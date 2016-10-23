@@ -8,9 +8,9 @@
 	"engines": {
 		"node": "4.5.0"
 	},
-	"main": "local_modules/app/electron_main.js",
+	"main": "main.js",
 	"scripts": {
-		"start": "electron ."
+		"start": "electron ./local_modules/electron_main/electron_main.js"
 	},
 	"dependencies": {
 		"async": "^2.1.2",
