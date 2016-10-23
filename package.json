@@ -1,18 +1,22 @@
 {
-  "name": "mymonero-app",
-  "repository": "",
-  "description": "Please see ./README.md",
-  "version": "1.0.0",
-  "private": true,
-  "engines": {
-    "node": "4.5.0"
-  },
-  "scripts": {
-    "start": "node local_modules/app/app.js",
-    "monitor": "nodemon --watch . -e js,css,html,json local_modules/app/app.js"
-  },
-  "dependencies": {
-    "async": "^2.1.2",
-    "mixpanel": "^0.4.0"
-  }
+	"name": "mymonero-app",
+    "author": "MyMonero",
+	"repository": "",
+	"description": "Please see ./README.md",
+	"version": "1.0.0",
+	"private": true,
+	"engines": {
+		"node": "4.5.0"
+	},
+	"main": "local_modules/app/electron_main.js",
+	"scripts": {
+		"start": "electron ."
+	},
+	"dependencies": {
+		"async": "^2.1.2",
+		"mixpanel": "^0.4.0"
+	},
+    "devDependencies": {
+		"electron": "^1.4.1"
+    }
 }
