@@ -74,7 +74,7 @@ class MainWindowController extends WindowController
 		if (self.window !== null && typeof self.window !== 'undefined') {
 			return
 		}
-		self.window = self._new_window();
+		self.window = self._new_window()
 		self.window.on('closed', function() // this is not within new_window because such accessors should never directly or indirectly modify state of anything but within its own fn scope
 		{
 			self.window = null // release

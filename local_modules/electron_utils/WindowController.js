@@ -14,7 +14,7 @@ class WindowController
     //
     constructor(options, context)
     {
-        var self = this;
+        var self = this
         self.options = options
         self.context = context
         //
@@ -23,7 +23,7 @@ class WindowController
     setup()
     {
         var self = this
-    };
+    }
     //
     //
     ////////////////////////////////////////////////////////////////////////////////

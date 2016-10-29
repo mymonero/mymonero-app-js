@@ -11,7 +11,7 @@ var context_object_instantiation_descriptions =
 		instance_key: "persister",
 		options: {}
 	}
-];
+]
 function NewHydratedContext(app) 
 {
     var initialContext = 

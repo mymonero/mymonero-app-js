@@ -14,7 +14,7 @@ class Persister
     //
     constructor(options, context)
     {
-        var self = this;
+        var self = this
         self.options = options
         self.context = context
         //
@@ -29,11 +29,11 @@ class Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Public
 	
-	documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
+	documentsWithQuery(collectionName, query, options, fn)
 	{
 		var self = this
 		//
-		self.__documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
+		self.__documentsWithQuery(collectionName, query, options, fn)
 	}
 
 
@@ -46,16 +46,29 @@ class Persister
 		//
 		self.__updateDocuments(collectionName, query, update, options, fn)
 	}
+	removeDocuments(collectionName, query, options, fn)
+	{
+		var self = this
+		//
+		self.__removeDocuments(collectionName, query, options, fn)
+	}
 
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private
 	
-	__documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
-	{
+	__documentsWithQuery(collectionName, query, options, fn)
+	{ // fn: (err, docs) -> Void
 		var self = this
 		//
 		console.log("Error: You must override __documentsWithQuery in ", self)
+		console.log(
+			"options:\n{"
+			+ "\n\tsort: (-1,1) or QueryDict"
+			+ "\n\tskip: UInteger "
+			+ "\n\tlimit: UInteger"
+			+ "\n}"
+		)
 	}
 
 
@@ -63,10 +76,28 @@ class Persister
     // Runtime - Imperatives - Private
 
 	__updateDocuments(collectionName, query, update, options, fn)
-	{
+	{ // fn: (err, numAffected, affectedDocuments, upsert) -> Void
 		var self = this
 		//
 		console.log("Error: You must override __updateDocuments in", self)
+		console.log(
+			"options:\n{"
+			+ "\n\tupsert: Boolean(false)"
+			+ "\n\tmulti: Boolean(false)"
+			+ "\n\treturnUpdatedDocs: Boolean(false)"
+			+ "\n}"
+		)
+	}
+	__removeDocuments(collectionName, query, options, fn)
+	{ // fn: (err, numRemoved) -> Void
+		var self = this
+		//
+		console.log("Error: You must override __removeDocuments in", self)
+		console.log(
+			"options:\n{"
+			+ "\n\tmulti: Boolean(false)"
+			+ "\n}"
+		)
 	}
 
 

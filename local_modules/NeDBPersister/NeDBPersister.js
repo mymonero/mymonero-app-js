@@ -61,20 +61,23 @@ class NeDBPersister extends Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private - Overrides
 
-	__documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
+	__documentsWithQuery(collectionName, query, options, fn)
 	{
 		var self = this
 		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
 		var operation = dbHandle_forCollection.find(query)
-		if (sort_orNull !== null) {
-			operation.sort(sort_orNull)
+		//
+		options = options || {}
+		if (typeof options.sort !== 'undefined' && options.sort !== null) {
+			operation.sort(options.sort)
 		}
-		if (skip_orNull !== null) {
-			operation.skip(skip_orNull)
+		if (typeof options.skip !== 'undefined' && options.skip !== null) {
+			operation.skip(options.skip)
 		}
-		if (limit_orNull !== null) {
-			operation.limit(limit_orNull)
+		if (typeof options.limit !== 'undefined' && options.limit !== null) {
+			operation.limit(options.limit)
 		}
+		//
 		operation.exec(function(err, docs)
 		{
 			fn(err, docs)
@@ -89,13 +92,22 @@ class NeDBPersister extends Persister
 	{
 		var self = this
 		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		console.log("dbHandle_forCollection" , dbHandle_forCollection)
 		dbHandle_forCollection.update(query, update, options, function(err, numAffected, affectedDocuments, upsert)
 		{
-			fn(err, numAffected, affectedDocuments, upsert)
+		   fn(err, numAffected, affectedDocuments, upsert)	
 		})
 	}
-	
+	__removeDocuments(collectionName, query, options, fn)
+	{ 
+		var self = this
+		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		options = options || {}
+		dbHandle_forCollection.remove(query, options, function(err, numRemoved)
+		{
+			fn(err, numRemoved)
+		})	
+	}	
+
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Delegation - 
