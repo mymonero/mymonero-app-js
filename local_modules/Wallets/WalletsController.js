@@ -1,6 +1,6 @@
 "use strict"
 //
-
+const Wallet = require('./Wallet')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,6 +18,8 @@ class WalletsController
         var self = this
         self.options = options
         self.context = context
+		//
+		self.wallets = []
         //
         self.setup()
     }
