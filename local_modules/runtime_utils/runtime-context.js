@@ -18,23 +18,23 @@
 // Hydrate context
 function NewHydratedContext(context_object_instantiation_descriptions, initialContext_orNilForNew)
 {
-    var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {};
+    var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {}
     for (var i in context_object_instantiation_descriptions) {
-        var description = context_object_instantiation_descriptions[i];
-        var module = require("" + description.module_path);
-        var instance = new module(description.options, context);
-        context[description.instance_key] = instance;
+        var description = context_object_instantiation_descriptions[i]
+        var module = require("" + description.module_path)
+        var instance = new module(description.options, context)
+        context[description.instance_key] = instance
     }
-    var context_keys = Object.keys(context);
+    var context_keys = Object.keys(context)
     for (var i in context_keys) {
-        var context_key = context_keys[i];
-        var instance = context[context_key];
-        var postWholeContextInit_setup__fn = instance.__runtimeContext_postWholeContextInit_setup;
+        var context_key = context_keys[i]
+        var instance = context[context_key]
+        var postWholeContextInit_setup__fn = instance.__runtimeContext_postWholeContextInit_setup
         if (typeof postWholeContextInit_setup__fn !== 'undefined') {
-            postWholeContextInit_setup__fn.call(instance); // using 'call' so the function's "this" is instance
+            postWholeContextInit_setup__fn.call(instance) // using 'call' so the function's "this" is instance
         }
     }
     
-    return context;
+    return context
 }
-module.exports.NewHydratedContext = NewHydratedContext;
+module.exports.NewHydratedContext = NewHydratedContext
