@@ -13,7 +13,56 @@ module.exports = context
 
 
 
-// context.persister.documentsWithQuery("wallets", {
-// }, function(err, docs)
+// __test_updateWallet()
+//
+// function __test_updateWallet()
 // {
-// })
+// 	var query =
+// 	{
+// 		"key": "some encrypted secret"
+// 	}
+// 	var update =
+// 	{
+// 		"key": "some encrypted secret"
+// 	}
+// 	var options =
+// 	{
+// 		upsert: true,
+// 		multi: false,
+// 		returnUpdatedDocs: true
+// 	}
+// 	context.persister.updateDocuments(
+// 		"wallets",
+// 		query,
+// 		update,
+// 		options,
+// 		function(
+// 			err,
+// 			numAffected,
+// 			affectedDocuments,
+// 			upsert
+// 		)
+// 		{
+//
+// 			console.log("err,  numAffected,  affectedDocuments,  upsert,",
+// 						err,
+// 						numAffected,
+// 						affectedDocuments,
+// 						upsert)
+//
+// 			__test_findWallet();
+// 		}
+// 	);
+// }
+// function __test_findWallet()
+// {
+// 	context.persister.documentsWithQuery(
+// 		"wallets",
+// 		{ "key": "some encrypted secret" },
+// 		function(err, docs)
+// 		{
+// 			console.log("err", err)
+// 			console.log("docs", docs)
+// 		}
+// 	)
+// }

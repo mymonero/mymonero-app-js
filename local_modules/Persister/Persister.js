@@ -40,6 +40,13 @@ class Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Public
 
+	updateDocuments(collectionName, query, update, options, fn)
+	{
+		var self = this
+		//
+		self.__updateDocuments(collectionName, query, update, options, fn)
+	}
+
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private
@@ -54,6 +61,13 @@ class Persister
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Private
+
+	__updateDocuments(collectionName, query, update, options, fn)
+	{
+		var self = this
+		//
+		console.log("Error: You must override __updateDocuments in", self)
+	}
 
 
     ////////////////////////////////////////////////////////////////////////////////

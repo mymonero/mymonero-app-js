@@ -75,6 +75,16 @@ class NeDBPersister extends Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Private - Overrides
 	
+	__updateDocuments(collectionName, query, update, options, fn)
+	{
+		var self = this
+		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		console.log("dbHandle_forCollection" , dbHandle_forCollection)
+		dbHandle_forCollection.update(query, update, options, function(err, numAffected, affectedDocuments, upsert)
+		{
+			fn(err, numAffected, affectedDocuments, upsert)
+		})
+	}
 	
 
     ////////////////////////////////////////////////////////////////////////////////
