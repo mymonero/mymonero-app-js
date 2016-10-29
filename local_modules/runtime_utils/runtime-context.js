@@ -1,3 +1,5 @@
+"use strict"
+//
 // Context generation
 // Format is like this:
 // var context_object_instantiation_descriptions =

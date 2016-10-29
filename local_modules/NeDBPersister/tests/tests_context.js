@@ -1,3 +1,5 @@
+"use strict"
+//
 // Hydrate context
 var context_object_instantiation_descriptions = 
 [ 
