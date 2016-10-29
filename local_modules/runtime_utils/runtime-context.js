@@ -22,7 +22,17 @@ function NewHydratedContext(context_object_instantiation_descriptions, initialCo
     for (var i in context_object_instantiation_descriptions) {
         var description = context_object_instantiation_descriptions[i]
         var module = require("" + description.module_path)
+		if (typeof module === 'undefined' || module === null) {
+			console.log("Error: Unable to require " + description.module_path + ". Skipping.")
+			
+			continue
+		}
         var instance = new module(description.options, context)
+		if (typeof instance === 'undefined' || instance === null) {
+			console.log("Error: Unable to create an instance of " + description.module_path + ". Skipping.")
+			
+			continue
+		}
         context[description.instance_key] = instance
     }
     var context_keys = Object.keys(context)

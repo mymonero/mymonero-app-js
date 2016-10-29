@@ -29,8 +29,8 @@ class NeDBPersister extends Persister
 	{
 		var self = this
 		var context = self.context
-		var app = context.app
-		var pathTo_dataFile = path.join(app.getPath('userData'), '/' + collectionName + '.nedb_datafile')
+		var userDataAbsoluteFilepath = context.userDataAbsoluteFilepath
+		var pathTo_dataFile = path.join(userDataAbsoluteFilepath, '/' + collectionName + '.nedb_datafile')
 		var dbHandle = new Datastore({ 
 			filename: pathTo_dataFile,
 		    autoload: true
