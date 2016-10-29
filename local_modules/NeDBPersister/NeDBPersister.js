@@ -17,47 +17,58 @@ class NeDBPersister extends Persister
 		//
         super.setup()
 		//
-		var db = self._new_db()
-		self.db = db
-		//
-		db.loadDatabase(function (err)
-		{ // Callback is optional
-			// Now commands will be executed
-			if (err) {
-				console.log("loaded db w err", err)
-				// crash log here ?
-				process.exit(1)
-				//
-				return // just in case?
-			}
-		})
+		var dbHandles = {}
+		self.dbHandles = dbHandles
     }
 
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private
 	
-	_new_db()
+	_new_dbHandle_forCollectionNamed(collectionName)
 	{
 		var self = this
 		var context = self.context
 		var app = context.app
-		var pathTo_dataFile = path.join(app.getPath('userData'), 'application.datafile')
-		var db = new Datastore({ 
+		var pathTo_dataFile = path.join(app.getPath('userData'), '/' + collectionName + '.nedb_datafile')
+		var dbHandle = new Datastore({ 
 			filename: pathTo_dataFile,
 		    autoload: true
 		})
 		//
-		return db
+		return dbHandle
 	}
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Runtime - Accessors - Private - Lazy Accessors
+	
+	_dbHandle_forCollectionNamed(collectionName)
+	{
+		var self = this
+		var dbHandle_forCollection = self.dbHandles[collectionName]
+		if (dbHandle_forCollection === null || typeof dbHandle_forCollection === 'undefined') {
+			dbHandle_forCollection = self._new_dbHandle_forCollectionNamed(collectionName)
+			self.dbHandles[collectionName] = dbHandle_forCollection
+		}
+		//
+		return dbHandle_forCollection
+	}
+
 
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private - Overrides
 
-	__documentsWithQuery(query, fn)
+	__documentsWithQuery(collectionName, query, fn)
 	{
 		var self = this
+		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		dbHandle_forCollection.find(query, function(err, docs)
+		{
+			fn(err, docs)
+		})
 	}
 
 

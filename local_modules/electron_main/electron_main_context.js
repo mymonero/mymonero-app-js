@@ -8,7 +8,7 @@ var context_object_instantiation_descriptions =
     },
 	{
 		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
-		instance_key: "NeDBPersister",
+		instance_key: "persister",
 		options: {}
 	}
 ];
