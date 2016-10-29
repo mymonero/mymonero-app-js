@@ -29,11 +29,11 @@ class Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Public
 	
-	documentsWithQuery(collectionName, query, fn)
+	documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
 	{
 		var self = this
 		//
-		self.__documentsWithQuery(collectionName, query, fn)
+		self.__documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
 	}
 
 
@@ -51,7 +51,7 @@ class Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private
 	
-	__documentsWithQuery(collectionName, query, fn)
+	__documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
 	{
 		var self = this
 		//

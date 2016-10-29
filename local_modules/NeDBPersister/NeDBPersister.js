@@ -61,11 +61,21 @@ class NeDBPersister extends Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private - Overrides
 
-	__documentsWithQuery(collectionName, query, fn)
+	__documentsWithQuery(collectionName, query, sort_orNull, skip_orNull, limit_orNull, fn)
 	{
 		var self = this
 		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		dbHandle_forCollection.find(query, function(err, docs)
+		var operation = dbHandle_forCollection.find(query)
+		if (sort_orNull !== null) {
+			operation.sort(sort_orNull)
+		}
+		if (skip_orNull !== null) {
+			operation.skip(skip_orNull)
+		}
+		if (limit_orNull !== null) {
+			operation.limit(limit_orNull)
+		}
+		operation.exec(function(err, docs)
 		{
 			fn(err, docs)
 		})

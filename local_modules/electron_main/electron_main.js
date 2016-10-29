@@ -50,19 +50,22 @@ module.exports = context
 // 						affectedDocuments,
 // 						upsert)
 //
-// 			__test_findWallet();
+			__test_findWallet();
 // 		}
 // 	);
 // }
-// function __test_findWallet()
-// {
-// 	context.persister.documentsWithQuery(
-// 		"wallets",
-// 		{ "key": "some encrypted secret" },
-// 		function(err, docs)
-// 		{
-// 			console.log("err", err)
-// 			console.log("docs", docs)
-// 		}
-// 	)
-// }
+function __test_findWallet()
+{
+	context.persister.documentsWithQuery(
+		"wallets",
+		{ "key": "some encrypted secret" },
+		null,
+		null,
+		null,
+		function(err, docs)
+		{
+			console.log("err", err)
+			console.log("docs", docs)
+		}
+	)
+}
