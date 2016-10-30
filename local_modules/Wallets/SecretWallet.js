@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Principal class
 //
-class Wallet
+class SecretWallet
 {
     //
     //
@@ -43,4 +43,4 @@ class Wallet
     // Runtime - Delegation - Private
 
 }
-module.exports = Wallet
+module.exports = SecretWallet

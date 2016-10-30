@@ -8,7 +8,15 @@ async.series(
 		__proceedTo_test_updateWallet,
 		__proceedTo_test_findWallet,
 		__proceedTo_test_removeWallet
-	]
+	],
+	function(err)
+	{
+		if (err) {
+			console.log("Error while performing tests: ", err)
+		} else {
+			console.log("Tests completed without error.")
+		}
+	}
 )
 //
 function __proceedTo_test_updateWallet(fn)
