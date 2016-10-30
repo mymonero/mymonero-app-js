@@ -1,6 +1,6 @@
 //
 //
-// This module implements the RNCryptor version 3 scheme. Its code is 
+// This module implements the RNCryptor version 3 scheme.
 //
 var crypto = require('crypto');
 //
@@ -36,7 +36,7 @@ function EncryptedBase64String(plaintext_msg, password)
         headers: 
         {
             version: String.fromCharCode(currentVersionCryptorFormatVersion),
-            options: String.fromCharCode(cryptor_settings.options) // not sure what this is for
+            options: String.fromCharCode(cryptor_settings.options)
         }
     };
     components.headers.encryption_salt = _new_random_salt();
@@ -194,7 +194,7 @@ function _new_random_iv_of_length(block_size)
 
         return ivString;
     } catch (ex) {
-        // handle error
+        // TODO: handle error
         // most likely, entropy sources are drained
     }
 }
