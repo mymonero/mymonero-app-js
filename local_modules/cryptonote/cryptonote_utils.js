@@ -27,6 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Original Author: Lucas Jones
+// Updated to vanilla/Node.JS compatability by Paul Shapiro
 
 var cnUtil = (function(initConfig) {
     var config = $.extend({}, initConfig);
