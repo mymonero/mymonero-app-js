@@ -7,7 +7,6 @@ var context_object_instantiation_descriptions =
 		module_path: __dirname + "/../HostedMoneroAPIClient",
 		instance_key: "hostedMoneroAPIClient",
 		options: {
-			host: "mymonero.com"
 		}
 	}
 ]
