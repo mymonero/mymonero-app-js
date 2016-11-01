@@ -1,7 +1,7 @@
 "use strict"
 //
 const request = require('request')
-const JSBigInt = require('./vendor/biginteger').BigInteger // important: grab defined export
+const JSBigInt = require('../cryptonote/biginteger').BigInteger // important: grab defined export
 const async = require('async')
 //
 //
