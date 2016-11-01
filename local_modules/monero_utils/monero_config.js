@@ -1,4 +1,4 @@
-const JSBigInt = require('../cryptonote_utils').BigInteger
+const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
 module.exports = 
 {

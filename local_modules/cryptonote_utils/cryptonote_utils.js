@@ -29,18 +29,16 @@
 // Original Author: Lucas Jones
 // Updated to support modular inclusion
 	
-// v--- These should maybe be injected into context
+// v--- These should maybe be injected into a context and supplied to currencyConfig for future platforms
 const JSBigInt = require('./biginteger').BigInteger
-const cnBase58 = require('./cnBase58').cnBase58
-const CNCrypto = require('cryptonote_crypto_EMSCRIPTEN').CNCrypto
+const cnBase58 = require('./cryptonote_base58').cnBase58
+const CNCrypto = require('./cryptonote_crypto_EMSCRIPTEN').CNCrypto
 
 var cnUtil = function(currencyConfig)
 {
 	var config = {} // shallow copy of initConfig
     for (var key in currencyConfig) {
-        if (initConfig.hasOwnProperty(key)) {
-           config[key] = currencyConfig[key];
-        }
+       config[key] = currencyConfig[key]
     }
 	//
     config.coinUnits = new JSBigInt(10).pow(config.coinUnitPlaces);

@@ -1,8 +1,10 @@
 "use strict"
 //
 const request = require('request')
-const JSBigInt = require('../monero/biginteger').BigInteger // important: grab defined export
+const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const async = require('async')
+const monero_utils = require('../monero_utils/monero_utils_instance')
+const TransactionKeyImageCache = require('./TransactionKeyImageCache')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +38,32 @@ class HostedMoneroAPIClient
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Public
 	
+	LogIn(address, view_key, fn)
+	{
+		const self = this
+		const endpointPath = "login"
+		const parameters = self._new_parameters_forWalletRequest(address, view_key)
+		parameters.create_account = true
+		//
+		self._API_request(
+			endpointPath,
+			parameters,
+			function(err, data)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				__proceedTo_parseAndCallBack(data)
+			}
+		)
+		function __proceedTo_parseAndCallBack(data)
+		{
+			console.log("data", data)
+			fn(err)
+		}
+	}
+	
 	AddressInfo(address, view_key, fn)
 	{
 		const self = this
@@ -64,37 +92,37 @@ class HostedMoneroAPIClient
 		    const blockchain_height = data.blockchain_height || 0;
 			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
 			const spent_outputs = data.spent_outputs || []			
-			async.each(
+			//
+			// TODO:
+			const view_key__private = null 
+			const spend_key__public = null
+			const spend_key__private = null
+			//
+			for (let spent_output of spent_outputs) {
+	            var key_image = TransactionKeyImageCache.Lazy_KeyImage(
+	                spent_output.tx_pub_key,
+	                spent_output.out_index,
+					view_key__private,
+					spend_key__public,
+					spend_key__private
+	            )
+	            if (spent_output.key_image !== key_image) {
+	                console.log('Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
+	                total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
+	            }
+			}
+			// yield
+			fn(
+				null,
+				total_received,
+				locked_balance,
+				total_sent,
 				spent_outputs,
-				function(spent_output, cb)
-				{
-		            var key_image = AccountService.cachedKeyImage(
-		                spent_output.tx_pub_key,
-		                spent_output.out_index
-		            )
-		            if (spent_output.key_image !== key_image) {
-		                console.log('Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
-		                total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
-		            }
-			        async.setImmediate(function()
-					{ // defer cb for one tick so callstack doesn't overflow 
-						cb()
-					})
-				}, function()
-				{
-					fn(
-						null,
-						total_received,
-						locked_balance,
-						total_sent,
-						spent_outputs,
-						account_scanned_tx_height,
-						account_scanned_block_height,
-						account_scan_start_height,
-						transaction_height,
-						blockchain_height
-					)
-				}
+				account_scanned_tx_height,
+				account_scanned_block_height,
+				account_scan_start_height,
+				transaction_height,
+				blockchain_height
 			)
 		}
 	}
@@ -126,12 +154,21 @@ class HostedMoneroAPIClient
 	        const blockchain_height = data.blockchain_height || 0
 			//
 	        const transactions = data.transactions || []
+			//
+			// TODO:
+			const view_key__private = null 
+			const spend_key__public = null
+			const spend_key__private = null
+			//
 	        for (let i = 0; i < transactions.length; ++i) {
 	            if ((transactions[i].spent_outputs || []).length > 0) {
 	                for (var j = 0; j < transactions[i].spent_outputs.length; ++j) {
-	                    var key_image = AccountService.cachedKeyImage(
+	                    var key_image = TransactionKeyImageCache.Lazy_KeyImage(
 	                        transactions[i].spent_outputs[j].tx_pub_key,
-	                        transactions[i].spent_outputs[j].out_index
+	                        transactions[i].spent_outputs[j].out_index,
+							view_key__private,
+							spend_key__public,
+							spend_key__private
 	                    )
 	                    if (transactions[i].spent_outputs[j].key_image !== key_image) {
 	                        console.log('Output used as mixin, ignoring (' + transactions[i].spent_outputs[j].key_image + '/' + key_image + ')')
@@ -147,7 +184,7 @@ class HostedMoneroAPIClient
 	                continue
 	            }
 	            transactions[i].amount = new JSBigInt(transactions[i].total_received || 0).subtract(transactions[i].total_sent || 0).toString()
-	            transactions[i].approx_float_amount = parseFloat(cnUtil.formatMoney(transactions[i].amount))
+	            transactions[i].approx_float_amount = parseFloat(monero_utils.formatMoney(transactions[i].amount))
 	            transactions[i].timestamp = new Date(transactions[i].timestamp)
 	        }
 	        transactions.sort(function(a, b) 

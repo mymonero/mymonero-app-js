@@ -4,8 +4,13 @@
 var context_object_instantiation_descriptions = 
 [ 
 	{
-		module_path: __dirname + "/../HostedMoneroAPIClient",
+		module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
 		instance_key: "hostedMoneroAPIClient",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
+		instance_key: "persister",
 		options: {}
 	}
 ]
