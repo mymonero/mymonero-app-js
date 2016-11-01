@@ -27,10 +27,22 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Original Author: Lucas Jones
-// Updated to vanilla/Node.JS compatability by Paul Shapiro
+// Updated to support modular inclusion
+	
+// v--- These should maybe be injected into context
+const JSBigInt = require('./biginteger').BigInteger
+const cnBase58 = require('./cnBase58').cnBase58
+const CNCrypto = require('cryptonote_crypto_EMSCRIPTEN').CNCrypto
 
-var cnUtil = (function(initConfig) {
-    var config = $.extend({}, initConfig);
+var cnUtil = function(currencyConfig)
+{
+	var config = {} // shallow copy of initConfig
+    for (var key in currencyConfig) {
+        if (initConfig.hasOwnProperty(key)) {
+           config[key] = currencyConfig[key];
+        }
+    }
+	//
     config.coinUnits = new JSBigInt(10).pow(config.coinUnitPlaces);
 
     var HASH_STATE_BYTES = 200;
@@ -105,11 +117,11 @@ var cnUtil = (function(initConfig) {
         if (input.length !== 64) {
             throw "Invalid input length";
         }
-        var mem = Module._malloc(64);
-        Module.HEAPU8.set(input, mem);
-        Module.ccall('sc_reduce', 'void', ['number'], [mem]);
-        var output = Module.HEAPU8.subarray(mem, mem + 64);
-        Module._free(mem);
+        var mem = CNCrypto._malloc(64);
+        CNCrypto.HEAPU8.set(input, mem);
+        CNCrypto.ccall('sc_reduce', 'void', ['number'], [mem]);
+        var output = CNCrypto.HEAPU8.subarray(mem, mem + 64);
+        CNCrypto._free(mem);
         return bintohex(output);
     };
 
@@ -118,11 +130,11 @@ var cnUtil = (function(initConfig) {
         if (input.length !== 32) {
             throw "Invalid input length";
         }
-        var mem = Module._malloc(32);
-        Module.HEAPU8.set(input, mem);
-        Module.ccall('sc_reduce32', 'void', ['number'], [mem]);
-        var output = Module.HEAPU8.subarray(mem, mem + 32);
-        Module._free(mem);
+        var mem = CNCrypto._malloc(32);
+        CNCrypto.HEAPU8.set(input, mem);
+        CNCrypto.ccall('sc_reduce32', 'void', ['number'], [mem]);
+        var output = CNCrypto.HEAPU8.subarray(mem, mem + 32);
+        CNCrypto._free(mem);
         return bintohex(output);
     };
 
@@ -131,13 +143,13 @@ var cnUtil = (function(initConfig) {
         if (input.length !== 32) {
             throw "Invalid input length";
         }
-        var input_mem = Module._malloc(32);
-        Module.HEAPU8.set(input, input_mem);
-        var ge_p3 = Module._malloc(STRUCT_SIZES.GE_P3);
-        Module.ccall('ge_scalarmult_base', 'void', ['number', 'number'], [ge_p3, input_mem]);
-        var output = Module.HEAPU8.subarray(ge_p3, ge_p3 + STRUCT_SIZES.GE_P3);
-        Module._free(input_mem);
-        Module._free(ge_p3);
+        var input_mem = CNCrypto._malloc(32);
+        CNCrypto.HEAPU8.set(input, input_mem);
+        var ge_p3 = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        CNCrypto.ccall('ge_scalarmult_base', 'void', ['number', 'number'], [ge_p3, input_mem]);
+        var output = CNCrypto.HEAPU8.subarray(ge_p3, ge_p3 + STRUCT_SIZES.GE_P3);
+        CNCrypto._free(input_mem);
+        CNCrypto._free(ge_p3);
         return bintohex(output);
     };
 
@@ -146,13 +158,13 @@ var cnUtil = (function(initConfig) {
         if (input.length !== STRUCT_SIZES.GE_P3) {
             throw "Invalid input length";
         }
-        var ge_p3 = Module._malloc(STRUCT_SIZES.GE_P3);
-        Module.HEAPU8.set(input, ge_p3);
-        var out_mem = Module._malloc(32);
-        Module.ccall('ge_p3_tobytes', 'void', ['number', 'number'], [out_mem, ge_p3]);
-        var output = Module.HEAPU8.subarray(out_mem, out_mem + 32);
-        Module._free(ge_p3);
-        Module._free(out_mem);
+        var ge_p3 = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        CNCrypto.HEAPU8.set(input, ge_p3);
+        var out_mem = CNCrypto._malloc(32);
+        CNCrypto.ccall('ge_p3_tobytes', 'void', ['number', 'number'], [out_mem, ge_p3]);
+        var output = CNCrypto.HEAPU8.subarray(out_mem, out_mem + 32);
+        CNCrypto._free(ge_p3);
+        CNCrypto._free(out_mem);
         return bintohex(output);
     };
 
@@ -213,13 +225,13 @@ var cnUtil = (function(initConfig) {
         if (outlen <= 0) {
             throw "Invalid output length";
         }
-        var input_mem = Module._malloc(inlen);
-        Module.HEAPU8.set(input, input_mem);
-        var out_mem = Module._malloc(outlen);
-        Module._keccak(input_mem, inlen | 0, out_mem, outlen | 0);
-        var output = Module.HEAPU8.subarray(out_mem, out_mem + outlen);
-        Module._free(input_mem);
-        Module._free(out_mem);
+        var input_mem = CNCrypto._malloc(inlen);
+        CNCrypto.HEAPU8.set(input, input_mem);
+        var out_mem = CNCrypto._malloc(outlen);
+        CNCrypto._keccak(input_mem, inlen | 0, out_mem, outlen | 0);
+        var output = CNCrypto.HEAPU8.subarray(out_mem, out_mem + outlen);
+        CNCrypto._free(input_mem);
+        CNCrypto._free(out_mem);
         return bintohex(output);
     };
 
@@ -278,20 +290,20 @@ var cnUtil = (function(initConfig) {
         if (key.length !== (KEY_SIZE * 2)) {
             throw "Invalid input length";
         }
-        var h_m = Module._malloc(HASH_SIZE);
-        var point_m = Module._malloc(STRUCT_SIZES.GE_P2);
-        var point2_m = Module._malloc(STRUCT_SIZES.GE_P1P1);
-        var res_m = Module._malloc(STRUCT_SIZES.GE_P3);
+        var h_m = CNCrypto._malloc(HASH_SIZE);
+        var point_m = CNCrypto._malloc(STRUCT_SIZES.GE_P2);
+        var point2_m = CNCrypto._malloc(STRUCT_SIZES.GE_P1P1);
+        var res_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
         var hash = hextobin(this.cn_fast_hash(key, KEY_SIZE));
-        Module.HEAPU8.set(hash, h_m);
-        Module.ccall("ge_fromfe_frombytes_vartime", "void", ["number", "number"], [point_m, h_m]);
-        Module.ccall("ge_mul8", "void", ["number", "number"], [point2_m, point_m]);
-        Module.ccall("ge_p1p1_to_p3", "void", ["number", "number"], [res_m, point2_m]);
-        var res = Module.HEAPU8.subarray(res_m, res_m + STRUCT_SIZES.GE_P3);
-        Module._free(h_m);
-        Module._free(point_m);
-        Module._free(point2_m);
-        Module._free(res_m);
+        CNCrypto.HEAPU8.set(hash, h_m);
+        CNCrypto.ccall("ge_fromfe_frombytes_vartime", "void", ["number", "number"], [point_m, h_m]);
+        CNCrypto.ccall("ge_mul8", "void", ["number", "number"], [point2_m, point_m]);
+        CNCrypto.ccall("ge_p1p1_to_p3", "void", ["number", "number"], [res_m, point2_m]);
+        var res = CNCrypto.HEAPU8.subarray(res_m, res_m + STRUCT_SIZES.GE_P3);
+        CNCrypto._free(h_m);
+        CNCrypto._free(point_m);
+        CNCrypto._free(point2_m);
+        CNCrypto._free(res_m);
         return bintohex(res);
     };
 
@@ -299,26 +311,26 @@ var cnUtil = (function(initConfig) {
         if (!pub || !sec || pub.length !== 64 || sec.length !== 64) {
             throw "Invalid input length";
         }
-        var pub_m = Module._malloc(KEY_SIZE);
-        var sec_m = Module._malloc(KEY_SIZE);
-        Module.HEAPU8.set(hextobin(pub), pub_m);
-        Module.HEAPU8.set(hextobin(sec), sec_m);
-        if (Module.ccall("sc_check", "number", ["number"], [sec_m]) !== 0) {
+        var pub_m = CNCrypto._malloc(KEY_SIZE);
+        var sec_m = CNCrypto._malloc(KEY_SIZE);
+        CNCrypto.HEAPU8.set(hextobin(pub), pub_m);
+        CNCrypto.HEAPU8.set(hextobin(sec), sec_m);
+        if (CNCrypto.ccall("sc_check", "number", ["number"], [sec_m]) !== 0) {
             throw "sc_check(sec) != 0";
         }
-        var point_m = Module._malloc(STRUCT_SIZES.GE_P3);
-        var point2_m = Module._malloc(STRUCT_SIZES.GE_P2);
+        var point_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        var point2_m = CNCrypto._malloc(STRUCT_SIZES.GE_P2);
         var point_b = hextobin(this.hash_to_ec(pub));
-        Module.HEAPU8.set(point_b, point_m);
-        var image_m = Module._malloc(STRUCT_SIZES.KEY_IMAGE);
-        Module.ccall("ge_scalarmult", "void", ["number", "number", "number"], [point2_m, sec_m, point_m]);
-        Module.ccall("ge_tobytes", "void", ["number", "number"], [image_m, point2_m]);
-        var res = Module.HEAPU8.subarray(image_m, image_m + STRUCT_SIZES.KEY_IMAGE);
-        Module._free(pub_m);
-        Module._free(sec_m);
-        Module._free(point_m);
-        Module._free(point2_m);
-        Module._free(image_m);
+        CNCrypto.HEAPU8.set(point_b, point_m);
+        var image_m = CNCrypto._malloc(STRUCT_SIZES.KEY_IMAGE);
+        CNCrypto.ccall("ge_scalarmult", "void", ["number", "number", "number"], [point2_m, sec_m, point_m]);
+        CNCrypto.ccall("ge_tobytes", "void", ["number", "number"], [image_m, point2_m]);
+        var res = CNCrypto.HEAPU8.subarray(image_m, image_m + STRUCT_SIZES.KEY_IMAGE);
+        CNCrypto._free(pub_m);
+        CNCrypto._free(sec_m);
+        CNCrypto._free(point_m);
+        CNCrypto._free(point2_m);
+        CNCrypto._free(image_m);
         return bintohex(res);
     };
 
@@ -440,28 +452,28 @@ var cnUtil = (function(initConfig) {
         }
         var pub_b = hextobin(pub);
         var sec_b = hextobin(sec);
-        var pub_m = Module._malloc(KEY_SIZE);
-        Module.HEAPU8.set(pub_b, pub_m);
-        var sec_m = Module._malloc(KEY_SIZE);
-        Module.HEAPU8.set(sec_b, sec_m);
-        var ge_p3_m = Module._malloc(STRUCT_SIZES.GE_P3);
-        var ge_p2_m = Module._malloc(STRUCT_SIZES.GE_P2);
-        var ge_p1p1_m = Module._malloc(STRUCT_SIZES.GE_P1P1);
-        if (Module.ccall("ge_frombytes_vartime", "bool", ["number", "number"], [ge_p3_m, pub_m]) !== 0) {
+        var pub_m = CNCrypto._malloc(KEY_SIZE);
+        CNCrypto.HEAPU8.set(pub_b, pub_m);
+        var sec_m = CNCrypto._malloc(KEY_SIZE);
+        CNCrypto.HEAPU8.set(sec_b, sec_m);
+        var ge_p3_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        var ge_p2_m = CNCrypto._malloc(STRUCT_SIZES.GE_P2);
+        var ge_p1p1_m = CNCrypto._malloc(STRUCT_SIZES.GE_P1P1);
+        if (CNCrypto.ccall("ge_frombytes_vartime", "bool", ["number", "number"], [ge_p3_m, pub_m]) !== 0) {
             throw "ge_frombytes_vartime returned non-zero error code";
         }
-        Module.ccall("ge_scalarmult", "void", ["number", "number", "number"], [ge_p2_m, sec_m, ge_p3_m]);
-        Module.ccall("ge_mul8", "void", ["number", "number"], [ge_p1p1_m, ge_p2_m]);
-        Module.ccall("ge_p1p1_to_p2", "void", ["number", "number"], [ge_p2_m, ge_p1p1_m]);
-        var derivation_m = Module._malloc(KEY_SIZE);
-        Module.ccall("ge_tobytes", "void", ["number", "number"], [derivation_m, ge_p2_m]);
-        var res = Module.HEAPU8.subarray(derivation_m, derivation_m + KEY_SIZE);
-        Module._free(pub_m);
-        Module._free(sec_m);
-        Module._free(ge_p3_m);
-        Module._free(ge_p2_m);
-        Module._free(ge_p1p1_m);
-        Module._free(derivation_m);
+        CNCrypto.ccall("ge_scalarmult", "void", ["number", "number", "number"], [ge_p2_m, sec_m, ge_p3_m]);
+        CNCrypto.ccall("ge_mul8", "void", ["number", "number"], [ge_p1p1_m, ge_p2_m]);
+        CNCrypto.ccall("ge_p1p1_to_p2", "void", ["number", "number"], [ge_p2_m, ge_p1p1_m]);
+        var derivation_m = CNCrypto._malloc(KEY_SIZE);
+        CNCrypto.ccall("ge_tobytes", "void", ["number", "number"], [derivation_m, ge_p2_m]);
+        var res = CNCrypto.HEAPU8.subarray(derivation_m, derivation_m + KEY_SIZE);
+        CNCrypto._free(pub_m);
+        CNCrypto._free(sec_m);
+        CNCrypto._free(ge_p3_m);
+        CNCrypto._free(ge_p2_m);
+        CNCrypto._free(ge_p1p1_m);
+        CNCrypto._free(derivation_m);
         return bintohex(res);
     };
 
@@ -489,40 +501,40 @@ var cnUtil = (function(initConfig) {
         if (derivation.length !== 64 || pub.length !== 64) {
             throw "Invalid input length!";
         }
-        var derivation_m = Module._malloc(KEY_SIZE);
+        var derivation_m = CNCrypto._malloc(KEY_SIZE);
         var derivation_b = hextobin(derivation);
-        Module.HEAPU8.set(derivation_b, derivation_m);
-        var base_m = Module._malloc(KEY_SIZE);
+        CNCrypto.HEAPU8.set(derivation_b, derivation_m);
+        var base_m = CNCrypto._malloc(KEY_SIZE);
         var base_b = hextobin(pub);
-        Module.HEAPU8.set(base_b, base_m);
-        var point1_m = Module._malloc(STRUCT_SIZES.GE_P3);
-        var point2_m = Module._malloc(STRUCT_SIZES.GE_P3);
-        var point3_m = Module._malloc(STRUCT_SIZES.GE_CACHED);
-        var point4_m = Module._malloc(STRUCT_SIZES.GE_P1P1);
-        var point5_m = Module._malloc(STRUCT_SIZES.GE_P2);
-        var derived_key_m = Module._malloc(KEY_SIZE);
-        if (Module.ccall("ge_frombytes_vartime", "bool", ["number", "number"], [point1_m, base_m]) !== 0) {
+        CNCrypto.HEAPU8.set(base_b, base_m);
+        var point1_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        var point2_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        var point3_m = CNCrypto._malloc(STRUCT_SIZES.GE_CACHED);
+        var point4_m = CNCrypto._malloc(STRUCT_SIZES.GE_P1P1);
+        var point5_m = CNCrypto._malloc(STRUCT_SIZES.GE_P2);
+        var derived_key_m = CNCrypto._malloc(KEY_SIZE);
+        if (CNCrypto.ccall("ge_frombytes_vartime", "bool", ["number", "number"], [point1_m, base_m]) !== 0) {
             throw "ge_frombytes_vartime returned non-zero error code";
         }
-        var scalar_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
+        var scalar_m = CNCrypto._malloc(STRUCT_SIZES.EC_SCALAR);
         var scalar_b = hextobin(this.derivation_to_scalar(
-            bintohex(Module.HEAPU8.subarray(derivation_m, derivation_m + STRUCT_SIZES.EC_POINT)), out_index));
-        Module.HEAPU8.set(scalar_b, scalar_m);
-        Module.ccall("ge_scalarmult_base", "void", ["number", "number"], [point2_m, scalar_m]);
-        Module.ccall("ge_p3_to_cached", "void", ["number", "number"], [point3_m, point2_m]);
-        Module.ccall("ge_add", "void", ["number", "number", "number"], [point4_m, point1_m, point3_m]);
-        Module.ccall("ge_p1p1_to_p2", "void", ["number", "number"], [point5_m, point4_m]);
-        Module.ccall("ge_tobytes", "void", ["number", "number"], [derived_key_m, point5_m]);
-        var res = Module.HEAPU8.subarray(derived_key_m, derived_key_m + KEY_SIZE);
-        Module._free(derivation_m);
-        Module._free(base_m);
-        Module._free(scalar_m);
-        Module._free(point1_m);
-        Module._free(point2_m);
-        Module._free(point3_m);
-        Module._free(point4_m);
-        Module._free(point5_m);
-        Module._free(derived_key_m);
+            bintohex(CNCrypto.HEAPU8.subarray(derivation_m, derivation_m + STRUCT_SIZES.EC_POINT)), out_index));
+        CNCrypto.HEAPU8.set(scalar_b, scalar_m);
+        CNCrypto.ccall("ge_scalarmult_base", "void", ["number", "number"], [point2_m, scalar_m]);
+        CNCrypto.ccall("ge_p3_to_cached", "void", ["number", "number"], [point3_m, point2_m]);
+        CNCrypto.ccall("ge_add", "void", ["number", "number", "number"], [point4_m, point1_m, point3_m]);
+        CNCrypto.ccall("ge_p1p1_to_p2", "void", ["number", "number"], [point5_m, point4_m]);
+        CNCrypto.ccall("ge_tobytes", "void", ["number", "number"], [derived_key_m, point5_m]);
+        var res = CNCrypto.HEAPU8.subarray(derived_key_m, derived_key_m + KEY_SIZE);
+        CNCrypto._free(derivation_m);
+        CNCrypto._free(base_m);
+        CNCrypto._free(scalar_m);
+        CNCrypto._free(point1_m);
+        CNCrypto._free(point2_m);
+        CNCrypto._free(point3_m);
+        CNCrypto._free(point4_m);
+        CNCrypto._free(point5_m);
+        CNCrypto._free(derived_key_m);
         return bintohex(res);
     };
 
@@ -530,17 +542,17 @@ var cnUtil = (function(initConfig) {
         if (derivation.length !== 64 || sec.length !== 64) {
             throw "Invalid input length!";
         }
-        var scalar_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
+        var scalar_m = CNCrypto._malloc(STRUCT_SIZES.EC_SCALAR);
         var scalar_b = hextobin(this.derivation_to_scalar(derivation, out_index));
-        Module.HEAPU8.set(scalar_b, scalar_m);
-        var base_m = Module._malloc(KEY_SIZE);
-        Module.HEAPU8.set(hextobin(sec), base_m);
-        var derived_m = Module._malloc(STRUCT_SIZES.EC_POINT);
-        Module.ccall("sc_add", "void", ["number", "number", "number"], [derived_m, base_m, scalar_m]);
-        var res = Module.HEAPU8.subarray(derived_m, derived_m + STRUCT_SIZES.EC_POINT);
-        Module._free(scalar_m);
-        Module._free(base_m);
-        Module._free(derived_m);
+        CNCrypto.HEAPU8.set(scalar_b, scalar_m);
+        var base_m = CNCrypto._malloc(KEY_SIZE);
+        CNCrypto.HEAPU8.set(hextobin(sec), base_m);
+        var derived_m = CNCrypto._malloc(STRUCT_SIZES.EC_POINT);
+        CNCrypto.ccall("sc_add", "void", ["number", "number", "number"], [derived_m, base_m, scalar_m]);
+        var res = CNCrypto.HEAPU8.subarray(derived_m, derived_m + STRUCT_SIZES.EC_POINT);
+        CNCrypto._free(scalar_m);
+        CNCrypto._free(base_m);
+        CNCrypto._free(derived_m);
         return bintohex(res);
     };
 
@@ -641,23 +653,23 @@ var cnUtil = (function(initConfig) {
             throw "real_index is invalid";
         }
 
-        var _ge_tobytes = Module.cwrap("ge_tobytes", "void", ["number", "number"]);
-        var _ge_p3_tobytes = Module.cwrap("ge_p3_tobytes", "void", ["number", "number"]);
-        var _ge_scalarmult_base = Module.cwrap("ge_scalarmult_base", "void", ["number", "number"]);
-        var _ge_scalarmult = Module.cwrap("ge_scalarmult", "void", ["number", "number", "number"]);
-        var _sc_add = Module.cwrap("sc_add", "void", ["number", "number", "number"]);
-        var _sc_sub = Module.cwrap("sc_sub", "void", ["number", "number", "number"]);
-        var _sc_mulsub = Module.cwrap("sc_mulsub", "void", ["number", "number", "number", "number"]);
-        var _sc_0 = Module.cwrap("sc_0", "void", ["number"]);
-        var _ge_double_scalarmult_base_vartime = Module.cwrap("ge_double_scalarmult_base_vartime", "void", ["number", "number", "number", "number"]);
-        var _ge_double_scalarmult_precomp_vartime = Module.cwrap("ge_double_scalarmult_precomp_vartime", "void", ["number", "number", "number", "number", "number"]);
-        var _ge_frombytes_vartime = Module.cwrap("ge_frombytes_vartime", "number", ["number", "number"]);
-        var _ge_dsm_precomp = Module.cwrap("ge_dsm_precomp", "void", ["number", "number"]);
+        var _ge_tobytes = CNCrypto.cwrap("ge_tobytes", "void", ["number", "number"]);
+        var _ge_p3_tobytes = CNCrypto.cwrap("ge_p3_tobytes", "void", ["number", "number"]);
+        var _ge_scalarmult_base = CNCrypto.cwrap("ge_scalarmult_base", "void", ["number", "number"]);
+        var _ge_scalarmult = CNCrypto.cwrap("ge_scalarmult", "void", ["number", "number", "number"]);
+        var _sc_add = CNCrypto.cwrap("sc_add", "void", ["number", "number", "number"]);
+        var _sc_sub = CNCrypto.cwrap("sc_sub", "void", ["number", "number", "number"]);
+        var _sc_mulsub = CNCrypto.cwrap("sc_mulsub", "void", ["number", "number", "number", "number"]);
+        var _sc_0 = CNCrypto.cwrap("sc_0", "void", ["number"]);
+        var _ge_double_scalarmult_base_vartime = CNCrypto.cwrap("ge_double_scalarmult_base_vartime", "void", ["number", "number", "number", "number"]);
+        var _ge_double_scalarmult_precomp_vartime = CNCrypto.cwrap("ge_double_scalarmult_precomp_vartime", "void", ["number", "number", "number", "number", "number"]);
+        var _ge_frombytes_vartime = CNCrypto.cwrap("ge_frombytes_vartime", "number", ["number", "number"]);
+        var _ge_dsm_precomp = CNCrypto.cwrap("ge_dsm_precomp", "void", ["number", "number"]);
 
         var buf_size = STRUCT_SIZES.EC_POINT * 2 * keys.length;
-        var buf_m = Module._malloc(buf_size);
+        var buf_m = CNCrypto._malloc(buf_size);
         var sig_size = STRUCT_SIZES.SIGNATURE * keys.length;
-        var sig_m = Module._malloc(sig_size);
+        var sig_m = CNCrypto._malloc(sig_size);
 
         // Struct pointer helper functions
         function buf_a(i) {
@@ -676,19 +688,19 @@ var cnUtil = (function(initConfig) {
             return sig_m + STRUCT_SIZES.EC_SCALAR * (2 * i + 1);
         }
 
-        var image_m = Module._malloc(STRUCT_SIZES.KEY_IMAGE);
-        Module.HEAPU8.set(hextobin(k_image), image_m);
+        var image_m = CNCrypto._malloc(STRUCT_SIZES.KEY_IMAGE);
+        CNCrypto.HEAPU8.set(hextobin(k_image), image_m);
         var i;
-        var image_unp_m = Module._malloc(STRUCT_SIZES.GE_P3);
-        var image_pre_m = Module._malloc(STRUCT_SIZES.GE_DSMP);
-        var sum_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-        var k_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-        var h_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-        var tmp2_m = Module._malloc(STRUCT_SIZES.GE_P2);
-        var tmp3_m = Module._malloc(STRUCT_SIZES.GE_P3);
-        var pub_m = Module._malloc(KEY_SIZE);
-        var sec_m = Module._malloc(KEY_SIZE);
-        Module.HEAPU8.set(hextobin(sec), sec_m);
+        var image_unp_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        var image_pre_m = CNCrypto._malloc(STRUCT_SIZES.GE_DSMP);
+        var sum_m = CNCrypto._malloc(STRUCT_SIZES.EC_SCALAR);
+        var k_m = CNCrypto._malloc(STRUCT_SIZES.EC_SCALAR);
+        var h_m = CNCrypto._malloc(STRUCT_SIZES.EC_SCALAR);
+        var tmp2_m = CNCrypto._malloc(STRUCT_SIZES.GE_P2);
+        var tmp3_m = CNCrypto._malloc(STRUCT_SIZES.GE_P3);
+        var pub_m = CNCrypto._malloc(KEY_SIZE);
+        var sec_m = CNCrypto._malloc(KEY_SIZE);
+        CNCrypto.HEAPU8.set(hextobin(sec), sec_m);
         if (_ge_frombytes_vartime(image_unp_m, image_m) != 0) {
             throw "failed to call ge_frombytes_vartime";
         }
@@ -698,51 +710,51 @@ var cnUtil = (function(initConfig) {
             if (i === real_index) {
                 // Real key
                 var rand = this.random_scalar();
-                Module.HEAPU8.set(hextobin(rand), k_m);
+                CNCrypto.HEAPU8.set(hextobin(rand), k_m);
                 _ge_scalarmult_base(tmp3_m, k_m);
                 _ge_p3_tobytes(buf_a(i), tmp3_m);
                 var ec = this.hash_to_ec(keys[i]);
-                Module.HEAPU8.set(hextobin(ec), tmp3_m);
+                CNCrypto.HEAPU8.set(hextobin(ec), tmp3_m);
                 _ge_scalarmult(tmp2_m, k_m, tmp3_m);
                 _ge_tobytes(buf_b(i), tmp2_m);
             } else {
-                Module.HEAPU8.set(hextobin(this.random_scalar()), sig_c(i));
-                Module.HEAPU8.set(hextobin(this.random_scalar()), sig_r(i));
-                Module.HEAPU8.set(hextobin(keys[i]), pub_m);
-                if (Module.ccall("ge_frombytes_vartime", "void", ["number", "number"], [tmp3_m, pub_m]) !== 0) {
+                CNCrypto.HEAPU8.set(hextobin(this.random_scalar()), sig_c(i));
+                CNCrypto.HEAPU8.set(hextobin(this.random_scalar()), sig_r(i));
+                CNCrypto.HEAPU8.set(hextobin(keys[i]), pub_m);
+                if (CNCrypto.ccall("ge_frombytes_vartime", "void", ["number", "number"], [tmp3_m, pub_m]) !== 0) {
                     throw "Failed to call ge_frombytes_vartime";
                 }
                 _ge_double_scalarmult_base_vartime(tmp2_m, sig_c(i), tmp3_m, sig_r(i));
                 _ge_tobytes(buf_a(i), tmp2_m);
                 var ec = this.hash_to_ec(keys[i]);
-                Module.HEAPU8.set(hextobin(ec), tmp3_m);
+                CNCrypto.HEAPU8.set(hextobin(ec), tmp3_m);
                 _ge_double_scalarmult_precomp_vartime(tmp2_m, sig_r(i), tmp3_m, sig_c(i), image_pre_m);
                 _ge_tobytes(buf_b(i), tmp2_m);
                 _sc_add(sum_m, sum_m, sig_c(i));
             }
         }
-        var buf_bin = Module.HEAPU8.subarray(buf_m, buf_m + buf_size);
+        var buf_bin = CNCrypto.HEAPU8.subarray(buf_m, buf_m + buf_size);
         var scalar = this.hash_to_scalar(prefix_hash + bintohex(buf_bin));
-        Module.HEAPU8.set(hextobin(scalar), h_m);
+        CNCrypto.HEAPU8.set(hextobin(scalar), h_m);
         _sc_sub(sig_c(real_index), h_m, sum_m);
         _sc_mulsub(sig_r(real_index), sig_c(real_index), sec_m, k_m);
-        var sig_data = bintohex(Module.HEAPU8.subarray(sig_m, sig_m + sig_size));
+        var sig_data = bintohex(CNCrypto.HEAPU8.subarray(sig_m, sig_m + sig_size));
         var sigs = [];
         for (var k = 0; k < keys.length; k++) {
             sigs.push(sig_data.slice(STRUCT_SIZES.SIGNATURE * 2 * k, STRUCT_SIZES.SIGNATURE * 2 * (k + 1)));
         }
-        Module._free(image_m);
-        Module._free(image_unp_m);
-        Module._free(image_pre_m);
-        Module._free(sum_m);
-        Module._free(k_m);
-        Module._free(h_m);
-        Module._free(tmp2_m);
-        Module._free(tmp3_m);
-        Module._free(buf_m);
-        Module._free(sig_m);
-        Module._free(pub_m);
-        Module._free(sec_m);
+        CNCrypto._free(image_m);
+        CNCrypto._free(image_unp_m);
+        CNCrypto._free(image_pre_m);
+        CNCrypto._free(sum_m);
+        CNCrypto._free(k_m);
+        CNCrypto._free(h_m);
+        CNCrypto._free(tmp2_m);
+        CNCrypto._free(tmp3_m);
+        CNCrypto._free(buf_m);
+        CNCrypto._free(sig_m);
+        CNCrypto._free(pub_m);
+        CNCrypto._free(sec_m);
         return sigs;
     };
 
@@ -1110,4 +1122,5 @@ var cnUtil = (function(initConfig) {
     }
 
     return this;
-})(config);
+}
+exports.cnUtil = cnUtil

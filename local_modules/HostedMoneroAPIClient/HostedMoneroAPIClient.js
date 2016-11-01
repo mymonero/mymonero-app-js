@@ -1,7 +1,7 @@
 "use strict"
 //
 const request = require('request')
-const JSBigInt = require('../cryptonote/biginteger').BigInteger // important: grab defined export
+const JSBigInt = require('../monero/biginteger').BigInteger // important: grab defined export
 const async = require('async')
 //
 //
@@ -10,11 +10,11 @@ const async = require('async')
 //
 class HostedMoneroAPIClient
 {
-    //
-    //
+	
+
     ////////////////////////////////////////////////////////////////////////////////
     // Lifecycle - Initialization
-    //
+
     constructor(options, context)
     {
         var self = this
@@ -183,6 +183,7 @@ class HostedMoneroAPIClient
             view_key: view_key
 		}
 	}
+	
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Private

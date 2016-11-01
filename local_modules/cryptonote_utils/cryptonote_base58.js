@@ -1,6 +1,10 @@
-var cnBase58 = (function () {
-    var b58 = {};
+// v--- These should maybe be injected into context
+const JSBigInt = require('./biginteger').BigInteger
 
+var cnBase58 = (function ()
+{
+    var b58 = {};
+	//
     var alphabet_str = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     var alphabet = [];
     for (var i = 0; i < alphabet_str.length; i++) {
@@ -188,3 +192,5 @@ var cnBase58 = (function () {
 
     return b58;
 })();
+
+exports.cnBase58 = cnBase58
