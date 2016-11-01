@@ -22,7 +22,7 @@
 	    var index = checksum % words.length;
 	    return index;
 	}
-	exports. mn_get_checksum_index = mn_get_checksum_index;
+	exports.mn_get_checksum_index = mn_get_checksum_index;
 
 	function mn_encode(str, wordset_name) {
 	    'use strict';
@@ -45,7 +45,7 @@
 	    }
 	    return out.join(' ');
 	}
-	exports. mn_encode = mn_encode
+	exports.mn_encode = mn_encode
 
 	function mn_swap_endian_4byte(str) {
 	    'use strict';
