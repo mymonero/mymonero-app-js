@@ -33,6 +33,7 @@
 const JSBigInt = require('./biginteger').BigInteger
 const cnBase58 = require('./cryptonote_base58').cnBase58
 const CNCrypto = require('./cryptonote_crypto_EMSCRIPTEN').CNCrypto
+const mnemonic = require('./mnemonic')
 
 var cnUtil = function(currencyConfig)
 {
@@ -386,12 +387,12 @@ var cnUtil = function(currencyConfig)
 
     // Generate a 256-bit crypto random
     this.rand_32 = function() {
-        return mn_random(256);
+        return mnemonic.mn_random(256);
     };
 
     // Generate a 128-bit crypto random
     this.rand_16 = function() {
-        return mn_random(128);
+        return mnemonic.mn_random(128);
     };
 
     this.random_keypair = function() {
@@ -633,7 +634,7 @@ var cnUtil = function(currencyConfig)
 
     // Random 32-byte ec scalar
     this.random_scalar = function() {
-        var rand = this.sc_reduce(mn_random(64 * 8));
+        var rand = this.sc_reduce(mnemonic.mn_random(64 * 8));
         return rand.slice(0, STRUCT_SIZES.EC_SCALAR * 2);
     };
 
