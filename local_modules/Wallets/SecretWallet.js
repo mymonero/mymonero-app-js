@@ -177,15 +177,15 @@ class SecretWallet
 		//
 		function __succeeded(new_address)
 		{
-			console.log("SUCCESS", data, wasAccountImported)
 			self.isLoggingIn = false
 	        self.isLoggedIn = true
 			//
             const wasAccountImported = !wasAGeneratedWallet && new_address
+			// console.log("SUCCESS… wasAccountImported", wasAccountImported)
 			self.wasAccountImported = wasAccountImported
 			//
 			// TODO: emit event that login status changed?
-			fn(null, data)
+			fn(null)
 		}
 		function __failed(err)
 		{

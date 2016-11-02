@@ -72,11 +72,15 @@ function VerifiedComponentsForLogIn(
     } else {
     	spend_key = spend_key_orUndefinedForViewOnly
     }
-    if (!view_key || view_key.length !== 64 || (view_only ? false : spend_key.length !== 64)) {
+	
+    const isInViewOnlyMode = (spend_key === '')
+	
+	
+    if (!view_key || view_key.length !== 64 || (isInViewOnlyMode ? false : spend_key.length !== 64)) {
         fn(new Error("invalid secret key length"))
 		return
     }
-    if (!monero_utils.valid_hex(view_key) || (view_only ? false : !monero_utils.valid_hex(spend_key))) {
+    if (!monero_utils.valid_hex(view_key) || (isInViewOnlyMode ? false : !monero_utils.valid_hex(spend_key))) {
         fn(new Error("invalid hex formatting"))
 		return
     }
@@ -96,8 +100,7 @@ function VerifiedComponentsForLogIn(
 		fn(new Error("invalid view key"))
 		return
     }
-    const isInViewOnlyMode = (spend_key === '')
-    if (!view_only && (public_keys.spend !== expected_spend_pub)) {
+    if (!isInViewOnlyMode && (public_keys.spend !== expected_spend_pub)) {
         fn(new Error("invalid spend key"))
 		return
     }
@@ -111,7 +114,7 @@ function VerifiedComponentsForLogIn(
         var expected_account = monero_utils.create_address(seed_orUndefined)
         if (expected_account.view.sec !== view_key ||
             expected_account.spend.sec !== spend_key ||
-            expected_account.public_addr !== public_address) {
+            expected_account.public_addr !== address) {
             fn(new Error("invalid seed"))
         }
         account_seed = seed_orUndefined
@@ -127,4 +130,4 @@ function VerifiedComponentsForLogIn(
 		isInViewOnlyMode
 	)
 }
-	
+exports.VerifiedComponentsForLogIn = VerifiedComponentsForLogIn
