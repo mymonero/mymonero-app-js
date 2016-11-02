@@ -3,27 +3,27 @@
 const mnemonic = require('../cryptonote_utils/mnemonic')
 const monero_utils = require('./monero_utils_instance')
 //
-function SeedAndKeysFromMnemonic(mnemonic, fn)
+function SeedAndKeysFromMnemonic(mnemonicString, fn)
 { // fn: (err?, seed?, keys?)
-	mnemonic = mnemonic.toLowerCase() || ""
+	mnemonicString = mnemonicString.toLowerCase() || ""
 	try {
 		var seed
 		var keys
 	    switch (language) {
 	        case 'english':
 	            try {
-	                seed = mnemonic.mn_decode(mnemonic)
+	                seed = mnemonic.mn_decode(mnemonicString)
 	            } catch (e) {
 	                // Try decoding as an electrum seed, on failure throw the original exception
 	                try {
-	                    seed = mnemonic.mn_decode(mnemonic, "electrum")
+	                    seed = mnemonic.mn_decode(mnemonicString, "electrum")
 	                } catch (ee) {
 	                    throw e
 	                }
 	            }
 	            break
 	        default:
-	            seed = mnemonic.mn_decode(mnemonic, language)
+	            seed = mnemonic.mn_decode(mnemonicString, language)
 	            break
 	    }
 	    keys = monero_utils.create_address(seed)
