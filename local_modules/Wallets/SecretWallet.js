@@ -24,9 +24,9 @@ class SecretWallet
 		// TODO: load record from database if key provided in options.... maybe SecretWallet shouldn't really handle 
 		self.wallet_currency = 'xmr' // default // TODO: persist in db
 		// TODO: abstract out currency from this 
-		self.mnemonic_language = 'english' // default // TODO: store in and hydrate from db
+		self.mnemonic_language = 'english' // default // TODO: store in and hydrate from db; TODO: declare & lookup language constants in monero_utils_instance
 		self.isLoggingIn = false // not persisted in DB
-		self.isLoggedIn = false // TODO: toggle this based on what is persisted in the DB
+		self.isLoggedIn = false // TODO: toggle this based on what is persisted in the DB -- the wallet needs to be imported to MyMonero for the hosted API stuff to work
     }
     setup()
     {
@@ -40,11 +40,12 @@ class SecretWallet
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Public	
 	
-	LogIn_mnemonic(mnemonic, language, fn)
+	LogIn_mnemonic(mnemonicString, language, fn)
 	{ // fn: (err?, …) -> Void (see _logIn)
 		const self = this
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
-			mnemonic,
+			mnemonicString,
+			self.mnemonic_language,
 			function(err, seed, keys)
 			{
 				if (err) {
@@ -88,7 +89,7 @@ class SecretWallet
     // Runtime - Accessors - Private
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Private
+    // Runtime - Imperatives - Private - Account registration with hosted node API
 
 	_logOut()
 	{

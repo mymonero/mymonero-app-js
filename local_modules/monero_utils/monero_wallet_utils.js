@@ -3,13 +3,13 @@
 const mnemonic = require('../cryptonote_utils/mnemonic')
 const monero_utils = require('./monero_utils_instance')
 //
-function SeedAndKeysFromMnemonic(mnemonicString, fn)
+function SeedAndKeysFromMnemonic(mnemonicString, mnemonicLanguage, fn)
 { // fn: (err?, seed?, keys?)
 	mnemonicString = mnemonicString.toLowerCase() || ""
 	try {
-		var seed
-		var keys
-	    switch (language) {
+		var seed = null
+		var keys = null
+	    switch (mnemonicLanguage) {
 	        case 'english':
 	            try {
 	                seed = mnemonic.mn_decode(mnemonicString)
@@ -23,10 +23,18 @@ function SeedAndKeysFromMnemonic(mnemonicString, fn)
 	            }
 	            break
 	        default:
-	            seed = mnemonic.mn_decode(mnemonicString, language)
+	            seed = mnemonic.mn_decode(mnemonicString, mnemonicLanguage)
 	            break
 	    }
+		if (seed === null) {
+			fn(new Error("Unable to derive seed"), null, null)
+			return
+		}
 	    keys = monero_utils.create_address(seed)
+		if (keys === null) {
+			fn(new Error("Unable to derive keys from seed"), seed, null)
+			return
+		}
 		fn(null, seed, keys)
 	} catch (e) {
 	    console.error("Invalid mnemonic!")
