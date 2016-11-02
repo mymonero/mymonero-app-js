@@ -10,6 +10,18 @@
 
 (function(exports)
 {
+	var isNodeJS
+	if (typeof window !== 'undefined') {
+		isNodeJS = false
+	} else {
+		isNodeJS = true
+	}
+	var nodeJS__crypto
+	if (isNodeJS == true) {
+		nodeJS__crypto = require('crypto')
+		crc32 = require('./crc32').crc32
+	}	
+	
 	var mn_default_wordset = 'english';
 	exports.mn_default_wordset = mn_default_wordset;
 
@@ -104,38 +116,49 @@
 	function mn_random(bits) {
 	    'use strict';
 	    if (bits % 32 !== 0) throw "Something weird went wrong: Invalid number of bits - " + bits;
-	    var array = new Uint32Array(bits / 32);
+		if (isNodeJS == false) {
+			// browser implementation
+		    var array = new Uint32Array(bits / 32);
 
-	    var i = 0;
+		    var i = 0;
 
-	    function arr_is_zero() {
-	        for (var j = 0; j < bits / 32; ++j) {
-	            if (array[j] !== 0) return false;
-	        }
-	        return true;
-	    }
+		    function arr_is_zero() {
+		        for (var j = 0; j < bits / 32; ++j) {
+		            if (array[j] !== 0) return false;
+		        }
+		        return true;
+		    }
 
-	    do {
-	        /// Doing this in the loop is chunky, blame Microsoft and the in-flux status of the window.crypto standard
-	        if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
-	            window.crypto.getRandomValues(array);
-	        } else if (typeof window !== 'undefined' && typeof window.msCrypto === 'object' && typeof window.msCrypto.getRandomValues === 'function') {
-	            window.msCrypto.getRandomValues(array);
-	        } else {
-	            throw "Unfortunately MyMonero only runs on browsers that support the JavaScript Crypto API";
-	        }
+		    do {
+		        /// Doing this in the loop is chunky, blame Microsoft and the in-flux status of the window.crypto standard
+		        if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+		            window.crypto.getRandomValues(array);
+		        } else if (typeof window !== 'undefined' && typeof window.msCrypto === 'object' && typeof window.msCrypto.getRandomValues === 'function') {
+		            window.msCrypto.getRandomValues(array);
+		        } else {
+		            throw "Unfortunately MyMonero only runs on browsers that support the JavaScript Crypto API";
+		        }
 
-	        ++i;
-	    } while (i < 5 && arr_is_zero());
-	    if (arr_is_zero()) {
-	        throw "Something went wrong and we could not securely generate random data for your account";
-	    }
-	    // Convert to hex
-	    var out = '';
-	    for (var j = 0; j < bits / 32; ++j) {
-	        out += ('0000000' + array[j].toString(16)).slice(-8);
-	    }
-	    return out;
+		        ++i;
+		    } while (i < 5 && arr_is_zero());
+		    if (arr_is_zero()) {
+		        throw "Something went wrong and we could not securely generate random data for your account";
+		    }
+		    // Convert to hex
+		    var out = '';
+		    for (var j = 0; j < bits / 32; ++j) {
+		        out += ('0000000' + array[j].toString(16)).slice(-8);
+		    }
+			
+		    return out;
+		} else {
+			// node.js implementation
+			//			v---- Declared above
+			const buffer = nodeJS__crypto.randomBytes(bits / 8) // assuming 8 bits in byte
+			const hexString = buffer.toString("hex")
+			//
+			return hexString			
+		}
 	}
 	exports.mn_random = mn_random;
 

@@ -32,7 +32,7 @@
 // v--- These should maybe be injected into a context and supplied to currencyConfig for future platforms
 const JSBigInt = require('./biginteger').BigInteger
 const cnBase58 = require('./cryptonote_base58').cnBase58
-const CNCrypto = require('./cryptonote_crypto_EMSCRIPTEN').CNCrypto
+const CNCrypto = require('./cryptonote_crypto_EMSCRIPTEN')
 const mnemonic = require('./mnemonic')
 
 var cnUtil = function(currencyConfig)

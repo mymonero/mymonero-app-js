@@ -5,7 +5,7 @@ const monero_utils = require('./monero_utils_instance')
 //
 function NewlyCreatedWallet(mnemonic_wordsetName)
 {
-	const seed = monero_utils.rand_16()
+	const seed = monero_utils.rand_16() // 128-bit/16-byte key -- comes out as 32 chars
 	const mnemonicString = mnemonic.mn_encode(seed, mnemonic_wordsetName)
 	const keys = monero_utils.create_address(seed)
 	//
