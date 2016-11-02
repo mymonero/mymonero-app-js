@@ -111,13 +111,13 @@ class SecretWallet
 		//
 		self.isLoggingIn = true
 		//
-		function __succeeded(data)
+		function __succeeded(new_address)
 		{
 			console.log("SUCCESS", data, wasAccountImported)
 			self.isLoggingIn = false
 	        self.isLoggedIn = true
 			//
-            const wasAccountImported = !wasAGeneratedWallet && data.new_address
+            const wasAccountImported = !wasAGeneratedWallet && new_address
 			self.wasAccountImported = wasAccountImported
 			//
 			// TODO: emit event that login status changed?
@@ -163,13 +163,13 @@ class SecretWallet
 			self.context.hostedMoneroAPIClient.LogIn(
 				address,
 				view_key,
-				function(err, wasAccountImported/*, … TODO */)
+				function(err, new_address)
 				{
 					if (err) {
 						__failed(err)
 						return
 					} 
-					__succeeded(data) // TODO pass along parsed args
+					__succeeded(new_address)
 				}
 			)
 		}

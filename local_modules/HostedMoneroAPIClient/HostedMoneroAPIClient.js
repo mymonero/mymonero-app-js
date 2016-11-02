@@ -39,7 +39,7 @@ class HostedMoneroAPIClient
     // Runtime - Accessors - Public
 	
 	LogIn(address, view_key, fn)
-	{
+	{ // fn: (err?, new_address?)
 		const self = this
 		const endpointPath = "login"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key)
@@ -59,8 +59,11 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			console.log("data", data)
-			fn(err)
+			const new_address = data.new_address
+			console.log("data from login: ", data)
+			// TODO? parse anything else?
+			//
+			fn(null, new_address)
 		}
 	}
 	
