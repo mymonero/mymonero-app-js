@@ -3,13 +3,27 @@
 const mnemonic = require('../cryptonote_utils/mnemonic')
 const monero_utils = require('./monero_utils_instance')
 //
-function SeedAndKeysFromMnemonic(mnemonicString, mnemonicLanguage, fn)
+function NewlyCreatedWallet(mnemonic_wordsetName)
+{
+	const seed = monero_utils.rand_16()
+	const mnemonicString = mnemonic.mn_encode(seed, mnemonic_wordsetName)
+	const keys = monero_utils.create_address(seed)
+	//
+	return {
+		seed: seed,
+		mnemonicString: mnemonicString,
+		keys: keys
+	}
+}
+exports.NewlyCreatedWallet = NewlyCreatedWallet
+//
+function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn)
 { // fn: (err?, seed?, keys?)
 	mnemonicString = mnemonicString.toLowerCase() || ""
 	try {
 		var seed = null
 		var keys = null
-	    switch (mnemonicLanguage) {
+	    switch (mnemonic_wordsetName) {
 	        case 'english':
 	            try {
 	                seed = mnemonic.mn_decode(mnemonicString)
@@ -23,7 +37,7 @@ function SeedAndKeysFromMnemonic(mnemonicString, mnemonicLanguage, fn)
 	            }
 	            break
 	        default:
-	            seed = mnemonic.mn_decode(mnemonicString, mnemonicLanguage)
+	            seed = mnemonic.mn_decode(mnemonicString, mnemonic_wordsetName)
 	            break
 	    }
 		if (seed === null) {

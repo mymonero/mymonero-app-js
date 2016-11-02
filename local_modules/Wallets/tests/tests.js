@@ -8,7 +8,7 @@ const SecretWallet = require('../SecretWallet')
 //
 async.series(
 	[
-		_proceedTo_test_login
+		_proceedTo_test_loginCreatingNewWallet
 	],
 	function(err)
 	{
@@ -20,8 +20,21 @@ async.series(
 	}
 )
 
-function _proceedTo_test_login(fn)
+function _proceedTo_test_loginCreatingNewWallet(fn)
 {
+	console.log("> _proceedTo_test_loginCreatingNewWallet")
 	const wallet = new SecretWallet({}, context)
 	console.log("Wallet is ", wallet)
+	wallet.LogIn_creatingNewWallet(
+		function(mnemonicString, confirmation_cb)
+		{
+			confirmation_cb(mnemonicString) // we're just going to pass this 
+			// straight through here to simulate the user correctly entering it
+		},
+		function(err, data)
+		{
+			console.log("err", err)
+			console.log("data", data)
+		}
+	)
 }
