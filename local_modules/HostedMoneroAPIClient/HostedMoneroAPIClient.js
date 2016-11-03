@@ -60,7 +60,7 @@ class HostedMoneroAPIClient
 		function __proceedTo_parseAndCallBack(data)
 		{
 			const new_address = data.new_address
-			console.log("data from login: ", data)
+			// console.log("data from login: ", data)
 			// TODO? parse anything else?
 			//
 			fn(null, new_address)

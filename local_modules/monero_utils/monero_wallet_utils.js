@@ -3,6 +3,13 @@
 const mnemonic = require('../cryptonote_utils/mnemonic')
 const monero_utils = require('./monero_utils_instance')
 //
+const wordsetNames = {}
+const wordsetNames_array = Object.keys(mnemonic.mn_words)
+for (let wordsetName of wordsetNames_array) {
+	wordsetNames[wordsetName] = wordsetName
+}
+exports.wordsetNames = wordsetNames
+//
 function NewlyCreatedWallet(mnemonic_wordsetName)
 {
 	const seed = monero_utils.rand_16() // 128-bit/16-byte key -- comes out as 32 chars

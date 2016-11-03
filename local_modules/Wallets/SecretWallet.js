@@ -24,6 +24,11 @@ const documentCryptScheme =
 }
 const CollectionName = "Wallets"
 //
+const wallet_currencies =
+{
+	xmr: 'xmr'
+}
+//
 class SecretWallet
 {
     constructor(
@@ -73,10 +78,9 @@ class SecretWallet
 			}
 			self.mustCreateNewWalletAndAccount = true
 			//
-			// TODO: load record from database if key provided in options.... maybe SecretWallet shouldn't really handle 
-			self.wallet_currency = 'xmr' // default // TODO: persist in db
-			// TODO: abstract out currency from this 
-			self.mnemonic_wordsetName = 'english' // default // TODO: store in and hydrate from db; TODO: declare & lookup language constants in monero_utils_instance
+			
+			self.wallet_currency = wallet_currencies.XMR // default 
+			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
 			//
 			console.log("Creating new wallet.")
 			self.logIn_creatingNewWallet(
@@ -359,7 +363,6 @@ class SecretWallet
 	)
 	{
 		const self = this
-		console.log("_logIn")
 		//
 		self.isLoggingIn = true
 		//
@@ -523,12 +526,8 @@ class SecretWallet
 			)
 			{
 
-				console.log("Saved Walleterr,  numAffected,  affectedDocuments,  upsert,",
-							err,
-							numAffected,
-							affectedDocuments,
-							upsert)
 				if (err) {
+					console.error("Error while saving wallet:", err)
 					fn(err)
 					return
 				} 
@@ -554,6 +553,7 @@ class SecretWallet
 						return // bail
 					}
 				}
+				console.log("Saved wallet with _id " + self._id + ".")
 				fn()
 			}
 		)
