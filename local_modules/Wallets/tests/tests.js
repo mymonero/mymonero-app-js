@@ -31,10 +31,9 @@ function _proceedTo_test_loginCreatingNewWallet(fn)
 			confirmation_cb(mnemonicString) // we're just going to pass this 
 			// straight through here to simulate the user correctly entering it
 		},
-		function(err, data)
+		function(err)
 		{
 			console.log("err", err)
-			console.log("data", data)
 		}
 	)
 }

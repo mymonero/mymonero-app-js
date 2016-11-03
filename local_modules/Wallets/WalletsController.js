@@ -19,7 +19,7 @@ class WalletsController
         self.options = options
         self.context = context
 		//
-		self.wallets = []
+		self.wallets = [] // fetch and keep up to date
         //
         self.setup()
     }

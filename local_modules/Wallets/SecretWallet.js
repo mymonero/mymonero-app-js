@@ -1,18 +1,31 @@
 "use strict"
 //
 const monero_wallet_utils = require('../monero_utils/monero_wallet_utils')
+const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
 //
-//
-////////////////////////////////////////////////////////////////////////////////
-// Principal class
+const cryptScheme =
+{
+	wallet_currency: { type: CryptSchemeFieldValueTypes.String },
+	account_seed: { type: CryptSchemeFieldValueTypes.String },
+	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
+	  // view
+	  // spend
+	private_keys: { type: CryptSchemeFieldValueTypes.JSON },
+	  // view
+	  // spend
+	heights: { type: CryptSchemeFieldValueTypes.JSON },
+		// account_scanned_height
+		// account_scanned_block_height
+		// account_scan_start_height
+		// transaction_height
+		// blockchain_height
+	transactions: { type: CryptSchemeFieldValueTypes.Array }
+}
+const CollectionName = "Wallets"
 //
 class SecretWallet
 {
-    //
-    //
-    ////////////////////////////////////////////////////////////////////////////////
-    // Lifecycle - Initialization
-    //
     constructor(options, context)
     {
         var self = this
@@ -27,6 +40,25 @@ class SecretWallet
 		self.mnemonic_wordsetName = 'english' // default // TODO: store in and hydrate from db; TODO: declare & lookup language constants in monero_utils_instance
 		self.isLoggingIn = false // not persisted in DB
 		self.isLoggedIn = false // TODO: toggle this based on what is persisted in the DB -- the wallet needs to be imported to MyMonero for the hosted API stuff to work
+		//
+		self._id = self.options._id || null
+		//
+		self.persistencePassword = self.options.persistencePassword || null
+		//
+		// TODO: hydrate all these from db
+		self.account_seed = null
+		self.public_keys = null
+		self.private_keys = null
+		self.isInViewOnlyMode = null
+		//
+		self.transactions = null
+		//
+		// TODO: unpack these from persisted 'heights'
+		self.account_scanned_height = null
+		self.account_scanned_block_height = null
+		self.account_scan_start_height = null
+		self.transaction_height = null
+		self.blockchain_height = null
     }
     setup()
     {
@@ -38,7 +70,7 @@ class SecretWallet
     // Runtime - Accessors - Public
 	
     ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Public	
+    // Runtime - Imperatives - Public - Logging in/Creating accounts
 	
 	LogIn_creatingNewWallet(
 		informingAndVerifyingMnemonic_cb,
@@ -147,9 +179,16 @@ class SecretWallet
     }
 	
 	
+    ////////////////////////////////////////////////////////////////////////////////
+    // Runtime - Imperatives - Public - Sending funds
+	
+	// TODO
+	
+	
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Private
+	
 
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Private - Account registration with hosted node API
@@ -157,9 +196,23 @@ class SecretWallet
 	_logOut()
 	{
 		const self = this
-        self.isLoggedIn = false
-		// TODO: more fields……
-		// TODO: emit event
+		//
+		self.isLoggingIn = false
+		self.isLoggedIn = false
+		//
+		self.account_seed = null
+		self.public_keys = null
+		self.private_keys = null
+		self.isInViewOnlyMode = null
+		//
+		self.account_scanned_height = null
+		self.account_scanned_block_height = null
+		self.account_scan_start_height = null
+		self.transaction_height = null
+		self.blockchain_height = null
+		self.transactions = null
+		// more fields?
+		// TODO: emit event?
     }
 
 	_logIn(
@@ -175,26 +228,6 @@ class SecretWallet
 		//
 		self.isLoggingIn = true
 		//
-		function __succeeded(new_address)
-		{
-			self.isLoggingIn = false
-	        self.isLoggedIn = true
-			//
-            const wasAccountImported = !wasAGeneratedWallet && new_address
-			// console.log("SUCCESS… wasAccountImported", wasAccountImported)
-			self.wasAccountImported = wasAccountImported
-			//
-			// TODO: emit event that login status changed?
-			fn(null)
-		}
-		function __failed(err)
-		{
-			self.isLoggingIn = false
-			self.isLoggedIn = false // obvs
-			//
-			// TODO: emit event?
-			fn(err, null)
-		}
 		monero_wallet_utils.VerifiedComponentsForLogIn(
 			address, 
 			view_key, 
@@ -211,18 +244,24 @@ class SecretWallet
 			)
 			{
 				if (err) {
-					__failed(err)
+					self._logOut()
+					fn(err, null)
 					return
 				}
-				console.log("address account_seed public_keys private_keys isInViewOnlyMode", address, 
-				account_seed, 
-				public_keys, 
-				private_keys,
-				isInViewOnlyMode)
-				__proceedTo_loginViaHostedAPI()
+				__proceedTo_loginViaHostedAPI(
+					account_seed, 
+					public_keys, 
+					private_keys,
+					isInViewOnlyMode
+				)
 			}
 		)
-		function __proceedTo_loginViaHostedAPI()
+		function __proceedTo_loginViaHostedAPI(
+			account_seed,  // these arguments only get passed through 
+			public_keys,  // so they can be set in one place below
+			private_keys,
+			isInViewOnlyMode
+		)
 		{
 			self.context.hostedMoneroAPIClient.LogIn(
 				address,
@@ -230,18 +269,199 @@ class SecretWallet
 				function(err, new_address)
 				{
 					if (err) {
-						__failed(err)
+						self._logOut()
+						fn(err, null)
 						return
-					} 
-					__succeeded(new_address)
+					}
+					self.account_seed = account_seed
+					self.public_keys = public_keys
+					self.private_keys = private_keys
+					self.isInViewOnlyMode = isInViewOnlyMode
+					//
+					self.isLoggingIn = false
+			        self.isLoggedIn = true
+					//
+		            const wasAccountImported = !wasAGeneratedWallet && new_address
+					// console.log("SUCCESS… wasAccountImported", wasAccountImported)
+					self.wasAccountImported = wasAccountImported
+					//
+					self.saveToDisk()
+					//
+					// TODO: emit event that login status changed?
+					//
+					fn(null)
 				}
 			)
 		}
     }
+
 	
+    ////////////////////////////////////////////////////////////////////////////////
+    // Runtime - Imperatives - Private
+	
+	saveToDisk()
+	{
+		console.log("> saveToDisk")
+		const self = this
+		const persistencePassword = self.persistencePassword
+		if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
+			console.error("Cannot save wallet to disk as persistencePassword was missing.")
+			return
+		}
+		const heights = {} // to construct:
+		if (account_scanned_height !== null && typeof account_scanned_height !== 'undefined') {
+			heights["account_scanned_height"] = account_scanned_height
+		}
+		if (account_scanned_block_height !== null && typeof account_scanned_block_height !== 'undefined') {
+			heights["account_scanned_block_height"] = account_scanned_block_height
+		}
+		if (account_scan_start_height !== null && typeof account_scan_start_height !== 'undefined') {
+			heights["account_scan_start_height"] = account_scan_start_height
+		}
+		if (transaction_height !== null && typeof transaction_height !== 'undefined') {
+			heights["transaction_height"] = transaction_height
+		}
+		if (blockchain_height !== null && typeof blockchain_height !== 'undefined') {
+			heights["blockchain_height"] = blockchain_height
+		}
+		const plaintextDocument =
+		{
+			wallet_currency: self.wallet_currency,
+			//
+			account_seed: self.account_seed,
+			public_keys: self.public_keys,
+			private_keys: self.private_keys,
+			//
+			transactions: self.transactions || [], // maybe not fetched yet
+			heights: heights
+		}
+		if (self._id !== null) {
+			plaintextDocument._id = self._id
+		}
+		//
+		const encryptedDocument = document_cryptor.New_EncryptedDocument(
+			plaintextDocument, 
+			documentCryptScheme, 
+			persistencePassword
+		)
+		//
+		var query =
+		{
+			account_seed: encryptedDocument.account_seed
+		}
+		var update = encryptedDocument
+		var options =
+		{
+			upsert: true,
+			multi: false,
+			returnUpdatedDocs: true
+		}
+		self.context.persister.updateDocuments(
+			CollectionName,
+			query,
+			update,
+			options,
+			function(
+				err,
+				numAffected,
+				affectedDocuments,
+				upsert
+			)
+			{
+
+				console.log("Saved Walleterr,  numAffected,  affectedDocuments,  upsert,",
+							err,
+							numAffected,
+							affectedDocuments,
+							upsert)
+			}
+		)
+	}
+	
+	
+    ////////////////////////////////////////////////////////////////////////////////
+    // Runtime - Imperatives - Private - Tx history sync
+	
+	_fetchTransactionHistory(fn)
+	{ // fn: (err?) -> Void
+		const self = this
+		var __debug_fnName = "_fetchTransactionHistory"
+		if (self.isLoggedIn !== true) {
+			const errStr = "Unable to " + __debug_fnName + " as isLoggedIn !== true"
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		if (typeof self.account_seed === 'undefined' && self.account_seed === null || self.account_seed === '') {
+			const errStr = "Unable to " + __debug_fnName + " as no account_seed"
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		if (typeof self.private_keys === 'undefined' && self.private_keys === null) {
+			const errStr = "Unable to " + __debug_fnName + " as no private_keys"
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		self.context.hostedMoneroAPIClient.AddressTransactions(
+			self.account_seed,
+			self.private_keys.view,
+			function(
+				err,
+				account_scanned_height, 
+				account_scanned_block_height, 
+				account_scan_start_height,
+				transaction_height, 
+				blockchain_height, 
+				transactions
+			)
+			{
+				if (err) {
+					console.error(err)
+					fn(err)
+					return
+				}
+				//
+				self.__didFetchTransactionHistory(
+					account_scanned_height, 
+					account_scanned_block_height, 
+					account_scan_start_height,
+					transaction_height, 
+					blockchain_height, 
+					transactions
+				)
+			}
+		)
+	}
+
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Delegation - Private
+    // Runtime - Delegation - Private - Tx history sync
+
+	__didFetchTransactionHistory(
+		account_scanned_height, 
+		account_scanned_block_height, 
+		account_scan_start_height,
+		transaction_height, 
+		blockchain_height, 
+		transactions
+	)
+	{
+		const self = this
+		console.log("_didFetchTransactionHistory")
+		//
+		self.account_scanned_height = account_scanned_height
+		self.account_scanned_block_height = account_scanned_block_height
+		self.account_scan_start_height = account_scan_start_height
+		self.transaction_height = transaction_height
+		self.blockchain_height = blockchain_height 
+		self.transactions = transactions
+		//
+		self.saveToDisk()
+		//
+		// TODO: emit event 
+	}
 
 }
 module.exports = SecretWallet
