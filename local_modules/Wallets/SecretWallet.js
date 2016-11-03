@@ -6,9 +6,6 @@ const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
 //
 const documentCryptScheme =
 {
-	wallet_currency: { type: CryptSchemeFieldValueTypes.String },
-	mnemonic_wordsetName: { type: CryptSchemeFieldValueTypes.String },
-	//
 	account_seed: { type: CryptSchemeFieldValueTypes.String },
 	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
 	  // view
