@@ -31,10 +31,7 @@ const wallet_currencies =
 //
 class SecretWallet
 {
-	constructor(
-		options, 
-		context
-	)
+	constructor(options, context)
 	{
 		var self = this
 		self.options = options
@@ -77,8 +74,7 @@ class SecretWallet
 				return
 			}
 			self.mustCreateNewWalletAndAccount = true
-			//
-			
+			//			
 			self.wallet_currency = wallet_currencies.XMR // default 
 			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
 			//
