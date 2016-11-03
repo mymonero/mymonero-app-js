@@ -11,19 +11,19 @@ const path = require('path')
 class NeDBPersister extends Persister
 {
 
-    setup()
-    {
-        var self = this
+	setup()
+	{
+		var self = this
 		//
-        super.setup()
+		super.setup()
 		//
 		var dbHandles = {}
 		self.dbHandles = dbHandles
-    }
+	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Accessors - Private
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Private
 	
 	_new_dbHandle_forCollectionNamed(collectionName)
 	{
@@ -33,15 +33,15 @@ class NeDBPersister extends Persister
 		var pathTo_dataFile = path.join(userDataAbsoluteFilepath, '/' + collectionName + '.nedb_datafile')
 		var dbHandle = new Datastore({ 
 			filename: pathTo_dataFile,
-		    autoload: true
+			autoload: true
 		})
 		//
 		return dbHandle
 	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Accessors - Private - Lazy Accessors
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Private - Lazy Accessors
 	
 	_dbHandle_forCollectionNamed(collectionName)
 	{
@@ -56,8 +56,8 @@ class NeDBPersister extends Persister
 	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Accessors - Private - Overrides
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Private - Overrides
 
 	__documentsWithQuery(collectionName, query, options, fn)
 	{
@@ -83,8 +83,8 @@ class NeDBPersister extends Persister
 	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Private - Overrides
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Overrides
 	
 	__updateDocuments(collectionName, query, update, options, fn)
 	{
@@ -107,8 +107,8 @@ class NeDBPersister extends Persister
 	}	
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Delegation - 
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - 
 
 }
 module.exports = NeDBPersister

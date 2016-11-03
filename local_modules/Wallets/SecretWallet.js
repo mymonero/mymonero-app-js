@@ -31,20 +31,20 @@ const wallet_currencies =
 //
 class SecretWallet
 {
-    constructor(
+	constructor(
 		options, 
 		context
 	)
-    {
-        var self = this
-        self.options = options
-        self.context = context
-        //
-        self.setup()
-    }
-    setup()
-    {
-        var self = this
+	{
+		var self = this
+		self.options = options
+		self.context = context
+		//
+		self.setup()
+	}
+	setup()
+	{
+		var self = this
 		//
 		const failure_cb = self.options.failure_cb // (err) -> Void
 		const successfullyInstantiated_cb = self.options.successfullyInstantiated_cb // () -> Void
@@ -194,14 +194,14 @@ class SecretWallet
 				successfullyInstantiated_cb() // all done
 			}
 		)
-    }
+	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Accessors - Public
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Public
 	
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Public - Logging in/Creating accounts
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Logging in/Creating accounts
 	
 	logIn_creatingNewWallet(
 		informingAndVerifyingMnemonic_cb,
@@ -237,18 +237,18 @@ class SecretWallet
 			function(userConfirmed_mnemonicString)
 			{
 				var trimmed_userConfirmed_mnemonicString = userConfirmed_mnemonicString.trim()
-		        if (trimmed_userConfirmed_mnemonicString === '') {
+				if (trimmed_userConfirmed_mnemonicString === '') {
 					const errStr = "Please enter a private login key"
 					const err = new Error(errStr)
 					fn(err)
-		            return
-		        }
-		        if (trimmed_userConfirmed_mnemonicString.toLocaleLowerCase() !== mnemonicString.trim().toLocaleLowerCase()) {
+					return
+				}
+				if (trimmed_userConfirmed_mnemonicString.toLocaleLowerCase() !== mnemonicString.trim().toLocaleLowerCase()) {
 					const errStr = "Private login key does not match"
 					const err = new Error(errStr)
 					fn(err)
-		            return
-		        }
+					return
+				}
 				// Now we can proceed
 				_proceedTo_logIn()
 			}
@@ -256,7 +256,7 @@ class SecretWallet
 		function _proceedTo_logIn()
 		{
 			// pretty sure this is redundant, so commenting:
-	        // var keys = cnUtil.create_address(seed)
+			// var keys = cnUtil.create_address(seed)
 			const address = keys.public_addr
 			const view_key__private = keys.view.sec
 			const spend_key__private = keys.spend.sec
@@ -300,8 +300,8 @@ class SecretWallet
 				)
 			}
 		)
-    }
-    logIn_keys(address, view_key__private, spend_key__private)
+	}
+	logIn_keys(address, view_key__private, spend_key__private)
 	{ // fn: (err?) -> Void
 		const self = this
 		const seed = undefined
@@ -314,22 +314,22 @@ class SecretWallet
 			wasAGeneratedWallet,
 			fn
 		)
-    }
+	}
 	
 	
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Public - Sending funds
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Sending funds
 	
 	// TODO
 	
 	
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Accessors - Private
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Private
 	
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Private - Account registration with hosted node API
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Account registration with hosted node API
 
 	_logOut()
 	{
@@ -351,7 +351,7 @@ class SecretWallet
 		self.transactions = null
 		// more fields?
 		// TODO: emit event?
-    }
+	}
 
 	_logIn(
 		address, 
@@ -419,9 +419,9 @@ class SecretWallet
 					self.isInViewOnlyMode = isInViewOnlyMode
 					//
 					self.isLoggingIn = false
-			        self.isLoggedIn = true
+					self.isLoggedIn = true
 					//
-		            const wasAccountImported = !wasAGeneratedWallet && new_address
+					const wasAccountImported = !wasAGeneratedWallet && new_address
 					// console.log("SUCCESS… wasAccountImported", wasAccountImported)
 					self.wasAccountImported = wasAccountImported
 					//
@@ -439,11 +439,11 @@ class SecretWallet
 				}
 			)
 		}
-    }
+	}
 
 	
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Private
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private
 	
 	saveToDisk(fn)
 	{
@@ -560,8 +560,8 @@ class SecretWallet
 	}
 	
 	
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Imperatives - Private - Tx history sync
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Tx history sync
 	
 	_fetchTransactionHistory(fn)
 	{ // fn: (err?) -> Void
@@ -617,8 +617,8 @@ class SecretWallet
 	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Runtime - Delegation - Private - Tx history sync
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - Private - Tx history sync
 
 	__didFetchTransactionHistory(
 		account_scanned_height, 

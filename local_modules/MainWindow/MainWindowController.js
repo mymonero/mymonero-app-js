@@ -10,14 +10,14 @@ class MainWindowController extends WindowController
 	//
 	// Initialization
 	//	
-    setup()
-    {
-        var self = this
-        super.setup()
+	setup()
+	{
+		var self = this
+		super.setup()
 		//
 		self.setup_window()
 		self.setup_observation()
-    }
+	}
 	setup_window()
 	{
 		var self = this
@@ -42,9 +42,9 @@ class MainWindowController extends WindowController
 		app.on('window-all-closed', self._allWindowsDidClose)
 		app.on('activate', function()
 		{
-		    if (self.window === null) {
+			if (self.window === null) {
 				self._create_window_ifNecessary()
-		    }
+			}
 		})
 	}
 	//
@@ -58,7 +58,7 @@ class MainWindowController extends WindowController
 		var window = new electron.BrowserWindow({
 	  	  width: 800, 
 	  	  height: 600
-	    })
+		})
 		window.loadURL(`file://${__dirname}/html/index.html`)
 		//
 		return window
@@ -89,9 +89,9 @@ class MainWindowController extends WindowController
 		var self = this
 		var app = self.context.app
 		//
-	    if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
+		if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
 			app.quit() 
-	    }
+		}
 	}
 }
 module.exports = MainWindowController

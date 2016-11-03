@@ -51,10 +51,10 @@ var CONSTRUCT = {}; // Unique token to call "private" version of constructor
 	simply returned as-is. Otherwise, <BigInteger()> is equivalent to <parse>
 	without a radix argument.
 
-	> var n0 = BigInteger();      // Same as <BigInteger.ZERO>
+	> var n0 = BigInteger();	  // Same as <BigInteger.ZERO>
 	> var n1 = BigInteger("123"); // Create a new <BigInteger> with value 123
 	> var n2 = BigInteger(123);   // Create a new <BigInteger> with value 123
-	> var n3 = BigInteger(n2);    // Return n2, unchanged
+	> var n3 = BigInteger(n2);	// Return n2, unchanged
 
 	The constructor form only takes an array and a sign. *n* must be an
 	array of numbers in little-endian order, where each digit is between 0
@@ -196,7 +196,7 @@ BigInteger.digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 	Parameters:
 
 		base - Optional base to represent the number in (default is base 10).
-		       Must be between 2 and 36 inclusive, or an Error will be thrown.
+			   Must be between 2 and 36 inclusive, or an Error will be thrown.
 
 	Returns:
 
@@ -298,8 +298,8 @@ BigInteger.radixRegex = [
 	If no base is provided, or *base* is 10, the number can be in exponential
 	form. For example, these are all valid:
 
-	> BigInteger.parse("1e9");              // Same as "1000000000"
-	> BigInteger.parse("1.234*10^3");       // Same as 1234
+	> BigInteger.parse("1e9");			  // Same as "1000000000"
+	> BigInteger.parse("1.234*10^3");	   // Same as 1234
 	> BigInteger.parse("56789 * 10 ** -2"); // Same as 567
 
 	If any characters fall outside the range defined by the radix, an exception
@@ -1028,7 +1028,7 @@ BigInteger.prototype.divide = BigInteger.prototype.quotient;
 	Parameters:
 
 		n - The remainder after *this* is divided *this* by *n*. Will be
-		    converted to a <BigInteger>.
+			converted to a <BigInteger>.
 
 	Returns:
 
@@ -1330,10 +1330,10 @@ BigInteger.prototype.isZero = function() {
 	This is equivalent to, but faster than
 
 	> if (n >= 0) {
-	>     return this.multiply(BigInteger("1e" + n));
+	>	 return this.multiply(BigInteger("1e" + n));
 	> }
 	> else { // n <= 0
-	>     return this.quotient(BigInteger("1e" + -n));
+	>	 return this.quotient(BigInteger("1e" + -n));
 	> }
 
 	Parameters:
