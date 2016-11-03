@@ -29,7 +29,7 @@ class Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Accessors - Public
 	
-	documentsWithQuery(collectionName, query, options, fn)
+	DocumentsWithQuery(collectionName, query, options, fn)
 	{
 		var self = this
 		//
@@ -40,13 +40,13 @@ class Persister
     ////////////////////////////////////////////////////////////////////////////////
     // Runtime - Imperatives - Public
 
-	updateDocuments(collectionName, query, update, options, fn)
+	UpdateDocuments(collectionName, query, update, options, fn)
 	{
 		var self = this
 		//
 		self.__updateDocuments(collectionName, query, update, options, fn)
 	}
-	removeDocuments(collectionName, query, options, fn)
+	RemoveDocuments(collectionName, query, options, fn)
 	{
 		var self = this
 		//

@@ -196,5 +196,6 @@ function _new_random_iv_of_length(block_size)
     } catch (ex) {
         // TODO: handle error
         // most likely, entropy sources are drained
+		throw ex
     }
 }

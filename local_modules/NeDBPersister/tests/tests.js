@@ -36,7 +36,7 @@ function __proceedTo_test_updateWallet(fn)
 		multi: false,
 		returnUpdatedDocs: true
 	}
-	context.persister.updateDocuments(
+	context.persister.UpdateDocuments(
 		"wallets",
 		query,
 		update,
@@ -62,7 +62,7 @@ function __proceedTo_test_updateWallet(fn)
 function __proceedTo_test_findWallet(fn)
 {
 	console.log("> __test_findWallet")
-	context.persister.documentsWithQuery(
+	context.persister.DocumentsWithQuery(
 		"wallets",
 		{ "key": "some encrypted secret" },
 		{},
@@ -77,7 +77,7 @@ function __proceedTo_test_findWallet(fn)
 function __proceedTo_test_removeWallet(fn)
 {
 	console.log("> __test_removeWallet")
-	context.persister.removeDocuments(
+	context.persister.RemoveDocuments(
 		"wallets",
 		{ "key": "some encrypted secret" },
 		null,

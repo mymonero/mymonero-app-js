@@ -18,6 +18,7 @@ function NewHydratedContext()
 {
     var initialContext = 
     {
+		userDataAbsoluteFilepath: "./test_products"
     }
 
     return require("../../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)

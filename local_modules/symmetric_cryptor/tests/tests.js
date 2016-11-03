@@ -29,7 +29,8 @@ function _proceedTo_test_stringCryptor(fn)
 	async.series(
 		[
 			__proceedTo_test_string_encryption,
-			__proceedTo_test_string_decryption
+			__proceedTo_test_string_decryption,
+			__proceedTo_test_string_decryption_withBadPassword
 		],
 		function(err)
 		{
@@ -55,17 +56,51 @@ function _proceedTo_test_stringCryptor(fn)
 			fn(err)
 			return
 		}
-		var decryptedString = symmetric_string_cryptor.DecryptedPlaintextString(encryptedString, password)
-		if (decryptedString === plaintextMessage) {
-			console.log("Successfully decrypted message to obtain:", decryptedString)
-			//
-			fn()
-		} else {
-			var errStr = "Error: Test failed. Decrypted message did not match original plaintext message."
+		try {
+			var decryptedString = symmetric_string_cryptor.DecryptedPlaintextString(encryptedString, password)
+			if (decryptedString === plaintextMessage) {
+				console.log("Successfully decrypted message to obtain:", decryptedString)
+				//
+				fn()
+			} else {
+				var errStr = "Error: Test failed. Decrypted message did not match original plaintext message."
+				var err = new Error(errStr)
+				console.log(errStr)
+				//
+				fn(err)
+			}
+		} catch (e) {
+			var err = new Error(e)
+			console.log("Decryption err", e)
+			fn(err)
+		}
+	}
+	function __proceedTo_test_string_decryption_withBadPassword(fn)
+	{
+		if (encryptedString === null) {
+			var errStr = "Cannot decrypt message as encrypt didn't succeed"
 			var err = new Error(errStr)
 			console.log(errStr)
 			//
 			fn(err)
+			return
+		}
+		try {
+			var decryptedString = symmetric_string_cryptor.DecryptedPlaintextString(encryptedString, "obviously wrong password")
+			if (decryptedString === plaintextMessage) {
+				const errStr = "Despite having bad password, successfully decrypted message to obtain: " + decryptedString
+				const err = new Error(errStr)
+				console.error(errStr)
+				fn(err)
+			} else {
+				var errStr = "Despite having bad password, was able to decrypt text... even though decrypted message did not match original plaintext message."
+				const err = new Error(errStr)
+				console.error(errStr)
+				fn(err)
+			}
+		} catch (e) {
+			console.log("Caught decryption error while trying to decrypt with bad password: ", e)
+			fn()
 		}
 	}
 }
