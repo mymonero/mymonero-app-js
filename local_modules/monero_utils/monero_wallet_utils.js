@@ -24,9 +24,9 @@ function NewlyCreatedWallet(mnemonic_wordsetName)
 }
 exports.NewlyCreatedWallet = NewlyCreatedWallet
 //
-function MnemonicStringFromSeed(account_seed, language)
+function MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
 {
-    const mnemonicString = mnemonic.mn_encode(account_seed, language)
+    const mnemonicString = mnemonic.mn_encode(account_seed, mnemonic_wordsetName)
 	//
 	return mnemonicString
 }
