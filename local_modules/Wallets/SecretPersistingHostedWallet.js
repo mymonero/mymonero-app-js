@@ -36,7 +36,7 @@ const wallet_currencies =
 	xmr: 'xmr'
 }
 //
-class SecretWallet
+class SecretPersistingHostedWallet
 {
 	constructor(options, context)
 	{
@@ -79,7 +79,7 @@ class SecretWallet
 		self._id = self.options._id || null // initialize to null if creating wallet
 		self.persistencePassword = self.options.persistencePassword || null
 		if (self.persistencePassword === null) {
-			const errStr = "You must supply a persistencePassword in the options of your SecretWallet instantiation call"
+			const errStr = "You must supply a persistencePassword in the options of your SecretPersistingHostedWallet instantiation call"
 			console.error(errStr)
 			failure_cb(new Error(errStr))
 			return
@@ -94,7 +94,7 @@ class SecretWallet
 			// TODO: implement all other import cases like having addr + keys, as well as wallet import w/fee
 			//
 			if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
-				const errStr = "You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretWallet instantiation call"
+				const errStr = "You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call"
 				console.error(errStr)
 				failure_cb(new Error(errStr))
 				return
@@ -110,7 +110,7 @@ class SecretWallet
 				function(err)
 				{
 					if (err) {
-						const errStr = "Failed to instantiate a SecretWallet by creating new wallet and account with error… " + err.toString()
+						const errStr = "Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
 						console.error(errStr)
 						failure_cb(err)
 					} else {
@@ -809,4 +809,4 @@ class SecretWallet
 		// todo: emit event?
 	}
 }
-module.exports = SecretWallet
+module.exports = SecretPersistingHostedWallet

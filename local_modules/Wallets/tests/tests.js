@@ -4,7 +4,7 @@ const async = require('async')
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const SecretWallet = require('../SecretWallet')
+const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
@@ -62,7 +62,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 			}
 		}
 	}
-	const wallet = new SecretWallet(options, context)
+	const wallet = new SecretPersistingHostedWallet(options, context)
 }
 function _proceedTo_test_openingSavedWallet(fn)
 {
@@ -105,5 +105,5 @@ function _proceedTo_test_openingSavedWallet(fn)
 			}
 		}
 	}
-	const wallet = new SecretWallet(options, context)
+	const wallet = new SecretPersistingHostedWallet(options, context)
 }
