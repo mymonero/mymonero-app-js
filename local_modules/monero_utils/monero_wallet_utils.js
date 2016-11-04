@@ -24,6 +24,14 @@ function NewlyCreatedWallet(mnemonic_wordsetName)
 }
 exports.NewlyCreatedWallet = NewlyCreatedWallet
 //
+function MnemonicStringFromSeed(account_seed, language)
+{
+    const mnemonicString = mnemonic.mn_encode(account_seed, language)
+	//
+	return mnemonicString
+}
+exports.MnemonicStringFromSeed = MnemonicStringFromSeed
+//
 function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn)
 { // fn: (err?, seed?, keys?)
 	mnemonicString = mnemonicString.toLowerCase() || ""

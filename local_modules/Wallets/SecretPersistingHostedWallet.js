@@ -59,6 +59,10 @@ class SecretPersistingHostedWallet
 		//
 		function _trampolineFor_successfullyInstantiated_cb()
 		{
+			// TODO: assert account_seed defined
+			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.wallet_currency)
+			console.log("self.mnemonicString", self.mnemonicString)
+			
 			successfullyInstantiated_cb()
 			//
 			setTimeout(function()
@@ -231,6 +235,7 @@ class SecretPersistingHostedWallet
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 	
+	
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Logging in/Creating accounts
 	
@@ -302,7 +307,7 @@ class SecretPersistingHostedWallet
 				fn
 			)
 		}
-	}
+	}	
 	
 	logIn_mnemonic(mnemonicString, language, fn)
 	{ // fn: (err?) -> Void
