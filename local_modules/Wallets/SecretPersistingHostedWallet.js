@@ -6,6 +6,7 @@ const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
 //
 const documentCryptScheme =
 {
+	public_address: { type: CryptSchemeFieldValueTypes.String },
 	account_seed: { type: CryptSchemeFieldValueTypes.String },
 	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
 		// view
@@ -169,8 +170,9 @@ class SecretPersistingHostedWallet
 				self.isLoggedIn = plaintextDocument.isLoggedIn
 				//
 				self.account_seed = plaintextDocument.account_seed
-				self.public_keys = plaintextDocument.public_keys
 				self.private_keys = plaintextDocument.private_keys
+				self.public_address = plaintextDocument.public_address
+				self.public_keys = plaintextDocument.public_keys
 				self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 				//
 				self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
@@ -205,6 +207,9 @@ class SecretPersistingHostedWallet
 				}
 				if (self.account_seed === null || typeof self.account_seed === 'undefined' || self.account_seed === '') {
 					return _failWithValidationErr("Reconstituted wallet had no valid account_seed")
+				}
+				if (self.public_address === null || typeof self.public_address === 'undefined' || self.public_address === '') {
+					return _failWithValidationErr("Reconstituted wallet had no valid public_address")
 				}
 				if (self.public_keys === null || typeof self.public_keys === 'undefined' || self.public_keys === {}) {
 					return _failWithValidationErr("Reconstituted wallet had no valid public_keys")
@@ -450,6 +455,7 @@ class SecretPersistingHostedWallet
 						fn(err)
 						return
 					}
+					self.public_address = address
 					self.account_seed = account_seed
 					self.public_keys = public_keys
 					self.private_keys = private_keys
@@ -532,8 +538,9 @@ class SecretPersistingHostedWallet
 			mnemonic_wordsetName: self.mnemonic_wordsetName,
 			//
 			account_seed: self.account_seed,
-			public_keys: self.public_keys,
 			private_keys: self.private_keys,
+			public_address: self.public_address,
+			public_keys: self.public_keys,
 			//
 			isLoggedIn: self.isLoggedIn,
 			isInViewOnlyMode: self.isInViewOnlyMode,
