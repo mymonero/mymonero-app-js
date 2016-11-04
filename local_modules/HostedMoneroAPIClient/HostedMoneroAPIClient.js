@@ -105,6 +105,7 @@ class HostedMoneroAPIClient
 				var key_image = TransactionKeyImageCache.Lazy_KeyImage(
 					spent_output.tx_pub_key,
 					spent_output.out_index,
+					address,
 					view_key__private,
 					spend_key__public,
 					spend_key__private
@@ -169,6 +170,7 @@ class HostedMoneroAPIClient
 						var key_image = TransactionKeyImageCache.Lazy_KeyImage(
 							transactions[i].spent_outputs[j].tx_pub_key,
 							transactions[i].spent_outputs[j].out_index,
+							address,
 							view_key__private,
 							spend_key__public,
 							spend_key__private

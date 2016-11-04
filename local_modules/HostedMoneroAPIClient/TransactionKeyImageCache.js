@@ -7,6 +7,7 @@ var key_images = {}
 var Lazy_KeyImage = function(
 	tx_pub_key, 
 	out_index,
+	public_address,
 	view_key__private,
 	spend_key__public,
 	spend_key__private
