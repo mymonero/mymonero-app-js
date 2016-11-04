@@ -8,19 +8,26 @@ const documentCryptScheme =
 {
 	account_seed: { type: CryptSchemeFieldValueTypes.String },
 	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
-	  // view
-	  // spend
+		// view
+		// spend
 	private_keys: { type: CryptSchemeFieldValueTypes.JSON },
-	  // view
-	  // spend
+		// view
+		// spend
 	//
 	heights: { type: CryptSchemeFieldValueTypes.JSON },
 		// account_scanned_height
+		// account_scanned_tx_height
 		// account_scanned_block_height
 		// account_scan_start_height
 		// transaction_height
 		// blockchain_height
-	transactions: { type: CryptSchemeFieldValueTypes.Array }
+	totals: { type: CryptSchemeFieldValueTypes.JSON },
+		// total_received
+		// locked_balance
+		// total_sent
+	//
+	transactions: { type: CryptSchemeFieldValueTypes.Array },
+	spent_outputs: { type: CryptSchemeFieldValueTypes.Array }
 }
 const CollectionName = "Wallets"
 //
@@ -49,6 +56,25 @@ class SecretWallet
 		// ^ ifNewWallet__informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
 		// 	confirmation_cb: (userConfirmed_mnemonicString) -> Void
 		// See logIn_creatingNewWallet. Only need to supply this if you're asking to create a new wallet
+		//
+		function _trampolineFor_successfullyInstantiated_cb()
+		{
+			successfullyInstantiated_cb()
+			//
+			setTimeout(function()
+			{ // kick off synchronizations
+				self._fetch_accountInfo(
+					function(err)
+					{	
+					}
+				)
+				self._fetch_transactionHistory(
+					function(err)
+					{
+					}
+				)
+			})
+		}
 		//
 		self._id = self.options._id || null // initialize to null if creating wallet
 		self.persistencePassword = self.options.persistencePassword || null
@@ -89,7 +115,7 @@ class SecretWallet
 						failure_cb(err)
 					} else {
 						console.log("success")
-						successfullyInstantiated_cb()
+						_trampolineFor_successfullyInstantiated_cb()
 					}
 				}
 			)
@@ -148,10 +174,19 @@ class SecretWallet
 				// unpacking heights…
 				const heights = plaintextDocument.heights // no || {} because we always persist at least {}
 				self.account_scanned_height = heights.account_scanned_height
+				self.account_scanned_tx_height = heights.account_scanned_tx_height 
 				self.account_scanned_block_height = heights.account_scanned_block_height
 				self.account_scan_start_height = heights.account_scan_start_height
 				self.transaction_height = heights.transaction_height
 				self.blockchain_height = heights.blockchain_height
+				//
+				// unpacking totals
+				const totals = plaintextDocument.totals
+				self.total_received = totals.total_received
+				self.locked_balance = totals.locked_balance
+				self.total_sent = totals.total_sent
+				//
+				self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
 				//
 				//
 				// validation
@@ -187,7 +222,7 @@ class SecretWallet
 				}
 				//
 				// finally
-				successfullyInstantiated_cb() // all done
+				_trampolineFor_successfullyInstantiated_cb() // all done
 			}
 		)
 	}
@@ -341,6 +376,7 @@ class SecretWallet
 		//
 		self.account_scanned_height = null
 		self.account_scanned_block_height = null
+		self.account_scanned_tx_height = null
 		self.account_scan_start_height = null
 		self.transaction_height = null
 		self.blockchain_height = null
@@ -445,6 +481,7 @@ class SecretWallet
 	{
 		console.log("> saveToDisk")
 		const self = this
+		//
 		const persistencePassword = self.persistencePassword
 		if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
 			const errStr = "Cannot save wallet to disk as persistencePassword was missing."
@@ -452,9 +489,13 @@ class SecretWallet
 			fn(err)
 			return
 		}
+		//
 		const heights = {} // to construct:
+		if (self.account_scanned_tx_height !== null && typeof self.account_scanned_tx_height !== 'undefined') {
+			heights["account_scanned_tx_height"] == self.account_scanned_tx_height
+		}
 		if (self.account_scanned_height !== null && typeof self.account_scanned_height !== 'undefined') {
-			heights["account_scanned_height"] = account_scanned_height
+			heights["account_scanned_height"] = self.account_scanned_height
 		}
 		if (self.account_scanned_block_height !== null && typeof self.account_scanned_block_height !== 'undefined') {
 			heights["account_scanned_block_height"] = self.account_scanned_block_height
@@ -468,6 +509,18 @@ class SecretWallet
 		if (self.blockchain_height !== null && typeof self.blockchain_height !== 'undefined') {
 			heights["blockchain_height"] = self.blockchain_height
 		}
+		//
+		const totals = {}
+		if (self.total_received !== null && typeof self.total_received !== 'undefined') {
+			heights["total_received"] = self.total_received
+		}
+		if (self.locked_balance !== null && typeof self.locked_balance !== 'undefined') {
+			heights["locked_balance"] = self.locked_balance
+		}
+		if (self.total_sent !== null && typeof self.total_sent !== 'undefined') {
+			heights["total_sent"] = self.total_sent
+		}		
+		//
 		const plaintextDocument =
 		{
 			wallet_currency: self.wallet_currency,
@@ -481,7 +534,9 @@ class SecretWallet
 			isInViewOnlyMode: self.isInViewOnlyMode,
 			//
 			transactions: self.transactions || [], // maybe not fetched yet
-			heights: heights
+			heights: heights,
+			totals: totals,
+			spent_outputs: self.spent_outputs || [] // maybe not fetched yet
 		}
 		if (self._id !== null) {
 			plaintextDocument._id = self._id
@@ -557,12 +612,71 @@ class SecretWallet
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private - Tx history sync
+	// Runtime - Imperatives - Private - Account info & tx history fetch/sync
 	
-	_fetchTransactionHistory(fn)
+	_fetch_accountInfo(fn)
+	{
+		const self = this
+		var __debug_fnName = "_fetch_accountInfo"
+		if (self.isLoggedIn !== true) {
+			const errStr = "Unable to " + __debug_fnName + " as isLoggedIn !== true"
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		if (typeof self.account_seed === 'undefined' && self.account_seed === null || self.account_seed === '') {
+			const errStr = "Unable to " + __debug_fnName + " as no account_seed"
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		if (typeof self.private_keys === 'undefined' && self.private_keys === null) {
+			const errStr = "Unable to " + __debug_fnName + " as no private_keys"
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		self.context.hostedMoneroAPIClient.AddressInfo(
+			self.account_seed,
+			self.private_keys.view,
+			function(
+				err,
+				total_received,
+				locked_balance,
+				total_sent,
+				spent_outputs,
+				account_scanned_tx_height,
+				account_scanned_block_height,
+				account_scan_start_height,
+				transaction_height,
+				blockchain_height
+			)
+			{
+				if (err) {
+					console.error(err)
+					fn(err)
+					return
+				}
+				//
+				self.__didFetch_accountInfo(
+					total_received,
+					locked_balance,
+					total_sent,
+					spent_outputs,
+					account_scanned_tx_height,
+					account_scanned_block_height,
+					account_scan_start_height,
+					transaction_height,
+					blockchain_height
+				)
+			}
+		)
+	}
+		
+	_fetch_transactionHistory(fn)
 	{ // fn: (err?) -> Void
 		const self = this
-		var __debug_fnName = "_fetchTransactionHistory"
+		var __debug_fnName = "_fetch_transactionHistory"
 		if (self.isLoggedIn !== true) {
 			const errStr = "Unable to " + __debug_fnName + " as isLoggedIn !== true"
 			console.error(errStr)
@@ -600,7 +714,7 @@ class SecretWallet
 					return
 				}
 				//
-				self.__didFetchTransactionHistory(
+				self.__didFetch_transactionHistory(
 					account_scanned_height, 
 					account_scanned_block_height, 
 					account_scan_start_height,
@@ -614,9 +728,52 @@ class SecretWallet
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private - Tx history sync
+	// Runtime - Delegation - Private - Account info & tx history fetch/save/sync
 
-	__didFetchTransactionHistory(
+	__didFetch_accountInfo(
+		total_received,
+		locked_balance,
+		total_sent,
+		spent_outputs,
+		account_scanned_tx_height,
+		account_scanned_block_height,
+		account_scan_start_height,
+		transaction_height,
+		blockchain_height
+	)
+	{
+		const self = this
+		console.log("_didFetchTransactionHistory")
+		//
+		self.total_received = total_received
+		self.locked_balance = locked_balance
+		self.total_sent = total_sent
+		self.spent_outputs = spent_outputs
+		self.account_scanned_tx_height = account_scanned_tx_height
+		self.account_scanned_block_height = account_scanned_block_height
+		self.account_scan_start_height = account_scan_start_height
+		self.transaction_height = transaction_height
+		self.blockchain_height = blockchain_height
+		//
+		self.saveToDisk(
+			function(err)
+			{
+				if (!err) {
+					self.___didReceiveAndSaveUpdateTo_accountInfo()	
+				}
+			}
+		)
+	}
+	___didReceiveAndSaveUpdateTo_accountInfo()
+	{
+		if (typeof self.options.didReceiveUpdateToAccountInfo === 'function') {
+			self.options.didReceiveUpdateToAccountInfo()
+		}
+		// todo: emit event?
+	}
+	//
+	//
+	__didFetch_transactionHistory(
 		account_scanned_height, 
 		account_scanned_block_height, 
 		account_scan_start_height,
@@ -638,12 +795,18 @@ class SecretWallet
 		self.saveToDisk(
 			function(err)
 			{
-				// anything to do here?
-				//
-				// TODO: emit event 
+				if (!err) {
+					self.___didReceiveAndSaveUpdateTo_accountTransactions()	
+				}
 			}
 		)
 	}
-
+	___didReceiveAndSaveUpdateTo_accountTransactions()
+	{
+		if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
+			self.options.didReceiveUpdateToAccountTransactions()
+		}
+		// todo: emit event?
+	}
 }
 module.exports = SecretWallet

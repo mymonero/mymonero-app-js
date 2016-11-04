@@ -26,6 +26,12 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 {
 	console.log("> _proceedTo_test_creatingNewWalletAndAccount")
 	var persistencePassword = "my wallet password"
+	var finishedAccountInfoSync = false
+	var finishedAccountTxsSync = false
+	function areAllSyncOperationsFinished()
+	{
+		return finishedAccountInfoSync && finishedAccountTxsSync
+	}
 	const options = 
 	{
 		persistencePassword: persistencePassword,
@@ -36,11 +42,24 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 		successfullyInstantiated_cb: function()
 		{
 			console.log("Wallet is ", wallet)
-			fn()
+			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
 		},
 		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
 		{
 			confirmation_cb(mnemonicString) // simulating correct user input
+		},
+		//
+		didReceiveUpdateToAccountInfo: function()
+		{
+			if (areAllSyncOperationsFinished) {
+				fn()
+			}
+		},
+		didReceiveUpdateToAccountTransactions: function()
+		{
+			if (areAllSyncOperationsFinished) {
+				fn()
+			}
 		}
 	}
 	const wallet = new SecretWallet(options, context)
@@ -49,9 +68,15 @@ function _proceedTo_test_openingSavedWallet(fn)
 {
 	console.log("> _proceedTo_test_openingSavedWallet")
 	var persistencePassword = "my wallet password"
+	var finishedAccountInfoSync = false
+	var finishedAccountTxsSync = false
+	function areAllSyncOperationsFinished()
+	{
+		return finishedAccountInfoSync && finishedAccountTxsSync
+	}
 	const options = 
 	{
-		_id: "bRN07NSAgLO6DFBP", // take the _id from the wallet creation above
+		_id: "4bYazIQtgsKym4wy", // take the _id from the wallet creation above
 		persistencePassword: persistencePassword,
 		failure_cb: function(err)
 		{
@@ -60,11 +85,24 @@ function _proceedTo_test_openingSavedWallet(fn)
 		successfullyInstantiated_cb: function()
 		{
 			console.log("Wallet is ", wallet)
-			fn()
+			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
 		},
-		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString)
+		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
 		{
 			confirmation_cb(mnemonicString) // simulating correct user input
+		},
+		//
+		didReceiveUpdateToAccountInfo: function()
+		{
+			if (areAllSyncOperationsFinished) {
+				fn()
+			}
+		},
+		didReceiveUpdateToAccountTransactions: function()
+		{
+			if (areAllSyncOperationsFinished) {
+				fn()
+			}
 		}
 	}
 	const wallet = new SecretWallet(options, context)
