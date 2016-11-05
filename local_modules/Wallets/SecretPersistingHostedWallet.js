@@ -489,8 +489,8 @@ class SecretPersistingHostedWallet
 	
 	saveToDisk(fn)
 	{
-		console.log("> saveToDisk")
 		const self = this
+		console.log("> saveToDisk", self)
 		//
 		const persistencePassword = self.persistencePassword
 		if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
@@ -522,13 +522,13 @@ class SecretPersistingHostedWallet
 		//
 		const totals = {}
 		if (self.total_received !== null && typeof self.total_received !== 'undefined') {
-			heights["total_received"] = self.total_received
+			totals["total_received"] = self.total_received
 		}
 		if (self.locked_balance !== null && typeof self.locked_balance !== 'undefined') {
-			heights["locked_balance"] = self.locked_balance
+			totals["locked_balance"] = self.locked_balance
 		}
 		if (self.total_sent !== null && typeof self.total_sent !== 'undefined') {
-			heights["total_sent"] = self.total_sent
+			totals["total_sent"] = self.total_sent
 		}		
 		//
 		const plaintextDocument =
@@ -549,9 +549,9 @@ class SecretPersistingHostedWallet
 			totals: totals,
 			spent_outputs: self.spent_outputs || [] // maybe not fetched yet
 		}
-		if (self._id !== null) {
-			plaintextDocument._id = self._id
-		}
+		// if (self._id !== null) {
+		// 	plaintextDocument._id = self._id
+		// }
 		// console.log("debug info: going to save plaintextDocument", plaintextDocument)
 		//
 		const encryptedDocument = document_cryptor.New_EncryptedDocument(
@@ -575,6 +575,9 @@ class SecretPersistingHostedWallet
 			multi: false,
 			returnUpdatedDocs: true
 		}
+		// console.log("query", query)
+		// console.log("update", update)
+		// console.log("options", options)
 		self.context.persister.UpdateDocuments(
 			CollectionName,
 			query,
