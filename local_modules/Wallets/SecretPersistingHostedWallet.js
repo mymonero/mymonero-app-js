@@ -61,7 +61,7 @@ class SecretPersistingHostedWallet
 		function _trampolineFor_successfullyInstantiated_cb()
 		{
 			// TODO: assert account_seed defined
-			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.wallet_currency)
+			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
 			console.log("self.mnemonicString", self.mnemonicString)
 			
 			successfullyInstantiated_cb()
@@ -106,7 +106,7 @@ class SecretPersistingHostedWallet
 			}
 			self.mustCreateNewWalletAndAccount = true
 			//			
-			self.wallet_currency = wallet_currencies.XMR // default 
+			self.wallet_currency = wallet_currencies.xmr // default 
 			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
 			//
 			console.log("Creating new wallet.")
