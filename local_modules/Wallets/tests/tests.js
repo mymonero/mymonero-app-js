@@ -8,7 +8,7 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		_proceedTo_test_creatingNewWalletAndAccount,
+		// _proceedTo_test_creatingNewWalletAndAccount,
 		_proceedTo_test_openingSavedWallet
 	],
 	function(err)
@@ -51,13 +51,15 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 		//
 		didReceiveUpdateToAccountInfo: function()
 		{
-			if (areAllSyncOperationsFinished) {
+			finishedAccountInfoSync = true
+			if (areAllSyncOperationsFinished()) {
 				fn()
 			}
 		},
 		didReceiveUpdateToAccountTransactions: function()
 		{
-			if (areAllSyncOperationsFinished) {
+			finishedAccountTxsSync = true
+			if (areAllSyncOperationsFinished()) {
 				fn()
 			}
 		}
@@ -76,7 +78,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 	}
 	const options = 
 	{
-		_id: "4bYazIQtgsKym4wy", // take the _id from the wallet creation above
+		_id: "FQoUeDdSYT1ol16K", // take the _id from the wallet creation above
 		persistencePassword: persistencePassword,
 		failure_cb: function(err)
 		{
@@ -94,13 +96,15 @@ function _proceedTo_test_openingSavedWallet(fn)
 		//
 		didReceiveUpdateToAccountInfo: function()
 		{
-			if (areAllSyncOperationsFinished) {
+			finishedAccountInfoSync = true
+			if (areAllSyncOperationsFinished()) {
 				fn()
 			}
 		},
 		didReceiveUpdateToAccountTransactions: function()
 		{
-			if (areAllSyncOperationsFinished) {
+			finishedAccountTxsSync = true
+			if (areAllSyncOperationsFinished()) {
 				fn()
 			}
 		}
