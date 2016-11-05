@@ -235,6 +235,7 @@ class HostedMoneroAPIClient
 		const self = this
 		parameters = parameters || {}
 		const completeURL = self.baseURL + endpointPath
+		// console.log("requesting", completeURL, "with params", parameters)
 		request({
 			method: "POST", // maybe break this out
 			url: completeURL,

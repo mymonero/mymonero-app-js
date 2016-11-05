@@ -62,7 +62,6 @@ class SecretPersistingHostedWallet
 		{
 			// TODO: assert account_seed defined
 			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
-			console.log("self.mnemonicString", self.mnemonicString)
 			
 			successfullyInstantiated_cb()
 			//
@@ -649,7 +648,7 @@ class SecretPersistingHostedWallet
 			return
 		}
 		self.context.hostedMoneroAPIClient.AddressInfo(
-			self.account_seed,
+			self.public_address,
 			self.private_keys.view,
 			function(
 				err,
@@ -708,7 +707,7 @@ class SecretPersistingHostedWallet
 			return
 		}
 		self.context.hostedMoneroAPIClient.AddressTransactions(
-			self.account_seed,
+			self.public_address,
 			self.private_keys.view,
 			function(
 				err,
