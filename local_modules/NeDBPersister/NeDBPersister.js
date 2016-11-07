@@ -61,9 +61,9 @@ class NeDBPersister extends Persister
 
 	__documentsWithQuery(collectionName, query, options, fn)
 	{
-		var self = this
-		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		var operation = dbHandle_forCollection.find(query)
+		const self = this
+		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		const operation = dbHandle_forCollection.find(query)
 		//
 		options = options || {}
 		if (typeof options.sort !== 'undefined' && options.sort !== null) {
@@ -86,19 +86,28 @@ class NeDBPersister extends Persister
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Overrides
 	
+	__insertDocuments(collectionName, savableDocument, fn)
+	{
+		const self = this
+		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		dbHandle_forCollection.insert(savableDocument, function(err, newDocument)
+		{
+			fn(err, newDocument)
+		})
+	}
 	__updateDocuments(collectionName, query, update, options, fn)
 	{
-		var self = this
-		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		const self = this
+		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
 		dbHandle_forCollection.update(query, update, options, function(err, numAffected, affectedDocuments, upsert)
 		{
-		   fn(err, numAffected, affectedDocuments, upsert)	
+			fn(err, numAffected, affectedDocuments, upsert)	
 		})
 	}
 	__removeDocuments(collectionName, query, options, fn)
 	{ 
-		var self = this
-		var dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
+		const self = this
+		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
 		options = options || {}
 		dbHandle_forCollection.remove(query, options, function(err, numRemoved)
 		{

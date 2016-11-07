@@ -40,15 +40,21 @@ class Persister
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
 
+	InsertDocument(collectionName, savableDocument, fn)
+	{
+		const self = this
+		//
+		self.__insertDocuments(collectionName, savableDocument, fn)
+	}
 	UpdateDocuments(collectionName, query, update, options, fn)
 	{
-		var self = this
+		const self = this
 		//
 		self.__updateDocuments(collectionName, query, update, options, fn)
 	}
 	RemoveDocuments(collectionName, query, options, fn)
 	{
-		var self = this
+		const self = this
 		//
 		self.__removeDocuments(collectionName, query, options, fn)
 	}
@@ -59,7 +65,7 @@ class Persister
 	
 	__documentsWithQuery(collectionName, query, options, fn)
 	{ // fn: (err, docs) -> Void
-		var self = this
+		const self = this
 		//
 		console.log("Error: You must override __documentsWithQuery in ", self)
 		console.log(
@@ -75,9 +81,15 @@ class Persister
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
+	__insertDocuments(collectionName, savableDocument, fn)
+	{ // fn: (err, newDocument) -> Void
+		const self = this
+		//
+		console.log("Error: You must override __insertDocuments in", self)
+	}
 	__updateDocuments(collectionName, query, update, options, fn)
 	{ // fn: (err, numAffected, affectedDocuments, upsert) -> Void
-		var self = this
+		const self = this
 		//
 		console.log("Error: You must override __updateDocuments in", self)
 		console.log(
@@ -90,7 +102,7 @@ class Persister
 	}
 	__removeDocuments(collectionName, query, options, fn)
 	{ // fn: (err, numRemoved) -> Void
-		var self = this
+		const self = this
 		//
 		console.log("Error: You must override __removeDocuments in", self)
 		console.log(

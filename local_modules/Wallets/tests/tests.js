@@ -8,9 +8,8 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		_proceedTo_test_creatingNewWalletAndAccount
-		//,
-		// _proceedTo_test_openingSavedWallet
+		// _proceedTo_test_creatingNewWalletAndAccount,
+		_proceedTo_test_openingSavedWallet
 	],
 	function(err)
 	{
@@ -79,7 +78,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 	}
 	const options = 
 	{
-		_id: "FQoUeDdSYT1ol16K", // take the _id from the wallet creation above
+		_id: "qcI9CIxyZ0USVVja", // take the _id from the wallet creation above
 		persistencePassword: persistencePassword,
 		failure_cb: function(err)
 		{

@@ -572,9 +572,6 @@ class SecretPersistingHostedWallet
 			totals: totals,
 			spent_outputs: self.spent_outputs || [] // maybe not fetched yet
 		}
-		if (self._id !== null) {
-			plaintextDocument._id = self._id
-		}
 		// console.log("debug info: going to save plaintextDocument", plaintextDocument)
 		// console.log("type of account_scanned_height", typeof plaintextDocument.heights.account_scanned_height)
 		// console.log("totals", JSON.stringify(plaintextDocument.totals))
@@ -587,62 +584,79 @@ class SecretPersistingHostedWallet
 		)
 		// console.log("debug info: going to save encryptedDocument", encryptedDocument)
 		//
-		var query =
+		// insert & update fn declarations for imminent usage…
+		function _proceedTo_insertExistingDocument()
 		{
-		}
-		if (self._id !== null) {
-			query._id = self._id // we want to update the existing one
-		} else {
-			// we're going to upsert it
-		}
-		var update = 
-		{
-			$set: encryptedDocument
-		}
-		var options =
-		{
-			multi: false,
-			upsert: true,
-			returnUpdatedDocs: true
-		}
-		// console.log("query", query)
-		// console.log("update", update)
-		// console.log("options", options)
-		self.context.persister.UpdateDocuments(
-			CollectionName,
-			query,
-			update,
-			options,
-			function(
-				err,
-				numAffected,
-				affectedDocuments,
-				upsert
-			)
-			{
-
-				if (err) {
-					console.error("Error while saving wallet:", err)
-					fn(err)
-					return
-				} 
-				var affectedDocument
-				if (Array.isArray(affectedDocuments)) {
-					affectedDocument = affectedDocuments[0]
-				} else {
-					affectedDocument = affectedDocuments
-				}
-				if (self._id === null) {
-					if (affectedDocument._id === null) { // not that this would happen…
-						const errStr = "Saved wallet but _id after saving was null"
+			self.context.persister.InsertDocument(
+				CollectionName,
+				encryptedDocument,
+				function(
+					err,
+					newDocument
+				)
+				{
+					if (err) {
+						console.error("Error while saving wallet:", err)
+						fn(err)
+						return
+					} 
+					if (newDocument._id === null) { // not that this would happen…
+						const errStr = "Inserted wallet but _id after saving was null"
 						const err = new Error(errStr)
 						fn(err)
 						return // bail
 					}
-					self._id = affectedDocument._id // so we have it in runtime memory now…
-				} else {
+					self._id = newDocument._id // so we have it in runtime memory now…
+					console.log("✅  Saved newly inserted wallet with _id " + self._id + ".")
+					fn()
+				}
+			)
+		}
+		function _proceedTo_updateExistingDocument()
+		{
+			var query =
+			{
+				_id: self._id // we want to update the existing one
+			}
+			var update = encryptedDocument
+			var options =
+			{
+				multi: false,
+				upsert: false, // we are only using .update because we know the document exists
+				returnUpdatedDocs: true
+			}
+			self.context.persister.UpdateDocuments(
+				CollectionName,
+				query,
+				update,
+				options,
+				function(
+					err,
+					numAffected,
+					affectedDocuments,
+					upsert
+				)
+				{
+
+					if (err) {
+						console.error("Error while saving wallet:", err)
+						fn(err)
+						return
+					} 
+					var affectedDocument
+					if (Array.isArray(affectedDocuments)) {
+						affectedDocument = affectedDocuments[0]
+					} else {
+						affectedDocument = affectedDocuments
+					}
+					if (affectedDocument._id === null) { // not that this would happen…
+						const errStr = "Updated wallet but _id after saving was null"
+						const err = new Error(errStr)
+						fn(err)
+						return // bail
+					}
 					if (affectedDocument._id !== self._id) {
-						const errStr = "Saved wallet but _id after saving was not equal to non-null _id before saving"
+						const errStr = "Updated wallet but _id after saving was not equal to non-null _id before saving"
 						const err = new Error(errStr)
 						fn(err)
 						return // bail
@@ -653,11 +667,18 @@ class SecretPersistingHostedWallet
 						fn(err)
 						return // bail
 					}
+					console.log("✅  Saved update to wallet with _id " + self._id + ".")
+					fn()
 				}
-				console.log("Saved wallet with _id " + self._id + ".")
-				fn()
-			}
-		)
+			)
+		}
+		//
+		if (self._id === null) {
+			_proceedTo_insertExistingDocument()
+		} else {
+			_proceedTo_updateExistingDocument()
+		}
+
 	}
 	
 	
