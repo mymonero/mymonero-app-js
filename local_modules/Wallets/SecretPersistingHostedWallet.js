@@ -180,6 +180,7 @@ class SecretPersistingHostedWallet
 				self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 				//
 				self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
+				// ^ TODO: these may be stored as key imgs…… need to do (de)serialization same in principle to .totals
 				//
 				// unpacking heights…
 				const heights = plaintextDocument.heights // no || {} because we always persist at least {}
