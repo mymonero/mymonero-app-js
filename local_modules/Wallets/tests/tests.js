@@ -8,7 +8,14 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		// _proceedTo_test_creatingNewWalletAndAccount,
+		// function(cb)
+		// {
+		// 	const collectionName = "Wallets"
+		// 	const dbHandle = context.persister._dbHandle_forCollectionNamed(collectionName)
+		// 	dbHandle.persistence.compactDatafile()
+		// }
+		// ,
+		_proceedTo_test_creatingNewWalletAndAccount,
 		_proceedTo_test_openingSavedWallet
 	],
 	function(err)
