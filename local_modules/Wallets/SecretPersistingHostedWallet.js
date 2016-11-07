@@ -90,13 +90,15 @@ class SecretPersistingHostedWallet
 			return
 		}
 		//
-		self.isLoggingIn = false // not persisted in DB
-		self.isLoggedIn = false // TODO: toggle this based on what is persisted in the DB -- the wallet needs to be imported to MyMonero for the hosted API stuff to work
+		// states not persisted in DB
+		self.isLoggingIn = false 
 		//
-		self.mustCreateNewWalletAndAccount = false
+		self.isLoggedIn = false // this is soon toggled based on what is persisted in the DB
+		//
+		self.mustCreateNewWalletAndAccount = false 
 		if (self._id === null) {
 			//
-			// TODO: implement all other import cases like having addr + keys, as well as wallet import w/fee
+			// TODO: implement all other import cases like having addr + keys, as well as wallet import detection + fee agreement... callbacks and init args? 
 			//
 			if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
 				const errStr = "You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call"
@@ -110,6 +112,8 @@ class SecretPersistingHostedWallet
 			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
 			//
 			console.log("Creating new wallet.")
+			//
+			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
 			self.logIn_creatingNewWallet(
 				ifNewWallet__informingAndVerifyingMnemonic_cb, // this is passed straight through from the initializer
 				function(err)
@@ -169,6 +173,10 @@ class SecretPersistingHostedWallet
 				//
 				// reconstituting state…
 				self.isLoggedIn = plaintextDocument.isLoggedIn
+				self.dateThatLast_fetchedAccountInfo = plaintextDocument.dateThatLast_fetchedAccountInfo
+				self.dateThatLast_fetchedAccountTransactions = plaintextDocument.dateThatLast_fetchedAccountTransactions
+				//
+				self.dateWalletFirstSavedLocally = plaintextDocument.dateWalletFirstSavedLocally
 				//
 				self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
 				self.wallet_currency = plaintextDocument.wallet_currency
@@ -538,6 +546,10 @@ class SecretPersistingHostedWallet
 			totals["total_sent"] = self.total_sent.toString()
 		}		
 		//
+		if (typeof self.dateWalletFirstSavedLocally === 'undefined') {
+			self.dateWalletFirstSavedLocally = new Date()
+		}
+		//
 		const plaintextDocument =
 		{
 			wallet_currency: self.wallet_currency,
@@ -549,6 +561,10 @@ class SecretPersistingHostedWallet
 			public_keys: self.public_keys,
 			//
 			isLoggedIn: self.isLoggedIn,
+			dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo,
+			dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions,
+			dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally,
+			//
 			isInViewOnlyMode: self.isInViewOnlyMode,
 			//
 			transactions: self.transactions || [], // maybe not fetched yet
@@ -789,6 +805,8 @@ class SecretPersistingHostedWallet
 		self.transaction_height = transaction_height
 		self.blockchain_height = blockchain_height
 		//
+		self.dateThatLast_fetchedAccountInfo = new Date()
+		//
 		self.saveToDisk(
 			function(err)
 			{
@@ -826,6 +844,8 @@ class SecretPersistingHostedWallet
 		self.transaction_height = transaction_height
 		self.blockchain_height = blockchain_height 
 		self.transactions = transactions
+		//
+		self.dateThatLast_fetchedAccountTransactions = new Date()
 		//
 		self.saveToDisk(
 			function(err)

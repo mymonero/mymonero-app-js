@@ -8,8 +8,9 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		// _proceedTo_test_creatingNewWalletAndAccount,
-		_proceedTo_test_openingSavedWallet
+		_proceedTo_test_creatingNewWalletAndAccount
+		//,
+		// _proceedTo_test_openingSavedWallet
 	],
 	function(err)
 	{
