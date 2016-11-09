@@ -545,9 +545,9 @@ class SecretPersistingHostedWallet
 					self.isLoggingIn = false
 					self.isLoggedIn = true
 					//
-					const wasAccountImported = !wasAGeneratedWallet && new_address
-					// console.log("SUCCESS… wasAccountImported", wasAccountImported)
-					self.wasAccountImported = wasAccountImported
+					const shouldDisplayImportAccountOption = !wasAGeneratedWallet && new_address
+					// console.log("SUCCESS… shouldDisplayImportAccountOption", shouldDisplayImportAccountOption)
+					self.shouldDisplayImportAccountOption = shouldDisplayImportAccountOption
 					//
 					self.saveToDisk(
 						function(err)
