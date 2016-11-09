@@ -763,8 +763,8 @@ class SecretPersistingHostedWallet
 			fn(err)
 			return
 		}
-		if (typeof self.account_seed === 'undefined' && self.account_seed === null || self.account_seed === '') {
-			const errStr = "❌  Unable to " + __debug_fnName + " as no account_seed"
+		if (typeof self.public_address === 'undefined' && self.public_address === null || self.public_address === '') {
+			const errStr = "❌  Unable to " + __debug_fnName + " as no public_address"
 			console.error(errStr)
 			const err = new Error(errStr)
 			fn(err)
@@ -825,8 +825,8 @@ class SecretPersistingHostedWallet
 			fn(err)
 			return
 		}
-		if (typeof self.account_seed === 'undefined' && self.account_seed === null || self.account_seed === '') {
-			const errStr = "❌  Unable to " + __debug_fnName + " as no account_seed"
+		if (typeof self.public_address === 'undefined' && self.public_address === null || self.public_address === '') {
+			const errStr = "❌  Unable to " + __debug_fnName + " as no public_address"
 			console.error(errStr)
 			const err = new Error(errStr)
 			fn(err)
