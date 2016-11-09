@@ -63,7 +63,15 @@ class SecretPersistingHostedWallet
 		{
 			// TODO: assert account_seed defined
 			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
-			
+			if (typeof self.initialization_mnemonicString !== 'undefined' && self.initialization_mnemonicString !== null) {
+				if (self.mnemonicString !== self.initialization_mnemonicString) {
+					const errStr = "Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
+					console.error(errStr)
+					failure_cb(new Error(errStr))
+					return
+				}
+			}
+			//
 			successfullyInstantiated_cb()
 			//
 			setTimeout(function()
@@ -97,20 +105,58 @@ class SecretPersistingHostedWallet
 		//
 		self.mustCreateNewWalletAndAccount = false 
 		if (self._id === null) {
+			self.wallet_currency = wallet_currencies.xmr // default 
+			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
 			//
-			// TODO: implement all other import cases like having addr + keys, as well as wallet import detection + fee agreement... callbacks and init args? 
+			// existing mnemonic string
+			self.initialization_mnemonicString = self.options.initWithMnemonic__mnemonicString
+			if (typeof self.initialization_mnemonicString !== 'undefined') {
+				const initialization_mnemonic_wordsetLanguage = self.options.initWithMnemonic_wordsetLanguage || self.mnemonic_wordsetName
+				self.logIn_mnemonic(
+					self.initialization_mnemonicString, 
+					initialization_mnemonic_wordsetLanguage, // will default to self.mnemonic_wordsetName  
+					fn
+				)				
+				//
+				return
+			}
 			//
+			// address + view & spend keys
+			const initialization_address = self.options.initWithKeys__address
+			const initialization_view_key__private = self.options.initWithKeys__view_key__private
+			const initialization_spend_key__private = self.options.initWithKeys__spend_key__private
+			if (typeof initialization_address !== 'undefined') {
+				if (typeof initialization_view_key__private === 'undefined' || initialization_view_key__private === null || initialization_view_key__private === '') {
+					const errStr = "You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+					console.error(errStr)
+					failure_cb(new Error(errStr))
+					return
+				}
+				if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
+					const errStr = "You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+					console.error(errStr)
+					failure_cb(new Error(errStr))
+					return
+				}
+				self.logIn_keys(
+					initialization_address, 
+					initialization_view_key__private, 
+					initialization_spend_key__private, 
+					fn
+				)
+ 				//
+				return
+			}
+			//
+			// Otherwise, we're creating a new wallet
 			if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
-				const errStr = "You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call"
+				const errStr = "You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
 				console.error(errStr)
 				failure_cb(new Error(errStr))
 				return
 			}
-			self.mustCreateNewWalletAndAccount = true
-			//			
-			self.wallet_currency = wallet_currencies.xmr // default 
-			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
 			//
+			self.mustCreateNewWalletAndAccount = true
 			console.log("Creating new wallet.")
 			//
 			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
@@ -356,7 +402,7 @@ class SecretPersistingHostedWallet
 			}
 		)
 	}
-	logIn_keys(address, view_key__private, spend_key__private)
+	logIn_keys(address, view_key__private, spend_key__private, fn)
 	{ // fn: (err?) -> Void
 		const self = this
 		const seed = undefined
