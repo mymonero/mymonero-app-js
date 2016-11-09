@@ -65,7 +65,7 @@ class SecretPersistingHostedWallet
 			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
 			if (typeof self.initialization_mnemonicString !== 'undefined' && self.initialization_mnemonicString !== null) {
 				if (self.mnemonicString !== self.initialization_mnemonicString) {
-					const errStr = "Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
+					const errStr = "❌  Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
 					console.error(errStr)
 					failure_cb(new Error(errStr))
 					return
@@ -92,7 +92,7 @@ class SecretPersistingHostedWallet
 		self._id = self.options._id || null // initialize to null if creating wallet
 		self.persistencePassword = self.options.persistencePassword || null
 		if (self.persistencePassword === null) {
-			const errStr = "You must supply a persistencePassword in the options of your SecretPersistingHostedWallet instantiation call"
+			const errStr = "❌  You must supply a persistencePassword in the options of your SecretPersistingHostedWallet instantiation call"
 			console.error(errStr)
 			failure_cb(new Error(errStr))
 			return
@@ -111,12 +111,22 @@ class SecretPersistingHostedWallet
 			// existing mnemonic string
 			self.initialization_mnemonicString = self.options.initWithMnemonic__mnemonicString
 			if (typeof self.initialization_mnemonicString !== 'undefined') {
-				const initialization_mnemonic_wordsetLanguage = self.options.initWithMnemonic_wordsetLanguage || self.mnemonic_wordsetName
+				self.mnemonic_wordsetName = self.options.initWithMnemonic__wordsetName || self.mnemonic_wordsetName
 				self.logIn_mnemonic(
 					self.initialization_mnemonicString, 
-					initialization_mnemonic_wordsetLanguage, // will default to self.mnemonic_wordsetName  
-					fn
-				)				
+					self.mnemonic_wordsetName,
+					function(err)
+					{
+						if (err) {
+							const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with mnemonic with error… " + err.toString()
+							console.error(errStr)
+							failure_cb(err)
+						} else {
+							console.log("successfully added existing wallet via mnemonic string")
+							_trampolineFor_successfullyInstantiated_cb()
+						}
+					}
+				)
 				//
 				return
 			}
@@ -127,13 +137,13 @@ class SecretPersistingHostedWallet
 			const initialization_spend_key__private = self.options.initWithKeys__spend_key__private
 			if (typeof initialization_address !== 'undefined') {
 				if (typeof initialization_view_key__private === 'undefined' || initialization_view_key__private === null || initialization_view_key__private === '') {
-					const errStr = "You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+					const errStr = "❌  You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
 					console.error(errStr)
 					failure_cb(new Error(errStr))
 					return
 				}
 				if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
-					const errStr = "You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+					const errStr = "❌  You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
 					console.error(errStr)
 					failure_cb(new Error(errStr))
 					return
@@ -142,7 +152,18 @@ class SecretPersistingHostedWallet
 					initialization_address, 
 					initialization_view_key__private, 
 					initialization_spend_key__private, 
-					fn
+					function(err)
+					{
+						if (err) {
+							const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with address + spend & view keys with error… " + err.toString()
+							console.error(errStr)
+							failure_cb(err)
+						} else {
+							console.log("successfully added existing wallet via address and view & spend keys")
+							_trampolineFor_successfullyInstantiated_cb()
+						}
+					}
+
 				)
  				//
 				return
@@ -150,7 +171,7 @@ class SecretPersistingHostedWallet
 			//
 			// Otherwise, we're creating a new wallet
 			if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
-				const errStr = "You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
+				const errStr = "❌  You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
 				console.error(errStr)
 				failure_cb(new Error(errStr))
 				return
@@ -165,7 +186,7 @@ class SecretPersistingHostedWallet
 				function(err)
 				{
 					if (err) {
-						const errStr = "Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
+						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
 						console.error(errStr)
 						failure_cb(err)
 					} else {
@@ -190,7 +211,7 @@ class SecretPersistingHostedWallet
 					return
 				}
 				if (docs.length === 0) {
-					const errStr = "Wallet with that _id not found."
+					const errStr = "❌  Wallet with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
 					failure_cb(err)
@@ -208,7 +229,7 @@ class SecretPersistingHostedWallet
 						self.persistencePassword
 					)
 				} catch (e) {
-					const errStr = "Decryption err: " + e.toString()
+					const errStr = "❌  Decryption err: " + e.toString()
 					const err = new Error(errStr)
 					console.error(errStr)
 					failure_cb(err)
@@ -327,7 +348,7 @@ class SecretPersistingHostedWallet
 		//
 		// Now we must have the user confirm they wrote down their seed correctly
 		if (typeof informingAndVerifyingMnemonic_cb === 'undefined') {
-			const errStr = "informingAndVerifyingMnemonic_cb was undefined."
+			const errStr = "❌  informingAndVerifyingMnemonic_cb was undefined."
 			const err = new Error(errStr)
 			console.error(errStr)
 			fn(err)
@@ -339,13 +360,13 @@ class SecretPersistingHostedWallet
 			{
 				var trimmed_userConfirmed_mnemonicString = userConfirmed_mnemonicString.trim()
 				if (trimmed_userConfirmed_mnemonicString === '') {
-					const errStr = "Please enter a private login key"
+					const errStr = "❌  Please enter a private login key"
 					const err = new Error(errStr)
 					fn(err)
 					return
 				}
 				if (trimmed_userConfirmed_mnemonicString.toLocaleLowerCase() !== mnemonicString.trim().toLocaleLowerCase()) {
-					const errStr = "Private login key does not match"
+					const errStr = "❌  Private login key does not match"
 					const err = new Error(errStr)
 					fn(err)
 					return
@@ -374,12 +395,12 @@ class SecretPersistingHostedWallet
 		}
 	}	
 	
-	logIn_mnemonic(mnemonicString, language, fn)
+	logIn_mnemonic(mnemonicString, wordsetName, fn)
 	{ // fn: (err?) -> Void
 		const self = this
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
-			self.mnemonic_wordsetName,
+			wordsetName,
 			function(err, seed, keys)
 			{
 				if (err) {
@@ -555,7 +576,7 @@ class SecretPersistingHostedWallet
 		//
 		const persistencePassword = self.persistencePassword
 		if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
-			const errStr = "Cannot save wallet to disk as persistencePassword was missing."
+			const errStr = "❌  Cannot save wallet to disk as persistencePassword was missing."
 			const err = new Error(errStr)
 			fn(err)
 			return
@@ -647,7 +668,7 @@ class SecretPersistingHostedWallet
 						return
 					} 
 					if (newDocument._id === null) { // not that this would happen…
-						const errStr = "Inserted wallet but _id after saving was null"
+						const errStr = "❌  Inserted wallet but _id after saving was null"
 						const err = new Error(errStr)
 						fn(err)
 						return // bail
@@ -696,19 +717,19 @@ class SecretPersistingHostedWallet
 						affectedDocument = affectedDocuments
 					}
 					if (affectedDocument._id === null) { // not that this would happen…
-						const errStr = "Updated wallet but _id after saving was null"
+						const errStr = "❌  Updated wallet but _id after saving was null"
 						const err = new Error(errStr)
 						fn(err)
 						return // bail
 					}
 					if (affectedDocument._id !== self._id) {
-						const errStr = "Updated wallet but _id after saving was not equal to non-null _id before saving"
+						const errStr = "❌  Updated wallet but _id after saving was not equal to non-null _id before saving"
 						const err = new Error(errStr)
 						fn(err)
 						return // bail
 					}
 					if (numAffected === 0) {
-						const errStr = "Number of documents affected by _id'd update was 0"
+						const errStr = "❌  Number of documents affected by _id'd update was 0"
 						const err = new Error(errStr)
 						fn(err)
 						return // bail
@@ -736,20 +757,23 @@ class SecretPersistingHostedWallet
 		const self = this
 		var __debug_fnName = "_fetch_accountInfo"
 		if (self.isLoggedIn !== true) {
-			const errStr = "Unable to " + __debug_fnName + " as isLoggedIn !== true"
+			const errStr = "❌  Unable to " + __debug_fnName + " as isLoggedIn !== true"
 			console.error(errStr)
+			const err = new Error(errStr)
 			fn(err)
 			return
 		}
 		if (typeof self.account_seed === 'undefined' && self.account_seed === null || self.account_seed === '') {
-			const errStr = "Unable to " + __debug_fnName + " as no account_seed"
+			const errStr = "❌  Unable to " + __debug_fnName + " as no account_seed"
 			console.error(errStr)
+			const err = new Error(errStr)
 			fn(err)
 			return
 		}
 		if (typeof self.private_keys === 'undefined' && self.private_keys === null) {
-			const errStr = "Unable to " + __debug_fnName + " as no private_keys"
+			const errStr = "❌  Unable to " + __debug_fnName + " as no private_keys"
 			console.error(errStr)
+			const err = new Error(errStr)
 			fn(err)
 			return
 		}
@@ -770,7 +794,7 @@ class SecretPersistingHostedWallet
 			)
 			{
 				if (err) {
-					console.error(err)
+					console.error(err.toString())
 					fn(err)
 					return
 				}
@@ -795,20 +819,23 @@ class SecretPersistingHostedWallet
 		const self = this
 		var __debug_fnName = "_fetch_transactionHistory"
 		if (self.isLoggedIn !== true) {
-			const errStr = "Unable to " + __debug_fnName + " as isLoggedIn !== true"
+			const errStr = "❌  Unable to " + __debug_fnName + " as isLoggedIn !== true"
 			console.error(errStr)
+			const err = new Error(errStr)
 			fn(err)
 			return
 		}
 		if (typeof self.account_seed === 'undefined' && self.account_seed === null || self.account_seed === '') {
-			const errStr = "Unable to " + __debug_fnName + " as no account_seed"
+			const errStr = "❌  Unable to " + __debug_fnName + " as no account_seed"
 			console.error(errStr)
+			const err = new Error(errStr)
 			fn(err)
 			return
 		}
 		if (typeof self.private_keys === 'undefined' && self.private_keys === null) {
-			const errStr = "Unable to " + __debug_fnName + " as no private_keys"
+			const errStr = "❌  Unable to " + __debug_fnName + " as no private_keys"
 			console.error(errStr)
+			const err = new Error(errStr)
 			fn(err)
 			return
 		}
