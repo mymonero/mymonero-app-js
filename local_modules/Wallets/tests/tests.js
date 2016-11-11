@@ -17,10 +17,10 @@ async.series(
 		// }
 		// ,
 		// _proceedTo_test_creatingNewWalletAndAccount,
-		// _proceedTo_test_openingSavedWallet,
+		_proceedTo_test_openingSavedWallet,
 		//
-		_proceedTo_test_importingWalletByMnemonic,
-		_proceedTo_test_importingWalletByAddressAndKeys
+		// _proceedTo_test_importingWalletByMnemonic,
+		// _proceedTo_test_importingWalletByAddressAndKeys
 	],
 	function(err)
 	{
@@ -89,7 +89,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 	}
 	const options = 
 	{
-		_id: "qcI9CIxyZ0USVVja", // take the _id from the wallet creation above
+		_id: "UrougbLX3qcNUXIa", // take the _id from the wallet creation above
 		persistencePassword: persistencePassword,
 		failure_cb: function(err)
 		{

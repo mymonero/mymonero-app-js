@@ -286,9 +286,9 @@ class SecretPersistingHostedWallet
 				if (self.isLoggedIn !== true) {
 					return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn")
 				}
-				if (self.account_seed === null || typeof self.account_seed === 'undefined' || self.account_seed === '') {
-					return _failWithValidationErr("Reconstituted wallet had no valid account_seed")
-				}
+				// We are not going to check whether the acct seed is nil/'' here because if the wallet was
+				// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
+				// cannot obtain the seed.
 				if (self.public_address === null || typeof self.public_address === 'undefined' || self.public_address === '') {
 					return _failWithValidationErr("Reconstituted wallet had no valid public_address")
 				}
