@@ -2,3 +2,4 @@
 node_modules
 build
 test_products
+local_modules/Wallets/tests/tests_config.js # you should create your own from local_modules/Wallets/tests/tests_config.EXAMPLE.js
