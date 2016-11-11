@@ -342,6 +342,13 @@ class SecretPersistingHostedWallet
 		//
 		return monero_wallet_utils.TransactionLockedReason(tx, blockchain_height)
 	}
+	//
+    IsAccountCatchingUp = function()
+	{
+		const self = this
+		//
+        return (self.blockchain_height - self.account_scanned_block_height) >= 10
+    }
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
