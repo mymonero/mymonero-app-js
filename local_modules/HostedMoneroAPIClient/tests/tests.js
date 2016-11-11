@@ -2,9 +2,10 @@
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const testWallet_address = "44AjvEj1YNeHcN19A25EcoNiuj75buNe7BKkbTPYJ1Bs3EFai2GkQTFELtD8V1jst3S8SCKed5MypLxkrydgirdcJttYaxY";
-const testWallet_view_key = "0f02d6d5f86e6fc0a4a96aa02b55d7cd89bedce349e70117f6012d52cdedb208";
-const testWallet_spend_key = "3187e24b9aa7a6ecf5f85231a8beba058a8be70f289456d8080a2e38232c340f";
+const testWallet_address = "42S6txwM9RA53BL2Uf46CeM5WMJHTj6jWKgmSMLiLeb6A8QwXiWTK51PxF7wR8wNdgLJkWCM3NaiTfhWJnhskk7A7S5bEfp";
+const testWallet_view_key = "883ada1a057f177e5edcc8a85ab732e2c30e52ab2d4708ecadc6bd2338bcac08";
+const testWallet_spend_key__private = "d5d5789e274f965c3edd72464512f29e0c1934b6e6c0b87bfff86007b0775b0d";
+const testWallet_spend_key__public = "1561812c8b12b918239257156a26cf78096302172f14c56fb6cb86f9c29ed536";
 //
 const async = require('async')
 async.series(
@@ -49,6 +50,8 @@ function __proceedTo_test_addressInfo(fn)
 	context.hostedMoneroAPIClient.AddressInfo(
 		testWallet_address,
 		testWallet_view_key,
+		testWallet_spend_key__public,
+		testWallet_spend_key__private,
 		function(
 			err,
 			total_received,
@@ -85,6 +88,8 @@ function __proceedTo_test_addressTransactions(fn)
 	context.hostedMoneroAPIClient.AddressTransactions(
 		testWallet_address,
 		testWallet_view_key,
+		testWallet_spend_key__public,
+		testWallet_spend_key__private,
 		function(
 			err, 
 			account_scanned_height, 

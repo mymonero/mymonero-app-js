@@ -16,8 +16,8 @@ async.series(
 		// 	dbHandle.persistence.compactDatafile()
 		// }
 		// ,
-		_proceedTo_test_creatingNewWalletAndAccount,
-		_proceedTo_test_openingSavedWallet,
+		// _proceedTo_test_creatingNewWalletAndAccount,
+		// _proceedTo_test_openingSavedWallet,
 		//
 		_proceedTo_test_importingWalletByMnemonic,
 		_proceedTo_test_importingWalletByAddressAndKeys

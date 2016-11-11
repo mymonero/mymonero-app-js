@@ -38,11 +38,11 @@ class HostedMoneroAPIClient
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 	
-	LogIn(address, view_key, fn)
+	LogIn(address, view_key__private, fn)
 	{ // fn: (err?, new_address?)
 		const self = this
 		const endpointPath = "login"
-		const parameters = self._new_parameters_forWalletRequest(address, view_key)
+		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
 		parameters.create_account = true
 		//
 		self._API_request(
@@ -67,11 +67,17 @@ class HostedMoneroAPIClient
 		}
 	}
 	
-	AddressInfo(address, view_key, fn)
+	AddressInfo(
+		address, 
+		view_key__private, 
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
 	{
 		const self = this
 		const endpointPath = "get_address_info"
-		const parameters = self._new_parameters_forWalletRequest(address, view_key)
+		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
 		self._API_request(
 			endpointPath,
 			parameters,
@@ -95,11 +101,6 @@ class HostedMoneroAPIClient
 			const blockchain_height = data.blockchain_height || 0;
 			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
 			const spent_outputs = data.spent_outputs || []			
-			//
-			// TODO:
-			const view_key__private = null 
-			const spend_key__public = null
-			const spend_key__private = null
 			//
 			for (let spent_output of spent_outputs) {
 				var key_image = TransactionKeyImageCache.Lazy_KeyImage(
@@ -131,11 +132,17 @@ class HostedMoneroAPIClient
 		}
 	}
 	
-	AddressTransactions(address, view_key, fn)
+	AddressTransactions(
+		address, 
+		view_key__private, 
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
 	{
 		const self = this
 		const endpointPath = "get_address_txs"
-		const parameters = self._new_parameters_forWalletRequest(address, view_key)
+		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
 		//
 		self._API_request(
 			endpointPath,
@@ -158,11 +165,6 @@ class HostedMoneroAPIClient
 			const blockchain_height = data.blockchain_height || 0
 			//
 			const transactions = data.transactions || []
-			//
-			// TODO:
-			const view_key__private = null 
-			const spend_key__public = null
-			const spend_key__private = null
 			//
 			for (let i = 0; i < transactions.length; ++i) {
 				if ((transactions[i].spent_outputs || []).length > 0) {
@@ -218,11 +220,11 @@ class HostedMoneroAPIClient
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private - Requests
 	
-	_new_parameters_forWalletRequest(address, view_key)
+	_new_parameters_forWalletRequest(address, view_key__private)
 	{
 		return {
 			address: address,
-			view_key: view_key
+			view_key: view_key__private
 		}
 	}
 	

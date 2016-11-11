@@ -780,6 +780,8 @@ class SecretPersistingHostedWallet
 		self.context.hostedMoneroAPIClient.AddressInfo(
 			self.public_address,
 			self.private_keys.view,
+			self.public_keys.spend,
+			self.private_keys.spend,
 			function(
 				err,
 				total_received,
@@ -842,6 +844,8 @@ class SecretPersistingHostedWallet
 		self.context.hostedMoneroAPIClient.AddressTransactions(
 			self.public_address,
 			self.private_keys.view,
+			self.public_keys.spend,
+			self.private_keys.spend,
 			function(
 				err,
 				account_scanned_height, 
