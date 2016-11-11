@@ -320,6 +320,28 @@ class SecretPersistingHostedWallet
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
+
+	IsTransactionConfirmed(tx)
+	{
+		const self = this
+		const blockchain_height = self.blockchain_height
+		//
+		return monero_wallet_utils.IsTransactionConfirmed(tx, blockchain_height)
+	}
+	IsTransactionUnlocked(tx)
+	{
+		const self = this
+		const blockchain_height = self.blockchain_height
+		//
+		return monero_wallet_utils.IsTransactionUnlocked(tx, blockchain_height)
+	}
+	TransactionLockedReason(tx)
+	{
+		const self = this
+		const blockchain_height = self.blockchain_height
+		//
+		return monero_wallet_utils.TransactionLockedReason(tx, blockchain_height)
+	}
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
