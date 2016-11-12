@@ -2,34 +2,39 @@
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const testWallet_address = "42S6txwM9RA53BL2Uf46CeM5WMJHTj6jWKgmSMLiLeb6A8QwXiWTK51PxF7wR8wNdgLJkWCM3NaiTfhWJnhskk7A7S5bEfp";
-const testWallet_view_key = "883ada1a057f177e5edcc8a85ab732e2c30e52ab2d4708ecadc6bd2338bcac08";
-const testWallet_spend_key__private = "d5d5789e274f965c3edd72464512f29e0c1934b6e6c0b87bfff86007b0775b0d";
-const testWallet_spend_key__public = "1561812c8b12b918239257156a26cf78096302172f14c56fb6cb86f9c29ed536";
+const tests_config = require('./tests_config.js')
+if (typeof tests_config === 'undefined' || tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/HostedMoneroAPIClient/tests/ in order to run this test.")
+	process.exit(1)
+	return
+}
 //
 const async = require('async')
 async.series(
 	[
 		__proceedTo_test_logIn,
+		//
 		__proceedTo_test_addressInfo,
-		__proceedTo_test_addressTransactions
+		__proceedTo_test_addressTransactions,
+		//
+		__proceedTo_test_UnspentOuts
 	],
 	function(err)
 	{
 		if (err) {
-			console.log("Error while performing tests: ", err)
+			console.log("❌  Error while performing tests: ", err)
 		} else {
-			console.log("Tests completed without error.")
+			console.log("✅  Tests completed without error.")
 		}
 	}
 )
 //
 function __proceedTo_test_logIn(fn)
 {
-	console.log("> test_logIn")
+	console.log("▶️  test_logIn")
 	context.hostedMoneroAPIClient.LogIn(
-		testWallet_address,
-		testWallet_view_key,
+		tests_config.testWallet_address,
+		tests_config.testWallet_view_key,
 		function(
 			err,
 			new_address
@@ -46,12 +51,12 @@ function __proceedTo_test_logIn(fn)
 }
 function __proceedTo_test_addressInfo(fn)
 {
-	console.log("> test_addressInfo")
+	console.log("▶️  test_addressInfo")
 	context.hostedMoneroAPIClient.AddressInfo(
-		testWallet_address,
-		testWallet_view_key,
-		testWallet_spend_key__public,
-		testWallet_spend_key__private,
+		tests_config.testWallet_address,
+		tests_config.testWallet_view_key,
+		tests_config.testWallet_spend_key__public,
+		tests_config.testWallet_spend_key__private,
 		function(
 			err,
 			total_received,
@@ -84,12 +89,12 @@ function __proceedTo_test_addressInfo(fn)
 }
 function __proceedTo_test_addressTransactions(fn)
 {	
-	console.log("> test_addressTransactions")
+	console.log("▶️  test_addressTransactions")
 	context.hostedMoneroAPIClient.AddressTransactions(
-		testWallet_address,
-		testWallet_view_key,
-		testWallet_spend_key__public,
-		testWallet_spend_key__private,
+		tests_config.testWallet_address,
+		tests_config.testWallet_view_key,
+		tests_config.testWallet_spend_key__public,
+		tests_config.testWallet_spend_key__private,
 		function(
 			err, 
 			account_scanned_height, 
@@ -109,6 +114,36 @@ function __proceedTo_test_addressTransactions(fn)
 				transaction_height, 
 				blockchain_height, 
 				transactions
+			)
+			fn(err)
+		}
+	)
+}
+function __proceedTo_test_UnspentOuts(fn)
+{	
+	console.log("▶️  __proceedTo_test_UnspentOuts")
+	const mixinNumber = 3
+	context.hostedMoneroAPIClient.UnspentOuts(
+		tests_config.testWallet_address,
+		tests_config.testWallet_view_key,
+		tests_config.testWallet_spend_key__public,
+		tests_config.testWallet_spend_key__private,
+		mixinNumber,
+		function(
+			err, 
+			unspentOuts,
+			unused_outs,
+			using_outs,
+			using_outs_amount
+		)
+		{
+			console.log("err", err)
+			console.log(
+				"unspentOuts, unused_outs, using_outs, using_outs_amount", 
+				unspentOuts,
+				unused_outs,
+				using_outs,
+				using_outs_amount
 			)
 			fn(err)
 		}

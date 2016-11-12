@@ -1035,14 +1035,14 @@ var cnUtil = function(currencyConfig)
 
 	this.decompose_amount_into_digits = function(amount) {
 		/*if (dust_threshold === undefined) {
-			dust_threshold = config.dustThreshold;
+			dust_threshold = config.dustThreshold; // NOTE: this would need to be passed in
 		}*/
 		amount = amount.toString();
 		var ret = [];
 		while (amount.length > 0) {
 			//split all the way down since v2 fork
 			/*var remaining = new JSBigInt(amount);
-			if (remaining.compare(config.dustThreshold) <= 0) {
+			if (remaining.compare(config.dustThreshold) <= 0) { // NOTE: this would need to be passed in
 				if (remaining.compare(0) > 0) {
 					ret.push(remaining);
 				}

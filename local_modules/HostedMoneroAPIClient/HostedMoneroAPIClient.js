@@ -3,6 +3,7 @@
 const request = require('request')
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const async = require('async')
+const monero_config = require('../monero_utils/monero_config')
 const monero_utils = require('../monero_utils/monero_utils_instance')
 const TransactionKeyImageCache = require('./TransactionKeyImageCache')
 //
@@ -66,7 +67,8 @@ class HostedMoneroAPIClient
 			fn(null, new_address)
 		}
 	}
-	
+	//
+	// Syncing
 	AddressInfo(
 		address, 
 		view_key__private, 
@@ -131,7 +133,6 @@ class HostedMoneroAPIClient
 			)
 		}
 	}
-	
 	AddressTransactions(
 		address, 
 		view_key__private, 
@@ -210,12 +211,100 @@ class HostedMoneroAPIClient
 			)
 		}
 	}
+	//
+	// Sending coins
+	UnspentOuts(
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		mixinNumber,
+		fn
+	)
+	{
+		const self = this
+		mixinNumber = parseInt(mixinNumber) // jic
+		//
+		const parameters =
+		{
+			address: address,
+			view_key: view_key__private,
+			amount: '0',
+			mixin: mixinNumber,
+			use_dust: mixinNumber === 0, // Use dust outputs only when we are using no mixins
+			dust_threshold: monero_config.dustThreshold.toString()
+		}
+		const endpointPath = 'get_unspent_outs'
+		self._API_request(
+			endpointPath,
+			parameters,
+			function(err, data)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				__proceedTo_parseAndCallBack(data)
+			}
+		)
+		function __proceedTo_parseAndCallBack(data)
+		{
+			// console.log("debug: info: unspentouts: data", data)
+		
+			const data_outputs = data.outputs
+			const finalized_outputs = data.outputs || [] // to finalize:
+			(function()
+			{ // finalization
+	            for (var i = 0; i < finalized_outputs.length; i++) {
+	                for (var j = 0; finalized_outputs[i] && j < finalized_outputs[i].spend_key_images.length; j++) {
+						var key_image = TransactionKeyImageCache.Lazy_KeyImage(
+							finalized_outputs[i].tx_pub_key, 
+							finalized_outputs[i].index,
+							address,
+							view_key__private,
+							spend_key__public,
+							spend_key__private
+						)
+	                    if (key_image === finalized_outputs[i].spend_key_images[j]) {
+	                        console.log("Output was spent with key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_outputs[i].amount));
+	                        // Remove output from list
+	                        finalized_outputs.splice(i, 1);
+	                        if (finalized_outputs[i]) {
+	                            j = finalized_outputs[i].spend_key_images.length;
+	                        }
+	                        i--;
+	                    } else {
+	                        console.log("Output used as mixin (" + key_image + "/" + finalized_outputs[i].spend_key_images[j] + ")");
+	                    }
+	                }
+	            }
+			})()
+            // console.log("Unspent outs: " + JSON.stringify(finalized_outputs));
+			//
+			const unspentOuts = finalized_outputs
+			const unused_outs = unspentOuts.slice(0)
+			const using_outs = []
+			const using_outs_amount = new JSBigInt(0)
+			//
+			// yield
+			fn(
+				null, // no error
+				unspentOuts,
+				unused_outs,
+				using_outs,
+				using_outs_amount
+			)
+		}
+	}
 
-	
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
+	
+	
+	
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private - Requests
