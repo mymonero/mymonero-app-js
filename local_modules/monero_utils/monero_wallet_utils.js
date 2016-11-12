@@ -27,7 +27,7 @@ exports.NewlyCreatedWallet = NewlyCreatedWallet
 //
 function MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
 {
-    const mnemonicString = mnemonic.mn_encode(account_seed, mnemonic_wordsetName)
+	const mnemonicString = mnemonic.mn_encode(account_seed, mnemonic_wordsetName)
 	//
 	return mnemonicString
 }
@@ -155,18 +155,18 @@ exports.VerifiedComponentsForLogIn = VerifiedComponentsForLogIn
 //
 function IsTransactionConfirmed(tx, blockchain_height)
 {
-    return (blockchain_height - tx.height) > monero_config.txMinConfirms
+	return (blockchain_height - tx.height) > monero_config.txMinConfirms
 }
 exports.IsTransactionConfirmed = IsTransactionConfirmed
 //
 function IsTransactionUnlocked(tx, blockchain_height)
 {
-    return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
+	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
 }
 exports.IsTransactionUnlocked = IsTransactionUnlocked
 //
 function TransactionLockedReason(tx, blockchain_height)
 {
-    return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
+	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
 }
 exports.TransactionLockedReason = TransactionLockedReason
