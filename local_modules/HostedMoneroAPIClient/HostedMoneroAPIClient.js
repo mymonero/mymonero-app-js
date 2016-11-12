@@ -27,6 +27,7 @@ class HostedMoneroAPIClient
 		self.scheme = "https"
 		self.host = "api.mymonero.com:8443/" // later will be configurable
 		self.baseURL = self.scheme + "://" + self.host
+		self.txChargeRatio = 0.5 // Service fee relative to tx fee (0.5 => 50%)
 		//
 		self.setup()
 	}
@@ -253,46 +254,89 @@ class HostedMoneroAPIClient
 		
 			const data_outputs = data.outputs
 			const finalized_outputs = data.outputs || [] // to finalize:
-			(function()
-			{ // finalization
-	            for (var i = 0; i < finalized_outputs.length; i++) {
-	                for (var j = 0; finalized_outputs[i] && j < finalized_outputs[i].spend_key_images.length; j++) {
-						var key_image = TransactionKeyImageCache.Lazy_KeyImage(
-							finalized_outputs[i].tx_pub_key, 
-							finalized_outputs[i].index,
-							address,
-							view_key__private,
-							spend_key__public,
-							spend_key__private
-						)
-	                    if (key_image === finalized_outputs[i].spend_key_images[j]) {
-	                        console.log("Output was spent with key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_outputs[i].amount));
-	                        // Remove output from list
-	                        finalized_outputs.splice(i, 1);
-	                        if (finalized_outputs[i]) {
-	                            j = finalized_outputs[i].spend_key_images.length;
-	                        }
-	                        i--;
-	                    } else {
-	                        console.log("Output used as mixin (" + key_image + "/" + finalized_outputs[i].spend_key_images[j] + ")");
-	                    }
-	                }
-	            }
-			})()
-            // console.log("Unspent outs: " + JSON.stringify(finalized_outputs));
+			for (var i = 0; i < finalized_outputs.length; i++) {
+				for (var j = 0; finalized_outputs[i] && j < finalized_outputs[i].spend_key_images.length; j++) {
+					var key_image = TransactionKeyImageCache.Lazy_KeyImage(
+						finalized_outputs[i].tx_pub_key, 
+						finalized_outputs[i].index,
+						address,
+						view_key__private,
+						spend_key__public,
+						spend_key__private
+					)
+					if (key_image === finalized_outputs[i].spend_key_images[j]) {
+						console.log("Output was spent with key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_outputs[i].amount));
+						// Remove output from list
+						finalized_outputs.splice(i, 1);
+						if (finalized_outputs[i]) {
+							j = finalized_outputs[i].spend_key_images.length;
+						}
+						i--;
+					} else {
+						console.log("Output used as mixin (" + key_image + "/" + finalized_outputs[i].spend_key_images[j] + ")");
+					}
+				}
+			}
+			// console.log("Unspent outs: " + JSON.stringify(finalized_outputs));
 			//
 			const unspentOuts = finalized_outputs
 			const unused_outs = unspentOuts.slice(0)
-			const using_outs = []
-			const using_outs_amount = new JSBigInt(0)
 			//
 			// yield
 			fn(
 				null, // no error
 				unspentOuts,
-				unused_outs,
-				using_outs,
-				using_outs_amount
+				unused_outs
+			)
+		}
+	}
+	RandomOuts(
+		using_outs,
+		fn
+	)
+	{
+		const self = this
+		mixinNumber = parseInt(mixinNumber)
+		//
+		if (mixinNumber < 0 || isNaN(mixinNumber)) {
+			const errStr = "Invalid mixin - must be >= 0"
+			const err = new Error(errStr)
+			fn(err)
+			return
+		}
+		//
+		var amounts = [];
+		for (var l = 0; l < using_outs.length; l++) {
+			amounts.push(using_outs[l].amount.toString())
+		}
+		var request =
+		{
+			amounts: amounts,
+			count: mixinNumber + 1 // Add one to mixin so we can skip real output key if necessary
+		}
+		//
+		const endpointPath = 'get_random_outs'
+		self._API_request(
+			endpointPath,
+			parameters,
+			function(err, data)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				__proceedTo_parseAndCallBack(data)
+			}
+		)
+		function __proceedTo_parseAndCallBack(data)
+		{
+			console.log("debug: info: random outs: data", data)
+			const amount_outs = data.amount_outs
+			//
+			// yield
+			fn(
+				null, // no error
+				amount_outs
 			)
 		}
 	}
@@ -315,6 +359,14 @@ class HostedMoneroAPIClient
 			address: address,
 			view_key: view_key__private
 		}
+	}
+
+	hostingServiceChargeFor_transaction(amount)
+	{
+		const self = this
+		amount = new JSBigInt(amount);
+		// amount * txChargeRatio
+		return amount.divide(1 / self.txChargeRatio);
 	}
 	
 

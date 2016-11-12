@@ -170,3 +170,54 @@ function TransactionLockedReason(tx, blockchain_height)
 	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
 }
 exports.TransactionLockedReason = TransactionLockedReason
+
+//
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+// Sending funds
+//
+
+function UsableOutputsAndAmountForMixin(
+	target_amount,
+	using_outs_amount,
+	unused_outs
+)
+{
+	console.log(
+		"Selecting outputs to use. Current total: " 
+		+ monero_utils.formatMoney(using_outs_amount) 
+		+ " target: " + monero_utils.formatMoney(target_amount)
+	)
+	var toFinalize_usingOutsAmount = using_outs_amount
+	const toFinalize_usableOuts = []
+
+	function __randomIndex(list) {
+		return Math.floor(Math.random() * list.length);
+	}
+	function _poppedRandomValueFromList(list)
+	{
+		var idx = __randomIndex(list)
+		var val = list[idx]
+		list.splice(idx, 1)
+		//
+		return val
+	}
+	while (using_outs_amount.compare(target_amount) < 0 && unused_outs.length > 0) {
+		var out = _poppedRandomValueFromList(unused_outs)
+		const out_amount = out.amount
+		toFinalize_usableOuts.push(out)
+		toFinalize_usingOutsAmount = using_outs_amount.add(out_amount)
+		console.log(
+			"Using output: "
+			+ monero_utils.formatMoney(out_amount) 
+			+ " - " 
+			+ JSON.stringify(out)
+		)
+	}
+	//
+	return {
+		usableOuts: toFinalize_usableOuts,
+		usingOutsAmount: toFinalize_usingOutsAmount
+	}
+}

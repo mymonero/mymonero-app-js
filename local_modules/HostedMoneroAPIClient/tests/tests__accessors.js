@@ -133,19 +133,22 @@ function __proceedTo_test_UnspentOuts(fn)
 			err, 
 			unspentOuts,
 			unused_outs,
-			using_outs,
-			using_outs_amount
 		)
 		{
 			console.log("err", err)
 			console.log(
-				"unspentOuts, unused_outs, using_outs, using_outs_amount", 
+				"unspentOuts, unused_outs", 
 				unspentOuts,
 				unused_outs,
-				using_outs,
-				using_outs_amount
 			)
 			fn(err)
 		}
 	)
 }
+//
+// function __proceedTo_test_RandomOuts(fn)
+// {
+// 	console.log("▶️  __proceedTo_test_RandomOuts")
+// todo?
+// }
+
