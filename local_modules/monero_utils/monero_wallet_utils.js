@@ -181,7 +181,7 @@ exports.TransactionLockedReason = TransactionLockedReason
 function UsableOutputsAndAmountForMixin(
 	target_amount,
 	using_outs_amount,
-	unused_outs
+	unusedOuts
 )
 {
 	console.log(
@@ -203,8 +203,8 @@ function UsableOutputsAndAmountForMixin(
 		//
 		return val
 	}
-	while (using_outs_amount.compare(target_amount) < 0 && unused_outs.length > 0) {
-		var out = _poppedRandomValueFromList(unused_outs)
+	while (using_outs_amount.compare(target_amount) < 0 && unusedOuts.length > 0) {
+		var out = _poppedRandomValueFromList(unusedOuts)
 		const out_amount = out.amount
 		toFinalize_usableOuts.push(out)
 		toFinalize_usingOutsAmount = using_outs_amount.add(out_amount)

@@ -1,5 +1,8 @@
 "use strict"
 //
+const async = require('async')
+//
+const monero_utils = require('../monero_utils/monero_utils_instance')
 const monero_wallet_utils = require('../monero_utils/monero_wallet_utils')
 const document_cryptor = require('../symmetric_cryptor/document_cryptor')
 const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
@@ -358,6 +361,185 @@ class SecretPersistingHostedWallet
 	}
 	
 	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Private - Sending funds
+	
+	new_currencyReady_targetDescriptions_fromPossibleOpenAliasTargetDescriptions( 
+		// TODO: ^ maybe extend this to support looking up eventual address by contact id.... 
+		targetDescriptions,
+		confirmWithUser_openAliasAddress_cb,
+		fn
+	) // fn: (err, currencyReady_targetDescriptions) -> Void
+	{ // parse & normalize the target descriptions by mapping them to currency (Monero)-ready addresses & amounts
+		const self = this
+		// some pure function declarations for the map we'll do on targetDescriptions
+		function new_currencyReady_targetDescription_fromCurrencyAddress(
+			currencyReady_address,
+			currencyReady_amountToSend,
+			cb
+		)
+		{
+            try {
+                monero_utils.decode_address(currencyReady_address) // verify that the address is valid
+            } catch (e) {
+                const errStr = "Failed to decode address (#" + i + "): " + e
+				const err = new Error(err)
+				cb(err)
+                return
+            }
+            cb(null, { 
+                address: currencyReady_address,
+                amount: currencyReady_amountToSend
+            })
+		}
+		function new_currencyReady_targetDescription_fromOpenAliasAddress(
+			targetDescription_address,
+			currencyReady_amountToSend,
+			cb
+		)
+		{
+			if (typeof confirmWithUser_openAliasAddress_cb === 'undefined' || confirmWithUser_openAliasAddress_cb === null) {
+				const errStr = "You must supply a confirmWithUser_openAliasAddress_cb to support OpenAlias address confirmation"
+				const err = new Error(err)
+				cb(err)
+				return
+			}
+            var domain = targetDescription_address.replace(/@/g, ".");
+			self.context.hostedMoneroAPIClient.TXTRecords(
+				domain,
+				function(
+					err,
+					records,
+					dnssec_used,
+					secured,
+					dnssec_fail_reason
+				)
+				{
+					if (err) {
+						const errStr = "Failed to resolve DNS records for '" + domain + "': " + err
+						const err = new Error(err)
+						cb(err)
+						return
+					}
+                    var oaRecords = [];
+                    console.log(domain + ": ", records);
+                    if (dnssec_used) {
+                        if (secured) {
+                            console.log("DNSSEC validation successful")
+                        } else {
+							const errStr = "DNSSEC validation failed for " + domain + ": " + dnssec_fail_reason
+							const err = new Error(err)
+							cb(err)
+                            return
+                        }
+                    } else {
+                        console.log("DNSSEC Not used");
+                    }
+                    for (var i = 0; i < records.length; i++) {
+                        var record = records[i];
+                        if (record.slice(0, 4 + config.openAliasPrefix.length + 1) !== "oa1:" + config.openAliasPrefix + " ") {
+                            continue;
+                        }
+                        console.log("Found OpenAlias record: " + record);
+                        oaRecords.push(parseOpenAliasRecord(record));
+                    }
+                    if (oaRecords.length === 0) {
+						const errStr = "No OpenAlias records found for: " + domain
+						const err = new Error(err)
+						cb(err)
+                        return
+                    }
+                    if (oaRecords.length !== 1) {
+						const errStr = "Multiple addresses found for given domain: " + domain
+						const err = new Error(err)
+						cb(err)
+                        return
+                    }
+                    console.log("OpenAlias record: ", oaRecords[0])
+                    var oaAddress = oaRecords[0].address
+                    try { // verify address is decodable for currency
+                        monero_utils.decode_address(oaAddress)
+                    } catch (e) {
+						const errStr = "Failed to decode OpenAlias address: " + oaAddress + ": " + e
+						const err = new Error(err)
+						cb(err)
+                        return
+                    }
+					const currencyReady_address = oaAddress
+					confirmWithUser_openAliasAddress_cb(
+			            domain,
+			            currencyReady_address,
+						oaRecords[0].name, 
+						oaRecords[0].description, 
+			            dnssec_used && secured,
+			            function()
+						{ // if user has confirmed
+			                console.log("User confirmed OpenAlias resolution for " + domain + " to " + currencyReady_address);
+							cb({ // return for map
+                                address: currencyReady_address,
+                                amount: currencyReady_amountToSend,
+                                domain: domain
+                            })
+			            },
+			            function()
+						{ // if user has cancelled
+			                console.log("User rejected OpenAlias resolution for " + domain + " to " + currencyReady_address);
+							const errStr = "OpenAlias resolution rejected by user"
+							const err = new Error(err)
+							cb(err)
+			            }
+					)
+				}
+			)
+		}
+		async.mapSeries(
+			targetDescriptions,
+			function(targetDescription, cb)
+			{
+	            var targetDescription = targetDescriptions[i];
+	            if (!targetDescription.address && !targetDescription.amount) { // PSNote: is this check rigorous enough?
+					const errStr = "Please supply a target address and a target amount."
+					const err = new Error(err)
+					cb(err)
+					return
+	            }
+				const targetDescription_address = targetDescription.address
+				const targetDescription_amount = targetDescription.amount
+                var currencyReady_amountToSend; // possibly need this ; here for the JS parser
+                try {
+                    currencyReady_amountToSend = cnUtil.parseMoney(targetDescription_amount)
+                } catch (e) {
+                    const errStr = "Failed to parse amount (#" + i + ")"
+					const err = new Error(err)
+					cb(err)
+                    return
+                }
+                if (targetDescription_address.indexOf('.') !== -1) { // then this is assumed to be a normal single Monero public address
+					new_currencyReady_targetDescription_fromCurrencyAddress(
+						targetDescription_address,
+						currencyReady_amountToSend,
+						cb
+					)
+					return
+                }
+				// otherwise, at present, this would be an open alias address which requires dns lookup
+				new_currencyReady_targetDescription_fromOpenAliasAddress(
+					targetDescription_address,
+					currencyReady_amountToSend,
+					confirmWithUser_openAliasAddress_cb,
+					cb
+				)
+			},
+			function(err, currencyReady_targetDescriptions)
+			{
+				fn(err, currencyReady_targetDescriptions)
+			}
+		)
+	}
+	
+	
+	
+	
 	
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Logging in/Creating accounts
@@ -477,17 +659,6 @@ class SecretPersistingHostedWallet
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Sending funds
-	
-	// TODO
-	
-	
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Private
-	
-
-	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Account registration with hosted node API
 
 	_logOut()
@@ -600,11 +771,59 @@ class SecretPersistingHostedWallet
 				}
 			)
 		}
+	}	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Sending funds
+	
+	SendFunds(
+		targetDescriptions, // [ { address: String, amount: Number } ]
+		mixin,
+		payment_id,
+		fn,
+		confirmWithUser_openAliasAddress_cb
+	)
+	{
+		const self = this
+		// arg sanitization
+		mixin = parseInt(mixin)
+		//
+		// state-lock function
+		if (self.isSendingFunds === true) {
+			const errStr = "Currently already sending funds. Please try again when complete."
+			const err = new Error(errStr)
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		self.isSendingFunds = true
+		//
+		// some callback trampoline function declarations…
+		function __trampolineFor_success()
+		{
+			fn()
+		}
+		function __trampolineFor_err_withStr(errStr)
+		{
+			const err = new Error(errStr)
+			fn(err)
+		}
+		//
+		// parse & normalize the target descriptions by mapping them to Monero addresses & amounts
+		self.new_currencyReady_targetDescriptions_fromPossibleOpenAliasTargetDescriptions(
+			targetDescriptions,
+			confirmWithUser_openAliasAddress_cb,
+			function(err, currencyReady_targetDescriptions)
+			{
+				
+			}
+		)
 	}
 
 	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private
+	// Runtime - Imperatives - Private - Persistence
 	
 	saveToDisk(fn)
 	{
