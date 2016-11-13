@@ -17,7 +17,9 @@ async.series(
 		__proceedTo_test_addressInfo,
 		__proceedTo_test_addressTransactions,
 		//
-		__proceedTo_test_UnspentOuts
+		__proceedTo_test_UnspentOuts,
+		//
+		__proceedTo_test_TXTRecords
 	],
 	function(err)
 	{
@@ -132,14 +134,14 @@ function __proceedTo_test_UnspentOuts(fn)
 		function(
 			err, 
 			unspentOuts,
-			unused_outs,
+			unusedOuts
 		)
 		{
 			console.log("err", err)
 			console.log(
-				"unspentOuts, unused_outs", 
+				"unspentOuts, unusedOuts", 
 				unspentOuts,
-				unused_outs,
+				unusedOuts
 			)
 			fn(err)
 		}
@@ -151,4 +153,30 @@ function __proceedTo_test_UnspentOuts(fn)
 // 	console.log("▶️  __proceedTo_test_RandomOuts")
 // todo?
 // }
+
+function __proceedTo_test_TXTRecords(fn)
+{
+	const domain = "donate.getmonero.org"
+	context.hostedMoneroAPIClient.TXTRecords(
+		domain,
+		function(
+			err,
+			records,
+			dnssec_used,
+			secured,
+			dnssec_fail_reason
+		)
+		{
+			console.log("err", err)
+			console.log(
+				"records, dnssec_used, secured, dnssec_fail_reason", 
+				records,
+				dnssec_used,
+				secured,
+				dnssec_fail_reason
+			)
+			fn(err)
+		}
+	)
+}
 

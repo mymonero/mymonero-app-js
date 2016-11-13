@@ -280,13 +280,13 @@ class HostedMoneroAPIClient
 			// console.log("Unspent outs: " + JSON.stringify(finalized_outputs));
 			//
 			const unspentOuts = finalized_outputs
-			const unused_outs = unspentOuts.slice(0)
+			const unusedOuts = unspentOuts.slice(0)
 			//
 			// yield
 			fn(
 				null, // no error
 				unspentOuts,
-				unused_outs
+				unusedOuts
 			)
 		}
 	}
@@ -337,6 +337,47 @@ class HostedMoneroAPIClient
 			fn(
 				null, // no error
 				amount_outs
+			)
+		}
+	}
+	TXTRecords(
+		domain,
+		fn
+	)
+	{		
+		const self = this
+		//
+		const endpointPath = 'get_txt_records'
+		const parameters =
+		{
+			domain: domain
+		}		
+		self._API_request(
+			endpointPath,
+			parameters,
+			function(err, data)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				__proceedTo_parseAndCallBack(data)
+			}
+		)
+		function __proceedTo_parseAndCallBack(data)
+		{
+			console.log("debug: info: txt records: data", data)
+			const records = data.records
+			const dnssec_used = data.dnssec_used
+			const secured = data.secured
+			const dnssec_fail_reason = data.dnssec_fail_reason
+			//
+			fn(
+				null, // no error
+				records,
+				dnssec_used,
+				secured,
+				dnssec_fail_reason
 			)
 		}
 	}
