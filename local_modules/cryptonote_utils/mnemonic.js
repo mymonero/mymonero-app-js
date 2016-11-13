@@ -1,10 +1,10 @@
 /*
- mnemonic.js : Converts between 4-byte aligned strings and a human-readable
- sequence of words. Uses 1626 common words taken from wikipedia article:
- http://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/Contemporary_poetry
- Originally written in python special for Electrum (lightweight Bitcoin client).
- This version has been reimplemented in javascript and placed in public domain.
- */
+mnemonic.js : Converts between 4-byte aligned strings and a human-readable
+sequence of words. Uses 1626 common words taken from wikipedia article:
+http://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/Contemporary_poetry
+Originally written in python special for Electrum (lightweight Bitcoin client).
+This version has been reimplemented in javascript and placed in public domain.
+*/
 /* This file has been modified to export its various functions and properties */
 
 

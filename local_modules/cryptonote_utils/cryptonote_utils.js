@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Original Author: Lucas Jones
-// Updated to support modular inclusion
+// * Updated for Node.JS inclusion by Paul Shapiro (pending support for mobile?)
 	
 // v--- These should maybe be injected into a context and supplied to currencyConfig for future platforms
 const JSBigInt = require('./biginteger').BigInteger

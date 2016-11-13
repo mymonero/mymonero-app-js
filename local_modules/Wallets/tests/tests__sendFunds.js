@@ -54,7 +54,11 @@ function _proceedTo_test_sendFunds_1(fn)
 			payment_id,
 			function(err)
 			{
-				console.log("fn from SendFunds")
+				if (err) {
+					console.error("❌  Failed to send funds with", err)
+				} else {
+					console.log("✅  Successfully sent funds")
+				}
 				fn(err) // err may be null
 			},
 			function( // SendFunds will confirm with user via this function before calling the fn just above
