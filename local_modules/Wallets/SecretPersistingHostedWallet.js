@@ -125,8 +125,9 @@ class SecretPersistingHostedWallet
 		self.persistencePassword = self.options.persistencePassword || null
 		if (self.persistencePassword === null) {
 			const errStr = "❌  You must supply a persistencePassword in the options of your SecretPersistingHostedWallet instantiation call"
+			const err = new Error(errStr)
 			console.error(errStr)
-			failure_cb(new Error(errStr))
+			failure_cb(err)
 			return
 		}
 		//
@@ -153,10 +154,10 @@ class SecretPersistingHostedWallet
 							const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with mnemonic with error… " + err.toString()
 							console.error(errStr)
 							failure_cb(err)
-						} else {
-							console.log("successfully added existing wallet via mnemonic string")
-							_trampolineFor_successfullyInstantiated_cb()
+							return
 						}
+						console.log("✅  Successfully added existing wallet via mnemonic string")
+						_trampolineFor_successfullyInstantiated_cb()
 					}
 				)
 				//
@@ -176,8 +177,9 @@ class SecretPersistingHostedWallet
 				}
 				if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
 					const errStr = "❌  You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+					const err = new Error(errStr)
 					console.error(errStr)
-					failure_cb(new Error(errStr))
+					failure_cb(err)
 					return
 				}
 				self.logIn_keys(
@@ -188,12 +190,13 @@ class SecretPersistingHostedWallet
 					{
 						if (err) {
 							const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with address + spend & view keys with error… " + err.toString()
+							const err = new Error(errStr)
 							console.error(errStr)
 							failure_cb(err)
-						} else {
-							console.log("successfully added existing wallet via address and view & spend keys")
-							_trampolineFor_successfullyInstantiated_cb()
+							return
 						}
+						console.log("✅  Successfully added existing wallet via address and view & spend keys")
+						_trampolineFor_successfullyInstantiated_cb()
 					}
 
 				)
@@ -204,8 +207,9 @@ class SecretPersistingHostedWallet
 			// Otherwise, we're creating a new wallet
 			if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
 				const errStr = "❌  You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
+				const err = new Error(errStr)
 				console.error(errStr)
-				failure_cb(new Error(errStr))
+				failure_cb(err)
 				return
 			}
 			//
@@ -219,12 +223,13 @@ class SecretPersistingHostedWallet
 				{
 					if (err) {
 						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
+						const err = new Error(errStr)
 						console.error(errStr)
 						failure_cb(err)
-					} else {
-						console.log("success")
-						_trampolineFor_successfullyInstantiated_cb()
+						return
 					}
+					console.log("✅  Successfully logged after creating a new wallet.")
+					_trampolineFor_successfullyInstantiated_cb()
 				}
 			)
 			//
