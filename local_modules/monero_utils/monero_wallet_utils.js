@@ -170,14 +170,12 @@ function TransactionLockedReason(tx, blockchain_height)
 	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
 }
 exports.TransactionLockedReason = TransactionLockedReason
-
 //
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 // Sending funds
 //
-
 function UsableOutputsAndAmountForMixin(
 	target_amount,
 	using_outs_amount,

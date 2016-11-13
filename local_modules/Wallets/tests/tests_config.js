@@ -9,7 +9,7 @@ module.exports =
 	//
 	
 	// opening already saved
-	openWalletWith_id: "RYPEYp6M2q8KUsSh", // take the _id from the wallet creation test output
+	openWalletWith_id: "Mm7xNrzK2tPI995y", // take the _id from the wallet creation test output
 	
 	
 	// importing wallets
