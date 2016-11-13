@@ -204,6 +204,25 @@ exports.TransactionLockedReason = TransactionLockedReason
 ////////////////////////////////////////////////////////////////////////////////
 // Sending funds
 //
+function IsValidPaymentIDOrNoPaymentID(payment_id)
+{
+	if (
+		payment_id 
+			&&
+		(
+			payment_id.length !== 64 
+				|| 
+			!(/^[0-9a-fA-F]{64}$/.test(payment_id))
+		) 
+			&& 
+		payment_id.length !== 16
+	) {
+		return false
+	}
+	return true
+}
+exports.IsValidPaymentIDOrNoPaymentID = IsValidPaymentIDOrNoPaymentID
+//
 function UsableOutputsAndAmountForMixin(
 	target_amount,
 	using_outs_amount,

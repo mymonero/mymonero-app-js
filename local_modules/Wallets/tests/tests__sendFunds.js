@@ -39,17 +39,13 @@ function _proceedTo_test_sendFunds_1(fn)
 	}
 	function _didFinishAllSyncOperations()
 	{
-		const targetDescriptions =
-		[
-			{
-				address: 'donate.getmonero.org',
-				amount: 0.001
-			}
-		]
+		const target_address = "donate.getmonero.org"
+		const amount = 0.001
 		const mixin = 3
 		const payment_id = null
 		wallet.SendFunds(
-			targetDescriptions, // [ { address: String, amount: Number } ]
+			target_address,
+			amount,
 			mixin,
 			payment_id,
 			function(err)

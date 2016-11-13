@@ -281,39 +281,36 @@ class HostedMoneroAPIClient
 			// console.log("debug: info: unspentouts: data", data)
 		
 			const data_outputs = data.outputs
-			const finalized_outputs = data.outputs || [] // to finalize:
-			for (var i = 0; i < finalized_outputs.length; i++) {
-				for (var j = 0; finalized_outputs[i] && j < finalized_outputs[i].spend_key_images.length; j++) {
+			const finalized_unspentOutputs = data.outputs || [] // to finalize:
+			for (var i = 0; i < finalized_unspentOutputs.length; i++) {
+				for (var j = 0; finalized_unspentOutputs[i] && j < finalized_unspentOutputs[i].spend_key_images.length; j++) {
 					var key_image = TransactionKeyImageCache.Lazy_KeyImage(
-						finalized_outputs[i].tx_pub_key, 
-						finalized_outputs[i].index,
+						finalized_unspentOutputs[i].tx_pub_key, 
+						finalized_unspentOutputs[i].index,
 						address,
 						view_key__private,
 						spend_key__public,
 						spend_key__private
 					)
-					if (key_image === finalized_outputs[i].spend_key_images[j]) {
-						console.log("Output was spent with key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_outputs[i].amount));
+					if (key_image === finalized_unspentOutputs[i].spend_key_images[j]) {
+						console.log("💬  Output was spent; key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_unspentOutputs[i].amount));
 						// Remove output from list
-						finalized_outputs.splice(i, 1);
-						if (finalized_outputs[i]) {
-							j = finalized_outputs[i].spend_key_images.length;
+						finalized_unspentOutputs.splice(i, 1);
+						if (finalized_unspentOutputs[i]) {
+							j = finalized_unspentOutputs[i].spend_key_images.length;
 						}
 						i--;
 					} else {
-						console.log("Output used as mixin (" + key_image + "/" + finalized_outputs[i].spend_key_images[j] + ")");
+						console.log("💬  Output used as mixin (" + key_image + "/" + finalized_unspentOutputs[i].spend_key_images[j] + ")");
 					}
 				}
 			}
-			// console.log("Unspent outs: " + JSON.stringify(finalized_outputs));
-			//
-			const unspentOuts = finalized_outputs
-			const unusedOuts = unspentOuts.slice(0)
-			//
+			// console.log("Unspent outs: " + JSON.stringify(finalized_unspentOutputs));
+			const unusedOuts = finalized_unspentOutputs.slice(0)
 			// yield
 			fn(
 				null, // no error
-				unspentOuts,
+				finalized_unspentOutputs,
 				unusedOuts
 			)
 		}

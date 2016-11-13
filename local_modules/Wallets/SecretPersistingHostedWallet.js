@@ -31,6 +31,7 @@
 const async = require('async')
 //
 const monero_utils = require('../monero_utils/monero_utils_instance')
+const monero_config = require('../monero_utils/monero_config')
 const monero_wallet_utils = require('../monero_utils/monero_wallet_utils')
 const monero_openalias_utils = require('../monero_utils/monero_openalias_utils')
 const document_cryptor = require('../symmetric_cryptor/document_cryptor')
@@ -784,7 +785,8 @@ class SecretPersistingHostedWallet
 	// Runtime - Imperatives - Public - Sending funds
 	
 	SendFunds(
-		targetDescriptions, // [ { address: String, amount: Number } ]
+		target_address, // currency-ready wallet public address or OpenAlias address
+		target_amount, // number
 		mixin,
 		payment_id,
 		fn,
@@ -806,26 +808,133 @@ class SecretPersistingHostedWallet
 		self.isSendingFunds = true
 		//
 		// some callback trampoline function declarations…
+		// these are important for resetting self's state,
+		// which is done in ___aTrampolineForFnWasCalled below
 		function __trampolineFor_success()
 		{
+			___aTrampolineForFnWasCalled()
+			//
 			fn()
+		}
+		function __trampolineFor_err_withErr(err)
+		{
+			___aTrampolineForFnWasCalled()
+			//
+			fn(err)
 		}
 		function __trampolineFor_err_withStr(errStr)
 		{
+			___aTrampolineForFnWasCalled()
+			//
 			const err = new Error(errStr)
+			console.error(errStr)
 			fn(err)
+		}
+		function ___aTrampolineForFnWasCalled()
+		{ // private - no need to call this yourself unless you're writing a trampoline function
+			self.isSendingFunds = false
 		}
 		//
 		// parse & normalize the target descriptions by mapping them to Monero addresses & amounts
+		const targetDescription =
+		{ 
+			address: target_address, 
+			amount: target_amount
+		}
 		self.new_currencyReady_targetDescriptions_fromPossibleOpenAliasTargetDescriptions(
-			targetDescriptions,
+			[ targetDescription ], // requires a list of descriptions - but
+			// SendFunds was not written with multiple target support as MyMonero
+			// does not yet support it
 			confirmWithUser_openAliasAddress_cb,
 			function(err, currencyReady_targetDescriptions)
 			{
-				console.log("err", err)
-				console.log("Resolved... ", currencyReady_targetDescriptions)
+				
+				if (err) {
+					__trampolineFor_err_withErr(err)
+					return
+				}
+				const invalidOrZeroDestination_errStr = "You need to enter a valid destination"
+				if (currencyReady_targetDescriptions.length === 0) {
+					__trampolineFor_err_withStr(invalidOrZeroDestination_errStr)
+					return
+				}
+				const currencyReady_targetDescription = currencyReady_targetDescriptions[0]
+				if (typeof currencyReady_targetDescription === null || typeof currencyReady_targetDescription === 'undefined') {
+					__trampolineFor_err_withStr(invalidOrZeroDestination_errStr)
+					return
+				}
+				_proceedTo_prepareToSendFundsTo_currencyReady_targetDescription(currencyReady_targetDescription)
 			}
 		)
+		function _proceedTo_prepareToSendFundsTo_currencyReady_targetDescription(currencyReady_targetDescription)
+		{
+			var targetDescription_address = currencyReady_targetDescription.address
+			var targetDescription_amount = currencyReady_targetDescription.amount
+			//
+	        var totalAmountWithoutFee_JSBigInt = (new JSBigInt(0)).add(targetDescription_amount)
+            console.log("💬  Total to send, before fee: " + monero_utils.formatMoney(totalAmountWithoutFee_JSBigInt));
+            if (totalAmountWithoutFee_JSBigInt.compare(0) <= 0) {
+				const errStr = "The amount you've entered is too low"
+				__trampolineFor_err_withStr(errStr)
+                return
+			}
+			//
+			// Derive/finalize some values…
+			var final__payment_id = payment_id
+	        var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one
+            var address__decode_result = monero_utils.decode_address(targetDescription_address)
+            if (address__decode_result.intPaymentId && payment_id) {
+				const errStr = "Payment ID field must be blank when using an Integrated Address"
+				__trampolineFor_err_withStr(errStr)
+                return
+            }
+			if (address__decode_result.intPaymentId) {
+                final__payment_id = address__decode_result.intPaymentId
+                final__pid_encrypt = true // we do want to encrypt if using an integrated address
+            }
+			//
+			// Validation
+            if (monero_wallet_utils.IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
+				const errStr = "The payment ID you've entered is not valid"
+				__trampolineFor_err_withStr(errStr)
+                return
+            }
+			//
+			_proceedTo_getUnspentOutsUsableForMixin(
+				target_address,
+				totalAmountWithoutFee_JSBigInt,
+				final__payment_id,
+				final__pid_encrypt
+			)
+		}
+		function _proceedTo_getUnspentOutsUsableForMixin(
+			target_address, // a monero-valid wallet public address
+			totalAmountWithoutFee_JSBigInt,
+			final__payment_id, // non-existent or valid
+			final__pid_encrypt // true or false
+		)
+		{
+			self.context.hostedMoneroAPIClient.UnspentOuts(
+				self.public_address,
+				self.private_keys.view,
+				self.public_keys.spend,
+				self.private_keys.spend,
+				mixin,
+				function(
+					err, 
+					unspentOuts,
+					unusedOuts
+				)
+				{
+					console.log("err", err)
+					console.log(
+						"unspentOuts, unusedOuts", 
+						unspentOuts,
+						unusedOuts
+					)
+				}
+			)
+		}
 	}
 
 	
