@@ -29,7 +29,7 @@
 "use strict"
 //
 const mnemonic = require('../cryptonote_utils/mnemonic')
-const monero_utils = require('./monero_utils_instance')
+const monero_utils = require('./monero_cryptonote_utils_instance')
 const monero_config = require('./monero_config')
 //
 const wordsetNames = {}
@@ -175,94 +175,4 @@ function VerifiedComponentsForLogIn(
 	)
 }
 exports.VerifiedComponentsForLogIn = VerifiedComponentsForLogIn
-//
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Transactions
-//
-function IsTransactionConfirmed(tx, blockchain_height)
-{
-	return (blockchain_height - tx.height) > monero_config.txMinConfirms
-}
-exports.IsTransactionConfirmed = IsTransactionConfirmed
-//
-function IsTransactionUnlocked(tx, blockchain_height)
-{
-	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
-}
-exports.IsTransactionUnlocked = IsTransactionUnlocked
-//
-function TransactionLockedReason(tx, blockchain_height)
-{
-	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
-}
-exports.TransactionLockedReason = TransactionLockedReason
-//
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Sending funds
-//
-function IsValidPaymentIDOrNoPaymentID(payment_id)
-{
-	if (
-		payment_id 
-			&&
-		(
-			payment_id.length !== 64 
-				|| 
-			!(/^[0-9a-fA-F]{64}$/.test(payment_id))
-		) 
-			&& 
-		payment_id.length !== 16
-	) {
-		return false
-	}
-	return true
-}
-exports.IsValidPaymentIDOrNoPaymentID = IsValidPaymentIDOrNoPaymentID
-//
-function UsableOutputsAndAmountForMixin(
-	target_amount,
-	using_outs_amount,
-	unusedOuts
-)
-{
-	console.log(
-		"Selecting outputs to use. Current total: " 
-		+ monero_utils.formatMoney(using_outs_amount) 
-		+ " target: " + monero_utils.formatMoney(target_amount)
-	)
-	var toFinalize_usingOutsAmount = using_outs_amount
-	const toFinalize_usableOuts = []
 
-	function __randomIndex(list) {
-		return Math.floor(Math.random() * list.length);
-	}
-	function _poppedRandomValueFromList(list)
-	{
-		var idx = __randomIndex(list)
-		var val = list[idx]
-		list.splice(idx, 1)
-		//
-		return val
-	}
-	while (using_outs_amount.compare(target_amount) < 0 && unusedOuts.length > 0) {
-		var out = _poppedRandomValueFromList(unusedOuts)
-		const out_amount = out.amount
-		toFinalize_usableOuts.push(out)
-		toFinalize_usingOutsAmount = using_outs_amount.add(out_amount)
-		console.log(
-			"Using output: "
-			+ monero_utils.formatMoney(out_amount) 
-			+ " - " 
-			+ JSON.stringify(out)
-		)
-	}
-	//
-	return {
-		usableOuts: toFinalize_usableOuts,
-		usingOutsAmount: toFinalize_usingOutsAmount
-	}
-}

@@ -28,7 +28,7 @@
 
 //
 const monero_config = require('./monero_config')
-const monero_utils = require('./monero_utils_instance')
+const monero_utils = require('./monero_cryptonote_utils_instance')
 const openalias_utils = require('../openalias_utils/openalias_utils')
 //
 const currency_openAliasPrefix = monero_config.openAliasPrefix

@@ -9,7 +9,11 @@
 	Support for arbitrary internal representation base was added by
 	Vitaly Magerya.
 */
+/*
 
+This file has been modified by Paul Shapiro to bring in the function lowVal which was written by Lucas Jones
+
+*/
 /*
 	File: biginteger.js
 
@@ -1564,6 +1568,15 @@ BigInteger.prototype.valueOf = function() {
 BigInteger.prototype.toJSValue = function() {
 	return parseInt(this.toString(), 10);
 };
+
+/*
+	Function: lowVal
+	Author: Lucas Jones
+*/
+BigInteger.prototype.lowVal = function () {
+    return this._d[0] || 0;
+};
+
 
 var MAX_EXP = BigInteger(0x7FFFFFFF);
 // Constant: MAX_EXP

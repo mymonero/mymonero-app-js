@@ -32,7 +32,7 @@ const request = require('request')
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const async = require('async')
 const monero_config = require('../monero_utils/monero_config')
-const monero_utils = require('../monero_utils/monero_utils_instance')
+const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
 const TransactionKeyImageCache = require('./TransactionKeyImageCache')
 //
 //
@@ -317,12 +317,13 @@ class HostedMoneroAPIClient
 	}
 	RandomOuts(
 		using_outs,
+		mixinNumber,
 		fn
 	)
 	{
 		const self = this
-		mixinNumber = parseInt(mixinNumber)
 		//
+		mixinNumber = parseInt(mixinNumber)
 		if (mixinNumber < 0 || isNaN(mixinNumber)) {
 			const errStr = "Invalid mixin - must be >= 0"
 			const err = new Error(errStr)
@@ -334,12 +335,12 @@ class HostedMoneroAPIClient
 		for (var l = 0; l < using_outs.length; l++) {
 			amounts.push(using_outs[l].amount.toString())
 		}
-		var request =
+		//
+		var parameters =
 		{
 			amounts: amounts,
 			count: mixinNumber + 1 // Add one to mixin so we can skip real output key if necessary
 		}
-		//
 		const endpointPath = 'get_random_outs'
 		self._API_request(
 			endpointPath,
@@ -376,7 +377,7 @@ class HostedMoneroAPIClient
 		const parameters =
 		{
 			domain: domain
-		}		
+		}
 		self._API_request(
 			endpointPath,
 			parameters,
@@ -427,12 +428,16 @@ class HostedMoneroAPIClient
 		}
 	}
 
-	hostingServiceChargeFor_transaction(amount)
+	HostingServiceChargeFor_transactionWithNetworkFee(networkFee)
 	{
 		const self = this
-		amount = new JSBigInt(amount);
+		networkFee = new JSBigInt(networkFee)
 		// amount * txChargeRatio
-		return amount.divide(1 / self.txChargeRatio);
+		return networkFee.divide(1 / self.txChargeRatio)
+	}
+	HostingServiceFeeDepositAddress()
+	{
+		return "42LUcizuzdwDb3bVnN2G3sTwV77EFiPqLHPZMs7Vk7dnRBmv62McQxHhuD6WLtCJVaf4aXGyR2GbtRjeWTWBhAYG6kiPL5L"
 	}
 	
 

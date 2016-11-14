@@ -26,35 +26,67 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"use strict"
 //
+const monero_config = require('../monero_utils/monero_config')
 const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
-var key_images = {}
 //
-var Lazy_KeyImage = function(
-	tx_pub_key, 
-	out_index,
-	public_address,
-	view_key__private,
-	spend_key__public,
-	spend_key__private
+function IsValidPaymentIDOrNoPaymentID(payment_id)
+{
+	if (
+		payment_id 
+			&&
+		(
+			payment_id.length !== 64 
+				|| 
+			!(/^[0-9a-fA-F]{64}$/.test(payment_id))
+		) 
+			&& 
+		payment_id.length !== 16
+	) {
+		return false
+	}
+	return true
+}
+exports.IsValidPaymentIDOrNoPaymentID = IsValidPaymentIDOrNoPaymentID
+//
+function OutputsAndAmountToUseForMixin(
+	target_amount,
+	unusedOuts
 )
 {
-	var cache_index = tx_pub_key + ':' + public_address + ':' + out_index
-	if (typeof key_images[cache_index] !== 'undefined' && key_images[cache_index] !== null) {
-		return key_images[cache_index]
+	function __randomIndex(list)
+	{
+		return Math.floor(Math.random() * list.length);
 	}
-	var key_image = monero_utils.generate_key_image(
-		tx_pub_key,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		out_index
-	).key_image
-	// cache:
-	key_images[cache_index] = key_image
+	function _poppedRandomValueFromList(list)
+	{
+		var idx = __randomIndex(list)
+		var val = list[idx]
+		list.splice(idx, 1)
+		//
+		return val
+	}
+	console.log("Selecting outputs to use. target: " + monero_utils.formatMoney(target_amount))
+	var toFinalize_usingOutsAmount = new JSBigInt(0)
+	const toFinalize_usingOuts = []
+	while (toFinalize_usingOutsAmount.compare(target_amount) < 0 && unusedOuts.length > 0) {
+		var out = _poppedRandomValueFromList(unusedOuts)
+		const out_amount = out.amount
+		toFinalize_usingOuts.push(out)
+		toFinalize_usingOutsAmount = toFinalize_usingOutsAmount.add(out_amount)
+		console.log(
+			"Using output: "
+			+ monero_utils.formatMoney(out_amount) 
+			+ " - " 
+			+ JSON.stringify(out)
+		)
+	}
 	//
-	return key_image
+	return {
+		usingOuts: toFinalize_usingOuts,
+		usingOutsAmount: toFinalize_usingOutsAmount
+	}
 }
-exports.Lazy_KeyImage = Lazy_KeyImage
+exports.OutputsAndAmountToUseForMixin = OutputsAndAmountToUseForMixin

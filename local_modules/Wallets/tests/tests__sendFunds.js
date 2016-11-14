@@ -1,7 +1,6 @@
 "use strict"
 //
 const async = require('async')
-const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
 //
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {

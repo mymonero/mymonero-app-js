@@ -26,10 +26,23 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"use strict"
-//
+
 const monero_config = require('./monero_config')
-const cryptonote_utils = require('../cryptonote_utils/cryptonote_utils').cnUtil
-const monero_utils_instance = cryptonote_utils(monero_config)
+
+function IsTransactionConfirmed(tx, blockchain_height)
+{
+	return (blockchain_height - tx.height) > monero_config.txMinConfirms
+}
+exports.IsTransactionConfirmed = IsTransactionConfirmed
 //
-module.exports = monero_utils_instance
+function IsTransactionUnlocked(tx, blockchain_height)
+{
+	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
+}
+exports.IsTransactionUnlocked = IsTransactionUnlocked
+//
+function TransactionLockedReason(tx, blockchain_height)
+{
+	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
+}
+exports.TransactionLockedReason = TransactionLockedReason
