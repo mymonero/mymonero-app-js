@@ -792,6 +792,15 @@ class SecretPersistingHostedWallet
 		mixin, 
 		payment_id,
 		fn,
+		// fn: (
+		//		err?,
+		//		currencyReady_targetDescription_address?,
+		//		sentAmount?,
+		//		targetDescription_domain_orNone?,
+		//		final__payment_id?,
+		//		tx_hash?,
+		//		tx_fee?
+		// )
 		confirmWithUser_openAliasAddress_cb
 	)
 	{
@@ -812,11 +821,28 @@ class SecretPersistingHostedWallet
 		// some callback trampoline function declarations…
 		// these are important for resetting self's state,
 		// which is done in ___aTrampolineForFnWasCalled below
-		function __trampolineFor_success()
+		function __trampolineFor_success(
+			currencyReady_targetDescription_address,
+			sentAmount,
+			targetDescription_domain_orNone,
+			final__payment_id,
+			tx_hash,
+			tx_fee
+		)
 		{
 			___aTrampolineForFnWasCalled()
 			//
-			fn()
+			console.log("✅  Successfully sent funds.")
+			//
+			fn(
+				null,
+				currencyReady_targetDescription_address,
+				sentAmount,
+				targetDescription_domain_orNone,
+				final__payment_id,
+				tx_hash,
+				tx_fee
+			)
 		}
 		function __trampolineFor_err_withErr(err)
 		{
@@ -873,6 +899,7 @@ class SecretPersistingHostedWallet
 		{
 			var currencyReady_targetDescription_address = currencyReady_targetDescription.address
 			var currencyReady_targetDescription_amount = currencyReady_targetDescription.amount
+			const targetDescription_domain_orNone = currencyReady_targetDescription.domain // or undefined
 			//
 	        var totalAmountWithoutFee_JSBigInt = (new JSBigInt(0)).add(currencyReady_targetDescription_amount)
             console.log("💬  Total to send, before fee: " + monero_utils.formatMoney(totalAmountWithoutFee_JSBigInt));
@@ -907,14 +934,16 @@ class SecretPersistingHostedWallet
 				currencyReady_targetDescription_address,
 				totalAmountWithoutFee_JSBigInt,
 				final__payment_id,
-				final__pid_encrypt
+				final__pid_encrypt,
+				targetDescription_domain_orNone
 			)
 		}
 		function _proceedTo_getUnspentOutsUsableForMixin(
 			currencyReady_targetDescription_address,
 			totalAmountWithoutFee_JSBigInt,
 			final__payment_id, // non-existent or valid
-			final__pid_encrypt // true or false
+			final__pid_encrypt, // true or false
+			targetDescription_domain_orNone
 		)
 		{
 			self.context.hostedMoneroAPIClient.UnspentOuts(
@@ -938,6 +967,7 @@ class SecretPersistingHostedWallet
 						totalAmountWithoutFee_JSBigInt,
 						final__payment_id,
 						final__pid_encrypt,
+						targetDescription_domain_orNone,
 						unusedOuts
 					)
 				}
@@ -948,6 +978,7 @@ class SecretPersistingHostedWallet
 			totalAmountWithoutFee_JSBigInt,
 			final__payment_id,
 			final__pid_encrypt,
+			targetDescription_domain_orNone,
 			unusedOuts
         ) 
 		{
@@ -960,6 +991,7 @@ class SecretPersistingHostedWallet
 				totalAmountWithoutFee_JSBigInt,
 				final__payment_id,
 				final__pid_encrypt,
+				targetDescription_domain_orNone,
 				unusedOuts,
 				network_minimumFee
 			)
@@ -969,6 +1001,7 @@ class SecretPersistingHostedWallet
 			totalAmountWithoutFee_JSBigInt,
 			final__payment_id,
 			final__pid_encrypt,
+			targetDescription_domain_orNone,
 			unusedOuts,
 			attemptAt_network_minimumFee
         ) 
@@ -1056,14 +1089,19 @@ class SecretPersistingHostedWallet
 			}
 			function __createTxAndAttemptToSend(mix_outs)
 			{
-				const signedTx = __new_signedMoneroTx(
+				const serializedSignedTx = __new_serializedSignedMoneroTx(
 					mix_outs,
 					attemptAt_network_minimumFee
 				)
+		        var tx_hash = monero_utils.cn_fast_hash(
+					serializedSignedTx,
+					serializedSignedTx.length / 2
+				)
+		        console.log("Tx hash: " + tx_hash)
 				//
 	            // work out per-kb fee for transaction and verify that it's enough
 	            var prevFee = attemptAt_network_minimumFee
-	            var txBlobBytes = signedTx.length / 2
+	            var txBlobBytes = serializedSignedTx.length / 2
 	            var numKB = Math.floor(txBlobBytes / 1024)
 	            if (txBlobBytes % 1024) {
 	                numKB++
@@ -1078,6 +1116,7 @@ class SecretPersistingHostedWallet
 						totalAmountWithoutFee_JSBigInt,
 						final__payment_id,
 						final__pid_encrypt,
+						targetDescription_domain_orNone,
 						unusedOuts,
 						feeActuallyNeededByNetwork // we are re-entering this codepath after changing this feeActuallyNeededByNetwork
 					)
@@ -1089,48 +1128,33 @@ class SecretPersistingHostedWallet
 				const final_networkFee = attemptAt_network_minimumFee // just to make things clear
 				console.log("💬  Successful tx generation, submitting tx. Going with final_networkFee of ", final_networkFee)
 				// status: submitting…
-	            var request = 
-				{
-	                address: self.public_address,
-	                view_key: self.private_keys.view,
-	                tx: signedTx
-	            }
-				console.log("request" , request)
-	            // $http.post(config.apiUrl + 'submit_raw_tx', request)
-	            //     .success(function() {
-	            //         console.log("Successfully submitted tx");
-	            //         $scope.targets = [{}];
-				//         var tx_hash = monero_utils.cn_fast_hash(
-				//			signedTx, 
-				//			signedTx.length / 2
-				//		   )
-				//         console.log("Tx hash: " + tx_hash)
-	            //         $scope.sent_tx = {
-	            //             address: currencyReady_targetDescription_address,
-	            //             domain: realDsts[0].domain,
-				//             amount: amount,
-	            //             payment_id: payment_id,
-	            //             tx_id: tx_hash,
-	            //             tx_fee: attemptAt_network_minimumFee.add(getTxCharge(attemptAt_network_minimumFee))
-	            //         };
-	            //         $scope.success_page = true;
-	            //         $scope.status = "";
-	            //         $scope.submitting = false;
-	            //     })
-	            //     .error(function(error) {
-	            //         $scope.status = "";
-	            //         $scope.submitting = false;
-	            //         $scope.error = "Something unexpected occurred when submitting your transaction: " + (error.Error || error);
-	            //     });
-				
-				
+				self.context.hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
+					self.public_address,
+					self.private_keys.view,
+					serializedSignedTx,
+					function(err)
+					{
+						if (err) {
+							__trampolineFor_err_withStr("Something unexpected occurred when submitting your transaction:", err)
+							return
+						}
+						const tx_fee = attemptAt_network_minimumFee.add(hostingService_chargeAmount)
+						__trampolineFor_success(
+							currencyReady_targetDescription_address,
+							amount,
+							targetDescription_domain_orNone,
+							final__payment_id,
+							tx_hash,
+							tx_fee
+						) // 🎉
+					}
+				)
 			}
-            function __new_signedMoneroTx(
+            function __new_serializedSignedMoneroTx(
 				mix_outs,
 				networkFee
 			)
 			{ // Construct & serialize transaction
-
                 var signedTx;
                 try {
                     console.log('Destinations: ')

@@ -63,10 +63,26 @@ class HostedMoneroAPIClient
 	{
 		var self = this
 	}
-
-
+	
+	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Public
+	// Runtime - Accessors - Public - Metrics/lookups/transforms
+
+	HostingServiceChargeFor_transactionWithNetworkFee(networkFee)
+	{
+		const self = this
+		networkFee = new JSBigInt(networkFee)
+		// amount * txChargeRatio
+		return networkFee.divide(1 / self.txChargeRatio)
+	}
+	HostingServiceFeeDepositAddress()
+	{
+		return "42LUcizuzdwDb3bVnN2G3sTwV77EFiPqLHPZMs7Vk7dnRBmv62McQxHhuD6WLtCJVaf4aXGyR2GbtRjeWTWBhAYG6kiPL5L"
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Public - Requests
 	
 	LogIn(address, view_key__private, fn)
 	{ // fn: (err?, new_address?)
@@ -409,12 +425,44 @@ class HostedMoneroAPIClient
 	}
 
 
-
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public
+	// Runtime - Imperatives - Public - Sending funds
 	
-	
-	
+	SubmitSerializedSignedTransaction(
+		address,
+		view_key__private,
+		serializedSignedTx,
+		fn // (err?) -> Void
+	)
+	{
+		const self = this
+		//
+		const endpointPath = 'submit_raw_tx'
+		const parameters =
+		{
+			address: address,
+			view_key: view_key__private,
+			tx: serializedSignedTx
+		}
+		self._API_request(
+			endpointPath,
+			parameters,
+			function(err, data)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				__proceedTo_parseAndCallBack(data)
+			}
+		)
+		function __proceedTo_parseAndCallBack(data)
+		{
+			console.log("debug: info: submit_raw_tx: data", data)
+			//
+			fn(null)
+		}
+	}
 	
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -428,17 +476,6 @@ class HostedMoneroAPIClient
 		}
 	}
 
-	HostingServiceChargeFor_transactionWithNetworkFee(networkFee)
-	{
-		const self = this
-		networkFee = new JSBigInt(networkFee)
-		// amount * txChargeRatio
-		return networkFee.divide(1 / self.txChargeRatio)
-	}
-	HostingServiceFeeDepositAddress()
-	{
-		return "42LUcizuzdwDb3bVnN2G3sTwV77EFiPqLHPZMs7Vk7dnRBmv62McQxHhuD6WLtCJVaf4aXGyR2GbtRjeWTWBhAYG6kiPL5L"
-	}
 	
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -449,7 +486,7 @@ class HostedMoneroAPIClient
 		const self = this
 		parameters = parameters || {}
 		const completeURL = self.baseURL + endpointPath
-		// console.log("requesting", completeURL, "with params", parameters)
+		console.log("📡  " + completeURL)
 		request({
 			method: "POST", // maybe break this out
 			url: completeURL,
@@ -473,6 +510,7 @@ class HostedMoneroAPIClient
 				} else {
 					json = body
 				}
+				console.log("✅  " + completeURL + " " + statusCode)
 				fn(null, json)
 			} else {
 				if (err) {

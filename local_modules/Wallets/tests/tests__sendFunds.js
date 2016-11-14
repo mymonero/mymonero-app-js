@@ -47,12 +47,29 @@ function _proceedTo_test_sendFunds_1(fn)
 			amount,
 			mixin,
 			payment_id,
-			function(err)
+			function(
+				err,
+				currencyReady_targetDescription_address,
+				sentAmount,
+				targetDescription_domain_orNone,
+				final__payment_id,
+				tx_hash,
+				tx_fee
+			)
 			{
 				if (err) {
 					console.error("❌  Failed to send funds with", err)
 				} else {
 					console.log("✅  Successfully sent funds")
+					console.log(
+						"currencyReady_targetDescription_address, sentAmount, targetDescription_domain_orNone, final__payment_id, tx_hash, tx_fee", 
+						currencyReady_targetDescription_address,
+						sentAmount,
+						targetDescription_domain_orNone,
+						final__payment_id,
+						tx_hash,
+						tx_fee
+					)
 				}
 				fn(err) // err may be null
 			},
