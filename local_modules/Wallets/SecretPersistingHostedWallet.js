@@ -280,103 +280,107 @@ class SecretPersistingHostedWallet
 					return
 				}
 				const encryptedDocument = docs[0]
-				//
-				//
-				// decryption
-				var plaintextDocument
-				try {
-					plaintextDocument = document_cryptor.New_DecryptedDocument(
-						encryptedDocument, 
-						documentCryptScheme, 
-						self.persistencePassword
-					)
-				} catch (e) {
-					const errStr = "❌  Decryption err: " + e.toString()
-					const err = new Error(errStr)
-					console.error(errStr)
-					failure_cb(err)
-					return
-				}
-				// console.log("plaintextDocument", plaintextDocument)
-				//
-				//
-				// reconstituting state…
-				self.isLoggedIn = plaintextDocument.isLoggedIn
-				self.dateThatLast_fetchedAccountInfo = plaintextDocument.dateThatLast_fetchedAccountInfo
-				self.dateThatLast_fetchedAccountTransactions = plaintextDocument.dateThatLast_fetchedAccountTransactions
-				//
-				self.dateWalletFirstSavedLocally = plaintextDocument.dateWalletFirstSavedLocally
-				//
-				self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
-				self.wallet_currency = plaintextDocument.wallet_currency
-				//
-				self.account_seed = plaintextDocument.account_seed
-				self.private_keys = plaintextDocument.private_keys
-				self.public_address = plaintextDocument.public_address
-				self.public_keys = plaintextDocument.public_keys
-				self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
-				//
-				self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
-				// ^ TODO: these may be stored as key imgs…… need to do (de)serialization same in principle to .totals
-				//
-				// unpacking heights…
-				const heights = plaintextDocument.heights // no || {} because we always persist at least {}
-				self.account_scanned_height = heights.account_scanned_height
-				self.account_scanned_tx_height = heights.account_scanned_tx_height 
-				self.account_scanned_block_height = heights.account_scanned_block_height
-				self.account_scan_start_height = heights.account_scan_start_height
-				self.transaction_height = heights.transaction_height
-				self.blockchain_height = heights.blockchain_height
-				//
-				// unpacking totals
-				const totals = plaintextDocument.totals
-				// console.log("totals " , totals)
-				self.total_received = new JSBigInt(totals.total_received) // persisted as string
-				self.locked_balance = new JSBigInt(totals.locked_balance) // persisted as string
-				self.total_sent = new JSBigInt(totals.total_sent) // persisted as string
-				//
-				self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
-				//
-				//
-				// validation
-				function _failWithValidationErr(errStr)
-				{
-					const err = new Error(errStr)
-					console.error(errStr)
-					failure_cb(err)
-				}
-				if (self.isLoggedIn !== true) {
-					return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn")
-				}
-				// We are not going to check whether the acct seed is nil/'' here because if the wallet was
-				// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
-				// cannot obtain the seed.
-				if (self.public_address === null || typeof self.public_address === 'undefined' || self.public_address === '') {
-					return _failWithValidationErr("Reconstituted wallet had no valid public_address")
-				}
-				if (self.public_keys === null || typeof self.public_keys === 'undefined' || self.public_keys === {}) {
-					return _failWithValidationErr("Reconstituted wallet had no valid public_keys")
-				}
-				if (self.public_keys.view === null || typeof self.public_keys.view === 'undefined' || self.public_keys.view === '') {
-					return _failWithValidationErr("Reconstituted wallet had no valid public_keys.view")
-				}
-				if (self.public_keys.spend === null || typeof self.public_keys.spend === 'undefined' || self.public_keys.spend === '') {
-					return _failWithValidationErr("Reconstituted wallet had no valid public_keys.spend")
-				}
-				if (self.private_keys === null || typeof self.private_keys === 'undefined' || self.private_keys === {}) {
-					return _failWithValidationErr("Reconstituted wallet had no valid private_keys")
-				}
-				if (self.private_keys.view === null || typeof self.private_keys.view === 'undefined' || self.private_keys.view === '') {
-					return _failWithValidationErr("Reconstituted wallet had no valid private_keys.view")
-				}
-				if (self.private_keys.spend === null || typeof self.private_keys.spend === 'undefined' || self.private_keys.spend === '') {
-					return _failWithValidationErr("Reconstituted wallet had no valid private_keys.spend")					
-				}
-				//
-				// finally
-				_trampolineFor_successfullyInstantiated_cb() // all done
+				__proceedTo_decryptDocument(encryptedDocument)
 			}
 		)
+		function __proceedTo_decryptDocument(encryptedDocument)
+		{
+			var plaintextDocument
+			try {
+				plaintextDocument = document_cryptor.New_DecryptedDocument(
+					encryptedDocument, 
+					documentCryptScheme, 
+					self.persistencePassword
+				)
+			} catch (e) {
+				const errStr = "❌  Decryption err: " + e.toString()
+				const err = new Error(errStr)
+				console.error(errStr)
+				failure_cb(err)
+				return
+			}
+			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+		}
+		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+		{ // reconstituting state…
+				// console.log("plaintextDocument", plaintextDocument)
+			self.isLoggedIn = plaintextDocument.isLoggedIn
+			self.dateThatLast_fetchedAccountInfo = plaintextDocument.dateThatLast_fetchedAccountInfo
+			self.dateThatLast_fetchedAccountTransactions = plaintextDocument.dateThatLast_fetchedAccountTransactions
+			//
+			self.dateWalletFirstSavedLocally = plaintextDocument.dateWalletFirstSavedLocally
+			//
+			self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
+			self.wallet_currency = plaintextDocument.wallet_currency
+			//
+			self.account_seed = plaintextDocument.account_seed
+			self.private_keys = plaintextDocument.private_keys
+			self.public_address = plaintextDocument.public_address
+			self.public_keys = plaintextDocument.public_keys
+			self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+			//
+			self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
+			// ^ TODO: these may be stored as key imgs…… need to do (de)serialization same in principle to .totals
+			//
+			// unpacking heights…
+			const heights = plaintextDocument.heights // no || {} because we always persist at least {}
+			self.account_scanned_height = heights.account_scanned_height
+			self.account_scanned_tx_height = heights.account_scanned_tx_height 
+			self.account_scanned_block_height = heights.account_scanned_block_height
+			self.account_scan_start_height = heights.account_scan_start_height
+			self.transaction_height = heights.transaction_height
+			self.blockchain_height = heights.blockchain_height
+			//
+			// unpacking totals
+			const totals = plaintextDocument.totals
+			// console.log("totals " , totals)
+			self.total_received = new JSBigInt(totals.total_received) // persisted as string
+			self.locked_balance = new JSBigInt(totals.locked_balance) // persisted as string
+			self.total_sent = new JSBigInt(totals.total_sent) // persisted as string
+			//
+			self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
+			//
+			__proceedTo_validateHydration()
+		}
+		function __proceedTo_validateHydration()
+		{
+			function _failWithValidationErr(errStr)
+			{
+				const err = new Error(errStr)
+				console.error(errStr)
+				failure_cb(err)
+			}
+			if (self.isLoggedIn !== true) {
+				return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn")
+			}
+			// We are not going to check whether the acct seed is nil/'' here because if the wallet was
+			// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
+			// cannot obtain the seed.
+			if (self.public_address === null || typeof self.public_address === 'undefined' || self.public_address === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_address")
+			}
+			if (self.public_keys === null || typeof self.public_keys === 'undefined' || self.public_keys === {}) {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_keys")
+			}
+			if (self.public_keys.view === null || typeof self.public_keys.view === 'undefined' || self.public_keys.view === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_keys.view")
+			}
+			if (self.public_keys.spend === null || typeof self.public_keys.spend === 'undefined' || self.public_keys.spend === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_keys.spend")
+			}
+			if (self.private_keys === null || typeof self.private_keys === 'undefined' || self.private_keys === {}) {
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys")
+			}
+			if (self.private_keys.view === null || typeof self.private_keys.view === 'undefined' || self.private_keys.view === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.view")
+			}
+			if (self.private_keys.spend === null || typeof self.private_keys.spend === 'undefined' || self.private_keys.spend === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.spend")					
+			}
+			//
+			// finally
+			_trampolineFor_successfullyInstantiated_cb() // all done
+		}
 	}
 
 
