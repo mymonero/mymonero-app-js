@@ -136,106 +136,131 @@ class SecretPersistingHostedWallet
 		//
 		self.isLoggedIn = false // this is soon toggled based on what is persisted in the DB
 		//
-		self.mustCreateNewWalletAndAccount = false 
+		self.mustCreateNewWalletAndAccount = false // to derive…
 		if (self._id === null) {
-			self.wallet_currency = wallet_currencies.xmr // default 
-			self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
-			//
-			// existing mnemonic string
-			self.initialization_mnemonicString = self.options.initWithMnemonic__mnemonicString
-			if (typeof self.initialization_mnemonicString !== 'undefined') {
-				self.mnemonic_wordsetName = self.options.initWithMnemonic__wordsetName || self.mnemonic_wordsetName
-				self.logIn_mnemonic(
-					self.initialization_mnemonicString, 
-					self.mnemonic_wordsetName,
-					function(err)
-					{
-						if (err) {
-							const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with mnemonic with error… " + err.toString()
-							console.error(errStr)
-							failure_cb(err)
-							return
-						}
-						console.log("✅  Successfully added existing wallet via mnemonic string")
-						_trampolineFor_successfullyInstantiated_cb()
-					}
-				)
-				//
-				return
-			}
-			//
-			// address + view & spend keys
-			const initialization_address = self.options.initWithKeys__address
-			const initialization_view_key__private = self.options.initWithKeys__view_key__private
-			const initialization_spend_key__private = self.options.initWithKeys__spend_key__private
-			if (typeof initialization_address !== 'undefined') {
-				if (typeof initialization_view_key__private === 'undefined' || initialization_view_key__private === null || initialization_view_key__private === '') {
-					const errStr = "❌  You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
-					console.error(errStr)
-					failure_cb(new Error(errStr))
-					return
-				}
-				if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
-					const errStr = "❌  You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
-					const err = new Error(errStr)
-					console.error(errStr)
-					failure_cb(err)
-					return
-				}
-				self.logIn_keys(
-					initialization_address, 
-					initialization_view_key__private, 
-					initialization_spend_key__private, 
-					function(err)
-					{
-						if (err) {
-							const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with address + spend & view keys with error… " + err.toString()
-							const err = new Error(errStr)
-							console.error(errStr)
-							failure_cb(err)
-							return
-						}
-						console.log("✅  Successfully added existing wallet via address and view & spend keys")
-						_trampolineFor_successfullyInstantiated_cb()
-					}
-
-				)
- 				//
-				return
-			}
-			//
-			// Otherwise, we're creating a new wallet
-			if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
-				const errStr = "❌  You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
-				const err = new Error(errStr)
-				console.error(errStr)
-				failure_cb(err)
-				return
-			}
-			//
-			self.mustCreateNewWalletAndAccount = true
-			console.log("Creating new wallet.")
-			//
-			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
-			self.logIn_creatingNewWallet(
-				ifNewWallet__informingAndVerifyingMnemonic_cb, // this is passed straight through from the initializer
+			self._setup_logInOrSignUp(
+				ifNewWallet__informingAndVerifyingMnemonic_cb,
+				failure_cb,
+				_trampolineFor_successfullyInstantiated_cb
+			)
+			return
+		}
+		// Wallet supposedly already exists. Let's look it up…
+		self._setup_fetchExistingWalletWithId(
+			failure_cb,
+			_trampolineFor_successfullyInstantiated_cb
+		)
+	}
+	_setup_logInOrSignUp(
+		ifNewWallet__informingAndVerifyingMnemonic_cb,
+		failure_cb,
+		_trampolineFor_successfullyInstantiated_cb
+	)
+	{
+		const self = this
+		//
+		self.wallet_currency = wallet_currencies.xmr // default 
+		self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
+		//
+		// existing mnemonic string
+		self.initialization_mnemonicString = self.options.initWithMnemonic__mnemonicString
+		if (typeof self.initialization_mnemonicString !== 'undefined') {
+			self.mnemonic_wordsetName = self.options.initWithMnemonic__wordsetName || self.mnemonic_wordsetName
+			self.logIn_mnemonic(
+				self.initialization_mnemonicString, 
+				self.mnemonic_wordsetName,
 				function(err)
 				{
 					if (err) {
-						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
-						const err = new Error(errStr)
+						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with mnemonic with error… " + err.toString()
 						console.error(errStr)
 						failure_cb(err)
 						return
 					}
-					console.log("✅  Successfully logged after creating a new wallet.")
+					console.log("✅  Successfully added existing wallet via mnemonic string")
 					_trampolineFor_successfullyInstantiated_cb()
 				}
 			)
 			//
 			return
 		}
-		// Wallet supposedly already exists. Let's look it up…
+		//
+		// address + view & spend keys
+		const initialization_address = self.options.initWithKeys__address
+		const initialization_view_key__private = self.options.initWithKeys__view_key__private
+		const initialization_spend_key__private = self.options.initWithKeys__spend_key__private
+		if (typeof initialization_address !== 'undefined') {
+			if (typeof initialization_view_key__private === 'undefined' || initialization_view_key__private === null || initialization_view_key__private === '') {
+				const errStr = "❌  You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+				console.error(errStr)
+				failure_cb(new Error(errStr))
+				return
+			}
+			if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
+				const errStr = "❌  You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
+				const err = new Error(errStr)
+				console.error(errStr)
+				failure_cb(err)
+				return
+			}
+			self.logIn_keys(
+				initialization_address, 
+				initialization_view_key__private, 
+				initialization_spend_key__private, 
+				function(err)
+				{
+					if (err) {
+						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with address + spend & view keys with error… " + err.toString()
+						const err = new Error(errStr)
+						console.error(errStr)
+						failure_cb(err)
+						return
+					}
+					console.log("✅  Successfully added existing wallet via address and view & spend keys")
+					_trampolineFor_successfullyInstantiated_cb()
+				}
+
+			)
+			//
+			return
+		}
+		//
+		// Otherwise, we're creating a new wallet
+		if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
+			const errStr = "❌  You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
+			const err = new Error(errStr)
+			console.error(errStr)
+			failure_cb(err)
+			return
+		}
+		//
+		self.mustCreateNewWalletAndAccount = true
+		console.log("Creating new wallet.")
+		//
+		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
+		self.logIn_creatingNewWallet(
+			ifNewWallet__informingAndVerifyingMnemonic_cb, // this is passed straight through from the initializer
+			function(err)
+			{
+				if (err) {
+					const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
+					const err = new Error(errStr)
+					console.error(errStr)
+					failure_cb(err)
+					return
+				}
+				console.log("✅  Successfully logged after creating a new wallet.")
+				_trampolineFor_successfullyInstantiated_cb()
+			}
+		)
+	}
+	_setup_fetchExistingWalletWithId(
+		failure_cb,
+		_trampolineFor_successfullyInstantiated_cb
+	)
+	{
+		const self = this
+		//	
 		self.context.persister.DocumentsWithQuery(
 			CollectionName,
 			{ _id: self._id }, // cause we're saying we have an _id passed in…
