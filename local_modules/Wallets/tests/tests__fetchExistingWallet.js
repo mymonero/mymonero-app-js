@@ -44,7 +44,7 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 async.series(
 	[
 		_proceedTo_test_importingWalletByMnemonic,
-		_proceedTo_test_importingWalletByAddressAndKeys
+		// _proceedTo_test_importingWalletByAddressAndKeys // this will import the wallet w/o an account_seed
 	],
 	function(err)
 	{

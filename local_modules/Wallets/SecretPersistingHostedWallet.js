@@ -93,14 +93,18 @@ class SecretPersistingHostedWallet
 		//
 		function _trampolineFor_successfullyInstantiated_cb()
 		{
-			// TODO: assert account_seed defined
-			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
-			if (typeof self.initialization_mnemonicString !== 'undefined' && self.initialization_mnemonicString !== null) {
-				if (self.mnemonicString !== self.initialization_mnemonicString) {
-					const errStr = "❌  Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
-					console.error(errStr)
-					failure_cb(new Error(errStr))
-					return
+			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
+				console.warn("⚠️  Wallet initialized without an account_seed.")
+				self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
+			} else {
+				self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
+				if (typeof self.initialization_mnemonicString !== 'undefined' && self.initialization_mnemonicString !== null) {
+					if (self.mnemonicString !== self.initialization_mnemonicString) {
+						const errStr = "❌  Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
+						console.error(errStr)
+						failure_cb(new Error(errStr))
+						return
+					}
 				}
 			}
 			//
@@ -332,7 +336,6 @@ class SecretPersistingHostedWallet
 			self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 			//
 			self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
-			// ^ TODO: these may be stored as key imgs…… need to do (de)serialization same in principle to .totals
 			//
 			// unpacking heights…
 			const heights = plaintextDocument.heights // no || {} because we always persist at least {}
