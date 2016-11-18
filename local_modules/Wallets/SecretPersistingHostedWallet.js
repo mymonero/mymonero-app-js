@@ -106,8 +106,8 @@ class SecretPersistingHostedWallet
 			//
 			successfullyInstantiated_cb()
 			//
-			setTimeout(function()
-			{ // kick off synchronizations
+			function __callAllSyncFunctions()
+			{
 				self._fetch_accountInfo(
 					function(err)
 					{	
@@ -118,7 +118,21 @@ class SecretPersistingHostedWallet
 					{
 					}
 				)
+			}
+			//
+			// kick off synchronizations
+			setTimeout(function()
+			{ 
+				__callAllSyncFunctions()
 			})
+			//
+			// and kick off the polling call to pull latest updates
+			const syncPollingInterval = 10000 
+			setInterval(function()
+			{
+				__callAllSyncFunctions()
+			}, syncPollingInterval)
+			
 		}
 		//
 		// initial properties…

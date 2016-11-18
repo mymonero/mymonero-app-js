@@ -50,8 +50,10 @@ async.series(
 	{
 		if (err) {
 			console.log("Error while performing tests: ", err)
+			process.exit(1)
 		} else {
 			console.log("Tests completed without error.")
+			process.exit(0)
 		}
 	}
 )
@@ -87,6 +89,9 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 		//
 		didReceiveUpdateToAccountInfo: function()
 		{
+			if (finishedAccountInfoSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
 			finishedAccountInfoSync = true
 			if (areAllSyncOperationsFinished()) {
 				fn()
@@ -94,6 +99,9 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 		},
 		didReceiveUpdateToAccountTransactions: function()
 		{
+			if (finishedAccountTxsSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
 			finishedAccountTxsSync = true
 			if (areAllSyncOperationsFinished()) {
 				fn()
@@ -135,6 +143,9 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 		//
 		didReceiveUpdateToAccountInfo: function()
 		{
+			if (finishedAccountInfoSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
 			finishedAccountInfoSync = true
 			if (areAllSyncOperationsFinished()) {
 				fn()
@@ -142,6 +153,9 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 		},
 		didReceiveUpdateToAccountTransactions: function()
 		{
+			if (finishedAccountTxsSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
 			finishedAccountTxsSync = true
 			if (areAllSyncOperationsFinished()) {
 				fn()
