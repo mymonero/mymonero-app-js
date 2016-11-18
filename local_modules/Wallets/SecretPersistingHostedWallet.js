@@ -121,6 +121,7 @@ class SecretPersistingHostedWallet
 			})
 		}
 		//
+		// initial properties…
 		self._id = self.options._id || null // initialize to null if creating wallet
 		self.persistencePassword = self.options.persistencePassword || null
 		if (self.persistencePassword === null) {
@@ -130,12 +131,9 @@ class SecretPersistingHostedWallet
 			failure_cb(err)
 			return
 		}
-		//
-		// states not persisted in DB
 		self.isLoggingIn = false 
 		//
 		self.isLoggedIn = false // this is soon toggled based on what is persisted in the DB
-		//
 		self.mustCreateNewWalletAndAccount = false // to derive…
 		if (self._id === null) {
 			self._setup_logInOrSignUp(
@@ -927,6 +925,42 @@ class SecretPersistingHostedWallet
 		} else {
 			_proceedTo_updateExistingDocument()
 		}
+
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Changing password
+	
+	ChangePasswordFromTo(
+		testWithExisting_persistencePassword,
+		changeTo_persistencePassword,
+		fn
+	)
+	{
+		const self = this
+		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null || self.persistencePassword == '') {
+			return fn(new Error("Invalid self.persistencePassword"))
+		}
+		if (self.persistencePassword !== testWithExisting_persistencePassword) {
+			return fn(new Error("Unable to unlock wallet with that password"))
+		}
+		if (changeTo_persistencePassword.length < 5) {
+			return fn(new Error("New password must be more than 5 characters"))
+		}
+		console.log("Wallet changing password.")
+		self.persistencePassword = changeTo_persistencePassword
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to change password with error", err)
+				} else {
+					console.log("Successfully changed password.")
+				}
+				fn(err)
+			}
+		)
 
 	}
 	
