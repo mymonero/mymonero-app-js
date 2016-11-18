@@ -42,7 +42,7 @@ async.series(
 		if (err) {
 			console.log("Error while performing tests: ", err)
 		} else {
-			console.log("Tests completed without error.")
+			console.log("✅  Tests completed without error.")
 		}
 	}
 )

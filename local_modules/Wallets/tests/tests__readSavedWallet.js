@@ -51,7 +51,7 @@ async.series(
 			console.log("Error while performing tests: ", err)
 			process.exit(0)
 		} else {
-			console.log("Tests completed without error.")
+			console.log("✅  Tests completed without error.")
 			process.exit(1)
 		}
 	}
@@ -67,6 +67,11 @@ function _proceedTo_test_openingSavedWallet(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}	
+	function _trampolineFor_fn()
+	{
+		console.log("New_StateCachedTransactions", wallet.New_StateCachedTransactions())
+		fn()
+	}
 	const options = 
 	{
 		_id: wallets__tests_config.openWalletWith_id,
@@ -92,7 +97,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 			}
 			finishedAccountInfoSync = true
 			if (areAllSyncOperationsFinished()) {
-				fn()
+				_trampolineFor_fn()
 			}
 		},
 		didReceiveUpdateToAccountTransactions: function()
@@ -102,7 +107,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 			}
 			finishedAccountTxsSync = true
 			if (areAllSyncOperationsFinished()) {
-				fn()
+				_trampolineFor_fn()
 			}
 		}
 	}

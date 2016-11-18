@@ -51,7 +51,7 @@ async.series(
 			console.log("Error while performing tests: ", err)
 			process.exit(1)
 		} else {
-			console.log("Tests completed without error.")
+			console.log("✅  Tests completed without error.")
 			process.exit(0)
 		}
 	}

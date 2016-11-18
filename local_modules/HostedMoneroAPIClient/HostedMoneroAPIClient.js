@@ -159,7 +159,7 @@ class HostedMoneroAPIClient
 					spend_key__private
 				)
 				if (spent_output.key_image !== key_image) {
-					console.log('Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
+					console.log('💬  Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
 					total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
 				}
 			}

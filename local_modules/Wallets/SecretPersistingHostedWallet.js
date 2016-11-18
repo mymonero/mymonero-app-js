@@ -29,8 +29,10 @@
 "use strict"
 //
 const async = require('async')
+const extend = require('util')._extend
 //
 const monero_wallet_utils = require('../monero_utils/monero_wallet_utils')
+const monero_txParsing_utils = require('../monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../monero_utils/monero_sendingFunds_utils')
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
@@ -407,22 +409,43 @@ class SecretPersistingHostedWallet
 		const self = this
 		const blockchain_height = self.blockchain_height
 		//
-		return monero_wallet_utils.IsTransactionConfirmed(tx, blockchain_height)
+		return monero_txParsing_utils.IsTransactionConfirmed(tx, blockchain_height)
 	}
 	IsTransactionUnlocked(tx)
 	{
 		const self = this
 		const blockchain_height = self.blockchain_height
 		//
-		return monero_wallet_utils.IsTransactionUnlocked(tx, blockchain_height)
+		return monero_txParsing_utils.IsTransactionUnlocked(tx, blockchain_height)
 	}
 	TransactionLockedReason(tx)
 	{
 		const self = this
 		const blockchain_height = self.blockchain_height
 		//
-		return monero_wallet_utils.TransactionLockedReason(tx, blockchain_height)
+		return monero_txParsing_utils.TransactionLockedReason(tx, blockchain_height)
 	}
+	//
+	New_StateCachedTransactions()
+	{ // this function is preferred for public access
+	  // as it caches the derivations of the above accessors
+		const self = this
+		const transactions = self.transactions || []
+		const stateCachedTransactions = [] // to finalize
+		const transactions_length = transactions.length
+		for (let i = 0 ; i < transactions_length ; i++) {
+			const transaction = transactions[i]
+			const shallowCopyOf_transaction = extend({}, transaction)
+			shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
+			shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
+			shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
+			//
+			stateCachedTransactions.push(shallowCopyOf_transaction)
+		}
+		//
+		return stateCachedTransactions
+	}
+	
 	//
 	IsAccountCatchingUp()
 	{
@@ -652,7 +675,6 @@ class SecretPersistingHostedWallet
 					self.isLoggedIn = true
 					//
 					const shouldDisplayImportAccountOption = !wasAGeneratedWallet && new_address
-					// console.log("SUCCESS… shouldDisplayImportAccountOption", shouldDisplayImportAccountOption)
 					self.shouldDisplayImportAccountOption = shouldDisplayImportAccountOption
 					//
 					self.saveToDisk(
@@ -769,7 +791,7 @@ class SecretPersistingHostedWallet
 	saveToDisk(fn)
 	{
 		const self = this
-		console.log("> saveToDisk", self)
+		console.log("📝  Saving wallet to disk:", self)
 		//
 		const persistencePassword = self.persistencePassword
 		if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
@@ -1167,7 +1189,6 @@ class SecretPersistingHostedWallet
 	)
 	{
 		const self = this
-		// console.log("_didFetchTransactionHistory")
 		//
 		self.account_scanned_height = account_scanned_height
 		self.account_scanned_block_height = account_scanned_block_height
