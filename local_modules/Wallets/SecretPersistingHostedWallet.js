@@ -37,35 +37,7 @@ const monero_sendingFunds_utils = require('../monero_utils/monero_sendingFunds_u
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
 const document_cryptor = require('../symmetric_cryptor/document_cryptor')
-const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
-//
-const documentCryptScheme =
-{
-	public_address: { type: CryptSchemeFieldValueTypes.String },
-	account_seed: { type: CryptSchemeFieldValueTypes.String },
-	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
-		// view
-		// spend
-	private_keys: { type: CryptSchemeFieldValueTypes.JSON },
-		// view
-		// spend
-	//
-	heights: { type: CryptSchemeFieldValueTypes.JSON },
-		// account_scanned_height
-		// account_scanned_tx_height
-		// account_scanned_block_height
-		// account_scan_start_height
-		// transaction_height
-		// blockchain_height
-	totals: { type: CryptSchemeFieldValueTypes.JSON },
-		// total_received
-		// locked_balance
-		// total_sent
-	//
-	transactions: { type: CryptSchemeFieldValueTypes.Array },
-	spent_outputs: { type: CryptSchemeFieldValueTypes.Array }
-}
-const CollectionName = "Wallets"
+const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
 //
 const wallet_currencies =
 {
@@ -282,7 +254,7 @@ class SecretPersistingHostedWallet
 		const self = this
 		//	
 		self.context.persister.DocumentsWithQuery(
-			CollectionName,
+			secretWallet_persistence_utils.CollectionName,
 			{ _id: self._id }, // cause we're saying we have an _id passed in…
 			{},
 			function(err, docs)
@@ -309,7 +281,7 @@ class SecretPersistingHostedWallet
 			try {
 				plaintextDocument = document_cryptor.New_DecryptedDocument(
 					encryptedDocument, 
-					documentCryptScheme, 
+					secretWallet_persistence_utils.DocumentCryptScheme, 
 					self.persistencePassword
 				)
 			} catch (e) {
@@ -323,43 +295,10 @@ class SecretPersistingHostedWallet
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…
-				// console.log("plaintextDocument", plaintextDocument)
-			self.isLoggedIn = plaintextDocument.isLoggedIn
-			self.dateThatLast_fetchedAccountInfo = plaintextDocument.dateThatLast_fetchedAccountInfo
-			self.dateThatLast_fetchedAccountTransactions = plaintextDocument.dateThatLast_fetchedAccountTransactions
-			//
-			self.dateWalletFirstSavedLocally = plaintextDocument.dateWalletFirstSavedLocally
-			//
-			self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
-			self.wallet_currency = plaintextDocument.wallet_currency
-			self.walletLabel = plaintextDocument.walletLabel
-			//
-			self.account_seed = plaintextDocument.account_seed
-			self.private_keys = plaintextDocument.private_keys
-			self.public_address = plaintextDocument.public_address
-			self.public_keys = plaintextDocument.public_keys
-			self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
-			//
-			self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
-			//
-			// unpacking heights…
-			const heights = plaintextDocument.heights // no || {} because we always persist at least {}
-			self.account_scanned_height = heights.account_scanned_height
-			self.account_scanned_tx_height = heights.account_scanned_tx_height 
-			self.account_scanned_block_height = heights.account_scanned_block_height
-			self.account_scan_start_height = heights.account_scan_start_height
-			self.transaction_height = heights.transaction_height
-			self.blockchain_height = heights.blockchain_height
-			//
-			// unpacking totals
-			const totals = plaintextDocument.totals
-			// console.log("totals " , totals)
-			self.total_received = new JSBigInt(totals.total_received) // persisted as string
-			self.locked_balance = new JSBigInt(totals.locked_balance) // persisted as string
-			self.total_sent = new JSBigInt(totals.total_sent) // persisted as string
-			//
-			self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
-			//
+			secretWallet_persistence_utils.HydrateWalletInstance(
+				self,
+				plaintextDocument
+			)
 			__proceedTo_validateHydration()
 		}
 		function __proceedTo_validateHydration()
@@ -797,184 +736,10 @@ class SecretPersistingHostedWallet
 	saveToDisk(fn)
 	{
 		const self = this
-		console.log("📝  Saving wallet to disk:", self)
-		//
-		const persistencePassword = self.persistencePassword
-		if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
-			const errStr = "❌  Cannot save wallet to disk as persistencePassword was missing."
-			const err = new Error(errStr)
-			fn(err)
-			return
-		}
-		//
-		const heights = {} // to construct:
-		if (self.walletLabel !== null && typeof self.walletLabel !== 'undefined') {
-			heights["walletLabel"] = self.walletLabel
-		}
-		if (self.account_scanned_tx_height !== null && typeof self.account_scanned_tx_height !== 'undefined') {
-			heights["account_scanned_tx_height"] = self.account_scanned_tx_height
-		}
-		if (self.account_scanned_height !== null && typeof self.account_scanned_height !== 'undefined') {
-			heights["account_scanned_height"] = self.account_scanned_height
-		}
-		if (self.account_scanned_block_height !== null && typeof self.account_scanned_block_height !== 'undefined') {
-			heights["account_scanned_block_height"] = self.account_scanned_block_height
-		}
-		if (self.account_scan_start_height !== null && typeof self.account_scan_start_height !== 'undefined') {
-			heights["account_scan_start_height"] = self.account_scan_start_height
-		}
-		if (self.transaction_height !== null && typeof self.transaction_height !== 'undefined') {
-			heights["transaction_height"] = self.transaction_height
-		}
-		if (self.blockchain_height !== null && typeof self.blockchain_height !== 'undefined') {
-			heights["blockchain_height"] = self.blockchain_height
-		}
-		//
-		const totals = {} // we store all of these as strings since the totals are JSBigInts
-		if (self.total_received !== null && typeof self.total_received !== 'undefined') {
-			totals["total_received"] = self.total_received.toString()
-		}
-		if (self.locked_balance !== null && typeof self.locked_balance !== 'undefined') {
-			totals["locked_balance"] = self.locked_balance.toString()
-		}
-		if (self.total_sent !== null && typeof self.total_sent !== 'undefined') {
-			totals["total_sent"] = self.total_sent.toString()
-		}		
-		//
-		if (typeof self.dateWalletFirstSavedLocally === 'undefined') {
-			self.dateWalletFirstSavedLocally = new Date()
-		}
-		//
-		const plaintextDocument =
-		{
-			walletLabel: self.walletLabel,
-			wallet_currency: self.wallet_currency,
-			mnemonic_wordsetName: self.mnemonic_wordsetName,
-			//
-			account_seed: self.account_seed,
-			private_keys: self.private_keys,
-			public_address: self.public_address,
-			public_keys: self.public_keys,
-			//
-			isLoggedIn: self.isLoggedIn,
-			dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo,
-			dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions,
-			dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally,
-			//
-			isInViewOnlyMode: self.isInViewOnlyMode,
-			//
-			transactions: self.transactions || [], // maybe not fetched yet
-			heights: heights,
-			totals: totals,
-			spent_outputs: self.spent_outputs || [] // maybe not fetched yet
-		}
-		// console.log("debug info: going to save plaintextDocument", plaintextDocument)
-		// console.log("type of account_scanned_height", typeof plaintextDocument.heights.account_scanned_height)
-		// console.log("totals", JSON.stringify(plaintextDocument.totals))
-		// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))
-		//
-		const encryptedDocument = document_cryptor.New_EncryptedDocument(
-			plaintextDocument, 
-			documentCryptScheme, 
-			persistencePassword
+		secretWallet_persistence_utils.SaveToDisk(
+			self,
+			fn
 		)
-		// console.log("debug info: going to save encryptedDocument", encryptedDocument)
-		//
-		// insert & update fn declarations for imminent usage…
-		function _proceedTo_insertExistingDocument()
-		{
-			self.context.persister.InsertDocument(
-				CollectionName,
-				encryptedDocument,
-				function(
-					err,
-					newDocument
-				)
-				{
-					if (err) {
-						console.error("Error while saving wallet:", err)
-						fn(err)
-						return
-					} 
-					if (newDocument._id === null) { // not that this would happen…
-						const errStr = "❌  Inserted wallet but _id after saving was null"
-						const err = new Error(errStr)
-						fn(err)
-						return // bail
-					}
-					self._id = newDocument._id // so we have it in runtime memory now…
-					console.log("✅  Saved newly inserted wallet with _id " + self._id + ".")
-					fn()
-				}
-			)
-		}
-		function _proceedTo_updateExistingDocument()
-		{
-			var query =
-			{
-				_id: self._id // we want to update the existing one
-			}
-			var update = encryptedDocument
-			var options =
-			{
-				multi: false,
-				upsert: false, // we are only using .update because we know the document exists
-				returnUpdatedDocs: true
-			}
-			self.context.persister.UpdateDocuments(
-				CollectionName,
-				query,
-				update,
-				options,
-				function(
-					err,
-					numAffected,
-					affectedDocuments,
-					upsert
-				)
-				{
-
-					if (err) {
-						console.error("Error while saving wallet:", err)
-						fn(err)
-						return
-					} 
-					var affectedDocument
-					if (Array.isArray(affectedDocuments)) {
-						affectedDocument = affectedDocuments[0]
-					} else {
-						affectedDocument = affectedDocuments
-					}
-					if (affectedDocument._id === null) { // not that this would happen…
-						const errStr = "❌  Updated wallet but _id after saving was null"
-						const err = new Error(errStr)
-						fn(err)
-						return // bail
-					}
-					if (affectedDocument._id !== self._id) {
-						const errStr = "❌  Updated wallet but _id after saving was not equal to non-null _id before saving"
-						const err = new Error(errStr)
-						fn(err)
-						return // bail
-					}
-					if (numAffected === 0) {
-						const errStr = "❌  Number of documents affected by _id'd update was 0"
-						const err = new Error(errStr)
-						fn(err)
-						return // bail
-					}
-					console.log("✅  Saved update to wallet with _id " + self._id + ".")
-					fn()
-				}
-			)
-		}
-		//
-		if (self._id === null) {
-			_proceedTo_insertExistingDocument()
-		} else {
-			_proceedTo_updateExistingDocument()
-		}
-
 	}
 	
 	
@@ -1024,10 +789,10 @@ class SecretPersistingHostedWallet
 	)
 	{
 		const self = this
-		if (typeof self.walletLabel === 'undefined' || self.walletLabel === null || self.walletLabel.length < 1) {
+		if (typeof toWalletLabel === 'undefined' || toWalletLabel === null || toWalletLabel.length < 1) {
 			return fn(new Error("Please enter a wallet name"))
 		}
-		self.walletLabel = walletLabel
+		self.walletLabel = toWalletLabel
 		self.saveToDisk(
 			function(err)
 			{
