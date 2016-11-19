@@ -82,6 +82,7 @@ class SecretPersistingHostedWallet
 				}
 			}
 			//
+			console.info("✅  Successfully instantiated", self.Description())
 			successfullyInstantiated_cb()
 			//
 			function __callAllSyncFunctions()
@@ -404,6 +405,12 @@ class SecretPersistingHostedWallet
 		const self = this
 		//
 		return self.total_received.subtract(self.total_sent)
+	}
+	Description()
+	{
+		const self = this
+		//
+		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance()
 	}
 	
 	

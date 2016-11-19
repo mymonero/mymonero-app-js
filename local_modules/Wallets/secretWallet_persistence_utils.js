@@ -90,7 +90,7 @@ function SaveToDisk(
 )
 {
 	const self = walletInstance
-	console.log("📝  Saving wallet to disk:", self)
+	console.log("📝  Saving wallet to disk ", self.Description())
 	//
 	const persistencePassword = self.persistencePassword
 	if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {

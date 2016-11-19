@@ -28,42 +28,54 @@
 
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions = 
-[ 
+const wallets__tests_config = require('./tests_config.js')
+if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
+	process.exit(1)
+	return
+}
+//
+const context = require('./tests_context').NewHydratedContext()
+//
+
+const async = require('async')
+async.series(
+	[
+		_proceedTo_test_bootController
+	],
+	function(err)
 	{
-		module_path: __dirname + "/../MainWindow/MainWindowController",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../Wallets/WalletsController",
-		instance_key: "walletsController",
-		options: {
-			obtainPasswordToOpenWalletWithLabel_cb: function(
-				walletLabel, 
-				returningPassword_cb
-			)
-			{
-				console.log("obtain pw", walletLabel, returningPassword_cb)
-				returningPassword_cb("a much stronger password than before")
-			}
+		if (err) {
+			console.log("Error while performing tests: ", err)
+			process.exit(1)
+		} else {
+			console.log("✅  Tests completed without error.")
+			process.exit(0)
 		}
 	}
-]
-function NewHydratedContext(app) 
-{
-	var initialContext = 
-	{
-		app: app,
-		userDataAbsoluteFilepath: app.getPath('userData')
-	}
+)
 
-	return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+function _proceedTo_test_bootController(cb)
+{
+	const WalletsController__module = require('../WalletsController')
+	//
+	const walletsController__options =
+	{
+		obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
+		{
+			returningPassword_cb(wallets__tests_config.persistencePassword) // normally the user would enter this
+		},
+		didInitializeSuccessfully_cb: function()
+		{
+			cb()
+		},
+		failedToInitializeSuccessfully_cb: function(err)
+		{
+			cb(err)			
+		}
+	}
+	const walletsController = new WalletsController__module(
+		walletsController__options,
+		context
+	)
 }
-module.exports.NewHydratedContext = NewHydratedContext

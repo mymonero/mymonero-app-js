@@ -39,36 +39,66 @@ const secretWallet_persistence_utils = require('./secretWallet_persistence_utils
 //
 class WalletsController
 {
-	//
-	//
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Lifecycle - Initialization
-	//
+
 	constructor(options, context)
 	{
-		var self = this
+		const self = this
 		self.options = options
 		self.context = context
 		//
-		self.obtainPasswordToOpenWalletWithLabel_cb = self.options.obtainPasswordToOpenWalletWithLabel_cb // (walletLabel, returningPassword_cb) -> Void
+		self.obtainPasswordToOpenWalletWithLabel_cb = self.options.obtainPasswordToOpenWalletWithLabel_cb 
+		// ^-- obtainPasswordToOpenWalletWithLabel_cb: (walletLabel, returningPassword_cb) -> Void
+		//		returningPassword_cb: (tryWith_persistencePassword: String?, orShouldSkipThisWallet: Bool?) -> Void
+		if (typeof self.obtainPasswordToOpenWalletWithLabel_cb !== 'function' || self.obtainPasswordToOpenWalletWithLabel_cb === null) {
+			const errStr = "You must supply a obtainPasswordToOpenWalletWithLabel_cb via options to your WalletsController instance"
+			console.error(errStr)
+			throw errStr
+			return
+		} 
+		//
+		self.didInitializeSuccessfully_cb = self.options.didInitializeSuccessfully_cb
+		self.failedToInitializeSuccessfully_cb = self.options.failedToInitializeSuccessfully_cb
 		//
 		self.setup()
 	}
 	setup()
 	{
-		var self = this
+		const self = this
+		const context = self.context
 		//
 		function _trampolineFor_finishedInitializing()
 		{
-			console.log("wallets!", self.wallets)
+			if (typeof self.didInitializeSuccessfully_cb === 'function') {
+				self.didInitializeSuccessfully_cb()
+			} else {
+				console.warn("No didInitializeSuccessfully_cb provided via options to your WalletsController")
+			}
+		}
+		function _trampolineFor_failedToInitialize_withErr(err)
+		{
+			console.error(errStr)
+			//
+			if (typeof self.failedToInitializeSuccessfully_cb === 'function') {
+				self.failedToInitializeSuccessfully_cb(err)
+			} else {
+				console.warn("No failedToInitializeSuccessfully_cb provided via options to your WalletsController")
+			}
+		}
+		function _trampolineFor_failedToInitialize_withErrStr(errStr)
+		{
+			_trampolineFor_failedToInitialize_withErr(new Error(errStr))
 		}
 		//
 		self._new_idsAndLabelsOfPersistedWallets(
 			function(err, idsAndLabels)
 			{
 				if (err) {
-					// TODO: emit event
-					console.error("Error fetching persisted wallet ids", err)
+					const errStr = "Error fetching persisted wallet ids: " + err.toString()
+					_trampolineFor_failedToInitialize_withErrStr(errStr)
 					return
 				}
 				__proceedTo_loadWalletsWithIdsAndLabels(idsAndLabels)
@@ -76,7 +106,6 @@ class WalletsController
 		)
 		function __proceedTo_loadWalletsWithIdsAndLabels(idsAndLabels)
 		{
-			console.log("idsAndLabels" , idsAndLabels)
 			self.wallets = []
 			async.eachSeries(
 				idsAndLabels,

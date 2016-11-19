@@ -28,8 +28,6 @@
 
 "use strict"
 //
-const async = require('async')
-//
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
 	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
@@ -40,3 +38,15 @@ if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === nu
 const context = require('./tests_context').NewHydratedContext()
 const walletsController = context.walletsController
 console.log("walletsController" , walletsController)
+
+// TODO: add extant wallet(s)
+
+
+// initWithMnemonic__mnemonicString: wallets__tests_config.initWithMnemonic__mnemonicString,
+// initWithMnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
+//
+//
+//
+// initWithKeys__address: wallets__tests_config.initWithKeys__address,
+// initWithKeys__view_key__private: wallets__tests_config.initWithKeys__view_key__private,
+// initWithKeys__spend_key__private: wallets__tests_config.initWithKeys__spend_key__private,
