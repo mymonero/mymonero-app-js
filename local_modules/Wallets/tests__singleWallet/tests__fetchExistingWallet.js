@@ -75,11 +75,11 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 		initWithMnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
 		//
 		persistencePassword: wallets__tests_config.persistencePassword,
-		failure_cb: function(err)
+		failedSetUp_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullyInstantiated_cb: function()
+		successfullySetUp_cb: function()
 		{
 			console.log("Wallet is ", wallet)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
@@ -131,11 +131,11 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 		initWithKeys__spend_key__private: wallets__tests_config.initWithKeys__spend_key__private,
 		//
 		persistencePassword: wallets__tests_config.persistencePassword,
-		failure_cb: function(err)
+		failedSetUp_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullyInstantiated_cb: function()
+		successfullySetUp_cb: function()
 		{
 			console.log("Wallet is ", wallet)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch

@@ -68,7 +68,6 @@ class WalletsController
 	setup()
 	{
 		const self = this
-		const context = self.context
 		//
 		function _trampolineFor_finishedInitializing()
 		{
@@ -92,6 +91,21 @@ class WalletsController
 		{
 			_trampolineFor_failedToInitialize_withErr(new Error(errStr))
 		}
+		//
+		self._setup_reconstitutePersistedWallets(
+			_trampolineFor_finishedInitializing,
+			_trampolineFor_failedToInitialize_withErr,
+			_trampolineFor_failedToInitialize_withErrStr
+		)
+	}
+	_setup_reconstitutePersistedWallets(
+		_trampolineFor_finishedInitializing,
+		_trampolineFor_failedToInitialize_withErr,
+		_trampolineFor_failedToInitialize_withErrStr
+	)
+	{
+		const self = this
+		const context = self.context
 		//
 		self._new_idsAndLabelsOfPersistedWallets(
 			function(err, idsAndLabels)
@@ -127,14 +141,15 @@ class WalletsController
 							{
 								_id: _id,
 								persistencePassword: tryWith_persistencePassword,
-								failure_cb: function(err)
+								failedSetUp_cb: function(err)
 								{
 									console.error("Failed to read wallet ", err)
 									cb(err)
 								},
-								successfullyInstantiated_cb: function()
+								successfullySetUp_cb: function()
 								{
-									self.wallets.push(wallet)
+									self._wallet_wasSuccessfullySetUp(wallet)
+									//
 									cb(null)
 								},
 								//
@@ -166,8 +181,118 @@ class WalletsController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 	
+	
+	
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
+	
+	AddExtantWalletWith_mnemonicString(
+		walletLabel,
+		persistencePassword,
+		mnemonicString,
+		wordsetName,
+		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet, wasWalletAlreadyInserted: Bool?) -> Void
+	)
+	{
+		const self = this
+		const context = self.context
+		//
+		var walletAlreadyExists = false
+		const wallets_length = self.wallets.length
+		for (let i = 0 ; i < wallets_length ; i++) {
+			const wallet = self.wallets[i]
+			if (wallet.mnemonicString === mnemonicString) {
+				// simply return existing wallet
+				fn(null, wallet, true) // wasWalletAlreadyInserted: true
+				return
+			}
+			// TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
+		}
+		//
+		var wallet;
+		const options = 
+		{
+			walletLabel: walletLabel,
+			persistencePassword: persistencePassword,
+			//
+			initWithMnemonic__mnemonicString: mnemonicString,
+			initWithMnemonic__wordsetName: wordsetName,
+			//
+			failedSetUp_cb: function(err)
+			{
+				fn(err)
+			},
+			successfullySetUp_cb: function()
+			{
+				self._wallet_wasSuccessfullySetUp(wallet)
+				//
+				fn(null, wallet, false) // wasWalletAlreadyInserted: false
+			},
+			//
+			didReceiveUpdateToAccountInfo: function()
+			{
+			},
+			didReceiveUpdateToAccountTransactions: function()
+			{
+			}
+		}
+		wallet = new SecretPersistingHostedWallet(options, context)
+	}
+	AddExtantWalletWith_addressAndKeys(
+		walletLabel,
+		persistencePassword,
+		address,
+		view_key__private,
+		spend_key__private,
+		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet, wasWalletAlreadyInserted: Bool?) -> Void
+	)
+	{
+		const self = this
+		const context = self.context
+		//
+		var walletAlreadyExists = false
+		const wallets_length = self.wallets.length
+		for (let i = 0 ; i < wallets_length ; i++) {
+			const wallet = self.wallets[i]
+			if (wallet.public_address === address) {
+				// simply return existing wallet; note: this wallet might have mnemonic and thus seed
+				// so might not be exactly what consumer of AddExtantWalletWith_addressAndKeys is expecting
+				fn(null, wallet, true) // wasWalletAlreadyInserted: true
+				return
+			}
+		}
+		//
+		var wallet;
+		const options = 
+		{
+			walletLabel: walletLabel,
+			persistencePassword: persistencePassword,
+			//
+			initWithMnemonic__address: address,
+			initWithMnemonic__view_key__private: view_key__private,
+			initWithMnemonic__spend_key__private: spend_key__private,
+			//
+			failedSetUp_cb: function(err)
+			{
+				fn(err)
+			},
+			successfullySetUp_cb: function()
+			{
+				self._wallet_wasSuccessfullySetUp(wallet)
+				//
+				fn(null)
+			},
+			//
+			didReceiveUpdateToAccountInfo: function()
+			{
+			},
+			didReceiveUpdateToAccountTransactions: function()
+			{
+			}
+		}
+		wallet = new SecretPersistingHostedWallet(options, context)
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
@@ -201,11 +326,20 @@ class WalletsController
 		)
 	}
 
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
+
+	_wallet_wasSuccessfullySetUp(walletInstance)
+	{
+		const self = this
+		self.wallets.push(walletInstance)
+		//
+		// todo: fire event/call cb that new wallet added to list
+	}
 
 }
 module.exports = WalletsController

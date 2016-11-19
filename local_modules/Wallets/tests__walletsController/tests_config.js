@@ -36,10 +36,6 @@ module.exports =
 	persistencePassword: "a much stronger password than before",
 	//
 	
-	// opening already saved
-	openWalletWith_id: "SL9vayN9PX9Gq8mI", // take the _id from the wallet creation or fetch test output
-	
-	
 	// importing wallets
 	// I
 	initWithMnemonic__mnemonicString: "phone etiquette twice oars bounced left wonders aglow fleet avidly ramped fuzzy height nodes fever radar soapy fading boyfriend vortex wizard slug mowing occur soapy", 

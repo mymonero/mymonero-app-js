@@ -58,14 +58,14 @@ class SecretPersistingHostedWallet
 	{
 		var self = this
 		//
-		const failure_cb = self.options.failure_cb // (err) -> Void
-		const successfullyInstantiated_cb = self.options.successfullyInstantiated_cb // () -> Void
+		const failedSetUp_cb = self.options.failedSetUp_cb // (err) -> Void
+		const successfullySetUp_cb = self.options.successfullySetUp_cb // () -> Void
 		const ifNewWallet__informingAndVerifyingMnemonic_cb = self.options.ifNewWallet__informingAndVerifyingMnemonic_cb 
 		// ^ ifNewWallet__informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
 		// 	confirmation_cb: (userConfirmed_mnemonicString) -> Void
 		// See logIn_creatingNewWallet. Only need to supply this if you're asking to create a new wallet
 		//
-		function _trampolineFor_successfullyInstantiated_cb()
+		function _trampolineFor_successfullySetUp_cb()
 		{
 			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
 				console.warn("⚠️  Wallet initialized without an account_seed.")
@@ -76,14 +76,14 @@ class SecretPersistingHostedWallet
 					if (self.mnemonicString !== self.initialization_mnemonicString) {
 						const errStr = "❌  Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
 						console.error(errStr)
-						failure_cb(new Error(errStr))
+						failedSetUp_cb(new Error(errStr))
 						return
 					}
 				}
 			}
 			//
 			console.info("✅  Successfully instantiated", self.Description())
-			successfullyInstantiated_cb()
+			successfullySetUp_cb()
 			//
 			function __callAllSyncFunctions()
 			{
@@ -121,7 +121,7 @@ class SecretPersistingHostedWallet
 			const errStr = "❌  You must supply a persistencePassword in the options of your SecretPersistingHostedWallet instantiation call"
 			const err = new Error(errStr)
 			console.error(errStr)
-			failure_cb(err)
+			failedSetUp_cb(err)
 			return
 		}
 		self.isLoggingIn = false 
@@ -133,21 +133,21 @@ class SecretPersistingHostedWallet
 			//
 			self._setup_logInOrSignUp(
 				ifNewWallet__informingAndVerifyingMnemonic_cb,
-				failure_cb,
-				_trampolineFor_successfullyInstantiated_cb
+				failedSetUp_cb,
+				_trampolineFor_successfullySetUp_cb
 			)
 			return
 		}
 		// Wallet supposedly already exists. Let's look it up…
 		self._setup_fetchExistingWalletWithId(
-			failure_cb,
-			_trampolineFor_successfullyInstantiated_cb
+			failedSetUp_cb,
+			_trampolineFor_successfullySetUp_cb
 		)
 	}
 	_setup_logInOrSignUp(
 		ifNewWallet__informingAndVerifyingMnemonic_cb,
-		failure_cb,
-		_trampolineFor_successfullyInstantiated_cb
+		failedSetUp_cb,
+		_trampolineFor_successfullySetUp_cb
 	)
 	{
 		const self = this
@@ -167,11 +167,11 @@ class SecretPersistingHostedWallet
 					if (err) {
 						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with mnemonic with error… " + err.toString()
 						console.error(errStr)
-						failure_cb(err)
+						failedSetUp_cb(err)
 						return
 					}
 					console.log("✅  Successfully added existing wallet via mnemonic string")
-					_trampolineFor_successfullyInstantiated_cb()
+					_trampolineFor_successfullySetUp_cb()
 				}
 			)
 			//
@@ -186,14 +186,14 @@ class SecretPersistingHostedWallet
 			if (typeof initialization_view_key__private === 'undefined' || initialization_view_key__private === null || initialization_view_key__private === '') {
 				const errStr = "❌  You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
 				console.error(errStr)
-				failure_cb(new Error(errStr))
+				failedSetUp_cb(new Error(errStr))
 				return
 			}
 			if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
 				const errStr = "❌  You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
 				const err = new Error(errStr)
 				console.error(errStr)
-				failure_cb(err)
+				failedSetUp_cb(err)
 				return
 			}
 			self.logIn_keys(
@@ -206,11 +206,11 @@ class SecretPersistingHostedWallet
 						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with address + spend & view keys with error… " + err.toString()
 						const err = new Error(errStr)
 						console.error(errStr)
-						failure_cb(err)
+						failedSetUp_cb(err)
 						return
 					}
 					console.log("✅  Successfully added existing wallet via address and view & spend keys")
-					_trampolineFor_successfullyInstantiated_cb()
+					_trampolineFor_successfullySetUp_cb()
 				}
 
 			)
@@ -223,7 +223,7 @@ class SecretPersistingHostedWallet
 			const errStr = "❌  You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
 			const err = new Error(errStr)
 			console.error(errStr)
-			failure_cb(err)
+			failedSetUp_cb(err)
 			return
 		}
 		//
@@ -239,17 +239,17 @@ class SecretPersistingHostedWallet
 					const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
 					const err = new Error(errStr)
 					console.error(errStr)
-					failure_cb(err)
+					failedSetUp_cb(err)
 					return
 				}
 				console.log("✅  Successfully logged after creating a new wallet.")
-				_trampolineFor_successfullyInstantiated_cb()
+				_trampolineFor_successfullySetUp_cb()
 			}
 		)
 	}
 	_setup_fetchExistingWalletWithId(
-		failure_cb,
-		_trampolineFor_successfullyInstantiated_cb
+		failedSetUp_cb,
+		_trampolineFor_successfullySetUp_cb
 	)
 	{
 		const self = this
@@ -262,14 +262,14 @@ class SecretPersistingHostedWallet
 			{
 				if (err) {
 					console.error(err.toString)
-					failure_cb(err)
+					failedSetUp_cb(err)
 					return
 				}
 				if (docs.length === 0) {
 					const errStr = "❌  Wallet with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
-					failure_cb(err)
+					failedSetUp_cb(err)
 					return
 				}
 				const encryptedDocument = docs[0]
@@ -289,7 +289,7 @@ class SecretPersistingHostedWallet
 				const errStr = "❌  Decryption err: " + e.toString()
 				const err = new Error(errStr)
 				console.error(errStr)
-				failure_cb(err)
+				failedSetUp_cb(err)
 				return
 			}
 			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
@@ -308,7 +308,7 @@ class SecretPersistingHostedWallet
 			{
 				const err = new Error(errStr)
 				console.error(errStr)
-				failure_cb(err)
+				failedSetUp_cb(err)
 			}
 			if (self.isLoggedIn !== true) {
 				return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn")
@@ -342,7 +342,7 @@ class SecretPersistingHostedWallet
 			}
 			//
 			// finally
-			_trampolineFor_successfullyInstantiated_cb() // all done
+			_trampolineFor_successfullySetUp_cb() // all done
 		}
 	}
 

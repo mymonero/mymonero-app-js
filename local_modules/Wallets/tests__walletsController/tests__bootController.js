@@ -37,7 +37,6 @@ if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === nu
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-
 const async = require('async')
 async.series(
 	[
@@ -54,7 +53,7 @@ async.series(
 		}
 	}
 )
-
+//
 function _proceedTo_test_bootController(cb)
 {
 	const WalletsController__module = require('../WalletsController')
