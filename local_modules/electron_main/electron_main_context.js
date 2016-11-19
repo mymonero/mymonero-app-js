@@ -40,6 +40,17 @@ var context_object_instantiation_descriptions =
 		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
 		instance_key: "persister",
 		options: {}
+	},
+	{
+		module_path: __dirname + "/../Wallets/WalletsController",
+		instance_key: "walletsController",
+		options: {
+			obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
+			{
+				console.log("obtain pw", walletLabel, returningPassword_cb)
+				returningPassword_cb("a much stronger password than before")
+			}
+		}
 	}
 ]
 function NewHydratedContext(app) 

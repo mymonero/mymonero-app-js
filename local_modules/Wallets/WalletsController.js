@@ -28,7 +28,10 @@
 
 "use strict"
 //
-const Wallet = require('./Wallet')
+const async = require('async')
+//
+const SecretPersistingHostedWallet = require('./SecretPersistingHostedWallet')
+const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,13 +50,87 @@ class WalletsController
 		self.options = options
 		self.context = context
 		//
-		self.wallets = [] // fetch and keep up to date
+		self.obtainPasswordToOpenWalletWithLabel_cb = self.options.obtainPasswordToOpenWalletWithLabel_cb // (walletLabel, returningPassword_cb) -> Void
 		//
 		self.setup()
 	}
 	setup()
 	{
 		var self = this
+		//
+		function _trampolineFor_finishedInitializing()
+		{
+			console.log("wallets!", self.wallets)
+		}
+		//
+		self._new_idsAndLabelsOfPersistedWallets(
+			function(err, idsAndLabels)
+			{
+				if (err) {
+					// TODO: emit event
+					console.error("Error fetching persisted wallet ids", err)
+					return
+				}
+				__proceedTo_loadWalletsWithIdsAndLabels(idsAndLabels)
+			}
+		)
+		function __proceedTo_loadWalletsWithIdsAndLabels(idsAndLabels)
+		{
+			console.log("idsAndLabels" , idsAndLabels)
+			self.wallets = []
+			async.eachSeries(
+				idsAndLabels,
+				function(idAndLabel, cb)
+				{
+					const _id = idAndLabel._id
+					const walletLabel = idAndLabel.walletLabel
+					var wallet;
+					self.obtainPasswordToOpenWalletWithLabel_cb(
+						walletLabel,
+						function(tryWith_persistencePassword, orShouldSkip)
+						{
+							if (orShouldSkip) {
+								// do not push anything
+								cb()
+								return // exit
+							}
+							const options = 
+							{
+								_id: _id,
+								persistencePassword: tryWith_persistencePassword,
+								failure_cb: function(err)
+								{
+									console.error("Failed to read wallet ", err)
+									cb(err)
+								},
+								successfullyInstantiated_cb: function()
+								{
+									self.wallets.push(wallet)
+									cb(null)
+								},
+								//
+								didReceiveUpdateToAccountInfo: function()
+								{ // TODO - proxy (via centrally shared fn probably)
+								},
+								didReceiveUpdateToAccountTransactions: function()
+								{ // TODO - proxy
+								}
+							}
+							wallet = new SecretPersistingHostedWallet(options, context)
+						}
+					)
+				},
+				function(err)
+				{
+					if (err) {
+						// TODO: emit event
+						console.error("Error fetching persisted wallet ids", err)
+						return
+					}
+					_trampolineFor_finishedInitializing()
+				}
+			)
+		}
 	}
 
 
@@ -65,6 +142,35 @@ class WalletsController
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
+
+	_new_idsAndLabelsOfPersistedWallets(
+		fn // (err?, docs?) -> Void
+	) 
+	{
+		const self = this
+		self.context.persister.DocumentsWithQuery(
+			secretWallet_persistence_utils.CollectionName,
+			{}, // blank query - find all
+			{},
+			function(err, docs)
+			{
+				if (err) {
+					console.error(err.toString)
+					fn(err)
+					return
+				}
+				const idsAndLabels = []
+				docs.forEach(function(el, idx)
+				{
+					idsAndLabels.push({
+						_id: el._id,
+						walletLabel: el.walletLabel
+					})
+				})
+				fn(null, idsAndLabels)
+			}
+		)
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
