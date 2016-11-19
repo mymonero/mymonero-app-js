@@ -998,12 +998,14 @@ class SecretPersistingHostedWallet
 			return fn(new Error("New password must be more than 5 characters"))
 		}
 		console.log("Wallet changing password.")
+		const old_persistencePassword = self.persistencePassword
 		self.persistencePassword = changeTo_persistencePassword
 		self.saveToDisk(
 			function(err)
 			{
 				if (err) {
 					console.error("Failed to change password with error", err)
+					self.persistencePassword = old_persistencePassword // revert
 				} else {
 					console.log("Successfully changed password.")
 				}
