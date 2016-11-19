@@ -32,7 +32,7 @@ const async = require('async')
 //
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
 	process.exit(1)
 	return
 }
@@ -43,7 +43,8 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		_proceedTo_test_openingSavedWallet,
+		_proceedTo_test_importingWalletByMnemonic,
+		// _proceedTo_test_importingWalletByAddressAndKeys // this will import the wallet w/o an account_seed
 	],
 	function(err)
 	{
@@ -57,8 +58,7 @@ async.series(
 	}
 )
 //
-//
-function _proceedTo_test_openingSavedWallet(fn)
+function _proceedTo_test_importingWalletByMnemonic(fn)
 {
 	console.log("> _proceedTo_test_openingSavedWallet")
 	var finishedAccountInfoSync = false
@@ -66,31 +66,14 @@ function _proceedTo_test_openingSavedWallet(fn)
 	function areAllSyncOperationsFinished()
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
-	}
-	function didFinishAllSyncOperations()
-	{
-		console.log("Proceed to change password ", wallet)
-		const existing_persistencePassword = wallets__tests_config.persistencePassword
-		const myNew_tooShort_password = "  "
-		const myNew_good_password = "a much stronger password than before"
-		const changeTo_persistencePassword = myNew_good_password
-		wallet.ChangePasswordFromTo(
-			existing_persistencePassword,
-			changeTo_persistencePassword,
-			function(err)
-			{
-				if (err) {
-					console.log("Failed to change pw with err", err)
-				} else {
-					console.log("Successfully changed pw")
-				}
-				fn(err)
-			}
-		)
-	}
+	}	
 	const options = 
 	{
-		_id: wallets__tests_config.openWalletWith_id,
+		walletLabel: "Checking",
+		//
+		initWithMnemonic__mnemonicString: wallets__tests_config.initWithMnemonic__mnemonicString,
+		initWithMnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
+		//
 		persistencePassword: wallets__tests_config.persistencePassword,
 		failure_cb: function(err)
 		{
@@ -113,7 +96,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 			}
 			finishedAccountInfoSync = true
 			if (areAllSyncOperationsFinished()) {
-				didFinishAllSyncOperations()
+				fn()
 			}
 		},
 		didReceiveUpdateToAccountTransactions: function()
@@ -123,7 +106,63 @@ function _proceedTo_test_openingSavedWallet(fn)
 			}
 			finishedAccountTxsSync = true
 			if (areAllSyncOperationsFinished()) {
-				didFinishAllSyncOperations()
+				fn()
+			}
+		}
+	}
+	const wallet = new SecretPersistingHostedWallet(options, context)
+}
+
+function _proceedTo_test_importingWalletByAddressAndKeys(fn)
+{
+	console.log("> _proceedTo_test_openingSavedWallet")
+	var finishedAccountInfoSync = false
+	var finishedAccountTxsSync = false
+	function areAllSyncOperationsFinished()
+	{
+		return finishedAccountInfoSync && finishedAccountTxsSync
+	}
+	const options = 
+	{
+		walletLabel: "Checking",
+		//
+		initWithKeys__address: wallets__tests_config.initWithKeys__address,
+		initWithKeys__view_key__private: wallets__tests_config.initWithKeys__view_key__private,
+		initWithKeys__spend_key__private: wallets__tests_config.initWithKeys__spend_key__private,
+		//
+		persistencePassword: wallets__tests_config.persistencePassword,
+		failure_cb: function(err)
+		{
+			fn(err)
+		},
+		successfullyInstantiated_cb: function()
+		{
+			console.log("Wallet is ", wallet)
+			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
+		},
+		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
+		{
+			confirmation_cb(mnemonicString) // simulating correct user input
+		},
+		//
+		didReceiveUpdateToAccountInfo: function()
+		{
+			if (finishedAccountInfoSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
+			finishedAccountInfoSync = true
+			if (areAllSyncOperationsFinished()) {
+				fn()
+			}
+		},
+		didReceiveUpdateToAccountTransactions: function()
+		{
+			if (finishedAccountTxsSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
+			finishedAccountTxsSync = true
+			if (areAllSyncOperationsFinished()) {
+				fn()
 			}
 		}
 	}

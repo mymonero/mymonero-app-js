@@ -28,39 +28,44 @@
 
 "use strict"
 //
+const wallets__tests_config = require('./tests_config.js')
+if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
+	process.exit(1)
+	return
+}	
 // Hydrate context
 var context_object_instantiation_descriptions = 
 [ 
 	{
-		module_path: __dirname + "/../MainWindow/MainWindowController",
-		instance_key: "mainWindowController",
+		module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
+		instance_key: "hostedMoneroAPIClient",
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
+		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
 		instance_key: "persister",
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../Wallets/WalletsController",
+		module_path: __dirname + "/../WalletsController",
 		instance_key: "walletsController",
 		options: {
 			obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
 			{
 				console.log("obtain pw", walletLabel, returningPassword_cb)
-				returningPassword_cb(wallets__tests_config.persistencePassword) // normally the user would enter this
+				returningPassword_cb("a much stronger password than before")
 			}
 		}
 	}
 ]
-function NewHydratedContext(app) 
+function NewHydratedContext() 
 {
 	var initialContext = 
 	{
-		app: app,
-		userDataAbsoluteFilepath: app.getPath('userData')
+		userDataAbsoluteFilepath: "./test_products"
 	}
 
-	return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	return require("../../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
 }
 module.exports.NewHydratedContext = NewHydratedContext

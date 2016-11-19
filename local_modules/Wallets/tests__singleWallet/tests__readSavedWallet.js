@@ -32,7 +32,7 @@ const async = require('async')
 //
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__singleWallet/ in order to run this test.")
 	process.exit(1)
 	return
 }
@@ -43,33 +43,38 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		_proceedTo_test_creatingNewWalletAndAccount,
+		_proceedTo_test_openingSavedWallet,
 	],
 	function(err)
 	{
 		if (err) {
 			console.log("Error while performing tests: ", err)
-			process.exit(1)
+			process.exit(0)
 		} else {
 			console.log("✅  Tests completed without error.")
-			process.exit(0)
+			process.exit(1)
 		}
 	}
 )
 //
 //
-function _proceedTo_test_creatingNewWalletAndAccount(fn)
+function _proceedTo_test_openingSavedWallet(fn)
 {
-	console.log("> _proceedTo_test_creatingNewWalletAndAccount")
+	console.log("> _proceedTo_test_openingSavedWallet")
 	var finishedAccountInfoSync = false
 	var finishedAccountTxsSync = false
 	function areAllSyncOperationsFinished()
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
+	}	
+	function _trampolineFor_fn()
+	{
+		console.log("New_StateCachedTransactions", wallet.New_StateCachedTransactions())
+		fn()
 	}
 	const options = 
 	{
-		walletLabel: "Checking",
+		_id: wallets__tests_config.openWalletWith_id,
 		persistencePassword: wallets__tests_config.persistencePassword,
 		failure_cb: function(err)
 		{
@@ -92,7 +97,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 			}
 			finishedAccountInfoSync = true
 			if (areAllSyncOperationsFinished()) {
-				fn()
+				_trampolineFor_fn()
 			}
 		},
 		didReceiveUpdateToAccountTransactions: function()
@@ -102,7 +107,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 			}
 			finishedAccountTxsSync = true
 			if (areAllSyncOperationsFinished()) {
-				fn()
+				_trampolineFor_fn()
 			}
 		}
 	}

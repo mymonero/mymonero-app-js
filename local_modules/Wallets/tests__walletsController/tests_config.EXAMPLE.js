@@ -26,41 +26,24 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"use strict"
+const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
 //
-// Hydrate context
-var context_object_instantiation_descriptions = 
-[ 
-	{
-		module_path: __dirname + "/../MainWindow/MainWindowController",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../Wallets/WalletsController",
-		instance_key: "walletsController",
-		options: {
-			obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
-			{
-				console.log("obtain pw", walletLabel, returningPassword_cb)
-				returningPassword_cb(wallets__tests_config.persistencePassword) // normally the user would enter this
-			}
-		}
-	}
-]
-function NewHydratedContext(app) 
+module.exports =
 {
-	var initialContext = 
-	{
-		app: app,
-		userDataAbsoluteFilepath: app.getPath('userData')
-	}
+	// shared - persistence
+	//
+	persistencePassword: "a secret phrase",
 
-	return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	// used by readSavedWallet
+	openWalletWith_id: "UrougbLX3qcNUXIa", // take the _id from the wallet creation test output or from fetchExistingWallet 
+
+		
+	// used by fetchExistingWallet
+	// I
+	initWithMnemonic__mnemonicString: "…", 
+	initWithMnemonic__wordsetName: monero_wallet_utils.wordsetNames.english,
+	// II
+	initWithKeys__address: "…",
+	initWithKeys__view_key__private: "…",
+	initWithKeys__spend_key__private: "…",
 }
-module.exports.NewHydratedContext = NewHydratedContext

@@ -28,39 +28,15 @@
 
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions = 
-[ 
-	{
-		module_path: __dirname + "/../MainWindow/MainWindowController",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../Wallets/WalletsController",
-		instance_key: "walletsController",
-		options: {
-			obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
-			{
-				console.log("obtain pw", walletLabel, returningPassword_cb)
-				returningPassword_cb(wallets__tests_config.persistencePassword) // normally the user would enter this
-			}
-		}
-	}
-]
-function NewHydratedContext(app) 
-{
-	var initialContext = 
-	{
-		app: app,
-		userDataAbsoluteFilepath: app.getPath('userData')
-	}
-
-	return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+const async = require('async')
+//
+const wallets__tests_config = require('./tests_config.js')
+if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
+	process.exit(1)
+	return
 }
-module.exports.NewHydratedContext = NewHydratedContext
+//
+const context = require('./tests_context').NewHydratedContext()
+const walletsController = context.walletsController
+console.log("walletsController" , walletsController)
