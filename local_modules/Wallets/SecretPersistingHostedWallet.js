@@ -156,6 +156,8 @@ class SecretPersistingHostedWallet
 		self.isLoggedIn = false // this is soon toggled based on what is persisted in the DB
 		self.mustCreateNewWalletAndAccount = false // to derive…
 		if (self._id === null) {
+			self.walletLabel = self.options.walletLabel || ""
+			//
 			self._setup_logInOrSignUp(
 				ifNewWallet__informingAndVerifyingMnemonic_cb,
 				failure_cb,
@@ -330,6 +332,7 @@ class SecretPersistingHostedWallet
 			//
 			self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
 			self.wallet_currency = plaintextDocument.wallet_currency
+			self.walletLabel = plaintextDocument.walletLabel
 			//
 			self.account_seed = plaintextDocument.account_seed
 			self.private_keys = plaintextDocument.private_keys
@@ -369,6 +372,9 @@ class SecretPersistingHostedWallet
 			}
 			if (self.isLoggedIn !== true) {
 				return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn")
+			}
+			if (self.walletLabel === null || typeof self.walletLabel === 'undefined' || self.walletLabel === "") {
+				return _failWithValidationErr("Reconstituted wallet had no valid walletLabel")
 			}
 			// We are not going to check whether the acct seed is nil/'' here because if the wallet was
 			// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
@@ -802,6 +808,9 @@ class SecretPersistingHostedWallet
 		}
 		//
 		const heights = {} // to construct:
+		if (self.walletLabel !== null && typeof self.walletLabel !== 'undefined') {
+			heights["walletLabel"] = self.walletLabel
+		}
 		if (self.account_scanned_tx_height !== null && typeof self.account_scanned_tx_height !== 'undefined') {
 			heights["account_scanned_tx_height"] = self.account_scanned_tx_height
 		}
@@ -838,6 +847,7 @@ class SecretPersistingHostedWallet
 		//
 		const plaintextDocument =
 		{
+			walletLabel: self.walletLabel,
 			wallet_currency: self.wallet_currency,
 			mnemonic_wordsetName: self.mnemonic_wordsetName,
 			//
@@ -1000,7 +1010,33 @@ class SecretPersistingHostedWallet
 				fn(err)
 			}
 		)
-
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Changing meta data
+	
+	SetWalletLabel(
+		toWalletLabel,
+		fn
+	)
+	{
+		const self = this
+		if (typeof self.walletLabel === 'undefined' || self.walletLabel === null || self.walletLabel.length < 1) {
+			return fn(new Error("Please enter a wallet name"))
+		}
+		self.walletLabel = walletLabel
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save new wallet name", err)
+				} else {
+					console.log("Successfully saved new wallet name.")
+				}
+				fn(err)
+			}
+		)
 	}
 	
 	

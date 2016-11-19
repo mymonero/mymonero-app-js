@@ -69,6 +69,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 	}
 	const options = 
 	{
+		walletLabel: "Checking",
 		persistencePassword: wallets__tests_config.persistencePassword,
 		failure_cb: function(err)
 		{

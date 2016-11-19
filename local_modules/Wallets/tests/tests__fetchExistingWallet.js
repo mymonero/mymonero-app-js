@@ -69,6 +69,8 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 	}	
 	const options = 
 	{
+		walletLabel: "Checking",
+		//
 		initWithMnemonic__mnemonicString: wallets__tests_config.initWithMnemonic__mnemonicString,
 		initWithMnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
 		//
@@ -122,6 +124,8 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 	}
 	const options = 
 	{
+		walletLabel: "Checking",
+		//
 		initWithKeys__address: wallets__tests_config.initWithKeys__address,
 		initWithKeys__view_key__private: wallets__tests_config.initWithKeys__view_key__private,
 		initWithKeys__spend_key__private: wallets__tests_config.initWithKeys__spend_key__private,
