@@ -30,20 +30,21 @@
 //
 const async = require('async')
 //
-const wallets__tests_config = require('./tests_config.js')
-if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__singleWallet/ in order to run this test.")
+const tests_config = require('./tests_config.js')
+if (typeof tests_config === 'undefined' || tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Contacts/tests/ in order to run this test.")
 	process.exit(1)
 	return
 }
-//
 const context = require('./tests_context').NewHydratedContext()
 //
-const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
+var contactsListController; // to initialize…
 //
 async.series(
 	[
-		_proceedTo_test_listContacts,
+		_proceedTo_test_bootController
+		//
+
 	],
 	function(err)
 	{
@@ -58,9 +59,32 @@ async.series(
 )
 //
 //
-function _proceedTo_test_listContacts(fn)
+function _proceedTo_test_bootController(fn)
 {
-	console.log("> _proceedTo_test_listContacts")
-
-
+	console.log("> _proceedTo_test_bootController")
+	//
+	const options =
+	{
+		didInitializeSuccessfully_cb: function()
+		{
+			console.log("Contacts: ")
+			contactsListController.contacts.forEach(
+				function(el, idx)
+				{ // just logging them out…
+					console.log(el.Description())
+				}
+			)
+			//
+			fn()
+		},
+		failedToInitializeSuccessfully_cb: function(err)
+		{
+			fn(err)			
+		}
+	}
+	const Class = require('../ContactsListController')
+	contactsListController = new Class(
+		options,
+		context
+	)
 }

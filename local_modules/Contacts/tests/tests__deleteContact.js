@@ -39,72 +39,63 @@ if (typeof tests_config === 'undefined' || tests_config === null) {
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const Contact = require('../Contact')
+var contactsListController; // to initialize…
 //
 async.series(
 	[
-		_proceedTo_test_creatingNewWalletAndAccount,
+		_proceedTo_test_bootController,
+		//
+		_proceedTo_test_deleteContact
 	],
 	function(err)
 	{
 		if (err) {
 			console.log("Error while performing tests: ", err)
-			process.exit(1)
+			process.exit(0)
 		} else {
 			console.log("✅  Tests completed without error.")
-			process.exit(0)
+			process.exit(1)
 		}
 	}
 )
 //
 //
-function _proceedTo_test_creatingNewWalletAndAccount(fn)
+function _proceedTo_test_bootController(fn)
 {
-	console.log("> _proceedTo_test_creatingNewWalletAndAccount")
-	var finishedAccountInfoSync = false
-	var finishedAccountTxsSync = false
-	function areAllSyncOperationsFinished()
+	console.log("> _proceedTo_test_bootController")
+	//
+	const options =
 	{
-		return finishedAccountInfoSync && finishedAccountTxsSync
-	}
-	const options = 
-	{
-		walletLabel: "Checking",
-		persistencePassword: wallets__tests_config.persistencePassword,
-		Wallets/tests__singleWallet: function(err)
+		didInitializeSuccessfully_cb: function()
 		{
-			fn(err)
+			console.log("Contacts: ")
+			contactsListController.contacts.forEach(
+				function(el, idx)
+				{ // just logging them out…
+					console.log(el.Description())
+				}
+			)
+			//
+			fn()
 		},
-		successfullySetUp_cb: function()
+		failedToInitializeSuccessfully_cb: function(err)
 		{
-			console.log("Wallet is ", wallet)
-			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-		},
-		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
-		{
-			confirmation_cb(mnemonicString) // simulating correct user input
-		},
-		//
-		didReceiveUpdateToAccountInfo: function()
-		{
-			if (finishedAccountInfoSync == true) {
-				return // already done initial sync - don't re-trigger fn
-			}
-			finishedAccountInfoSync = true
-			if (areAllSyncOperationsFinished()) {
-				fn()
-			}
-		},
-		didReceiveUpdateToAccountTransactions: function()
-		{
-			if (finishedAccountTxsSync == true) {
-				return // already done initial sync - don't re-trigger fn
-			}
-			finishedAccountTxsSync = true
-			if (areAllSyncOperationsFinished()) {
-				fn()
-			}
+			fn(err)			
 		}
 	}
-	const wallet = new SecretPersistingHostedWallet(options, context)
+	const Class = require('../ContactsListController')
+	contactsListController = new Class(
+		options,
+		context
+	)
+}
+function _proceedTo_test_deleteContact(fn)
+{
+	if (typeof contactsListController === 'undefined' || contactsListController === null) {
+		// but techically async ought not to let this test be executed if controller boot failed
+		cb(new Error("contactsListController undefined or null"))
+		return
+	}
+	//
+	// TODO	
 }

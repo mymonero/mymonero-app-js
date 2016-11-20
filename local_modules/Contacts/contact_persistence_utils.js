@@ -25,6 +25,8 @@ function SaveToDisk(
 	const self = instance
 	console.log("📝  Saving contact to disk ", self.Description())
 	//
+	fn = fn || function(err) { console.trace("No fn provided to SaveToDisk") }
+	//
 	const plaintextDocument =
 	{
 		fullname: self.fullname,

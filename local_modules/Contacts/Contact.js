@@ -67,7 +67,16 @@ class Contact
 		self.address__XMR = self.options.address__XMR
 		//
 		self.saveToDisk(
-			
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save new address__XMR", err)
+					failedSetUp_cb(err)
+				} else {
+					console.log("Successfully saved new address__XMR.")
+					_trampolineFor_successfullySetUp_cb()
+				}
+			}
 		)
 	}
 	_setup_fetchExistingDocumentWithId(failedSetUp_cb, _trampolineFor_successfullySetUp_cb)
@@ -138,7 +147,7 @@ class Contact
 	saveToDisk(fn)
 	{
 		const self = this
-		instance_persistence_utils.SaveToDisk(
+		contact_persistence_utils.SaveToDisk(
 			self,
 			fn
 		)

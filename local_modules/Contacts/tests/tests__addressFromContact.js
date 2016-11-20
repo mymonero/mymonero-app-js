@@ -77,6 +77,7 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 		{
 			console.log("Contact is ", contact)
 			console.log("Address is ", contact.address__XMR)
+			fn()
 		}
 	}
 	const instance = new Contact(options, context)

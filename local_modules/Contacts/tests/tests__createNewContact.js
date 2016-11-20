@@ -39,25 +39,75 @@ if (typeof tests_config === 'undefined' || tests_config === null) {
 //
 const context = require('./tests_context').NewHydratedContext()
 //
+var contactsListController; // to initialize…
+//
 async.series(
 	[
-		_proceedTo_test_creatingNewContact,
+		_proceedTo_test_bootController,
+		//
+		_proceedTo_test_createNewContact
 	],
 	function(err)
 	{
 		if (err) {
 			console.log("Error while performing tests: ", err)
-			process.exit(1)
+			process.exit(0)
 		} else {
 			console.log("✅  Tests completed without error.")
-			process.exit(0)
+			process.exit(1)
 		}
 	}
 )
 //
 //
-function _proceedTo_test_creatingNewContact(fn)
+function _proceedTo_test_bootController(fn)
 {
-	console.log("> _proceedTo_test_creatingNewContact")
-	
+	console.log("> _proceedTo_test_bootController")
+	//
+	const options =
+	{
+		didInitializeSuccessfully_cb: function()
+		{
+			console.log("Contacts: ")
+			contactsListController.contacts.forEach(
+				function(el, idx)
+				{ // just logging them out…
+					console.log(el.Description())
+				}
+			)
+			//
+			fn()
+		},
+		failedToInitializeSuccessfully_cb: function(err)
+		{
+			fn(err)			
+		}
+	}
+	const Class = require('../ContactsListController')
+	contactsListController = new Class(
+		options,
+		context
+	)
+}
+function _proceedTo_test_createNewContact(fn)
+{
+	if (typeof contactsListController === 'undefined' || contactsListController === null) {
+		// but techically async ought not to let this test be executed if controller boot failed
+		fn(new Error("contactsListController undefined or null"))
+		return
+	}
+	//
+	contactsListController.AddContact(
+		tests_config.fullname,
+		tests_config.address__XMR,
+		function(err, instance)
+		{
+			if (err) {
+				fn(err)
+			} else {
+				console.log("Successfully added new contact", instance)
+				fn()
+			}
+		}
+	)
 }

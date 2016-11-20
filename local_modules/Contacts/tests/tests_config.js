@@ -28,8 +28,8 @@
 
 module.exports =
 {
-	contact_name: "Paul Shapiro",
-	contact_address__XMR: "42S6txwM9RA53BL2Uf46CeM5WMJHTj6jWKgmSMLiLeb6A8QwXiWTK51PxF7wR8wNdgLJkWCM3NaiTfhWJnhskk7A7S5bEfp",
+	fullname: "Paul Shapiro",
+	address__XMR: "42S6txwM9RA53BL2Uf46CeM5WMJHTj6jWKgmSMLiLeb6A8QwXiWTK51PxF7wR8wNdgLJkWCM3NaiTfhWJnhskk7A7S5bEfp",
 	//
 	// after creating, populate:
 	openContactWith_id: "" // in order to run addressFromContact

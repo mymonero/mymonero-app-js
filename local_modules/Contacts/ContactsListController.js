@@ -94,7 +94,7 @@ class ContactsListController
 		const context = self.context
 		//
 		self._new_loadDescriptionsOfPersisted_contacts(
-			function(err, ids)
+			function(err, loadDescriptions)
 			{
 				if (err) {
 					const errStr = "Error fetching persisted contact ids: " + err.toString()
@@ -108,10 +108,10 @@ class ContactsListController
 		{
 			self.contacts = []
 			async.eachSeries(
-				ids,
-				function(loadDescriptions, cb)
+				loadDescriptions,
+				function(loadDescription, cb)
 				{
-					const _id = id._id
+					const _id = loadDescription._id
 					var instance;
 					const options = 
 					{
