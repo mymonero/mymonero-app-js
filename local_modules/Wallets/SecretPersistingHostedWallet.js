@@ -751,6 +751,21 @@ class SecretPersistingHostedWallet
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Deletion
+	
+	Delete(
+		fn // (err?) -> Void
+	)
+	{
+		const self = this
+		secretWallet_persistence_utils.DeleteFromDisk(
+			self,
+			fn
+		)
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing password
 	
 	ChangePasswordFromTo(

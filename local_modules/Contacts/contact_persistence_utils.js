@@ -143,7 +143,6 @@ function DeleteFromDisk(
 			numRemoved
 		)
 		{
-
 			if (err) {
 				console.error("Error while removing contact:", err)
 				fn(err)
@@ -153,7 +152,7 @@ function DeleteFromDisk(
 				fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
 				return // bail
 			}
-			console.log("✅  Deleted saved contact with _id " + self._id + ".")
+			console.log("🗑  Deleted saved contact with _id " + self._id + ".")
 			fn()
 		}
 	)

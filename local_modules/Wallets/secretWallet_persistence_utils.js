@@ -258,3 +258,40 @@ function SaveToDisk(
 	}
 }
 exports.SaveToDisk = SaveToDisk
+//
+function DeleteFromDisk(
+	instance,
+	fn
+)
+{
+	const self = instance
+	console.log("📝  Deleting wallet ", self.Description())
+	const query =
+	{
+		_id: self._id 
+	}
+	const options = {}
+	self.context.persister.RemoveDocuments(
+		CollectionName,
+		query,
+		options,
+		function(
+			err,
+			numRemoved
+		)
+		{
+			if (err) {
+				console.error("Error while removing wallet:", err)
+				fn(err)
+				return
+			} 
+			if (numRemoved === 0) {
+				fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
+				return // bail
+			}
+			console.log("🗑  Deleted saved wallet with _id " + self._id + ".")
+			fn()
+		}
+	)
+}
+exports.DeleteFromDisk = DeleteFromDisk

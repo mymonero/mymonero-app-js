@@ -35,7 +35,9 @@ module.exports =
 	//
 	persistencePassword: "a much stronger password than before",
 	//
-	
+	//
+	deleteWalletWith_id: "SL9vayN9PX9Gq8mI",
+	//
 	// importing wallets
 	// I
 	initWithMnemonic__mnemonicString: "phone etiquette twice oars bounced left wonders aglow fleet avidly ramped fuzzy height nodes fever radar soapy fading boyfriend vortex wizard slug mowing occur soapy", 

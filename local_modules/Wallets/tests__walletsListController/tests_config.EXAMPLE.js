@@ -35,7 +35,7 @@ module.exports =
 	persistencePassword: "a secret phrase",
 
 	// used by readSavedWallet
-	openWalletWith_id: "UrougbLX3qcNUXIa", // take the _id from the wallet creation test output or from fetchExistingWallet 
+	deleteWalletWith_id: "", // take the _id from the wallet creation test output or from fetchExistingWallet 
 
 		
 	// used by fetchExistingWallet

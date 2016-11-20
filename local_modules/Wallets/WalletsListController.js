@@ -292,6 +292,48 @@ class WalletsListController
 		}
 		wallet = new SecretPersistingHostedWallet(options, context)
 	}
+	//
+	DeleteWalletWithId(
+		_id,
+		fn
+	)
+	{
+		const self = this
+		const wallets_length = self.wallets.length
+		//
+		var indexOfWallet = null;
+		var walletToDelete = null;
+		console.log("_id" , _id)
+		for (let i = 0 ; i < wallets_length ; i++) {
+			const wallet = self.wallets[i]
+			if (wallet._id === _id) {
+				indexOfWallet = i
+				walletToDelete = wallet
+				break
+			}
+		}
+		if (indexOfWallet === null || walletToDelete === null) {
+			fn(new Error("Wallet not found"))
+			return
+		}
+		//
+		self.wallets.splice(indexOfWallet, 1) // pre-emptively remove the wallet from the list
+		self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
+		//
+		walletToDelete.Delete(
+			function(err)
+			{
+				if (err) {
+					self.wallets.splice(indexOfWallet, 0, walletToDelete) // revert deletion
+					self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
+					fn(err)
+					return
+				}
+				walletToDelete = null // free
+				fn()
+			}
+		)
+	}
 		
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -337,8 +379,11 @@ class WalletsListController
 	{
 		const self = this
 		self.wallets.push(walletInstance)
-		//
-		// todo: fire event/call cb that new wallet added to list
+		self.__listUpdatedAtRuntime_wallets()
+	}
+	__listUpdatedAtRuntime_wallets()
+	{
+		// todo: fire event/call cb that list updated
 	}
 
 }
