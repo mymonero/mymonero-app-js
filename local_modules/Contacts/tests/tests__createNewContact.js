@@ -96,7 +96,6 @@ function _proceedTo_test_createNewContact(fn)
 		fn(new Error("contactsListController undefined or null"))
 		return
 	}
-	//
 	contactsListController.AddContact(
 		tests_config.fullname,
 		tests_config.address__XMR,

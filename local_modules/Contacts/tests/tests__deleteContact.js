@@ -93,9 +93,19 @@ function _proceedTo_test_deleteContact(fn)
 {
 	if (typeof contactsListController === 'undefined' || contactsListController === null) {
 		// but techically async ought not to let this test be executed if controller boot failed
-		cb(new Error("contactsListController undefined or null"))
+		fn(new Error("contactsListController undefined or null"))
 		return
 	}
-	//
-	// TODO	
+	contactsListController.DeleteContactWithId(
+		tests_config.deleteContactWith_id,
+		function(err)
+		{
+			if (err) {
+				fn(err)
+			} else {
+				console.log("Successfully deleted contact")
+				fn()
+			}
+		}
+	)
 }

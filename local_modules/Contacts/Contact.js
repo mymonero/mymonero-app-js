@@ -155,6 +155,21 @@ class Contact
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Deletion
+	
+	Delete(
+		fn // (err?) -> Void
+	)
+	{
+		const self = this
+		contact_persistence_utils.DeleteFromDisk(
+			self,
+			fn
+		)
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
 	
 	Set_fullname(

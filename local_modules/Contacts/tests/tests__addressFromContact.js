@@ -68,7 +68,7 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 	var instance;
 	const options = 
 	{
-		_id: tests_config.openContactWith_id,
+		_id: tests_config.getAddressFromContactWith_id,
 		//
 		failedSetUp_cb: function(err)
 		{

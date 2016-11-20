@@ -181,6 +181,47 @@ class ContactsListController
 		}
 		instance = new Contact(options, context)
 	}
+	DeleteContactWithId(
+		_id,
+		fn // fn: (err: Error?) -> Void
+	)
+	{
+		const self = this
+		const contacts_length = self.contacts.length
+		//
+		var indexOfContact = null;
+		var contactToDelete = null;
+		console.log("_id" , _id)
+		for (let i = 0 ; i < contacts_length ; i++) {
+			const contact = self.contacts[i]
+			if (contact._id === _id) {
+				indexOfContact = i
+				contactToDelete = contact
+				break
+			}
+		}
+		if (indexOfContact === null || contactToDelete === null) {
+			fn(new Error("Contact not found"))
+			return
+		}
+		//
+		self.contacts.splice(indexOfContact, 1) // pre-emptively remove the contact from the list
+		self.__listUpdated_contacts() // ensure delegate notified
+		//
+		contactToDelete.Delete(
+			function(err)
+			{
+				if (err) {
+					self.contacts.splice(indexOfContact, 0, contactToDelete) // revert deletion
+					self.__listUpdated_contacts() // ensure delegate notified
+					fn(err)
+					return
+				}
+				contactToDelete = null // free
+				fn()
+			}
+		)
+	}		
 		
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -225,6 +266,11 @@ class ContactsListController
 	{
 		const self = this
 		self.contacts.push(instance)
+		self.__listUpdated_contacts() // ensure delegate notified
+	}
+
+	__listUpdated_contacts()
+	{
 		//
 		// todo: fire event/call cb that new contact added to list
 	}

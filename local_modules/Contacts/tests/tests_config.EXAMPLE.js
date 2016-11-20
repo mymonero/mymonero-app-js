@@ -32,5 +32,6 @@ module.exports =
 	address__XMR: "…",
 	//
 	// after creating, populate:
-	openContactWith_id: "" // in order to run addressFromContact
+	getAddressFromContactWith_id: "", // to run addressFromContact
+	deleteContactWith_id: "" // to run deleteContact
 }
