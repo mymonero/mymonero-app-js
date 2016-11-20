@@ -26,24 +26,41 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+"use strict"
 //
-const monero_config = require('./monero_config')
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+const async = require('async')
 //
-function IsTransactionConfirmed(tx, blockchain_height)
-{
-	return (blockchain_height - tx.height) > monero_config.txMinConfirms
+const wallets__tests_config = require('./tests_config.js')
+if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__singleWallet/ in order to run this test.")
+	process.exit(1)
+	return
 }
-exports.IsTransactionConfirmed = IsTransactionConfirmed
 //
-function IsTransactionUnlocked(tx, blockchain_height)
-{
-	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
-}
-exports.IsTransactionUnlocked = IsTransactionUnlocked
+const context = require('./tests_context').NewHydratedContext()
 //
-function TransactionLockedReason(tx, blockchain_height)
+const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
+//
+async.series(
+	[
+		_proceedTo_test_listContacts,
+	],
+	function(err)
+	{
+		if (err) {
+			console.log("Error while performing tests: ", err)
+			process.exit(0)
+		} else {
+			console.log("✅  Tests completed without error.")
+			process.exit(1)
+		}
+	}
+)
+//
+//
+function _proceedTo_test_listContacts(fn)
 {
-	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
+	console.log("> _proceedTo_test_listContacts")
+
+
 }
-exports.TransactionLockedReason = TransactionLockedReason

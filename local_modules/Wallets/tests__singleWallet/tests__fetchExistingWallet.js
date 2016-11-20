@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -60,7 +60,7 @@ async.series(
 //
 function _proceedTo_test_importingWalletByMnemonic(fn)
 {
-	console.log("> _proceedTo_test_openingSavedWallet")
+	console.log("> _proceedTo_test_importingWalletByMnemonic")
 	var finishedAccountInfoSync = false
 	var finishedAccountTxsSync = false
 	function areAllSyncOperationsFinished()
@@ -115,7 +115,7 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 
 function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 {
-	console.log("> _proceedTo_test_openingSavedWallet")
+	console.log("> _proceedTo_test_importingWalletByAddressAndKeys")
 	var finishedAccountInfoSync = false
 	var finishedAccountTxsSync = false
 	function areAllSyncOperationsFinished()

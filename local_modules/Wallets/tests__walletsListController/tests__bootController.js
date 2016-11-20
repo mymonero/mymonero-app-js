@@ -26,24 +26,55 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+"use strict"
 //
-const monero_config = require('./monero_config')
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
-//
-function IsTransactionConfirmed(tx, blockchain_height)
-{
-	return (blockchain_height - tx.height) > monero_config.txMinConfirms
+const wallets__tests_config = require('./tests_config.js')
+if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsListController/ in order to run this test.")
+	process.exit(1)
+	return
 }
-exports.IsTransactionConfirmed = IsTransactionConfirmed
 //
-function IsTransactionUnlocked(tx, blockchain_height)
-{
-	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
-}
-exports.IsTransactionUnlocked = IsTransactionUnlocked
+const context = require('./tests_context').NewHydratedContext()
 //
-function TransactionLockedReason(tx, blockchain_height)
+const async = require('async')
+async.series(
+	[
+		_proceedTo_test_bootController
+	],
+	function(err)
+	{
+		if (err) {
+			console.log("Error while performing tests: ", err)
+			process.exit(1)
+		} else {
+			console.log("✅  Tests completed without error.")
+			process.exit(0)
+		}
+	}
+)
+//
+function _proceedTo_test_bootController(cb)
 {
-	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
+	const WalletsListController__module = require('../WalletsListController')
+	//
+	const walletsListController__options =
+	{
+		obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
+		{
+			returningPassword_cb(wallets__tests_config.persistencePassword) // normally the user would enter this
+		},
+		didInitializeSuccessfully_cb: function()
+		{
+			cb()
+		},
+		failedToInitializeSuccessfully_cb: function(err)
+		{
+			cb(err)			
+		}
+	}
+	const walletsListController = new WalletsListController__module(
+		walletsListController__options,
+		context
+	)
 }
-exports.TransactionLockedReason = TransactionLockedReason

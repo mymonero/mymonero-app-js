@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -42,8 +42,8 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../Wallets/WalletsController",
-		instance_key: "walletsController",
+		module_path: __dirname + "/../Wallets/WalletsListController",
+		instance_key: "walletsListController",
 		options: {
 			obtainPasswordToOpenWalletWithLabel_cb: function(
 				walletLabel, 

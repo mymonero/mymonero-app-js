@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -28,19 +28,22 @@
 
 "use strict"
 //
-const wallets__tests_config = require('./tests_config.js')
-if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
+const async = require('async')
+//
+const tests_config = require('./tests_config.js')
+if (typeof tests_config === 'undefined' || tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Contacts/tests/ in order to run this test.")
 	process.exit(1)
 	return
 }
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const async = require('async')
+const Contact = require('../Contact')
+//
 async.series(
 	[
-		_proceedTo_test_bootController
+		_proceedTo_test_creatingNewWalletAndAccount,
 	],
 	function(err)
 	{
@@ -54,27 +57,54 @@ async.series(
 	}
 )
 //
-function _proceedTo_test_bootController(cb)
+//
+function _proceedTo_test_creatingNewWalletAndAccount(fn)
 {
-	const WalletsController__module = require('../WalletsController')
-	//
-	const walletsController__options =
+	console.log("> _proceedTo_test_creatingNewWalletAndAccount")
+	var finishedAccountInfoSync = false
+	var finishedAccountTxsSync = false
+	function areAllSyncOperationsFinished()
 	{
-		obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
+		return finishedAccountInfoSync && finishedAccountTxsSync
+	}
+	const options = 
+	{
+		walletLabel: "Checking",
+		persistencePassword: wallets__tests_config.persistencePassword,
+		Wallets/tests__singleWallet: function(err)
 		{
-			returningPassword_cb(wallets__tests_config.persistencePassword) // normally the user would enter this
+			fn(err)
 		},
-		didInitializeSuccessfully_cb: function()
+		successfullySetUp_cb: function()
 		{
-			cb()
+			console.log("Wallet is ", wallet)
+			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
 		},
-		failedToInitializeSuccessfully_cb: function(err)
+		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
 		{
-			cb(err)			
+			confirmation_cb(mnemonicString) // simulating correct user input
+		},
+		//
+		didReceiveUpdateToAccountInfo: function()
+		{
+			if (finishedAccountInfoSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
+			finishedAccountInfoSync = true
+			if (areAllSyncOperationsFinished()) {
+				fn()
+			}
+		},
+		didReceiveUpdateToAccountTransactions: function()
+		{
+			if (finishedAccountTxsSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
+			finishedAccountTxsSync = true
+			if (areAllSyncOperationsFinished()) {
+				fn()
+			}
 		}
 	}
-	const walletsController = new WalletsController__module(
-		walletsController__options,
-		context
-	)
+	const wallet = new SecretPersistingHostedWallet(options, context)
 }

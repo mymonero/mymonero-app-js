@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -37,7 +37,7 @@ const secretWallet_persistence_utils = require('./secretWallet_persistence_utils
 ////////////////////////////////////////////////////////////////////////////////
 // Principal class
 //
-class WalletsController
+class WalletsListController
 {
 
 
@@ -54,7 +54,7 @@ class WalletsController
 		// ^-- obtainPasswordToOpenWalletWithLabel_cb: (walletLabel, returningPassword_cb) -> Void
 		//		returningPassword_cb: (tryWith_persistencePassword: String?, orShouldSkipThisWallet: Bool?) -> Void
 		if (typeof self.obtainPasswordToOpenWalletWithLabel_cb !== 'function' || self.obtainPasswordToOpenWalletWithLabel_cb === null) {
-			const errStr = "You must supply a obtainPasswordToOpenWalletWithLabel_cb via options to your WalletsController instance"
+			const errStr = "You must supply a obtainPasswordToOpenWalletWithLabel_cb via options to your WalletsListController instance"
 			console.error(errStr)
 			throw errStr
 			return
@@ -74,7 +74,7 @@ class WalletsController
 			if (typeof self.didInitializeSuccessfully_cb === 'function') {
 				self.didInitializeSuccessfully_cb()
 			} else {
-				console.warn("No didInitializeSuccessfully_cb provided via options to your WalletsController")
+				console.warn("No didInitializeSuccessfully_cb provided via options to your WalletsListController")
 			}
 		}
 		function _trampolineFor_failedToInitialize_withErr(err)
@@ -84,7 +84,7 @@ class WalletsController
 			if (typeof self.failedToInitializeSuccessfully_cb === 'function') {
 				self.failedToInitializeSuccessfully_cb(err)
 			} else {
-				console.warn("No failedToInitializeSuccessfully_cb provided via options to your WalletsController")
+				console.warn("No failedToInitializeSuccessfully_cb provided via options to your WalletsListController")
 			}
 		}
 		function _trampolineFor_failedToInitialize_withErrStr(errStr)
@@ -184,7 +184,7 @@ class WalletsController
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public
+	// Runtime - Imperatives - Public - Wallets list
 	
 	AddExtantWalletWith_mnemonicString(
 		walletLabel,
@@ -292,7 +292,7 @@ class WalletsController
 		}
 		wallet = new SecretPersistingHostedWallet(options, context)
 	}
-	
+		
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
@@ -342,4 +342,4 @@ class WalletsController
 	}
 
 }
-module.exports = WalletsController
+module.exports = WalletsListController

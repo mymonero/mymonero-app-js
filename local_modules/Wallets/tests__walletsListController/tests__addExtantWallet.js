@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -30,14 +30,14 @@
 //
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsController/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsListController/ in order to run this test.")
 	process.exit(1)
 	return
 }
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-var walletsController; // to instantiate for usage……
+var walletsListController; // to instantiate for usage……
 //
 const async = require('async')
 async.series(
@@ -61,9 +61,9 @@ async.series(
 //
 function _proceedTo_test_bootController(cb)
 {
-	const WalletsController__module = require('../WalletsController')
+	const WalletsListController__module = require('../WalletsListController')
 	//
-	const walletsController__options =
+	const walletsListController__options =
 	{
 		obtainPasswordToOpenWalletWithLabel_cb: function(walletLabel, returningPassword_cb)
 		{
@@ -75,29 +75,29 @@ function _proceedTo_test_bootController(cb)
 		},
 		failedToInitializeSuccessfully_cb: function(err)
 		{
-			walletsController = null // clear out so that subsequent asserts don't get bad info
+			walletsListController = null // clear out so that subsequent asserts don't get bad info
 			//
 			cb(err)			
 		}
 	}
-	walletsController = new WalletsController__module(
-		walletsController__options,
+	walletsListController = new WalletsListController__module(
+		walletsListController__options,
 		context
 	)
 }
 //
 function _proceedTo_test_addingExtantWalletBy_mnemonicString(cb)
 {
-	if (walletsController == null || typeof walletsController === 'undefined') {
-		// but techically async ought not to let this test be executed if walletsController boot failed
-		cb(new Error("walletsController undefined or null"))
+	if (walletsListController == null || typeof walletsListController === 'undefined') {
+		// but techically async ought not to let this test be executed if walletsListController boot failed
+		cb(new Error("walletsListController undefined or null"))
 		return
 	}
 	//
 	const initWithMnemonic__mnemonicString = wallets__tests_config.initWithMnemonic__mnemonicString
 	const initWithMnemonic__wordsetName = wallets__tests_config.initWithMnemonic__wordsetName
 	//
-	walletsController.AddExtantWalletWith_mnemonicString(
+	walletsListController.AddExtantWalletWith_mnemonicString(
 		"Checking",
 		wallets__tests_config.persistencePassword,
 		initWithMnemonic__mnemonicString,
@@ -118,9 +118,9 @@ function _proceedTo_test_addingExtantWalletBy_mnemonicString(cb)
 }
 function _proceedTo_test_addingExtantWalletBy_addrAndPrivateKeys(cb)
 {
-	if (walletsController == null || typeof walletsController === 'undefined') {
-		// but techically async ought not to let this test be executed if walletsController boot failed
-		cb(new Error("walletsController undefined or null"))
+	if (walletsListController == null || typeof walletsListController === 'undefined') {
+		// but techically async ought not to let this test be executed if walletsListController boot failed
+		cb(new Error("walletsListController undefined or null"))
 		return
 	}
 	//
@@ -128,7 +128,7 @@ function _proceedTo_test_addingExtantWalletBy_addrAndPrivateKeys(cb)
 	const initWithKeys__view_key__private = wallets__tests_config.initWithKeys__view_key__private
 	const initWithKeys__spend_key__private = wallets__tests_config.initWithKeys__spend_key__private
 	//
-	walletsController.AddExtantWalletWith_addressAndKeys(
+	walletsListController.AddExtantWalletWith_addressAndKeys(
 		"Checking",
 		wallets__tests_config.persistencePassword,
 		initWithKeys__address,

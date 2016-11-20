@@ -26,24 +26,28 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-//
-const monero_config = require('./monero_config')
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
-//
-function IsTransactionConfirmed(tx, blockchain_height)
+"use strict"
+// Hydrate context
+var context_object_instantiation_descriptions = 
+[ 
+	{
+		module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
+		instance_key: "hostedMoneroAPIClient",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
+		instance_key: "persister",
+		options: {}
+	}
+]
+function NewHydratedContext() 
 {
-	return (blockchain_height - tx.height) > monero_config.txMinConfirms
+	var initialContext = 
+	{
+		userDataAbsoluteFilepath: "./test_products"
+	}
+
+	return require("../../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
 }
-exports.IsTransactionConfirmed = IsTransactionConfirmed
-//
-function IsTransactionUnlocked(tx, blockchain_height)
-{
-	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
-}
-exports.IsTransactionUnlocked = IsTransactionUnlocked
-//
-function TransactionLockedReason(tx, blockchain_height)
-{
-	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
-}
-exports.TransactionLockedReason = TransactionLockedReason
+module.exports.NewHydratedContext = NewHydratedContext

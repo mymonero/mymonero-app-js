@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -26,28 +26,11 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"use strict"
-// Hydrate context
-var context_object_instantiation_descriptions = 
-[ 
-	{
-		module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
-		instance_key: "hostedMoneroAPIClient",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
-		options: {}
-	}
-]
-function NewHydratedContext() 
+module.exports =
 {
-	var initialContext = 
-	{
-		userDataAbsoluteFilepath: "./test_products"
-	}
-
-	return require("../../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	contact_name: "Paul Shapiro",
+	contact_address__XMR: "42S6txwM9RA53BL2Uf46CeM5WMJHTj6jWKgmSMLiLeb6A8QwXiWTK51PxF7wR8wNdgLJkWCM3NaiTfhWJnhskk7A7S5bEfp",
+	//
+	// after creating, populate:
+	openContactWith_id: "" // in order to run addressFromContact
 }
-module.exports.NewHydratedContext = NewHydratedContext

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016, MyMonero.com
+// Copyright (c) 2014-2017, MyMonero.com
 // 
 // All rights reserved.
 // 
@@ -43,7 +43,7 @@ const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
 //
 async.series(
 	[
-		_proceedTo_test_openingSavedWallet,
+		_proceedTo_test_changingWalletPassword,
 	],
 	function(err)
 	{
@@ -58,9 +58,9 @@ async.series(
 )
 //
 //
-function _proceedTo_test_openingSavedWallet(fn)
+function _proceedTo_test_changingWalletPassword(fn)
 {
-	console.log("> _proceedTo_test_openingSavedWallet")
+	console.log("> _proceedTo_test_changingWalletPassword")
 	var finishedAccountInfoSync = false
 	var finishedAccountTxsSync = false
 	function areAllSyncOperationsFinished()

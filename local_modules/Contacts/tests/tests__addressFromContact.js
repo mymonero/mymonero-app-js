@@ -26,24 +26,58 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+"use strict"
 //
-const monero_config = require('./monero_config')
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+const async = require('async')
 //
-function IsTransactionConfirmed(tx, blockchain_height)
-{
-	return (blockchain_height - tx.height) > monero_config.txMinConfirms
+const tests_config = require('./tests_config.js')
+if (typeof tests_config === 'undefined' || tests_config === null) {
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Contacts/tests/ in order to run this test.")
+	process.exit(1)
+	return
 }
-exports.IsTransactionConfirmed = IsTransactionConfirmed
 //
-function IsTransactionUnlocked(tx, blockchain_height)
-{
-	return monero_utils.is_tx_unlocked(tx.unlock_time || 0, blockchain_height)
-}
-exports.IsTransactionUnlocked = IsTransactionUnlocked
+const context = require('./tests_context').NewHydratedContext()
 //
-function TransactionLockedReason(tx, blockchain_height)
+const Contact = require('../Contact')
+//
+async.series(
+	[
+		_proceedTo_test_gettingAddressFromContact,
+	],
+	function(err)
+	{
+		if (err) {
+			console.log("Error while performing tests: ", err)
+			process.exit(0)
+		} else {
+			console.log("✅  Tests completed without error.")
+			process.exit(1)
+		}
+	}
+)
+//
+//
+function _proceedTo_test_gettingAddressFromContact(fn)
 {
-	return monero_utils.tx_locked_reason(tx.unlock_time || 0, blockchain_height)
+	console.log("> _proceedTo_test_gettingAddressFromContact")
+	function _trampolineFor_fn()
+	{
+		fn()
+	}
+	const options = 
+	{
+		_id: tests_config.openContactWith_id,
+		//
+		failedSetUp_cb: function(err)
+		{
+			fn(err)
+		},
+		successfullySetUp_cb: function()
+		{
+			console.log("Contact is ", contact)
+			console.log("Address is ", contact.address__XMR)
+		}
+	}
+	const instance = new Contact(options, context)
 }
-exports.TransactionLockedReason = TransactionLockedReason
