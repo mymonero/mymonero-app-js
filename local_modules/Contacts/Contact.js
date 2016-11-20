@@ -70,10 +70,10 @@ class Contact
 			function(err)
 			{
 				if (err) {
-					console.error("Failed to save new address__XMR", err)
+					console.error("Failed to save new contact", err)
 					failedSetUp_cb(err)
 				} else {
-					console.log("Successfully saved new address__XMR.")
+					console.log("Successfully saved new contact.")
 					_trampolineFor_successfullySetUp_cb()
 				}
 			}
