@@ -32,5 +32,5 @@ module.exports =
 	address__XMR: "42S6txwM9RA53BL2Uf46CeM5WMJHTj6jWKgmSMLiLeb6A8QwXiWTK51PxF7wR8wNdgLJkWCM3NaiTfhWJnhskk7A7S5bEfp",
 	//
 	// after creating, populate:
-	openContactWith_id: "" // in order to run addressFromContact
+	openContactWith_id: "HeaUjNNxFADzSQV2" // in order to run addressFromContact
 }

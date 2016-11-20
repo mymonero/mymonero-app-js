@@ -65,6 +65,7 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 	{
 		fn()
 	}
+	var instance;
 	const options = 
 	{
 		_id: tests_config.openContactWith_id,
@@ -75,10 +76,10 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 		},
 		successfullySetUp_cb: function()
 		{
-			console.log("Contact is ", contact)
-			console.log("Address is ", contact.address__XMR)
+			console.log("Contact is ", instance)
+			console.log("Address is ", instance.address__XMR)
 			fn()
 		}
 	}
-	const instance = new Contact(options, context)
+	instance = new Contact(options, context)
 }
