@@ -95,7 +95,7 @@ class Contact
 					return
 				}
 				if (docs.length === 0) {
-					const errStr = "❌  Wallet with that _id not found."
+					const errStr = "❌  Contact with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
 					failedSetUp_cb(err)
