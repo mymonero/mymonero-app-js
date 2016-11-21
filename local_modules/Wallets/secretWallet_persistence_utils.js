@@ -38,7 +38,29 @@ exports.CollectionName = CollectionName
 
 
 // Utility functions
-function HydrateWalletInstance(
+function HydrateInstance_withUnencryptedValues(
+	walletInstance,
+	encryptedDocument
+)
+{
+	const self = walletInstance
+	//
+	// console.log("encryptedDocument", encryptedDocument)
+	self.isLoggedIn = encryptedDocument.isLoggedIn
+	self.dateThatLast_fetchedAccountInfo = encryptedDocument.dateThatLast_fetchedAccountInfo
+	self.dateThatLast_fetchedAccountTransactions = encryptedDocument.dateThatLast_fetchedAccountTransactions
+	//
+	self.dateWalletFirstSavedLocally = encryptedDocument.dateWalletFirstSavedLocally
+	//
+	self.mnemonic_wordsetName = encryptedDocument.mnemonic_wordsetName
+	self.wallet_currency = encryptedDocument.wallet_currency
+	self.walletLabel = encryptedDocument.walletLabel
+	//
+	self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+}
+exports.HydrateInstance_withUnencryptedValues = HydrateInstance_withUnencryptedValues
+//
+function HydrateInstance_withDecryptedValues(
 	walletInstance,
 	plaintextDocument
 )
@@ -46,16 +68,6 @@ function HydrateWalletInstance(
 	const self = walletInstance
 	//
 	// console.log("plaintextDocument", plaintextDocument)
-	self.isLoggedIn = plaintextDocument.isLoggedIn
-	self.dateThatLast_fetchedAccountInfo = plaintextDocument.dateThatLast_fetchedAccountInfo
-	self.dateThatLast_fetchedAccountTransactions = plaintextDocument.dateThatLast_fetchedAccountTransactions
-	//
-	self.dateWalletFirstSavedLocally = plaintextDocument.dateWalletFirstSavedLocally
-	//
-	self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
-	self.wallet_currency = plaintextDocument.wallet_currency
-	self.walletLabel = plaintextDocument.walletLabel
-	//
 	self.account_seed = plaintextDocument.account_seed
 	self.private_keys = plaintextDocument.private_keys
 	self.public_address = plaintextDocument.public_address
@@ -82,7 +94,9 @@ function HydrateWalletInstance(
 	//
 	self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
 }
-exports.HydrateWalletInstance = HydrateWalletInstance
+exports.HydrateInstance_withDecryptedValues = HydrateInstance_withDecryptedValues
+
+
 //
 function SaveToDisk(
 	walletInstance,

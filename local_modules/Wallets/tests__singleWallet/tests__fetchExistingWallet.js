@@ -72,7 +72,7 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 		walletLabel: "Checking",
 		//
 		initWithMnemonic__mnemonicString: wallets__tests_config.initWithMnemonic__mnemonicString,
-		initWithMnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
+		mnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
 		//
 		persistencePassword: wallets__tests_config.persistencePassword,
 		failedSetUp_cb: function(err)

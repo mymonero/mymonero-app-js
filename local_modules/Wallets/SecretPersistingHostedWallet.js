@@ -46,214 +46,35 @@ const wallet_currencies =
 //
 class SecretPersistingHostedWallet
 {
+	// Init -> setup 
+	// Important: You must manually call one of the 'Boot_' methods after you initialize 
+	
 	constructor(options, context)
 	{
 		var self = this
 		self.options = options
 		self.context = context
 		//
-		self.setup()
-	}
-	setup()
-	{
-		var self = this
-		//
-		const failedSetUp_cb = self.options.failedSetUp_cb // (err) -> Void
-		const successfullySetUp_cb = self.options.successfullySetUp_cb // () -> Void
-		const ifNewWallet__informingAndVerifyingMnemonic_cb = self.options.ifNewWallet__informingAndVerifyingMnemonic_cb 
-		// ^ ifNewWallet__informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
-		// 	confirmation_cb: (userConfirmed_mnemonicString) -> Void
-		// See logIn_creatingNewWallet. Only need to supply this if you're asking to create a new wallet
-		//
-		function _trampolineFor_successfullySetUp_cb()
-		{
-			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
-				console.warn("⚠️  Wallet initialized without an account_seed.")
-				self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
-			} else {
-				self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
-				if (typeof self.initialization_mnemonicString !== 'undefined' && self.initialization_mnemonicString !== null) {
-					if (self.mnemonicString !== self.initialization_mnemonicString) {
-						const errStr = "❌  Initialized a wallet with a mnemonic string and logged in successfully but the derived mnemonic string from the account_seed wasn't the same as the initialization mnemonic string"
-						console.error(errStr)
-						failedSetUp_cb(new Error(errStr))
-						return
-					}
-				}
-			}
-			//
-			console.info("✅  Successfully instantiated", self.Description())
-			successfullySetUp_cb()
-			//
-			function __callAllSyncFunctions()
-			{
-				self._fetch_accountInfo(
-					function(err)
-					{	
-					}
-				)
-				self._fetch_transactionHistory(
-					function(err)
-					{
-					}
-				)
-			}
-			//
-			// kick off synchronizations
-			setTimeout(function()
-			{ 
-				__callAllSyncFunctions()
-			})
-			//
-			// and kick off the polling call to pull latest updates
-			const syncPollingInterval = 10000 
-			setInterval(function()
-			{
-				__callAllSyncFunctions()
-			}, syncPollingInterval)
-			
-		}
-		//
-		// initial properties…
+		// initialization state
 		self._id = self.options._id || null // initialize to null if creating wallet
-		self.persistencePassword = self.options.persistencePassword || null
-		if (self.persistencePassword === null) {
-			const errStr = "❌  You must supply a persistencePassword in the options of your SecretPersistingHostedWallet instantiation call"
-			const err = new Error(errStr)
-			console.error(errStr)
-			failedSetUp_cb(err)
-			return
-		}
+		self.failedToInitialize_cb = self.options.failedToInitialize_cb || function(err) {}
+		self.successfullyInitialized_cb = self.options.successfullyInitialized_cb || function(err) {}
+		//
+		// runtime state initialization
+		self.isBooted = false // you must manually boot the instance
 		self.isLoggingIn = false 
+		self.isLoggedIn = true // maybe modified by existing doc
 		//
-		self.isLoggedIn = false // this is soon toggled based on what is persisted in the DB
-		self.mustCreateNewWalletAndAccount = false // to derive…
-		if (self._id === null) {
-			self.walletLabel = self.options.walletLabel || ""
-			//
-			self._setup_logInOrSignUp(
-				ifNewWallet__informingAndVerifyingMnemonic_cb,
-				failedSetUp_cb,
-				_trampolineFor_successfullySetUp_cb
-			)
-			return
+		// detecting how to set up instance
+		if (self._id !== null) { // need to look up existing document but do not decrypt & boot
+			self.__setup_fetchExistingDoc_andAwaitBoot()
+		} else {
+			self.__setup_andAwaitBootAndLogInAndDocumentCreation()
 		}
-		// Wallet supposedly already exists. Let's look it up…
-		self._setup_fetchExistingWalletWithId(
-			failedSetUp_cb,
-			_trampolineFor_successfullySetUp_cb
-		)
 	}
-	_setup_logInOrSignUp(
-		ifNewWallet__informingAndVerifyingMnemonic_cb,
-		failedSetUp_cb,
-		_trampolineFor_successfullySetUp_cb
-	)
+	__setup_fetchExistingDoc_andAwaitBoot()
 	{
 		const self = this
-		//
-		self.wallet_currency = wallet_currencies.xmr // default 
-		self.mnemonic_wordsetName = monero_wallet_utils.wordsetNames.english // default 
-		//
-		// existing mnemonic string
-		self.initialization_mnemonicString = self.options.initWithMnemonic__mnemonicString
-		if (typeof self.initialization_mnemonicString !== 'undefined') {
-			self.mnemonic_wordsetName = self.options.initWithMnemonic__wordsetName || self.mnemonic_wordsetName
-			self.logIn_mnemonic(
-				self.initialization_mnemonicString, 
-				self.mnemonic_wordsetName,
-				function(err)
-				{
-					if (err) {
-						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with mnemonic with error… " + err.toString()
-						console.error(errStr)
-						failedSetUp_cb(err)
-						return
-					}
-					console.log("✅  Successfully added existing wallet via mnemonic string")
-					_trampolineFor_successfullySetUp_cb()
-				}
-			)
-			//
-			return
-		}
-		//
-		// address + view & spend keys
-		const initialization_address = self.options.initWithKeys__address
-		const initialization_view_key__private = self.options.initWithKeys__view_key__private
-		const initialization_spend_key__private = self.options.initWithKeys__spend_key__private
-		if (typeof initialization_address !== 'undefined') {
-			if (typeof initialization_view_key__private === 'undefined' || initialization_view_key__private === null || initialization_view_key__private === '') {
-				const errStr = "❌  You must supply a initWithKeys__view_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
-				console.error(errStr)
-				failedSetUp_cb(new Error(errStr))
-				return
-			}
-			if (typeof initialization_spend_key__private === 'undefined' || initialization_spend_key__private === null || initialization_spend_key__private === '') {
-				const errStr = "❌  You must supply a initWithKeys__spend_key__private as an argument to you SecretPersistingHostedWallet instantiation call as you are passing initWithKeys__address"
-				const err = new Error(errStr)
-				console.error(errStr)
-				failedSetUp_cb(err)
-				return
-			}
-			self.logIn_keys(
-				initialization_address, 
-				initialization_view_key__private, 
-				initialization_spend_key__private, 
-				function(err)
-				{
-					if (err) {
-						const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by adding existing wallet with address + spend & view keys with error… " + err.toString()
-						const err = new Error(errStr)
-						console.error(errStr)
-						failedSetUp_cb(err)
-						return
-					}
-					console.log("✅  Successfully added existing wallet via address and view & spend keys")
-					_trampolineFor_successfullySetUp_cb()
-				}
-
-			)
-			//
-			return
-		}
-		//
-		// Otherwise, we're creating a new wallet
-		if (typeof ifNewWallet__informingAndVerifyingMnemonic_cb === 'undefined' || ifNewWallet__informingAndVerifyingMnemonic_cb === null) {
-			const errStr = "❌  You must supply a ifNewWallet__informingAndVerifyingMnemonic_cb as an argument to you SecretPersistingHostedWallet instantiation call as you are creating a new wallet"
-			const err = new Error(errStr)
-			console.error(errStr)
-			failedSetUp_cb(err)
-			return
-		}
-		//
-		self.mustCreateNewWalletAndAccount = true
-		console.log("Creating new wallet.")
-		//
-		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
-		self.logIn_creatingNewWallet(
-			ifNewWallet__informingAndVerifyingMnemonic_cb, // this is passed straight through from the initializer
-			function(err)
-			{
-				if (err) {
-					const errStr = "❌  Failed to instantiate a SecretPersistingHostedWallet by creating new wallet and account with error… " + err.toString()
-					const err = new Error(errStr)
-					console.error(errStr)
-					failedSetUp_cb(err)
-					return
-				}
-				console.log("✅  Successfully logged after creating a new wallet.")
-				_trampolineFor_successfullySetUp_cb()
-			}
-		)
-	}
-	_setup_fetchExistingWalletWithId(
-		failedSetUp_cb,
-		_trampolineFor_successfullySetUp_cb
-	)
-	{
-		const self = this
-		//	
 		self.context.persister.DocumentsWithQuery(
 			secretWallet_persistence_utils.CollectionName,
 			{ _id: self._id }, // cause we're saying we have an _id passed in…
@@ -262,174 +83,76 @@ class SecretPersistingHostedWallet
 			{
 				if (err) {
 					console.error(err.toString)
-					failedSetUp_cb(err)
+					self.failedToInitialize_cb(err)
 					return
 				}
 				if (docs.length === 0) {
 					const errStr = "❌  Wallet with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
-					failedSetUp_cb(err)
+					self.failedToInitialize_cb(err)
 					return
 				}
 				const encryptedDocument = docs[0]
-				__proceedTo_decryptDocument(encryptedDocument)
+				//
+				// we can pull out unencrypted values like metadata
+				secretWallet_persistence_utils.HydrateInstance_withUnencryptedValues(
+					self,
+					encryptedDocument
+				)
+				// Validation of necessary non-encrypted values
+				if (self.isLoggedIn !== true) {
+					return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn") // TODO: not sure how we should handle this yet. maybe login failed while adding the wallet?
+				}
+				if (self.wallet_label === null || typeof self.wallet_label === 'undefined' || self.wallet_label === "") {
+					return _failWithValidationErr("Reconstituted wallet had no valid wallet_label")
+				}
+				//
+				// and we hang onto this for when the instantiator opts to boot the instance
+				self.initialization_encryptedDocument = encryptedDocument
+				self.successfullyInitialized_cb()
 			}
 		)
-		function __proceedTo_decryptDocument(encryptedDocument)
-		{
-			var plaintextDocument
-			try {
-				plaintextDocument = document_cryptor.New_DecryptedDocument(
-					encryptedDocument, 
-					secretWallet_persistence_utils.DocumentCryptScheme, 
-					self.persistencePassword
-				)
-			} catch (e) {
-				const errStr = "❌  Decryption err: " + e.toString()
-				const err = new Error(errStr)
-				console.error(errStr)
-				failedSetUp_cb(err)
-				return
-			}
-			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
-		}
-		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
-		{ // reconstituting state…
-			secretWallet_persistence_utils.HydrateWalletInstance(
-				self,
-				plaintextDocument
-			)
-			__proceedTo_validateHydration()
-		}
-		function __proceedTo_validateHydration()
-		{
-			function _failWithValidationErr(errStr)
-			{
-				const err = new Error(errStr)
-				console.error(errStr)
-				failedSetUp_cb(err)
-			}
-			if (self.isLoggedIn !== true) {
-				return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn")
-			}
-			if (self.walletLabel === null || typeof self.walletLabel === 'undefined' || self.walletLabel === "") {
-				return _failWithValidationErr("Reconstituted wallet had no valid walletLabel")
-			}
-			// We are not going to check whether the acct seed is nil/'' here because if the wallet was
-			// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
-			// cannot obtain the seed.
-			if (self.public_address === null || typeof self.public_address === 'undefined' || self.public_address === '') {
-				return _failWithValidationErr("Reconstituted wallet had no valid public_address")
-			}
-			if (self.public_keys === null || typeof self.public_keys === 'undefined' || self.public_keys === {}) {
-				return _failWithValidationErr("Reconstituted wallet had no valid public_keys")
-			}
-			if (self.public_keys.view === null || typeof self.public_keys.view === 'undefined' || self.public_keys.view === '') {
-				return _failWithValidationErr("Reconstituted wallet had no valid public_keys.view")
-			}
-			if (self.public_keys.spend === null || typeof self.public_keys.spend === 'undefined' || self.public_keys.spend === '') {
-				return _failWithValidationErr("Reconstituted wallet had no valid public_keys.spend")
-			}
-			if (self.private_keys === null || typeof self.private_keys === 'undefined' || self.private_keys === {}) {
-				return _failWithValidationErr("Reconstituted wallet had no valid private_keys")
-			}
-			if (self.private_keys.view === null || typeof self.private_keys.view === 'undefined' || self.private_keys.view === '') {
-				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.view")
-			}
-			if (self.private_keys.spend === null || typeof self.private_keys.spend === 'undefined' || self.private_keys.spend === '') {
-				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.spend")					
-			}
-			//
-			// finally
-			_trampolineFor_successfullySetUp_cb() // all done
-		}
 	}
-
+	__setup_andAwaitBootAndLogInAndDocumentCreation()
+	{
+		const self = this
+		//
+		// need to create new document. gather metadata & state we need to do so
+		self.isLoggedIn = false
+		self.wallet_label = self.options.wallet_label || ""
+		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default 
+		self.mnemonic_wordsetName = self.options.mnemonic_wordsetName || monero_wallet_utils.wordsetNames.english // default 
+		// 
+		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
+		// case I: user is inputting mnemonic string
+		// case II: user is inputting address + view & spend keys
+		// case III: we're creating a new wallet
+		if (self.options.wantsToCreateNewWallet === true) { // generate new mnemonic seed -- we will pick this up later in the corresponding Boot_*
+			self.generatedOnInit_walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName)
+		}
+		//
+		// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
+		self.successfullyInitialized_cb()
+	}
+	
+	
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Public
+	// Post init, pre-boot - Public - Accessors - Creating new wallets
+	
+	FreshMnemonicWhichWasGeneratedOnInit()
+	{
+		return self.generatedOnInit_walletDescription.mnemonicString
+	}
+	// TODO: there may be room for a 'regenerate mnemonic' with new wordset imperative function
+	
 
-	IsTransactionConfirmed(tx)
-	{
-		const self = this
-		const blockchain_height = self.blockchain_height
-		//
-		return monero_txParsing_utils.IsTransactionConfirmed(tx, blockchain_height)
-	}
-	IsTransactionUnlocked(tx)
-	{
-		const self = this
-		const blockchain_height = self.blockchain_height
-		//
-		return monero_txParsing_utils.IsTransactionUnlocked(tx, blockchain_height)
-	}
-	TransactionLockedReason(tx)
-	{
-		const self = this
-		const blockchain_height = self.blockchain_height
-		//
-		return monero_txParsing_utils.TransactionLockedReason(tx, blockchain_height)
-	}
-	//
-	New_StateCachedTransactions()
-	{ // this function is preferred for public access
-	  // as it caches the derivations of the above accessors
-		const self = this
-		const transactions = self.transactions || []
-		const stateCachedTransactions = [] // to finalize
-		const transactions_length = transactions.length
-		for (let i = 0 ; i < transactions_length ; i++) {
-			const transaction = transactions[i]
-			const shallowCopyOf_transaction = extend({}, transaction)
-			shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
-			shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
-			shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
-			//
-			stateCachedTransactions.push(shallowCopyOf_transaction)
-		}
-		//
-		return stateCachedTransactions
-	}
-	
-	//
-	IsAccountCatchingUp()
-	{
-		const self = this
-		//
-		return (self.blockchain_height - self.account_scanned_block_height) >= 10
-	}
-	//
-	Balance()
-	{
-		const self = this
-		var total_received = self.total_received
-		var total_sent = self.total_sent
-		if (typeof total_received === 'undefined') {
-			total_received = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
-			console.log("⚠️  Wallet Balance() called while self.total_received was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
-			// console.trace()
-		}
-		if (typeof total_sent === 'undefined') {
-			total_sent = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
-			console.log("⚠️  Wallet Balance() called while self.total_sent was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
-			// console.trace()
-		}
-		//
-		return total_received.subtract(total_sent)
-	}
-	Description()
-	{
-		const self = this
-		//
-		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance()
-	}
-	
-	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Logging in/Creating accounts
-	
-	logIn_creatingNewWallet(
+	// Booting - Public - Imperatives - Creating/adding wallets
+
+	Boot_byLoggingIntoHostedService_byCreatingNewWallet(
+		persistencePassword,
 		informingAndVerifyingMnemonic_cb,
 		fn
 	)
@@ -445,7 +168,16 @@ class SecretPersistingHostedWallet
 	  //	
 		const self = this
 		//
-		const walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName)
+		self.persistencePassword = persistencePassword || null
+		if (persistencePassword === null) {
+			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			const err = new Error(errStr)
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		//
+		const generatedOnInit_walletDescription = self.generatedOnInit_walletDescription
 		const seed = walletDescription.seed
 		const mnemonicString = walletDescription.mnemonicString
 		const keys = walletDescription.keys
@@ -482,13 +214,12 @@ class SecretPersistingHostedWallet
 		function _proceedTo_logIn()
 		{
 			// pretty sure this is redundant, so commenting:
-			// var keys = monero_utils.create_address(seed)
 			const address = keys.public_addr
 			const view_key__private = keys.view.sec
 			const spend_key__private = keys.spend.sec
 			const wasAGeneratedWallet = true // true, in this case
 			//
-			self._logIn(
+			self._boot_byLoggingIn(
 				address,
 				view_key__private,
 				spend_key__private,
@@ -497,11 +228,25 @@ class SecretPersistingHostedWallet
 				fn
 			)
 		}
-	}	
-	
-	logIn_mnemonic(mnemonicString, wordsetName, fn)
+	}
+	Boot_byLoggingIntoHostedService_withMnemonic(
+		persistencePassword,
+		mnemonicString, 
+		wordsetName, 
+		fn
+	)
 	{ // fn: (err?) -> Void
 		const self = this
+		//
+		self.persistencePassword = persistencePassword || null
+		if (persistencePassword === null) {
+			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			const err = new Error(errStr)
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		//
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
 			wordsetName,
@@ -516,7 +261,7 @@ class SecretPersistingHostedWallet
 				const view_key__private = keys.view.sec
 				const spend_key__private = keys.spend.sec
 				const wasAGeneratedWallet = false
-				self._logIn(
+				self._boot_byLoggingIn(
 					address,
 					view_key__private,
 					spend_key__private,
@@ -527,12 +272,28 @@ class SecretPersistingHostedWallet
 			}
 		)
 	}
-	logIn_keys(address, view_key__private, spend_key__private, fn)
+	Boot_byLoggingIntoHostedService_withAddressAndKeys(
+		persistencePassword,
+		address, 
+		view_key__private, 
+		spend_key__private, 
+		fn
+	)
 	{ // fn: (err?) -> Void
 		const self = this
+		//
+		self.persistencePassword = persistencePassword || null
+		if (persistencePassword === null) {
+			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			const err = new Error(errStr)
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		//
 		const seed = undefined
 		const wasAGeneratedWallet = false
-		self._logIn(
+		self._boot_byLoggingIn(
 			address,
 			view_key__private,
 			spend_key__private,
@@ -542,34 +303,102 @@ class SecretPersistingHostedWallet
 		)
 	}
 	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private - Account registration with hosted node API
 
-	_logOut()
+	////////////////////////////////////////////////////////////////////////////////
+	// Booting - Public - Imperatives - Reading saved wallets
+
+	Boot_decryptingExistingInitDoc(
+		persistencePassword,
+		fn
+	)
 	{
 		const self = this
 		//
-		self.isLoggingIn = false
-		self.isLoggedIn = false
+		self.persistencePassword = persistencePassword || null
+		if (persistencePassword === null) {
+			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			const err = new Error(errStr)
+			console.error(errStr)
+			fn(err)
+			return
+		}
 		//
-		self.account_seed = null
-		self.public_keys = null
-		self.private_keys = null
-		self.isInViewOnlyMode = null
-		//
-		self.account_scanned_height = null
-		self.account_scanned_block_height = null
-		self.account_scanned_tx_height = null
-		self.account_scan_start_height = null
-		self.transaction_height = null
-		self.blockchain_height = null
-		self.transactions = null
-		// more fields?
-		// TODO: emit event?
+		const encryptedDocument = self.initialization_encryptedDocument
+		if (typeof encryptedDocument === 'undefined' || encryptedDocument === null) {
+			const errStr = "__boot_decryptInitDoc_andBoot called but encryptedDocument undefined"
+			const err = new Error(err)
+			fn(err)
+			return
+		}
+		function __proceedTo_decryptDocument(encryptedDocument)
+		{
+			var plaintextDocument
+			try {
+				plaintextDocument = document_cryptor.New_DecryptedDocument(
+					encryptedDocument, 
+					secretWallet_persistence_utils.DocumentCryptScheme, 
+					self.persistencePassword
+				)
+			} catch (e) {
+				const errStr = "❌  Decryption err: " + e.toString()
+				const err = new Error(errStr)
+				console.error(errStr)
+				fn(err)
+				return
+			}
+			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+		}
+		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+		{ // reconstituting state…
+			secretWallet_persistence_utils.HydrateInstance_withDecryptedValues(
+				self,
+				plaintextDocument
+			)
+			__proceedTo_validateEncryptedValuesHydration()
+		}
+		function __proceedTo_validateEncryptedValuesHydration()
+		{
+			function _failWithValidationErr(errStr)
+			{
+				const err = new Error(errStr)
+				console.error(errStr)
+				failedSetUp_cb(err)
+			}
+			// We are not going to check whether the acct seed is nil/'' here because if the wallet was
+			// imported with public addr, view key, and spend key only rather than seed/mnemonic, we
+			// cannot obtain the seed.
+			if (self.public_address === null || typeof self.public_address === 'undefined' || self.public_address === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_address")
+			}
+			if (self.public_keys === null || typeof self.public_keys === 'undefined' || self.public_keys === {}) {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_keys")
+			}
+			if (self.public_keys.view === null || typeof self.public_keys.view === 'undefined' || self.public_keys.view === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_keys.view")
+			}
+			if (self.public_keys.spend === null || typeof self.public_keys.spend === 'undefined' || self.public_keys.spend === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid public_keys.spend")
+			}
+			if (self.private_keys === null || typeof self.private_keys === 'undefined' || self.private_keys === {}) {
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys")
+			}
+			if (self.private_keys.view === null || typeof self.private_keys.view === 'undefined' || self.private_keys.view === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.view")
+			}
+			if (self.private_keys.spend === null || typeof self.private_keys.spend === 'undefined' || self.private_keys.spend === '') {
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.spend")					
+			}
+			//
+			// finally
+			self._trampolineFor_successfullyBooted(fn)
+		}
 	}
+	
 
-	_logIn(
+	////////////////////////////////////////////////////////////////////////////////
+	// Booting - Private - Imperatives
+	
+	_boot_byLoggingIn(
 		address, 
 		view_key, 
 		spend_key_orUndefinedForViewOnly, 
@@ -648,14 +477,186 @@ class SecretPersistingHostedWallet
 								fn(err)
 								return
 							}
-							// TODO: emit event that login status changed?
-							fn(err)
+							self._trampolineFor_successfullyBooted(fn)
 						}
 					)
 				}
 			)
 		}
 	}	
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Booting - Private - Delegation
+	
+	_trampolineFor_successfullyBooted(
+		fn
+	)
+	{ // fn: (err?) -> Void
+		const self = this
+		if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
+			console.warn("⚠️  Wallet initialized without an account_seed.")
+			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
+		} else {
+			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
+		}
+		//
+		console.info("✅  Successfully instantiated", self.Description())
+		self.isBooted = true
+		fn()
+		//
+		function __callAllSyncFunctions()
+		{
+			self._fetch_accountInfo(
+				function(err)
+				{	
+				}
+			)
+			self._fetch_transactionHistory(
+				function(err)
+				{
+				}
+			)
+		}
+		//
+		// kick off synchronizations
+		setTimeout(function()
+		{ 
+			__callAllSyncFunctions()
+		})
+		//
+		// and kick off the polling call to pull latest updates
+		const syncPollingInterval = 10000 
+		setInterval(function()
+		{
+			__callAllSyncFunctions()
+		}, syncPollingInterval)
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Public
+
+	IsTransactionConfirmed(tx)
+	{
+		const self = this
+		const blockchain_height = self.blockchain_height
+		//
+		return monero_txParsing_utils.IsTransactionConfirmed(tx, blockchain_height)
+	}
+	IsTransactionUnlocked(tx)
+	{
+		const self = this
+		const blockchain_height = self.blockchain_height
+		//
+		return monero_txParsing_utils.IsTransactionUnlocked(tx, blockchain_height)
+	}
+	TransactionLockedReason(tx)
+	{
+		const self = this
+		const blockchain_height = self.blockchain_height
+		//
+		return monero_txParsing_utils.TransactionLockedReason(tx, blockchain_height)
+	}
+	//
+	New_StateCachedTransactions()
+	{ // this function is preferred for public access
+	  // as it caches the derivations of the above accessors
+		const self = this
+		const transactions = self.transactions || []
+		const stateCachedTransactions = [] // to finalize
+		const transactions_length = transactions.length
+		for (let i = 0 ; i < transactions_length ; i++) {
+			const transaction = transactions[i]
+			const shallowCopyOf_transaction = extend({}, transaction)
+			shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
+			shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
+			shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
+			//
+			stateCachedTransactions.push(shallowCopyOf_transaction)
+		}
+		//
+		return stateCachedTransactions
+	}
+	
+	//
+	IsAccountCatchingUp()
+	{
+		const self = this
+		// TODO: detect whether account is synched yet
+		//
+		return (self.blockchain_height - self.account_scanned_block_height) >= 10
+	}
+	//
+	Balance()
+	{
+		const self = this
+		// TODO: (?) detect whether account is synched yet
+		//
+		var total_received = self.total_received
+		var total_sent = self.total_sent
+		if (typeof total_received === 'undefined') {
+			total_received = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
+			console.log("⚠️  Wallet Balance() called while self.total_received was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
+			// console.trace()
+		}
+		if (typeof total_sent === 'undefined') {
+			total_sent = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
+			console.log("⚠️  Wallet Balance() called while self.total_sent was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
+			// console.trace()
+		}
+		//
+		return total_received.subtract(total_sent)
+	}
+	Description()
+	{
+		const self = this
+		//
+		return "Wallet with _id " + self._id + " named " + self.wallet_label + ", Balance:" + self.Balance()
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Logging in/Creating accounts
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Account registration with hosted node API
+
+	_logOut()
+	{
+		const self = this
+		//
+		self.isLoggingIn = false
+		self.isLoggedIn = false
+		//
+		self.account_seed = null
+		self.public_keys = null
+		self.private_keys = null
+		self.isInViewOnlyMode = null
+		//
+		self.account_scanned_height = null
+		self.account_scanned_block_height = null
+		self.account_scanned_tx_height = null
+		self.account_scan_start_height = null
+		self.transaction_height = null
+		self.blockchain_height = null
+		self.transactions = null
+		// more fields?
+		// TODO: emit event?
+	}
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
@@ -818,15 +819,15 @@ class SecretPersistingHostedWallet
 	// Runtime - Imperatives - Public - Changing meta data
 	
 	SetWalletLabel(
-		toWalletLabel,
+		toLabel,
 		fn
 	)
 	{
 		const self = this
-		if (typeof toWalletLabel === 'undefined' || toWalletLabel === null || toWalletLabel.length < 1) {
+		if (typeof toLabel === 'undefined' || toLabel === null || toLabel.length < 1) {
 			return fn(new Error("Please enter a wallet name"))
 		}
-		self.walletLabel = toWalletLabel
+		self.wallet_label = toLabel
 		self.saveToDisk(
 			function(err)
 			{

@@ -216,7 +216,7 @@ class WalletsListController
 			persistencePassword: persistencePassword,
 			//
 			initWithMnemonic__mnemonicString: mnemonicString,
-			initWithMnemonic__wordsetName: wordsetName,
+			mnemonic__wordsetName: wordsetName,
 			//
 			failedSetUp_cb: function(err)
 			{
