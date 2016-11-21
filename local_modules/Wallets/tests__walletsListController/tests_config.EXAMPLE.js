@@ -36,7 +36,7 @@ module.exports =
 
 	// used by readSavedWallet
 	deleteWalletWith_id: "", // take the _id from the wallet creation test output or from fetchExistingWallet 
-
+	unlockWalletWith_id: "",
 		
 	// used by fetchExistingWallet
 	// I

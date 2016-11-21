@@ -93,25 +93,24 @@ class ContactsListController
 		const self = this
 		const context = self.context
 		//
-		self._new_loadDescriptionsOfPersisted_contacts(
-			function(err, loadDescriptions)
+		self._new_idsOfPersisted_contacts(
+			function(err, ids)
 			{
 				if (err) {
 					const errStr = "Error fetching persisted contact ids: " + err.toString()
 					_trampolineFor_failedToInitialize_withErrStr(errStr)
 					return
 				}
-				__proceedTo_load_contactsWithLoadDescriptions(loadDescriptions)
+				__proceedTo_load_contactsWithIds(ids)
 			}
 		)
-		function __proceedTo_load_contactsWithLoadDescriptions(loadDescriptions)
+		function __proceedTo_load_contactsWithIds(ids)
 		{
 			self.contacts = []
 			async.eachSeries(
-				loadDescriptions,
-				function(loadDescription, cb)
+				ids,
+				function(_id, cb)
 				{
-					const _id = loadDescription._id
 					var instance;
 					const options = 
 					{
@@ -227,8 +226,8 @@ class ContactsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 
-	_new_loadDescriptionsOfPersisted_contacts(
-		fn // (err?, loadDescriptions?) -> Void
+	_new_idsOfPersisted_contacts(
+		fn // (err?, ids?) -> Void
 	) 
 	{
 		const self = this
@@ -243,14 +242,12 @@ class ContactsListController
 					fn(err)
 					return
 				}
-				const loadDescriptions = []
+				const ids = []
 				docs.forEach(function(el, idx)
 				{
-					loadDescriptions.push({
-						_id: el._id // you can add other things to this desc ala the Wallet
-					})
+					loadDescriptions.push(el._id)
 				})
-				fn(null, loadDescriptions)
+				fn(null, ids)
 			}
 		)
 	}

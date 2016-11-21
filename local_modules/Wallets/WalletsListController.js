@@ -50,16 +50,6 @@ class WalletsListController
 		self.options = options
 		self.context = context
 		//
-		self.obtainPasswordToOpenWalletWithLabel_cb = self.options.obtainPasswordToOpenWalletWithLabel_cb 
-		// ^-- obtainPasswordToOpenWalletWithLabel_cb: (walletLabel, returningPassword_cb) -> Void
-		//		returningPassword_cb: (tryWith_persistencePassword: String?, orShouldSkipThisWallet: Bool?) -> Void
-		if (typeof self.obtainPasswordToOpenWalletWithLabel_cb !== 'function' || self.obtainPasswordToOpenWalletWithLabel_cb === null) {
-			const errStr = "You must supply a obtainPasswordToOpenWalletWithLabel_cb via options to your WalletsListController instance"
-			console.error(errStr)
-			throw errStr
-			return
-		} 
-		//
 		self.didInitializeSuccessfully_cb = self.options.didInitializeSuccessfully_cb
 		self.failedToInitializeSuccessfully_cb = self.options.failedToInitializeSuccessfully_cb
 		//
@@ -107,62 +97,50 @@ class WalletsListController
 		const self = this
 		const context = self.context
 		//
-		self._new_idsAndLabelsOfPersistedWallets(
-			function(err, idsAndLabels)
+		self._new_idsOfPersistedWallets(
+			function(err, ids)
 			{
 				if (err) {
 					const errStr = "Error fetching persisted wallet ids: " + err.toString()
 					_trampolineFor_failedToInitialize_withErrStr(errStr)
 					return
 				}
-				__proceedTo_loadWalletsWithIdsAndLabels(idsAndLabels)
+				__proceedTo_loadWalletsWithIds(ids)
 			}
 		)
-		function __proceedTo_loadWalletsWithIdsAndLabels(idsAndLabels)
+		function __proceedTo_loadWalletsWithIds(ids)
 		{
 			self.wallets = []
 			async.eachSeries(
-				idsAndLabels,
-				function(idAndLabel, cb)
+				ids,
+				function(_id, cb)
 				{
-					const _id = idAndLabel._id
-					const walletLabel = idAndLabel.walletLabel
-					self.obtainPasswordToOpenWalletWithLabel_cb(
-						walletLabel,
-						function(tryWith_persistencePassword, orShouldSkip)
+					var wallet;
+					const options = 
+					{
+						_id: _id,
+						//
+						failedToInitialize_cb: function(err)
 						{
-							if (orShouldSkip) {
-								// do not push anything
-								cb()
-								return // exit
-							}
-							var wallet;
-							const options = 
-							{
-								_id: _id,
-								persistencePassword: tryWith_persistencePassword,
-								failedToInitialize_cb: function(err)
-								{
-									console.error("Failed to read wallet ", err)
-									cb(err)
-								},
-								successfullyInitialized_cb: function()
-								{
-									self._wallet_wasSuccessfullySetUp(wallet)
-									//
-									cb(null)
-								},
-								//
-								didReceiveUpdateToAccountInfo: function()
-								{ // TODO - proxy (via centrally shared fn probably)
-								},
-								didReceiveUpdateToAccountTransactions: function()
-								{ // TODO - proxy
-								}
-							}
-							wallet = new SecretPersistingHostedWallet(options, context)
+							console.error("Failed to read wallet ", err)
+							cb(err)
+						},
+						successfullyInitialized_cb: function()
+						{
+							console.log("Initialized wallet", wallet.Description())
+							self._wallet_wasSuccessfullyInitialized(wallet) // not yet booted - we will let consumer do that 
+							//
+							cb(null)
+						},
+						//
+						didReceiveUpdateToAccountInfo: function()
+						{ // TODO: bubble?
+						},
+						didReceiveUpdateToAccountTransactions: function()
+						{ // TODO: bubble?
 						}
-					)
+					}
+					wallet = new SecretPersistingHostedWallet(options, context)
 				},
 				function(err)
 				{
@@ -186,6 +164,54 @@ class WalletsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Wallets list
 	
+	CreateAndAddNewlyGeneratedWallet(
+		persistencePassword, // TODO: maybe break these out depending on what the UI needs
+		walletLabel,
+		informingAndVerifyingMnemonic_cb, // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
+										    // confirmation_cb: (userConfirmed_mnemonicString) -> Void
+		fn // fn: (err: Error?, walletInstance, SecretPersistingHostedWallet) -> Void
+	)
+	{
+		const self = this
+		const context = self.context
+		//
+		var wallet;
+		const options = 
+		{
+			generateNewWallet: true, // must flip this flag to true
+			//
+			failedToInitialize_cb: function(err)
+			{
+				fn(err)
+			},
+			successfullyInitialized_cb: function()
+			{
+				wallet.Boot_byLoggingIntoHostedService_byCreatingNewWallet(
+					persistencePassword,
+					walletLabel,
+					informingAndVerifyingMnemonic_cb,
+					function(err)
+					{
+						if (err) {
+							fn(err)
+							return
+						}
+						self._wallet_wasSuccessfullyInitialized(wallet)
+						//
+						fn(null, wallet)
+					}
+				)
+			},
+			//
+			didReceiveUpdateToAccountInfo: function()
+			{ // TODO: bubble?
+			},
+			didReceiveUpdateToAccountTransactions: function()
+			{ // TODO: bubble?
+			}
+		}
+		wallet = new SecretPersistingHostedWallet(options, context)
+	}
 	AddExtantWalletWith_mnemonicString(
 		walletLabel,
 		persistencePassword,
@@ -212,28 +238,34 @@ class WalletsListController
 		var wallet;
 		const options = 
 		{
-			walletLabel: walletLabel,
-			persistencePassword: persistencePassword,
-			//
-			initWithMnemonic__mnemonicString: mnemonicString,
-			mnemonic__wordsetName: wordsetName,
-			//
 			failedToInitialize_cb: function(err)
 			{
 				fn(err)
 			},
 			successfullyInitialized_cb: function()
 			{
-				self._wallet_wasSuccessfullySetUp(wallet)
-				//
-				fn(null, wallet, false) // wasWalletAlreadyInserted: false
+				wallet.Boot_byLoggingIntoHostedService_withMnemonic(
+					persistencePassword,
+					walletLabel,
+					mnemonicString,
+					wordsetName,
+					function(err) {
+						if (err) {
+							fn(err)
+							return
+						}
+						self._wallet_wasSuccessfullyInitialized(wallet)
+						//
+						fn(null, wallet, false) // wasWalletAlreadyInserted: false
+					}
+				)
 			},
 			//
 			didReceiveUpdateToAccountInfo: function()
-			{
+			{ // TODO: bubble?
 			},
 			didReceiveUpdateToAccountTransactions: function()
-			{
+			{ // TODO: bubble?
 			}
 		}
 		wallet = new SecretPersistingHostedWallet(options, context)
@@ -265,32 +297,66 @@ class WalletsListController
 		var wallet;
 		const options = 
 		{
-			walletLabel: walletLabel,
-			persistencePassword: persistencePassword,
-			//
-			initWithMnemonic__address: address,
-			initWithMnemonic__view_key__private: view_key__private,
-			initWithMnemonic__spend_key__private: spend_key__private,
-			//
 			failedToInitialize_cb: function(err)
 			{
 				fn(err)
 			},
 			successfullyInitialized_cb: function()
 			{
-				self._wallet_wasSuccessfullySetUp(wallet)
-				//
-				fn(null)
+				wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
+					persistencePassword,
+					walletLabel,
+					address, 
+					view_key__private, 
+					spend_key__private, 
+					function(err)
+					{
+						if (err) {
+							fn(err)
+							return
+						}
+						self._wallet_wasSuccessfullyInitialized(wallet)
+						//
+						fn(null)
+					}
+				)
 			},
 			//
 			didReceiveUpdateToAccountInfo: function()
-			{
+			{ // TODO: bubble?
 			},
 			didReceiveUpdateToAccountTransactions: function()
-			{
+			{ // TODO: bubble?
 			}
 		}
 		wallet = new SecretPersistingHostedWallet(options, context)
+	}
+	//
+	BootWalletWithId(
+		_id,
+		persistencePassword,
+		fn // (err, wallet) -> Void
+	)
+	{
+		const self = this
+		const instanceAndIndex = self.__walletInstanceAndIndexWithId(_id)
+		var indexOfWallet = instanceAndIndex.index
+		var walletInstance = instanceAndIndex.instance
+		if (indexOfWallet === null || walletInstance === null) {
+			fn(new Error("Wallet not found"), null)
+			return
+		}
+		walletInstance.Boot_decryptingExistingInitDoc(
+			persistencePassword,
+			function(err)
+			{
+				if (err) {
+					fn(err, walletInstance)
+					return
+				}
+				fn(null, walletInstance)
+			}
+		)
 	}
 	//
 	DeleteWalletWithId(
@@ -299,20 +365,11 @@ class WalletsListController
 	)
 	{
 		const self = this
-		const wallets_length = self.wallets.length
 		//
-		var indexOfWallet = null;
-		var walletToDelete = null;
-		console.log("_id" , _id)
-		for (let i = 0 ; i < wallets_length ; i++) {
-			const wallet = self.wallets[i]
-			if (wallet._id === _id) {
-				indexOfWallet = i
-				walletToDelete = wallet
-				break
-			}
-		}
-		if (indexOfWallet === null || walletToDelete === null) {
+		const instanceAndIndex = self.__walletInstanceAndIndexWithId(_id)
+		var indexOfWallet = instanceAndIndex.index
+		var walletInstance = instanceAndIndex.instance
+		if (indexOfWallet === null || walletInstance === null) {
 			fn(new Error("Wallet not found"))
 			return
 		}
@@ -320,16 +377,16 @@ class WalletsListController
 		self.wallets.splice(indexOfWallet, 1) // pre-emptively remove the wallet from the list
 		self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
 		//
-		walletToDelete.Delete(
+		walletInstance.Delete(
 			function(err)
 			{
 				if (err) {
-					self.wallets.splice(indexOfWallet, 0, walletToDelete) // revert deletion
+					self.wallets.splice(indexOfWallet, 0, walletInstance) // revert deletion
 					self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
 					fn(err)
 					return
 				}
-				walletToDelete = null // free
+				walletInstance = null // 'free'
 				fn()
 			}
 		)
@@ -339,8 +396,8 @@ class WalletsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 
-	_new_idsAndLabelsOfPersistedWallets(
-		fn // (err?, docs?) -> Void
+	_new_idsOfPersistedWallets(
+		fn // (err?, ids?) -> Void
 	) 
 	{
 		const self = this
@@ -355,19 +412,38 @@ class WalletsListController
 					fn(err)
 					return
 				}
-				const idsAndLabels = []
+				const ids = []
 				docs.forEach(function(el, idx)
 				{
-					idsAndLabels.push({
-						_id: el._id,
-						walletLabel: el.walletLabel
-					})
+					ids.push(el._id)
 				})
-				fn(null, idsAndLabels)
+				fn(null, ids)
 			}
 		)
 	}
-
+	__walletInstanceAndIndexWithId(_id)
+	{
+		const self = this
+		//
+		const wallets_length = self.wallets.length
+		var targetWallet_index = null
+		var targetWallet_instance = null
+		console.log("FIND INSTANCE WITH _id" , _id)
+		for (let i = 0 ; i < wallets_length ; i++) {
+			const wallet = self.wallets[i]
+			if (wallet._id === _id) {
+				targetWallet_index = i
+				targetWallet_instance = wallet
+				break
+			}
+		}
+		//
+		return {
+			index: targetWallet_index,
+			instance: targetWallet_instance
+		}
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
@@ -375,7 +451,7 @@ class WalletsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
 
-	_wallet_wasSuccessfullySetUp(walletInstance)
+	_wallet_wasSuccessfullyInitialized(walletInstance)
 	{
 		const self = this
 		self.wallets.push(walletInstance)

@@ -536,7 +536,7 @@ class SecretPersistingHostedWallet
 		//
 		console.info("✅  Successfully instantiated", self.Description())
 		self.isBooted = true
-		fn()
+		fn() // ensure we call the callback
 		//
 		function __callAllSyncFunctions()
 		{

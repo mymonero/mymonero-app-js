@@ -36,7 +36,8 @@ module.exports =
 	persistencePassword: "a much stronger password than before",
 	//
 	//
-	deleteWalletWith_id: "SL9vayN9PX9Gq8mI",
+	deleteWalletWith_id: "Vi3XO7lz73lbKOcP",
+	unlockWalletWith_id: "CaaTGULvdHzttrKu",
 	//
 	// importing wallets
 	// I
