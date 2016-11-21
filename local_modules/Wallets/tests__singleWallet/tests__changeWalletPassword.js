@@ -88,10 +88,11 @@ function _proceedTo_test_changingWalletPassword(fn)
 			}
 		)
 	}
+	var wallet;
 	const options = 
 	{
 		_id: wallets__tests_config.openWalletWith_id,
-		persistencePassword: wallets__tests_config.persistencePassword,
+		//
 		failedToInitialize_cb: function(err)
 		{
 			fn(err)
@@ -100,10 +101,17 @@ function _proceedTo_test_changingWalletPassword(fn)
 		{
 			console.log("Wallet is ", wallet)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-		},
-		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
-		{
-			confirmation_cb(mnemonicString) // simulating correct user input
+			wallet.Boot_decryptingExistingInitDoc(
+				wallets__tests_config.persistencePassword,
+				function(err)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					// now we will await the completion of the sync so we can do the operation for this test
+				}
+			)
 		},
 		//
 		didReceiveUpdateToAccountInfo: function()
@@ -127,5 +135,5 @@ function _proceedTo_test_changingWalletPassword(fn)
 			}
 		}
 	}
-	const wallet = new SecretPersistingHostedWallet(options, context)
+	wallet = new SecretPersistingHostedWallet(options, context)
 }
