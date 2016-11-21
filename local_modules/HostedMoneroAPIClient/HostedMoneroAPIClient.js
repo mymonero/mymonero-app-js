@@ -29,11 +29,14 @@
 "use strict"
 //
 const request = require('request')
-const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const async = require('async')
+//
+const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const monero_config = require('../monero_utils/monero_config')
 const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+//
 const TransactionKeyImageCache = require('./TransactionKeyImageCache')
+const config__MyMonero = require('./config__MyMonero')	
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,10 +55,11 @@ class HostedMoneroAPIClient
 		self.options = options
 		self.context = context
 		//
-		self.scheme = "https"
-		self.host = "api.mymonero.com:8443/" // later will be configurable
+		self.scheme = config__MyMonero.API__protocolScheme
+		self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // later will be configurable
 		self.baseURL = self.scheme + "://" + self.host
-		self.txChargeRatio = 0.5 // Service fee relative to tx fee (0.5 => 50%)
+		//
+		self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
 		//
 		self.setup()
 	}
@@ -76,8 +80,8 @@ class HostedMoneroAPIClient
 		return networkFee.divide(1 / self.txChargeRatio)
 	}
 	HostingServiceFeeDepositAddress()
-	{
-		return "42LUcizuzdwDb3bVnN2G3sTwV77EFiPqLHPZMs7Vk7dnRBmv62McQxHhuD6WLtCJVaf4aXGyR2GbtRjeWTWBhAYG6kiPL5L"
+	{ // -> String
+		return config__MyMonero.HostingServiceFee_depositAddress
 	}
 	
 	

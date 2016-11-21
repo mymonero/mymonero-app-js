@@ -403,8 +403,20 @@ class SecretPersistingHostedWallet
 	Balance()
 	{
 		const self = this
+		var total_received = self.total_received
+		var total_sent = self.total_sent
+		if (typeof total_received === 'undefined') {
+			total_received = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
+			console.log("⚠️  Wallet Balance() called while self.total_received was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
+			// console.trace()
+		}
+		if (typeof total_sent === 'undefined') {
+			total_sent = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
+			console.log("⚠️  Wallet Balance() called while self.total_sent was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
+			// console.trace()
+		}
 		//
-		return self.total_received.subtract(self.total_sent)
+		return total_received.subtract(total_sent)
 	}
 	Description()
 	{

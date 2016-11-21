@@ -92,7 +92,7 @@ function _proceedTo_test_changingWalletPassword(fn)
 	{
 		_id: wallets__tests_config.openWalletWith_id,
 		persistencePassword: wallets__tests_config.persistencePassword,
-		Wallets/tests__singleWallet: function(err)
+		failedSetUp_cb: function(err)
 		{
 			fn(err)
 		},

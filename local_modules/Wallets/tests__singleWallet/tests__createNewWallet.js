@@ -71,7 +71,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 	{
 		walletLabel: "Checking",
 		persistencePassword: wallets__tests_config.persistencePassword,
-		Wallets/tests__singleWallet: function(err)
+		failedSetUp_cb: function(err)
 		{
 			fn(err)
 		},
