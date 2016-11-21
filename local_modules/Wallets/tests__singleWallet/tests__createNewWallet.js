@@ -67,22 +67,36 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
+	var wallet;
 	const options = 
 	{
-		walletLabel: "Checking",
-		persistencePassword: wallets__tests_config.persistencePassword,
-		failedSetUp_cb: function(err)
+		generateNewWallet: true,
+		//
+		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullySetUp_cb: function()
+		successfullyInitialized_cb: function()
 		{
 			console.log("Wallet is ", wallet)
-			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-		},
-		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
-		{
-			confirmation_cb(mnemonicString) // simulating correct user input
+			wallet.Boot_byLoggingIntoHostedService_byCreatingNewWallet(
+				wallets__tests_config.persistencePassword,
+				"Checking",
+				function(mnemonicString, confirmation_cb)
+				{
+					console.log("🔁  Simulating correct user input of mnemonicString", mnemonicString)
+					confirmation_cb(mnemonicString) // simulating correct user input
+				},
+				function(err)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					// now we'll await the sync functions finishing!
+					console.log("✅  Booted wallet!")
+				}
+			)
 		},
 		//
 		didReceiveUpdateToAccountInfo: function()
@@ -106,5 +120,5 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 			}
 		}
 	}
-	const wallet = new SecretPersistingHostedWallet(options, context)
+	wallet = new SecretPersistingHostedWallet(options, context)
 }

@@ -56,7 +56,7 @@ function HydrateInstance_withUnencryptedValues(
 	self.wallet_currency = encryptedDocument.wallet_currency
 	self.walletLabel = encryptedDocument.walletLabel
 	//
-	self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+	self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
 }
 exports.HydrateInstance_withUnencryptedValues = HydrateInstance_withUnencryptedValues
 //

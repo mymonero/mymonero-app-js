@@ -75,11 +75,11 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 		mnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
 		//
 		persistencePassword: wallets__tests_config.persistencePassword,
-		failedSetUp_cb: function(err)
+		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullySetUp_cb: function()
+		successfullyInitialized_cb: function(wallet)
 		{
 			console.log("Wallet is ", wallet)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
@@ -110,7 +110,7 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 			}
 		}
 	}
-	const wallet = new SecretPersistingHostedWallet(options, context)
+	const instance = new SecretPersistingHostedWallet(options, context)
 }
 
 function _proceedTo_test_importingWalletByAddressAndKeys(fn)
@@ -131,11 +131,11 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 		initWithKeys__spend_key__private: wallets__tests_config.initWithKeys__spend_key__private,
 		//
 		persistencePassword: wallets__tests_config.persistencePassword,
-		failedSetUp_cb: function(err)
+		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullySetUp_cb: function()
+		successfullyInitialized_cb: function(wallet)
 		{
 			console.log("Wallet is ", wallet)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
@@ -166,5 +166,5 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 			}
 		}
 	}
-	const wallet = new SecretPersistingHostedWallet(options, context)
+	const instance = new SecretPersistingHostedWallet(options, context)
 }

@@ -127,7 +127,6 @@ class WalletsListController
 				{
 					const _id = idAndLabel._id
 					const walletLabel = idAndLabel.walletLabel
-					var wallet;
 					self.obtainPasswordToOpenWalletWithLabel_cb(
 						walletLabel,
 						function(tryWith_persistencePassword, orShouldSkip)
@@ -137,16 +136,17 @@ class WalletsListController
 								cb()
 								return // exit
 							}
+							var wallet;
 							const options = 
 							{
 								_id: _id,
 								persistencePassword: tryWith_persistencePassword,
-								failedSetUp_cb: function(err)
+								failedToInitialize_cb: function(err)
 								{
 									console.error("Failed to read wallet ", err)
 									cb(err)
 								},
-								successfullySetUp_cb: function()
+								successfullyInitialized_cb: function()
 								{
 									self._wallet_wasSuccessfullySetUp(wallet)
 									//
@@ -218,11 +218,11 @@ class WalletsListController
 			initWithMnemonic__mnemonicString: mnemonicString,
 			mnemonic__wordsetName: wordsetName,
 			//
-			failedSetUp_cb: function(err)
+			failedToInitialize_cb: function(err)
 			{
 				fn(err)
 			},
-			successfullySetUp_cb: function()
+			successfullyInitialized_cb: function()
 			{
 				self._wallet_wasSuccessfullySetUp(wallet)
 				//
@@ -272,11 +272,11 @@ class WalletsListController
 			initWithMnemonic__view_key__private: view_key__private,
 			initWithMnemonic__spend_key__private: spend_key__private,
 			//
-			failedSetUp_cb: function(err)
+			failedToInitialize_cb: function(err)
 			{
 				fn(err)
 			},
-			successfullySetUp_cb: function()
+			successfullyInitialized_cb: function()
 			{
 				self._wallet_wasSuccessfullySetUp(wallet)
 				//

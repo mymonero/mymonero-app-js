@@ -92,11 +92,11 @@ function _proceedTo_test_changingWalletPassword(fn)
 	{
 		_id: wallets__tests_config.openWalletWith_id,
 		persistencePassword: wallets__tests_config.persistencePassword,
-		failedSetUp_cb: function(err)
+		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullySetUp_cb: function()
+		successfullyInitialized_cb: function()
 		{
 			console.log("Wallet is ", wallet)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
