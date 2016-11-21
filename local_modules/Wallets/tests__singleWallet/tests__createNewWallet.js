@@ -94,7 +94,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 						return
 					}
 					// now we'll await the sync functions finishing!
-					console.log("✅  Booted wallet!")
+					console.log("✅  Booted newly created wallet!")
 				}
 			)
 		},

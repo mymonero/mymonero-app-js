@@ -66,27 +66,33 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 	function areAllSyncOperationsFinished()
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
-	}	
+	}
+	var wallet;
 	const options = 
 	{
-		walletLabel: "Checking",
-		//
-		initWithMnemonic__mnemonicString: wallets__tests_config.initWithMnemonic__mnemonicString,
-		mnemonic__wordsetName: wallets__tests_config.initWithMnemonic__wordsetName,
-		//
-		persistencePassword: wallets__tests_config.persistencePassword,
 		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function(wallet)
+		successfullyInitialized_cb: function()
 		{
 			console.log("Wallet is ", wallet)
-			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-		},
-		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
-		{
-			confirmation_cb(mnemonicString) // simulating correct user input
+			//
+			wallet.Boot_byLoggingIntoHostedService_withMnemonic(
+				wallets__tests_config.persistencePassword,
+				"Checking",
+				wallets__tests_config.initWithMnemonic__mnemonicString, 
+				wallets__tests_config.initWithMnemonic__wordsetName, 
+				function(err)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					// now we can await the completion of the syncs
+					console.log("✅  Booted wallet opened by mnemonic!")
+				}
+			)
 		},
 		//
 		didReceiveUpdateToAccountInfo: function()
@@ -110,7 +116,7 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 			}
 		}
 	}
-	const instance = new SecretPersistingHostedWallet(options, context)
+	wallet = new SecretPersistingHostedWallet(options, context)
 }
 
 function _proceedTo_test_importingWalletByAddressAndKeys(fn)
@@ -122,27 +128,33 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
+	var wallet;
 	const options = 
 	{
-		walletLabel: "Checking",
-		//
-		initWithKeys__address: wallets__tests_config.initWithKeys__address,
-		initWithKeys__view_key__private: wallets__tests_config.initWithKeys__view_key__private,
-		initWithKeys__spend_key__private: wallets__tests_config.initWithKeys__spend_key__private,
-		//
-		persistencePassword: wallets__tests_config.persistencePassword,
 		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function(wallet)
+		successfullyInitialized_cb: function()
 		{
 			console.log("Wallet is ", wallet)
-			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-		},
-		ifNewWallet__informingAndVerifyingMnemonic_cb: function(mnemonicString, confirmation_cb)
-		{
-			confirmation_cb(mnemonicString) // simulating correct user input
+
+			wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
+				wallets__tests_config.persistencePassword,
+				"Checking",
+				wallets__tests_config.initWithKeys__address, 
+				wallets__tests_config.initWithKeys__view_key__private, 
+				wallets__tests_config.initWithKeys__spend_key__private, 
+				function(err)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					// now we'll await completion of syncs
+					console.log("✅  Booted wallet opened by address and keys!")
+				}
+			)
 		},
 		//
 		didReceiveUpdateToAccountInfo: function()
@@ -166,5 +178,5 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 			}
 		}
 	}
-	const instance = new SecretPersistingHostedWallet(options, context)
+	wallet = new SecretPersistingHostedWallet(options, context)
 }

@@ -269,6 +269,7 @@ class SecretPersistingHostedWallet
 		}
 		//
 		self.walletLabel = walletLabel || ""
+		self.mnemonic_wordsetName = wordsetName || self.mnemonic_wordsetName // default has already been initialized
 		//
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
@@ -375,6 +376,9 @@ class SecretPersistingHostedWallet
 				fn(err)
 				return
 			}
+			//
+			self.initialization_encryptedDocument = null // now we can free this
+			//
 			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
