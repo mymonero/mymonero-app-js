@@ -460,7 +460,6 @@ class SecretPersistingHostedWallet
 			)
 			{
 				if (err) {
-					self._logOut()
 					fn(err)
 					return
 				}
@@ -487,7 +486,6 @@ class SecretPersistingHostedWallet
 				function(err, new_address)
 				{
 					if (err) {
-						self._logOut()
 						fn(err)
 						return
 					}
@@ -647,39 +645,7 @@ class SecretPersistingHostedWallet
 		//
 		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance()
 	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Logging in/Creating accounts
-	
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private - Account registration with hosted node API
-
-	_logOut()
-	{
-		const self = this
-		//
-		self.isLoggingIn = false
-		self.isLoggedIn = false
-		//
-		self.account_seed = null
-		self.public_keys = null
-		self.private_keys = null
-		self.isInViewOnlyMode = null
-		//
-		self.account_scanned_height = null
-		self.account_scanned_block_height = null
-		self.account_scanned_tx_height = null
-		self.account_scan_start_height = null
-		self.transaction_height = null
-		self.blockchain_height = null
-		self.transactions = null
-		// more fields?
-		// TODO: emit event?
-	}
-	
+		
 	
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Sending funds
