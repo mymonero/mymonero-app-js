@@ -566,17 +566,6 @@ class SecretPersistingHostedWallet
 		}, syncPollingInterval)
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
