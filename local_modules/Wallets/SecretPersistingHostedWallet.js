@@ -158,7 +158,7 @@ class SecretPersistingHostedWallet
 	////////////////////////////////////////////////////////////////////////////////
 	// Post init, pre-boot - Public - Accessors - Creating new wallets
 	
-	FreshMnemonicWhichWasGeneratedOnInit()
+	MnemonicStringWhichWasGeneratedOnInit()
 	{
 		return self.generatedOnInit_walletDescription.mnemonicString
 	}
