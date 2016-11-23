@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -29,8 +29,8 @@
 "use strict"
 //
 // Hydrate context
-var context_object_instantiation_descriptions = 
-[ 
+var context_object_instantiation_descriptions =
+[
 	{
 		module_path: __dirname + "/../MainWindow/MainWindowController",
 		instance_key: "mainWindowController",
@@ -42,23 +42,42 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../Wallets/WalletsListController",
-		instance_key: "walletsListController",
+		module_path: __dirname + "/../AppRuntime/AppRuntimeController",
+		instance_key: "appRuntimeController",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../Passwords/PasswordController",
+		instance_key: "passwordController",
 		options: {
-			obtainPasswordToOpenWalletWithLabel_cb: function(
-				walletLabel, 
-				returningPassword_cb
-			)
+			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
 			{
-				console.log("obtain pw", walletLabel, returningPassword_cb)
-				returningPassword_cb("a much stronger password than before")
+				controller.context.appRuntimeController.passwordController__obtainPasswordFromUser_wOptlValidationErrMsg_cb(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
+			},
+			didSetFirstPasswordDuringThisRuntime_cb: function(controller, password)
+			{
+				controller.context.appRuntimeController.passwordController__didSetFirstPasswordDuringThisRuntime_cb(controller, password)
+			},
+			didChangePassword_cb: function(controller, password)
+			{
+				controller.context.appRuntimeController.passwordController__didChangePassword_cb(controller, password)
 			}
 		}
+	},
+	{
+		module_path: __dirname + "/../Wallets/WalletsListController",
+		instance_key: "walletsListController",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../Contacts/ContactsListController",
+		instance_key: "contactsListController",
+		options: {}
 	}
 ]
-function NewHydratedContext(app) 
+function NewHydratedContext(app)
 {
-	var initialContext = 
+	var initialContext =
 	{
 		app: app,
 		userDataAbsoluteFilepath: app.getPath('userData')

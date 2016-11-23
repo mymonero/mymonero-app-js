@@ -67,7 +67,7 @@ function _proceedTo_test_bootController(cb)
 	console.log("▶️  _proceedTo_test_bootController")
 	const options =
 	{
-		obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPw_cb, showingValidationErrMsg_orUndefined)
+		obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
 		{
 			if (typeof showingValidationErrMsg_orUndefined !== 'undefined') {
 				console.error("Password entry validation error:", showingValidationErrMsg_orUndefined)
@@ -88,7 +88,7 @@ function _proceedTo_test_bootController(cb)
 				obtained_passwordString = theOriginalPassword
 				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
 			}
-			obtainedErrOrPw_cb(
+			obtainedErrOrPwAndType_cb(
 				errToPassBack,
 				obtained_passwordString,
 				obtained_typeOfPassword

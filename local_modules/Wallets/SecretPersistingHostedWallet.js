@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -46,9 +46,9 @@ const wallet_currencies =
 //
 class SecretPersistingHostedWallet
 {
-	// Init -> setup 
-	// Important: You must manually call one of the 'Boot_' methods after you initialize 
-	
+	// Init -> setup
+	// Important: You must manually call one of the 'Boot_' methods after you initialize
+
 	constructor(options, context)
 	{
 		var self = this
@@ -74,7 +74,7 @@ class SecretPersistingHostedWallet
 		//
 		// runtime state initialization
 		self.isBooted = false // you must manually boot the instance
-		self.isLoggingIn = false 
+		self.isLoggingIn = false
 		self.isLoggedIn = true // maybe modified by existing doc
 		//
 		// detecting how to set up instance
@@ -138,9 +138,9 @@ class SecretPersistingHostedWallet
 		//
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false
-		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default 
-		self.mnemonic_wordsetName = self.options.mnemonic_wordsetName || monero_wallet_utils.wordsetNames.english // default 
-		// 
+		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default
+		self.mnemonic_wordsetName = self.options.mnemonic_wordsetName || monero_wallet_utils.wordsetNames.english // default
+		//
 		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
 		// case I: user is inputting mnemonic string
 		// case II: user is inputting address + view & spend keys
@@ -152,18 +152,18 @@ class SecretPersistingHostedWallet
 		// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
 		self.successfullyInitialized_cb()
 	}
-	
-	
+
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Post init, pre-boot - Public - Accessors - Creating new wallets
-	
+
 	MnemonicStringWhichWasGeneratedOnInit()
 	{
 		return self.generatedOnInit_walletDescription.mnemonicString
 	}
 	// TODO: there may be room for a 'regenerate mnemonic' with new wordset imperative function
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Booting - Public - Imperatives - Creating/adding wallets
@@ -181,9 +181,9 @@ class SecretPersistingHostedWallet
 	  // To use this function, you must supply a informingAndVerifyingMnemonic_cb.
 	  // Your supplied cb will be called with the generated mnemonicString and another
 	  // _cb, which you must call after you get the user to confirm their mnemonicString.
-	  // This function will proceed to verify the confirmation mnemonic string and 
+	  // This function will proceed to verify the confirmation mnemonic string and
 	  // then log into the hosted node server to create an account
-	  //	
+	  //
 		const self = this
 		//
 		self.persistencePassword = persistencePassword || null
@@ -252,8 +252,8 @@ class SecretPersistingHostedWallet
 	Boot_byLoggingIntoHostedService_withMnemonic(
 		persistencePassword,
 		walletLabel,
-		mnemonicString, 
-		wordsetName, 
+		mnemonicString,
+		wordsetName,
 		fn
 	)
 	{ // fn: (err?) -> Void
@@ -299,9 +299,9 @@ class SecretPersistingHostedWallet
 	Boot_byLoggingIntoHostedService_withAddressAndKeys(
 		persistencePassword,
 		walletLabel,
-		address, 
-		view_key__private, 
-		spend_key__private, 
+		address,
+		view_key__private,
+		spend_key__private,
 		fn
 	)
 	{ // fn: (err?) -> Void
@@ -329,7 +329,7 @@ class SecretPersistingHostedWallet
 			fn
 		)
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Booting - Public - Imperatives - Reading saved wallets
@@ -365,8 +365,8 @@ class SecretPersistingHostedWallet
 			var plaintextDocument
 			try {
 				plaintextDocument = document_cryptor.New_DecryptedDocument(
-					encryptedDocument, 
-					secretWallet_persistence_utils.DocumentCryptScheme, 
+					encryptedDocument,
+					secretWallet_persistence_utils.DocumentCryptScheme,
 					self.persistencePassword
 				)
 			} catch (e) {
@@ -419,24 +419,24 @@ class SecretPersistingHostedWallet
 				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.view")
 			}
 			if (self.private_keys.spend === null || typeof self.private_keys.spend === 'undefined' || self.private_keys.spend === '') {
-				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.spend")					
+				return _failWithValidationErr("Reconstituted wallet had no valid private_keys.spend")
 			}
 			//
 			// finally
 			self._trampolineFor_successfullyBooted(fn)
 		}
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Booting - Private - Imperatives
-	
+
 	_boot_byLoggingIn(
-		address, 
-		view_key, 
-		spend_key_orUndefinedForViewOnly, 
-		seed_orUndefined, 
-		wasAGeneratedWallet, 
+		address,
+		view_key,
+		spend_key_orUndefinedForViewOnly,
+		seed_orUndefined,
+		wasAGeneratedWallet,
 		fn
 	)
 	{
@@ -445,16 +445,16 @@ class SecretPersistingHostedWallet
 		self.isLoggingIn = true
 		//
 		monero_wallet_utils.VerifiedComponentsForLogIn(
-			address, 
-			view_key, 
-			spend_key_orUndefinedForViewOnly, 
-			seed_orUndefined, 
+			address,
+			view_key,
+			spend_key_orUndefinedForViewOnly,
+			seed_orUndefined,
 			wasAGeneratedWallet,
 			function(
 				err,
-				address, 
-				account_seed, 
-				public_keys, 
+				address,
+				account_seed,
+				public_keys,
 				private_keys,
 				isInViewOnlyMode
 			)
@@ -464,8 +464,8 @@ class SecretPersistingHostedWallet
 					return
 				}
 				__proceedTo_loginViaHostedAPI(
-					account_seed, 
-					public_keys, 
+					account_seed,
+					public_keys,
 					private_keys,
 					isInViewOnlyMode,
 					fn
@@ -473,7 +473,7 @@ class SecretPersistingHostedWallet
 			}
 		)
 		function __proceedTo_loginViaHostedAPI(
-			account_seed,  // these arguments only get passed through 
+			account_seed,  // these arguments only get passed through
 			public_keys,  // so they can be set in one place below
 			private_keys,
 			isInViewOnlyMode,
@@ -514,12 +514,12 @@ class SecretPersistingHostedWallet
 				}
 			)
 		}
-	}	
-	
+	}
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Booting - Private - Delegation
-	
+
 	_trampolineFor_successfullyBooted(
 		fn
 	)
@@ -540,7 +540,7 @@ class SecretPersistingHostedWallet
 		{
 			self._fetch_accountInfo(
 				function(err)
-				{	
+				{
 				}
 			)
 			self._fetch_transactionHistory(
@@ -552,18 +552,18 @@ class SecretPersistingHostedWallet
 		//
 		// kick off synchronizations
 		setTimeout(function()
-		{ 
+		{
 			__callAllSyncFunctions()
 		})
 		//
 		// and kick off the polling call to pull latest updates
-		const syncPollingInterval = 10000 
+		const syncPollingInterval = 30 * 1000 // ms 
 		setInterval(function()
 		{
 			__callAllSyncFunctions()
 		}, syncPollingInterval)
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
@@ -609,7 +609,7 @@ class SecretPersistingHostedWallet
 		//
 		return stateCachedTransactions
 	}
-	
+
 	//
 	IsAccountCatchingUp()
 	{
@@ -645,15 +645,15 @@ class SecretPersistingHostedWallet
 		//
 		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance()
 	}
-		
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Sending funds
-	
+
 	SendFunds(
 		target_address, // currency-ready wallet public address or OpenAlias address
 		amount, // number
-		mixin, 
+		mixin,
 		payment_id,
 		fn,
 		// fn: (
@@ -737,10 +737,10 @@ class SecretPersistingHostedWallet
 		)
 	}
 
-	
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Persistence
-	
+
 	saveToDisk(fn)
 	{
 		const self = this
@@ -749,11 +749,11 @@ class SecretPersistingHostedWallet
 			fn
 		)
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Deletion
-	
+
 	Delete(
 		fn // (err?) -> Void
 	)
@@ -764,11 +764,11 @@ class SecretPersistingHostedWallet
 			fn
 		)
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing password
-	
+
 	ChangePasswordFromTo(
 		testWithExisting_persistencePassword,
 		changeTo_persistencePassword,
@@ -801,11 +801,11 @@ class SecretPersistingHostedWallet
 			}
 		)
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
-	
+
 	SetWalletLabel(
 		toLabel,
 		fn
@@ -828,11 +828,11 @@ class SecretPersistingHostedWallet
 			}
 		)
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Account info & tx history fetch/sync
-	
+
 	_fetch_accountInfo(fn)
 	{
 		const self = this
@@ -896,7 +896,7 @@ class SecretPersistingHostedWallet
 			}
 		)
 	}
-		
+
 	_fetch_transactionHistory(fn)
 	{ // fn: (err?) -> Void
 		const self = this
@@ -929,11 +929,11 @@ class SecretPersistingHostedWallet
 			self.private_keys.spend,
 			function(
 				err,
-				account_scanned_height, 
-				account_scanned_block_height, 
+				account_scanned_height,
+				account_scanned_block_height,
 				account_scan_start_height,
-				transaction_height, 
-				blockchain_height, 
+				transaction_height,
+				blockchain_height,
 				transactions
 			)
 			{
@@ -944,11 +944,11 @@ class SecretPersistingHostedWallet
 				}
 				//
 				self.__didFetch_transactionHistory(
-					account_scanned_height, 
-					account_scanned_block_height, 
+					account_scanned_height,
+					account_scanned_block_height,
 					account_scan_start_height,
-					transaction_height, 
-					blockchain_height, 
+					transaction_height,
+					blockchain_height,
 					transactions
 				)
 			}
@@ -990,7 +990,7 @@ class SecretPersistingHostedWallet
 			function(err)
 			{
 				if (!err) {
-					self.___didReceiveAndSaveUpdateTo_accountInfo()	
+					self.___didReceiveAndSaveUpdateTo_accountInfo()
 				}
 			}
 		)
@@ -1006,11 +1006,11 @@ class SecretPersistingHostedWallet
 	//
 	//
 	__didFetch_transactionHistory(
-		account_scanned_height, 
-		account_scanned_block_height, 
+		account_scanned_height,
+		account_scanned_block_height,
 		account_scan_start_height,
-		transaction_height, 
-		blockchain_height, 
+		transaction_height,
+		blockchain_height,
 		transactions
 	)
 	{
@@ -1020,7 +1020,7 @@ class SecretPersistingHostedWallet
 		self.account_scanned_block_height = account_scanned_block_height
 		self.account_scan_start_height = account_scan_start_height
 		self.transaction_height = transaction_height
-		self.blockchain_height = blockchain_height 
+		self.blockchain_height = blockchain_height
 		self.transactions = transactions
 		//
 		self.dateThatLast_fetchedAccountTransactions = new Date()
@@ -1029,7 +1029,7 @@ class SecretPersistingHostedWallet
 			function(err)
 			{
 				if (!err) {
-					self.___didReceiveAndSaveUpdateTo_accountTransactions()	
+					self.___didReceiveAndSaveUpdateTo_accountTransactions()
 				}
 			}
 		)

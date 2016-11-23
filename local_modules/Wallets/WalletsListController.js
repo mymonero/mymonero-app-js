@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -50,53 +50,16 @@ class WalletsListController
 		self.options = options
 		self.context = context
 		//
-		self.didInitializeSuccessfully_cb = self.options.didInitializeSuccessfully_cb
-		self.failedToInitializeSuccessfully_cb = self.options.failedToInitializeSuccessfully_cb
+		self.hasBooted = false // not booted yet - we'll defer things till we have
 		//
 		self.setup()
 	}
 	setup()
 	{
 		const self = this
-		//
-		function _trampolineFor_finishedInitializing()
-		{
-			if (typeof self.didInitializeSuccessfully_cb === 'function') {
-				self.didInitializeSuccessfully_cb()
-			} else {
-				console.warn("No didInitializeSuccessfully_cb provided via options to your WalletsListController")
-			}
-		}
-		function _trampolineFor_failedToInitialize_withErr(err)
-		{
-			console.error(errStr)
-			//
-			if (typeof self.failedToInitializeSuccessfully_cb === 'function') {
-				self.failedToInitializeSuccessfully_cb(err)
-			} else {
-				console.warn("No failedToInitializeSuccessfully_cb provided via options to your WalletsListController")
-			}
-		}
-		function _trampolineFor_failedToInitialize_withErrStr(errStr)
-		{
-			_trampolineFor_failedToInitialize_withErr(new Error(errStr))
-		}
-		//
-		self._setup_reconstitutePersistedWallets(
-			_trampolineFor_finishedInitializing,
-			_trampolineFor_failedToInitialize_withErr,
-			_trampolineFor_failedToInitialize_withErrStr
-		)
-	}
-	_setup_reconstitutePersistedWallets(
-		_trampolineFor_finishedInitializing,
-		_trampolineFor_failedToInitialize_withErr,
-		_trampolineFor_failedToInitialize_withErrStr
-	)
-	{
-		const self = this
 		const context = self.context
 		//
+		// reconsitute persisted wallets
 		self._new_idsOfPersistedWallets(
 			function(err, ids)
 			{
@@ -111,59 +74,98 @@ class WalletsListController
 		function __proceedTo_loadWalletsWithIds(ids)
 		{
 			self.wallets = []
-			async.eachSeries(
-				ids,
-				function(_id, cb)
-				{
-					var wallet;
-					const options = 
-					{
-						_id: _id,
-						//
-						failedToInitialize_cb: function(err)
-						{
-							console.error("Failed to read wallet ", err)
-							cb(err)
-						},
-						successfullyInitialized_cb: function()
-						{
-							console.log("Initialized wallet", wallet.Description())
-							self._wallet_wasSuccessfullyInitialized(wallet) // not yet booted - we will let consumer do that 
-							//
-							cb(null)
-						},
-						//
-						didReceiveUpdateToAccountInfo: function()
-						{ // TODO: bubble?
-						},
-						didReceiveUpdateToAccountTransactions: function()
-						{ // TODO: bubble?
-						}
-					}
-					wallet = new SecretPersistingHostedWallet(options, context)
-				},
-				function(err)
+			if (ids.length === 0) {
+				self.hasBooted = true // nothing to do to boot
+				return
+			}
+			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
+				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 				{
 					if (err) {
-						// TODO: emit event
-						console.error("Error fetching persisted wallet ids", err)
+						fn(err)
 						return
 					}
-					_trampolineFor_finishedInitializing()
+					__proceedTo_loadAndBootAllExtantWalletsWithPassword(obtainedPasswordString)
 				}
 			)
+			function __proceedTo_loadAndBootAllExtantWalletsWithPassword(persistencePassword)
+			{
+				async.each(
+					ids,
+					function(_id, cb)
+					{
+						var wallet;
+						const options =
+						{
+							_id: _id,
+							//
+							failedToInitialize_cb: function(err)
+							{
+								console.error("Failed to read wallet ", err)
+								cb(err)
+							},
+							successfullyInitialized_cb: function()
+							{
+								wallet.Boot_decryptingExistingInitDoc(
+									persistencePassword,
+									function(err)
+									{
+										if (err) {
+											cb(err)
+											return
+										}
+										console.log("Initialized wallet", wallet.Description())
+										self._wallet_wasSuccessfullyInitialized(wallet) // not yet booted
+										cb()
+									}
+								)
+							},
+							didReceiveUpdateToAccountInfo: function()
+							{ // TODO: bubble?
+							},
+							didReceiveUpdateToAccountTransactions: function()
+							{ // TODO: bubble?
+							}
+						}
+						wallet = new SecretPersistingHostedWallet(options, context)
+					},
+					function(err)
+					{
+						if (err) {
+							console.error("Error fetching persisted wallet ids", err)
+							throw err
+							return
+						}
+						self.hasBooted = true // all done!
+					}
+				)
+			}
 		}
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
-	
-	
-	
+
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Opening existing wallets
+
+	_bootWallet(
+		walletInstance,
+		persistencePassword,
+		fn // (err, wallet) -> Void
+	)
+	{
+		const self = this
+	}
+
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Wallets list
-	
+
 	CreateAndAddNewlyGeneratedWallet(
 		persistencePassword, // TODO: maybe break these out depending on what the UI needs
 		walletLabel,
@@ -176,7 +178,7 @@ class WalletsListController
 		const context = self.context
 		//
 		var wallet;
-		const options = 
+		const options =
 		{
 			generateNewWallet: true, // must flip this flag to true
 			//
@@ -236,7 +238,7 @@ class WalletsListController
 		}
 		//
 		var wallet;
-		const options = 
+		const options =
 		{
 			failedToInitialize_cb: function(err)
 			{
@@ -295,7 +297,7 @@ class WalletsListController
 		}
 		//
 		var wallet;
-		const options = 
+		const options =
 		{
 			failedToInitialize_cb: function(err)
 			{
@@ -306,9 +308,9 @@ class WalletsListController
 				wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
 					persistencePassword,
 					walletLabel,
-					address, 
-					view_key__private, 
-					spend_key__private, 
+					address,
+					view_key__private,
+					spend_key__private,
 					function(err)
 					{
 						if (err) {
@@ -330,33 +332,6 @@ class WalletsListController
 			}
 		}
 		wallet = new SecretPersistingHostedWallet(options, context)
-	}
-	//
-	BootWalletWithId(
-		_id,
-		persistencePassword,
-		fn // (err, wallet) -> Void
-	)
-	{
-		const self = this
-		const instanceAndIndex = self.__walletInstanceAndIndexWithId(_id)
-		var indexOfWallet = instanceAndIndex.index
-		var walletInstance = instanceAndIndex.instance
-		if (indexOfWallet === null || walletInstance === null) {
-			fn(new Error("Wallet not found"), null)
-			return
-		}
-		walletInstance.Boot_decryptingExistingInitDoc(
-			persistencePassword,
-			function(err)
-			{
-				if (err) {
-					fn(err, walletInstance)
-					return
-				}
-				fn(null, walletInstance)
-			}
-		)
 	}
 	//
 	DeleteWalletWithId(
@@ -391,14 +366,14 @@ class WalletsListController
 			}
 		)
 	}
-		
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 
 	_new_idsOfPersistedWallets(
 		fn // (err?, ids?) -> Void
-	) 
+	)
 	{
 		const self = this
 		self.context.persister.DocumentsWithQuery(
@@ -443,7 +418,7 @@ class WalletsListController
 			instance: targetWallet_instance
 		}
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private

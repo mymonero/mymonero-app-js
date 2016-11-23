@@ -59,8 +59,8 @@ class PasswordController
 		self.hasBooted = false
 		self._password = undefined // it's not been obtained from the user yet - we only store it in memory
 		self.obtainPasswordFromUser_wOptlValidationErrMsg_cb = self.options.obtainPasswordFromUser_wOptlValidationErrMsg_cb
-		// obtainPasswordFromUser_wOptlValidationErrMsg_cb: (controller, obtainedErrOrPw_cb, showingValidationErrMsg_orUndefined) -> Void
-		//	obtainedErrOrPw_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword: AvailableUserSelectableTypesOfPassword?) -> Void // you can send an err to say the user cancelled pw entry. this controller doesn't do anything to the pw if there's an err and if the pw isn't changed, the didChange callback(s) are not notified/called
+		// obtainPasswordFromUser_wOptlValidationErrMsg_cb: (controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined) -> Void
+		//	obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword: AvailableUserSelectableTypesOfPassword?) -> Void // you can send an err to say the user cancelled pw entry. this controller doesn't do anything to the pw if there's an err and if the pw isn't changed, the didChange callback(s) are not notified/called
 		if (typeof self.obtainPasswordFromUser_wOptlValidationErrMsg_cb === 'undefined' || self.obtainPasswordFromUser_wOptlValidationErrMsg_cb === null) {
 			const errStr = "You must supply a obtainPasswordFromUser_wOptlValidationErrMsg_cb function in the options of PasswordController. See type definition comment in constructor() of PasswordController"
 			console.error(errStr)
@@ -154,16 +154,16 @@ class PasswordController
 			return true
 		}
 	}
-	WhenBooted_PasswordAndType(obtainedErrOrPw_cb) // obtainedErrOrPw_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
+	WhenBooted_PasswordAndType(obtainedErrOrPwAndType_cb) // obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
 	{ // this function is asynchronous because it needs the option of requesting the PW from the user (it's basically a lazy accessor)
 		const self = this
 		self._executeWhenBooted(function()
 		{
 			if (self.HasUserEnteredPasswordYet() === false) {
-				self._obtainNewPasswordFromUser(obtainedErrOrPw_cb)
+				self._obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb)
 				return
 			}
-			obtainedErrOrPw_cb(null, self._password, self.userSelectedTypeOfPassword)
+			obtainedErrOrPwAndType_cb(null, self._password, self.userSelectedTypeOfPassword)
 		})
 	}
 
@@ -176,7 +176,7 @@ class PasswordController
 		// ^-- (userSelectedTypeOfPassword, errOrUserEnteredExistingPW_cb) -> Void
 		// ^-- supply this and have the user enter their existing PIN/PW so we can check
 		// <- there's no need to supply a function here for getting the user to enter their pw
-		obtainedErrOrPw_cb // (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
+		obtainedErrOrPwAndType_cb // (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
 	)
 	{
 		const self = this
@@ -193,7 +193,7 @@ class PasswordController
 				{
 					if (err) {
 						console.error("Failed to verify existing password for password change")
-						obtainedErrOrPw_cb(err)
+						obtainedErrOrPwAndType_cb(err)
 						return
 					}
 					// we're relying on having checked above that user has entered a valid pw already
@@ -217,19 +217,19 @@ class PasswordController
 							const errStr = "Unable to unlock data with that password" // incorrect password, basically
 							console.error(errStr, "e", e)
 							const err = new Error(errStr)
-							obtainedErrOrPw_cb(err)
+							obtainedErrOrPwAndType_cb(err)
 							return
 						}
 						if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
 							const errStr = "Incorrect password"
 							const err = new Error(errStr)
-							obtainedErrOrPw_cb(err)
+							obtainedErrOrPwAndType_cb(err)
 							return
 						}
 					}
 					//
 					// passwords match or no match check necessary and we can proceed
-					self._obtainNewPasswordFromUser(obtainedErrOrPw_cb)
+					self._obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb)
 				}
 			)
 		})
@@ -257,7 +257,7 @@ class PasswordController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Imperatives - Private - Setting/changing Password
 
-	_obtainNewPasswordFromUser(obtainedErrOrPw_cb) // obtainedErrOrPw_cb: (err?, userSelectedTypeOfPassword?, obtainedPasswordString?) -> Void
+	_obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb) // obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
 	{
 		const self = this
 		if (self.hasBooted === false) {
@@ -268,12 +268,12 @@ class PasswordController
 		}
 		const initialValidationErrorMessage = undefined // initially, no validation err msg
 		self.__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-			obtainedErrOrPw_cb,
+			obtainedErrOrPwAndType_cb,
 			initialValidationErrorMessage
 		)
 	}
 	__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-		obtainedErrOrPw_cb,
+		obtainedErrOrPwAndType_cb,
 		showingValidationErrMsg_orUndefined
 	)
 	{
@@ -284,14 +284,14 @@ class PasswordController
 			function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 			{
 				if (err) {
-					obtainedErrOrPw_cb(err)
+					obtainedErrOrPwAndType_cb(err)
 					return
 				}
 				// I. Validate features of pw before trying and accepting
 				if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
 					if (obtainedPasswordString.length != 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 						self.__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-							obtainedErrOrPw_cb, // passing the same obtainedErrOrPw_cb
+							obtainedErrOrPwAndType_cb, // passing the same obtainedErrOrPwAndType_cb
 							"Invalid PIN length" // but also passing this
 						)
 						return // bail as we are re-entering
@@ -301,7 +301,7 @@ class PasswordController
 				} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().FreeformStringPW) {
 					if (obtainedPasswordString.length < 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 						self.__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-							obtainedErrOrPw_cb, // passing the same obtainedErrOrPw_cb
+							obtainedErrOrPwAndType_cb, // passing the same obtainedErrOrPwAndType_cb
 							"Password too short" // but also passing this
 						)
 						return // bail as we are re-entering
@@ -326,7 +326,7 @@ class PasswordController
 					{
 						if (err) {
 							self._password = undefined // they'll have to try again
-							obtainedErrOrPw_cb(err)
+							obtainedErrOrPwAndType_cb(err)
 							return
 						}
 						// broadcast on next tick but before yield
@@ -339,7 +339,7 @@ class PasswordController
 							}
 							//
 							// yield
-							obtainedErrOrPw_cb(null, obtainedPasswordString, userSelectedTypeOfPassword)
+							obtainedErrOrPwAndType_cb(null, obtainedPasswordString, userSelectedTypeOfPassword)
 						})
 					}
 				)
