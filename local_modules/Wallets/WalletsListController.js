@@ -65,7 +65,7 @@ class WalletsListController
 			{
 				if (err) {
 					const errStr = "Error fetching persisted wallet ids: " + err.toString()
-					_trampolineFor_failedToInitialize_withErrStr(errStr)
+					throw errStr
 					return
 				}
 				__proceedTo_loadWalletsWithIds(ids)
@@ -82,7 +82,7 @@ class WalletsListController
 				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 				{
 					if (err) {
-						fn(err)
+						throw err
 						return
 					}
 					__proceedTo_loadAndBootAllExtantWalletsWithPassword(obtainedPasswordString)
@@ -147,20 +147,35 @@ class WalletsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Opening existing wallets
-
-	_bootWallet(
-		walletInstance,
-		persistencePassword,
-		fn // (err, wallet) -> Void
-	)
+	Wallets(fn)
 	{
 		const self = this
+		self.ExecuteWhenBooted(
+			function()
+			{
+				fn(self.wallets)
+			}
+		)
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Deferring control til boot
+
+	ExecuteWhenBooted(fn)
+	{
+		const self = this
+		if (self.hasBooted === true) {
+			fn()
+			return
+		}
+		setTimeout(
+			function()
+			{
+				self.ExecuteWhenBooted(fn)
+			},
+			50 // ms
+		)
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////

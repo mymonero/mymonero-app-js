@@ -5,6 +5,4 @@ node_modules
 build
 test_products
 
-local_modules/Wallets/tests/tests_config.js
-local_modules/HostedMoneroAPIClient/tests/tests_config.js
-local_modules/Contacts/tests/tests_config.js
+**/tests_config.js
