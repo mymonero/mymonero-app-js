@@ -92,7 +92,6 @@ function _proceedTo_test_addingExtantWalletBy_mnemonicString(cb)
 	//
 	walletsListController.AddExtantWalletWith_mnemonicString(
 		"Checking",
-		wallets__tests_config.persistencePassword,
 		initWithMnemonic__mnemonicString,
 		initWithMnemonic__wordsetName,
 		function(err, walletInstance, wasWalletAlreadyInserted)
@@ -123,7 +122,6 @@ function _proceedTo_test_addingExtantWalletBy_addrAndPrivateKeys(cb)
 	//
 	walletsListController.AddExtantWalletWith_addressAndKeys(
 		"Checking",
-		wallets__tests_config.persistencePassword,
 		initWithKeys__address,
 		initWithKeys__view_key__private,
 		initWithKeys__spend_key__private,
