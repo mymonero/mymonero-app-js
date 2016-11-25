@@ -145,7 +145,7 @@ class WalletsListController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Public
+	// Booted - Accessors - Public
 
 	Wallets(fn)
 	{
@@ -179,9 +179,9 @@ class WalletsListController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Wallets list
+	// Booted - Imperatives - Public - Wallets list
 
-	CreateAndAddNewlyGeneratedWallet(
+	WhenBooted_CreateAndAddNewlyGeneratedWallet(
 		walletLabel,
 		informingAndVerifyingMnemonic_cb, // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
 										    // confirmation_cb: (userConfirmed_mnemonicString) -> Void
@@ -190,57 +190,62 @@ class WalletsListController
 	{
 		const self = this
 		const context = self.context
-		context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-			function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+		self.ExecuteWhenBooted(
+			function()
 			{
-				if (err) {
-					fn(err)
-					return
+				context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
+					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+					{
+						if (err) {
+							fn(err)
+							return
+						}
+						_proceedWithPassword(obtainedPasswordString)
+					}
+				)
+				function _proceedWithPassword(persistencePassword)
+				{
+					var wallet;
+					const options =
+					{
+						generateNewWallet: true, // must flip this flag to true
+						//
+						failedToInitialize_cb: function(err)
+						{
+							fn(err)
+						},
+						successfullyInitialized_cb: function()
+						{
+							wallet.Boot_byLoggingIntoHostedService_byCreatingNewWallet(
+								persistencePassword,
+								walletLabel,
+								informingAndVerifyingMnemonic_cb,
+								function(err)
+								{
+									if (err) {
+										fn(err)
+										return
+									}
+									self._wallet_wasSuccessfullyInitialized(wallet)
+									//
+									fn(null, wallet)
+								}
+							)
+						},
+						//
+						didReceiveUpdateToAccountInfo: function()
+						{ // TODO: bubble?
+						},
+						didReceiveUpdateToAccountTransactions: function()
+						{ // TODO: bubble?
+						}
+					}
+					wallet = new SecretPersistingHostedWallet(options, context)
 				}
-				_proceedWithPassword(obtainedPasswordString)
 			}
 		)
-		function _proceedWithPassword(persistencePassword)
-		{
-			var wallet;
-			const options =
-			{
-				generateNewWallet: true, // must flip this flag to true
-				//
-				failedToInitialize_cb: function(err)
-				{
-					fn(err)
-				},
-				successfullyInitialized_cb: function()
-				{
-					wallet.Boot_byLoggingIntoHostedService_byCreatingNewWallet(
-						persistencePassword,
-						walletLabel,
-						informingAndVerifyingMnemonic_cb,
-						function(err)
-						{
-							if (err) {
-								fn(err)
-								return
-							}
-							self._wallet_wasSuccessfullyInitialized(wallet)
-							//
-							fn(null, wallet)
-						}
-					)
-				},
-				//
-				didReceiveUpdateToAccountInfo: function()
-				{ // TODO: bubble?
-				},
-				didReceiveUpdateToAccountTransactions: function()
-				{ // TODO: bubble?
-				}
-			}
-			wallet = new SecretPersistingHostedWallet(options, context)
-		}
 	}
-	AddExtantWalletWith_mnemonicString(
+	WhenBooted_AddExtantWalletWith_mnemonicString(
 		walletLabel,
 		mnemonicString,
 		wordsetName,
@@ -249,67 +254,72 @@ class WalletsListController
 	{
 		const self = this
 		const context = self.context
-		context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-			function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+		self.ExecuteWhenBooted(
+			function()
 			{
-				if (err) {
-					fn(err)
-					return
+				context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
+					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+					{
+						if (err) {
+							fn(err)
+							return
+						}
+						_proceedWithPassword(obtainedPasswordString)
+					}
+				)
+				function _proceedWithPassword(persistencePassword)
+				{
+					var walletAlreadyExists = false
+					const wallets_length = self.wallets.length
+					for (let i = 0 ; i < wallets_length ; i++) {
+						const wallet = self.wallets[i]
+						if (wallet.mnemonicString === mnemonicString) {
+							// simply return existing wallet
+							fn(null, wallet, true) // wasWalletAlreadyInserted: true
+							return
+						}
+						// TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
+					}
+					//
+					var wallet;
+					const options =
+					{
+						failedToInitialize_cb: function(err)
+						{
+							fn(err)
+						},
+						successfullyInitialized_cb: function()
+						{
+							wallet.Boot_byLoggingIntoHostedService_withMnemonic(
+								persistencePassword,
+								walletLabel,
+								mnemonicString,
+								wordsetName,
+								function(err) {
+									if (err) {
+										fn(err)
+										return
+									}
+									self._wallet_wasSuccessfullyInitialized(wallet)
+									//
+									fn(null, wallet, false) // wasWalletAlreadyInserted: false
+								}
+							)
+						},
+						//
+						didReceiveUpdateToAccountInfo: function()
+						{ // TODO: bubble?
+						},
+						didReceiveUpdateToAccountTransactions: function()
+						{ // TODO: bubble?
+						}
+					}
+					wallet = new SecretPersistingHostedWallet(options, context)
 				}
-				_proceedWithPassword(obtainedPasswordString)
 			}
 		)
-		function _proceedWithPassword(persistencePassword)
-		{
-			var walletAlreadyExists = false
-			const wallets_length = self.wallets.length
-			for (let i = 0 ; i < wallets_length ; i++) {
-				const wallet = self.wallets[i]
-				if (wallet.mnemonicString === mnemonicString) {
-					// simply return existing wallet
-					fn(null, wallet, true) // wasWalletAlreadyInserted: true
-					return
-				}
-				// TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
-			}
-			//
-			var wallet;
-			const options =
-			{
-				failedToInitialize_cb: function(err)
-				{
-					fn(err)
-				},
-				successfullyInitialized_cb: function()
-				{
-					wallet.Boot_byLoggingIntoHostedService_withMnemonic(
-						persistencePassword,
-						walletLabel,
-						mnemonicString,
-						wordsetName,
-						function(err) {
-							if (err) {
-								fn(err)
-								return
-							}
-							self._wallet_wasSuccessfullyInitialized(wallet)
-							//
-							fn(null, wallet, false) // wasWalletAlreadyInserted: false
-						}
-					)
-				},
-				//
-				didReceiveUpdateToAccountInfo: function()
-				{ // TODO: bubble?
-				},
-				didReceiveUpdateToAccountTransactions: function()
-				{ // TODO: bubble?
-				}
-			}
-			wallet = new SecretPersistingHostedWallet(options, context)
-		}
 	}
-	AddExtantWalletWith_addressAndKeys(
+	WhenBooted_AddExtantWalletWith_addressAndKeys(
 		walletLabel,
 		address,
 		view_key__private,
@@ -319,67 +329,72 @@ class WalletsListController
 	{
 		const self = this
 		const context = self.context
-		context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-			function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+		self.ExecuteWhenBooted(
+			function()
 			{
-				if (err) {
-					fn(err)
-					return
+				context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
+					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+					{
+						if (err) {
+							fn(err)
+							return
+						}
+						_proceedWithPassword(obtainedPasswordString)
+					}
+				)
+				function _proceedWithPassword(persistencePassword)
+				{
+					var walletAlreadyExists = false
+					const wallets_length = self.wallets.length
+					for (let i = 0 ; i < wallets_length ; i++) {
+						const wallet = self.wallets[i]
+						if (wallet.public_address === address) {
+							// simply return existing wallet; note: this wallet might have mnemonic and thus seed
+							// so might not be exactly what consumer of WhenBooted_AddExtantWalletWith_addressAndKeys is expecting
+							fn(null, wallet, true) // wasWalletAlreadyInserted: true
+							return
+						}
+					}
+					//
+					var wallet;
+					const options =
+					{
+						failedToInitialize_cb: function(err)
+						{
+							fn(err)
+						},
+						successfullyInitialized_cb: function()
+						{
+							wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
+								persistencePassword,
+								walletLabel,
+								address,
+								view_key__private,
+								spend_key__private,
+								function(err)
+								{
+									if (err) {
+										fn(err)
+										return
+									}
+									self._wallet_wasSuccessfullyInitialized(wallet)
+									//
+									fn(null)
+								}
+							)
+						},
+						//
+						didReceiveUpdateToAccountInfo: function()
+						{ // TODO: bubble?
+						},
+						didReceiveUpdateToAccountTransactions: function()
+						{ // TODO: bubble?
+						}
+					}
+					wallet = new SecretPersistingHostedWallet(options, context)
 				}
-				_proceedWithPassword(obtainedPasswordString)
 			}
 		)
-		function _proceedWithPassword(persistencePassword)
-		{
-			var walletAlreadyExists = false
-			const wallets_length = self.wallets.length
-			for (let i = 0 ; i < wallets_length ; i++) {
-				const wallet = self.wallets[i]
-				if (wallet.public_address === address) {
-					// simply return existing wallet; note: this wallet might have mnemonic and thus seed
-					// so might not be exactly what consumer of AddExtantWalletWith_addressAndKeys is expecting
-					fn(null, wallet, true) // wasWalletAlreadyInserted: true
-					return
-				}
-			}
-			//
-			var wallet;
-			const options =
-			{
-				failedToInitialize_cb: function(err)
-				{
-					fn(err)
-				},
-				successfullyInitialized_cb: function()
-				{
-					wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
-						persistencePassword,
-						walletLabel,
-						address,
-						view_key__private,
-						spend_key__private,
-						function(err)
-						{
-							if (err) {
-								fn(err)
-								return
-							}
-							self._wallet_wasSuccessfullyInitialized(wallet)
-							//
-							fn(null)
-						}
-					)
-				},
-				//
-				didReceiveUpdateToAccountInfo: function()
-				{ // TODO: bubble?
-				},
-				didReceiveUpdateToAccountTransactions: function()
-				{ // TODO: bubble?
-				}
-			}
-			wallet = new SecretPersistingHostedWallet(options, context)
-		}
 	}
 	//
 	DeleteWalletWithId(
@@ -389,28 +404,33 @@ class WalletsListController
 	{
 		const self = this
 		//
-		const instanceAndIndex = self.__walletInstanceAndIndexWithId(_id)
-		var indexOfWallet = instanceAndIndex.index
-		var walletInstance = instanceAndIndex.instance
-		if (indexOfWallet === null || walletInstance === null) {
-			fn(new Error("Wallet not found"))
-			return
-		}
-		//
-		self.wallets.splice(indexOfWallet, 1) // pre-emptively remove the wallet from the list
-		self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
-		//
-		walletInstance.Delete(
-			function(err)
+		self.ExecuteWhenBooted(
+			function()
 			{
-				if (err) {
-					self.wallets.splice(indexOfWallet, 0, walletInstance) // revert deletion
-					self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
-					fn(err)
+				const instanceAndIndex = self.__walletInstanceAndIndexWithId(_id)
+				var indexOfWallet = instanceAndIndex.index
+				var walletInstance = instanceAndIndex.instance
+				if (indexOfWallet === null || walletInstance === null) {
+					fn(new Error("Wallet not found"))
 					return
 				}
-				walletInstance = null // 'free'
-				fn()
+				//
+				self.wallets.splice(indexOfWallet, 1) // pre-emptively remove the wallet from the list
+				self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
+				//
+				walletInstance.Delete(
+					function(err)
+					{
+						if (err) {
+							self.wallets.splice(indexOfWallet, 0, walletInstance) // revert deletion
+							self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
+							fn(err)
+							return
+						}
+						walletInstance = null // 'free'
+						fn()
+					}
+				)
 			}
 		)
 	}
