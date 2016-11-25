@@ -122,9 +122,6 @@ class SecretPersistingHostedWallet
 				if (self.isLoggedIn !== true) {
 					return _failWithValidationErr("Reconstituted wallet had non-true isLoggedIn") // TODO: not sure how we should handle this yet. maybe login failed while adding the wallet?
 				}
-				if (self.walletLabel === null || typeof self.walletLabel === 'undefined' || self.walletLabel === "") {
-					return _failWithValidationErr("Reconstituted wallet had no valid self.walletLabel")
-				}
 				//
 				// and we hang onto this for when the instantiator opts to boot the instance
 				self.initialization_encryptedDocument = encryptedDocument
@@ -152,7 +149,6 @@ class SecretPersistingHostedWallet
 		// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
 		self.successfullyInitialized_cb()
 	}
-
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -396,6 +392,12 @@ class SecretPersistingHostedWallet
 				const err = new Error(errStr)
 				console.error(errStr)
 				self.failedToInitialize_cb(err)
+			}
+			if (self.walletLabel === null || typeof self.walletLabel === 'undefined' || self.walletLabel === "") {
+				return _failWithValidationErr("Reconstituted wallet had no valid self.walletLabel")
+			}
+			if (self.wallet_currency === null || typeof self.wallet_currency === 'undefined' || self.wallet_currency === "") {
+				return _failWithValidationErr("Reconstituted wallet had no valid self.wallet_currency")
 			}
 			// We are not going to check whether the acct seed is nil/'' here because if the wallet was
 			// imported with public addr, view key, and spend key only rather than seed/mnemonic, we

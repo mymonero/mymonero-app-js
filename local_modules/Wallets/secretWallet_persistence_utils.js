@@ -7,7 +7,11 @@ const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
 const documentCryptScheme =
 {
+	walletLabel: { type: CryptSchemeFieldValueTypes.String },
+	wallet_currency: { type: CryptSchemeFieldValueTypes.String },
+	//
 	public_address: { type: CryptSchemeFieldValueTypes.String },
+	mnemonic_wordsetName: { type: CryptSchemeFieldValueTypes.String },
 	account_seed: { type: CryptSchemeFieldValueTypes.String },
 	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
 		// view
@@ -52,10 +56,6 @@ function HydrateInstance_withUnencryptedValues(
 	//
 	self.dateWalletFirstSavedLocally = encryptedDocument.dateWalletFirstSavedLocally
 	//
-	self.mnemonic_wordsetName = encryptedDocument.mnemonic_wordsetName
-	self.wallet_currency = encryptedDocument.wallet_currency
-	self.walletLabel = encryptedDocument.walletLabel
-	//
 	self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
 }
 exports.HydrateInstance_withUnencryptedValues = HydrateInstance_withUnencryptedValues
@@ -67,7 +67,11 @@ function HydrateInstance_withDecryptedValues(
 {
 	const self = walletInstance
 	//
+	self.walletLabel = plaintextDocument.walletLabel
+	self.wallet_currency = plaintextDocument.wallet_currency
+	//
 	// console.log("plaintextDocument", plaintextDocument)
+	self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
 	self.account_seed = plaintextDocument.account_seed
 	self.private_keys = plaintextDocument.private_keys
 	self.public_address = plaintextDocument.public_address
