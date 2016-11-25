@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -64,29 +64,29 @@ function _proceedTo_test_bootController(fn)
 {
 	console.log("> _proceedTo_test_bootController")
 	//
-	const options =
-	{
-		didInitializeSuccessfully_cb: function()
+	const options = {}
+	const Class = require('../ContactsListController')
+	try {
+		contactsListController = new Class(
+			options,
+			context
+		)
+	} catch (e) {
+		contactsListController = null
+		fn(e)
+	}
+	contactsListController.WhenBooted_Contacts(
+		function(contacts)
 		{
 			console.log("Contacts: ")
-			contactsListController.contacts.forEach(
+			contacts.forEach(
 				function(el, idx)
 				{ // just logging them out…
 					console.log(el.Description())
 				}
 			)
-			//
 			fn()
-		},
-		failedToInitializeSuccessfully_cb: function(err)
-		{
-			fn(err)			
 		}
-	}
-	const Class = require('../ContactsListController')
-	contactsListController = new Class(
-		options,
-		context
 	)
 }
 function _proceedTo_test_createNewContact(fn)
@@ -96,7 +96,7 @@ function _proceedTo_test_createNewContact(fn)
 		fn(new Error("contactsListController undefined or null"))
 		return
 	}
-	contactsListController.AddContact(
+	contactsListController.WhenBooted_AddContact(
 		tests_config.fullname,
 		tests_config.address__XMR,
 		function(err, instance)

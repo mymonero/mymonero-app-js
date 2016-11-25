@@ -69,7 +69,7 @@ function _proceedTo_test_bootController(cb)
 			context
 		)
 		walletsListController = controller
-		controller.Wallets(function(wallets)
+		controller.WhenBooted_Wallets(function(wallets)
 		{ // ^-- this will defer till booted
 			console.log("Wallets", wallets)
 			cb()

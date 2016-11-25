@@ -147,7 +147,7 @@ class WalletsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Booted - Accessors - Public
 
-	Wallets(fn)
+	WhenBooted_Wallets(fn)
 	{
 		const self = this
 		self.ExecuteWhenBooted(
@@ -157,6 +157,7 @@ class WalletsListController
 			}
 		)
 	}
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Deferring control til boot
@@ -397,7 +398,7 @@ class WalletsListController
 		)
 	}
 	//
-	DeleteWalletWithId(
+	WhenBooted_DeleteWalletWithId(
 		_id,
 		fn
 	)

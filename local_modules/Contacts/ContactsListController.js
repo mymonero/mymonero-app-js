@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -46,59 +46,24 @@ class ContactsListController
 		self.options = options
 		self.context = context
 		//
-		self.didInitializeSuccessfully_cb = self.options.didInitializeSuccessfully_cb
-		self.failedToInitializeSuccessfully_cb = self.options.failedToInitializeSuccessfully_cb
+		self.hasBooted = false
 		//
 		self.setup()
 	}
 	setup()
 	{
 		const self = this
-		//
-		function _trampolineFor_finishedInitializing()
-		{
-			if (typeof self.didInitializeSuccessfully_cb === 'function') {
-				self.didInitializeSuccessfully_cb()
-			} else {
-				console.warn("No didInitializeSuccessfully_cb provided via options to your ContactsListController")
-			}
-		}
-		function _trampolineFor_failedToInitialize_withErr(err)
-		{
-			console.error(errStr)
-			//
-			if (typeof self.failedToInitializeSuccessfully_cb === 'function') {
-				self.failedToInitializeSuccessfully_cb(err)
-			} else {
-				console.warn("No failedToInitializeSuccessfully_cb provided via options to your ContactsListController")
-			}
-		}
-		function _trampolineFor_failedToInitialize_withErrStr(errStr)
-		{
-			_trampolineFor_failedToInitialize_withErr(new Error(errStr))
-		}
-		//
-		self._setup_reconstitutePersistedDocuments(
-			_trampolineFor_finishedInitializing,
-			_trampolineFor_failedToInitialize_withErr,
-			_trampolineFor_failedToInitialize_withErrStr
-		)
-	}
-	_setup_reconstitutePersistedDocuments(
-		_trampolineFor_finishedInitializing,
-		_trampolineFor_failedToInitialize_withErr,
-		_trampolineFor_failedToInitialize_withErrStr
-	)
-	{
-		const self = this
 		const context = self.context
 		//
+		// reconstitute existing contacts
 		self._new_idsOfPersisted_contacts(
 			function(err, ids)
 			{
 				if (err) {
-					const errStr = "Error fetching persisted contact ids: " + err.toString()
-					_trampolineFor_failedToInitialize_withErrStr(errStr)
+					const exStr = "Error fetching list of saved contacts"
+					const errStr = exStr + ": " + err.toString()
+					console.error(errStr)
+					throw exStr
 					return
 				}
 				__proceedTo_load_contactsWithIds(ids)
@@ -112,7 +77,7 @@ class ContactsListController
 				function(_id, cb)
 				{
 					var instance;
-					const options = 
+					const options =
 					{
 						_id: _id,
 						//
@@ -133,11 +98,14 @@ class ContactsListController
 				function(err)
 				{
 					if (err) {
-						// TODO: emit event
-						console.error("Error fetching persisted contact ids", err)
+						const exStr = "Error while loading saved contacts"
+						const errStr = exStr + ": " + err.toString()
+						console.error(errStr)
+						throw exStr
 						return
 					}
-					_trampolineFor_finishedInitializing()
+					//
+					self.hasBooted = true // all done!
 				}
 			)
 		}
@@ -145,14 +113,44 @@ class ContactsListController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Public
-	
-	
-	
+	// Runtime - Imperatives - Public - Deferring control til boot
+
+	ExecuteWhenBooted(fn)
+	{
+		const self = this
+		if (self.hasBooted === true) {
+			fn()
+			return
+		}
+		setTimeout(
+			function()
+			{
+				self.ExecuteWhenBooted(fn)
+			},
+			50 // ms
+		)
+	}
+
+
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - List management
-	
-	AddContact(
+	// Booted - Accessors - Public
+
+	WhenBooted_Contacts(fn)
+	{
+		const self = this
+		self.ExecuteWhenBooted(
+			function()
+			{
+				fn(self.contacts)
+			}
+		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Booted - Imperatives - Public - List management
+
+	WhenBooted_AddContact(
 		fullname,
 		address__XMR,
 		fn // fn: (err: Error?, instance: Contact?) -> Void
@@ -160,75 +158,83 @@ class ContactsListController
 	{
 		const self = this
 		const context = self.context
-		//
-		var instance;
-		const options = 
-		{
-			fullname: fullname,
-			address__XMR: address__XMR,
-			//
-			failedSetUp_cb: function(err)
+		self.ExecuteWhenBooted(
+			function()
 			{
-				fn(err)
-			},
-			successfullySetUp_cb: function()
-			{
-				self._contact_wasSuccessfullySetUp(instance)
-				//
-				fn(null)
+				var instance;
+				const options =
+				{
+					fullname: fullname,
+					address__XMR: address__XMR,
+					//
+					failedSetUp_cb: function(err)
+					{
+						fn(err)
+					},
+					successfullySetUp_cb: function()
+					{
+						self._contact_wasSuccessfullySetUp(instance)
+						//
+						fn(null)
+					}
+				}
+				instance = new Contact(options, context)
 			}
-		}
-		instance = new Contact(options, context)
+		)
 	}
-	DeleteContactWithId(
+	WhenBooted_DeleteContactWithId(
 		_id,
 		fn // fn: (err: Error?) -> Void
 	)
 	{
 		const self = this
 		const contacts_length = self.contacts.length
-		//
-		var indexOfContact = null;
-		var contactToDelete = null;
-		console.log("_id" , _id)
-		for (let i = 0 ; i < contacts_length ; i++) {
-			const contact = self.contacts[i]
-			if (contact._id === _id) {
-				indexOfContact = i
-				contactToDelete = contact
-				break
-			}
-		}
-		if (indexOfContact === null || contactToDelete === null) {
-			fn(new Error("Contact not found"))
-			return
-		}
-		//
-		self.contacts.splice(indexOfContact, 1) // pre-emptively remove the contact from the list
-		self.__listUpdated_contacts() // ensure delegate notified
-		//
-		contactToDelete.Delete(
-			function(err)
+		self.ExecuteWhenBooted(
+			function()
 			{
-				if (err) {
-					self.contacts.splice(indexOfContact, 0, contactToDelete) // revert deletion
-					self.__listUpdated_contacts() // ensure delegate notified
-					fn(err)
+				var indexOfContact = null;
+				var contactToDelete = null;
+				console.log("_id" , _id)
+				for (let i = 0 ; i < contacts_length ; i++) {
+					const contact = self.contacts[i]
+					if (contact._id === _id) {
+						indexOfContact = i
+						contactToDelete = contact
+						break
+					}
+				}
+				if (indexOfContact === null || contactToDelete === null) {
+					fn(new Error("Contact not found"))
 					return
 				}
-				contactToDelete = null // free
-				fn()
+				//
+				self.contacts.splice(indexOfContact, 1) // pre-emptively remove the contact from the list
+				self.__listUpdated_contacts() // ensure delegate notified
+				//
+				contactToDelete.Delete(
+					function(err)
+					{
+						if (err) {
+							self.contacts.splice(indexOfContact, 0, contactToDelete) // revert deletion
+							self.__listUpdated_contacts() // ensure delegate notified
+							fn(err)
+							return
+						}
+						contactToDelete = null // free
+						fn()
+					}
+				)
 			}
 		)
-	}		
-		
+	}
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 
 	_new_idsOfPersisted_contacts(
 		fn // (err?, ids?) -> Void
-	) 
+	)
 	{
 		const self = this
 		self.context.persister.DocumentsWithQuery(
@@ -245,7 +251,7 @@ class ContactsListController
 				const ids = []
 				docs.forEach(function(el, idx)
 				{
-					loadDescriptions.push(el._id)
+					ids.push(el._id)
 				})
 				fn(null, ids)
 			}

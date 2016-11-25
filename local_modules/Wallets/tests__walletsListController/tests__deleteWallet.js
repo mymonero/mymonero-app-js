@@ -68,7 +68,7 @@ function _proceedTo_test_bootController(cb)
 			context
 		)
 		walletsListController = controller
-		controller.Wallets(function(wallets)
+		controller.WhenBooted_Wallets(function(wallets)
 		{ // ^-- this will defer till booted
 			console.log("Wallets", wallets)
 			cb()
@@ -86,7 +86,7 @@ function _proceedTo_test_deleteWallet(cb)
 		return
 	}
 	const _id = wallets__tests_config.deleteWalletWith_id
-	walletsListController.DeleteWalletWithId(
+	walletsListController.WhenBooted_DeleteWalletWithId(
 		_id,
 		function(err)
 		{
