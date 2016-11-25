@@ -91,7 +91,6 @@ function _proceedTo_test_addingExtantWalletBy_mnemonicString(cb)
 	const initWithMnemonic__wordsetName = wallets__tests_config.initWithMnemonic__wordsetName
 	//
 	walletsListController.WhenBooted_AddExtantWalletWith_mnemonicString(
-		"Checking",
 		initWithMnemonic__mnemonicString,
 		initWithMnemonic__wordsetName,
 		function(err, walletInstance, wasWalletAlreadyInserted)
@@ -121,7 +120,6 @@ function _proceedTo_test_addingExtantWalletBy_addrAndPrivateKeys(cb)
 	const initWithKeys__spend_key__private = wallets__tests_config.initWithKeys__spend_key__private
 	//
 	walletsListController.WhenBooted_AddExtantWalletWith_addressAndKeys(
-		"Checking",
 		initWithKeys__address,
 		initWithKeys__view_key__private,
 		initWithKeys__spend_key__private,

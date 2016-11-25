@@ -294,7 +294,6 @@ class SecretPersistingHostedWallet
 	}
 	Boot_byLoggingIntoHostedService_withAddressAndKeys(
 		persistencePassword,
-		walletLabel,
 		address,
 		view_key__private,
 		spend_key__private,
