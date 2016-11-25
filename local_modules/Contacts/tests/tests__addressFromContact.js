@@ -69,6 +69,7 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 	const options =
 	{
 		_id: tests_config.getAddressFromContactWith_id,
+		persistencePassword: tests_config.persistencePassword,
 		//
 		failedSetUp_cb: function(err)
 		{

@@ -74,7 +74,7 @@ class WalletsListController
 		function __proceedTo_loadWalletsWithIds(ids)
 		{
 			self.wallets = []
-			if (ids.length === 0) {
+			if (ids.length === 0) { // do not cause the pw to be requested yet
 				self.hasBooted = true // nothing to do to boot
 				return
 			}

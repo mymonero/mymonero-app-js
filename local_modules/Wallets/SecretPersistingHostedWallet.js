@@ -557,7 +557,7 @@ class SecretPersistingHostedWallet
 		})
 		//
 		// and kick off the polling call to pull latest updates
-		const syncPollingInterval = 30 * 1000 // ms 
+		const syncPollingInterval = 30 * 1000 // ms
 		setInterval(function()
 		{
 			__callAllSyncFunctions()

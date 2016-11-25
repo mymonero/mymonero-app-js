@@ -378,7 +378,7 @@ class PasswordController
 		}
 		// console.log("modelObject" , modelObject)
 		// insert & update fn declarations for imminent usage…
-		function _proceedTo_insertExistingDocument()
+		function _proceedTo_insertNewDocument()
 		{
 			self.context.persister.InsertDocument(
 				CollectionName,
@@ -459,7 +459,7 @@ class PasswordController
 		}
 		//
 		if (self._id === null || typeof self._id === 'undefined') {
-			_proceedTo_insertExistingDocument()
+			_proceedTo_insertNewDocument()
 		} else {
 			_proceedTo_updateExistingDocument()
 		}

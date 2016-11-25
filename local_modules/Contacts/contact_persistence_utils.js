@@ -1,7 +1,18 @@
+//
+const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
+//
 // Constants
 //
 const CollectionName = "Contacts"
 exports.CollectionName = CollectionName
+//
+const documentCryptScheme =
+{
+	fullname: { type: CryptSchemeFieldValueTypes.String },
+	address__XMR: { type: CryptSchemeFieldValueTypes.String }
+}
+exports.DocumentCryptScheme = documentCryptScheme
 //
 // Utility functions
 function HydrateInstance(
@@ -25,20 +36,33 @@ function SaveToDisk(
 	const self = instance
 	console.log("📝  Saving contact to disk ", self.Description())
 	//
-	fn = fn || function(err) { console.trace("No fn provided to SaveToDisk") }
+	fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
+	//
+	const persistencePassword = self.persistencePassword
+	if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
+		const errStr = "❌  Cannot save contact to disk as persistencePassword was missing."
+		const err = new Error(errStr)
+		fn(err)
+		return
+	}
 	//
 	const plaintextDocument =
 	{
 		fullname: self.fullname,
 		address__XMR: self.address__XMR
 	}
+	const encryptedDocument = document_cryptor.New_EncryptedDocument(
+		plaintextDocument,
+		documentCryptScheme,
+		persistencePassword
+	)
 	//
 	// insert & update fn declarations for imminent usage…
-	function _proceedTo_insertExistingDocument()
+	function _proceedTo_insertNewDocument()
 	{
 		self.context.persister.InsertDocument(
 			CollectionName,
-			plaintextDocument,
+			encryptedDocument,
 			function(
 				err,
 				newDocument
@@ -48,7 +72,7 @@ function SaveToDisk(
 					console.error("Error while saving contact:", err)
 					fn(err)
 					return
-				} 
+				}
 				if (newDocument._id === null) { // not that this would happen…
 					fn(new Error("❌  Inserted contact but _id after saving was null"))
 					return // bail
@@ -89,7 +113,7 @@ function SaveToDisk(
 					console.error("Error while saving contact:", err)
 					fn(err)
 					return
-				} 
+				}
 				var affectedDocument
 				if (Array.isArray(affectedDocuments)) {
 					affectedDocument = affectedDocuments[0]
@@ -115,7 +139,7 @@ function SaveToDisk(
 	}
 	//
 	if (self._id === null) {
-		_proceedTo_insertExistingDocument()
+		_proceedTo_insertNewDocument()
 	} else {
 		_proceedTo_updateExistingDocument()
 	}
@@ -131,7 +155,7 @@ function DeleteFromDisk(
 	console.log("📝  Deleting contact ", self.Description())
 	const query =
 	{
-		_id: self._id 
+		_id: self._id
 	}
 	const options = {}
 	self.context.persister.RemoveDocuments(
@@ -147,7 +171,7 @@ function DeleteFromDisk(
 				console.error("Error while removing contact:", err)
 				fn(err)
 				return
-			} 
+			}
 			if (numRemoved === 0) {
 				fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
 				return // bail

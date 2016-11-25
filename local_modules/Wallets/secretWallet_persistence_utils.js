@@ -79,7 +79,7 @@ function HydrateInstance_withDecryptedValues(
 	// unpacking heights…
 	const heights = plaintextDocument.heights // no || {} because we always persist at least {}
 	self.account_scanned_height = heights.account_scanned_height
-	self.account_scanned_tx_height = heights.account_scanned_tx_height 
+	self.account_scanned_tx_height = heights.account_scanned_tx_height
 	self.account_scanned_block_height = heights.account_scanned_block_height
 	self.account_scan_start_height = heights.account_scan_start_height
 	self.transaction_height = heights.transaction_height
@@ -143,7 +143,7 @@ function SaveToDisk(
 	}
 	if (self.total_sent !== null && typeof self.total_sent !== 'undefined') {
 		totals["total_sent"] = self.total_sent.toString()
-	}		
+	}
 	//
 	if (typeof self.dateWalletFirstSavedLocally === 'undefined') {
 		self.dateWalletFirstSavedLocally = new Date()
@@ -178,14 +178,14 @@ function SaveToDisk(
 	// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))
 	//
 	const encryptedDocument = document_cryptor.New_EncryptedDocument(
-		plaintextDocument, 
-		documentCryptScheme, 
+		plaintextDocument,
+		documentCryptScheme,
 		persistencePassword
 	)
 	// console.log("debug info: going to save encryptedDocument", encryptedDocument)
 	//
 	// insert & update fn declarations for imminent usage…
-	function _proceedTo_insertExistingDocument()
+	function _proceedTo_insertNewDocument()
 	{
 		self.context.persister.InsertDocument(
 			CollectionName,
@@ -199,7 +199,7 @@ function SaveToDisk(
 					console.error("Error while saving wallet:", err)
 					fn(err)
 					return
-				} 
+				}
 				if (newDocument._id === null) { // not that this would happen…
 					fn(new Error("❌  Inserted wallet but _id after saving was null"))
 					return // bail
@@ -240,7 +240,7 @@ function SaveToDisk(
 					console.error("Error while saving wallet:", err)
 					fn(err)
 					return
-				} 
+				}
 				var affectedDocument
 				if (Array.isArray(affectedDocuments)) {
 					affectedDocument = affectedDocuments[0]
@@ -266,7 +266,7 @@ function SaveToDisk(
 	}
 	//
 	if (self._id === null) {
-		_proceedTo_insertExistingDocument()
+		_proceedTo_insertNewDocument()
 	} else {
 		_proceedTo_updateExistingDocument()
 	}
@@ -282,7 +282,7 @@ function DeleteFromDisk(
 	console.log("📝  Deleting wallet ", self.Description())
 	const query =
 	{
-		_id: self._id 
+		_id: self._id
 	}
 	const options = {}
 	self.context.persister.RemoveDocuments(
@@ -298,7 +298,7 @@ function DeleteFromDisk(
 				console.error("Error while removing wallet:", err)
 				fn(err)
 				return
-			} 
+			}
 			if (numRemoved === 0) {
 				fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
 				return // bail

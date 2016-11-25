@@ -72,6 +72,24 @@ class ContactsListController
 		function __proceedTo_load_contactsWithIds(ids)
 		{
 			self.contacts = []
+			//
+			if (ids.length === 0) { // then don't cause the pw to be requested yet
+				self.hasBooted = true // nothing to do to boot
+				return
+			}
+			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
+				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+				{
+					if (err) {
+						throw err
+						return
+					}
+					__proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, obtainedPasswordString)
+				}
+			)
+		}
+		function __proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, persistencePassword)
+		{
 			async.eachSeries(
 				ids,
 				function(_id, cb)
@@ -80,20 +98,17 @@ class ContactsListController
 					const options =
 					{
 						_id: _id,
-						//
-						failedSetUp_cb: function(err)
-						{
-							console.error("Failed to read contact ", err)
-							cb(err)
-						},
-						successfullySetUp_cb: function()
-						{
-							self._contact_wasSuccessfullySetUp(instance)
-							//
-							cb(null)
-						}
+						persistencePassword: persistencePassword,
 					}
-					instance = new Contact(options, context)
+					try {
+						instance = new Contact(options, context)
+					} catch (e) {
+						console.error("Failed to read contact ", err)
+						cb(e)
+						return
+					}
+					self._contact_wasSuccessfullySetUp(instance)
+					cb()
 				},
 				function(err)
 				{
@@ -161,24 +176,35 @@ class ContactsListController
 		self.ExecuteWhenBooted(
 			function()
 			{
-				var instance;
-				const options =
-				{
-					fullname: fullname,
-					address__XMR: address__XMR,
-					//
-					failedSetUp_cb: function(err)
+				self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
+					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						fn(err)
-					},
-					successfullySetUp_cb: function()
-					{
-						self._contact_wasSuccessfullySetUp(instance)
-						//
-						fn(null)
+						if (err) {
+							fn(err)
+							return
+						}
+						var instance;
+						const options =
+						{
+							persistencePassword: obtainedPasswordString,
+							//
+							fullname: fullname,
+							address__XMR: address__XMR,
+							//
+							failedSetUp_cb: function(err)
+							{
+								fn(err)
+							},
+							successfullySetUp_cb: function()
+							{
+								self._contact_wasSuccessfullySetUp(instance)
+								//
+								fn(null)
+							}
+						}
+						instance = new Contact(options, context)
 					}
-				}
-				instance = new Contact(options, context)
+				)
 			}
 		)
 	}
