@@ -11,7 +11,8 @@
   },
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
-    "start": "electron ./local_modules/electron_main/electron_main.js"
+    "start": "electron ./local_modules/electron_main/electron_main.js",
+	"start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js"
   },
   "dependencies": {
     "async": "^2.1.2",

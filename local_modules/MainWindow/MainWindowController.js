@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -37,10 +37,10 @@ class MainWindowController extends WindowController
 	//
 	//
 	// Initialization
-	//	
+	//
 	setup()
 	{
-		var self = this
+		const self = this
 		super.setup()
 		//
 		self.setup_window()
@@ -48,8 +48,8 @@ class MainWindowController extends WindowController
 	}
 	setup_window()
 	{
-		var self = this
-		var app = self.context.app
+		const self = this
+		const app = self.context.app
 		//
 		self.window = null // zeroing and declaration
 		if (app.isReady() === true) {
@@ -58,8 +58,8 @@ class MainWindowController extends WindowController
 	}
 	setup_observation()
 	{
-		var self = this
-		var app = self.context.app
+		const self = this
+		const app = self.context.app
 		//
 		if (app.isReady() == false) {
 			app.on('ready', function()
@@ -79,15 +79,19 @@ class MainWindowController extends WindowController
 	//
 	// Accessors
 	//
+	_new_browserWindowTitle()
+	{
+		return "MyMonero"
+	}
 	_new_window()
 	{
-		var self = this
-		//
-		var window = new electron.BrowserWindow({
-	  	  width: 800, 
-	  	  height: 600
+		const self = this
+		const window = new electron.BrowserWindow({
+			width: 800,
+			height: 600,
+			title: self._new_browserWindowTitle()
 		})
-		window.loadURL(`file://${__dirname}/html/index.html`)
+		window.loadURL(`file://${__dirname}/browser/index.html`)
 		//
 		return window
 	}
@@ -97,8 +101,7 @@ class MainWindowController extends WindowController
 	//
 	_create_window_ifNecessary()
 	{
-		var self = this
-		//
+		const self = this
 		if (self.window !== null && typeof self.window !== 'undefined') {
 			return
 		}
@@ -107,6 +110,9 @@ class MainWindowController extends WindowController
 		{
 			self.window = null // release
 		})
+		if (process.env.NODE_ENV === 'development') {
+			self.window.webContents.openDevTools() // open the dev tools
+		}
 	}
 	//
 	//
@@ -114,11 +120,10 @@ class MainWindowController extends WindowController
 	//
 	_allWindowsDidClose()
 	{
-		var self = this
-		var app = self.context.app
-		//
+		const self = this
+		const app = self.context.app
 		if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
-			app.quit() 
+			app.quit()
 		}
 	}
 }
