@@ -116,7 +116,7 @@ class MainWindowController extends WindowController
 	}
 	//
 	//
-	// Delegation
+	// Delegation - Private
 	//
 	_allWindowsDidClose()
 	{
@@ -125,6 +125,15 @@ class MainWindowController extends WindowController
 		if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
 			app.quit()
 		}
+	}
+	//
+	//
+	// Delegation - From render process
+	//
+	RendererProcessDidGetControl()
+	{
+		const self = this
+		console.log("main window c says RendererProcessDidGetControl")
 	}
 }
 module.exports = MainWindowController

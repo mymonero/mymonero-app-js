@@ -18,7 +18,7 @@
     "async": "^2.1.2",
     "mixpanel": "^0.4.0",
     "nedb": "^1.8.0",
-    "request": "^2.76.0",
+    "request": "^2.76.0"
   },
   "devDependencies": {
     "electron": "^1.4.1",
