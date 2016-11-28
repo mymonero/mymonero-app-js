@@ -30,6 +30,10 @@
 //
 class View
 {
+	//
+	//
+	// Setup
+	//
 	constructor(options, context)
 	{
 		const self = this
@@ -69,12 +73,20 @@ class View
 	addSubview(view)
 	{
 		const self = this
+		const toLayer = self.layer
+		self.addSubview_appendingToLayer(view, toLayer)
+	}
+	addSubview_appendingToLayer(view, superlayer)
+	{ // this is exposed so you can inject subviews into manually created children elements of your choice
+		console.log("superlayer" , superlayer)
+		const self = this
 		// local state:
 		self.subviews.push(view)
 		// subview's dependency setup:
 		view.superview = self
+		view.superlayer = superlayer
 		// DOM:
-		self.layer.appendChild(view.layer)
+		superlayer.appendChild(view.layer)
 	}
 	removeFromSuperview()
 	{
@@ -83,8 +95,34 @@ class View
 			throw "no superview"
 			return
 		}
+		if (typeof self.superlayer === 'undefined' || self.superlayer === null) {
+			throw "no superlayer"
+			return
+		}
 		// DOM:
-		self.superview.layer.removeChild(self.layer)
+		self.superlayer.removeChild(self.layer)
+		// now we can release the superlayer
+		self.superlayer = null
+		// now before we can release the superview,
+		// we must manage the superview's subview list
+		const superview_indexOf_self = self.superview.subviews.indexOf(self)
+		if (superview_indexOf_self === -1) {
+			throw "superview didn't have self as subview"
+		}
+		self.superview.subviews.splice(superview_indexOf_self, 1)
+		// and now we can free the superview
+		self.superview = null
+	}
+	removeAllSubviews()
+	{
+		const self = this
+		self.subviews.forEach(
+			function(view, i)
+			{
+				view.removeFromSuperview()
+			}
+		)
+		self.subviews = []
 	}
 }
 module.exports = View

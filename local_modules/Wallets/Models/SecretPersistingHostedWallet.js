@@ -35,6 +35,7 @@ const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
 const monero_txParsing_utils = require('../../monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
 const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
+const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 //
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
@@ -637,8 +638,9 @@ class SecretPersistingHostedWallet
 			console.log("⚠️  Wallet Balance() called while self.total_sent was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
 			// console.trace()
 		}
+		const balance_JSBigInt = total_received.subtract(total_sent)
 		//
-		return total_received.subtract(total_sent)
+		return monero_utils.formatMoney(balance_JSBigInt)
 	}
 	Description()
 	{

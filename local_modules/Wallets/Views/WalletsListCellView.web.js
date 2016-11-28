@@ -39,4 +39,40 @@ class WalletsListCellView extends View
 		const self = this
 		self.setup()
 	}
+	setup()
+	{
+		const self = this
+	}
+	//
+	//
+	// Teardown/Recycling
+	//
+	prepareForReuse() {}
+	//
+	//
+	// Runtime - Accessors
+	//
+	//
+	//
+	// Runtime - Imperatives
+	//
+	ConfigureWith_wallet(wallet)
+	{
+		const self = this
+		if (typeof self.wallet !== 'undefined') {
+			self.prepareForReuse()
+		}
+		self.wallet = wallet
+		self._configureWithWallet()
+	}
+	_configureWithWallet()
+	{
+		const self = this
+		const wallet = self.wallet
+		self.layer.innerHTML =
+			"<p>"
+				+ wallet.walletLabel + ": " + wallet.Balance() + wallet.wallet_currency
+			+ "</p>"
+	}
 }
+module.exports = WalletsListCellView

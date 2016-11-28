@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const WalletsListCellView = require('./WalletsListCellView.web')
 //
 class WalletsListView extends View
 {
@@ -100,7 +101,18 @@ class WalletsListView extends View
 			)
 			self.walletCellViews = []
 		}
-		console.log("TODO: now add subviews for ", wallets)
+		// now add subviews
+		const context = self.context
+		wallets.forEach(
+			function(wallet, i)
+			{
+				const options = {}
+				const view = new WalletsListCellView(options, context)
+				self.walletCellViews.push(view)
+				view.ConfigureWith_wallet(wallet)
+				self.addSubview(view)
+			}
+		)
 	}
 	//
 	//

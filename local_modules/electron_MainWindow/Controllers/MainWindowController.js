@@ -126,13 +126,5 @@ class MainWindowController extends WindowController
 			app.quit()
 		}
 	}
-	//
-	//
-	// Delegation - From render process
-	//
-	RendererProcessDidGetControl()
-	{
-		const self = this
-	}
 }
 module.exports = MainWindowController
