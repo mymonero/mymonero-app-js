@@ -91,7 +91,7 @@ class MainWindowController extends WindowController
 			height: 600,
 			title: self._new_browserWindowTitle()
 		})
-		window.loadURL(`file://${__dirname}/browser/index.html`)
+		window.loadURL(`file://${__dirname}/Views/index.html`)
 		//
 		return window
 	}

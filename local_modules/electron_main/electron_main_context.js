@@ -32,11 +32,6 @@
 var context_object_instantiation_descriptions =
 [
 	{
-		module_path: __dirname + "/../MainWindow/MainWindowController",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
 		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
 		instance_key: "persister",
 		options: {}
@@ -77,6 +72,11 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../Contacts/ContactsListController",
 		instance_key: "contactsListController",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../electron_MainWindow/Controllers/MainWindowController",
+		instance_key: "mainWindowController",
 		options: {}
 	}
 ]

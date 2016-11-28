@@ -28,25 +28,15 @@
 //
 "use strict"
 //
-class WalletsListView
+const View = require('../../Views/View.web')
+//
+class WalletsListView extends View
 {
-	constructor(options, dependencies)
+	constructor(options, context)
 	{
-		const self = this
-		// parse & hang onto various initial properties…
-		// options
-		self.web = options.web || false // for MVP this will always be true
-		self.superview = options.superview || undefined
-		if (typeof self.superview === 'undefined') {
-			throw "superview undefined"
-		}
-		self.document = options.document || undefined
-		if (typeof self.document === 'undefined') {
-			throw "document undefined"
-		}
-		// dependencies
-		self.walletsListController = dependencies.walletsListController
+		super(options, context)
 		//
+		const self = this
 		self.setup()
 	}
 	setup()
@@ -62,34 +52,24 @@ class WalletsListView
 	_setup_views()
 	{
 		const self = this
-		self.view = document.createElement("div")
-		self.view.id = self.Id()
-		self.superview.insertBefore(self.view, self.superview.childNodes[0])
-		//
 		self.walletCellViews = [] // initialize container
 	}
 	_setup_startObserving()
 	{
 		const self = this
-		self.walletsListController.on(
-			self.walletsListController.WalletsListController_eventName_listUpdated(),
+		const walletsListController = self.context.walletsListController
+		walletsListController.on(
+			walletsListController.WalletsListController_eventName_listUpdated(),
 			function()
 			{
-				self._WalletsListController_eventName_listUpdated()
+				console.log("trampoline for _WalletsListController_eventName_listUpdated")
+				self._WalletsListController_listUpdated()
 			}
 		)
 	}
 	//
 	//
-	// Accessors - Factories
-	//
-	Id()
-	{
-		return "WalletsList"
-	}
-	//
-	//
-	// Imperatives - Configuration
+	// Runtime - Imperatives - View Configuration
 	//
 	reloadData()
 	{
@@ -98,7 +78,7 @@ class WalletsListView
 			return // prevent redundant calls
 		}
 		self.isAlreadyWaitingForWallets = true
-		self.walletsListController.WhenBooted_Wallets(
+		self.context.walletsListController.WhenBooted_Wallets(
 			function(wallets)
 			{
 				self.isAlreadyWaitingForWallets = false // unlock
@@ -111,7 +91,7 @@ class WalletsListView
 		const self = this
 		// TODO: diff these wallets with existing wallets?
 		if (self.walletCellViews.length != 0) {
-			// for now, just flash list
+			// for now, just flash list:
 			self.walletCellViews.forEach(
 				function(view, i)
 				{
@@ -120,13 +100,13 @@ class WalletsListView
 			)
 			self.walletCellViews = []
 		}
-		console.log("_configure with ", wallets)
+		console.log("TODO: now add subviews for ", wallets)
 	}
 	//
 	//
-	// Delegation - Data source
+	// Runtime - Delegation - Data source
 	//
-	_WalletsListController_eventName_listUpdated()
+	_WalletsListController_listUpdated()
 	{
 		const self = this
 		console.log("wallets list view hears list updated")

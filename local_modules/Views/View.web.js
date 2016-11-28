@@ -25,10 +25,66 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-// TODO:
-removeFromSuperview()
+//
+"use strict"
+//
+class View
 {
-
+	constructor(options, context)
+	{
+		const self = this
+		self.options = options
+		self.context = context
+		//
+		// proceed to setup for runtime:
+		self.__View_setup_views() // namespacing to avoid subclass collision
+	}
+	__View_setup_views()
+	{
+		const self = this
+		self.subviews = []
+		self.setup_loadView()
+	}
+	//
+	//
+	// Setup - Imperatives - Overridable
+	//
+	setup_loadView()
+	{
+		const self = this
+		self.layer = document.createElement(self.TagName())
+	}
+	//
+	//
+	// Setup - Accessors - Overridable
+	//
+	TagName()
+	{
+		return "div" // this is the default; you can override this method to return what you'd like
+	}
+	//
+	//
+	// Runtime - Imperatives - View hierarchy
+	//
+	addSubview(view)
+	{
+		const self = this
+		// local state:
+		self.subviews.push(view)
+		// subview's dependency setup:
+		view.superview = self
+		// DOM:
+		self.layer.appendChild(view.layer)
+	}
+	removeFromSuperview()
+	{
+		const self = this
+		if (typeof self.superview === 'undefined' || self.superview === null) {
+			throw "no superview"
+			return
+		}
+		// DOM:
+		self.superview.layer.removeChild(self.layer)
+	}
 }
+module.exports = View
