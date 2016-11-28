@@ -79,6 +79,7 @@ class WalletsListController extends EventEmitter
 			self.wallets = []
 			if (ids.length === 0) { // do not cause the pw to be requested yet
 				self.hasBooted = true // nothing to do to boot
+				// and we don't want to emit that the list updated here
 				return
 			}
 			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
