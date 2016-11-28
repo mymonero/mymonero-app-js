@@ -65,7 +65,7 @@ var context_object_instantiation_descriptions =
 		}
 	},
 	{
-		module_path: __dirname + "/../Wallets/WalletsListController",
+		module_path: __dirname + "/../Wallets/Controllers/WalletsListController",
 		instance_key: "walletsListController",
 		options: {}
 	},
