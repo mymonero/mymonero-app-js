@@ -30,7 +30,7 @@
 //
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsListController/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/Tests/walletsListController/ in order to run this test.")
 	process.exit(1)
 	return
 }
@@ -62,7 +62,7 @@ async.series(
 function _proceedTo_test_bootController(cb)
 {
 	try {
-		const WalletsListController = require('../WalletsListController')
+		const WalletsListController = require('../../Controllers/WalletsListController')
 		const options = {}
 		const controller = new WalletsListController(
 			options,

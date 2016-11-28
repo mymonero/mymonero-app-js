@@ -31,12 +31,12 @@
 const async = require('async')
 const extend = require('util')._extend
 //
-const monero_wallet_utils = require('../monero_utils/monero_wallet_utils')
-const monero_txParsing_utils = require('../monero_utils/monero_txParsing_utils')
-const monero_sendingFunds_utils = require('../monero_utils/monero_sendingFunds_utils')
-const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
+const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
+const monero_txParsing_utils = require('../../monero_utils/monero_txParsing_utils')
+const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
+const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
 //
 const wallet_currencies =

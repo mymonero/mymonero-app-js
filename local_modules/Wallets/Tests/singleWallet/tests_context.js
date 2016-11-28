@@ -28,48 +28,18 @@
 
 "use strict"
 //
-const tests_config = require('./tests_config.js')
-if (typeof tests_config === 'undefined' || tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsListController/ in order to run this test.")
-	process.exit(1)
-	return
-}
-//
 // Hydrate context
 var context_object_instantiation_descriptions =
 [
 	{
-		module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
+		module_path: __dirname + "/../../../HostedMoneroAPIClient/HostedMoneroAPIClient",
 		instance_key: "hostedMoneroAPIClient",
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
+		module_path: __dirname + "/../../../NeDBPersister/NeDBPersister",
 		instance_key: "persister",
 		options: {}
-	},
-	{
-		module_path: __dirname + "/../../Passwords/PasswordController",
-		instance_key: "passwordController",
-		options: {
-			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
-			{
-				console.log("obtainPasswordFromUser_wOptlValidationErrMsg_cb" , tests_config.persistencePassword)
-				obtainedErrOrPwAndType_cb(
-					null,
-					tests_config.persistencePassword,
-					controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
-				)
-			},
-			didSetFirstPasswordDuringThisRuntime_cb: function(controller, password)
-			{
-				console.log("didSetFirstPasswordDuringThisRuntime_cb" , password)
-			},
-			didChangePassword_cb: function(controller, password)
-			{
-				console.log("didChangePassword_cb" , password)
-			}
-		}
 	}
 ]
 function NewHydratedContext()
@@ -79,6 +49,6 @@ function NewHydratedContext()
 		userDataAbsoluteFilepath: "./test_products"
 	}
 
-	return require("../../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	return require("../../../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
 }
 module.exports.NewHydratedContext = NewHydratedContext

@@ -1,8 +1,8 @@
 // Constants
 
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
-const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
+const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
 //
 //
 const documentCryptScheme =

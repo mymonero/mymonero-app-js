@@ -30,8 +30,8 @@
 //
 const async = require('async')
 //
-const SecretPersistingHostedWallet = require('./SecretPersistingHostedWallet')
-const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
+const SecretPersistingHostedWallet = require('../Models/SecretPersistingHostedWallet')
+const secretWallet_persistence_utils = require('../Models/secretWallet_persistence_utils')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////

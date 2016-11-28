@@ -4,14 +4,14 @@ const async = require('async')
 //
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__singleWallet/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/Tests/singleWallet/ in order to run this test.")
 	process.exit(1)
 	return
 }
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const SecretPersistingHostedWallet = require('../SecretPersistingHostedWallet')
+const SecretPersistingHostedWallet = require('../../Models/SecretPersistingHostedWallet')
 //
 async.series(
 	[
@@ -64,7 +64,7 @@ function _proceedTo_test_sendFunds_1(fn)
 				} else {
 					console.log("✅  Successfully sent funds")
 					console.log(
-						"currencyReady_targetDescription_address, sentAmount, targetDescription_domain_orNone, final__payment_id, tx_hash, tx_fee", 
+						"currencyReady_targetDescription_address, sentAmount, targetDescription_domain_orNone, final__payment_id, tx_hash, tx_fee",
 						currencyReady_targetDescription_address,
 						sentAmount,
 						targetDescription_domain_orNone,
@@ -78,8 +78,8 @@ function _proceedTo_test_sendFunds_1(fn)
 			function( // SendFunds will confirm with user via this function before calling the fn just above
 	            domain,
 	            currencyReady_address,
-				oaRecord_0_name, 
-				oaRecord_0_description, 
+				oaRecord_0_name,
+				oaRecord_0_description,
 	            dnssec_used_and_secured,
 				userConfirmed_cb,
 				userRejectedOrCancelled_cb
@@ -87,16 +87,16 @@ function _proceedTo_test_sendFunds_1(fn)
 			{
 				console.log("domain, currencyReady_address, oaRecord_0_name, oaRecord_0_description, dnssec_used_and_secured", domain,
 				currencyReady_address,
-				oaRecord_0_name, 
+				oaRecord_0_name,
 				oaRecord_0_description,
 				dnssec_used_and_secured)
-				
+
 				// simulate a user confirmation
 				userConfirmed_cb()
 			}
 		)
 	}
-	const options = 
+	const options =
 	{
 		_id: wallets__tests_config.openWalletWith_id,
 		//

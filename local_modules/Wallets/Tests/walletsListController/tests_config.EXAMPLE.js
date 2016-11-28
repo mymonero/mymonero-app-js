@@ -26,49 +26,23 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"use strict"
+const monero_wallet_utils = require('../../../monero_utils/monero_wallet_utils')
 //
-const wallets__tests_config = require('./tests_config.js')
-if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsListController/ in order to run this test.")
-	process.exit(1)
-	return
-}
-//
-const context = require('./tests_context').NewHydratedContext()
-//
-const async = require('async')
-async.series(
-	[
-		_proceedTo_test_bootController
-	],
-	function(err)
-	{
-		if (err) {
-			console.log("Error while performing tests: ", err)
-			process.exit(1)
-		} else {
-			console.log("✅  Tests completed without error.")
-			process.exit(0)
-		}
-	}
-)
-//
-function _proceedTo_test_bootController(cb)
+module.exports =
 {
-	try {
-		const WalletsListController = require('../WalletsListController')
-		const options = {}
-		const controller = new WalletsListController(
-			options,
-			context
-		)
-		controller.WhenBooted_Wallets(function(wallets)
-		{ // ^-- this will defer till booted
-			console.log("Wallets", wallets)
-			cb()
-		})
-	} catch (e) {
-		cb(e)
-	}
+	// shared - persistence
+	//
+	persistencePassword: "a secret phrase",
+
+	// used by readSavedWallet
+	deleteWalletWith_id: "", // take the _id from the wallet creation test output or from fetchExistingWallet
+
+	// used by fetchExistingWallet
+	// I
+	initWithMnemonic__mnemonicString: "…",
+	initWithMnemonic__wordsetName: monero_wallet_utils.wordsetNames.english,
+	// II
+	initWithKeys__address: "…",
+	initWithKeys__view_key__private: "…",
+	initWithKeys__spend_key__private: "…",
 }

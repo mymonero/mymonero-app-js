@@ -28,75 +28,97 @@
 
 "use strict"
 //
+const async = require('async')
+//
 const wallets__tests_config = require('./tests_config.js')
 if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/tests__walletsListController/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Wallets/Tests/singleWallet/ in order to run this test.")
 	process.exit(1)
 	return
 }
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-var walletsListController; // to instantiate for usage……
+const SecretPersistingHostedWallet = require('../../Models/SecretPersistingHostedWallet')
 //
-const async = require('async')
 async.series(
 	[
-		_proceedTo_test_bootController,
-		//
-		_proceedTo_test_deleteWallet,
+		_proceedTo_test_openingSavedWallet,
 	],
 	function(err)
 	{
 		if (err) {
 			console.log("Error while performing tests: ", err)
-			process.exit(1)
+			process.exit(0)
 		} else {
 			console.log("✅  Tests completed without error.")
-			process.exit(0)
+			process.exit(1)
 		}
 	}
 )
 //
-function _proceedTo_test_bootController(cb)
-{
-	try {
-		const WalletsListController = require('../WalletsListController')
-		const options = {}
-		const controller = new WalletsListController(
-			options,
-			context
-		)
-		walletsListController = controller
-		controller.WhenBooted_Wallets(function(wallets)
-		{ // ^-- this will defer till booted
-			console.log("Wallets", wallets)
-			cb()
-		})
-	} catch (e) {
-		cb(e)
-	}
-}
 //
-function _proceedTo_test_deleteWallet(cb)
+function _proceedTo_test_openingSavedWallet(fn)
 {
-	if (walletsListController == null || typeof walletsListController === 'undefined') {
-		// but techically async ought not to let this test be executed if walletsListController boot failed
-		cb(new Error("walletsListController undefined or null"))
-		return
+	console.log("> _proceedTo_test_openingSavedWallet")
+	var finishedAccountInfoSync = false
+	var finishedAccountTxsSync = false
+	function areAllSyncOperationsFinished()
+	{
+		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
-	const _id = wallets__tests_config.deleteWalletWith_id
-	walletsListController.WhenBooted_DeleteWalletWithId(
-		_id,
-		function(err)
+	function _trampolineFor_fn()
+	{
+		console.log("New_StateCachedTransactions", wallet.New_StateCachedTransactions())
+		fn()
+	}
+	var wallet;
+	const options =
+	{
+		_id: wallets__tests_config.openWalletWith_id,
+		failedToInitialize_cb: function(err)
 		{
-			if (err) {
-				console.error("Failed to delete wallet with _id", _id)
-				cb(err)
-				return
+			fn(err)
+		},
+		successfullyInitialized_cb: function()
+		{
+			console.log("Wallet is ", wallet)
+			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
+			// and because we still need to boot the wallet (decrypt the wallet)
+			const password = wallets__tests_config.persistencePassword
+			wallet.Boot_decryptingExistingInitDoc(
+				password,
+				function(err)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					// else we'll wait until the first sync operations are finished!
+				}
+			)
+		},
+		//
+		didReceiveUpdateToAccountInfo: function()
+		{
+			if (finishedAccountInfoSync == true) {
+				return // already done initial sync - don't re-trigger fn
 			}
-			console.log("Successfully deleted wallet with _id", _id)
-			cb()
+			finishedAccountInfoSync = true
+			if (areAllSyncOperationsFinished()) {
+				_trampolineFor_fn()
+			}
+		},
+		didReceiveUpdateToAccountTransactions: function()
+		{
+			if (finishedAccountTxsSync == true) {
+				return // already done initial sync - don't re-trigger fn
+			}
+			finishedAccountTxsSync = true
+			if (areAllSyncOperationsFinished()) {
+				_trampolineFor_fn()
+			}
 		}
-	)
+	}
+	wallet = new SecretPersistingHostedWallet(options, context)
 }

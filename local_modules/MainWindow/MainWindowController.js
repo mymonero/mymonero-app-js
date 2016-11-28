@@ -133,7 +133,6 @@ class MainWindowController extends WindowController
 	RendererProcessDidGetControl()
 	{
 		const self = this
-		console.log("main window c says RendererProcessDidGetControl")
 	}
 }
 module.exports = MainWindowController
