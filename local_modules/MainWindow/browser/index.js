@@ -6,25 +6,26 @@ const remote__context = remote__electron.getGlobal("context")
 const mainWindowController = remote__context.mainWindowController
 mainWindowController.RendererProcessDidGetControl()
 //
-var root_container;
+var rootView;
+const views = [];
 //
 document.addEventListener("DOMContentLoaded", function()
 {
-	root_container = document.getElementById('root-container')
+	rootView = document.getElementById('RootView')
 	setup_views()
 })
 //
 function setup_views()
 {
-	const views = []
 	views.push(_new_walletsList())
 }
 function _new_walletsList()
 {
-	const WalletsList = require('../../Wallets/Views/WalletsList')
-	const view = new WalletsList({
+	const WalletsListView = require('../../Wallets/Views/WalletsListView')
+	const view = new WalletsListView({
 		web: true,
-		superview: root_container
+		superview: rootView,
+		document: document
 	}, {
 		walletsListController: remote__context.walletsListController
 	})

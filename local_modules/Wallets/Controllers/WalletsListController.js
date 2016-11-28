@@ -28,6 +28,7 @@
 
 "use strict"
 //
+const EventEmitter = require('events')
 const async = require('async')
 //
 const SecretPersistingHostedWallet = require('../Models/SecretPersistingHostedWallet')
@@ -37,7 +38,7 @@ const secretWallet_persistence_utils = require('../Models/secretWallet_persisten
 ////////////////////////////////////////////////////////////////////////////////
 // Principal class
 //
-class WalletsListController
+class WalletsListController extends EventEmitter
 {
 
 
@@ -46,6 +47,8 @@ class WalletsListController
 
 	constructor(options, context)
 	{
+		super() // must call super before we can access `this`
+		//
 		const self = this
 		self.options = options
 		self.context = context
@@ -115,7 +118,9 @@ class WalletsListController
 											return
 										}
 										console.log("Initialized wallet", wallet.Description())
-										self._wallet_wasSuccessfullyInitialized(wallet) // not yet booted
+										self.wallets.push(wallet) // we manually manage the list here and thus
+										// take responsibility to emit WalletsListController_eventName_listUpdated below
+										//
 										cb()
 									}
 								)
@@ -137,6 +142,8 @@ class WalletsListController
 							return
 						}
 						self.hasBooted = true // all done!
+						//
+						self.emit(self.WalletsListController_eventName_listUpdated()) // emit after booting so this becomes an at-runtime emission
 					}
 				)
 			}
@@ -156,6 +163,10 @@ class WalletsListController
 				fn(self.wallets)
 			}
 		)
+	}
+	WalletsListController_eventName_listUpdated() // -> String
+	{
+		return "WalletsListController_eventName_listUpdated"
 	}
 
 
@@ -227,7 +238,7 @@ class WalletsListController
 										fn(err)
 										return
 									}
-									self._wallet_wasSuccessfullyInitialized(wallet)
+									self._atRuntime__wallet_wasSuccessfullyInitialized(wallet)
 									//
 									fn(null, wallet)
 								}
@@ -301,7 +312,7 @@ class WalletsListController
 										fn(err)
 										return
 									}
-									self._wallet_wasSuccessfullyInitialized(wallet)
+									self._atRuntime__wallet_wasSuccessfullyInitialized(wallet)
 									//
 									fn(null, wallet, false) // wasWalletAlreadyInserted: false
 								}
@@ -378,7 +389,7 @@ class WalletsListController
 										fn(err)
 										return
 									}
-									self._wallet_wasSuccessfullyInitialized(wallet)
+									self._atRuntime__wallet_wasSuccessfullyInitialized(wallet)
 									//
 									fn(null)
 								}
@@ -424,7 +435,7 @@ class WalletsListController
 					{
 						if (err) {
 							self.wallets.splice(indexOfWallet, 0, walletInstance) // revert deletion
-							self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
+							self._atRuntime__wallet_wasSuccessfullyInitialized() // ensure delegate notified
 							fn(err)
 							return
 						}
@@ -505,17 +516,18 @@ class WalletsListController
 	// Runtime - Imperatives - Private
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private
+	// Runtime/Boot - Delegation - Private - List updating
 
-	_wallet_wasSuccessfullyInitialized(walletInstance)
+	_atRuntime__wallet_wasSuccessfullyInitialized(walletInstance)
 	{
 		const self = this
 		self.wallets.push(walletInstance)
-		self.__listUpdatedAtRuntime_wallets()
+		self._atRuntime__listUpdated_wallets()
 	}
-	__listUpdatedAtRuntime_wallets()
+	_atRuntime__listUpdated_wallets()
 	{
-		// todo: fire event/call cb that list updated
+		const self = this
+		self.emit(self.WalletsListController_eventName_listUpdated())
 	}
 
 }

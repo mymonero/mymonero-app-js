@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -36,7 +36,7 @@ const monero_config = require('../monero_utils/monero_config')
 const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
 //
 const TransactionKeyImageCache = require('./TransactionKeyImageCache')
-const config__MyMonero = require('./config__MyMonero')	
+const config__MyMonero = require('./config__MyMonero')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ const config__MyMonero = require('./config__MyMonero')
 //
 class HostedMoneroAPIClient
 {
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Lifecycle - Initialization
@@ -67,8 +67,8 @@ class HostedMoneroAPIClient
 	{
 		var self = this
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Metrics/lookups/transforms
 
@@ -83,11 +83,11 @@ class HostedMoneroAPIClient
 	{ // -> String
 		return config__MyMonero.HostingServiceFee_depositAddress
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Requests
-	
+
 	LogIn(address, view_key__private, fn)
 	{ // fn: (err?, new_address?)
 		const self = this
@@ -119,8 +119,8 @@ class HostedMoneroAPIClient
 	//
 	// Syncing
 	AddressInfo(
-		address, 
-		view_key__private, 
+		address,
+		view_key__private,
 		spend_key__public,
 		spend_key__private,
 		fn
@@ -151,7 +151,7 @@ class HostedMoneroAPIClient
 			const transaction_height = data.transaction_height || 0;
 			const blockchain_height = data.blockchain_height || 0;
 			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
-			const spent_outputs = data.spent_outputs || []			
+			const spent_outputs = data.spent_outputs || []
 			//
 			for (let spent_output of spent_outputs) {
 				var key_image = TransactionKeyImageCache.Lazy_KeyImage(
@@ -163,7 +163,7 @@ class HostedMoneroAPIClient
 					spend_key__private
 				)
 				if (spent_output.key_image !== key_image) {
-					console.log('💬  Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
+					// console.log('💬  Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
 					total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
 				}
 			}
@@ -183,8 +183,8 @@ class HostedMoneroAPIClient
 		}
 	}
 	AddressTransactions(
-		address, 
-		view_key__private, 
+		address,
+		view_key__private,
 		spend_key__public,
 		spend_key__private,
 		fn
@@ -207,7 +207,7 @@ class HostedMoneroAPIClient
 			}
 		)
 		function __parseAndCallBack(data)
-		{			
+		{
 			const account_scanned_height = data.scanned_height || 0
 			const account_scanned_block_height = data.scanned_block_height || 0
 			const account_scan_start_height = data.start_height || 0
@@ -228,7 +228,7 @@ class HostedMoneroAPIClient
 							spend_key__private
 						)
 						if (transactions[i].spent_outputs[j].key_image !== key_image) {
-							console.log('Output used as mixin, ignoring (' + transactions[i].spent_outputs[j].key_image + '/' + key_image + ')')
+							// console.log('Output used as mixin, ignoring (' + transactions[i].spent_outputs[j].key_image + '/' + key_image + ')')
 							transactions[i].total_sent = new JSBigInt(transactions[i].total_sent).subtract(transactions[i].spent_outputs[j].amount).toString()
 							transactions[i].spent_outputs.splice(j, 1)
 							j--
@@ -244,18 +244,18 @@ class HostedMoneroAPIClient
 				transactions[i].approx_float_amount = parseFloat(monero_utils.formatMoney(transactions[i].amount))
 				transactions[i].timestamp = new Date(transactions[i].timestamp)
 			}
-			transactions.sort(function(a, b) 
+			transactions.sort(function(a, b)
 			{
 				return b.id - a.id
 			})
 			//
 			fn(
 				null, // no error
-				account_scanned_height, 
-				account_scanned_block_height, 
+				account_scanned_height,
+				account_scanned_block_height,
 				account_scan_start_height,
-				transaction_height, 
-				blockchain_height, 
+				transaction_height,
+				blockchain_height,
 				transactions
 			)
 		}
@@ -299,13 +299,13 @@ class HostedMoneroAPIClient
 		function __proceedTo_parseAndCallBack(data)
 		{
 			// console.log("debug: info: unspentouts: data", data)
-		
+
 			const data_outputs = data.outputs
 			const finalized_unspentOutputs = data.outputs || [] // to finalize:
 			for (var i = 0; i < finalized_unspentOutputs.length; i++) {
 				for (var j = 0; finalized_unspentOutputs[i] && j < finalized_unspentOutputs[i].spend_key_images.length; j++) {
 					var key_image = TransactionKeyImageCache.Lazy_KeyImage(
-						finalized_unspentOutputs[i].tx_pub_key, 
+						finalized_unspentOutputs[i].tx_pub_key,
 						finalized_unspentOutputs[i].index,
 						address,
 						view_key__private,
@@ -321,7 +321,7 @@ class HostedMoneroAPIClient
 						}
 						i--;
 					} else {
-						console.log("💬  Output used as mixin (" + key_image + "/" + finalized_unspentOutputs[i].spend_key_images[j] + ")");
+						// console.log("💬  Output used as mixin (" + key_image + "/" + finalized_unspentOutputs[i].spend_key_images[j] + ")");
 					}
 				}
 			}
@@ -390,7 +390,7 @@ class HostedMoneroAPIClient
 		domain,
 		fn
 	)
-	{		
+	{
 		const self = this
 		//
 		const endpointPath = 'get_txt_records'
@@ -431,7 +431,7 @@ class HostedMoneroAPIClient
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Sending funds
-	
+
 	SubmitSerializedSignedTransaction(
 		address,
 		view_key__private,
@@ -467,11 +467,11 @@ class HostedMoneroAPIClient
 			fn(null)
 		}
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private - Requests
-	
+
 	_new_parameters_forWalletRequest(address, view_key__private)
 	{
 		return {
@@ -483,7 +483,7 @@ class HostedMoneroAPIClient
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
-	
+
 	_API_request(endpointPath, parameters, fn)
 	{ // fn: (err?, data?) -> Void
 		const self = this
@@ -502,7 +502,7 @@ class HostedMoneroAPIClient
 		{
 			const statusCode = res.statusCode
 			if (!err && statusCode == 200) {
-				var json 
+				var json
 				if (typeof body === 'string') {
 					try {
 						json = JSON.parse(body);
@@ -529,7 +529,7 @@ class HostedMoneroAPIClient
 			}
 		})
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
