@@ -132,7 +132,7 @@ class WalletsListController
 					function(err)
 					{
 						if (err) {
-							console.error("Error fetching persisted wallet ids", err)
+							console.error("Error fetching persisted wallets", err)
 							throw err
 							return
 						}

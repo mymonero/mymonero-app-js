@@ -47,7 +47,7 @@ class AppRuntimeController
 	{
 		const self = this
 	}
-	
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Proxying - Password controller
@@ -65,7 +65,7 @@ class AppRuntimeController
 		var errToPassBack = null // use err if user cancelled - err will cancel the pw change
 		var obtained_passwordString;
 		var obtained_typeOfPassword;
-		obtained_passwordString = theOriginalPassword
+		obtained_passwordString = "a much stronger password than before",
 		obtained_typeOfPassword = passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW
 		obtainedErrOrPwAndType_cb(
 			errToPassBack,
@@ -73,17 +73,15 @@ class AppRuntimeController
 			obtained_typeOfPassword
 		)
 	}
-	didSetFirstPasswordDuringThisRuntime_cb(passwordController, password)
+	passwordController__didSetFirstPasswordDuringThisRuntime_cb(passwordController, password)
+	{
+		const self = this
+	}
+	passwordController__didChangePassword_cb(passwordController, password)
 	{
 		// TODO: funnel into a singular function which tells the wallets and contacts list controllers to re-save
 		const self = this
+		console.log("TODO: passwordController__didChangePassword_cb; inform wallet + contact lists")
 	}
-	didChangePassword_cb(passwordController, password)
-	{
-		// TODO: funnel into a singular function which tells the wallets and contacts list controllers to re-save
-		const self = this
-	}
-
-
 }
 module.exports = AppRuntimeController

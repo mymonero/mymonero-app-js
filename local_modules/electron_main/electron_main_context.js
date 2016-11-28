@@ -42,6 +42,11 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
+		module_path: __dirname + "/../HostedMoneroAPIClient/HostedMoneroAPIClient",
+		instance_key: "hostedMoneroAPIClient",
+		options: {}
+	},
+	{
 		module_path: __dirname + "/../AppRuntime/AppRuntimeController",
 		instance_key: "appRuntimeController",
 		options: {}
