@@ -53,6 +53,8 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		//
+		self.layer.style.border = "1px solid #eee"
+		//
 		self.setup_layers_accountInfo()
 		self.setup_layers_transactions()
 	}
@@ -62,7 +64,6 @@ class WalletsListCellView extends View
 		//
 		const layer = document.createElement("div")
 		layer.className = "accountInfo"
-		layer.style.border = "1px solid red"
 		//
 		self.layer_accountInfo = layer
 		self.layer.appendChild(layer)
@@ -73,7 +74,7 @@ class WalletsListCellView extends View
 		//
 		const layer = document.createElement("div")
 		layer.className = "transactions"
-		layer.style.border = "1px solid blue"
+		layer.style.borderTop = "1px solid #ccc"
 		//
 		self.layer_transactions = layer
 		self.layer.appendChild(layer)
@@ -146,10 +147,14 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		self.layer_accountInfo.innerHTML =
-			"<p>"
-				+ wallet.walletLabel + ": " + wallet.Balance() + wallet.wallet_currency
-			+ "</p>"
+		var htmlString = ''
+		htmlString += `<h3>${wallet.walletLabel}</h3>`
+		htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.wallet_currency}</p>`
+		htmlString += `<p>Secret mnemonic: ${wallet.mnemonicString}</p>`
+		htmlString += `<p>Address: ${wallet.public_address}</p>`
+		htmlString += `<p>View key: ${wallet.private_keys.view}</p>`
+		htmlString += `<p>Spend key: ${wallet.private_keys.spend}</p>`
+		self.layer_accountInfo.innerHTML = htmlString
 	}
 	_configureUIWithWallet__transactions()
 	{
@@ -160,7 +165,7 @@ class WalletsListCellView extends View
 		stateCachedTransactions.forEach(
 			function(tx, i)
 			{
-				lisHTMLString += "<li>" + tx.formatted_amount + "" + wallet.wallet_currency + "</li>"
+				lisHTMLString += `<li><span>${tx.formatted_amount} ${wallet.wallet_currency}</span></li>`
 				// TODO:
 				// <strong class="bold" ng-show="tx_is_confirmed(tx)">{{tx.amount | money}}  <span ng-show="!tx_is_unlocked(tx)"><i class="fa fa-lock"></i></span></strong>
 				// <strong class="bold red" ng-show="!tx_is_confirmed(tx)">{{tx.amount | money}} (unconfirmed)  <span ng-show="!tx_is_unlocked(tx)"><i class="fa fa-lock"></i></span></strong>
@@ -174,7 +179,7 @@ class WalletsListCellView extends View
 			}
 		)
 		// TODO: optimize this by maybe not using innerHTML?
-		self.layer_transactions.innerHTML = "<ul>" + lisHTMLString + "</ul>"
+		self.layer_transactions.innerHTML = "<h3>Transactions</h3><ul>" + lisHTMLString + "</ul>"
 	}
 	//
 	//
