@@ -52,6 +52,31 @@ class WalletsListCellView extends View
 	setup_layers()
 	{
 		const self = this
+		//
+		self.setup_layers_accountInfo()
+		self.setup_layers_transactions()
+	}
+	setup_layers_accountInfo()
+	{
+		const self = this
+		//
+		const layer = document.createElement("div")
+		layer.className = "accountInfo"
+		layer.style.border = "1px solid red"
+		//
+		self.layer_accountInfo = layer
+		self.layer.appendChild(layer)
+	}
+	setup_layers_transactions()
+	{
+		const self = this
+		//
+		const layer = document.createElement("div")
+		layer.className = "transactions"
+		layer.style.border = "1px solid blue"
+		//
+		self.layer_transactions = layer
+		self.layer.appendChild(layer)
 	}
 	//
 	//
@@ -114,21 +139,47 @@ class WalletsListCellView extends View
 	_configureUIWithWallet()
 	{
 		const self = this
+		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__transactions()
+	}
+	_configureUIWithWallet__accountInfo()
+	{
+		const self = this
 		const wallet = self.wallet
-		self.layer.innerHTML =
+		self.layer_accountInfo.innerHTML =
 			"<p>"
 				+ wallet.walletLabel + ": " + wallet.Balance() + wallet.wallet_currency
 			+ "</p>"
 	}
-	// TODO:
-	// _configureUIWithWallet__accountInfo()
-	// {
-	// 	const self = this
-	// }
-	// _configureUIWithWallet__transactions()
-	// {
-	// 	const self = this
-	// }
+	_configureUIWithWallet__transactions()
+	{
+		const self = this
+		const wallet = self.wallet
+		var lisHTMLString = ""
+		const stateCachedTransactions = wallet.New_StateCachedTransactions()
+		stateCachedTransactions.forEach(
+			function(tx, i)
+			{
+				lisHTMLString += "<li>" + tx.formatted_amount + "" + wallet.wallet_currency + "</li>"
+				// TODO:
+				// <strong class="bold" ng-show="tx_is_confirmed(tx)">{{tx.amount | money}}  <span ng-show="!tx_is_unlocked(tx)"><i class="fa fa-lock"></i></span></strong>
+				// <strong class="bold red" ng-show="!tx_is_confirmed(tx)">{{tx.amount | money}} (unconfirmed)  <span ng-show="!tx_is_unlocked(tx)"><i class="fa fa-lock"></i></span></strong>
+				// {{tx.timestamp | time}}
+				// {{tx.mixin}}
+				// {{tx.hash}}
+				// <div class="transaction-detail transaction-left" style="font-size: 11px;" ng-show="!tx_is_unlocked(tx)">
+				// {{tx_locked_reason(tx)}}
+				// </div>
+				// {{tx.payment_id || "N/A"}}
+			}
+		)
+		// TODO: optimize this by maybe not using innerHTML?
+		self.layer_transactions.innerHTML = "<ul>" + lisHTMLString + "</ul>"
+	}
+	//
+	//
+	// Internal - Runtime - Imperatives - Observation
+	//
 	startObserving_wallet()
 	{
 		const self = this
@@ -166,16 +217,12 @@ class WalletsListCellView extends View
 	wallet_EventName_accountInfoUpdated()
 	{
 		const self = this
-		self._configureUIWithWallet()
-		// TODO:
-		// self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__accountInfo()
 	}
 	wallet_EventName_transactionsUpdated()
 	{
 		const self = this
-		self._configureUIWithWallet()
-		// TODO:
-		// self._configureUIWithWallet__transactions()
+		self._configureUIWithWallet__transactions()
 	}
 }
 module.exports = WalletsListCellView

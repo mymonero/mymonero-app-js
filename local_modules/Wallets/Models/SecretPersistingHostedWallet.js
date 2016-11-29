@@ -614,6 +614,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		for (let i = 0 ; i < transactions_length ; i++) {
 			const transaction = transactions[i]
 			const shallowCopyOf_transaction = extend({}, transaction)
+			shallowCopyOf_transaction.formatted_amount = monero_utils.formatMoney(transaction.amount)
 			shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
 			shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
 			shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
