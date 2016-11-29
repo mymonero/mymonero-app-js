@@ -29,6 +29,7 @@
 "use strict"
 //
 const async = require('async')
+const EventEmitter = require('events')
 const extend = require('util')._extend
 //
 const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
@@ -45,13 +46,15 @@ const wallet_currencies =
 	xmr: 'xmr'
 }
 //
-class SecretPersistingHostedWallet
+class SecretPersistingHostedWallet extends EventEmitter
 {
 	// Init -> setup
 	// Important: You must manually call one of the 'Boot_' methods after you initialize
 
 	constructor(options, context)
 	{
+		super() // must call super before we can access this
+		//
 		var self = this
 		self.options = options
 		self.context = context
@@ -570,6 +573,15 @@ class SecretPersistingHostedWallet
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 
+	EventName_accountInfoUpdated()
+	{
+		return "EventName_accountInfoUpdated"
+	}
+	EventName_transactionsUpdated()
+	{
+		return "EventName_transactionsUpdated"
+	}
+	//
 	IsTransactionConfirmed(tx)
 	{
 		const self = this
@@ -1004,7 +1016,7 @@ class SecretPersistingHostedWallet
 		if (typeof self.options.didReceiveUpdateToAccountInfo === 'function') {
 			self.options.didReceiveUpdateToAccountInfo()
 		}
-		// todo: emit event?
+		self.emit(self.EventName_accountInfoUpdated())
 	}
 	//
 	//
@@ -1043,7 +1055,7 @@ class SecretPersistingHostedWallet
 		if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
 			self.options.didReceiveUpdateToAccountTransactions()
 		}
-		// todo: emit event?
+		self.emit(self.EventName_transactionsUpdated())
 	}
 }
 module.exports = SecretPersistingHostedWallet

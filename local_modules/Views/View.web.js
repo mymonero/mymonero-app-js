@@ -78,7 +78,6 @@ class View
 	}
 	addSubview_appendingToLayer(view, superlayer)
 	{ // this is exposed so you can inject subviews into manually created children elements of your choice
-		console.log("superlayer" , superlayer)
 		const self = this
 		// local state:
 		self.subviews.push(view)

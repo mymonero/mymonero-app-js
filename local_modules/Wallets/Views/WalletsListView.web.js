@@ -60,11 +60,11 @@ class WalletsListView extends View
 		const self = this
 		const walletsListController = self.context.walletsListController
 		walletsListController.on(
-			walletsListController.WalletsListController_eventName_listUpdated(),
+			walletsListController.EventName_listUpdated(),
 			function()
 			{
-				console.log("trampoline for _WalletsListController_eventName_listUpdated")
-				self._WalletsListController_listUpdated()
+				console.log("trampoline for _WalletsListController_EventName_listUpdated")
+				self._WalletsListController_EventName_listUpdated()
 			}
 		)
 	}
@@ -118,7 +118,7 @@ class WalletsListView extends View
 	//
 	// Runtime - Delegation - Data source
 	//
-	_WalletsListController_listUpdated()
+	_WalletsListController_EventName_listUpdated()
 	{
 		const self = this
 		console.log("wallets list view hears list updated")

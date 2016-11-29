@@ -120,7 +120,7 @@ class WalletsListController extends EventEmitter
 										}
 										console.log("Initialized wallet", wallet.Description())
 										self.wallets.push(wallet) // we manually manage the list here and thus
-										// take responsibility to emit WalletsListController_eventName_listUpdated below
+										// take responsibility to emit EventName_listUpdated below
 										//
 										cb()
 									}
@@ -144,7 +144,7 @@ class WalletsListController extends EventEmitter
 						}
 						self.hasBooted = true // all done!
 						//
-						self.emit(self.WalletsListController_eventName_listUpdated()) // emit after booting so this becomes an at-runtime emission
+						self.emit(self.EventName_listUpdated()) // emit after booting so this becomes an at-runtime emission
 					}
 				)
 			}
@@ -165,9 +165,9 @@ class WalletsListController extends EventEmitter
 			}
 		)
 	}
-	WalletsListController_eventName_listUpdated() // -> String
+	EventName_listUpdated() // -> String
 	{
-		return "WalletsListController_eventName_listUpdated"
+		return "EventName_listUpdated"
 	}
 
 
@@ -528,7 +528,7 @@ class WalletsListController extends EventEmitter
 	_atRuntime__listUpdated_wallets()
 	{
 		const self = this
-		self.emit(self.WalletsListController_eventName_listUpdated())
+		self.emit(self.EventName_listUpdated())
 	}
 
 }
