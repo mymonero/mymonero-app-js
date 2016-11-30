@@ -36,6 +36,10 @@ const contact_persistence_utils = require('./contact_persistence_utils')
 //
 class Contact extends EventEmitter
 {
+	//
+	//
+	// Setup
+	//
 	constructor(options, context)
 	{
 		super() // must call super before we can access `this`
@@ -55,13 +59,26 @@ class Contact extends EventEmitter
 		self._id = self.options._id || null // initialize to null if creating new document
 		self.persistencePassword = self.options.persistencePassword
 		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null) {
-			self.emit(self.EventName_errorWhileBooting(), new Error("You must supply an options.persistencePassword to your Contact instance"))
+			setTimeout(function()
+			{ // wait til next tick so that instantiator cannot have missed this
+				self.emit(self.EventName_errorWhileBooting(), new Error("You must supply an options.persistencePassword to your Contact instance"))
+			})
+			return
 		}
 		if (self._id === null || typeof self._id === 'undefined') { // must create new
 			self._setup_newDocument()
 		} else { // document supposedly already exists. Let's look it up…
 			self._setup_fetchExistingDocumentWithId()
 		}
+	}
+	__setup_didBoot()
+	{
+		const self = this
+		self.hasBooted = true
+		setTimeout(function()
+		{ // wait til next tick so that instantiator cannot have missed this
+			self.emit(self.EventName_booted())
+		})
 	}
 	_setup_newDocument()
 	{
@@ -75,12 +92,15 @@ class Contact extends EventEmitter
 			{
 				if (err) {
 					console.error("Failed to save new contact", err)
-					self.emit(self.EventName_errorWhileBooting(), err)
+					setTimeout(function()
+					{ // wait til next tick so that instantiator cannot have missed this
+						self.emit(self.EventName_errorWhileBooting(), err)
+					})
 					return
 				}
 				console.log("Successfully saved new contact.")
 				//
-				self.hasBooted = true
+				self.__setup_didBoot()
 			}
 		)
 	}
@@ -96,14 +116,20 @@ class Contact extends EventEmitter
 			{
 				if (err) {
 					console.error(err.toString)
-					self.emit(self.EventName_errorWhileBooting(), err)
+					setTimeout(function()
+					{ // wait til next tick so that instantiator cannot have missed this
+						self.emit(self.EventName_errorWhileBooting(), err)
+					})
 					return
 				}
 				if (docs.length === 0) {
 					const errStr = "❌  Contact with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
-					self.emit(self.EventName_errorWhileBooting(), err)
+					setTimeout(function()
+					{ // wait til next tick so that instantiator cannot have missed this
+						self.emit(self.EventName_errorWhileBooting(), err)
+					})
 					return
 				}
 				const encryptedDocument = docs[0]
@@ -123,7 +149,10 @@ class Contact extends EventEmitter
 				const errStr = "❌  Decryption err: " + e.toString()
 				const err = new Error(errStr)
 				console.error(errStr)
-				self.emit(self.EventName_errorWhileBooting(), err)
+				setTimeout(function()
+				{ // wait til next tick so that instantiator cannot have missed this
+					self.emit(self.EventName_errorWhileBooting(), err)
+				})
 				return
 			}
 			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
@@ -142,14 +171,16 @@ class Contact extends EventEmitter
 			{
 				const err = new Error(errStr)
 				console.error(errStr)
-				self.emit(self.EventName_errorWhileBooting(), err)
+				setTimeout(function()
+				{ // wait til next tick so that instantiator cannot have missed this
+					self.emit(self.EventName_errorWhileBooting(), err)
+				})
 			}
 			// we *could* check if fullname and possibly XMR addr are empty/undef here but not much need/reason
 			// and might lead to awkward UX
 			//
 			// all done
-			self.hasBooted = true
-			self.emit(self.EventName_booted())
+			self.__setup_didBoot()
 		}
 	}
 
