@@ -49,7 +49,7 @@ var context_object_instantiation_descriptions =
 		options: {
 			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
 			{
-				console.log("obtainPasswordFromUser_wOptlValidationErrMsg_cb" , tests_config.persistencePassword)
+				console.log("> Using password: " , tests_config.persistencePassword)
 				obtainedErrOrPwAndType_cb(
 					null,
 					tests_config.persistencePassword,

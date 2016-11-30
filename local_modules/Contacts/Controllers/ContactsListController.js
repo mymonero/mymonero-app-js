@@ -29,11 +29,12 @@
 "use strict"
 //
 const async = require('async')
+const EventEmitter = require('events')
 //
 const Contact = require('../Models/Contact')
 const contact_persistence_utils = require('../Models/contact_persistence_utils')
 //
-class ContactsListController
+class ContactsListController extends EventEmitter
 {
 
 
@@ -42,6 +43,8 @@ class ContactsListController
 
 	constructor(options, context)
 	{
+		super() // must call super before we can access `this`
+		//
 		const self = this
 		self.options = options
 		self.context = context
@@ -55,6 +58,12 @@ class ContactsListController
 		const self = this
 		const context = self.context
 		//
+		function _didBoot()
+		{
+			self.hasBooted = true // nothing to do to boot
+			self.emit(self.EventName_booted())
+		}
+		//
 		// reconstitute existing contacts
 		self._new_idsOfPersisted_contacts(
 			function(err, ids)
@@ -63,7 +72,8 @@ class ContactsListController
 					const exStr = "Error fetching list of saved contacts"
 					const errStr = exStr + ": " + err.toString()
 					console.error(errStr)
-					throw exStr
+					const err = new Error(exStr)
+					self.emit(self.EventName_errorWhileBooting(), err)
 					return
 				}
 				__proceedTo_load_contactsWithIds(ids)
@@ -74,14 +84,14 @@ class ContactsListController
 			self.contacts = []
 			//
 			if (ids.length === 0) { // then don't cause the pw to be requested yet
-				self.hasBooted = true // nothing to do to boot
+				_didBoot()
 				return
 			}
 			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
 				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 				{
 					if (err) {
-						throw err
+						self.emit(self.EventName_errorWhileBooting(), err)
 						return
 					}
 					__proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, obtainedPasswordString)
@@ -90,37 +100,40 @@ class ContactsListController
 		}
 		function __proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, persistencePassword)
 		{
+			// TODO: optimize by parallelizing and sorting after
 			async.eachSeries(
 				ids,
 				function(_id, cb)
 				{
-					var instance;
 					const options =
 					{
 						_id: _id,
-						persistencePassword: persistencePassword,
+						persistencePassword: persistencePassword
 					}
-					try {
-						instance = new Contact(options, context)
-					} catch (e) {
+					const instance = new Contact(options, context)
+					instance.on(instance.EventName_booted(), function()
+					{
+						// we are going to take responsibility to manually add contact and emit event below when all done
+						self.contacts.push(instance)
+						cb()
+					})
+					instance.on(instance.EventName_errorWhileBooting(), function(err)
+					{
 						console.error("Failed to read contact ", err)
-						cb(e)
-						return
-					}
-					self._contact_wasSuccessfullySetUp(instance)
-					cb()
+						cb(err)
+					})
 				},
 				function(err)
 				{
 					if (err) {
-						const exStr = "Error while loading saved contacts"
-						const errStr = exStr + ": " + err.toString()
-						console.error(errStr)
-						throw exStr
+						console.error("Error while loading saved contacts: " + err.toString())
+						self.emit(self.EventName_errorWhileBooting(), err)
 						return
 					}
 					//
-					self.hasBooted = true // all done!
+					_didBoot()
+					//
+					self.__listUpdated_contacts() // emit after booting so this becomes an at-runtime emission
 				}
 			)
 		}
@@ -160,6 +173,19 @@ class ContactsListController
 			}
 		)
 	}
+	//
+	EventName_booted()
+	{
+		return "EventName_booted"
+	}
+	EventName_errorWhileBooting()
+	{
+		return "EventName_errorWhileBooting"
+	}
+	EventName_listUpdated()
+	{
+		return "EventName_listUpdated"
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -183,26 +209,23 @@ class ContactsListController
 							fn(err)
 							return
 						}
-						var instance;
 						const options =
 						{
 							persistencePassword: obtainedPasswordString,
 							//
 							fullname: fullname,
 							address__XMR: address__XMR,
-							//
-							failedSetUp_cb: function(err)
-							{
-								fn(err)
-							},
-							successfullySetUp_cb: function()
-							{
-								self._contact_wasSuccessfullySetUp(instance)
-								//
-								fn(null)
-							}
 						}
-						instance = new Contact(options, context)
+						const instance = new Contact(options, context)
+						instance.on(instance.EventName_booted(), function()
+						{
+							self._atRuntime_contact_wasSuccessfullySetUp(instance)
+							fn(null, instance)
+						})
+						instance.on(instance.EventName_errorWhileBooting(), function(err)
+						{
+							fn(err)
+						})
 					}
 				)
 			}
@@ -291,7 +314,7 @@ class ContactsListController
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
 
-	_contact_wasSuccessfullySetUp(instance)
+	_atRuntime_contact_wasSuccessfullySetUp(instance)
 	{
 		const self = this
 		self.contacts.push(instance)
@@ -300,8 +323,8 @@ class ContactsListController
 
 	__listUpdated_contacts()
 	{
-		//
-		// todo: fire event/call cb that new contact added to list
+		const self = this
+		self.emit(self.EventName_listUpdated())
 	}
 
 }

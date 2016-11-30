@@ -138,7 +138,7 @@ function SaveToDisk(
 		)
 	}
 	//
-	if (self._id === null) {
+	if (self._id === null || typeof self._id === 'undefined') {
 		_proceedTo_insertNewDocument()
 	} else {
 		_proceedTo_updateExistingDocument()

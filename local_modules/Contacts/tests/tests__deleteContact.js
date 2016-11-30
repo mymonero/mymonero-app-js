@@ -66,28 +66,16 @@ function _proceedTo_test_bootController(fn)
 	//
 	const options = {}
 	const Class = require('../Controllers/ContactsListController')
-	try {
-		contactsListController = new Class(
-			options,
-			context
-		)
-	} catch (e) {
+	contactsListController = new Class(options, context)
+	contactsListController.on(contactsListController.EventName_booted(), function()
+	{
+		fn()
+	})
+	contactsListController.on(contactsListController.EventName_errorWhileBooting(), function(err)
+	{
 		contactsListController = null
-		fn(e)
-	}
-	contactsListController.WhenBooted_Contacts(
-		function(contacts)
-		{
-			console.log("Contacts: ")
-			contacts.forEach(
-				function(el, idx)
-				{ // just logging them out…
-					console.log(el.Description())
-				}
-			)
-			fn()
-		}
-	)
+		fn(err)
+	})
 }
 function _proceedTo_test_deleteContact(fn)
 {

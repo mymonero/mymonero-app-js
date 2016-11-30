@@ -65,7 +65,7 @@ class AppRuntimeController
 		var errToPassBack = null // use err if user cancelled - err will cancel the pw change
 		var obtained_passwordString;
 		var obtained_typeOfPassword;
-		obtained_passwordString = "a much stronger password than before",
+		obtained_passwordString = "a much stronger password than before"
 		obtained_typeOfPassword = passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW
 		obtainedErrOrPwAndType_cb(
 			errToPassBack,

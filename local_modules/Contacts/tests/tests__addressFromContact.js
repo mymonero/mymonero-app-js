@@ -65,22 +65,20 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 	{
 		fn()
 	}
-	var instance;
 	const options =
 	{
 		_id: tests_config.getAddressFromContactWith_id,
 		persistencePassword: tests_config.persistencePassword,
-		//
-		failedSetUp_cb: function(err)
-		{
-			fn(err)
-		},
-		successfullySetUp_cb: function()
-		{
-			console.log("Contact is ", instance)
-			console.log("Address is ", instance.address__XMR)
-			fn()
-		}
 	}
-	instance = new Contact(options, context)
+	const instance = new Contact(options, context)
+	instance.on(instance.EventName_booted(), function()
+	{
+		console.log("Contact is ", instance)
+		console.log("Address is ", instance.address__XMR)
+		fn()
+	})
+	instance.on(instance.EventName_errorWhileBooting(), function(err)
+	{
+ 		fn(err)
+	})
 }

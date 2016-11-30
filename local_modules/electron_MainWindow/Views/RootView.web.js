@@ -48,6 +48,7 @@ class RootView extends View
 	{
 		const self = this
 		self.setup_walletsListView()
+		self.setup_contactsListView()
 	}
 	setup_walletsListView()
 	{
@@ -57,6 +58,16 @@ class RootView extends View
 		const view = new WalletsListView(options, self.context)
 		//
 		self.walletsListView = view
+		self.addSubview(view)
+	}
+	setup_contactsListView()
+	{
+		const self = this
+		const ContactsListView = require('../../Contacts/Views/ContactsListView.web')
+		const options = {}
+		const view = new ContactsListView(options, self.context)
+		//
+		self.contactsListView = view
 		self.addSubview(view)
 	}
 }

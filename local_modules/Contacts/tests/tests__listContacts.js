@@ -65,15 +65,15 @@ function _proceedTo_test_bootController(fn)
 	//
 	const options = {}
 	const Class = require('../Controllers/ContactsListController')
-	try {
-		contactsListController = new Class(
-			options,
-			context
-		)
-	} catch (e) {
+	contactsListController = new Class(options, context)
+	contactsListController.on(contactsListController.EventName_booted(), function()
+	{
+	})
+	contactsListController.on(contactsListController.EventName_errorWhileBooting(), function(err)
+	{
 		contactsListController = null
-		fn(e)
-	}
+		fn(err)
+	})
 	contactsListController.WhenBooted_Contacts(
 		function(contacts)
 		{

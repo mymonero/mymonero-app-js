@@ -28,14 +28,18 @@
 
 "use strict"
 //
+const EventEmitter = require('events')
+//
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 //
 const contact_persistence_utils = require('./contact_persistence_utils')
 //
-class Contact
+class Contact extends EventEmitter
 {
 	constructor(options, context)
 	{
+		super() // must call super before we can access `this`
+		//
 		var self = this
 		self.options = options
 		self.context = context
@@ -51,9 +55,9 @@ class Contact
 		self._id = self.options._id || null // initialize to null if creating new document
 		self.persistencePassword = self.options.persistencePassword
 		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null) {
-			throw "You must supply an options.persistencePassword to your Contact instance"
+			self.emit(self.EventName_errorWhileBooting(), new Error("You must supply an options.persistencePassword to your Contact instance"))
 		}
-		if (self._id === null) { // must create new
+		if (self._id === null || typeof self._id === 'undefined') { // must create new
 			self._setup_newDocument()
 		} else { // document supposedly already exists. Let's look it up…
 			self._setup_fetchExistingDocumentWithId()
@@ -71,7 +75,7 @@ class Contact
 			{
 				if (err) {
 					console.error("Failed to save new contact", err)
-					throw err
+					self.emit(self.EventName_errorWhileBooting(), err)
 					return
 				}
 				console.log("Successfully saved new contact.")
@@ -80,7 +84,7 @@ class Contact
 			}
 		)
 	}
-	_setup_fetchExistingDocumentWithId(failedSetUp_cb, _trampolineFor_successfullySetUp_cb)
+	_setup_fetchExistingDocumentWithId()
 	{
 		const self = this
 		//
@@ -92,14 +96,14 @@ class Contact
 			{
 				if (err) {
 					console.error(err.toString)
-					throw err
+					self.emit(self.EventName_errorWhileBooting(), err)
 					return
 				}
 				if (docs.length === 0) {
 					const errStr = "❌  Contact with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
-					throw err
+					self.emit(self.EventName_errorWhileBooting(), err)
 					return
 				}
 				const encryptedDocument = docs[0]
@@ -119,7 +123,7 @@ class Contact
 				const errStr = "❌  Decryption err: " + e.toString()
 				const err = new Error(errStr)
 				console.error(errStr)
-				throw err
+				self.emit(self.EventName_errorWhileBooting(), err)
 				return
 			}
 			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
@@ -138,13 +142,14 @@ class Contact
 			{
 				const err = new Error(errStr)
 				console.error(errStr)
-				throw err
+				self.emit(self.EventName_errorWhileBooting(), err)
 			}
 			// we *could* check if fullname and possibly XMR addr are empty/undef here but not much need/reason
 			// and might lead to awkward UX
 			//
 			// all done
 			self.hasBooted = true
+			self.emit(self.EventName_booted())
 		}
 	}
 
@@ -157,6 +162,19 @@ class Contact
 		const self = this
 		//
 		return "Contact with _id " + self._id + " named " + self.fullname + ", XMR address:" + self.address__XMR
+	}
+	//
+	EventName_booted()
+	{
+		return "EventName_booted"
+	}
+	EventName_errorWhileBooting()
+	{
+		return "EventName_errorWhileBooting"
+	}
+	EventName_contactInfoUpdated()
+	{
+		return "EventName_contactInfoUpdated"
 	}
 
 
@@ -205,6 +223,7 @@ class Contact
 					console.error("Failed to save new fullname", err)
 				} else {
 					console.log("Successfully saved new fullname.")
+					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)
 			}
@@ -224,10 +243,21 @@ class Contact
 					console.error("Failed to save new address__XMR", err)
 				} else {
 					console.log("Successfully saved new address__XMR.")
+					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)
 			}
 		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - Private
+
+	_atRuntime_contactInfoUpdated()
+	{
+		const self = this
+		self.emit(self.EventName_contactInfoUpdated())
 	}
 }
 module.exports = Contact

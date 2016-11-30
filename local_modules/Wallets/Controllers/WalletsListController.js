@@ -144,7 +144,7 @@ class WalletsListController extends EventEmitter
 						}
 						self.hasBooted = true // all done!
 						//
-						self.emit(self.EventName_listUpdated()) // emit after booting so this becomes an at-runtime emission
+						self.__listUpdated_wallets() // emit after booting so this becomes an at-runtime emission
 					}
 				)
 			}
@@ -523,9 +523,9 @@ class WalletsListController extends EventEmitter
 	{
 		const self = this
 		self.wallets.push(walletInstance)
-		self._atRuntime__listUpdated_wallets()
+		self.__listUpdated_wallets()
 	}
-	_atRuntime__listUpdated_wallets()
+	__listUpdated_wallets()
 	{
 		const self = this
 		self.emit(self.EventName_listUpdated())
