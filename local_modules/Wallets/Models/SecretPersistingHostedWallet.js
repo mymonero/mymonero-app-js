@@ -45,6 +45,10 @@ const wallet_currencies =
 {
 	xmr: 'xmr'
 }
+const humanReadable__wallet_currencies =
+{
+	xmr: 'XMR'
+}
 //
 class SecretPersistingHostedWallet extends EventEmitter
 {
@@ -567,6 +571,19 @@ class SecretPersistingHostedWallet extends EventEmitter
 		{
 			__callAllSyncFunctions()
 		}, syncPollingInterval)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Booting - Accessors - Public
+
+	EventName_booted()
+	{
+		return "EventName_booted"
+	}
+	EventName_errorWhileBooting()
+	{
+		return "EventName_errorWhileBooting"
 	}
 
 

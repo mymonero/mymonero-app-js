@@ -60,22 +60,18 @@ async.series(
 //
 function _proceedTo_test_bootController(cb)
 {
-	try {
-		const WalletsListController = require('../../Controllers/WalletsListController')
-		const options = {}
-		const controller = new WalletsListController(
-			options,
-			context
-		)
-		walletsListController = controller
-		controller.WhenBooted_Wallets(function(wallets)
-		{ // ^-- this will defer till booted
-			console.log("Wallets", wallets)
-			cb()
-		})
-	} catch (e) {
-		cb(e)
-	}
+	const WalletsListController = require('../../Controllers/WalletsListController')
+	const options = {}
+	const controller = new WalletsListController(options, context)
+	walletsListController = controller
+	controller.on(controller.EventName_booted(), function()
+	{
+		cb()
+	})
+	controller.on(controller.EventName_errorWhileBooting(), function(err)
+	{
+		cb(err)
+	})
 }
 //
 function _proceedTo_test_deleteWallet(cb)

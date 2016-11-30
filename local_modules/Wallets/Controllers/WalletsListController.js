@@ -57,6 +57,26 @@ class WalletsListController extends EventEmitter
 		//
 		self.setup()
 	}
+	_setup_didBoot(optlFn)
+	{
+		const self = this
+		optlFn = optlFn || function() {}
+		//
+		self.hasBooted = true // all done!
+		setTimeout(function()
+		{ // on next tick to avoid instantiator missing this
+			self.emit(self.EventName_booted())
+			optlFn()
+		})
+	}
+	_setup_didFailToBootWithError(err)
+	{
+		const self = this
+		setTimeout(function()
+		{ // on next tick to avoid instantiator missing this
+			self.emit(self.EventName_errorWhileBooting(), err)
+		})
+	}
 	setup()
 	{
 		const self = this
@@ -68,7 +88,8 @@ class WalletsListController extends EventEmitter
 			{
 				if (err) {
 					const errStr = "Error fetching persisted wallet ids: " + err.toString()
-					throw errStr
+					const err = new Error(errStr)
+					self._setup_didFailToBootWithError(err)
 					return
 				}
 				__proceedTo_loadWalletsWithIds(ids)
@@ -78,15 +99,15 @@ class WalletsListController extends EventEmitter
 		{
 			self.wallets = []
 			if (ids.length === 0) { // do not cause the pw to be requested yet
-				self.hasBooted = true // nothing to do to boot
-				// and we don't want to emit that the list updated here
+				self._setup_didBoot()
+				// and we don't want/need to emit that the list updated here
 				return
 			}
 			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
 				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 				{
 					if (err) {
-						throw err
+						self._setup_didFailToBootWithError(err)
 						return
 					}
 					__proceedTo_loadAndBootAllExtantWalletsWithPassword(obtainedPasswordString)
@@ -139,16 +160,34 @@ class WalletsListController extends EventEmitter
 					{
 						if (err) {
 							console.error("Error fetching persisted wallets", err)
-							throw err
+							self._setup_didFailToBootWithError(err)
 							return
 						}
-						self.hasBooted = true // all done!
-						//
-						self.__listUpdated_wallets() // emit after booting so this becomes an at-runtime emission
+						self._setup_didBoot(function()
+						{ // in cb to ensure serialization of calls
+							self.__listUpdated_wallets() // emit after booting so this becomes an at-runtime emission
+						})
 					}
 				)
 			}
 		}
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Booting/Booted - Accessors - Public - Events emitted
+
+	EventName_booted()
+	{
+		return "EventName_booted"
+	}
+	EventName_errorWhileBooting()
+	{
+		return "EventName_errorWhileBooting"
+	}
+	EventName_listUpdated() // -> String
+	{
+		return "EventName_listUpdated"
 	}
 
 
@@ -164,10 +203,6 @@ class WalletsListController extends EventEmitter
 				fn(self.wallets)
 			}
 		)
-	}
-	EventName_listUpdated() // -> String
-	{
-		return "EventName_listUpdated"
 	}
 
 

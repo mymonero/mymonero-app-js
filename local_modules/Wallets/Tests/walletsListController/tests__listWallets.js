@@ -59,14 +59,18 @@ function _proceedTo_test_bootController(cb)
 	try {
 		const WalletsListController = require('../../Controllers/WalletsListController')
 		const options = {}
-		const controller = new WalletsListController(
-			options,
-			context
-		)
-		controller.WhenBooted_Wallets(function(wallets)
-		{ // ^-- this will defer till booted
-			console.log("Wallets", wallets)
-			cb()
+		const controller = new WalletsListController(options, context)
+		controller.on(controller.EventName_booted(), function()
+		{
+			controller.WhenBooted_Wallets(function(wallets)
+			{ // ^-- this will defer till booted
+				console.log("Wallets", wallets)
+				cb()
+			})
+		})
+		controller.on(controller.EventName_errorWhileBooting(), function(err)
+		{
+			cb(err)
 		})
 	} catch (e) {
 		cb(e)
