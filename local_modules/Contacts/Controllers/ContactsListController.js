@@ -61,7 +61,10 @@ class ContactsListController extends EventEmitter
 		function _didBoot()
 		{
 			self.hasBooted = true // nothing to do to boot
-			self.emit(self.EventName_booted())
+			setTimeout(function()
+			{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+				self.emit(self.EventName_booted())
+			})
 		}
 		//
 		// reconstitute existing contacts
@@ -70,7 +73,10 @@ class ContactsListController extends EventEmitter
 			{
 				if (err) {
 					console.error("Error fetching list of saved contacts: " + err.toString())
-					self.emit(self.EventName_errorWhileBooting(), err)
+					setTimeout(function()
+					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+						self.emit(self.EventName_errorWhileBooting(), err)
+					})
 					return
 				}
 				__proceedTo_load_contactsWithIds(ids)
@@ -88,7 +94,10 @@ class ContactsListController extends EventEmitter
 				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
 				{
 					if (err) {
-						self.emit(self.EventName_errorWhileBooting(), err)
+						setTimeout(function()
+						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+							self.emit(self.EventName_errorWhileBooting(), err)
+						})
 						return
 					}
 					__proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, obtainedPasswordString)
@@ -124,13 +133,19 @@ class ContactsListController extends EventEmitter
 				{
 					if (err) {
 						console.error("Error while loading saved contacts: " + err.toString())
-						self.emit(self.EventName_errorWhileBooting(), err)
+						setTimeout(function()
+						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+							self.emit(self.EventName_errorWhileBooting(), err)
+						})
 						return
 					}
 					//
 					_didBoot()
 					//
-					self.__listUpdated_contacts() // emit after booting so this becomes an at-runtime emission
+					setTimeout(function()
+					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+						self.__listUpdated_contacts() // emit after booting so this becomes an at-runtime emission
+					})
 				}
 			)
 		}
