@@ -79,15 +79,23 @@ function HydrateInstance_withDecryptedValues(
 	self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 	//
 	self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
+	self.transactions.forEach(
+		function(tx, i)
+		{ // we must fix up what JSON stringifying did to the data
+			tx.amount = new JSBigInt(tx.amount)
+			tx.timestamp = new Date(tx.timestamp)
+		}
+	)
+
 	//
 	// unpacking heights…
 	const heights = plaintextDocument.heights // no || {} because we always persist at least {}
-	self.account_scanned_height = heights.account_scanned_height
-	self.account_scanned_tx_height = heights.account_scanned_tx_height
-	self.account_scanned_block_height = heights.account_scanned_block_height
-	self.account_scan_start_height = heights.account_scan_start_height
-	self.transaction_height = heights.transaction_height
-	self.blockchain_height = heights.blockchain_height
+	self.account_scanned_height = new JSBigInt(heights.account_scanned_height)
+	self.account_scanned_tx_height = new JSBigInt(heights.account_scanned_tx_height)
+	self.account_scanned_block_height = new JSBigInt(heights.account_scanned_block_height)
+	self.account_scan_start_height = new JSBigInt(heights.account_scan_start_height)
+	self.transaction_height = new JSBigInt(heights.transaction_height)
+	self.blockchain_height = new JSBigInt(heights.blockchain_height)
 	//
 	// unpacking totals
 	const totals = plaintextDocument.totals

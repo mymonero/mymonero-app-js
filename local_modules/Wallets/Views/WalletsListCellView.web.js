@@ -160,26 +160,29 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		var lisHTMLString = ""
+		var ulInnerHTMLString = ""
 		const stateCachedTransactions = wallet.New_StateCachedTransactions()
 		stateCachedTransactions.forEach(
 			function(tx, i)
 			{
-				lisHTMLString += `<li><span>${tx.formatted_amount} ${wallet.wallet_currency}</span></li>`
-				// TODO:
-				// <strong class="bold" ng-show="tx_is_confirmed(tx)">{{tx.amount | money}}  <span ng-show="!tx_is_unlocked(tx)"><i class="fa fa-lock"></i></span></strong>
-				// <strong class="bold red" ng-show="!tx_is_confirmed(tx)">{{tx.amount | money}} (unconfirmed)  <span ng-show="!tx_is_unlocked(tx)"><i class="fa fa-lock"></i></span></strong>
-				// {{tx.timestamp | time}}
-				// {{tx.mixin}}
-				// {{tx.hash}}
-				// <div class="transaction-detail transaction-left" style="font-size: 11px;" ng-show="!tx_is_unlocked(tx)">
-				// {{tx_locked_reason(tx)}}
-				// </div>
-				// {{tx.payment_id || "N/A"}}
+				var liInnerHTMLString = ""
+				liInnerHTMLString += `<p>${tx.formatted_amount} ${wallet.wallet_currency}</p>`
+				if (tx.isConfirmed === false) {
+					liInnerHTMLString += `<p>(unconfirmed)</p>`
+				}
+				if (tx.isUnlocked === false) {
+					liInnerHTMLString += `<p>(locked) ${tx.lockedReason}</p>`
+				}
+				liInnerHTMLString += `<p>${tx.timestamp.toString()}</p>`
+				liInnerHTMLString += `<p>Mixin: ${tx.mixin}</p>`
+				liInnerHTMLString += `<p>Hash: ${tx.hash}</p>`
+				liInnerHTMLString += `<p>Payment ID: ${tx.payment_id || "N/A"}</p>`
+				//
+				ulInnerHTMLString += `<li>${liInnerHTMLString}</li>`
 			}
 		)
 		// TODO: optimize this by maybe not using innerHTML?
-		self.layer_transactions.innerHTML = "<h3>Transactions</h3><ul>" + lisHTMLString + "</ul>"
+		self.layer_transactions.innerHTML = "<h3>Transactions</h3><ul>" + ulInnerHTMLString + "</ul>"
 	}
 	//
 	//
