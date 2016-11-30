@@ -1,1 +1,1 @@
-node local_modules/Contacts/tests/tests__deleteContact.js
+node local_modules/Contacts/Tests/tests__deleteContact.js

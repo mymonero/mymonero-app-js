@@ -1,1 +1,1 @@
-node local_modules/Contacts/tests/tests__addressFromContact.js
+node local_modules/Contacts/Tests/tests__addressFromContact.js

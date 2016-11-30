@@ -30,8 +30,8 @@
 //
 const async = require('async')
 //
-const Contact = require('./Contact')
-const contact_persistence_utils = require('./contact_persistence_utils')
+const Contact = require('../Models/Contact')
+const contact_persistence_utils = require('../Models/contact_persistence_utils')
 //
 class ContactsListController
 {

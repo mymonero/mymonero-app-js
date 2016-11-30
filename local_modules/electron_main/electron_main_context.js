@@ -70,7 +70,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../Contacts/ContactsListController",
+		module_path: __dirname + "/../Contacts/Controllers/ContactsListController",
 		instance_key: "contactsListController",
 		options: {}
 	},

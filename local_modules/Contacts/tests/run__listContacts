@@ -1,1 +1,1 @@
-node local_modules/Contacts/tests/tests__listContacts.js
+node local_modules/Contacts/Tests/tests__listContacts.js

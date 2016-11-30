@@ -30,7 +30,7 @@
 //
 const tests_config = require('./tests_config.js')
 if (typeof tests_config === 'undefined' || tests_config === null) {
-	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Contacts/tests/ in order to run this test.")
+	console.error("You must create a tests_config.js (see tests_config.EXAMPLE.js) in local_modules/Contacts/Tests/ in order to run this test.")
 	process.exit(1)
 	return
 }

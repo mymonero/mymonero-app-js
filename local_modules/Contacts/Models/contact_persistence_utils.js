@@ -1,5 +1,5 @@
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
 //
 // Constants
