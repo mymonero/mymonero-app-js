@@ -69,10 +69,7 @@ class ContactsListController extends EventEmitter
 			function(err, ids)
 			{
 				if (err) {
-					const exStr = "Error fetching list of saved contacts"
-					const errStr = exStr + ": " + err.toString()
-					console.error(errStr)
-					const err = new Error(exStr)
+					console.error("Error fetching list of saved contacts: " + err.toString())
 					self.emit(self.EventName_errorWhileBooting(), err)
 					return
 				}
