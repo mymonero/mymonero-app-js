@@ -145,12 +145,13 @@ class HostedMoneroAPIClient
 		{
 			const total_received = new JSBigInt(data.total_received || 0);
 			const locked_balance = new JSBigInt(data.locked_funds || 0);
+			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
+			//
 			const account_scanned_tx_height = data.scanned_height || 0;
 			const account_scanned_block_height = data.scanned_block_height || 0;
 			const account_scan_start_height = data.start_height || 0;
 			const transaction_height = data.transaction_height || 0;
 			const blockchain_height = data.blockchain_height || 0;
-			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
 			const spent_outputs = data.spent_outputs || []
 			//
 			for (let spent_output of spent_outputs) {
@@ -313,7 +314,7 @@ class HostedMoneroAPIClient
 						spend_key__private
 					)
 					if (key_image === finalized_unspentOutputs[i].spend_key_images[j]) {
-						console.log("💬  Output was spent; key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_unspentOutputs[i].amount));
+						// console.log("💬  Output was spent; key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_unspentOutputs[i].amount));
 						// Remove output from list
 						finalized_unspentOutputs.splice(i, 1);
 						if (finalized_unspentOutputs[i]) {
@@ -376,7 +377,7 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			console.log("debug: info: random outs: data", data)
+			// console.log("debug: info: random outs: data", data)
 			const amount_outs = data.amount_outs
 			//
 			// yield
@@ -412,7 +413,7 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			console.log("debug: info: txt records: data", data)
+			// console.log("debug: info: txt records: data", data)
 			const records = data.records
 			const dnssec_used = data.dnssec_used
 			const secured = data.secured
@@ -462,7 +463,7 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			console.log("debug: info: submit_raw_tx: data", data)
+			// console.log("debug: info: submit_raw_tx: data", data)
 			//
 			fn(null)
 		}

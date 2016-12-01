@@ -102,16 +102,16 @@ class WalletsListCellView extends View
 			}
 			return false
 		}
-		if (doesListenerFunctionExist(self.wallet_EventName_accountInfoUpdated_listenerFunction) === true) {
+		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
 			self.wallet.remoteListener(
-				self.wallet.EventName_accountInfoUpdated(),
-				self.wallet_EventName_accountInfoUpdated_listenerFunction
+				self.wallet.EventName_balanceChanged(),
+				self.wallet_EventName_balanceChanged_listenerFunction
 			)
 		}
-		if (doesListenerFunctionExist(self.wallet_EventName_transactionsUpdated_listenerFunction) === true) {
+		if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
 			self.wallet.remoteListener(
-				self.wallet.EventName_transactionsUpdated(),
-				self.wallet_EventName_transactionsUpdated_listenerFunction
+				self.wallet.EventName_transactionsChanged(),
+				self.wallet_EventName_transactionsChanged_listenerFunction
 			)
 		}
 	}
@@ -166,7 +166,7 @@ class WalletsListCellView extends View
 			function(tx, i)
 			{
 				var liInnerHTMLString = ""
-				liInnerHTMLString += `<p>${tx.formatted_amount} ${wallet.wallet_currency}</p>`
+				liInnerHTMLString += `<p>${tx.approx_float_amount} ${wallet.wallet_currency}</p>`
 				if (tx.isConfirmed === false) {
 					liInnerHTMLString += `<p>(unconfirmed)</p>`
 				}
@@ -199,35 +199,35 @@ class WalletsListCellView extends View
 		// because if we need to stopObserving we need to have access to the listener fns
 		//
 		// account info updated
-		self.wallet_EventName_accountInfoUpdated_listenerFunction = function()
+		self.wallet_EventName_balanceChanged_listenerFunction = function()
 		{
-			self.wallet_EventName_accountInfoUpdated()
+			self.wallet_EventName_balanceChanged()
 		}
 		self.wallet.on(
-			self.wallet.EventName_accountInfoUpdated(),
-			self.wallet_EventName_accountInfoUpdated_listenerFunction
+			self.wallet.EventName_balanceChanged(),
+			self.wallet_EventName_balanceChanged_listenerFunction
 		)
 		//
 		// txs updated
-		self.wallet_EventName_transactionsUpdated_listenerFunction = function()
+		self.wallet_EventName_transactionsChanged_listenerFunction = function()
 		{
-			self.wallet_EventName_transactionsUpdated()
+			self.wallet_EventName_transactionsChanged()
 		}
 		self.wallet.on(
-			self.wallet.EventName_transactionsUpdated(),
-			self.wallet_EventName_transactionsUpdated_listenerFunction
+			self.wallet.EventName_transactionsChanged(),
+			self.wallet_EventName_transactionsChanged_listenerFunction
 		)
 	}
 	//
 	//
 	// Internal - Runtime - Delegation - Event handlers - Wallet
 	//
-	wallet_EventName_accountInfoUpdated()
+	wallet_EventName_balanceChanged()
 	{
 		const self = this
 		self._configureUIWithWallet__accountInfo()
 	}
-	wallet_EventName_transactionsUpdated()
+	wallet_EventName_transactionsChanged()
 	{
 		const self = this
 		self._configureUIWithWallet__transactions()

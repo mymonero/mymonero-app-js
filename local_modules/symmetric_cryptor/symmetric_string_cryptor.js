@@ -222,7 +222,7 @@ function _new_random_iv_of_length(block_size)
 
 		return ivString;
 	} catch (ex) {
-		// TODO: handle error
+		// TODO: handle error (this should be getting caught in consumer anyway)
 		// most likely, entropy sources are drained
 		throw ex
 	}

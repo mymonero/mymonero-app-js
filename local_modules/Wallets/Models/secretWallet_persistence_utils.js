@@ -82,24 +82,21 @@ function HydrateInstance_withDecryptedValues(
 	self.transactions.forEach(
 		function(tx, i)
 		{ // we must fix up what JSON stringifying did to the data
-			tx.amount = new JSBigInt(tx.amount)
 			tx.timestamp = new Date(tx.timestamp)
 		}
 	)
-
 	//
 	// unpacking heights…
 	const heights = plaintextDocument.heights // no || {} because we always persist at least {}
-	self.account_scanned_height = new JSBigInt(heights.account_scanned_height)
-	self.account_scanned_tx_height = new JSBigInt(heights.account_scanned_tx_height)
-	self.account_scanned_block_height = new JSBigInt(heights.account_scanned_block_height)
-	self.account_scan_start_height = new JSBigInt(heights.account_scan_start_height)
-	self.transaction_height = new JSBigInt(heights.transaction_height)
-	self.blockchain_height = new JSBigInt(heights.blockchain_height)
+	self.account_scanned_height = heights.account_scanned_height
+	self.account_scanned_tx_height = heights.account_scanned_tx_height
+	self.account_scanned_block_height = heights.account_scanned_block_height
+	self.account_scan_start_height = heights.account_scan_start_height
+	self.transaction_height = heights.transaction_height
+	self.blockchain_height = heights.blockchain_height
 	//
-	// unpacking totals
+	// unpacking totals -- these are stored as strings
 	const totals = plaintextDocument.totals
-	// console.log("totals " , totals)
 	self.total_received = new JSBigInt(totals.total_received) // persisted as string
 	self.locked_balance = new JSBigInt(totals.locked_balance) // persisted as string
 	self.total_sent = new JSBigInt(totals.total_sent) // persisted as string
@@ -179,7 +176,7 @@ function SaveToDisk(
 		//
 		isInViewOnlyMode: self.isInViewOnlyMode,
 		//
-		transactions: self.transactions || [], // maybe not fetched yet
+		transactions: self.transactions || [], 
 		heights: heights,
 		totals: totals,
 		spent_outputs: self.spent_outputs || [] // maybe not fetched yet

@@ -50,6 +50,26 @@ const humanReadable__wallet_currencies =
 	xmr: 'XMR'
 }
 //
+// Shared utility functions (these can be factored out)
+function areObjectsEqual(x, y)
+{
+    if ( x === y ) return true;
+    if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    if ( x.constructor !== y.constructor ) return false;
+    for ( var p in x ) {
+        if ( ! x.hasOwnProperty( p ) ) continue;
+        if ( ! y.hasOwnProperty( p ) ) return false;
+        if ( x[ p ] === y[ p ] ) continue;
+        if ( typeof( x[ p ] ) !== "object" ) return false;
+        if ( ! areObjectsEqual( x[ p ],  y[ p ] ) ) return false;
+    }
+    for ( p in y ) {
+		if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+    }
+    return true;
+}
+//
+//
 class SecretPersistingHostedWallet extends EventEmitter
 {
 	// Init -> setup
@@ -566,7 +586,8 @@ class SecretPersistingHostedWallet extends EventEmitter
 		})
 		//
 		// and kick off the polling call to pull latest updates
-		const syncPollingInterval = 30 * 1000 // ms
+		const syncPollingInterval = 10 * 1000 // ms
+		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
 		setInterval(function()
 		{
 			__callAllSyncFunctions()
@@ -590,13 +611,25 @@ class SecretPersistingHostedWallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 
-	EventName_accountInfoUpdated()
+	EventName_balanceChanged()
 	{
-		return "EventName_accountInfoUpdated"
+		return "EventName_balanceChanged"
 	}
-	EventName_transactionsUpdated()
+	EventName_spentOutputsChanged()
 	{
-		return "EventName_transactionsUpdated"
+		return "EventName_spentOutputsChanged"
+	}
+	EventName_heightsUpdated()
+	{
+		return "EventName_heightsUpdated"
+	}
+	EventName_transactionsChanged()
+	{
+		return "EventName_transactionsChanged"
+	}
+	EventName_transactionsAdded()
+	{
+		return "EventName_transactionsAdded"
 	}
 	//
 	IsTransactionConfirmed(tx)
@@ -631,7 +664,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 		for (let i = 0 ; i < transactions_length ; i++) {
 			const transaction = transactions[i]
 			const shallowCopyOf_transaction = extend({}, transaction)
-			shallowCopyOf_transaction.formatted_amount = monero_utils.formatMoney(transaction.amount)
 			shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
 			shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
 			shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
@@ -993,9 +1025,9 @@ class SecretPersistingHostedWallet extends EventEmitter
 	// Runtime - Delegation - Private - Account info & tx history fetch/save/sync
 
 	__didFetch_accountInfo(
-		total_received,
-		locked_balance,
-		total_sent,
+		total_received_JSBigInt,
+		locked_balance_JSBigInt,
+		total_sent_JSBigInt,
 		spent_outputs,
 		account_scanned_tx_height,
 		account_scanned_block_height,
@@ -1007,15 +1039,53 @@ class SecretPersistingHostedWallet extends EventEmitter
 		const self = this
 		// console.log("_didFetchTransactionHistory")
 		//
-		self.total_received = total_received
-		self.locked_balance = locked_balance
-		self.total_sent = total_sent
+		// JSBigInts
+		var accountBalance_didActuallyChange = false
+		if (typeof self.total_received === 'undefined' || self.total_received === null || typeof self.total_received !== 'object' || self.total_received.compare(total_received_JSBigInt) != 0) {
+			accountBalance_didActuallyChange = true
+		}
+		if (typeof self.locked_balance === 'undefined' || self.locked_balance === null || typeof self.locked_balance !== 'object' || self.locked_balance.compare(locked_balance_JSBigInt) != 0) {
+			accountBalance_didActuallyChange = true
+		}
+		if (typeof self.total_sent === 'undefined' || self.total_sent === null || typeof self.total_sent !== 'object' || self.total_sent.compare(total_sent_JSBigInt) != 0) {
+			accountBalance_didActuallyChange = true
+		}
+		self.total_received = total_received_JSBigInt
+		self.locked_balance = locked_balance_JSBigInt
+		self.total_sent = total_sent_JSBigInt
+		//
+		// outputs
+		// TODO: diff spent_outputs
+		var spentOutputs_didActuallyChange = false
+		if (typeof self.spent_outputs === 'undefined' || self.spent_outputs === null || areObjectsEqual(spent_outputs, self.spent_outputs) === false) {
+			spentOutputs_didActuallyChange = true
+		}
 		self.spent_outputs = spent_outputs
-		self.account_scanned_tx_height = account_scanned_tx_height
-		self.account_scanned_block_height = account_scanned_block_height
-		self.account_scan_start_height = account_scan_start_height
-		self.transaction_height = transaction_height
-		self.blockchain_height = blockchain_height
+		//
+		// heights
+		var heights_didActuallyChange = false
+		// TODO: should this actually be account_scanned_height? can we remove account_scanned_tx_height?
+		if (account_scanned_tx_height !== self.account_scanned_tx_height) {
+			heights_didActuallyChange = true
+			self.account_scanned_tx_height = account_scanned_tx_height
+		}
+		if (account_scanned_block_height !== self.account_scanned_block_height) {
+			heights_didActuallyChange = true
+			self.account_scanned_block_height = account_scanned_block_height
+		}
+		if (account_scan_start_height !== self.account_scan_start_height) {
+			heights_didActuallyChange = true
+			self.account_scan_start_height = account_scan_start_height
+		}
+		// NOTE: the following change even when we do not do/get any txs
+		if (transaction_height !== self.transaction_height) {
+			heights_didActuallyChange = true
+			self.transaction_height = transaction_height
+		}
+		if (blockchain_height !== self.blockchain_height) {
+			heights_didActuallyChange = true
+			self.blockchain_height = blockchain_height
+		}
 		//
 		self.dateThatLast_fetchedAccountInfo = new Date()
 		//
@@ -1023,21 +1093,32 @@ class SecretPersistingHostedWallet extends EventEmitter
 			function(err)
 			{
 				if (!err) {
-					self.___didReceiveAndSaveUpdateTo_accountInfo()
+					// no matter what we'll notify that updates were received
+					if (typeof self.options.didReceiveUpdateToAccountInfo === 'function') {
+						self.options.didReceiveUpdateToAccountInfo()
+					}
+					//
+					// then we'll check if anything actually changed
+					var anyChanges = false
+					if (accountBalance_didActuallyChange === true) {
+						anyChanges = true
+						self.___didReceiveActualChangeTo_balance()
+					}
+					if (spentOutputs_didActuallyChange === true) {
+						anyChanges = true
+						self.___didReceiveActualChangeTo_spentOutputs()
+					}
+					if (heights_didActuallyChange === true) {
+						anyChanges = true
+						self.___didReceiveActualChangeTo_heights()
+					}
+					if (anyChanges == false) {
+						console.log("💬  No actual changes to balance, heights, or spent outputs")
+					}
 				}
 			}
 		)
 	}
-	___didReceiveAndSaveUpdateTo_accountInfo()
-	{
-		const self = this
-		if (typeof self.options.didReceiveUpdateToAccountInfo === 'function') {
-			self.options.didReceiveUpdateToAccountInfo()
-		}
-		self.emit(self.EventName_accountInfoUpdated())
-	}
-	//
-	//
 	__didFetch_transactionHistory(
 		account_scanned_height,
 		account_scanned_block_height,
@@ -1049,31 +1130,126 @@ class SecretPersistingHostedWallet extends EventEmitter
 	{
 		const self = this
 		//
-		self.account_scanned_height = account_scanned_height
-		self.account_scanned_block_height = account_scanned_block_height
-		self.account_scan_start_height = account_scan_start_height
-		self.transaction_height = transaction_height
-		self.blockchain_height = blockchain_height
-		self.transactions = transactions
+		var heights_didActuallyChange = false
+		if (account_scanned_height !== self.account_scanned_height) {
+			heights_didActuallyChange = true
+			self.account_scanned_height = account_scanned_height
+		}
+		if (account_scanned_block_height !== self.account_scanned_block_height) {
+			heights_didActuallyChange = true
+			self.account_scanned_block_height = account_scanned_block_height
+		}
+		if (account_scan_start_height !== self.account_scan_start_height) {
+			heights_didActuallyChange = true
+			self.account_scan_start_height = account_scan_start_height
+		}
+		// NOTE: the following change even when we do not do/get any txs
+		if (transaction_height !== self.transaction_height) {
+			heights_didActuallyChange = true
+			self.transaction_height = transaction_height
+		}
+		if (blockchain_height !== self.blockchain_height) {
+			heights_didActuallyChange = true
+			self.blockchain_height = blockchain_height
+		}
 		//
+		// 
+		var transactionsList_didActuallyChange = false // we'll see if anything actually changed and only emit if so
+		var finalized_transactions = []
+		// We will construct the txs from the incoming txs here as follows.
+		// Doing this allows us to selectively preserve already-cached info.
+		var numberOfTransactionsAdded = 0
+		const self_transactions_length = self.transactions.length
+		const incoming_transactions_length = transactions.length
+		for (let i = 0 ; i < incoming_transactions_length ; i++) {
+			const incoming_tx = transactions[i]
+			const finalized_tx = incoming_tx // doing it like this, we allow the server to give us updates to transactions with ids we already know about
+			if (i >= self_transactions_length) {
+				transactionsList_didActuallyChange = true
+				numberOfTransactionsAdded += 1
+				console.log("a tx added")
+			} else {
+				const existing_tx_atI = self.transactions[i]
+				// doing a deep comparison of the transaction info
+				// if actual change, setting didActuallyChange to true
+				if (existing_tx_atI.id === incoming_tx.id) { // minor optimization
+					if (areObjectsEqual(incoming_tx, existing_tx_atI) === false) {
+						transactionsList_didActuallyChange = true
+						console.log("incoming_tx is not the same as existing_tx_atI")
+						console.log("incoming_tx" , incoming_tx)
+						console.log("existing_tx_atI" , existing_tx_atI)
+						// this is likely to happen if tx.height changes while pending confirmation
+					}
+				} else { // different transactions
+					transactionsList_didActuallyChange = true
+					// we're not sure if this i is a new transaction being added
+					// because it could be the result of all rows shifting down
+					// when a single new transaction is right at the beginning,
+					// so we're not going to increment numberOfTransactionsAdded here
+					console.log("id of tx different at idx", i)
+				}
+			}
+			//
+			// now that actually finalized,
+			finalized_transactions.push(finalized_tx) // accumulate
+		}
+		self.transactions = finalized_transactions
+		//
+		// do not count this as an actual change to txs
 		self.dateThatLast_fetchedAccountTransactions = new Date()
 		//
 		self.saveToDisk(
 			function(err)
 			{
 				if (!err) {
-					self.___didReceiveAndSaveUpdateTo_accountTransactions()
+					// notify/yield
+					//
+					// no matter what, we'll say we received update
+					if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
+						self.options.didReceiveUpdateToAccountTransactions()
+					}
+					//
+					// and here we'll check whether things actually changed
+					if (transactionsList_didActuallyChange === true) {
+						self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded)
+					} else {
+						console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
+					}
+					if (heights_didActuallyChange === true) {
+						self.___didReceiveActualChangeTo_heights()
+					}
 				}
 			}
 		)
 	}
-	___didReceiveAndSaveUpdateTo_accountTransactions()
+	//
+	___didReceiveActualChangeTo_balance()
 	{
 		const self = this
-		if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
-			self.options.didReceiveUpdateToAccountTransactions()
+		console.log("💬  Received an update to balance")
+		self.emit(self.EventName_balanceChanged())
+	}
+	___didReceiveActualChangeTo_spentOutputs()
+	{
+		const self = this
+		console.log("💬  Received an update to spent outputs")
+		self.emit(self.EventName_spentOutputsChanged())
+	}
+	___didReceiveActualChangeTo_heights()
+	{
+		const self = this
+		console.log("💬  Received an update to heights")
+		self.emit(self.EventName_heightsUpdated(), self)
+	}
+	___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded)
+	{
+		const self = this
+		console.log("💬  Got an update to txs list")
+		self.emit(self.EventName_transactionsChanged(), self)
+		if (numberOfTransactionsAdded > 0) {
+			console.log(`💬  ${numberOfTransactionsAdded} new transaction(s) added`)
+			self.emit(self.EventName_transactionsAdded(), self, numberOfTransactionsAdded)
 		}
-		self.emit(self.EventName_transactionsUpdated())
 	}
 }
 module.exports = SecretPersistingHostedWallet

@@ -139,7 +139,7 @@ class WalletsListController extends EventEmitter
 											cb(err)
 											return
 										}
-										console.log("Initialized wallet", wallet.Description())
+										console.log("💬  Initialized wallet", wallet.Description())
 										self.wallets.push(wallet) // we manually manage the list here and thus
 										// take responsibility to emit EventName_listUpdated below
 										//
