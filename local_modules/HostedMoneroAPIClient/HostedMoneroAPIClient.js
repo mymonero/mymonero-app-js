@@ -501,7 +501,7 @@ class HostedMoneroAPIClient
 			json: parameters,
 		}, function(err, res, body)
 		{
-			const statusCode = res.statusCode
+			const statusCode = typeof res !== 'undefined' ? res.statusCode : -1
 			if (!err && statusCode == 200) {
 				var json
 				if (typeof body === 'string') {
