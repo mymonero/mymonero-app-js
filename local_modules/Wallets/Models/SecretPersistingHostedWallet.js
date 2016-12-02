@@ -1201,6 +1201,9 @@ class SecretPersistingHostedWallet extends EventEmitter
 			const incoming_tx = transactions[i]
 			const finalized_tx = incoming_tx // doing it like this, we allow the server to give us updates to transactions with ids we already know about
 			var isNewTransaction = false // let's see……
+			
+			// TODO: fix this up by searching for tx with same id in existing list to check if tx actually new. if not actually new, do diff
+			
 			if (i >= self_transactions_length) {
 				console.log("a tx added")
 				transactionsList_didActuallyChange = true

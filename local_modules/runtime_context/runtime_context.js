@@ -69,7 +69,8 @@ function NewHydratedContext(context_object_instantiation_descriptions, initialCo
 	for (var i in context_keys) {
 		var context_key = context_keys[i]
 		var instance = context[context_key]
-		var postWholeContextInit_setup__fn = instance.__runtimeContext_postWholeContextInit_setup
+		// This calls an optional function that classes can implement to get control after the whole context is set up
+		var postWholeContextInit_setup__fn = instance.RuntimeContext_postWholeContextInit_setup
 		if (typeof postWholeContextInit_setup__fn !== 'undefined') {
 			postWholeContextInit_setup__fn.call(instance) // using 'call' so the function's "this" is instance
 		}

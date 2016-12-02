@@ -53,7 +53,7 @@ class HostedMoneroAPIClient
 	{
 		var self = this
 		self.options = options
-		self.context = context
+		self.context = context		
 		//
 		self.scheme = config__MyMonero.API__protocolScheme
 		self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // later will be configurable

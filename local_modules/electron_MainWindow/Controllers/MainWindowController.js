@@ -34,17 +34,18 @@ const WindowController = require('../../electron_utils/WindowController')
 //
 class MainWindowController extends WindowController
 {
-	//
-	//
+
+
+	////////////////////////////////////////////////////////////////////////////////
 	// Initialization
-	//
+
 	setup()
 	{
 		const self = this
 		super.setup()
 		//
 		self.setup_window()
-		self.setup_observation()
+		self.startObserving_app()
 	}
 	setup_window()
 	{
@@ -56,7 +57,7 @@ class MainWindowController extends WindowController
 			self._create_window_ifNecessary()
 		}
 	}
-	setup_observation()
+	startObserving_app()
 	{
 		const self = this
 		const app = self.context.app
@@ -75,10 +76,11 @@ class MainWindowController extends WindowController
 			}
 		})
 	}
-	//
-	//
-	// Accessors
-	//
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Accessors - Window
+
 	_new_browserWindowTitle()
 	{
 		return "MyMonero"
@@ -95,10 +97,11 @@ class MainWindowController extends WindowController
 		//
 		return window
 	}
-	//
-	//
-	// Imperatives
-	//
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Imperatives - Window
+
 	_create_window_ifNecessary()
 	{
 		const self = this
@@ -114,10 +117,21 @@ class MainWindowController extends WindowController
 			self.window.webContents.openDevTools() // open the dev tools
 		}
 	}
-	//
-	//
-	// Delegation - Private
-	//
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - Post-instantiation hook
+	
+	RuntimeContext_postWholeContextInit_setup()
+	{
+		const self = this
+		// We have to wait until post-whole-context-init to guarantee all controllers exist
+	}
+
+		
+	////////////////////////////////////////////////////////////////////////////////
+	// Delegation - Private - Windows
+
 	_allWindowsDidClose()
 	{
 		const self = this

@@ -57,6 +57,9 @@ class ContactsListController extends EventEmitter
 	{
 		const self = this
 		const context = self.context
+		if (typeof context.persister === 'undefined') { // self should only be after persister in the context module load list
+			throw "context.persister undefined in ContactsListController setup()"
+		}
 		//
 		function _didBoot()
 		{

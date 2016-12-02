@@ -81,6 +81,9 @@ class WalletsListController extends EventEmitter
 	{
 		const self = this
 		const context = self.context
+		if (typeof context.persister === 'undefined') { // self should only be after persister in the context module load list
+			throw "context.persister undefined in WalletsListController setup()"
+		}
 		//
 		// reconsitute persisted wallets
 		self._new_idsOfPersistedWallets(
@@ -140,8 +143,9 @@ class WalletsListController extends EventEmitter
 											return
 										}
 										console.log("💬  Initialized wallet", wallet.Description())
-										self.wallets.push(wallet) // we manually manage the list here and thus
-										// take responsibility to emit EventName_listUpdated below
+										self.wallets.push(wallet) // we manually manage the list here and
+										// thus take responsibility to emit EventName_listUpdated below
+										self._startObserving_wallet(wallet) // taking responsibility to start observing
 										//
 										cb()
 									}
@@ -188,6 +192,15 @@ class WalletsListController extends EventEmitter
 	EventName_listUpdated() // -> String
 	{
 		return "EventName_listUpdated"
+	}
+	//
+	EventName_aWallet_balanceChanged()
+	{
+		return "EventName_aWallet_balanceChanged"
+	}
+	EventName_aWallet_transactionsAdded()
+	{
+		return "EventName_aWallet_transactionsAdded"
 	}
 
 
@@ -463,6 +476,7 @@ class WalletsListController extends EventEmitter
 					return
 				}
 				//
+				self._stopObserving_wallet(walletInstance) // important
 				self.wallets.splice(indexOfWallet, 1) // pre-emptively remove the wallet from the list
 				self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
 				//
@@ -549,15 +563,64 @@ class WalletsListController extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private
+	// Runtime - Imperatives - Private - Event observation - Wallets
+	
+	_startObserving_wallet(wallet)
+	{
+		const self = this
+		// we need to be able to stop observing a wallet when the user deletes it (as we free the wallet),
+		// so we (stupidly) have to hang onto the listener function
+		{ // balanceChanged
+			if (typeof self.wallet_listenerFnsByWalletId_balanceChanged === 'undefined') {
+				self.wallet_listenerFnsByWalletId_balanceChanged = {}
+			}		
+			const fn = function(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+			{
+				self.emit(self.EventName_aWallet_balanceChanged(), emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+			}
+			self.wallet_listenerFnsByWalletId_balanceChanged[wallet._id] = fn
+			wallet.on(wallet.EventName_balanceChanged(), fn)
+		}
+		{ // transactionsAdded
+			if (typeof self.wallet_listenerFnsByWalletId_transactionsAdded === 'undefined') {
+				self.wallet_listenerFnsByWalletId_transactionsAdded = {}
+			}		
+			const fn = function(emittingWallet, numberOfTransactionsAdded, newTransactions)
+			{
+				self.emit(self.EventName_aWallet_transactionsAdded(), emittingWallet, numberOfTransactionsAdded, newTransactions)
+			}
+			self.wallet_listenerFnsByWalletId_transactionsAdded[wallet._id] = fn
+			wallet.on(wallet.EventName_transactionsAdded(), fn)
+		}
+	}
+	_stopObserving_wallet(wallet)
+	{
+		const self = this
+		{ // balanceChanged
+			const fn = self.wallet_listenerFnsByWalletId_balanceChanged[wallet._id]
+			if (typeof fn === 'undefined') {
+				throw "listener shouldn't have been undefined"
+			}
+			wallet.removeListener(wallet.EventName_balanceChanged(), fn)
+		}
+		{ // transactionsAdded
+			const fn = self.wallet_listenerFnsByWalletId_transactionsAdded[wallet._id]
+			if (typeof fn === 'undefined') {
+				throw "listener shouldn't have been undefined"
+			}
+			wallet.removeListener(wallet.EventName_transactionsAdded(), fn)
+		}
+	}	
+	
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime/Boot - Delegation - Private - List updating
+	// Runtime/Boot - Delegation - Private - List updating/instance management
 
 	_atRuntime__wallet_wasSuccessfullyInitialized(walletInstance)
 	{
 		const self = this
 		self.wallets.push(walletInstance)
+		self._startObserving_wallet(wallet)
 		self.__listUpdated_wallets()
 	}
 	__listUpdated_wallets()

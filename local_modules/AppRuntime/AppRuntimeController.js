@@ -33,7 +33,7 @@ class AppRuntimeController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Lifecycle - Initialization
+	// Initialization
 
 	constructor(options, context)
 	{
@@ -46,6 +46,41 @@ class AppRuntimeController
 	setup()
 	{
 		const self = this
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Setup - Observation
+	
+	_startObserving_walletsController()
+	{ // this is called by self.RuntimeContext_postWholeContextInit_setup
+		const self = this
+		const walletsListController = self.context.walletsListController
+		walletsListController.on(
+			walletsListController.EventName_aWallet_balanceChanged(),
+			function(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+			{
+				self._aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+			}
+		)
+		walletsListController.on(
+			walletsListController.EventName_aWallet_transactionsAdded(),
+			function(emittingWallet, numberOfTransactionsAdded, newTransactions)
+			{
+				self._aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
+			}
+		)		
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - Post-instantiation hook
+	
+	RuntimeContext_postWholeContextInit_setup()
+	{
+		const self = this
+		// We have to wait until post-whole-context-init to guarantee context members-to-observe exist
+		self._startObserving_walletsController()
 	}
 
 
@@ -82,6 +117,21 @@ class AppRuntimeController
 		// TODO: funnel into a singular function which tells the wallets and contacts list controllers to re-save
 		const self = this
 		console.log("TODO: passwordController__didChangePassword_cb; inform wallet + contact lists")
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - Events - WalletsListController
+	
+	_aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+	{
+		const self = this
+		console.log("app runtime c hears _aWallet_balanceChanged", emittingWallet._id, old_total_received, old_total_sent, old_locked_balance)
+	}	
+	_aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
+	{
+		const self = this
+		console.log("app runtime c hears _aWallet_transactionsAdded", emittingWallet._id, numberOfTransactionsAdded, newTransactions)
 	}
 }
 module.exports = AppRuntimeController
