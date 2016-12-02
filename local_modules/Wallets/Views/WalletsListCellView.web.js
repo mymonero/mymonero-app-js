@@ -149,7 +149,8 @@ class WalletsListCellView extends View
 		const wallet = self.wallet
 		var htmlString = ''
 		htmlString += `<h3>${wallet.walletLabel}</h3>`
-		htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.wallet_currency}</p>`
+		htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.HumanReadable_walletCurrency()}</p>`
+		htmlString += `<p>Locked balance: ${wallet.LockedBalance()} ${wallet.HumanReadable_walletCurrency()}`
 		htmlString += `<p>Secret mnemonic: ${wallet.mnemonicString}</p>`
 		htmlString += `<p>Address: ${wallet.public_address}</p>`
 		htmlString += `<p>View key: ${wallet.private_keys.view}</p>`

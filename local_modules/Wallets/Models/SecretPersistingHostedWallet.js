@@ -686,23 +686,40 @@ class SecretPersistingHostedWallet extends EventEmitter
 	Balance()
 	{
 		const self = this
-		// TODO: (?) detect whether account is synched yet
 		//
 		var total_received = self.total_received
 		var total_sent = self.total_sent
 		if (typeof total_received === 'undefined') {
 			total_received = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
-			console.log("⚠️  Wallet Balance() called while self.total_received was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
-			// console.trace()
 		}
 		if (typeof total_sent === 'undefined') {
 			total_sent = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
-			console.log("⚠️  Wallet Balance() called while self.total_sent was undefined. Using 0. Uncomment .trace() here and check: This is likely fine (not a code fault) if trace reveals Balance() called by Description()")
-			// console.trace()
 		}
 		const balance_JSBigInt = total_received.subtract(total_sent)
 		//
 		return monero_utils.formatMoney(balance_JSBigInt)
+	}
+	LockedBalance()
+	{
+		const self = this
+		var locked_balance_JSBigInt = self.locked_balance
+		if (typeof locked_balance_JSBigInt === 'undefined') {
+			locked_balance_JSBigInt = new JSBigInt(0)
+		}
+		//
+		return monero_utils.formatMoney(locked_balance_JSBigInt)
+	}
+	HumanReadable_walletCurrency()
+	{
+		const self = this
+		var wallet_currency = self.wallet_currency
+		if (typeof wallet_currency === 'undefined') {
+			console.error("HumanReadable_walletCurrency called while self.wallet_currency was nil, which shouldn't happen")
+			console.trace()
+			return ''
+		}
+		//
+		return humanReadable__wallet_currencies[wallet_currency] // declared outside of class 
 	}
 	Description()
 	{
@@ -1041,23 +1058,37 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		// JSBigInts
 		var accountBalance_didActuallyChange = false
-		if (typeof self.total_received === 'undefined' || self.total_received === null || typeof self.total_received !== 'object' || self.total_received.compare(total_received_JSBigInt) != 0) {
+		var existing_total_received = self.total_received || new JSBigInt(0)
+		var existing_total_sent = self.total_sent || new JSBigInt(0)
+		var existing_locked_balance = self.locked_balance || new JSBigInt(0)
+		function isExistingBigIntDifferentFrom(existingValue, newValue)
+		{
+			if (typeof existingValue === 'undefined' || existingValue === null || typeof existingValue !== 'object') { // let's always broadcast-as-diff receiving a newValue when existingValue is undefined, null, or non JSBigInts
+				return true
+			} // now we presume it's a JSBigInt…
+			if (existingValue.compare(newValue) != 0) {
+				return true
+			}
+			return false
+		}
+		if (isExistingBigIntDifferentFrom(existing_total_received, total_received_JSBigInt) === true) {
 			accountBalance_didActuallyChange = true
 		}
-		if (typeof self.locked_balance === 'undefined' || self.locked_balance === null || typeof self.locked_balance !== 'object' || self.locked_balance.compare(locked_balance_JSBigInt) != 0) {
+		if (isExistingBigIntDifferentFrom(existing_total_sent, total_sent_JSBigInt) === true) {
 			accountBalance_didActuallyChange = true
 		}
-		if (typeof self.total_sent === 'undefined' || self.total_sent === null || typeof self.total_sent !== 'object' || self.total_sent.compare(total_sent_JSBigInt) != 0) {
+		if (isExistingBigIntDifferentFrom(existing_locked_balance, locked_balance_JSBigInt) === true) {
 			accountBalance_didActuallyChange = true
 		}
 		self.total_received = total_received_JSBigInt
-		self.locked_balance = locked_balance_JSBigInt
 		self.total_sent = total_sent_JSBigInt
+		self.locked_balance = locked_balance_JSBigInt
 		//
 		// outputs
 		// TODO: diff spent_outputs
 		var spentOutputs_didActuallyChange = false
-		if (typeof self.spent_outputs === 'undefined' || self.spent_outputs === null || areObjectsEqual(spent_outputs, self.spent_outputs) === false) {
+		const existing_spent_outputs = self.spent_outputs
+		if (typeof existing_spent_outputs === 'undefined' || existing_spent_outputs === null || areObjectsEqual(spent_outputs, existing_spent_outputs) === false) {
 			spentOutputs_didActuallyChange = true
 		}
 		self.spent_outputs = spent_outputs
@@ -1102,11 +1133,15 @@ class SecretPersistingHostedWallet extends EventEmitter
 					var anyChanges = false
 					if (accountBalance_didActuallyChange === true) {
 						anyChanges = true
-						self.___didReceiveActualChangeTo_balance()
+						self.___didReceiveActualChangeTo_balance(
+							existing_total_received,
+							existing_total_sent,
+							existing_locked_balance
+						)
 					}
 					if (spentOutputs_didActuallyChange === true) {
 						anyChanges = true
-						self.___didReceiveActualChangeTo_spentOutputs()
+						self.___didReceiveActualChangeTo_spentOutputs(existing_spent_outputs)
 					}
 					if (heights_didActuallyChange === true) {
 						anyChanges = true
@@ -1159,15 +1194,19 @@ class SecretPersistingHostedWallet extends EventEmitter
 		// We will construct the txs from the incoming txs here as follows.
 		// Doing this allows us to selectively preserve already-cached info.
 		var numberOfTransactionsAdded = 0
+		const newTransactions = []
 		const self_transactions_length = self.transactions.length
 		const incoming_transactions_length = transactions.length
 		for (let i = 0 ; i < incoming_transactions_length ; i++) {
 			const incoming_tx = transactions[i]
 			const finalized_tx = incoming_tx // doing it like this, we allow the server to give us updates to transactions with ids we already know about
+			var isNewTransaction = false // let's see……
 			if (i >= self_transactions_length) {
+				console.log("a tx added")
 				transactionsList_didActuallyChange = true
 				numberOfTransactionsAdded += 1
-				console.log("a tx added")
+				isNewTransaction = true
+				// NOTE: we set isNewTransaction=true so we can push the finalized tx to newTransactions below
 			} else {
 				const existing_tx_atI = self.transactions[i]
 				// doing a deep comparison of the transaction info
@@ -1189,10 +1228,17 @@ class SecretPersistingHostedWallet extends EventEmitter
 					console.log("id of tx different at idx", i)
 				}
 			}
+			// TODO: finalize tx if necessary here... with contact details (check if exists on
+			// existing record by id, and if not, add)
 			//
-			// now that actually finalized,
-			finalized_transactions.push(finalized_tx) // accumulate
+			// now that actually finalized, accumulate:
+			finalized_transactions.push(finalized_tx) 
+			if (isNewTransaction === true) { // we break this out until here instead
+			// of putting above so we have the actually finalized_tx to push to newTransactions
+				newTransactions.push(finalized_tx)
+			}
 		}
+		const existing_transactions = self.transactions || []
 		self.transactions = finalized_transactions
 		//
 		// do not count this as an actual change to txs
@@ -1211,7 +1257,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 					//
 					// and here we'll check whether things actually changed
 					if (transactionsList_didActuallyChange === true) {
-						self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded)
+						self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, existing_transactions)
 					} else {
 						console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
 					}
@@ -1223,17 +1269,22 @@ class SecretPersistingHostedWallet extends EventEmitter
 		)
 	}
 	//
-	___didReceiveActualChangeTo_balance()
+	___didReceiveActualChangeTo_balance(
+		old_total_received,
+		old_total_sent,
+		old_locked_balance
+	)
 	{
 		const self = this
 		console.log("💬  Received an update to balance")
-		self.emit(self.EventName_balanceChanged())
+		self.emit(self.EventName_balanceChanged(), self, old_total_received, old_total_sent, old_locked_balance
+		)
 	}
-	___didReceiveActualChangeTo_spentOutputs()
+	___didReceiveActualChangeTo_spentOutputs(old_spent_outputs)
 	{
 		const self = this
 		console.log("💬  Received an update to spent outputs")
-		self.emit(self.EventName_spentOutputsChanged())
+		self.emit(self.EventName_spentOutputsChanged(), self, (old_spent_outputs || []))
 	}
 	___didReceiveActualChangeTo_heights()
 	{
@@ -1241,14 +1292,14 @@ class SecretPersistingHostedWallet extends EventEmitter
 		console.log("💬  Received an update to heights")
 		self.emit(self.EventName_heightsUpdated(), self)
 	}
-	___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded)
+	___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, oldTransactions)
 	{
 		const self = this
 		console.log("💬  Got an update to txs list")
-		self.emit(self.EventName_transactionsChanged(), self)
+		self.emit(self.EventName_transactionsChanged(), self, oldTransactions)
 		if (numberOfTransactionsAdded > 0) {
 			console.log(`💬  ${numberOfTransactionsAdded} new transaction(s) added`)
-			self.emit(self.EventName_transactionsAdded(), self, numberOfTransactionsAdded)
+			self.emit(self.EventName_transactionsAdded(), self, numberOfTransactionsAdded, newTransactions)
 		}
 	}
 }
