@@ -1196,43 +1196,36 @@ class SecretPersistingHostedWallet extends EventEmitter
 		var numberOfTransactionsAdded = 0
 		const newTransactions = []
 		const self_transactions_length = self.transactions.length
+		const existing_transactions = self.transactions || []
 		const incoming_transactions_length = transactions.length
 		for (let i = 0 ; i < incoming_transactions_length ; i++) {
 			const incoming_tx = transactions[i]
-			const finalized_tx = incoming_tx // doing it like this, we allow the server to give us updates to transactions with ids we already know about
 			var isNewTransaction = false // let's see……
-			
-			// TODO: fix this up by searching for tx with same id in existing list to check if tx actually new. if not actually new, do diff
-			
-			if (i >= self_transactions_length) {
+			var didFindIncomingTxIdInExistingTxs = false // let's see…
+			for (let j = 0 ; j < self_transactions_length ; j++) {
+				// search for tx with same id in existing list to check if tx actually new. if not actually new, do diff to check if change received in update
+				const existing_tx = existing_transactions[j]
+				if (existing_tx.id === incoming_tx.id) { // already known tx; diff
+					didFindIncomingTxIdInExistingTxs = true
+					const existing_same_tx = existing_tx
+					if (areObjectsEqual(incoming_tx, existing_same_tx) === false) {
+						transactionsList_didActuallyChange = true // this is likely to happen if tx.height changes while pending confirmation
+						console.log("incoming_tx is not the same as existing_tx")
+						console.log("incoming_tx" , incoming_tx)
+						console.log("existing_same_tx" , existing_same_tx)
+					}
+					break // no need to keep looking
+				}
+			}
+			if (didFindIncomingTxIdInExistingTxs !== true) { // then we have a new tx
 				console.log("a tx added")
 				transactionsList_didActuallyChange = true
 				numberOfTransactionsAdded += 1
-				isNewTransaction = true
-				// NOTE: we set isNewTransaction=true so we can push the finalized tx to newTransactions below
-			} else {
-				const existing_tx_atI = self.transactions[i]
-				// doing a deep comparison of the transaction info
-				// if actual change, setting didActuallyChange to true
-				if (existing_tx_atI.id === incoming_tx.id) { // minor optimization
-					if (areObjectsEqual(incoming_tx, existing_tx_atI) === false) {
-						transactionsList_didActuallyChange = true
-						console.log("incoming_tx is not the same as existing_tx_atI")
-						console.log("incoming_tx" , incoming_tx)
-						console.log("existing_tx_atI" , existing_tx_atI)
-						// this is likely to happen if tx.height changes while pending confirmation
-					}
-				} else { // different transactions
-					transactionsList_didActuallyChange = true
-					// we're not sure if this i is a new transaction being added
-					// because it could be the result of all rows shifting down
-					// when a single new transaction is right at the beginning,
-					// so we're not going to increment numberOfTransactionsAdded here
-					console.log("id of tx different at idx", i)
-				}
+				isNewTransaction = true // NOTE: we set isNewTransaction=true so we can push the finalized tx to newTransactions below
 			}
-			// TODO: finalize tx if necessary here... with contact details (check if exists on
-			// existing record by id, and if not, add)
+			//
+			const finalized_tx = incoming_tx // setting incoming_tx as based instead of existing_tx, if any, so we allow the server to give us updates to transactions with ids we already know about
+			// TODO: now finalize tx if necessary here... (e.g. check if existing tx has any cached info we want to bring into the finalized_tx before setting)
 			//
 			// now that actually finalized, accumulate:
 			finalized_transactions.push(finalized_tx) 
@@ -1241,7 +1234,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 				newTransactions.push(finalized_tx)
 			}
 		}
-		const existing_transactions = self.transactions || []
 		self.transactions = finalized_transactions
 		//
 		// do not count this as an actual change to txs
