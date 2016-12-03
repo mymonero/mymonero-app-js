@@ -116,13 +116,11 @@ class AppRuntimeController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Emissions - Callable by concrete implementations
 	
-	_calledByConcreteImplementation_broadcastThatAppWillQuit(fn)
+	_calledByConcreteImplementation_broadcastThatAppWillQuit()
 	{ // must call fn to tell concrete implementation to proceed with its implementation of quit
 		const self = this
 		console.log("💬  App will quit.")
 		self.emit(self.EventName_appWillQuit())
-		// ^ synchronous so we can just call fn
-		fn()
 	}
 	
 	

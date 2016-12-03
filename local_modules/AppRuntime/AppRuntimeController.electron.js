@@ -62,10 +62,7 @@ class AppRuntimeController_electron extends AppRuntimeController
 		// observe self instead of the platform-specific `app`
 		const self = this
 		const app = self.context.app
-		self._calledByConcreteImplementation_broadcastThatAppWillQuit(function()
-		{ // will be sync but just in case another concrete implementation needs async…
-			app.quit()
-		})
+		app.quit()
 	}
 	
 
@@ -77,6 +74,10 @@ class AppRuntimeController_electron extends AppRuntimeController
 		const self = this
 		const app = self.context.app
 		// nothing to do yet
+		app.on('will-quit', function()
+		{
+			self._calledByConcreteImplementation_broadcastThatAppWillQuit()
+		})
 	}
 }
 module.exports = AppRuntimeController_electron
