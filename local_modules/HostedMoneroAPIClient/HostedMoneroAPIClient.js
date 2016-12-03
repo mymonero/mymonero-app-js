@@ -95,7 +95,7 @@ class HostedMoneroAPIClient
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
 		parameters.create_account = true
 		//
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -118,7 +118,7 @@ class HostedMoneroAPIClient
 	}
 	//
 	// Syncing
-	AddressInfo(
+	AddressInfo_returningRequestHandle(
 		address,
 		view_key__private,
 		spend_key__public,
@@ -129,7 +129,7 @@ class HostedMoneroAPIClient
 		const self = this
 		const endpointPath = "get_address_info"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -182,8 +182,10 @@ class HostedMoneroAPIClient
 				blockchain_height
 			)
 		}
+		//
+		return requestHandle
 	}
-	AddressTransactions(
+	AddressTransactions_returningRequestHandle(
 		address,
 		view_key__private,
 		spend_key__public,
@@ -195,7 +197,7 @@ class HostedMoneroAPIClient
 		const endpointPath = "get_address_txs"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
 		//
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -260,6 +262,8 @@ class HostedMoneroAPIClient
 				transactions
 			)
 		}
+		//
+		return requestHandle
 	}
 	//
 	// Sending coins
@@ -285,7 +289,7 @@ class HostedMoneroAPIClient
 			dust_threshold: monero_config.dustThreshold.toString()
 		}
 		const endpointPath = 'get_unspent_outs'
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -363,7 +367,7 @@ class HostedMoneroAPIClient
 			count: mixinNumber + 1 // Add one to mixin so we can skip real output key if necessary
 		}
 		const endpointPath = 'get_random_outs'
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -399,7 +403,7 @@ class HostedMoneroAPIClient
 		{
 			domain: domain
 		}
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -449,7 +453,7 @@ class HostedMoneroAPIClient
 			view_key: view_key__private,
 			tx: serializedSignedTx
 		}
-		self._API_request(
+		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -485,13 +489,13 @@ class HostedMoneroAPIClient
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
-	_API_request(endpointPath, parameters, fn)
-	{ // fn: (err?, data?) -> Void
+	_API_doRequest_returningRequestHandle(endpointPath, parameters, fn)
+	{ // fn: (err?, data?) -> new Request
 		const self = this
 		parameters = parameters || {}
 		const completeURL = self.baseURL + endpointPath
 		console.log("📡  " + completeURL)
-		request({
+		const requestHandle = request({
 			method: "POST", // maybe break this out
 			url: completeURL,
 			headers: {
@@ -529,6 +533,8 @@ class HostedMoneroAPIClient
 				fn(err, null)
 			}
 		})
+		//
+		return requestHandle
 	}
 
 

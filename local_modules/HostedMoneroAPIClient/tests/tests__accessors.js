@@ -82,7 +82,7 @@ function __proceedTo_test_logIn(fn)
 function __proceedTo_test_addressInfo(fn)
 {
 	console.log("▶️  test_addressInfo")
-	context.hostedMoneroAPIClient.AddressInfo(
+	context.hostedMoneroAPIClient.AddressInfo_returningRequestHandle(
 		tests_config.testWallet_address,
 		tests_config.testWallet_view_key,
 		tests_config.testWallet_spend_key__public,
@@ -120,7 +120,7 @@ function __proceedTo_test_addressInfo(fn)
 function __proceedTo_test_addressTransactions(fn)
 {	
 	console.log("▶️  test_addressTransactions")
-	context.hostedMoneroAPIClient.AddressTransactions(
+	context.hostedMoneroAPIClient.AddressTransactions_returningRequestHandle(
 		tests_config.testWallet_address,
 		tests_config.testWallet_view_key,
 		tests_config.testWallet_spend_key__public,

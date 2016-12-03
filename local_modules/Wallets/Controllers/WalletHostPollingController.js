@@ -55,37 +55,9 @@ class WalletHostPollingController
 	setup()
 	{
 		const self = this
-		self.startPolling() // we're just immediately going to jump into the runtime - so only instantiate self when you're ready to do this
+		self._setup_startPolling() // we're just immediately going to jump into the runtime - so only instantiate self when you're ready to do this
 	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// Lifecycle - Teardown
-	
-	TearDown()
-	{ // this is public and must be called manually by wallet
-		const self = this
-		console.log("TODO: terminate all polling as well as existing requests")
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Events
-	
-	EventName_didReceive_accountInfo()
-	{
-		return "EventName_didReceive_accountInfo"
-	}
-	EventName_didReceive_transactions()
-	{
-		return "EventName_didReceive_transactions"
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Polling - Initiation/teardown
-
-	startPolling()
+	_setup_startPolling()
 	{
 		const self = this
 		function __callAllSyncFunctions()
@@ -95,7 +67,6 @@ class WalletHostPollingController
 		}
 		
 		// TODO: this all needs to be fixed up with a way to cancel the timer
-		
 		
 		//
 		// kick off synchronizations
@@ -112,16 +83,58 @@ class WalletHostPollingController
 			__callAllSyncFunctions()
 		}, syncPollingInterval)
 	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Lifecycle - Teardown
+	
+	TearDown()
+	{ // this is public and must be called manually by wallet
+		const self = this
+		self._tearDown_stopTimers()
+		self._tearDown_abortAndFreeRequests()
+	}
+	_tearDown_stopTimers()
+	{
+		const self = this
+		console.log("TODO: terminate all timers")
+	}
+	_tearDown_abortAndFreeRequests()
+	{
+		const self = this
+		{ // acct info
+			let req = self.requestHandle_for_accountInfo
+			if (typeof req !== 'undefined' && req !== null) {
+				console.log("💬  Aborting running acct info request")
+				req.abort()
+			}
+			self.requestHandle_for_accountInfo = null
+		}
+		{ // acct info
+			let req = self.requestHandle_for_transactions
+			if (typeof req !== 'undefined' && req !== null) {
+				console.log("💬  Aborting running transactions history request")
+				req.abort()
+			}
+			self.requestHandle_for_transactions = null
+		}
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Requests
-
-
-
+	// Runtime - Accessors - Events
+	
+	EventName_didReceive_accountInfo()
+	{
+		return "EventName_didReceive_accountInfo"
+	}
+	EventName_didReceive_transactions()
+	{
+		return "EventName_didReceive_transactions"
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private - Account info & tx history fetch/sync
+	// Runtime - Imperatives - Private - Requests
 
 	_fetch_accountInfo()
 	{
@@ -134,6 +147,13 @@ class WalletHostPollingController
 				// TODO: how to handle this? we'll retry soon enough
 			}
 			// success
+		}
+		//
+		if (typeof self.requestHandle_for_accountInfo !== 'undefined' && self.requestHandle_for_accountInfo !== null) {
+			const warnStr = "⚠️  _fetch_accountInfo called but request already taking place. Bailing"
+			console.warn(warnStr)
+			fn() // not an error we'd necessarily want to bubble
+			return
 		}
 		//
 		if (wallet.isLoggedIn !== true) {
@@ -157,7 +177,7 @@ class WalletHostPollingController
 			fn(err)
 			return
 		}
-		self.context.hostedMoneroAPIClient.AddressInfo(
+		const requestHandle = self.context.hostedMoneroAPIClient.AddressInfo_returningRequestHandle(
 			wallet.public_address,
 			wallet.private_keys.view,
 			wallet.public_keys.spend,
@@ -175,6 +195,9 @@ class WalletHostPollingController
 				blockchain_height
 			)
 			{
+				// immediately unlock this request fetch
+				self.requestHandle_for_accountInfo = null 
+				//
 				if (err) {
 					console.error(err.toString())
 					fn(err)
@@ -197,6 +220,7 @@ class WalletHostPollingController
 				)
 			}
 		)
+		self.requestHandle_for_accountInfo = requestHandle
 	}
 	_fetch_transactionHistory()
 	{ // fn: (err?) -> Void
@@ -209,6 +233,13 @@ class WalletHostPollingController
 				// TODO: how to handle this? we'll retry soon enough
 			}
 			// success
+		}
+		//
+		if (typeof self.requestHandle_for_transactions !== 'undefined' && self.requestHandle_for_transactions !== null) {
+			const warnStr = "⚠️  _fetch_transactionHistory called but request already taking place. Bailing"
+			console.warn(warnStr)
+			fn() // not an error we'd necessarily want to bubble
+			return
 		}
 		//
 		if (wallet.isLoggedIn !== true) {
@@ -232,7 +263,7 @@ class WalletHostPollingController
 			fn(err)
 			return
 		}
-		self.context.hostedMoneroAPIClient.AddressTransactions(
+		const requestHandle = self.context.hostedMoneroAPIClient.AddressTransactions_returningRequestHandle(
 			wallet.public_address,
 			wallet.private_keys.view,
 			wallet.public_keys.spend,
@@ -247,6 +278,9 @@ class WalletHostPollingController
 				transactions
 			)
 			{
+				// immediately unlock this request fetch
+				self.requestHandle_for_transactions = null 
+				//
 				if (err) {
 					console.error(err)
 					fn(err)
@@ -263,6 +297,7 @@ class WalletHostPollingController
 				)
 			}
 		)
+		self.requestHandle_for_transactions = requestHandle
 	}
 }
 module.exports = WalletHostPollingController
