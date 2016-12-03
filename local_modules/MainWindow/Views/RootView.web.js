@@ -53,7 +53,7 @@ class RootView extends View
 	setup_walletsListView()
 	{
 		const self = this
-		const WalletsListView = require('../../Wallets/Views/WalletsListView.web')
+		const WalletsListView = require('../../WalletsList/Views/WalletsListView.web')
 		const options = {}
 		const view = new WalletsListView(options, self.context)
 		//
