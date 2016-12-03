@@ -25,18 +25,20 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-class AppRuntimeController
+const EventEmitter = require('events') // TODO: abstract for platform independence
+//
+class AppRuntimeController extends EventEmitter
 {
-
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Initialization
 
 	constructor(options, context)
 	{
+		super() // must call super before accessing `this`
 		const self = this
 		self.options = options
 		self.context = context
@@ -47,10 +49,36 @@ class AppRuntimeController
 	{
 		const self = this
 	}
-
+	setup_concreteImpOverride_startObserving_app()
+	{	
+		throw "You must override setup_concreteImpOverride_startObserving_app but not call it on super"
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Setup - Observation
+	// Runtime - Accessors - Events
+	
+	EventName_appWillQuit()
+	{
+		return "EventName_appWillQuit"
+	}
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Concrete-implementation-overridable
+
+	Platform()
+	{
+		throw "implement this in your subclass"
+	}
+	Platforms()
+	{
+		throw "implement this in your subclass"
+	}
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime (not setup) - Imperatives - Setup - Observation
 	
 	_startObserving_walletsController()
 	{ // this is called by self.RuntimeContext_postWholeContextInit_setup
@@ -74,12 +102,25 @@ class AppRuntimeController
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Emissions - Callable by concrete implementations
+	
+	_calledByConcreteImplementation_broadcastThatAppWillQuit(fn)
+	{ // must call fn to tell concrete implementation to proceed with its implementation of quit
+		const self = this
+		self.emit(self.EventName_appWillQuit())
+		// ^ synchronous so we can just call fn
+		fn()
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Post-instantiation hook
 	
 	RuntimeContext_postWholeContextInit_setup()
 	{
 		const self = this
 		// We have to wait until post-whole-context-init to guarantee context members-to-observe exist
+		self._concreteImpOverride_startObserving_app() // you should implement this in your platform-specific implementation
 		self._startObserving_walletsController()
 	}
 

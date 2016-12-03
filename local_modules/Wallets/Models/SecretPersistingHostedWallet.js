@@ -72,7 +72,10 @@ function areObjectsEqual(x, y)
 //
 class SecretPersistingHostedWallet extends EventEmitter
 {
-	// Init -> setup
+
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Lifecycle - Init -> setup
 	// Important: You must manually call one of the 'Boot_' methods after you initialize
 
 	constructor(options, context)
@@ -176,6 +179,24 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
 		self.successfullyInitialized_cb()
+	}
+
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Lifecycle - Teardown
+	// Important: You must manually call TearDown() based on how you retain self
+	
+	TearDown()
+	{
+		const self = this
+		self._tearDown_polling()
+	}
+	_tearDown_polling()
+	{
+		const self = this
+		console.log("TODO: factor polling out into separate controller")
+		console.log("TODO: retain requests at call, free at cb, and then here cancel them if exists")
+		console.log("TODO: cancel poll timers")
 	}
 
 

@@ -138,9 +138,9 @@ class MainWindowController extends WindowController
 	_allWindowsDidClose()
 	{
 		const self = this
-		const app = self.context.app
-		if (process.platform === 'darwin') { // because macos apps stay active while main window closed
-			app.quit()
+		const appRuntimeController = self.context.appRuntimeController
+		if (appRuntimeController.Platform() === appRuntimeController.Platforms().MacOS) { // because macos apps stay active while main window closed
+			appRuntimeController.QuitApp() // we're going through appRuntimeController so that the wallets list controller can subscribe to the app runtime controller instead of the electron app (for cross platform usage)
 		}
 	}
 }

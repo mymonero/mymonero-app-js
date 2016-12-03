@@ -42,7 +42,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../AppRuntime/AppRuntimeController",
+		module_path: __dirname + "/../AppRuntime/AppRuntimeController.electron",
 		instance_key: "appRuntimeController",
 		options: {}
 	},
@@ -50,6 +50,7 @@ var context_object_instantiation_descriptions =
 		module_path: __dirname + "/../Passwords/PasswordController",
 		instance_key: "passwordController",
 		options: {
+			// TODO: transition this to .emits and imperatives(?)
 			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
 			{
 				controller.context.appRuntimeController.passwordController__obtainPasswordFromUser_wOptlValidationErrMsg_cb(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
@@ -75,7 +76,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../electron_MainWindow/Controllers/MainWindowController",
+		module_path: __dirname + "/../MainWindow/Controllers/MainWindowController.electron",
 		instance_key: "mainWindowController",
 		options: {}
 	}
