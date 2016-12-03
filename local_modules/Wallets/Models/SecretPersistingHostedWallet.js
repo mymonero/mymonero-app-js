@@ -609,7 +609,35 @@ class SecretPersistingHostedWallet extends EventEmitter
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Wallet properties
-
+	
+	HasEverFetched_accountInfo()
+	{ // semantically, accountInfo here actually excludes the address, keys, mnemonic, …
+		// and mostly means stuff like totals (balances) and heights… but we keep accountInfo
+		// cause of the endpoint name
+		const self = this
+		if (typeof self.dateThatLast_fetchedAccountInfo === 'undefined') {
+			return false
+		}
+		if (self.dateThatLast_fetchedAccountInfo === null) {
+			return false
+		}
+		console.log("typeof self.dateThatLast_fetchedAccountInfo", typeof  self.dateThatLast_fetchedAccountInfo)
+		//
+		return true
+	}
+	HasEverFetched_transactions()
+	{
+		const self = this
+		if (typeof self.dateThatLast_fetchedAccountTransactions === 'undefined') {
+			return false
+		}
+		if (self.dateThatLast_fetchedAccountTransactions === null) {
+			return false
+		}
+		console.log("typeof self.dateThatLast_fetchedAccountTransactions", typeof self.dateThatLast_fetchedAccountTransactions)
+		//
+		return true
+	}
 	IsTransactionConfirmed(tx)
 	{
 		const self = this
@@ -1160,8 +1188,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	{
 		const self = this
 		console.log("💬  Received an update to balance")
-		self.emit(self.EventName_balanceChanged(), self, old_total_received, old_total_sent, old_locked_balance
-		)
+		self.emit(self.EventName_balanceChanged(), self, old_total_received, old_total_sent, old_locked_balance)
 	}
 	___didReceiveActualChangeTo_spentOutputs(old_spent_outputs)
 	{

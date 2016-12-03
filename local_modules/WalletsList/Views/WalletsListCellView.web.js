@@ -149,8 +149,13 @@ class WalletsListCellView extends View
 		const wallet = self.wallet
 		var htmlString = ''
 		htmlString += `<h3>${wallet.walletLabel}</h3>`
-		htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.HumanReadable_walletCurrency()}</p>`
-		htmlString += `<p>Locked balance: ${wallet.LockedBalance()} ${wallet.HumanReadable_walletCurrency()}`
+		if (wallet.HasEverFetched_accountInfo() === false) {
+			htmlString += `<p>Balance: Loading…</p>`
+			htmlString += `<p>Locked balance: Loading…</P`
+		} else {
+			htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.HumanReadable_walletCurrency()}</p>`
+			htmlString += `<p>Locked balance: ${wallet.LockedBalance()} ${wallet.HumanReadable_walletCurrency()}</p>`
+		}
 		htmlString += `<p>Secret mnemonic: ${wallet.mnemonicString}</p>`
 		htmlString += `<p>Address: ${wallet.public_address}</p>`
 		htmlString += `<p>View key: ${wallet.private_keys.view}</p>`
@@ -183,7 +188,13 @@ class WalletsListCellView extends View
 			}
 		)
 		// TODO: optimize this by maybe not using innerHTML?
-		self.layer_transactions.innerHTML = "<h3>Transactions</h3><ul>" + ulInnerHTMLString + "</ul>"
+		var innerHTML = "<h3>Transactions</h3>"
+		if (wallet.HasEverFetched_transactions() === false) {
+			innerHTML += "<p>Loading…</p>" 
+		} else {
+			innerHTML += `<ul>${ulInnerHTMLString}</ul>`
+		}		
+		self.layer_transactions.innerHTML = innerHTML
 	}
 	//
 	//
