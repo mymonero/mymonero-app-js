@@ -104,8 +104,7 @@ function HydrateInstance_withDecryptedValues(
 	self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
 }
 exports.HydrateInstance_withDecryptedValues = HydrateInstance_withDecryptedValues
-
-
+//
 //
 function SaveToDisk(
 	walletInstance,

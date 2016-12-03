@@ -40,6 +40,7 @@ const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instanc
 //
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
+const WalletHostPollingController = require('../Controllers/WalletHostPollingController')
 //
 const wallet_currencies =
 {
@@ -194,14 +195,15 @@ class SecretPersistingHostedWallet extends EventEmitter
 	_tearDown_polling()
 	{
 		const self = this
-		console.log("TODO: factor polling out into separate controller")
-		console.log("TODO: retain requests at call, free at cb, and then here cancel them if exists")
-		console.log("TODO: cancel poll timers")
+		if (typeof self.hostPollingController !== 'undefined' && self.hostPollingController !== null) {
+			self.hostPollingController.TearDown()
+			self.hostPollingController = null
+		}
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Post init, pre-boot - Public - Accessors - Creating new wallets
+	// Runtime (Post init, pre-boot) - Accessors - Public - Creating new wallets
 
 	MnemonicStringWhichWasGeneratedOnInit()
 	{
@@ -211,7 +213,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Booting - Public - Imperatives - Creating/adding wallets
+	// Runtime - Imperatives - Public - Booting - Creating/adding wallets
 
 	Boot_byLoggingIntoHostedService_byCreatingNewWallet(
 		persistencePassword,
@@ -376,7 +378,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Booting - Public - Imperatives - Reading saved wallets
+ 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
 
 	Boot_decryptingExistingInitDoc(
 		persistencePassword,
@@ -479,7 +481,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Booting - Private - Imperatives
+	// Runtime - Imperatives - Private - Booting
 
 	_boot_byLoggingIn(
 		address,
@@ -568,56 +570,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Booting - Private - Delegation
-
-	_trampolineFor_successfullyBooted(
-		fn
-	)
-	{ // fn: (err?) -> Void
-		const self = this
-		if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
-			console.warn("⚠️  Wallet initialized without an account_seed.")
-			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
-		} else {
-			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
-		}
-		//
-		console.info("✅  Successfully instantiated", self.Description())
-		self.isBooted = true
-		fn() // ensure we call the callback
-		//
-		function __callAllSyncFunctions()
-		{
-			self._fetch_accountInfo(
-				function(err)
-				{
-				}
-			)
-			self._fetch_transactionHistory(
-				function(err)
-				{
-				}
-			)
-		}
-		//
-		// kick off synchronizations
-		setTimeout(function()
-		{
-			__callAllSyncFunctions()
-		})
-		//
-		// and kick off the polling call to pull latest updates
-		const syncPollingInterval = 10 * 1000 // ms
-		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
-		setInterval(function()
-		{
-			__callAllSyncFunctions()
-		}, syncPollingInterval)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Booting - Accessors - Public
+	// Runtime - Accessors - Public - Events - Booting
 
 	EventName_booted()
 	{
@@ -630,7 +583,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Public
+	// Runtime - Accessors - Public - Events - Updates
 
 	EventName_balanceChanged()
 	{
@@ -652,7 +605,11 @@ class SecretPersistingHostedWallet extends EventEmitter
 	{
 		return "EventName_transactionsAdded"
 	}
-	//
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Public - Wallet properties
+
 	IsTransactionConfirmed(tx)
 	{
 		const self = this
@@ -677,7 +634,8 @@ class SecretPersistingHostedWallet extends EventEmitter
 	//
 	New_StateCachedTransactions()
 	{ // this function is preferred for public access
-	  // as it caches the derivations of the above accessors
+	  // as it caches the derivations of the above accessors.
+	  // these things could maybe be derived on reception from API instead of on each access
 		const self = this
 		const transactions = self.transactions || []
 		const stateCachedTransactions = [] // to finalize
@@ -694,7 +652,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		return stateCachedTransactions
 	}
-
 	//
 	IsAccountCatchingUp()
 	{
@@ -707,7 +664,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 	Balance()
 	{
 		const self = this
-		//
 		var total_received = self.total_received
 		var total_sent = self.total_sent
 		if (typeof total_received === 'undefined') {
@@ -931,138 +887,38 @@ class SecretPersistingHostedWallet extends EventEmitter
 			}
 		)
 	}
-
-
+	
+	
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private - Account info & tx history fetch/sync
+	// Runtime - Delegation - Private - Booting
 
-	_fetch_accountInfo(fn)
-	{
-		const self = this
-		var __debug_fnName = "_fetch_accountInfo"
-		if (self.isLoggedIn !== true) {
-			const errStr = "❌  Unable to " + __debug_fnName + " as isLoggedIn !== true"
-			console.error(errStr)
-			const err = new Error(errStr)
-			fn(err)
-			return
-		}
-		if (typeof self.public_address === 'undefined' && self.public_address === null || self.public_address === '') {
-			const errStr = "❌  Unable to " + __debug_fnName + " as no public_address"
-			console.error(errStr)
-			const err = new Error(errStr)
-			fn(err)
-			return
-		}
-		if (typeof self.private_keys === 'undefined' && self.private_keys === null) {
-			const errStr = "❌  Unable to " + __debug_fnName + " as no private_keys"
-			console.error(errStr)
-			const err = new Error(errStr)
-			fn(err)
-			return
-		}
-		self.context.hostedMoneroAPIClient.AddressInfo(
-			self.public_address,
-			self.private_keys.view,
-			self.public_keys.spend,
-			self.private_keys.spend,
-			function(
-				err,
-				total_received,
-				locked_balance,
-				total_sent,
-				spent_outputs,
-				account_scanned_tx_height,
-				account_scanned_block_height,
-				account_scan_start_height,
-				transaction_height,
-				blockchain_height
-			)
-			{
-				if (err) {
-					console.error(err.toString())
-					fn(err)
-					return
-				}
-				//
-				self.__didFetch_accountInfo(
-					total_received,
-					locked_balance,
-					total_sent,
-					spent_outputs,
-					account_scanned_tx_height,
-					account_scanned_block_height,
-					account_scan_start_height,
-					transaction_height,
-					blockchain_height
-				)
-			}
-		)
-	}
-
-	_fetch_transactionHistory(fn)
+	_trampolineFor_successfullyBooted(
+		fn
+	)
 	{ // fn: (err?) -> Void
 		const self = this
-		var __debug_fnName = "_fetch_transactionHistory"
-		if (self.isLoggedIn !== true) {
-			const errStr = "❌  Unable to " + __debug_fnName + " as isLoggedIn !== true"
-			console.error(errStr)
-			const err = new Error(errStr)
-			fn(err)
-			return
+		if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
+			console.warn("⚠️  Wallet initialized without an account_seed.")
+			self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
+		} else {
+			self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
 		}
-		if (typeof self.public_address === 'undefined' && self.public_address === null || self.public_address === '') {
-			const errStr = "❌  Unable to " + __debug_fnName + " as no public_address"
-			console.error(errStr)
-			const err = new Error(errStr)
-			fn(err)
-			return
+		//
+		console.info("✅  Successfully instantiated", self.Description())
+		self.isBooted = true
+		fn() // ensure we call the callback
+		{ // instantiate (and kick off) polling controller
+			let options = { wallet: self }
+			let context = self.context
+			self.hostPollingController = new WalletHostPollingController(options, context)
 		}
-		if (typeof self.private_keys === 'undefined' && self.private_keys === null) {
-			const errStr = "❌  Unable to " + __debug_fnName + " as no private_keys"
-			console.error(errStr)
-			const err = new Error(errStr)
-			fn(err)
-			return
-		}
-		self.context.hostedMoneroAPIClient.AddressTransactions(
-			self.public_address,
-			self.private_keys.view,
-			self.public_keys.spend,
-			self.private_keys.spend,
-			function(
-				err,
-				account_scanned_height,
-				account_scanned_block_height,
-				account_scan_start_height,
-				transaction_height,
-				blockchain_height,
-				transactions
-			)
-			{
-				if (err) {
-					console.error(err)
-					fn(err)
-					return
-				}
-				//
-				self.__didFetch_transactionHistory(
-					account_scanned_height,
-					account_scanned_block_height,
-					account_scan_start_height,
-					transaction_height,
-					blockchain_height,
-					transactions
-				)
-			}
-		)
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private - Account info & tx history fetch/save/sync
+	// Runtime - Delegation - Private - WalletHostPollingController delegation fns
 
-	__didFetch_accountInfo(
+	_WalletHostPollingController_didFetch_accountInfo(
 		total_received_JSBigInt,
 		locked_balance_JSBigInt,
 		total_sent_JSBigInt,
@@ -1175,7 +1031,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			}
 		)
 	}
-	__didFetch_transactionHistory(
+	_WalletHostPollingController_didFetch_transactionHistory(
 		account_scanned_height,
 		account_scanned_block_height,
 		account_scan_start_height,
@@ -1291,7 +1147,11 @@ class SecretPersistingHostedWallet extends EventEmitter
 			}
 		)
 	}
-	//
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Delegation - Private - When actual data changes received from host 
+	
 	___didReceiveActualChangeTo_balance(
 		old_total_received,
 		old_total_sent,
