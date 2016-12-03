@@ -58,6 +58,7 @@ class PasswordController
 		//
 		self.hasBooted = false
 		self._password = undefined // it's not been obtained from the user yet - we only store it in memory
+		//
 		self.obtainPasswordFromUser_wOptlValidationErrMsg_cb = self.options.obtainPasswordFromUser_wOptlValidationErrMsg_cb
 		// obtainPasswordFromUser_wOptlValidationErrMsg_cb: (controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined) -> Void
 		//	obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword: AvailableUserSelectableTypesOfPassword?) -> Void // you can send an err to say the user cancelled pw entry. this controller doesn't do anything to the pw if there's an err and if the pw isn't changed, the didChange callback(s) are not notified/called
@@ -228,7 +229,7 @@ class PasswordController
 						}
 					}
 					//
-					// passwords match or no match check necessary and we can proceed
+					// passwords match checked as necessary, we can proceed
 					self._obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb)
 				}
 			)
@@ -343,7 +344,6 @@ class PasswordController
 						})
 					}
 				)
-
 			},
 			showingValidationErrMsg_orUndefined // we pass this back to the UI/consumer so they can show it if they need to, like on a pw was too short
 		)
