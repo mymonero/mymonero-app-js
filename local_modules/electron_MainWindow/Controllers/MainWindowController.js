@@ -68,7 +68,10 @@ class MainWindowController extends WindowController
 				self._create_window_ifNecessary()
 			})
 		}
-		app.on('window-all-closed', self._allWindowsDidClose)
+		app.on('window-all-closed', function()
+		{
+			self._allWindowsDidClose()
+		})
 		app.on('activate', function()
 		{
 			if (self.window === null) {
@@ -113,8 +116,8 @@ class MainWindowController extends WindowController
 		{
 			self.window = null // release
 		})
-		if (process.env.NODE_ENV === 'development') {
-			self.window.webContents.openDevTools() // open the dev tools
+		if (process.env.NODE_ENV === 'development') { // never unless development env
+			// self.window.webContents.openDevTools() // open the dev tools
 		}
 	}
 	
@@ -136,7 +139,7 @@ class MainWindowController extends WindowController
 	{
 		const self = this
 		const app = self.context.app
-		if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
+		if (process.platform === 'darwin') { // because macos apps stay active while main window closed
 			app.quit()
 		}
 	}

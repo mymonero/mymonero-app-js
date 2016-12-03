@@ -1200,14 +1200,21 @@ class SecretPersistingHostedWallet extends EventEmitter
 		const incoming_transactions_length = transactions.length
 		for (let i = 0 ; i < incoming_transactions_length ; i++) {
 			const incoming_tx = transactions[i]
+			delete incoming_tx["id"] // because this field changes while sending funds, even though hash stays the same, 
+			// and because we don't want `id` messing with our ability to diff. so we're not even going to try to store this
+			
 			var isNewTransaction = false // let's see……
 			var didFindIncomingTxIdInExistingTxs = false // let's see…
 			for (let j = 0 ; j < self_transactions_length ; j++) {
 				// search for tx with same id in existing list to check if tx actually new. if not actually new, do diff to check if change received in update
 				const existing_tx = existing_transactions[j]
-				if (existing_tx.id === incoming_tx.id) { // already known tx; diff
+				if (existing_tx.hash === incoming_tx.hash) { // already known tx; diff
 					didFindIncomingTxIdInExistingTxs = true
 					const existing_same_tx = existing_tx
+					delete existing_same_tx["id"] // we are deleting `id` here even though on a completely fresh import, according to this code, since we say finalized_tx=incoming_tx, we should never technically have a defined `id` in any existing_tx... but this is done here not only for explicit clarity but to preclude a false positive on a diff (areObjectsEqual below) in case any old data is present (which it is probably only likely to be at around the time of writing this :))
+					//
+					// unfortunately this is possibly going to be true if everything is the same except for the id field
+					// but technically it's an 'update'…… even though the id change should be opaque to the client
 					if (areObjectsEqual(incoming_tx, existing_same_tx) === false) {
 						transactionsList_didActuallyChange = true // this is likely to happen if tx.height changes while pending confirmation
 						console.log("incoming_tx is not the same as existing_tx")
