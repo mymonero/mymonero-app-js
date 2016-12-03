@@ -48,6 +48,18 @@ class AppRuntimeController extends EventEmitter
 	setup()
 	{
 		const self = this
+		self.startObserving_uncaughtExceptions()
+	}
+	startObserving_uncaughtExceptions()
+	{
+		const self = this
+		process.on('uncaughtException', function (error)
+		{ // We're going to observe this here (for electron especially) so
+		  // that the exceptions are prevented from bubbling up to the UI.
+		  // startObserving_uncaughtExceptions /might/ be able to be moved to ….electron.js
+			console.error("AppRuntimeController observed uncaught exception", error)
+			// TODO: send this to the error reporting service
+		})
 	}
 	setup_concreteImpOverride_startObserving_app()
 	{	
@@ -107,6 +119,7 @@ class AppRuntimeController extends EventEmitter
 	_calledByConcreteImplementation_broadcastThatAppWillQuit(fn)
 	{ // must call fn to tell concrete implementation to proceed with its implementation of quit
 		const self = this
+		console.log("💬  App will quit.")
 		self.emit(self.EventName_appWillQuit())
 		// ^ synchronous so we can just call fn
 		fn()

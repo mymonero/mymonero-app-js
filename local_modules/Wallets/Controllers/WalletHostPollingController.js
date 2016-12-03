@@ -70,7 +70,7 @@ class WalletHostPollingController
 		
 		//
 		// kick off synchronizations
-		setTimeout(function()
+		setImmediate(function()
 		{
 			__callAllSyncFunctions()
 		})
@@ -78,7 +78,7 @@ class WalletHostPollingController
 		// and kick off the polling call to pull latest updates
 		const syncPollingInterval = 10 * 1000 // ms
 		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
-		setInterval(function()
+		self.intervalTimeout = setInterval(function()
 		{
 			__callAllSyncFunctions()
 		}, syncPollingInterval)
@@ -97,7 +97,12 @@ class WalletHostPollingController
 	_tearDown_stopTimers()
 	{
 		const self = this
-		console.log("TODO: terminate all timers")
+		if (typeof self.intervalTimeout === 'undefined' || self.intervalTimeout === null) {
+			throw "_tearDown_stopTimers called but self.intervalTimeout already nil"
+		}
+		console.log("💬  Clearing polling intervalTimeout.")
+		clearInterval(self.intervalTimeout)
+		self.intervalTimeout = null
 	}
 	_tearDown_abortAndFreeRequests()
 	{
