@@ -74,6 +74,10 @@ class AppRuntimeController extends EventEmitter
 	{
 		return "EventName_appWillQuit"
 	}
+	EventName_userAttemptedToDuplicativelyLaunchApp()
+	{
+		return "EventName_userAttemptedToDuplicativelyLaunchApp"
+	}
 	
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +125,12 @@ class AppRuntimeController extends EventEmitter
 		const self = this
 		console.log("💬  App will quit.")
 		self.emit(self.EventName_appWillQuit())
+	}
+	_calledByConcreteImplementation_broadcastThat_userAttemptedToDuplicativelyLaunchApp()
+	{
+		const self = this
+		console.log("💬  User attempted to duplicatively launch app")
+		self.emit(self.EventName_userAttemptedToDuplicativelyLaunchApp())
 	}
 	
 	

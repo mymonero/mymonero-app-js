@@ -621,7 +621,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 		if (self.dateThatLast_fetchedAccountInfo === null) {
 			return false
 		}
-		console.log("typeof self.dateThatLast_fetchedAccountInfo", typeof  self.dateThatLast_fetchedAccountInfo)
 		//
 		return true
 	}
@@ -634,7 +633,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 		if (self.dateThatLast_fetchedAccountTransactions === null) {
 			return false
 		}
-		console.log("typeof self.dateThatLast_fetchedAccountTransactions", typeof self.dateThatLast_fetchedAccountTransactions)
 		//
 		return true
 	}

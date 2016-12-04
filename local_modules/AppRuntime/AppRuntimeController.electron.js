@@ -40,6 +40,33 @@ const __platforms =
 class AppRuntimeController_electron extends AppRuntimeController
 {
 
+	setup()
+	{
+		const self = this
+		super.setup() // call super first 
+		self._setup_makeAppSingleInstance_andQuitIfNecessary()
+	}
+	_setup_makeAppSingleInstance_andQuitIfNecessary()
+	{
+		const self = this
+		const app = self.context.app
+		var shouldQuit = app.makeSingleInstance( // ensure only one instance of the app
+		// can be run... not only for UX reasons but so we don't get any conditions
+		// which might mess with db sanity
+			function(argv, workingDirectory)
+			{ // Single instance context being passed control when user attempted to launch duplicate instance. Emit event so that main window may be focused
+				self._calledByConcreteImplementation_broadcastThat_userAttemptedToDuplicativelyLaunchApp()
+			}
+		)
+		if (shouldQuit) { // would be true if this is a duplicative app instance
+			console.log("💬  Will quit as app should be single-instance.")
+			self.QuitApp() // or just call app.quit()
+			return
+		}
+	}
+
+
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Concrete implementation overrides

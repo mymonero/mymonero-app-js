@@ -58,7 +58,6 @@ class MainWindowController extends WindowController
 	{
 		const self = this
 		const app = self.context.app
-		//
 		app.on('window-all-closed', function()
 		{
 			self._allWindowsDidClose()
@@ -94,8 +93,21 @@ class MainWindowController extends WindowController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Imperatives - Window
+	// Runtime - Imperatives - Window
 
+	create_window_whenAppReady()
+	{
+		const self = this
+		const app = self.context.app
+		if (app.isReady() === true) { // this is probably not going to be true as the app is fairly zippy to set up
+			self._create_window_ifNecessary()
+		} else {
+			app.on('ready', function()
+			{
+				self._create_window_ifNecessary()
+			})
+		}
+	}
 	_create_window_ifNecessary()
 	{
 		const self = this
@@ -124,15 +136,25 @@ class MainWindowController extends WindowController
 		// We'll wait til here to create the window cause it's the thing that generally kicks off booting the application/UI-level controllers in the context.
 		// However, we can't wait til those controllers are booted to create the window because they might need
 		// to present things like the password entry fields in the UI
-		const app = self.context.app
-		if (app.isReady() === true) { // this is probably not going to be true as the app is fairly zippy to set up
-			self._create_window_ifNecessary()
-		} else {
-			app.on('ready', function()
-			{
-				self._create_window_ifNecessary()
-			})
-		}
+		self.create_window_whenAppReady()
+		self.startObserving_appRuntimeController()
+	}
+	startObserving_appRuntimeController()
+	{
+		const self = this
+		const appRuntimeController = self.context.appRuntimeController
+		appRuntimeController.on(
+			appRuntimeController.EventName_userAttemptedToDuplicativelyLaunchApp(),
+			function()
+			{ // bring window to forefront howoever necessary
+				if (self.window !== null) {
+				    if (self.window.isMinimized()) {
+						self.window.restore()
+					}
+				    self.window.focus()
+				}
+			}
+		)
 	}
 
 		
