@@ -30,20 +30,25 @@
 //
 const electron = require('electron')
 //
-const WindowController = require('../../electron_window_utils/WindowController')
-//
-class MainWindowController extends WindowController
+class MainWindowController
 {
 
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Initialization
-
+	
+	constructor(options, context)
+	{
+		const self = this
+		//
+		self.options = options
+		self.context = context
+		//
+		self.setup()
+	}
 	setup()
 	{
 		const self = this
-		super.setup()
-		//
 		self.setup_window()
 		self.startObserving_app()
 	}
