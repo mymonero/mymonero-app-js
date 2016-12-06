@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const setup_utils = require('../../electron_window_utils/renderer_setup_utils')
+const setup_utils = require('../../electron_renderer_utils/renderer_setup_utils')
 setup_utils()
 //
 const remote__electron = require('electron').remote
