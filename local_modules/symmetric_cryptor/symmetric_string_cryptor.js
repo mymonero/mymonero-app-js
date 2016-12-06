@@ -190,7 +190,13 @@ function _is_hmac_valid(components, password)
 
 function _new_calculated_pbkdf2_key(password, salt) 
 { // Apply pseudo-random function HMAC-SHA1 by default
-	var key = crypto.pbkdf2Sync(password, salt, cryptor_settings.pbkdf2.iterations, cryptor_settings.pbkdf2.key_length);
+	var key = crypto.pbkdf2Sync(
+		password, 
+		salt, 
+		cryptor_settings.pbkdf2.iterations, 
+		cryptor_settings.pbkdf2.key_length,
+		'sha1'
+	);
 	
 	return key;
 }
