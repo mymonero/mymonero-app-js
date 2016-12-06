@@ -30,7 +30,7 @@
 //
 const electron = require('electron')
 //
-const WindowController = require('../../electron_utils/WindowController')
+const WindowController = require('../../electron_window_utils/WindowController')
 //
 class MainWindowController extends WindowController
 {
@@ -84,9 +84,14 @@ class MainWindowController extends WindowController
 		const window = new electron.BrowserWindow({
 			width: 800,
 			height: 600,
-			title: self._new_browserWindowTitle()
+			title: self._new_browserWindowTitle(),
+			webPreferences: { // these are all currently the default values but stating them here to be explicit…
+				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true
+				allowDisplayingInsecureContent: false, // https content only
+				allowRunningInsecureContent: false // html/js/css from https only
+			}
 		})
-		window.loadURL(`file://${__dirname}/../Views/index.html`)
+		window.loadURL(`file://${__dirname}/../Views/index.electron.html`)
 		//
 		return window
 	}
@@ -114,13 +119,29 @@ class MainWindowController extends WindowController
 		if (self.window !== null && typeof self.window !== 'undefined') {
 			return
 		}
-		self.window = self._new_window()
-		self.window.on('closed', function() // this is not within new_window because such accessors should never directly or indirectly modify state of anything but within its own fn scope
+		const window = self._new_window()
+		self.window = window
+		window.on('closed', function() // this is not within new_window because such accessors should never directly or indirectly modify state of anything but within its own fn scope
 		{
 			self.window = null // release
 		})
-		if (process.env.NODE_ENV === 'development') { // never unless development env
-			// self.window.webContents.openDevTools() // open the dev tools
+		{ // hardening
+			const allowDevTools = process.env.NODE_ENV === 'development'
+			const openDevTools = allowDevTools === true && false // don't need it to auto open
+			if (allowDevTools !== true) { // this prevents the dev tools from staying open
+				window.webContents.on( // but it would be nicer to completely preclude it opening
+					"devtools-opened",
+					function()
+					{
+						if (self.window) {
+							self.window.webContents.closeDevTools()
+						}
+					}
+				)
+			}
+			if (openDevTools === true) {
+				self.window.webContents.openDevTools()
+			}
 		}
 	}
 	

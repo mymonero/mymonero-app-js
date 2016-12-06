@@ -28,6 +28,9 @@
 //
 "use strict"
 //
+const setup_utils = require('../../electron_window_utils/renderer_setup_utils')
+setup_utils()
+//
 const remote__electron = require('electron').remote
 const remote__app = remote__electron.app
 const remote__context = remote__electron.getGlobal("context")
@@ -49,7 +52,7 @@ function new_rootView()
 		walletsListController: remote__context.walletsListController,
 		contactsListController: remote__context.contactsListController
 	}
-	const RootView = require('./RootView.web.js')
+	const RootView = require('./RootView.web.js') // electron uses .web files as it has a web DOM
 	const view = new RootView(options, renderer_context)
 	view.superview = null // just to be explicit
 	view.superlayer = superlayer
