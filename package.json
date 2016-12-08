@@ -20,7 +20,8 @@
     "nedb": "^1.8.0",
     "node-notifier": "^4.6.1",
     "request": "^2.76.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "electron": "^1.4.1",

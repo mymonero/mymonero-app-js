@@ -112,6 +112,7 @@ function SaveToDisk(
 )
 {
 	const self = walletInstance
+	const document_cryptor__background = self.context.document_cryptor__background
 	console.log("📝  Saving wallet to disk ", self.Description())
 	//
 	const persistencePassword = self.persistencePassword
@@ -185,15 +186,30 @@ function SaveToDisk(
 	// console.log("totals", JSON.stringify(plaintextDocument.totals))
 	// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))
 	//
-	const encryptedDocument = document_cryptor.New_EncryptedDocument(
+	
+	document_cryptor__background.New_EncryptedDocument(
 		plaintextDocument,
 		documentCryptScheme,
-		persistencePassword
+		persistencePassword,
+		function(err, encryptedDocument)
+		{
+			if (err) {
+				console.error("Error while saving :", err)
+				fn(err)
+				return
+			}
+
+			if (self._id === null) {
+				_proceedTo_insertNewDocument(encryptedDocument)
+			} else {
+				_proceedTo_updateExistingDocument(encryptedDocument)
+			}
+		}
 	)
 	// console.log("debug info: going to save encryptedDocument", encryptedDocument)
 	//
 	// insert & update fn declarations for imminent usage…
-	function _proceedTo_insertNewDocument()
+	function _proceedTo_insertNewDocument(encryptedDocument)
 	{
 		self.context.persister.InsertDocument(
 			CollectionName,
@@ -218,7 +234,7 @@ function SaveToDisk(
 			}
 		)
 	}
-	function _proceedTo_updateExistingDocument()
+	function _proceedTo_updateExistingDocument(encryptedDocument)
 	{
 		var query =
 		{
@@ -271,12 +287,6 @@ function SaveToDisk(
 				fn()
 			}
 		)
-	}
-	//
-	if (self._id === null) {
-		_proceedTo_insertNewDocument()
-	} else {
-		_proceedTo_updateExistingDocument()
 	}
 }
 exports.SaveToDisk = SaveToDisk

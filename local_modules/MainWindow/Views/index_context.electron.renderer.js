@@ -84,11 +84,12 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 ]
-function NewHydratedContext(app)
+function NewHydratedContext(app, document_cryptor__background)
 {
 	var initialContext =
 	{
 		app: app,
+		document_cryptor__background: document_cryptor__background,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}
 

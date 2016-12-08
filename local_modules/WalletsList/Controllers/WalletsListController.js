@@ -55,18 +55,7 @@ class WalletsListController extends EventEmitter
 		//
 		self.hasBooted = false // not booted yet - we'll defer things till we have
 		//
-		self.startObserving_app()
 		self.setup()
-	}
-	startObserving_app()
-	{ // TODO: abstract to make platform inspecific
-		const self = this
-		const app = self.context.app
-		app.on('will-quit', function()
-		{ // this might not be necessary anymore since this code now lives in the renderer process
-			console.log('wallets list c hears app will quit')
-			self._appWillQuit()
-		})
 	}
 	_setup_didBoot(optlFn)
 	{
@@ -672,10 +661,5 @@ class WalletsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime/Boot - Delegation - Private
 	
-	_appWillQuit()
-	{
-		const self = this
-		self._tearDown()
-	}
 }
 module.exports = WalletsListController

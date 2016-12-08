@@ -28,8 +28,32 @@
 //
 "use strict"
 //
-const electron = require('electron')
-const BrowserWindow = process.type === 'renderer' ?
-	electron.remote.BrowserWindow :
-	electron.BrowserWindow
-	
+const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+//
+const {ipcRenderer} = require('electron')
+//
+function callBack(taskUUID, err, returnValue)
+{
+	ipcRenderer.send('FinishedTask', taskUUID, err, returnValue)
+}	
+//
+ipcRenderer.on(
+	'New_EncryptedDocument', 
+	function(
+		event,
+		taskUUID,
+		plaintextDocument, 
+		documentCryptScheme, 
+		password
+	)
+	{
+		var encryptedDocument;
+		try {
+			encryptedDocument = document_cryptor.New_EncryptedDocument(plaintextDocument, documentCryptScheme, password)
+		} catch (e) {
+			callBack(taskUUID, e, null)
+			return
+		}
+		callBack(taskUUID, null, encryptedDocument)
+	}
+)

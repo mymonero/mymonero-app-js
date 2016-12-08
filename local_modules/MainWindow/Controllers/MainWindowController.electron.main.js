@@ -145,7 +145,7 @@ class MainWindowController
 			const openDevTools = allowDevTools === true && true
 			if (allowDevTools !== true) { // this prevents the dev tools from staying open
 				window.webContents.on( // but it would be nicer to completely preclude it opening
-					"devtools-opened",
+					'devtools-opened',
 					function()
 					{
 						if (self.window) {
