@@ -30,7 +30,7 @@
 //
 const EventEmitter = require('events') // TODO: abstract for platform independence
 //
-class AppRuntimeController extends EventEmitter
+class ApplicationControllerController extends EventEmitter
 {
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ class AppRuntimeController extends EventEmitter
 		{ // We're going to observe this here (for electron especially) so
 		  // that the exceptions are prevented from bubbling up to the UI.
 		  // startObserving_uncaughtExceptions /might/ be able to be moved to ….electron.js
-			console.error("AppRuntimeController observed uncaught exception", error)
+			console.error("ApplicationControllerController observed uncaught exception", error)
 			// TODO: send this to the error reporting service
 		})
 	}
@@ -96,25 +96,26 @@ class AppRuntimeController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime (not setup) - Imperatives - Setup - Observation
 	
-	_startObserving_walletsController()
-	{ // this is called by self.RuntimeContext_postWholeContextInit_setup
-		const self = this
-		const walletsListController = self.context.walletsListController
-		walletsListController.on(
-			walletsListController.EventName_aWallet_balanceChanged(),
-			function(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
-			{
-				self._aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
-			}
-		)
-		walletsListController.on(
-			walletsListController.EventName_aWallet_transactionsAdded(),
-			function(emittingWallet, numberOfTransactionsAdded, newTransactions)
-			{
-				self._aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
-			}
-		)		
-	}
+	// TODO: uncomment, maybe move, and apply for notifications
+	// _startObserving_walletsController()
+	// { // this is called by self.RuntimeContext_postWholeContextInit_setup
+	// 	const self = this
+	// 	const walletsListController = self.context.walletsListController
+	// 	walletsListController.on(
+	// 		walletsListController.EventName_aWallet_balanceChanged(),
+	// 		function(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+	// 		{
+	// 			self._aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+	// 		}
+	// 	)
+	// 	walletsListController.on(
+	// 		walletsListController.EventName_aWallet_transactionsAdded(),
+	// 		function(emittingWallet, numberOfTransactionsAdded, newTransactions)
+	// 		{
+	// 			self._aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
+	// 		}
+	// 	)
+	// }
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
@@ -142,58 +143,23 @@ class AppRuntimeController extends EventEmitter
 		const self = this
 		// We have to wait until post-whole-context-init to guarantee context members-to-observe exist
 		self._concreteImpOverride_startObserving_app() // you should implement this in your platform-specific implementation
-		self._startObserving_walletsController()
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Proxying - Password controller
-
-	passwordController__obtainPasswordFromUser_wOptlValidationErrMsg_cb(
-		passwordController,
-		obtainedErrOrPwAndType_cb,
-		showingValidationErrMsg_orUndefined
-	)
-	{
-		const self = this
-		if (typeof showingValidationErrMsg_orUndefined !== 'undefined') {
-			console.log("Password entry validation error:", showingValidationErrMsg_orUndefined)
-		}
-		var errToPassBack = null // use err if user cancelled - err will cancel the pw change
-		var obtained_passwordString;
-		var obtained_typeOfPassword;
-		obtained_passwordString = "a much stronger password than before"
-		obtained_typeOfPassword = passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW
-		obtainedErrOrPwAndType_cb(
-			errToPassBack,
-			obtained_passwordString,
-			obtained_typeOfPassword
-		)
-	}
-	passwordController__didSetFirstPasswordDuringThisRuntime_cb(passwordController, password)
-	{
-		const self = this
-	}
-	passwordController__didChangePassword_cb(passwordController, password)
-	{
-		// TODO: funnel into a singular function which tells the wallets and contacts list controllers to re-save
-		const self = this
-		console.log("TODO: passwordController__didChangePassword_cb; inform wallet + contact lists")
+		// self._startObserving_walletsController()
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Events - WalletsListController
 	
-	_aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
-	{
-		const self = this
-		console.log("app runtime c hears _aWallet_balanceChanged", emittingWallet._id, old_total_received, old_total_sent, old_locked_balance)
-	}	
-	_aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
-	{
-		const self = this
-		console.log("app runtime c hears _aWallet_transactionsAdded", emittingWallet._id, numberOfTransactionsAdded, newTransactions)
-	}
+	// TODO: uncomment, maybe move, and apply for notifications
+	// _aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
+	// {
+	// 	const self = this
+	// 	console.log("app runtime c hears _aWallet_balanceChanged", emittingWallet._id, old_total_received, old_total_sent, old_locked_balance)
+	// }
+	// _aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
+	// {
+	// 	const self = this
+	// 	console.log("app runtime c hears _aWallet_transactionsAdded", emittingWallet._id, numberOfTransactionsAdded, newTransactions)
+	// }
 }
-module.exports = AppRuntimeController
+module.exports = ApplicationControllerController

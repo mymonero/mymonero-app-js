@@ -10,14 +10,14 @@ This version has been reimplemented in javascript and placed in public domain.
 
 (function(exports)
 {
-	var isNodeJS
-	if (typeof window !== 'undefined') {
-		isNodeJS = false
+	var isNodeJSOrElectronRenderer
+	if (typeof window !== 'undefined' && window.IsElectronRendererProcess !== true) {
+		isNodeJSOrElectronRenderer = false
 	} else {
-		isNodeJS = true
+		isNodeJSOrElectronRenderer = true
 	}
 	var nodeJS__crypto
-	if (isNodeJS == true) {
+	if (isNodeJSOrElectronRenderer == true) {
 		nodeJS__crypto = require('crypto')
 		crc32 = require('./crc32').crc32
 	}	
@@ -116,7 +116,7 @@ This version has been reimplemented in javascript and placed in public domain.
 	function mn_random(bits) {
 		'use strict';
 		if (bits % 32 !== 0) throw "Something weird went wrong: Invalid number of bits - " + bits;
-		if (isNodeJS == false) {
+		if (isNodeJSOrElectronRenderer == false) {
 			// browser implementation
 			var array = new Uint32Array(bits / 32);
 

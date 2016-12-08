@@ -132,7 +132,7 @@ class MainWindowController
 		})
 		{ // hardening
 			const allowDevTools = process.env.NODE_ENV === 'development'
-			const openDevTools = allowDevTools === true && false // don't need it to auto open
+			const openDevTools = allowDevTools === true && true
 			if (allowDevTools !== true) { // this prevents the dev tools from staying open
 				window.webContents.on( // but it would be nicer to completely preclude it opening
 					"devtools-opened",
@@ -163,14 +163,14 @@ class MainWindowController
 		// However, we can't wait til those controllers are booted to create the window because they might need
 		// to present things like the password entry fields in the UI
 		self.create_window_whenAppReady()
-		self.startObserving_appRuntimeController()
+		self.startObserving_applicationController()
 	}
-	startObserving_appRuntimeController()
+	startObserving_applicationController()
 	{
 		const self = this
-		const appRuntimeController = self.context.appRuntimeController
-		appRuntimeController.on(
-			appRuntimeController.EventName_userAttemptedToDuplicativelyLaunchApp(),
+		const applicationController = self.context.applicationController
+		applicationController.on(
+			applicationController.EventName_userAttemptedToDuplicativelyLaunchApp(),
 			function()
 			{ // bring window to forefront howoever necessary
 				if (self.window !== null) {
@@ -190,9 +190,9 @@ class MainWindowController
 	_allWindowsDidClose()
 	{
 		const self = this
-		const appRuntimeController = self.context.appRuntimeController
-		if (appRuntimeController.Platform() === appRuntimeController.Platforms().MacOS) { // because macos apps stay active while main window closed
-			appRuntimeController.QuitApp() // we're going through appRuntimeController so that the wallets list controller can subscribe to the app runtime controller instead of the electron app (for cross platform usage)
+		const applicationController = self.context.applicationController
+		if (applicationController.Platform() === applicationController.Platforms().MacOS) { // because macos apps stay active while main window closed
+			applicationController.QuitApp() // we're going through applicationController so that the wallets list controller can subscribe to the app runtime controller instead of the electron app (for cross platform usage)
 		}
 	}
 }

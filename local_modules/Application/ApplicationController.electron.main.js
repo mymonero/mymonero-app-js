@@ -25,10 +25,10 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-const AppRuntimeController = require('./AppRuntimeController')
+const ApplicationController = require('./ApplicationController')
 //
 const __platform = process.platform // const as of derivation
 const __platform_named_MacOS = 'darwin' // not really MacOS
@@ -37,7 +37,7 @@ const __platforms =
 	MacOS: __platform_named_MacOS
 }
 //
-class AppRuntimeController_electron extends AppRuntimeController
+class ApplicationController_electron extends ApplicationController
 {
 
 	setup()
@@ -64,8 +64,6 @@ class AppRuntimeController_electron extends AppRuntimeController
 			return
 		}
 	}
-
-
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -107,4 +105,4 @@ class AppRuntimeController_electron extends AppRuntimeController
 		})
 	}
 }
-module.exports = AppRuntimeController_electron
+module.exports = ApplicationController_electron

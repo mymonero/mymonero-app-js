@@ -34,6 +34,7 @@ const _ = require('underscore') // minor optimization for other platforms
 module.exports = function()
 {
 	hardenRuntime()
+	identifyRuntime()
 	ensureEnv()
 }
 //
@@ -45,6 +46,10 @@ function hardenRuntime()
 	{
 		throw new Error("MyMonero does not support window.eval() for security reasons.")
 	}
+}
+function identifyRuntime()
+{
+	window.IsElectronRendererProcess = true
 }
 //
 function ensureEnv()

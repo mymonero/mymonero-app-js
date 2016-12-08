@@ -32,47 +32,13 @@
 var context_object_instantiation_descriptions =
 [
 	{
-		module_path: __dirname + "/../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
+		module_path: __dirname + "/../Application/ApplicationController.electron.main",
+		instance_key: "applicationController",
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../HostedMoneroAPIClient/HostedMoneroAPIClient",
-		instance_key: "hostedMoneroAPIClient",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../AppRuntime/AppRuntimeController.electron",
-		instance_key: "appRuntimeController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../Passwords/PasswordController",
-		instance_key: "passwordController",
-		options: {
-			// TODO: transition this to .emits and imperatives(?)
-			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
-			{
-				controller.context.appRuntimeController.passwordController__obtainPasswordFromUser_wOptlValidationErrMsg_cb(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
-			},
-			didSetFirstPasswordDuringThisRuntime_cb: function(controller, password)
-			{
-				controller.context.appRuntimeController.passwordController__didSetFirstPasswordDuringThisRuntime_cb(controller, password)
-			},
-			didChangePassword_cb: function(controller, password)
-			{
-				controller.context.appRuntimeController.passwordController__didChangePassword_cb(controller, password)
-			}
-		}
-	},
-	{
-		module_path: __dirname + "/../WalletsList/Controllers/WalletsListController",
-		instance_key: "walletsListController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../Contacts/Controllers/ContactsListController",
-		instance_key: "contactsListController",
+		module_path: __dirname + "/../Menus/MenuController.electron",
+		instance_key: "menuController",
 		options: {}
 	},
 	{

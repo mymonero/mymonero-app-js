@@ -42,22 +42,22 @@ const rootView = new_rootView() // hang onto reference
 //
 function new_rootView()
 {
-	const superlayer = document.body
-	const options = {}
-	const renderer_context =
-	{ // not 100% sure if we need to make the renderer context a different object, but
-	  // this at least expicitly calls out the controllers that are intended for UI usage:
-		mainWindowController: remote__context.mainWindowController,
-		passwordController: remote__context.passwordController,
-		walletsListController: remote__context.walletsListController,
-		contactsListController: remote__context.contactsListController
-	}
 	const RootView = require('./RootView.web.js') // electron uses .web files as it has a web DOM
+	const renderer_context = require('./index_context.electron').NewHydratedContext(
+		remote__app, 
+		remote__context.applicationController
+	)
+	const options = {}
 	const view = new RootView(options, renderer_context)
-	view.superview = null // just to be explicit
-	view.superlayer = superlayer
-	// manually attach the rootView to the DOM
-	superlayer.appendChild(view.layer) // the `layer` is actually the DOM element
+	{
+		view.superview = null // just to be explicit
+	}
+	{
+		const superlayer = document.body
+		view.superlayer = superlayer
+		// manually attach the rootView to the DOM
+		superlayer.appendChild(view.layer) // the `layer` is actually the DOM element
+	}
 	//
 	return view
 }

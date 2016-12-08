@@ -590,10 +590,10 @@ class WalletsListController extends EventEmitter
 		const self = this
 		// We have to wait until post-whole-context-init to guarantee all controllers exist
 		//
-		const appRuntimeController = self.context.appRuntimeController
-		appRuntimeController.on(appRuntimeController.EventName_appWillQuit(), function()
+		const applicationController = self.context.applicationController
+		applicationController.on(applicationController.EventName_appWillQuit(), function()
 		{
-			self._appRuntimeController_EventName_appWillQuit()
+			self._applicationController_EventName_appWillQuit()
 		})
 	}
 
@@ -669,7 +669,7 @@ class WalletsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime/Boot - Delegation - Private
 	
-	_appRuntimeController_EventName_appWillQuit()
+	_applicationController_EventName_appWillQuit()
 	{
 		const self = this
 		self._tearDown()
