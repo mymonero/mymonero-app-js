@@ -28,33 +28,12 @@
 //
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../Application/ApplicationController.electron.main",
-		instance_key: "applicationController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../Menus/MenuController.electron",
-		instance_key: "menuController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../MainWindow/Controllers/MainWindowController.electron.renderer",
-		instance_key: "mainWindowController",
-		options: {}
-	}
-]
-function NewHydratedContext(app)
+const electron = require('electron')
+//
+export class BackgroundModuleController
 {
-	var initialContext =
+	constructor(options, context)
 	{
-		app: app,
-		userDataAbsoluteFilepath: app.getPath('userData')
+		
 	}
-
-	return require("../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
 }
-module.exports.NewHydratedContext = NewHydratedContext

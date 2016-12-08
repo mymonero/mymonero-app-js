@@ -98,9 +98,15 @@ class ApplicationController_electron extends ApplicationController
 	{
 		const self = this
 		const app = self.context.app
-		// nothing to do yet
+		//
+		self.hasAlreadyHeardThat_willQuit = false
 		app.on('will-quit', function()
 		{
+			if (self.hasAlreadyHeardThat_willQuit === true) {
+				console.warn("⚠️  'will-quit' received redundantly")
+				return
+			}
+			self.hasAlreadyHeardThat_willQuit = true
 			self._calledByConcreteImplementation_broadcastThatAppWillQuit()
 		})
 	}

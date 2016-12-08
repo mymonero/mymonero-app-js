@@ -61,9 +61,9 @@ class ApplicationController extends EventEmitter
 			// TODO: send this to the error reporting service
 		})
 	}
-	setup_concreteImpOverride_startObserving_app()
+	_concreteImpOverride_startObserving_app()
 	{	
-		throw "You must override setup_concreteImpOverride_startObserving_app but not call it on super"
+		throw "You must override _concreteImpOverride_startObserving_app but not call it on super"
 	}
 	
 
