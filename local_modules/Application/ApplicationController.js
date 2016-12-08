@@ -30,7 +30,7 @@
 //
 const EventEmitter = require('events') // TODO: abstract for platform independence
 //
-class ApplicationControllerController extends EventEmitter
+class ApplicationController extends EventEmitter
 {
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ class ApplicationControllerController extends EventEmitter
 		{ // We're going to observe this here (for electron especially) so
 		  // that the exceptions are prevented from bubbling up to the UI.
 		  // startObserving_uncaughtExceptions /might/ be able to be moved to ….electron.js
-			console.error("ApplicationControllerController observed uncaught exception", error)
+			console.error("ApplicationController observed uncaught exception", error)
 			// TODO: send this to the error reporting service
 		})
 	}
@@ -92,31 +92,6 @@ class ApplicationControllerController extends EventEmitter
 		throw "implement this in your subclass"
 	}
 	
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime (not setup) - Imperatives - Setup - Observation
-	
-	// TODO: uncomment, maybe move, and apply for notifications
-	// _startObserving_walletsController()
-	// { // this is called by self.RuntimeContext_postWholeContextInit_setup
-	// 	const self = this
-	// 	const walletsListController = self.context.walletsListController
-	// 	walletsListController.on(
-	// 		walletsListController.EventName_aWallet_balanceChanged(),
-	// 		function(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
-	// 		{
-	// 			self._aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
-	// 		}
-	// 	)
-	// 	walletsListController.on(
-	// 		walletsListController.EventName_aWallet_transactionsAdded(),
-	// 		function(emittingWallet, numberOfTransactionsAdded, newTransactions)
-	// 		{
-	// 			self._aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
-	// 		}
-	// 	)
-	// }
-	
 	
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Emissions - Callable by concrete implementations
@@ -145,21 +120,5 @@ class ApplicationControllerController extends EventEmitter
 		self._concreteImpOverride_startObserving_app() // you should implement this in your platform-specific implementation
 		// self._startObserving_walletsController()
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Events - WalletsListController
-	
-	// TODO: uncomment, maybe move, and apply for notifications
-	// _aWallet_balanceChanged(emittingWallet, old_total_received, old_total_sent, old_locked_balance)
-	// {
-	// 	const self = this
-	// 	console.log("app runtime c hears _aWallet_balanceChanged", emittingWallet._id, old_total_received, old_total_sent, old_locked_balance)
-	// }
-	// _aWallet_transactionsAdded(emittingWallet, numberOfTransactionsAdded, newTransactions)
-	// {
-	// 	const self = this
-	// 	console.log("app runtime c hears _aWallet_transactionsAdded", emittingWallet._id, numberOfTransactionsAdded, newTransactions)
-	// }
 }
-module.exports = ApplicationControllerController
+module.exports = ApplicationController

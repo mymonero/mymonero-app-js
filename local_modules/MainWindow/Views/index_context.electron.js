@@ -65,11 +65,11 @@ var context_object_instantiation_descriptions =
 			},
 			didSetFirstPasswordDuringThisRuntime_cb: function(passwordController, password)
 			{
-
 			},
 			didChangePassword_cb: function(passwordController, password)
 			{
-
+				// TODO: broadcast this instead and observe in wallets list and contacts list
+				console.log("TODO: passwordController didChangePassword_cb; inform wallet + contact lists")
 			}
 		}
 	},
@@ -84,12 +84,12 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 ]
-function NewHydratedContext(app, applicationController)
+function NewHydratedContext(app, appRuntimeController)
 {
 	var initialContext =
 	{
 		app: app,
-		applicationController: applicationController,
+		appRuntimeController: appRuntimeController,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}
 
