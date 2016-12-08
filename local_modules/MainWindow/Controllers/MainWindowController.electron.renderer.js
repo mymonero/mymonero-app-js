@@ -73,6 +73,16 @@ class MainWindowController
 				self._create_window_ifNecessary()
 			}
 		})
+		// custom:
+		app.on('launched-duplicatively', function()
+		{ // bring window to forefront however necessary
+			if (self.window !== null) {
+			    if (self.window.isMinimized()) {
+					self.window.restore()
+				}
+			    self.window.focus()
+			}
+		})
 	}
 	
 	
@@ -163,24 +173,6 @@ class MainWindowController
 		// However, we can't wait til those controllers are booted to create the window because they might need
 		// to present things like the password entry fields in the UI
 		self.create_window_whenAppReady()
-		self.startObserving_applicationController()
-	}
-	startObserving_applicationController()
-	{
-		const self = this
-		const applicationController = self.context.applicationController
-		applicationController.on(
-			applicationController.EventName_userAttemptedToDuplicativelyLaunchApp(),
-			function()
-			{ // bring window to forefront howoever necessary
-				if (self.window !== null) {
-				    if (self.window.isMinimized()) {
-						self.window.restore()
-					}
-				    self.window.focus()
-				}
-			}
-		)
 	}
 
 		
@@ -190,9 +182,9 @@ class MainWindowController
 	_allWindowsDidClose()
 	{
 		const self = this
-		const applicationController = self.context.applicationController
-		if (applicationController.Platform() === applicationController.Platforms().MacOS) { // because macos apps stay active while main window closed
-			applicationController.QuitApp() // we're going through applicationController so that the wallets list controller can subscribe to the app runtime controller instead of the electron app (for cross platform usage)
+		const app = self.context.app
+		if (process.platform === 'darwin') { // because macos apps stay active while main window closed
+			app.quit()
 		}
 	}
 }

@@ -84,12 +84,11 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 ]
-function NewHydratedContext(app, applicationController)
+function NewHydratedContext(app)
 {
 	var initialContext =
 	{
 		app: app,
-		applicationController: applicationController,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}
 

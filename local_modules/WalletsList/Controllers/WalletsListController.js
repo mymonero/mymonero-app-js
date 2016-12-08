@@ -55,7 +55,18 @@ class WalletsListController extends EventEmitter
 		//
 		self.hasBooted = false // not booted yet - we'll defer things till we have
 		//
+		self.startObserving_app()
 		self.setup()
+	}
+	startObserving_app()
+	{ // TODO: abstract to make platform inspecific
+		const self = this
+		const app = self.context.app
+		app.on('will-quit', function()
+		{ // this might not be necessary anymore since this code now lives in the renderer process
+			console.log('wallets list c hears app will quit')
+			self._appWillQuit()
+		})
 	}
 	_setup_didBoot(optlFn)
 	{
@@ -194,8 +205,7 @@ class WalletsListController extends EventEmitter
 			const wallet = self.wallets[i]
 			wallet.TearDown()
 		}
-	}
-	
+	}	
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -588,13 +598,6 @@ class WalletsListController extends EventEmitter
 	RuntimeContext_postWholeContextInit_setup()
 	{
 		const self = this
-		// We have to wait until post-whole-context-init to guarantee all controllers exist
-		//
-		const applicationController = self.context.applicationController
-		applicationController.on(applicationController.EventName_appWillQuit(), function()
-		{
-			self._applicationController_EventName_appWillQuit()
-		})
 	}
 
 
@@ -669,7 +672,7 @@ class WalletsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime/Boot - Delegation - Private
 	
-	_applicationController_EventName_appWillQuit()
+	_appWillQuit()
 	{
 		const self = this
 		self._tearDown()

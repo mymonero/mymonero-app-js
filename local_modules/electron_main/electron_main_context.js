@@ -32,11 +32,6 @@
 var context_object_instantiation_descriptions =
 [
 	{
-		module_path: __dirname + "/../Application/ApplicationController.electron.main",
-		instance_key: "applicationController",
-		options: {}
-	},
-	{
 		module_path: __dirname + "/../Menus/MenuController.electron",
 		instance_key: "menuController",
 		options: {}
