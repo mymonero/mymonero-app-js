@@ -34,6 +34,7 @@ function SaveToDisk(
 )
 {
 	const self = instance
+	const document_cryptor__background = self.context.document_cryptor__background
 	console.log("📝  Saving contact to disk ", self.Description())
 	//
 	fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
@@ -51,14 +52,27 @@ function SaveToDisk(
 		fullname: self.fullname,
 		address__XMR: self.address__XMR
 	}
-	const encryptedDocument = document_cryptor.New_EncryptedDocument(
+	document_cryptor__background.New_EncryptedDocument(
 		plaintextDocument,
 		documentCryptScheme,
-		persistencePassword
+		persistencePassword,
+		function(err, encryptedDocument)
+		{
+			if (err) {
+				console.error("Error while saving :", err)
+				fn(err)
+				return
+			}
+			if (self._id === null || typeof self._id === 'undefined') {
+				_proceedTo_insertNewDocument(encryptedDocument)
+			} else {
+				_proceedTo_updateExistingDocument(encryptedDocument)
+			}
+		}
 	)
 	//
 	// insert & update fn declarations for imminent usage…
-	function _proceedTo_insertNewDocument()
+	function _proceedTo_insertNewDocument(encryptedDocument)
 	{
 		self.context.persister.InsertDocument(
 			CollectionName,
@@ -83,7 +97,7 @@ function SaveToDisk(
 			}
 		)
 	}
-	function _proceedTo_updateExistingDocument()
+	function _proceedTo_updateExistingDocument(encryptedDocument)
 	{
 		var query =
 		{
@@ -136,12 +150,6 @@ function SaveToDisk(
 				fn()
 			}
 		)
-	}
-	//
-	if (self._id === null || typeof self._id === 'undefined') {
-		_proceedTo_insertNewDocument()
-	} else {
-		_proceedTo_updateExistingDocument()
 	}
 }
 exports.SaveToDisk = SaveToDisk
