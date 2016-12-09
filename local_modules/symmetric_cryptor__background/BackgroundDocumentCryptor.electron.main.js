@@ -93,6 +93,8 @@ class BackgroundDocumentCryptor
 		window.webContents.on("did-fail-load", function(event, errorCode, errorDescription, validatedURL, isMainFrame)
 		{
 			console.error("Failed to load background window… err ", errorCode, errorDescription)
+			throw errorDescription
+			process.exit(-1) // can't really continue
 		})
 		// then call load
 		window.loadURL(`file://${__dirname}/index.electron.html`)
@@ -103,7 +105,7 @@ class BackgroundDocumentCryptor
 	}
 	//
 	//
-	// Runtime - Accessors
+	// Runtime - Accessors - Interface
 	//
 	New_EncryptedDocument(
 		plaintextDocument, 
@@ -113,27 +115,22 @@ class BackgroundDocumentCryptor
 	)
 	{
 		const self = this
-		self.ExecuteWhenBooted(function()
-		{
-			const taskUUID = uuidV1()
-			//
-			self.callbacksByUUID[taskUUID] = fn
-			//
-			self.window.webContents.send(
-				'New_EncryptedDocument',
-				taskUUID,
-				plaintextDocument, 
-				documentCryptScheme, 
-				password
-			)
-		})
+		self._executeBackgroundTaskNamed(
+			'New_EncryptedDocument',
+			fn,
+			plaintextDocument, 
+			documentCryptScheme, 
+			password
+		)
 	}
 	//
 	//
-	// Runtime - Imperatives
+	// Runtime - Imperatives - Internal
 	//
 	ExecuteWhenBooted(fn)
-	{
+	{ // ^ capitalizing this as
+	  // (a) it could theoretically be callable by self consumers
+	  // (b) it's the same code as used in other places so maintains regularity
 		const self = this
 		if (self.hasBooted === true) {
 			fn()
@@ -147,6 +144,39 @@ class BackgroundDocumentCryptor
 			10 // ms
 		)
 	}
+	_executeBackgroundTaskNamed(
+		rendererProcess_fnName,
+		fn
+		// …args
+	)
+	{
+		const self = this
+		const taskUUID = uuidV1()
+		{ // we need to generate taskUUID now to construct arguments so we might as well also hang onto it here instead of putting that within the call to ExecuteWhenBooted
+			self.callbacksByUUID[taskUUID] = fn
+		}
+		const webContents_send_arguments = [] // to build
+		{
+			webContents_send_arguments.push(rendererProcess_fnName)
+			webContents_send_arguments.push(taskUUID)
+			// apply any remaining arguments that the caller of _executeBackgroundTaskNamed wants to send to the bg method
+			for (let i = 2 ; i < arguments.length ; i++) {
+				// i at 2 to skip method name and fn
+				var i_arg = arguments["" + i] // as it's a hash
+				webContents_send_arguments.push(i_arg)
+			}
+		}
+		self.ExecuteWhenBooted(function()
+		{ // wait til window/threads set up
+			const webContents = self.window.webContents
+			webContents.send.apply(
+				webContents,
+				webContents_send_arguments
+			)
+		})
+
+	}
+	
 	
 	//
 	//
