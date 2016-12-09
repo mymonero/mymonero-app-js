@@ -28,7 +28,7 @@
 
 "use strict"
 //
-const request = require('request')
+const request = require('xhr')
 const async = require('async')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
