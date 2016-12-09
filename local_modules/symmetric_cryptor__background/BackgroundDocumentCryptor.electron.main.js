@@ -117,8 +117,24 @@ class BackgroundDocumentCryptor
 		const self = this
 		self._executeBackgroundTaskNamed(
 			'New_EncryptedDocument',
-			fn,
+			fn, // fn goes as second arg
 			plaintextDocument, 
+			documentCryptScheme, 
+			password
+		)
+	}
+	New_DecryptedDocument(
+		encryptedDocument,
+		documentCryptScheme,
+		password,
+		fn // fn: (err?, decryptedDocument) -> Void
+	)
+	{
+		const self = this
+		self._executeBackgroundTaskNamed(
+			'New_DecryptedDocument',
+			fn, // fn goes as second arg
+			encryptedDocument, 
 			documentCryptScheme, 
 			password
 		)
@@ -175,9 +191,7 @@ class BackgroundDocumentCryptor
 			)
 		})
 
-	}
-	
-	
+	}	
 	//
 	//
 	// Runtime - Delegation

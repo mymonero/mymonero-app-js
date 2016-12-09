@@ -386,6 +386,8 @@ class SecretPersistingHostedWallet extends EventEmitter
 	)
 	{
 		const self = this
+		const document_cryptor__background = self.context.document_cryptor__background
+		// TODO: move this function's contents to secretWallet_persistence_utils?
 		//
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
@@ -408,24 +410,24 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		function __proceedTo_decryptDocument(encryptedDocument)
 		{
-			var plaintextDocument
-			try {
-				plaintextDocument = document_cryptor.New_DecryptedDocument(
-					encryptedDocument,
-					secretWallet_persistence_utils.DocumentCryptScheme,
-					self.persistencePassword
-				)
-			} catch (e) {
-				const errStr = "❌  Decryption err: " + e.toString()
-				const err = new Error(errStr)
-				console.error(errStr)
-				fn(err)
-				return
-			}
-			//
-			self.initialization_encryptedDocument = null // now we can free this
-			//
-			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+			document_cryptor__background.New_DecryptedDocument(
+				encryptedDocument,
+				secretWallet_persistence_utils.DocumentCryptScheme,
+				self.persistencePassword,
+				function(err, plaintextDocument)
+				{
+					if (err) {
+						const errStr = "❌  Decryption err: " + e.toString()
+						const err = new Error(errStr)
+						console.error(errStr)
+						fn(err)
+						return
+					}
+					self.initialization_encryptedDocument = null // now we can free this
+					//
+					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+				}
+			)
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…

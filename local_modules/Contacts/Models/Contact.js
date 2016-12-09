@@ -138,24 +138,25 @@ class Contact extends EventEmitter
 		)
 		function __proceedTo_decryptEncryptedDocument(encryptedDocument)
 		{
-			var plaintextDocument
-			try {
-				plaintextDocument = document_cryptor.New_DecryptedDocument(
-					encryptedDocument,
-					contact_persistence_utils.DocumentCryptScheme,
-					self.persistencePassword
-				)
-			} catch (e) {
-				const errStr = "❌  Decryption err: " + e.toString()
-				const err = new Error(errStr)
-				console.error(errStr)
-				setTimeout(function()
-				{ // wait til next tick so that instantiator cannot have missed this
-					self.emit(self.EventName_errorWhileBooting(), err)
-				})
-				return
-			}
-			__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+			self.context.document_cryptor__background.New_DecryptedDocument(
+				encryptedDocument,
+				contact_persistence_utils.DocumentCryptScheme,
+				self.persistencePassword,
+				function(err, plaintextDocument)
+				{
+					if (err) {
+						const errStr = "❌  Decryption err: " + e.toString()
+						const err = new Error(errStr)
+						console.error(errStr)
+						setTimeout(function()
+						{ // wait til next tick so that instantiator cannot have missed this
+							self.emit(self.EventName_errorWhileBooting(), err)
+						})
+						return
+					}
+					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+				}
+			)
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…

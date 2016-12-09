@@ -49,11 +49,39 @@ ipcRenderer.on(
 	{
 		var encryptedDocument;
 		try {
-			encryptedDocument = document_cryptor.New_EncryptedDocument(plaintextDocument, documentCryptScheme, password)
+			encryptedDocument = document_cryptor.New_EncryptedDocument(
+				plaintextDocument, 
+				documentCryptScheme, 
+				password
+			)
 		} catch (e) {
 			callBack(taskUUID, e, null)
 			return
 		}
 		callBack(taskUUID, null, encryptedDocument)
+	}
+)
+ipcRenderer.on(
+	'New_DecryptedDocument',
+	function(
+		event,
+		taskUUID,
+		encryptedDocument, 
+		documentCryptScheme, 
+		password
+	)
+	{
+		var plaintextDocument;
+		try {
+			plaintextDocument = document_cryptor.New_DecryptedDocument(
+				encryptedDocument,
+				documentCryptScheme,
+				password
+			)
+		} catch (e) {
+			callBack(taskUUID, e, null)
+			return
+		}
+		callBack(taskUUID, null, plaintextDocument)
 	}
 )
