@@ -65,6 +65,11 @@ var context_object_instantiation_descriptions =
 				console.log("didChangePassword_cb" , password)
 			}
 		}
+	},
+	{
+		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.interfaceForTests",
+		instance_key: "document_cryptor__background",
+		options: {}
 	}
 ]
 function NewHydratedContext()

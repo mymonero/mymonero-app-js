@@ -32,6 +32,10 @@ const mnemonic = require('../cryptonote_utils/mnemonic')
 const monero_utils = require('./monero_cryptonote_utils_instance')
 const monero_config = require('./monero_config')
 //
+//
+////////////////////////////////////////////////////////////////////////////////
+// Mnemonic wordset utilities - Exposing available names
+//	
 const wordsetNames = {}
 const wordsetNames_array = Object.keys(mnemonic.mn_words)
 for (let wordsetName of wordsetNames_array) {
@@ -39,6 +43,42 @@ for (let wordsetName of wordsetNames_array) {
 }
 exports.wordsetNames = wordsetNames
 //
+//
+////////////////////////////////////////////////////////////////////////////////
+// Mnemonic wordset utilities - Wordset name detection by mnemonic contents
+//	
+function WordsetNameAccordingToMnemonicString(mnemonicString) // throws
+{
+	const mnemonicString_components = mnemonicString.split(' ')
+	if (mnemonicString_components.length == 0) {
+		throw "Invalid mnemonic"
+		return
+	}
+	console.log ("TODO! WordsetNameAccordingToMnemonicString")
+	return wordsetName
+}
+exports.WordsetNameAccordingToMnemonicString = WordsetNameAccordingToMnemonicString
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+// Mnemonic wordset utilities - By locale
+//	
+const mnemonicWordsetNamesByAppLocaleNames =
+{
+	English: "english",
+	Japanese: "japanese",
+	Spanish: "spanish",
+	Portuguese: "portuguese"
+	// NOTE: no support for 'electrum' wordset here
+}
+exports.MnemonicWordsetNamesByAppLocaleNames = mnemonicWordsetNamesByAppLocaleNames
+//
+exports.DefaultWalletMnemonicWordsetName = mnemonicWordsetNamesByAppLocaleNames.English
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+// Wallet creation:
+//	
 function NewlyCreatedWallet(mnemonic_wordsetName)
 {
 	const seed = monero_utils.rand_16() // 128-bit/16-byte key -- comes out as 32 chars
@@ -53,6 +93,10 @@ function NewlyCreatedWallet(mnemonic_wordsetName)
 }
 exports.NewlyCreatedWallet = NewlyCreatedWallet
 //
+//
+////////////////////////////////////////////////////////////////////////////////
+// Wallet login:
+//	
 function MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
 {
 	const mnemonicString = mnemonic.mn_encode(account_seed, mnemonic_wordsetName)

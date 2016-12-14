@@ -168,7 +168,15 @@ class SecretPersistingHostedWallet extends EventEmitter
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false
 		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default
-		self.mnemonic_wordsetName = self.options.mnemonic_wordsetName || monero_wallet_utils.wordsetNames.english // default
+		if (typeof self.context.app === 'undefined') {
+			self.mnemonic_wordsetName = monero_wallet_utils.DefaultWalletMnemonicWordsetName
+			console.log(`Defaulting to ${self.mnemonic_wordsetName} as self.context.app missing and so won't detect locale.`)
+		} else {
+			// for now, we'll assume this is electron
+			const monero_wallet_locale = require('../../monero_utils/monero_wallet_locale.electron') // include other lib when supporting other platforms
+			self.mnemonic_wordsetName = monero_wallet_locale.MnemonicWordsetNameAccordingToLocaleWithApp(self.context.app) // will default to english if no match
+			console.log("self.mnemonic_wordsetName" , self.mnemonic_wordsetName)
+		}
 		//
 		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
 		// case I: user is inputting mnemonic string
@@ -300,7 +308,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 		persistencePassword,
 		walletLabel,
 		mnemonicString,
-		wordsetName,
 		fn
 	)
 	{ // fn: (err?) -> Void
@@ -316,7 +323,16 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		//
 		self.walletLabel = walletLabel || ""
-		self.mnemonic_wordsetName = wordsetName || self.mnemonic_wordsetName // default has already been initialized
+		 
+		// TODO: remove wordset name from this function signature and autodetect the wordset based on checking the presence of all the words in a given wordset.
+		// error if wordset comparison issue		
+		try {
+			self.mnemonic_wordsetName = monero_wallet_utils.WordsetNameAccordingToMnemonicString(mnemonicString)
+		} catch (e) {
+			console.error("Error while detecting mnemonic wordset from mnemonic string: ", e)
+			fn(e)
+			return
+		}
 		//
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
@@ -1100,8 +1116,8 @@ class SecretPersistingHostedWallet extends EventEmitter
 		// Doing this allows us to selectively preserve already-cached info.
 		var numberOfTransactionsAdded = 0
 		const newTransactions = []
-		const self_transactions_length = self.transactions.length
 		const existing_transactions = self.transactions || []
+		const self_transactions_length = existing_transactions.length
 		const incoming_transactions_length = transactions.length
 		for (let i = 0 ; i < incoming_transactions_length ; i++) {
 			const incoming_tx = transactions[i]

@@ -25,35 +25,33 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../../../HostedMoneroAPIClient/HostedMoneroAPIClient",
-		instance_key: "hostedMoneroAPIClient",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../../symmetric_cryptor__background/BackgroundDocumentCryptor.interfaceForTests",
-		instance_key: "document_cryptor__background",
-		options: {}
-	}
-]
-function NewHydratedContext()
+const monero_wallet_utils = require('./monero_wallet_utils')
+//
+function mnemonicWordsetNameAccordingToLocaleWithApp(app)
 {
-	var initialContext =
-	{
-		userDataAbsoluteFilepath: "./test_products"
+	const self = this
+	const currentLocale = app.getLocale()
+	console.log("currentLocale:" , currentLocale)
+	const mnemonicWordsetNamesByAppLocaleNames = monero_wallet_utils.MnemonicWordsetNamesByAppLocaleNames
+	if (currentLocale.indexOf('en') === 0) {
+		console.log("en")
+		return mnemonicWordsetNamesByAppLocaleNames.English
+	} else if (currentLocale.indexOf('es') === 0) {
+		console.log("es")
+		return mnemonicWordsetNamesByAppLocaleNames.Spanish
+	} else if (currentLocale.indexOf('pt') === 0) {
+		console.log("pt")
+		return mnemonicWordsetNamesByAppLocaleNames.Portuguese
+	} else if (currentLocale.indexOf('ja') === 0) {
+		console.log("ja")
+		return mnemonicWordsetNamesByAppLocaleNames.Japanese
 	}
-
-	return require("../../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	//
+	console.log("default")
+	return monero_wallet_utils.DefaultWalletMnemonicWordsetName // which would be .English
+	
 }
-module.exports.NewHydratedContext = NewHydratedContext
+exports.MnemonicWordsetNameAccordingToLocaleWithApp = mnemonicWordsetNameAccordingToLocaleWithApp

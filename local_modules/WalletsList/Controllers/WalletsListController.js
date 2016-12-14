@@ -391,7 +391,6 @@ class WalletsListController extends EventEmitter
 	}
 	WhenBooted_AddExtantWalletWith_mnemonicString(
 		mnemonicString,
-		wordsetName,
 		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet, wasWalletAlreadyInserted: Bool?) -> Void
 	)
 	{
@@ -438,7 +437,6 @@ class WalletsListController extends EventEmitter
 								persistencePassword,
 								walletLabel,
 								mnemonicString,
-								wordsetName,
 								function(err) {
 									if (err) {
 										fn(err)

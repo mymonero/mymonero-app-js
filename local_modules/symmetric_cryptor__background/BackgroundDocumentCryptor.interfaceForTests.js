@@ -25,35 +25,64 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
+const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+//
+class BackgroundDocumentCryptor 
+{ // NOTE: This is not really a "background" processor - just a way to access the same functionality for tests in Node.JS
+	constructor(options, context)
 	{
-		module_path: __dirname + "/../../../HostedMoneroAPIClient/HostedMoneroAPIClient",
-		instance_key: "hostedMoneroAPIClient",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../../NeDBPersister/NeDBPersister",
-		instance_key: "persister",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../../symmetric_cryptor__background/BackgroundDocumentCryptor.interfaceForTests",
-		instance_key: "document_cryptor__background",
-		options: {}
+		const self = this
+		{
+			self.options = options
+			self.context = context
+		}
 	}
-]
-function NewHydratedContext()
-{
-	var initialContext =
+	//
+	//
+	// Runtime - Accessors - Interface
+	//
+	New_EncryptedDocument(
+		plaintextDocument, 
+		documentCryptScheme, 
+		password, 
+		fn // fn: (err?, encryptedDocument) -> Void
+	)
 	{
-		userDataAbsoluteFilepath: "./test_products"
+		var encryptedDocument;
+		try {
+			encryptedDocument = document_cryptor.New_EncryptedDocument(
+				plaintextDocument, 
+				documentCryptScheme, 
+				password
+			)
+		} catch (e) {
+			fn(e, null)
+			return
+		}
+		fn(null, encryptedDocument)
 	}
-
-	return require("../../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	New_DecryptedDocument(
+		encryptedDocument,
+		documentCryptScheme,
+		password,
+		fn // fn: (err?, decryptedDocument) -> Void
+	)
+	{
+		var plaintextDocument;
+		try {
+			plaintextDocument = document_cryptor.New_DecryptedDocument(
+				encryptedDocument,
+				documentCryptScheme,
+				password
+			)
+		} catch (e) {
+			fn(e, null)
+			return
+		}
+		fn(null, plaintextDocument)
+	}
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports = BackgroundDocumentCryptor
