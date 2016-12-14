@@ -41,7 +41,6 @@ module.exports =
 	// used by fetchExistingWallet
 	// I
 	initWithMnemonic__mnemonicString: "…",
-	initWithMnemonic__wordsetName: monero_wallet_utils.wordsetNames.english,
 	// II
 	initWithKeys__address: "…",
 	initWithKeys__view_key__private: "…",

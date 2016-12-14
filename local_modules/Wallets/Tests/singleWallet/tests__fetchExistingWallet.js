@@ -82,7 +82,6 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 				wallets__tests_config.persistencePassword,
 				"Checking",
 				wallets__tests_config.initWithMnemonic__mnemonicString,
-				wallets__tests_config.initWithMnemonic__wordsetName,
 				function(err)
 				{
 					if (err) {

@@ -334,9 +334,11 @@ class SecretPersistingHostedWallet extends EventEmitter
 			return
 		}
 		//
+		// We're not going to set self.mnemonicString here because we re-derive it from seed in _trampolineFor_successfullyBooted
+		//
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
-			wordsetName,
+			self.mnemonic_wordsetName,
 			function(err, seed, keys)
 			{
 				if (err) {

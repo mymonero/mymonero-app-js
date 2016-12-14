@@ -36,12 +36,13 @@ const monero_config = require('./monero_config')
 ////////////////////////////////////////////////////////////////////////////////
 // Mnemonic wordset utilities - Exposing available names
 //	
-const wordsetNames = {}
-const wordsetNames_array = Object.keys(mnemonic.mn_words)
-for (let wordsetName of wordsetNames_array) {
-	wordsetNames[wordsetName] = wordsetName
+const wordsetNamesByWordsetName = {}
+const allWordsetNames = Object.keys(mnemonic.mn_words)
+for (let wordsetName of allWordsetNames) {
+	wordsetNamesByWordsetName[wordsetName] = wordsetName
 }
-exports.wordsetNames = wordsetNames
+exports.WordsetNamesByWordsetName = wordsetNamesByWordsetName
+exports.AllWordsetNames = allWordsetNames
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,13 +50,44 @@ exports.wordsetNames = wordsetNames
 //	
 function WordsetNameAccordingToMnemonicString(mnemonicString) // throws
 {
-	const mnemonicString_components = mnemonicString.split(' ')
-	if (mnemonicString_components.length == 0) {
+	const mnemonicString_words = mnemonicString.split(' ')
+	if (mnemonicString_words.length == 0) {
 		throw "Invalid mnemonic"
 		return
 	}
-	console.log ("TODO! WordsetNameAccordingToMnemonicString")
-	return wordsetName
+	var wholeMnemonicSuspectedAsWordsetNamed = null // to derive
+	for (let mnemonicString_word of mnemonicString_words) {
+		var thisWordIsInWordsetNamed = null // to derive
+		for (let wordsetName of allWordsetNames) {
+			if (wordsetName === 'electrum') {
+				continue // skip because it conflicts with 'english'
+			}
+			const wordsetWords = mnemonic.mn_words[wordsetName].words
+			if (wordsetWords.indexOf(mnemonicString_word) !== -1) {
+				thisWordIsInWordsetNamed = wordsetName
+				break // done looking
+			}
+			// haven't found it yet
+		}
+		if (thisWordIsInWordsetNamed === null) { // didn't find this word in any of the mnemonic wordsets
+			throw "Unrecognized mnemonic language"
+			return
+		}
+		if (wholeMnemonicSuspectedAsWordsetNamed === null) { // haven't found it yet
+			wholeMnemonicSuspectedAsWordsetNamed = thisWordIsInWordsetNamed 
+		} else if (thisWordIsInWordsetNamed !== wholeMnemonicSuspectedAsWordsetNamed) {
+			throw "Ambiguous mnemonic language" // multiple wordset names detected
+			return
+		} else {
+			// nothing to do but keep verifying the rest of the words that it's the same suspsected wordset
+		}
+	}
+	if (wholeMnemonicSuspectedAsWordsetNamed === null) { // this might be redundant, but for logical rigor……
+		throw "Unrecognized mnemonic language"
+		return
+	}
+	//
+	return wholeMnemonicSuspectedAsWordsetNamed
 }
 exports.WordsetNameAccordingToMnemonicString = WordsetNameAccordingToMnemonicString
 //

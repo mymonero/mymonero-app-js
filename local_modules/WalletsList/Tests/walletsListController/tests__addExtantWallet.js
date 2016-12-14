@@ -84,11 +84,9 @@ function _proceedTo_test_addingExtantWalletBy_mnemonicString(cb)
 	}
 	//
 	const initWithMnemonic__mnemonicString = wallets__tests_config.initWithMnemonic__mnemonicString
-	const initWithMnemonic__wordsetName = wallets__tests_config.initWithMnemonic__wordsetName
 	//
 	walletsListController.WhenBooted_AddExtantWalletWith_mnemonicString(
 		initWithMnemonic__mnemonicString,
-		initWithMnemonic__wordsetName,
 		function(err, walletInstance, wasWalletAlreadyInserted)
 		{
 			if (err) {
