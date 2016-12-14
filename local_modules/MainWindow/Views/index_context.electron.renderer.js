@@ -42,7 +42,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../Passwords/PasswordController",
+		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
 		instance_key: "passwordController",
 		options: {
 			// TODO: transition this to .emits and imperatives(?)

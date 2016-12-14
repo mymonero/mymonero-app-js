@@ -30,7 +30,7 @@
 //
 const async = require('async')
 //
-const symmetric_string_cryptor = require('../symmetric_cryptor/symmetric_string_cryptor')
+const symmetric_string_cryptor = require('../../symmetric_cryptor/symmetric_string_cryptor')
 //
 const CollectionName = "PasswordMeta"
 const plaintextMessageToSaveForUnlockChallenges = "this is just a string that we'll use for checking whether a given password can unlock an encrypted version of this very message"

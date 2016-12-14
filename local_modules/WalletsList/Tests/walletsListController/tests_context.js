@@ -54,7 +54,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../../Passwords/PasswordController",
+		module_path: __dirname + "/../../../Passwords/Controllers/PasswordController",
 		instance_key: "passwordController",
 		options: {
 			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)

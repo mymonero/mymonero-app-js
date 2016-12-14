@@ -103,7 +103,7 @@ function _proceedTo_test_bootController(cb)
 			console.log("didChangePassword_cb", password)
 		}
 	}
-	const PasswordController = require('../PasswordController')
+	const PasswordController = require('../Controllers/PasswordController')
 	try {
 		controller = new PasswordController(
 			options,
