@@ -630,7 +630,7 @@ class WalletsListController extends EventEmitter
 	{
 		const self = this
 		self.wallets.push(walletInstance)
-		self._startObserving_wallet(wallet)
+		self._startObserving_wallet(walletInstance)
 		self.__listUpdated_wallets()
 	}
 	__listUpdated_wallets()

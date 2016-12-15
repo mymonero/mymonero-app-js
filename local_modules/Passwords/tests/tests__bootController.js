@@ -37,7 +37,7 @@ if (typeof tests_config === 'undefined' || tests_config === null) {
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const theOriginalPassword = "this is the original password"
+const theOriginalPassword = "a much stronger password than before"
 const theNextPassword = "923162"
 //
 var controller; // we'll obtain this with bootController
@@ -47,8 +47,9 @@ async.series(
 	[
 		_proceedTo_test_bootController,
 		//
-		_proceedTo_test_gettingPassword,
-		_proceedTo_test_changingPassword
+		_proceedTo_test_gettingPassword
+		//,
+		// _proceedTo_test_changingPassword
 	],
 	function(err)
 	{
@@ -130,11 +131,11 @@ function _proceedTo_test_gettingPassword(cb)
 		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
 		function(enterPassword_cb)
 		{
-			const errCollectingPW = null
+			const userDidCancel_orNil = null
 			const obtainedPassword = theOriginalPassword
 			console.log("Replying with existing password of ", obtainedPassword)
 			enterPassword_cb(
-				errCollectingPW, 
+				userDidCancel_orNil, 
 				obtainedPassword
 			)
 		}
@@ -143,11 +144,7 @@ function _proceedTo_test_gettingPassword(cb)
 		controller.EventName_SingleObserver_getUserToEnterNewPasswordWithCB(),
 		function(enterPasswordAndType_cb)
 		{
-			const didUserCancelPWEntry = false // set this to true to test
-			var errToPassBack = null
-			if (didUserCancelPWEntry === true) {
-				errToPassBack = new Error("User cancelled PW entry/change")
-			}
+			const userDidCancel_orNil = null // set this to true to test
 			var obtained_passwordString;
 			var obtained_typeOfPassword;
 			if (controller.HasUserEnteredValidPasswordYet()) {
@@ -160,7 +157,7 @@ function _proceedTo_test_gettingPassword(cb)
 				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
 			}
 			enterPasswordAndType_cb(
-				errToPassBack,
+				userDidCancel_orNil,
 				obtained_passwordString,
 				obtained_typeOfPassword
 			)

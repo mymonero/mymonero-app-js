@@ -185,6 +185,65 @@ class PasswordController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
 
+	WhenBootedAndPasswordObtained_PasswordAndType(
+		fn // (password, passwordType) -> Void
+	)
+	{ // this function is for convenience to wrap waiting for password readiness
+		const self = this
+console.log("> WhenBootedAndPasswordObtained_PasswordAndType")
+		self._executeWhenBooted(
+			function()
+			{
+		console.log("> booted")
+				function callBack()
+				{
+					console.log("CB")
+					fn(self.password, self.userSelectedTypeOfPassword)
+				}
+				if (self.HasUserEnteredValidPasswordYet() === true) {
+					console.log("> User already entered valid pw")
+					callBack()
+					return 
+				}
+				// then we have to wait for it
+				var hasObtainedPassword = false
+				// declaring functions for listeners so we can also unsubscribe
+				var onFn_ObtainedNewPassword_fn;
+				var onFn_ObtainedCorrectExistingPassword_fn;
+				function _aPasswordWasObtained()
+				{
+					// immediately unsubscribe
+					self.removeListener(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
+					self.removeListener(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
+					// guard call to callBack()
+					if (hasObtainedPassword === true) {
+						console.log("PasswordController/WhenBootedAndPasswordObtained_PasswordAndType _aPasswordWasObtained called redundantly")
+						return // shouldn't happen but just in case…
+					}
+					hasObtainedPassword = true
+					//
+					callBack()
+				}
+				onFn_ObtainedNewPassword_fn = function()
+				{
+					console.log("> onFn_ObtainedNewPassword_fn")
+					_aPasswordWasObtained()
+				}
+				onFn_ObtainedCorrectExistingPassword_fn = function()
+				{
+					console.log("> onFn_ObtainedCorrectExistingPassword_fn")
+					_aPasswordWasObtained()
+				}
+				self.on(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
+				self.on(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
+				console.log("subscribed..")
+				//
+				// now that we're subscribed, initiate the pw request
+				self.OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
+			}
+		)
+	}
+
 	OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
 	{
 		const self = this
