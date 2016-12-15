@@ -106,13 +106,9 @@ class WalletsListController extends EventEmitter
 				// and we don't want/need to emit that the list updated here
 				return
 			}
-			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+				function(obtainedPasswordString, userSelectedTypeOfPassword)
 				{
-					if (err) {
-						self._setup_didFailToBootWithError(err)
-						return
-					}
 					__proceedTo_loadAndBootAllExtantWalletsWithPassword(obtainedPasswordString)
 				}
 			)
@@ -336,13 +332,9 @@ class WalletsListController extends EventEmitter
 		self.ExecuteWhenBooted(
 			function()
 			{
-				context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+				context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						if (err) {
-							fn(err)
-							return
-						}
 						_proceedWithPassword(obtainedPasswordString)
 					}
 				)
@@ -399,13 +391,9 @@ class WalletsListController extends EventEmitter
 		self.ExecuteWhenBooted(
 			function()
 			{
-				context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+				context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						if (err) {
-							fn(err)
-							return
-						}
 						_proceedWithPassword(obtainedPasswordString)
 					}
 				)
@@ -473,13 +461,9 @@ class WalletsListController extends EventEmitter
 		self.ExecuteWhenBooted(
 			function()
 			{
-				context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+				context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						if (err) {
-							fn(err)
-							return
-						}
 						_proceedWithPassword(obtainedPasswordString)
 					}
 				)

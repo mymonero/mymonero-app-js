@@ -65,54 +65,18 @@ async.series(
 function _proceedTo_test_bootController(cb)
 {
 	console.log("▶️  _proceedTo_test_bootController")
-	const options =
-	{
-		obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
-		{
-			if (typeof showingValidationErrMsg_orUndefined !== 'undefined') {
-				console.error("Password entry validation error:", showingValidationErrMsg_orUndefined)
-			}
-			const didUserCancelPWEntry = false
-			var errToPassBack = null
-			if (didUserCancelPWEntry === true) {
-				errToPassBack = new Error("User cancelled PW entry/change")
-			}
-			var obtained_passwordString;
-			var obtained_typeOfPassword;
-			if (controller.HasUserEnteredPasswordYet()) {
-				console.log("Returning changed pw")
-				obtained_passwordString = theNextPassword // we're being requested for the pw here during a change pw operation
-				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().SixCharPIN
-			} else {
-				console.log("Returning first pw")
-				obtained_passwordString = theOriginalPassword
-				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
-			}
-			obtainedErrOrPwAndType_cb(
-				errToPassBack,
-				obtained_passwordString,
-				obtained_typeOfPassword
-			)
-		},
-		didSetFirstPasswordDuringThisRuntime_cb: function(controller, password)
-		{
-			console.log("didSetFirstPasswordDuringThisRuntime_cb", password)
-		},
-		didChangePassword_cb: function(controller, password)
-		{
-			console.log("didChangePassword_cb", password)
-		}
-	}
+	const options = {}
 	const PasswordController = require('../Controllers/PasswordController')
 	try {
 		controller = new PasswordController(
 			options,
 			context
 		)
-		cb()
 	} catch (e) {
 		cb(e)
+		return
 	}
+	cb()
 }
 
 function _proceedTo_test_gettingPassword(cb)
@@ -123,13 +87,88 @@ function _proceedTo_test_gettingPassword(cb)
 		return
 	}
 	// the following call ought to defer till the controller is booted
-	controller.WhenBooted_PasswordAndType(
-		function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+	//
+	//
+	var hasAlreadyCalledBack = false 
+	function __trampolineFor_callback()
+	{
+		if (hasAlreadyCalledBack === true) {
+			console.warn("Already called back")
+			return
+		}
+		hasAlreadyCalledBack = true
+		cb()
+	}
+	
+	
+	controller.on(
+		controller.EventName_ObtainedNewPassword(),
+		function()
 		{
-			console.log("Password? err", err, "obtainedPasswordString", obtainedPasswordString, "userSelectedTypeOfPassword", userSelectedTypeOfPassword)
-			cb(err)
+			console.log("EventName_ObtainedNewPassword Password:", controller.password, "userSelectedTypeOfPassword:", controller.userSelectedTypeOfPassword)
+			__trampolineFor_callback()
 		}
 	)
+	controller.on(
+		controller.EventName_ObtainedCorrectExistingPassword(),
+		function()
+		{
+			console.log("EventName_ObtainedCorrectExistingPassword Password:", controller.password, "userSelectedTypeOfPassword:", controller.userSelectedTypeOfPassword)
+			__trampolineFor_callback()
+		}
+	)
+	controller.on(
+		controller.EventName_ErroredWhileSettingNewPassword(),
+		function(err)
+		{ // where validation errors are received as well
+			console.log("EventName_ErroredWhileSettingNewPassword err:", err)
+		}
+	)
+	//
+	// supplying the password:
+	controller.on(
+		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
+		function(enterPassword_cb)
+		{
+			const errCollectingPW = null
+			const obtainedPassword = theOriginalPassword
+			console.log("Replying with existing password of ", obtainedPassword)
+			enterPassword_cb(
+				errCollectingPW, 
+				obtainedPassword
+			)
+		}
+	)
+	controller.on(
+		controller.EventName_SingleObserver_getUserToEnterNewPasswordWithCB(),
+		function(enterPasswordAndType_cb)
+		{
+			const didUserCancelPWEntry = false // set this to true to test
+			var errToPassBack = null
+			if (didUserCancelPWEntry === true) {
+				errToPassBack = new Error("User cancelled PW entry/change")
+			}
+			var obtained_passwordString;
+			var obtained_typeOfPassword;
+			if (controller.HasUserEnteredValidPasswordYet()) {
+				console.log("Returning changed pw")
+				obtained_passwordString = theNextPassword // we're being requested for the pw here during a change pw operation
+				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().SixCharPIN
+			} else {
+				console.log("Returning first pw")
+				obtained_passwordString = theOriginalPassword
+				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
+			}
+			enterPasswordAndType_cb(
+				errToPassBack,
+				obtained_passwordString,
+				obtained_typeOfPassword
+			)
+		}
+	)
+	
+	// kick off the request to get the PW from the user:
+	controller.OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
 }
 
 function _proceedTo_test_changingPassword(cb)
@@ -140,17 +179,8 @@ function _proceedTo_test_changingPassword(cb)
 		return
 	}
 	// the following call ought to defer till the controller is booted
+	const existingPassword = theOriginalPassword
 	controller.InitiateChangePassword(
-			function(userSelectedTypeOfPassword, errOrUserEnteredExistingPW_cb)
-			{
-				console.log("What is the user's existing", userSelectedTypeOfPassword, "password?")
-				var errToPassBack = null
-				const existingPassword = theOriginalPassword
-				errOrUserEnteredExistingPW_cb(errToPassBack, existingPassword)
-			},
-			function(err, obtainedPasswordString, userSelectedTypeOfPassword)
-			{
-				console.log("InitiateChangePassword cb", err, obtainedPasswordString, userSelectedTypeOfPassword)
-			}
+		existingPassword
 	)
 }

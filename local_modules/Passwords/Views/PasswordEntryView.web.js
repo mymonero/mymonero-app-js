@@ -30,7 +30,7 @@
 //
 const View = require('../../Views/View.web')
 //
-class RootView extends View
+class PasswordEntryView extends View
 {
 	constructor(options, context)
 	{
@@ -42,41 +42,57 @@ class RootView extends View
 	setup()
 	{
 		const self = this
-		self.setup_views()
-		self.setup_startObserving_passwordController()
-	}
-	setup_views()
-	{
-		const self = this
-		self.setup_walletsListView()
-		self.setup_contactsListView()
-	}
-	setup_walletsListView()
-	{
-		const self = this
-		const WalletsListView = require('../../WalletsList/Views/WalletsListView.web')
-		const options = {}
-		const view = new WalletsListView(options, self.context)
 		//
-		self.walletsListView = view
-		self.addSubview(view)
+		self._setup_views()
+		self._setup_startObserving()
+		//
+		// configure UI with initial state
+		self._configure()
 	}
-	setup_contactsListView()
+	_setup_views()
 	{
 		const self = this
-		const ContactsListView = require('../../Contacts/Views/ContactsListView.web')
-		const options = {}
-		const view = new ContactsListView(options, self.context)
-		//
-		self.contactsListView = view
-		self.addSubview(view)
 	}
-	setup_startObserving_passwordController()
+	_setup_startObserving()
+	{
+		const self = this
+	}
+	//
+	//
+	// Runtime - Imperatives - Interface
+	//
+	ShowInRootView(rootView)
+	{
+		const self = this
+		self.viewWillAppear()
+		rootView.addSubview(self)
+	}
+	Dismiss()
+	{
+		const self = this
+		if (typeof self.superview === 'undefined' || self.superview === null) {
+			console.error("Can't  dismiss password entry view as not in a superview")
+			return
+		}
+		self.removeFromSuperview()
+	}
+	//
+	//
+	// Runtime - Imperatives - View Configuration
+	//
+	_configure()
 	{
 		const self = this
 		const passwordController = self.context.passwordController
-		const PasswordEntryView = require('../../Passwords/Views/PasswordEntryView.web')
-		// passwordController.on('') // TODO
+	}
+	//
+	//
+	// Runtime - Delegation - Visibility cycle
+	//
+	viewWillAppear()
+	{
+		const self = this
+		self._configure()
 	}
 }
-module.exports = RootView
+module.exports = PasswordEntryView

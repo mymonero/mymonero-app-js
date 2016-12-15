@@ -93,16 +93,9 @@ class ContactsListController extends EventEmitter
 				_didBoot()
 				return
 			}
-			self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-				function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+				function(obtainedPasswordString, userSelectedTypeOfPassword)
 				{
-					if (err) {
-						setTimeout(function()
-						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-							self.emit(self.EventName_errorWhileBooting(), err)
-						})
-						return
-					}
 					__proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, obtainedPasswordString)
 				}
 			)
@@ -217,13 +210,9 @@ class ContactsListController extends EventEmitter
 		self.ExecuteWhenBooted(
 			function()
 			{
-				self.context.passwordController.WhenBooted_PasswordAndType( // this will block until we have access to the pw
-					function(err, obtainedPasswordString, userSelectedTypeOfPassword)
+				self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						if (err) {
-							fn(err)
-							return
-						}
 						const options =
 						{
 							persistencePassword: obtainedPasswordString,

@@ -29,6 +29,7 @@
 "use strict"
 //
 const async = require('async')
+const EventEmitter = require('events')
 //
 const symmetric_string_cryptor = require('../../symmetric_cryptor/symmetric_string_cryptor')
 //
@@ -40,10 +41,10 @@ const _userSelectedTypesOfPassword =
 	FreeformStringPW: "FreeformStringPW"
 } // TODO: add hash with human readable labels for each type
 //
-////////////////////////////////////////////////////////////////////////////////
-// Principal class
 //
-class PasswordController
+// Controller
+//
+class PasswordController extends EventEmitter
 {
 
 
@@ -52,24 +53,15 @@ class PasswordController
 
 	constructor(options, context)
 	{
+		super()
+		// ^--- have to call super before can access `this`
+		//
 		const self = this
 		self.options = options
 		self.context = context
 		//
 		self.hasBooted = false
-		self._password = undefined // it's not been obtained from the user yet - we only store it in memory
-		//
-		self.obtainPasswordFromUser_wOptlValidationErrMsg_cb = self.options.obtainPasswordFromUser_wOptlValidationErrMsg_cb
-		// obtainPasswordFromUser_wOptlValidationErrMsg_cb: (controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined) -> Void
-		//	obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword: AvailableUserSelectableTypesOfPassword?) -> Void // you can send an err to say the user cancelled pw entry. this controller doesn't do anything to the pw if there's an err and if the pw isn't changed, the didChange callback(s) are not notified/called
-		if (typeof self.obtainPasswordFromUser_wOptlValidationErrMsg_cb === 'undefined' || self.obtainPasswordFromUser_wOptlValidationErrMsg_cb === null) {
-			const errStr = "You must supply a obtainPasswordFromUser_wOptlValidationErrMsg_cb function in the options of PasswordController. See type definition comment in constructor() of PasswordController"
-			console.error(errStr)
-			throw errStr
-			return
-		}
-		self.didSetFirstPasswordDuringThisRuntime_cb = self.options.didSetFirstPasswordDuringThisRuntime_cb || function(controller, password) {}
-		self.didChangePassword_cb = self.options.didChangePassword_cb || function(controller, password) {}
+		self.password = undefined // it's not been obtained from the user yet - we only store it in memory
 		//
 		self.setupAndBoot()
 	}
@@ -141,96 +133,162 @@ class PasswordController
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
-
+	
+	// either
+	EventName_SetFirstPasswordDuringThisRuntime()
+	{
+		return 'EventName_SetFirstPasswordDuringThisRuntime'
+	}
+	// or
+	EventName_ChangedPassword()
+	{
+		return 'EventName_ChangedPassword'
+	}
+	//
+	//
+	EventName_ObtainedNewPassword()
+	{
+		return 'EventName_ObtainedNewPassword'
+	}
+	EventName_ObtainedCorrectExistingPassword()
+	{
+		return 'EventName_ObtainedCorrectExistingPassword'
+	}
+	EventName_ErroredWhileSettingNewPassword()
+	{
+		return "EventName_ErroredWhileSettingNewPassword"
+	}
+	EventName_SingleObserver_getUserToEnterExistingPasswordWithCB()
+	{
+		return "EventName_SingleObserver_getUserToEnterExistingPasswordWithCB"
+	}
+	EventName_SingleObserver_getUserToEnterNewPasswordWithCB()
+	{
+		return "EventName_SingleObserver_getUserToEnterNewPasswordWithCB"
+	}
+	//
 	AvailableUserSelectableTypesOfPassword()
 	{
 		return _userSelectedTypesOfPassword
 	}
-	HasUserEnteredPasswordYet()
+	HasUserEnteredValidPasswordYet()
 	{
 		const self = this
-		if (typeof self._password === 'undefined' || self._password === null || self._password === "") {
+		if (typeof self.password === 'undefined' || self.password === null || self.password === "") {
 			return false
 		} else {
 			return true
 		}
 	}
-	WhenBooted_PasswordAndType(obtainedErrOrPwAndType_cb) // obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
-	{ // this function is asynchronous because it needs the option of requesting the PW from the user (it's basically a lazy accessor)
-		const self = this
-		self._executeWhenBooted(function()
-		{
-			if (self.HasUserEnteredPasswordYet() === false) {
-				self._obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb)
-				return
-			}
-			obtainedErrOrPwAndType_cb(null, self._password, self.userSelectedTypeOfPassword)
-		})
-	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Imperatives - Public
+	// Runtime - Imperatives - Public
 
-	InitiateChangePassword(
-		getUserToEnterExistingPassword_cb,
-		// ^-- (userSelectedTypeOfPassword, errOrUserEnteredExistingPW_cb) -> Void
-		// ^-- supply this and have the user enter their existing PIN/PW so we can check
-		// <- there's no need to supply a function here for getting the user to enter their pw
-		obtainedErrOrPwAndType_cb // (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
-	)
+	OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
+	{
+		const self = this
+		self._executeWhenBooted(
+			function()
+			{
+				if (self.HasUserEnteredValidPasswordYet() === true) {
+					return // already got it
+				}
+				{ // guard
+					if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
+						console.log("isAlreadyGettingExistingOrNewPWFromUser. Exiting instead of re-initiating.")
+						return // only need to wait for it to be obtained
+					}
+					self.isAlreadyGettingExistingOrNewPWFromUser = true
+				}
+				//
+				if (typeof self._id === 'undefined' || self._id === null) { // if the user is not unlocking an already pw-protected app
+					// then we need to get a new PW from the user
+					self.obtainNewPasswordFromUser() // this will also call self.unguard_getNewOrExistingPassword()
+					return
+				} else { // then we need to get the existing PW and check it against the encrypted message
+					//
+					if (typeof self.encryptedMessageForUnlockChallenge === 'undefined' && !self.encryptedMessageForUnlockChallenge) {
+						const errStr = "Code fault: Existing document but no encryptedMessageForUnlockChallenge"
+						console.error(errStr)
+						self.unguard_getExistingPassword()
+						throw errStr
+						return
+					}					
+					self._getUserToEnterTheirExistingPassword(
+						function(userDidCancel_orNil, existingPassword)
+						{
+							if (userDidCancel_orNil === true) {
+								self.unguard_getNewOrExistingPassword()
+								return // just silently exit after unguarding
+							}
+							var decryptedMessageForUnlockChallenge;
+							try {
+								decryptedMessageForUnlockChallenge = symmetric_string_cryptor.DecryptedPlaintextString(
+									self.encryptedMessageForUnlockChallenge,
+									existingPassword
+								)
+							} catch (e) {
+								const errStr = "Incorrect password"
+								const err = new Error(errStr)
+								self.unguard_getNewOrExistingPassword()
+								self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+								return
+							}
+							if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
+								const errStr = "Incorrect password"
+								const err = new Error(errStr)
+								self.unguard_getNewOrExistingPassword()
+								self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+								return
+							}
+							//
+							self._didObtainPassword(existingPassword) // hang onto pw and set state
+							//
+							// yes, that looks good
+							self.unguard_getNewOrExistingPassword()
+							self.emit(self.EventName_ObtainedCorrectExistingPassword())
+						}
+					)
+				}
+			}
+		)
+	}
+	InitiateChangePassword()
 	{
 		const self = this
 		self._executeWhenBooted(function()
 		{
-			if (self.HasUserEnteredPasswordYet() === false) {
-				const errStr = "InitiateChangePassword called but HasUserEnteredPasswordYet === false. This should be disallowed in the UI"
+			if (self.HasUserEnteredValidPasswordYet() === false) {
+				const errStr = "InitiateChangePassword called but HasUserEnteredValidPasswordYet === false. This should be disallowed in the UI"
 				throw errStr
 				return
 			}
-			getUserToEnterExistingPassword_cb(
-				self.userSelectedTypeOfPassword,
-				function(err, userEnteredPassword)
+			{ // guard
+				if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
+					const errStr = "InitiateChangePassword called but isAlreadyGettingExistingOrNewPWFromUser === true. This should be precluded in the UI"
+					throw errStr
+					return // only need to wait for it to be obtained
+				}
+				self.isAlreadyGettingExistingOrNewPWFromUser = true
+			}
+			// ^-- we're relying on having checked above that user has entered a valid pw already
+			self._getUserToEnterTheirExistingPassword(
+				function(userDidCancel_orNil, existingPassword)
 				{
-					if (err) {
-						console.error("Failed to verify existing password for password change")
-						obtainedErrOrPwAndType_cb(err)
+					if (userDidCancel_orNil === true) {
+						self.unguard_getNewOrExistingPassword()
+						return // just silently exit after unguarding
+					}
+					if (self.password !== existingPassword) {
+						self.unguard_getNewOrExistingPassword()
+						const errStr = "Incorrect password"
+						const err = new Error(errStr)
+						self.emit(self.EventName_errorWhileChangingPassword(), err)
 						return
 					}
-					// we're relying on having checked above that user has entered a valid pw already
-					if (typeof self._id !== 'undefined' || self._id !== null) { // if the user is unlocking an already pw-protected app
-						// we need to check whether the password the user entered is actually the correct password to unlock the app
-						if (typeof self.encryptedMessageForUnlockChallenge === 'undefined' && !self.encryptedMessageForUnlockChallenge) {
-							const errStr = "Code fault: Existing document but no encryptedMessageForUnlockChallenge"
-							console.error(errStr)
-							throw errStr
-							fn(new Error(errStr)) // this won't really get called - just including for completeness
-							return
-						}
-						//
-						var decryptedMessageForUnlockChallenge;
-						try {
-							decryptedMessageForUnlockChallenge = symmetric_string_cryptor.DecryptedPlaintextString(
-								self.encryptedMessageForUnlockChallenge,
-								userEnteredPassword
-							)
-						} catch (e) {
-							const errStr = "Unable to unlock data with that password" // incorrect password, basically
-							console.error(errStr, "e", e)
-							const err = new Error(errStr)
-							obtainedErrOrPwAndType_cb(err)
-							return
-						}
-						if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
-							const errStr = "Incorrect password"
-							const err = new Error(errStr)
-							obtainedErrOrPwAndType_cb(err)
-							return
-						}
-					}
-					//
 					// passwords match checked as necessary, we can proceed
-					self._obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb)
+					self.obtainNewPasswordFromUser()
 				}
 			)
 		})
@@ -238,7 +296,135 @@ class PasswordController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Imperatives - Private - Deferring until booted
+	// Runtime - Imperatives - Private - Requesting password from user
+
+	unguard_getNewOrExistingPassword()
+	{
+		const self = this
+		self.isAlreadyGettingExistingOrNewPWFromUser = false
+	}
+	_getUserToEnterTheirExistingPassword(fn) // fn: (userDidCancel_orNil?, existingPassword?) -> Void
+	{
+		const self = this
+		//
+		var hasSingleObserverCallbackBeenCalledYet = false
+		self.emit(
+			self.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(), 
+			function(userDidCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
+			{ // we're passing a function that the single observer should call
+				if (hasSingleObserverCallbackBeenCalledYet === true) {
+					throw "this is a single observer function and must only be called once per emit"
+					return
+				}
+				hasSingleObserverCallbackBeenCalledYet = true // we're relying on this function capturing a distinct parent scope for each .emit call
+				//
+				if (userDidCancel_orNil) {
+					console.error("userDidCancel while having user enter their existing password")
+				}
+				fn(userDidCancel_orNil, obtainedPasswordString)
+			}
+		)
+	}
+	_getUserToEnterNewPassword(fn) // fn: (userDidCancel_orNil?, existingPassword?) -> Void
+	{
+		const self = this
+		//
+		var hasSingleObserverCallbackBeenCalledYet = false
+		self.emit(
+			self.EventName_SingleObserver_getUserToEnterNewPasswordWithCB(), 
+			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
+			{ // we're passing a function that the single observer should call
+				if (hasSingleObserverCallbackBeenCalledYet === true) {
+					throw "this is a single observer function and must only be called once per emit"
+					return
+				}
+				hasSingleObserverCallbackBeenCalledYet = true // we're relying on this function capturing a distinct parent scope for each .emit call
+				//
+				if (userDidCancel_orNil) {
+					console.error("userDidCancel_orNil while having user enter new password")
+				}
+				fn(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
+			}
+		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Setting/changing Password
+	
+	obtainNewPasswordFromUser()
+	{
+		const self = this
+		const wasFirstSetOfPasswordAtRuntime = self.HasUserEnteredValidPasswordYet() === false // it's ok if we derive this here instead of in obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet		
+		//
+		self._getUserToEnterNewPassword(
+			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
+			{
+				if (userDidCancel_orNil === true) {
+					self.unguard_getNewOrExistingPassword()
+					return // just silently exit after unguarding
+				}
+				//
+				// I. Validate features of pw before trying and accepting
+				if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
+					if (obtainedPasswordString.length != 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
+						self.unguard_getNewOrExistingPassword()
+						const err = new Error("Invalid PIN length")
+						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+						return // bail as we are re-entering
+					}
+					// TODO: check if all numbers
+					// TODO: check that numbers are not all just one number
+				} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().FreeformStringPW) {
+					if (obtainedPasswordString.length < 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
+						self.unguard_getNewOrExistingPassword()
+						const err = new Error("Password too short")
+						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+						return // bail as we are re-entering
+					}
+					// TODO: check if password content too weak?
+				} else { // this is weird - code fault or cracking attempt?
+					self.unguard_getNewOrExistingPassword()
+					const err = new Error("Unrecognized password type")
+					self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+					return
+				}
+				//
+				// II. hang onto new pw, pw type, and state(s)
+				console.log("💬  Obtained " + userSelectedTypeOfPassword + " '" + obtainedPasswordString + "'")
+				self._didObtainPassword(obtainedPasswordString) // save to self and flip state
+				self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
+				//
+				// III. finally, save doc so we know a pw has been entered once before
+				self.saveToDisk(
+					function(err)
+					{
+						if (err) {
+							self.unguard_getNewOrExistingPassword()
+							self.password = undefined // they'll have to try again
+							self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+							return
+						}
+						self.unguard_getNewOrExistingPassword()
+						{ // detecting & emiting first set or change
+							if (wasFirstSetOfPasswordAtRuntime === true) {
+								self.emit(self.EventName_SetFirstPasswordDuringThisRuntime(), self.password, self.userSelectedTypeOfPassword)
+							} else {
+								self.emit(self.EventName_ChangedPassword(), self.password, self.userSelectedTypeOfPassword)
+							}
+						}
+						{ // general purpose emit
+							self.emit(self.EventName_ObtainedNewPassword(), self.password, self.userSelectedTypeOfPassword)
+						}
+					}
+				)
+			}
+		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Deferring until booted
 
 	_executeWhenBooted(fn)
 	{
@@ -256,102 +442,6 @@ class PasswordController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Imperatives - Private - Setting/changing Password
-
-	_obtainNewPasswordFromUser(obtainedErrOrPwAndType_cb) // obtainedErrOrPwAndType_cb: (err?, obtainedPasswordString?, userSelectedTypeOfPassword?) -> Void
-	{
-		const self = this
-		if (self.hasBooted === false) {
-			const errStr = "Code fault: _obtainNewPasswordFromUser called when hasBooted=false"
-			console.error(errStr)
-			throw errStr
-			return
-		}
-		const initialValidationErrorMessage = undefined // initially, no validation err msg
-		self.__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-			obtainedErrOrPwAndType_cb,
-			initialValidationErrorMessage
-		)
-	}
-	__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-		obtainedErrOrPwAndType_cb,
-		showingValidationErrMsg_orUndefined
-	)
-	{
-		const self = this
-		const wasFirstSetOfPasswordAtRuntime = self.HasUserEnteredPasswordYet() === false // it's ok if we derive this here instead of in _obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet
-		self.obtainPasswordFromUser_wOptlValidationErrMsg_cb(
-			self,
-			function(err, obtainedPasswordString, userSelectedTypeOfPassword)
-			{
-				if (err) {
-					obtainedErrOrPwAndType_cb(err)
-					return
-				}
-				// I. Validate features of pw before trying and accepting
-				if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
-					if (obtainedPasswordString.length != 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
-						self.__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-							obtainedErrOrPwAndType_cb, // passing the same obtainedErrOrPwAndType_cb
-							"Invalid PIN length" // but also passing this
-						)
-						return // bail as we are re-entering
-					}
-					// TODO: check if all numbers
-					// TODO: check that numbers are not all just one number
-				} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().FreeformStringPW) {
-					if (obtainedPasswordString.length < 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
-						self.__obtainNewPasswordFromUser_wOptlValidationErrMsg(
-							obtainedErrOrPwAndType_cb, // passing the same obtainedErrOrPwAndType_cb
-							"Password too short" // but also passing this
-						)
-						return // bail as we are re-entering
-					}
-					// TODO: check if password content too weak?
-				} else {
-					const errStr = "Code fault or cracking attempt: Unrecognized userSelectedTypeOfPassword"
-					console.error(errStr)
-					throw errStr
-					fn(new Error(errStr)) // this won't really get called - just including for completeness
-					return
-				}
-				console.log("💬  Obtained " + userSelectedTypeOfPassword + " '" + obtainedPasswordString + "'")
-				// II. hang onto new pw, pw type, and state(s)
-				self._password = obtainedPasswordString
-				self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
-				self.hasUserEverEnteredPassword = true // we can now flip this to true
-				//
-				// III. finally, save doc so we know a pw has been entered once before
-				self.saveToDisk(
-					function(err)
-					{
-						if (err) {
-							self._password = undefined // they'll have to try again
-							obtainedErrOrPwAndType_cb(err)
-							return
-						}
-						// broadcast on next tick but before yield
-						setTimeout(function()
-						{
-							if (wasFirstSetOfPasswordAtRuntime === true) {
-								self.didSetFirstPasswordDuringThisRuntime_cb(self, self._password, self.userSelectedTypeOfPassword)
-							} else {
-								self.didChangePassword_cb(self, self._password, self.userSelectedTypeOfPassword)
-							}
-							//
-							// yield
-							obtainedErrOrPwAndType_cb(null, obtainedPasswordString, userSelectedTypeOfPassword)
-						})
-					}
-				)
-			},
-			showingValidationErrMsg_orUndefined // we pass this back to the UI/consumer so they can show it if they need to, like on a pw was too short
-		)
-	}
-
-
-
-	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Imperatives - Private - Persistence
 
 	saveToDisk(fn)
@@ -359,7 +449,7 @@ class PasswordController
 		const self = this
 		console.log("📝  Saving password model to disk.")
 		//
-		if (self._password === null || typeof self._password === 'undefined') {
+		if (self.password === null || typeof self.password === 'undefined') {
 			const errStr = "Code fault: saveToDisk musn't be called until a password has been set"
 			console.error(errStr)
 			throw errStr
@@ -368,7 +458,7 @@ class PasswordController
 		}
 		const encryptedMessageForUnlockChallenge = symmetric_string_cryptor.EncryptedBase64String(
 			plaintextMessageToSaveForUnlockChallenges,
-			self._password
+			self.password
 		)
 		self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
 		const persistableDocument =
@@ -428,7 +518,6 @@ class PasswordController
 					upsert
 				)
 				{
-
 					if (err) {
 						console.error("Error while saving password model:", err)
 						fn(err)
@@ -463,6 +552,16 @@ class PasswordController
 		} else {
 			_proceedTo_updateExistingDocument()
 		}
+	}
+	//
+	//
+	// Runtime - Delegation - Obtained password
+	//
+	_didObtainPassword(password)
+	{
+		const self = this
+		self.password = password
+		self.hasUserEverEnteredPassword = true // we can now flip this to true
 	}
 }
 module.exports = PasswordController
