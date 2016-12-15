@@ -137,22 +137,22 @@ class PasswordController extends EventEmitter
 	// either
 	EventName_SetFirstPasswordDuringThisRuntime()
 	{
-		return 'EventName_SetFirstPasswordDuringThisRuntime'
+		return "EventName_SetFirstPasswordDuringThisRuntime"
 	}
 	// or
 	EventName_ChangedPassword()
 	{
-		return 'EventName_ChangedPassword'
+		return "EventName_ChangedPassword"
 	}
 	//
 	//
 	EventName_ObtainedNewPassword()
 	{
-		return 'EventName_ObtainedNewPassword'
+		return "EventName_ObtainedNewPassword"
 	}
 	EventName_ObtainedCorrectExistingPassword()
 	{
-		return 'EventName_ObtainedCorrectExistingPassword'
+		return "EventName_ObtainedCorrectExistingPassword"
 	}
 	EventName_ErroredWhileSettingNewPassword()
 	{
@@ -190,18 +190,14 @@ class PasswordController extends EventEmitter
 	)
 	{ // this function is for convenience to wrap waiting for password readiness
 		const self = this
-console.log("> WhenBootedAndPasswordObtained_PasswordAndType")
 		self._executeWhenBooted(
 			function()
 			{
-		console.log("> booted")
 				function callBack()
 				{
-					console.log("CB")
 					fn(self.password, self.userSelectedTypeOfPassword)
 				}
 				if (self.HasUserEnteredValidPasswordYet() === true) {
-					console.log("> User already entered valid pw")
 					callBack()
 					return 
 				}
@@ -226,17 +222,14 @@ console.log("> WhenBootedAndPasswordObtained_PasswordAndType")
 				}
 				onFn_ObtainedNewPassword_fn = function()
 				{
-					console.log("> onFn_ObtainedNewPassword_fn")
 					_aPasswordWasObtained()
 				}
 				onFn_ObtainedCorrectExistingPassword_fn = function()
 				{
-					console.log("> onFn_ObtainedCorrectExistingPassword_fn")
 					_aPasswordWasObtained()
 				}
 				self.on(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
 				self.on(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
-				console.log("subscribed..")
 				//
 				// now that we're subscribed, initiate the pw request
 				self.OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
@@ -245,7 +238,8 @@ console.log("> WhenBootedAndPasswordObtained_PasswordAndType")
 	}
 
 	OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
-	{
+	{ // This function must be called in order to initiate a password entry screen being shown to the user
+	  // and to initiate any "password obtained" emits
 		const self = this
 		self._executeWhenBooted(
 			function()

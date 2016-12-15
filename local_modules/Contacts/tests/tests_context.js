@@ -46,25 +46,7 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
 		instance_key: "passwordController",
-		options: {
-			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(controller, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
-			{
-				console.log("> Using password: " , tests_config.persistencePassword)
-				obtainedErrOrPwAndType_cb(
-					null,
-					tests_config.persistencePassword,
-					controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
-				)
-			},
-			didSetFirstPasswordDuringThisRuntime_cb: function(controller, password)
-			{
-				console.log("didSetFirstPasswordDuringThisRuntime_cb" , password)
-			},
-			didChangePassword_cb: function(controller, password)
-			{
-				console.log("didChangePassword_cb" , password)
-			}
-		}
+		options: {}
 	},
 	{
 		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.interfaceForTests",
@@ -78,7 +60,64 @@ function NewHydratedContext()
 	{
 		userDataAbsoluteFilepath: "./test_products"
 	}
-
-	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	const context = require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	startObserving_passwordController(context)
+	//
+	return context
 }
 module.exports.NewHydratedContext = NewHydratedContext
+//
+function startObserving_passwordController(context)
+{
+	const controller = context.passwordController
+	//
+	const password = tests_config.persistencePassword
+	const passwordType = controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
+	//
+	controller.on(
+		controller.EventName_ObtainedNewPassword(),
+		function() 
+		{
+			console.log("~ got new pw")
+		}
+	)
+	controller.on(
+		controller.EventName_ObtainedCorrectExistingPassword(),
+		function() 
+		{
+			console.log("~ got existing pw")
+		}
+	)
+	controller.on(
+		controller.EventName_ErroredWhileSettingNewPassword(),
+		function(err)
+		{ // where validation errors are received as well
+			console.log("EventName_ErroredWhileSettingNewPassword err:", err)
+		}
+	)
+	//
+	// supplying the password:
+	controller.on(
+		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
+		function(enterPassword_cb)
+		{
+			console.log("~ entering new pw ", password)
+			enterPassword_cb(
+				null, // not a cancel
+				password
+			)
+		}
+	)
+	controller.on(
+		controller.EventName_SingleObserver_getUserToEnterNewPasswordWithCB(),
+		function(enterPasswordAndType_cb)
+		{
+			console.log("~ entering existing", passwordType, "pw ", password)
+			enterPasswordAndType_cb(
+				null, // not a cancel
+				password,
+				passwordType
+			)
+		}
+	)
+}
