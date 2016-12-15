@@ -46,6 +46,12 @@ var context_object_instantiation_descriptions =
 		instance_key: "mainWindowController",
 		options: {}
 	}
+	/*
+	
+		NOTE: Most of the actual electron application context lives
+		in local_modules/MainWindow/Views/index_context.electron.renderer.js
+	
+	*/
 ]
 function NewHydratedContext(app)
 {
