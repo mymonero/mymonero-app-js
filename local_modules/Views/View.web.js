@@ -28,7 +28,9 @@
 //
 "use strict"
 //
-class View
+const EventEmitter = require('events')
+//
+class View extends EventEmitter
 {
 	//
 	//
@@ -36,6 +38,8 @@ class View
 	//
 	constructor(options, context)
 	{
+		super() // must call before can access `this`
+		//
 		const self = this
 		self.options = options
 		self.context = context
