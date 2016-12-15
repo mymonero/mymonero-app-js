@@ -378,7 +378,7 @@ console.log("> WhenBootedAndPasswordObtained_PasswordAndType")
 				hasSingleObserverCallbackBeenCalledYet = true // we're relying on this function capturing a distinct parent scope for each .emit call
 				//
 				if (userDidCancel_orNil) {
-					console.error("userDidCancel while having user enter their existing password")
+					console.info("userDidCancel while having user enter their existing password")
 				}
 				fn(userDidCancel_orNil, obtainedPasswordString)
 			}
@@ -400,7 +400,7 @@ console.log("> WhenBootedAndPasswordObtained_PasswordAndType")
 				hasSingleObserverCallbackBeenCalledYet = true // we're relying on this function capturing a distinct parent scope for each .emit call
 				//
 				if (userDidCancel_orNil) {
-					console.error("userDidCancel_orNil while having user enter new password")
+					console.info("userDidCancel_orNil while having user enter new password")
 				}
 				fn(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			}
