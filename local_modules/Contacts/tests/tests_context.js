@@ -99,7 +99,7 @@ function startObserving_passwordController(context)
 	// supplying the password:
 	controller.on(
 		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
-		function(enterPassword_cb)
+		function(isForChangePassword, enterPassword_cb)
 		{
 			console.log("~ entering new pw ", password)
 			enterPassword_cb(
@@ -110,7 +110,7 @@ function startObserving_passwordController(context)
 	)
 	controller.on(
 		controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
-		function(enterPasswordAndType_cb)
+		function(isForChangePassword, enterPasswordAndType_cb)
 		{
 			console.log("~ entering existing", passwordType, "pw ", password)
 			enterPasswordAndType_cb(

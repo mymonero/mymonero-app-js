@@ -129,10 +129,8 @@ class PasswordEntryViewController extends EventEmitter
 		// supplying the password:
 		controller.on(
 			controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
-			function(enterPassword_cb)
+			function(isForChangePassword, enterPassword_cb)
 			{
-				// TODO: it would be useful to have the password controller tell us here whether this is for a password change or not so we can correlate that with what to do on dismissal
-				
 				const existingPasswordType = self.passwordController.userSelectedTypeOfPassword 
 				if (typeof existingPasswordType === 'undefined' || existingPasswordType === null || existingPasswordType.length == 0) {
 					throw "existingPasswordType was missing when passwordController asked us to have the user enter their existing password (and asserting it exists)"
@@ -140,6 +138,7 @@ class PasswordEntryViewController extends EventEmitter
 				}
 				self.view.GetUserToEnterExistingPasswordWithCB(
 					self.inSuperview,
+					isForChangePassword,
 					existingPasswordType,
 					enterPassword_cb
 				)
@@ -147,13 +146,11 @@ class PasswordEntryViewController extends EventEmitter
 		)
 		controller.on(
 			controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
-			function(enterPasswordAndType_cb)
+			function(isForChangePassword, enterPasswordAndType_cb)
 			{
-
-				// TODO: it would be useful to have the password controller tell us here whether this is for a password change or not
-
 				self.view.GetUserToEnterNewPasswordAndTypeWithCB(
 					self.inSuperview,
+					isForChangePassword,
 					enterPasswordAndType_cb
 				)
 			}

@@ -258,10 +258,12 @@ class PasswordController extends EventEmitter
 					}
 					self.isAlreadyGettingExistingOrNewPWFromUser = true
 				}
+				// we'll use this in a couple places
+				const isForChangePassword = false // this is simply for requesting to have the existing or a new password from the user				
 				//
 				if (typeof self._id === 'undefined' || self._id === null) { // if the user is not unlocking an already pw-protected app
 					// then we need to get a new PW from the user
-					self.obtainNewPasswordFromUser() // this will also call self.unguard_getNewOrExistingPassword()
+					self.obtainNewPasswordFromUser(isForChangePassword) // this will also call self.unguard_getNewOrExistingPassword()
 					return
 				} else { // then we need to get the existing PW and check it against the encrypted message
 					//
@@ -271,8 +273,9 @@ class PasswordController extends EventEmitter
 						self.unguard_getExistingPassword()
 						throw errStr
 						return
-					}					
+					}	
 					self._getUserToEnterTheirExistingPassword(
+						isForChangePassword,
 						function(userDidCancel_orNil, existingPassword)
 						{
 							if (userDidCancel_orNil === true) {
@@ -330,7 +333,9 @@ class PasswordController extends EventEmitter
 				self.isAlreadyGettingExistingOrNewPWFromUser = true
 			}
 			// ^-- we're relying on having checked above that user has entered a valid pw already
+			const isForChangePassword = true // we'll use this in a couple places
 			self._getUserToEnterTheirExistingPassword(
+				isForChangePassword,
 				function(userDidCancel_orNil, existingPassword)
 				{
 					if (userDidCancel_orNil === true) {
@@ -345,7 +350,7 @@ class PasswordController extends EventEmitter
 						return
 					}
 					// passwords match checked as necessary, we can proceed
-					self.obtainNewPasswordFromUser()
+					self.obtainNewPasswordFromUser(isForChangePassword)
 				}
 			)
 		})
@@ -360,13 +365,17 @@ class PasswordController extends EventEmitter
 		const self = this
 		self.isAlreadyGettingExistingOrNewPWFromUser = false
 	}
-	_getUserToEnterTheirExistingPassword(fn) // fn: (userDidCancel_orNil?, existingPassword?) -> Void
+	_getUserToEnterTheirExistingPassword(
+		isForChangePassword, 
+		fn // (userDidCancel_orNil?, existingPassword?) -> Void
+	)
 	{
 		const self = this
 		//
 		var hasSingleObserverCallbackBeenCalledYet = false
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(), 
+			isForChangePassword,
 			function(userDidCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
 			{ // we're passing a function that the single observer should call
 				if (hasSingleObserverCallbackBeenCalledYet === true) {
@@ -382,13 +391,17 @@ class PasswordController extends EventEmitter
 			}
 		)
 	}
-	_getUserToEnterNewPassword(fn) // fn: (userDidCancel_orNil?, existingPassword?) -> Void
+	_getUserToEnterNewPassword(
+		isForChangePassword,
+		fn // (userDidCancel_orNil?, existingPassword?) -> Void
+	)
 	{
 		const self = this
 		//
 		var hasSingleObserverCallbackBeenCalledYet = false
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(), 
+			isForChangePassword,
 			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{ // we're passing a function that the single observer should call
 				if (hasSingleObserverCallbackBeenCalledYet === true) {
@@ -409,12 +422,13 @@ class PasswordController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Setting/changing Password
 	
-	obtainNewPasswordFromUser()
+	obtainNewPasswordFromUser(isForChangePassword)
 	{
 		const self = this
 		const wasFirstSetOfPasswordAtRuntime = self.HasUserEnteredValidPasswordYet() === false // it's ok if we derive this here instead of in obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet		
 		//
 		self._getUserToEnterNewPassword(
+			isForChangePassword,
 			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{
 				if (userDidCancel_orNil === true) {
