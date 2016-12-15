@@ -141,7 +141,7 @@ function _proceedTo_test_gettingPassword(cb)
 		}
 	)
 	controller.on(
-		controller.EventName_SingleObserver_getUserToEnterNewPasswordWithCB(),
+		controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
 		function(enterPasswordAndType_cb)
 		{
 			const userDidCancel_orNil = null // set this to true to test

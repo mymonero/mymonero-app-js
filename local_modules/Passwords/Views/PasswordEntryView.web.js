@@ -46,12 +46,19 @@ class PasswordEntryView extends View
 		self._setup_views()
 		self._setup_startObserving()
 		//
-		// configure UI with initial state
-		self._configure()
 	}
 	_setup_views()
 	{
 		const self = this
+		self.layer.style.position = "fixed"
+		self.layer.style.top = "0"
+		self.layer.style.left = "0"
+		self.layer.style.width = "100%"
+		self.layer.style.height = "100%"
+		self.layer.style.zIndex = "9999"
+		self.layer.style.border = "0px solid orange" // for debug
+		self.layer.style.background = "#ccc"
+		self.layer.innerHTML = "<h3>Enter password:</h3>"
 	}
 	_setup_startObserving()
 	{
@@ -59,14 +66,98 @@ class PasswordEntryView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives - Interface
+	// Runtime - Accessors - Products
 	//
-	ShowInRootView(rootView)
+	PasswordEnteredInView()
 	{
 		const self = this
-		self.viewWillAppear()
-		rootView.addSubview(self)
+		// TODO: read this directly from the UI,
+		// v-- mocked for now
+		return "a much stronger password than before"
 	}
+	PasswordTypeSelectedInView()
+	{
+		const self = this
+		// TODO: read this directly from the UI,
+		// v-- mocked for now
+		return self.passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW
+	}
+	//
+	//
+	// Runtime - Accessors - UI state
+	//	
+	IsPresented()
+	{
+		const self = this
+		const v = typeof self.superview !== "undefined" && self.superview !== null
+		//
+		return v ? true : false
+	}
+	//
+	//
+	// Runtime - Imperatives - Interface - Showing the view
+	//
+
+	GetUserToEnterExistingPasswordWithCB(
+		inSuperview,
+		existingPasswordType,
+		enterPassword_cb
+		// TODO: add flag for whether this is for a change pw
+	)
+	{
+		const self = this
+		const password = self.PasswordEnteredInView()
+		const didCancel = false // TODO: to be tied into window dismissal… how?
+		
+		// TODO: verify that this change is legal according to current mode/state
+		// TODO: clear validation message
+		// TODO: put view into specific mode
+		
+		// TODO: maybe hold onto enterPassword_cb on self
+		// in case a cancel comes in - but if the user enters their PW fully
+		// or hits submit then this function, if waiting, gets released – same for enterPasswordAndType_cb.
+		// we should also set a pw entry mode and corroborate that with which _cb is stored
+		
+		self.showInView(inSuperview)
+		
+		enterPassword_cb(
+			didCancel ? didCancel : null,
+			password
+		)
+	}
+	GetUserToEnterNewPasswordAndTypeWithCB(
+		inSuperview,
+		enterPasswordAndType_cb
+		// TODO: add flag for whether this is for a change pw
+	)
+	{
+		const self = this
+		const password = self.PasswordEnteredInView()
+		const passwordType = self.PasswordTypeSelectedInView()
+		const didCancel = false // TODO: to be tied into window dismissal… how?
+		
+		// TODO: verify that this change is legal according to current mode/state
+		// TODO: clear validation message
+		// TODO: put view into specific mode		
+		
+		// TODO: maybe hold onto enterPasswordAndType_cb on self
+		// in case a cancel comes in - but if the user enters their PW fully
+		// or hits submit then this function, if waiting, gets released – same for enterPassword_cb.
+		// we should also set a pw entry mode and corroborate that with which _cb is stored
+		
+		// TODO: check here if already showing - if already, transition to new state with animation rather than w/o and do not call .showInView
+		self.showInView(inSuperview)
+		
+		enterPasswordAndType_cb(
+			didCancel ? didCancel : null,
+			password,
+			passwordType
+		)
+	}
+	//
+	//
+	// Runtime - Imperatives - Interface - Dismissing the view
+	//
 	Dismiss()
 	{
 		const self = this
@@ -74,17 +165,20 @@ class PasswordEntryView extends View
 			console.error("Can't  dismiss password entry view as not in a superview")
 			return
 		}
+		// TODO: animation
+		self.viewWillDisappear()
 		self.removeFromSuperview()
 	}
 	//
 	//
-	// Runtime - Imperatives - View Configuration
+	// Runtime - Imperatives - Internal - Showing the view - Utilities
 	//
-	_configure()
+	showInView(superview)
 	{
 		const self = this
-		const passwordController = self.context.passwordController
-	}
+		self.viewWillAppear()
+		superview.addSubview(self)
+	}	
 	//
 	//
 	// Runtime - Delegation - Visibility cycle
@@ -92,7 +186,12 @@ class PasswordEntryView extends View
 	viewWillAppear()
 	{
 		const self = this
-		self._configure()
+		console.log("Password entry view will appear")
+	}
+	viewWillDisappear()
+	{
+		const self = this
+		console.log("Password entry view will disappear")
 	}
 }
 module.exports = PasswordEntryView

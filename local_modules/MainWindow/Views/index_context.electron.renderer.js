@@ -44,34 +44,7 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
 		instance_key: "passwordController",
-		options: {
-			// TODO: transition this to .emits and imperatives(?)
-			obtainPasswordFromUser_wOptlValidationErrMsg_cb: function(passwordController, obtainedErrOrPwAndType_cb, showingValidationErrMsg_orUndefined)
-			{
-				if (typeof showingValidationErrMsg_orUndefined !== 'undefined') {
-					console.log("Password entry validation error:", showingValidationErrMsg_orUndefined)
-				}
-				var errToPassBack = null // use err if user cancelled - err will cancel the pw change
-				var obtained_passwordString;
-				var obtained_typeOfPassword;
-				// TODO: obtain PW from UI
-				obtained_passwordString = "a much stronger password than before"
-				obtained_typeOfPassword = passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW
-				obtainedErrOrPwAndType_cb(
-					errToPassBack,
-					obtained_passwordString,
-					obtained_typeOfPassword
-				)
-			},
-			didSetFirstPasswordDuringThisRuntime_cb: function(passwordController, password)
-			{
-			},
-			didChangePassword_cb: function(passwordController, password)
-			{
-				// TODO: broadcast this instead and observe in wallets list and contacts list
-				console.log("TODO: passwordController didChangePassword_cb; inform wallet + contact lists")
-			}
-		}
+		options: {}
 	},
 	{
 		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",

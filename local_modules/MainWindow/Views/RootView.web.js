@@ -43,13 +43,13 @@ class RootView extends View
 	{
 		const self = this
 		self.setup_views()
-		self.setup_startObserving_passwordController()
 	}
 	setup_views()
 	{
 		const self = this
 		self.setup_walletsListView()
 		self.setup_contactsListView()
+		self.setup_passwordEntryViewController() // this is technically a controller, not a view
 	}
 	setup_walletsListView()
 	{
@@ -71,12 +71,13 @@ class RootView extends View
 		self.contactsListView = view
 		self.addSubview(view)
 	}
-	setup_startObserving_passwordController()
+	setup_passwordEntryViewController()
 	{
 		const self = this
 		const passwordController = self.context.passwordController
-		const PasswordEntryView = require('../../Passwords/Views/PasswordEntryView.web')
-		// passwordController.on('') // TODO
+		const PasswordEntryViewController = require('../../Passwords/Controllers/PasswordEntryViewController.web')
+		const passwordEntryViewController = new PasswordEntryViewController(self, passwordController)
+		self.passwordEntryViewController = passwordEntryViewController
 	}
 }
 module.exports = RootView

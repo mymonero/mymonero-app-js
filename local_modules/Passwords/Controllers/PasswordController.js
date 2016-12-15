@@ -158,13 +158,17 @@ class PasswordController extends EventEmitter
 	{
 		return "EventName_ErroredWhileSettingNewPassword"
 	}
+	EventName_errorWhileChangingPassword()
+	{
+		return "EventName_errorWhileChangingPassword"
+	}
 	EventName_SingleObserver_getUserToEnterExistingPasswordWithCB()
 	{
 		return "EventName_SingleObserver_getUserToEnterExistingPasswordWithCB"
 	}
-	EventName_SingleObserver_getUserToEnterNewPasswordWithCB()
+	EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB()
 	{
-		return "EventName_SingleObserver_getUserToEnterNewPasswordWithCB"
+		return "EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB"
 	}
 	//
 	AvailableUserSelectableTypesOfPassword()
@@ -384,7 +388,7 @@ class PasswordController extends EventEmitter
 		//
 		var hasSingleObserverCallbackBeenCalledYet = false
 		self.emit(
-			self.EventName_SingleObserver_getUserToEnterNewPasswordWithCB(), 
+			self.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(), 
 			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{ // we're passing a function that the single observer should call
 				if (hasSingleObserverCallbackBeenCalledYet === true) {
