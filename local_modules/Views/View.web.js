@@ -83,13 +83,18 @@ class View extends EventEmitter
 	addSubview_appendingToLayer(view, superlayer)
 	{ // this is exposed so you can inject subviews into manually created children elements of your choice
 		const self = this
-		// local state:
-		self.subviews.push(view)
-		// subview's dependency setup:
-		view.superview = self
-		view.superlayer = superlayer
-		// DOM:
-		superlayer.appendChild(view.layer)
+		//
+		self.viewWillAppear()
+		{
+			// local state:
+			self.subviews.push(view)
+			// subview's dependency setup:
+			view.superview = self
+			view.superlayer = superlayer
+			// DOM:
+			superlayer.appendChild(view.layer)
+		}
+		self.viewDidAppear()
 	}
 	removeFromSuperview()
 	{
@@ -102,19 +107,24 @@ class View extends EventEmitter
 			throw "no superlayer"
 			return
 		}
-		// DOM:
-		self.superlayer.removeChild(self.layer)
-		// now we can release the superlayer
-		self.superlayer = null
-		// now before we can release the superview,
-		// we must manage the superview's subview list
-		const superview_indexOf_self = self.superview.subviews.indexOf(self)
-		if (superview_indexOf_self === -1) {
-			throw "superview didn't have self as subview"
+		//
+		self.viewWillDisappear()
+		{
+			// DOM:
+			self.superlayer.removeChild(self.layer)
+			// now we can release the superlayer
+			self.superlayer = null
+			// now before we can release the superview,
+			// we must manage the superview's subview list
+			const superview_indexOf_self = self.superview.subviews.indexOf(self)
+			if (superview_indexOf_self === -1) {
+				throw "superview didn't have self as subview"
+			}
+			self.superview.subviews.splice(superview_indexOf_self, 1)
+			// and now we can free the superview
+			self.superview = null
 		}
-		self.superview.subviews.splice(superview_indexOf_self, 1)
-		// and now we can free the superview
-		self.superview = null
+		self.viewDidDisappear()
 	}
 	removeAllSubviews()
 	{
@@ -127,5 +137,21 @@ class View extends EventEmitter
 		)
 		self.subviews = []
 	}
+	//
+	//
+	// Runtime - Delegation - View visibility - Overridable - Be sure to call on super
+	//
+	viewWillAppear()
+	{
+	}
+	viewDidAppear()
+	{
+	}
+	viewWillDisappear()
+	{		
+	}
+	viewDidDisappear()
+	{		
+	}	
 }
 module.exports = View

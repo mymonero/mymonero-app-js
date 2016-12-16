@@ -53,6 +53,7 @@ class MenuControllerController
 		const self = this
 		//
 		self.setupWith_passwordController()
+		self.setupWith_menuController()
 	}
 	setupWith_passwordController()
 	{
@@ -76,6 +77,18 @@ class MenuControllerController
 				}
 			)
 		}
+	}
+	setupWith_menuController()
+	{
+		const self = this
+		const controller = self.menuController
+		controller.on(
+			controller.EventName_menuItemSelected_ChangePassword(),
+			function()
+			{
+				self.context.passwordController.InitiateChangePassword() // this will throw if no pw has been entered yet
+			}
+		)
 	}
 	//
 	//

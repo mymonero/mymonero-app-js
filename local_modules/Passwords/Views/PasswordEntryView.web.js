@@ -189,12 +189,7 @@ class PasswordEntryView extends View
 				throw "GetUserToEnterExistingPasswordWithCB called but self.passwordEntryTaskMode not .None"
 				return
 			}
-			if (isForChangePassword === true) {
-				if (isAlreadyPresented === false) {
-					throw "GetUserToEnterExistingPasswordWithCB with ForChangingPassword taskMode but not currently presented"
-					return
-				}
-			} else {
+			if (isForChangePassword !== true) {
 				if (isAlreadyPresented === true) {
 					throw "GetUserToEnterExistingPasswordWithCB with ForUnlockingApp taskMode but already presented"
 					return
@@ -234,8 +229,10 @@ class PasswordEntryView extends View
 		const shouldAnimateToNewState = isAlreadyPresented === true
 		{ // check legality
 			if (self.passwordEntryTaskMode !== passwordEntryTaskModes.None) {
-				throw "GetUserToEnterNewPasswordAndTypeWithCB called but self.passwordEntryTaskMode not .None"
-				return
+				if (self.passwordEntryTaskMode !== passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType) {
+					throw "GetUserToEnterNewPasswordAndTypeWithCB called but self.passwordEntryTaskMode not .None and not .ForChangingPassword_ExistingPasswordGivenType"
+					return
+				}
 			}
 			if (isForChangePassword === true) {
 				if (isAlreadyPresented === false) {
@@ -291,7 +288,6 @@ class PasswordEntryView extends View
 			return
 		}
 		// TODO: animation
-		self.viewWillDisappear()
 		self.removeFromSuperview()
 		//
 		{ // clear both callbacks as well since we're no longer going to call back with either of the current values
@@ -306,7 +302,6 @@ class PasswordEntryView extends View
 	presentInView(superview)
 	{
 		const self = this
-		self.viewWillAppear()
 		superview.addSubview(self)
 	}
 	//
@@ -469,21 +464,27 @@ class PasswordEntryView extends View
 	}
 	//
 	//
-	// Runtime - Delegation - Visibility cycle
+	// Runtime - Delegation - Visibility cycle - Overrides
 	//
 	viewWillAppear()
 	{
 		const self = this
+		super.viewWillAppear()
+		//
 		console.log("Password entry view will appear")
 	}
 	viewWillDisappear()
 	{
 		const self = this
+		super.viewWillDisappear()
+		//
 		console.log("Password entry view will disappear")
 	}
 	viewDidDisappear()
 	{
 		const self = this
+		super.viewDidDisappear()
+		//
 		self.passwordEntryTaskMode = passwordEntryTaskModes.None // reset/clear
 		if (typeof self.enterNewPasswordAndTypeView.superview !== 'undefined' && self.enterNewPasswordAndTypeView.superview !== null) {
 			self.enterNewPasswordAndTypeView.removeFromSuperview()

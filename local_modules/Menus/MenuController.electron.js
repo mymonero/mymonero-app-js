@@ -31,10 +31,14 @@
 const {Menu, electron_shell} = require('electron')
 const isMacOS = process.platform === 'darwin'
 //
-class MenuController
+const EventEmitter = require('events')
+//
+class MenuController extends EventEmitter
 {
 	constructor(options, context)
 	{
+		super() // must can before accessing `this`
+		//
 		const self = this
 		self.options = options
 		self.context = context
@@ -74,7 +78,16 @@ class MenuController
 	{
 		return "Change Password"
 	}
-
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Event Names
+	
+	EventName_menuItemSelected_ChangePassword()
+	{
+		return "EventName_menuItemSelected_ChangePassword"
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Factories
@@ -108,7 +121,7 @@ class MenuController
 						enabled: false, // wait for first PW entry to enable
 						click: function(menuItem, browserWindow, event)
 						{
-							console.log("check pw")
+							self.emit(self.EventName_menuItemSelected_ChangePassword())
 						}
 					},
 					{
