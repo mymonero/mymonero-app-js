@@ -106,6 +106,13 @@ class PasswordEntryView extends View
 					self.submitForm() // we don't use the pw here as we just read it directly from the view
 				}
 			)
+			view.on(
+				view.EventName_CancelButtonPressed(),
+				function()
+				{
+					self.cancel()
+				}
+			)
 		}
 	}
 	// Observation
@@ -314,6 +321,10 @@ class PasswordEntryView extends View
 		if (typeof shouldAnimate === 'undefined') {
 			shouldAnimate = false
 		}
+		const isForChangingPassword = 
+			self.passwordEntryTaskMode == passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType 
+			|| self.passwordEntryTaskMode == passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType
+		//
 		// we do not need to call self._clearValidationMessage() here because the ConfigureToBeShown() fns have the same effect
 		{ // transition to screen
 			switch (self.passwordEntryTaskMode) {
@@ -323,7 +334,7 @@ class PasswordEntryView extends View
 						throw "enterNewPasswordAndTypeView should never be visible when transitioning to ExistingPasswordGivenType task mode"
 						return
 		 			}
-					self.enterExistingPasswordView.ConfigureToBeShown() // so we can get the right type of password entry UI set up
+					self.enterExistingPasswordView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
 					self.addSubview(self.enterExistingPasswordView) // TODO: any cases where we'd need to animate this on?
 					break
 				//	

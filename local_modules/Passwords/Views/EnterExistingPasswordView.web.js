@@ -45,15 +45,19 @@ class EnterExistingPasswordView extends View
 	}
 	//
 	//
-	// Runtime - Accessors - Events
+	// Runtime - Accessors - Public - Events
 	//
 	EventName_UserSubmittedNonZeroPassword()
 	{
 		return "EventName_UserSubmittedNonZeroPassword"
 	}
+	EventName_CancelButtonPressed()
+	{
+		return "EventName_CancelButtonPressed"
+	}
 	//
 	//
-	// Runtime - Accessors - Products
+	// Runtime - Accessors - Public - Products
 	//
 	Password()
 	{
@@ -68,11 +72,21 @@ class EnterExistingPasswordView extends View
 	}
 	//
 	//
+	// Runtime - Accessors - Internal - UI & UI metrics - Shared
+	//
+	idPrefix()
+	{
+		return "EnterExistingPasswordView"
+	}
+	//
+	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Text input field
 	//
 	idForChild_inputField()
 	{
-		return "EnterExistingPasswordView_idForChild_inputField"
+		const self = this
+		//
+		return self.idPrefix() + "_idForChild_inputField"
 	}
 	new_htmlStringFor_inputFieldLayer()
 	{
@@ -94,7 +108,9 @@ class EnterExistingPasswordView extends View
 	//
 	idForChild_validationMessageLabelLayer()
 	{
-		return "EnterExistingPasswordView_idForChild_validationMessageLabel"
+		const self = this
+		//
+		return self.idPrefix() + "_idForChild_validationMessageLabel"
 	}
 	new_htmlStringFor_validationMessageLabelLayer()
 	{
@@ -112,17 +128,46 @@ class EnterExistingPasswordView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives - Interface - Configuration 
+	// Runtime - Accessors - Internal - UI & UI metrics - Cancel button
 	//
-	ConfigureToBeShown()
+	idForChild_cancelButtonLayer()
 	{
 		const self = this
-		const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
-		if (userSelectedTypeOfPassword === null || userSelectedTypeOfPassword == "" || typeof userSelectedTypeOfPassword === 'undefined') {
-			throw "ConfigureToBeShown called but userSelectedTypeOfPassword undefined"
+		//
+		return self.idPrefix() + "_idForChild_cancelButtonLayer"
+	}
+	new_htmlStringFor_cancelButtonLayer()
+	{
+		const self = this
+		const htmlString = `<a id="${ self.idForChild_cancelButtonLayer() }" href="#">Cancel</a>`
+		//
+		return htmlString
+	}
+	selected_cancelButtonLayer()
+	{
+		const self = this
+		const layer = self.layer.querySelector(`a#${ self.idForChild_cancelButtonLayer() }`)
+		//
+		return layer
+	}
+	//
+	//
+	// Runtime - Imperatives - Interface - Configuration 
+	//
+	ConfigureToBeShown(isForChangingPassword)
+	{
+		const self = this
+		{
+			self.isForChangingPassword = isForChangingPassword
 		}
-		self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
-		self._configureUIGivenPasswordType()
+		{
+			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
+			if (userSelectedTypeOfPassword === null || userSelectedTypeOfPassword == "" || typeof userSelectedTypeOfPassword === 'undefined') {
+				throw "ConfigureToBeShown called but userSelectedTypeOfPassword undefined"
+			}
+			self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
+		}
+		self._configureUI()
 	}
 	SetValidationMessage(validationMessageString)
 	{
@@ -134,7 +179,7 @@ class EnterExistingPasswordView extends View
 	//
 	// Runtime - Imperatives - Internal
 	//
-	_configureUIGivenPasswordType()
+	_configureUI()
 	{
 		const self = this
 		const availableUserSelectableTypesOfPassword = self.context.passwordController.AvailableUserSelectableTypesOfPassword()
@@ -149,44 +194,75 @@ class EnterExistingPasswordView extends View
 			default:
 				throw "this switch should be exhaustive but no longer is"
 		}
-		self.layer.innerHTML = 
-			self.new_htmlStringFor_validationMessageLabelLayer()
-			+ `<h3>Please enter your ${humanReadable_passwordType}:</h3>`
-			+ self.new_htmlStringFor_inputFieldLayer()
-		{ // inputFieldLayer
-			const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
-			layer.addEventListener(
-				"keyup",
-				function(event)
-				{
-					if (event.keyCode === 13) {
-						const password = layer.value
-						if (typeof password === 'undefined' || password === null || password === "") {
-							return // give feedback if necessary (beep?)
-						}
-						self._yieldNonZeroPassword(password)
-					}
-				}
-			)
-			setTimeout(function()
-			{
-				layer.focus()
-			}, 5)
+		{ // constructing the innerHTML
+			var htmlString = 
+				self.new_htmlStringFor_validationMessageLabelLayer()
+				+ `<h3>Please enter your ${humanReadable_passwordType}:</h3>`
+				+ self.new_htmlStringFor_inputFieldLayer()
+			if (self.isForChangingPassword === true) {
+				htmlString += self.new_htmlStringFor_cancelButtonLayer()
+			}
+			self.layer.innerHTML = htmlString
 		}
-		{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-			const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
-			layer.style.color = "red"
-			layer.style.fontWeight = "bold"
-			layer.style.display = "block"
+		{ // JS-land setup, observation, etc:
+			{ // inputFieldLayer
+				const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
+				layer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						if (event.keyCode === 13) {
+							const password = layer.value
+							if (typeof password === 'undefined' || password === null || password === "") {
+								return // give feedback if necessary (beep?)
+							}
+							self._yield_nonZeroPassword(password)
+						}
+					}
+				)
+				setTimeout(function()
+				{
+					layer.focus()
+				}, 5)
+			}
+			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
+				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
+				layer.style.color = "red"
+				layer.style.fontWeight = "bold"
+				layer.style.display = "block"
+			}
+			{ // cancel button, if applicable
+				if (self.isForChangingPassword === true) {
+					const layer = self.selected_cancelButtonLayer() // now we can select it from the DOM
+					layer.style.display = "block"
+					layer.addEventListener(
+						"click",
+						function(event)
+						{
+							event.preventDefault()
+							self._yield_cancelButtonPressed()
+							//
+							return false
+						}
+					)
+				}
+			}
 		}
 	}
-	_yieldNonZeroPassword(password)
+	_yield_nonZeroPassword(password)
 	{
 		const self = this
 		self.emit(
 			self.EventName_UserSubmittedNonZeroPassword(),
 			password
 		)
-	}	
+	}
+	_yield_cancelButtonPressed(cancelButton)
+	{
+		const self = this
+		self.emit(
+			self.EventName_CancelButtonPressed()
+		)
+	}
 }
 module.exports = EnterExistingPasswordView
