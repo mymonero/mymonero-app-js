@@ -42,8 +42,151 @@ class EnterExistingPasswordView extends View
 	setup()
 	{
 		const self = this
-		//
-		self.layer.innerHTML = `<h3>Please enter your pin/password:</h3>` // TODO: configure with pw type
 	}
+	//
+	//
+	// Runtime - Accessors - Events
+	//
+	EventName_UserSubmittedNonZeroPassword()
+	{
+		return "EventName_UserSubmittedNonZeroPassword"
+	}
+	//
+	//
+	// Runtime - Accessors - Products
+	//
+	Password()
+	{
+		const self = this
+		const layer = self.selected_inputFieldLayer()
+		if (typeof layer === 'undefined' || layer === null) {
+			throw "layer undefined or null in Password()"
+			return ""
+		}
+		//
+		return layer.value
+	}
+	//
+	//
+	// Runtime - Accessors - Internal - UI & UI metrics - Text input field
+	//
+	idForChild_inputField()
+	{
+		return "EnterExistingPasswordView_idForChild_inputField"
+	}
+	new_htmlStringFor_inputFieldLayer()
+	{
+		const self = this
+		const htmlString = `<input type="password" id="${ self.idForChild_inputField() }" />`
+		//
+		return htmlString
+	}
+	selected_inputFieldLayer()
+	{
+		const self = this
+		const layer = self.layer.querySelector(`input#${ self.idForChild_inputField() }`)
+		//
+		return layer
+	}
+	//
+	//
+	// Runtime - Accessors - Internal - UI & UI metrics - Validation message label
+	//
+	idForChild_validationMessageLabelLayer()
+	{
+		return "EnterExistingPasswordView_idForChild_validationMessageLabel"
+	}
+	new_htmlStringFor_validationMessageLabelLayer()
+	{
+		const self = this
+		const htmlString = `<span id="${ self.idForChild_validationMessageLabelLayer() }"></span>`
+		//
+		return htmlString
+	}
+	selected_validationMessageLabelLayer()
+	{
+		const self = this
+		const layer = self.layer.querySelector(`span#${ self.idForChild_validationMessageLabelLayer() }`)
+		//
+		return layer
+	}
+	//
+	//
+	// Runtime - Imperatives - Interface - Configuration 
+	//
+	ConfigureToBeShown()
+	{
+		const self = this
+		const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
+		if (userSelectedTypeOfPassword === null || userSelectedTypeOfPassword == "" || typeof userSelectedTypeOfPassword === 'undefined') {
+			throw "ConfigureToBeShown called but userSelectedTypeOfPassword undefined"
+		}
+		self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
+		self._configureUIGivenPasswordType()
+	}
+	SetValidationMessage(validationMessageString)
+	{
+		const self = this
+		const validationMessageLabelLayer = self.selected_validationMessageLabelLayer()
+		validationMessageLabelLayer.innerHTML = validationMessageString || ""
+	}
+	//
+	//
+	// Runtime - Imperatives - Internal
+	//
+	_configureUIGivenPasswordType()
+	{
+		const self = this
+		const availableUserSelectableTypesOfPassword = self.context.passwordController.AvailableUserSelectableTypesOfPassword()
+		var humanReadable_passwordType = 'password'
+		switch (self.userSelectedTypeOfPassword) {
+			case availableUserSelectableTypesOfPassword.FreeformStringPW:
+				humanReadable_passwordType = 'password'
+				break
+			case availableUserSelectableTypesOfPassword.SixCharPIN:
+				humanReadable_passwordType = 'PIN'
+				break
+			default:
+				throw "this switch should be exhaustive but no longer is"
+		}
+		self.layer.innerHTML = 
+			self.new_htmlStringFor_validationMessageLabelLayer()
+			+ `<h3>Please enter your ${humanReadable_passwordType}:</h3>`
+			+ self.new_htmlStringFor_inputFieldLayer()
+		{ // inputFieldLayer
+			const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
+			layer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					if (event.keyCode === 13) {
+						const password = layer.value
+						if (typeof password === 'undefined' || password === null || password === "") {
+							return // give feedback if necessary (beep?)
+						}
+						self._yieldNonZeroPassword(password)
+					}
+				}
+			)
+			setTimeout(function()
+			{
+				layer.focus()
+			}, 5)
+		}
+		{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
+			const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
+			layer.style.color = "red"
+			layer.style.fontWeight = "bold"
+			layer.style.display = "block"
+		}
+	}
+	_yieldNonZeroPassword(password)
+	{
+		const self = this
+		self.emit(
+			self.EventName_UserSubmittedNonZeroPassword(),
+			password
+		)
+	}	
 }
 module.exports = EnterExistingPasswordView

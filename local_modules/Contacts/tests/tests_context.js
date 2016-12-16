@@ -95,6 +95,13 @@ function startObserving_passwordController(context)
 			console.log("EventName_ErroredWhileSettingNewPassword err:", err)
 		}
 	)
+	controller.on(
+		controller.EventName_ErroredWhileGettingExistingPassword(),
+		function(err)
+		{ // where validation errors received as well
+			console.log("EventName_ErroredWhileGettingExistingPassword", err)
+		}
+	)
 	//
 	// supplying the password:
 	controller.on(

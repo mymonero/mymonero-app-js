@@ -158,6 +158,10 @@ class PasswordController extends EventEmitter
 	{
 		return "EventName_ErroredWhileSettingNewPassword"
 	}
+	EventName_ErroredWhileGettingExistingPassword()
+	{
+		return "EventName_ErroredWhileGettingExistingPassword"
+	}
 	EventName_errorWhileChangingPassword()
 	{
 		return "EventName_errorWhileChangingPassword"
@@ -292,14 +296,14 @@ class PasswordController extends EventEmitter
 								const errStr = "Incorrect password"
 								const err = new Error(errStr)
 								self.unguard_getNewOrExistingPassword()
-								self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+								self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
 								return
 							}
 							if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
 								const errStr = "Incorrect password"
 								const err = new Error(errStr)
 								self.unguard_getNewOrExistingPassword()
-								self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+								self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
 								return
 							}
 							//
@@ -371,19 +375,11 @@ class PasswordController extends EventEmitter
 	)
 	{
 		const self = this
-		//
-		var hasSingleObserverCallbackBeenCalledYet = false
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(), 
 			isForChangePassword,
 			function(userDidCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
 			{ // we're passing a function that the single observer should call
-				if (hasSingleObserverCallbackBeenCalledYet === true) {
-					throw "this is a single observer function and must only be called once per emit"
-					return
-				}
-				hasSingleObserverCallbackBeenCalledYet = true // we're relying on this function capturing a distinct parent scope for each .emit call
-				//
 				if (userDidCancel_orNil) {
 					console.info("userDidCancel while having user enter their existing password")
 				}
@@ -397,19 +393,11 @@ class PasswordController extends EventEmitter
 	)
 	{
 		const self = this
-		//
-		var hasSingleObserverCallbackBeenCalledYet = false
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(), 
 			isForChangePassword,
 			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{ // we're passing a function that the single observer should call
-				if (hasSingleObserverCallbackBeenCalledYet === true) {
-					throw "this is a single observer function and must only be called once per emit"
-					return
-				}
-				hasSingleObserverCallbackBeenCalledYet = true // we're relying on this function capturing a distinct parent scope for each .emit call
-				//
 				if (userDidCancel_orNil) {
 					console.info("userDidCancel_orNil while having user enter new password")
 				}

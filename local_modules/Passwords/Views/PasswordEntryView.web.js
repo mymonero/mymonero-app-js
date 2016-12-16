@@ -96,7 +96,17 @@ class PasswordEntryView extends View
 		const self = this
 		const options = {}
 		const EnterExistingPasswordView = require('./EnterExistingPasswordView.web')
-		self.enterExistingPasswordView = new EnterExistingPasswordView(options, self.context)
+		const view = new EnterExistingPasswordView(options, self.context)
+		self.enterExistingPasswordView = view
+		{ // observation
+			view.on(
+				view.EventName_UserSubmittedNonZeroPassword(),
+				function(password)
+				{
+					self.submitForm() // we don't use the pw here as we just read it directly from the view
+				}
+			)
+		}
 	}
 	// Observation
 	_setup_startObserving()
@@ -117,7 +127,7 @@ class PasswordEntryView extends View
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
 				return self.enterNewPasswordAndTypeView.Password()
-			case passwordEntryTaskMode.None:
+			case passwordEntryTaskModes.None:
 				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
 				break
 			default:
@@ -125,7 +135,7 @@ class PasswordEntryView extends View
 				break
 		}
 		//
-		return null
+		return undefined
 	}
 	PasswordTypeSelectedInView()
 	{
@@ -133,11 +143,12 @@ class PasswordEntryView extends View
 		switch (self.passwordEntryTaskMode) {
 			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
-				throw "PasswordEnteredInView called when self.passwordEntryTaskMode for ExistingPasswordGivenType"
+				return undefined // we're going to allow this function to be called and simply return undefined because 
+				// the caller needs to pass it to a general purpose function
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
 				return self.enterNewPasswordAndTypeView.PasswordType()
-			case passwordEntryTaskMode.None:
+			case passwordEntryTaskModes.None:
 				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
 				break
 			default:
@@ -145,7 +156,7 @@ class PasswordEntryView extends View
 				break
 		}
 		//
-		return null
+		return undefined
 	}
 	//
 	//
@@ -188,15 +199,6 @@ class PasswordEntryView extends View
 					throw "GetUserToEnterExistingPasswordWithCB with ForUnlockingApp taskMode but already presented"
 					return
 				}
-			}
-			//
-			if (typeof self.enterPasswordAndType_cb !== 'undefined' && self.enterPasswordAndType_cb !== null) {
-				throw "GetUserToEnterExistingPasswordWithCB called but self.enterPasswordAndType_cb not null"
-				return
-			}
-			if (typeof self.enterPassword_cb !== 'undefined' && self.enterPassword_cb !== null) {
-				throw "GetUserToEnterExistingPasswordWithCB called but self.enterPassword_cb not null"
-				return
 			}
 		}
 		{ // we need to hang onto the callback for when the form is submitted
@@ -246,15 +248,6 @@ class PasswordEntryView extends View
 					return
 				}
 			}
-			//
-			if (self.enterPasswordAndType_cb !== null && typeof self.enterPasswordAndType_cb !== null) {
-				throw "GetUserToEnterExistingPasswordWithCB called but self.enterPasswordAndType_cb not null"
-				return
-			}
-			if (self.enterPassword_cb !== null && typeof self.enterPassword_cb !== null) {
-				throw "GetUserToEnterExistingPasswordWithCB called but self.enterPassword_cb not null"
-				return
-			}
 		}
 		{ // we need to hang onto the callback for when the form is submitted
 			self.enterPasswordAndType_cb = enterPasswordAndType_cb
@@ -300,6 +293,11 @@ class PasswordEntryView extends View
 		// TODO: animation
 		self.viewWillDisappear()
 		self.removeFromSuperview()
+		//
+		{ // clear both callbacks as well since we're no longer going to call back with either of the current values
+			self.enterPassword_cb = null
+			self.enterPasswordAndType_cb = null
+		}
 	}
 	//
 	//
@@ -321,9 +319,7 @@ class PasswordEntryView extends View
 		if (typeof shouldAnimate === 'undefined') {
 			shouldAnimate = false
 		}
-		{ // prepare for reuse
-			self._clearValidationMessage()
-		}
+		// we do not need to call self._clearValidationMessage() here because the ConfigureToBeShown() fns have the same effect
 		{ // transition to screen
 			switch (self.passwordEntryTaskMode) {
 				case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
@@ -332,6 +328,7 @@ class PasswordEntryView extends View
 						throw "enterNewPasswordAndTypeView should never be visible when transitioning to ExistingPasswordGivenType task mode"
 						return
 		 			}
+					self.enterExistingPasswordView.ConfigureToBeShown() // so we can get the right type of password entry UI set up
 					self.addSubview(self.enterExistingPasswordView) // TODO: any cases where we'd need to animate this on?
 					break
 				//	
@@ -344,7 +341,7 @@ class PasswordEntryView extends View
 					
 					break
 				//
-				case passwordEntryTaskMode.None:
+				case passwordEntryTaskModes.None:
 					throw "_configureWithMode called when self.passwordEntryTaskMode .None"
 					break
 				//	
@@ -358,16 +355,30 @@ class PasswordEntryView extends View
 	_setValidationMessage(validationMessageString)
 	{
 		const self = this
-		console.log("TODO _setValidationMessage", validationMessageString)
-		// TODO:
-		// self.validationMessage_LabelView.innerHTML = `<span>${validationMessageString}</span>`
+		switch (self.passwordEntryTaskMode) {
+			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
+			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
+				self.enterExistingPasswordView.SetValidationMessage(validationMessageString)
+				break
+			//	
+			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
+			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
+				self.enterNewPasswordAndTypeView.SetValidationMessage(validationMessageString)
+				break
+			//
+			case passwordEntryTaskModes.None:
+				throw "_setValidationMessage called when self.passwordEntryTaskMode .None"
+				break
+			//	
+			default:
+				throw "This switch ought to have been exhaustive"
+				break
+		}
 	}
 	_clearValidationMessage()
 	{
 		const self = this
-		console.log("TODO _clearValidationMessage")
-		// TODO:
-		// self.validationMessage_LabelView.innerHTML = ''
+		self._setValidationMessage("")
 	}	
 	//
 	//
@@ -388,11 +399,19 @@ class PasswordEntryView extends View
 	}
 	cancel()
 	{
-		const self = this // We don't need to call .Dismiss here because the cancel will be picked up by the PasswordEntryViewController
+		const self = this
+		//
 		self._passwordController_callBack_trampoline(
 			true, // didCancel
 			undefined,
 			undefined
+		)
+		//
+		setTimeout(
+			function()
+			{
+				self.Dismiss()
+			}
 		)
 	}	
 	_passwordController_callBack_trampoline(didCancel, password_orNil, passwordType_orNil)
@@ -401,18 +420,15 @@ class PasswordEntryView extends View
 		//
 		let enterPassword_cb = self.enterPassword_cb
 		let enterPasswordAndType_cb = self.enterPasswordAndType_cb
-		{ // might as well free these now that we're holding onto them
-			self.enterPassword_cb = null
-			self.enterPasswordAndType_cb = null
-		}
+		//
+		// NOTE: we unfortunately can't just clear the callbacks here even though this is where we use them because
+		// if there's a validation error, and the user wants to try again, there would be no callback through which
+		// to submit the subsequent try
+		//
 		switch (self.passwordEntryTaskMode) {
 			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
 				{ // validate cb state
-					if (typeof enterPasswordAndType_cb !== 'undefined' && enterPasswordAndType_cb !== null) {
-						throw "PasswordEntryView/_passwordController_callBack_trampoline: had a enterPasswordAndType_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
-						return
-					}
 					if (typeof enterPassword_cb === 'undefined' || enterPassword_cb === null) {
 						throw "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPassword_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
 						return
@@ -428,10 +444,6 @@ class PasswordEntryView extends View
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
 				console.log("2cb for mode", self.passwordEntryTaskMode)
 				{ // validate cb state
-					if (typeof enterPassword_cb !== 'undefined' && enterPassword_cb !== null) {
-						throw "PasswordEntryView/_passwordController_callBack_trampoline: had a enterPassword_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
-						return
-					}
 					if (typeof enterPasswordAndType_cb === 'undefined' || enterPasswordAndType_cb === null) {
 						throw "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPasswordAndType_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
 						return
@@ -444,7 +456,7 @@ class PasswordEntryView extends View
 				)
 				break
 			//
-			case passwordEntryTaskMode.None:
+			case passwordEntryTaskModes.None:
 				throw "_passwordController_callBack_trampoline called when self.passwordEntryTaskMode .None"
 				return
 				break

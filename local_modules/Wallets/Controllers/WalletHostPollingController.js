@@ -204,7 +204,7 @@ class WalletHostPollingController
 				self.requestHandle_for_accountInfo = null 
 				//
 				if (err) {
-					console.error(err.toString())
+					console.error(err.message)
 					fn(err)
 					return
 				}

@@ -108,7 +108,20 @@ class PasswordEntryViewController extends EventEmitter
 					return
 				}
 				self.view.ShowValidationErrorMessageToUser(
-					err ? err.toString() : "Unknown error. Please try again."
+					err ? err.message : "Unknown error. Please try again."
+				)
+			}
+		)
+		controller.on(
+			controller.EventName_ErroredWhileGettingExistingPassword(),
+			function(err)
+			{
+				if (self.view.IsPresented() !== true) {
+					throw "EventName_ErroredWhileGettingExistingPassword but self.view.superview nil"
+					return
+				}
+				self.view.ShowValidationErrorMessageToUser(
+					err ? err.message : "Unknown error. Please try again."
 				)
 			}
 		)
@@ -121,7 +134,7 @@ class PasswordEntryViewController extends EventEmitter
 					return
 				}
 				self.view.ShowValidationErrorMessageToUser(
-					err ? err.toString() : "Unknown error. Please try again."
+					err ? err.message : "Unknown error. Please try again."
 				)
 			}
 		)

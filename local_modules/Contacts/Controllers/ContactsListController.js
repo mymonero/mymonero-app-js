@@ -75,7 +75,7 @@ class ContactsListController extends EventEmitter
 			function(err, ids)
 			{
 				if (err) {
-					console.error("Error fetching list of saved contacts: " + err.toString())
+					console.error("Error fetching list of saved contacts: " + err.message)
 					setTimeout(function()
 					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 						self.emit(self.EventName_errorWhileBooting(), err)
@@ -128,7 +128,7 @@ class ContactsListController extends EventEmitter
 				function(err)
 				{
 					if (err) {
-						console.error("Error while loading saved contacts: " + err.toString())
+						console.error("Error while loading saved contacts: " + err.message)
 						setTimeout(function()
 						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 							self.emit(self.EventName_errorWhileBooting(), err)
@@ -297,7 +297,7 @@ class ContactsListController extends EventEmitter
 			function(err, docs)
 			{
 				if (err) {
-					console.error(err.toString)
+					console.error(err.message)
 					fn(err)
 					return
 				}

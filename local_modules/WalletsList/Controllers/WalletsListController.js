@@ -90,7 +90,7 @@ class WalletsListController extends EventEmitter
 			function(err, ids)
 			{
 				if (err) {
-					const errStr = "Error fetching persisted wallet ids: " + err.toString()
+					const errStr = "Error fetching persisted wallet ids: " + err.message
 					const err = new Error(errStr)
 					self._setup_didFailToBootWithError(err)
 					return
@@ -234,7 +234,7 @@ class WalletsListController extends EventEmitter
 			function(err, docs)
 			{
 				if (err) {
-					console.error(err.toString)
+					console.error(err.message)
 					fn(err)
 					return
 				}

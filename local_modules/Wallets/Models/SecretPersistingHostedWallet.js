@@ -126,7 +126,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			function(err, docs)
 			{
 				if (err) {
-					console.error(err.toString)
+					console.error(err.message)
 					self.failedToInitialize_cb(err)
 					return
 				}

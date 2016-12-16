@@ -115,7 +115,7 @@ class Contact extends EventEmitter
 			function(err, docs)
 			{
 				if (err) {
-					console.error(err.toString)
+					console.error(err.message)
 					setTimeout(function()
 					{ // wait til next tick so that instantiator cannot have missed this
 						self.emit(self.EventName_errorWhileBooting(), err)
