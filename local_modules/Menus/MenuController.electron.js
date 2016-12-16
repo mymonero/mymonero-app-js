@@ -28,7 +28,8 @@
 //
 "use strict"
 //
-const {Menu} = require('electron')
+const {Menu, electron_shell} = require('electron')
+const isMacOS = process.platform === 'darwin'
 //
 class MenuController
 {
@@ -67,13 +68,20 @@ class MenuController
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors
+	// Runtime - Accessors - Menu item names
+	
+	MenuItemName_ChangePassword()
+	{
+		return "Change Password"
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Factories
 	
 	_new_menuSpecs()
 	{
 		const self = this
-		const electron_shell = require('electron').shell
-		const isMacOS = process.platform === 'darwin'
 		const appName = self.context.app.getName()
 		//
 		const menuSpecs = []
@@ -83,6 +91,32 @@ class MenuController
 				submenu: [
 					{
 						role: 'about'
+					},
+					{
+						type: 'separator'
+					},
+					{
+						label: 'Preferences',
+						accelerator: 'CmdOrCtrl+,',
+						click: function(menuItem, browserWindow, event)
+						{
+							console.log("prefs")
+						}
+					},
+					{
+						label: self.MenuItemName_ChangePassword(),
+						enabled: false, // wait for first PW entry to enable
+						click: function(menuItem, browserWindow, event)
+						{
+							console.log("check pw")
+						}
+					},
+					{
+						label: 'Check for Updates',
+						click: function(menuItem, browserWindow, event)
+						{
+							console.log("check for updates")
+						}
 					},
 					{
 						type: 'separator'
@@ -180,80 +214,86 @@ class MenuController
 		// 		},
 		// 	]
 		// })
-		{ // Window menu
-			const menuSpec = 
-			{
-				role: 'window'
-			}
-			if (isMacOS === true) {
-				menuSpec.submenu = 
-				[
-					{
-						label: 'Close',
-						accelerator: 'CmdOrCtrl+W',
-						role: 'close'
-					},
-					{
-						label: 'Minimize',
-						accelerator: 'CmdOrCtrl+M',
-						role: 'minimize'
-					},
-					{
-						label: 'Zoom',
-						role: 'zoom'
-					},
-					{
-						type: 'separator'
-					},
-					{
-						label: 'Bring All to Front',
-						role: 'front'
-					}
-				]
-			} else {
-				menuSpec.submenu = 
-				[
-					{
-						role: 'minimize'
-					},
-					{
-						role: 'close'
-					}
-				]
-			}
-			menuSpecs.push(menuSpec)
-		}
+			
+		// v------- The window menu is commented for now because it also shows show:false (background process) windows
+		// { // Window menu
+		// 	const menuSpec =
+		// 	{
+		// 		role: 'window'
+		// 	}
+		// 	if (isMacOS === true) {
+		// 		menuSpec.submenu =
+		// 		[
+		// 			{
+		// 				label: 'Close',
+		// 				accelerator: 'CmdOrCtrl+W',
+		// 				role: 'close'
+		// 			},
+		// 			{
+		// 				label: 'Minimize',
+		// 				accelerator: 'CmdOrCtrl+M',
+		// 				role: 'minimize'
+		// 			},
+		// 			{
+		// 				label: 'Zoom',
+		// 				role: 'zoom'
+		// 			},
+		// 			{
+		// 				type: 'separator'
+		// 			},
+		// 			{
+		// 				label: 'Bring All to Front',
+		// 				role: 'front'
+		// 			}
+		// 		]
+		// 	} else {
+		// 		menuSpec.submenu =
+		// 		[
+		// 			{
+		// 				role: 'minimize'
+		// 			},
+		// 			{
+		// 				role: 'close'
+		// 			}
+		// 		]
+		// 	}
+		// 	menuSpecs.push(menuSpec)
+		// }
 		{ // Help
 			menuSpecs.push({
 				role: 'help',
 				submenu: [
 					{
 						label: 'MyMonero.com',
-						click() { 
+						click: function(menuItem, browserWindow, event)
+						{
 							electron_shell.openExternal('https://mymonero.com/')
 						}
 					},
 					{
-						role: 'separator'
+						type: 'separator'
 					},
 					{
 						label: 'Support',
-						click() {
+						click: function(menuItem, browserWindow, event)
+						{
 							electron_shell.openExternal('https://mymonero.com/#/support')
 						}
 					},
 					{
-						role: 'separator'
+						type: 'separator'
 					},
 					{
 						label: 'Privacy Policy',
-						click() { 
+						click: function(menuItem, browserWindow, event)
+						{
 							electron_shell.openExternal('https://mymonero.com/#/privacy-policy')
 						}
 					},
 					{
 						label: 'Terms of Use',
-						click() { 
+						click: function(menuItem, browserWindow, event)
+						{
 							electron_shell.openExternal('https://mymonero.com/#/terms')
 						}
 					}
@@ -266,7 +306,48 @@ class MenuController
 
 
 	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Searches
+	
+	_firstMenuItemNamed(itemName)
+	{
+		const self = this
+		const menuItems = self.menu.items
+		for (let menuItem of menuItems) {
+			const menuItemItems = menuItem.submenu.items
+			for (let menuItemItem of menuItemItems) {
+				{
+					const role = menuItemItem.role
+					if (typeof role !== 'undefined') {
+						if (itemName.toLowerCase == role) {
+							return menuItemItem
+						}
+					}
+				}
+				{
+					const label = menuItemItem.label
+					if (label === itemName) {
+						return menuItemItem
+					}
+				}
+			}
+		}
+		//
+		return null
+	}
+	
+
+	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives
+	
+	SetItemNamedEnabled(itemName, isEnabled)
+	{
+		const self = this
+		const menuItem = self._firstMenuItemNamed(itemName)
+		if (menuItem === null) {
+			throw "Menu item not found"
+		}
+		menuItem.enabled = isEnabled
+	}
 	
 
 	////////////////////////////////////////////////////////////////////////////////

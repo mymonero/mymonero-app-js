@@ -46,6 +46,8 @@ var context_object_instantiation_descriptions =
 		instance_key: "passwordController",
 		options: {}
 	},
+	//
+	// The following should go after the passwordController, persister, etc
 	{
 		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",
 		instance_key: "walletsListController",
@@ -56,13 +58,25 @@ var context_object_instantiation_descriptions =
 		instance_key: "contactsListController",
 		options: {}
 	},
+	//
+	{ // Silly as it sounds, this class exists to integrate the main process menuController with event 
+  	  // emissions from the renderer side so that integratees can remain able to operate independently.
+		module_path: __dirname + "/../../Menus/MenuControllerController.renderer",
+		instance_key: "menuControllerController", // we/you probably won't need to access this ever though
+		options: {}
+	},
 ]
-function NewHydratedContext(app, document_cryptor__background)
+function NewHydratedContext(
+	app, 
+	document_cryptor__background, 
+	menuController
+)
 {
 	var initialContext =
 	{
 		app: app,
 		document_cryptor__background: document_cryptor__background,
+		menuController: menuController,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}
 

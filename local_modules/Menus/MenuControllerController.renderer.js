@@ -28,37 +28,66 @@
 //
 "use strict"
 //
-const setup_utils = require('../../electron_renderer_utils/renderer_setup_utils')
-setup_utils()
+const {Menu} = require('electron')
 //
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const rootView = new_rootView() // hang onto reference
-//
-//
-// Accessors - Factories
-//
-function new_rootView()
-{
-	const RootView = require('./RootView.web.js') // electron uses .web files as it has a web DOM
-	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-		remote__app, 
-		remote__context.document_cryptor__background, // this must live on the main proc for ipc
-		remote__context.menuController // for UI and app runtime access
-	)
-	const options = {}
-	const view = new RootView(options, renderer_context)
+class MenuControllerController
+{ // Silly as it sounds, this class exists to integrate the main process menuController with event
+  // emissions from the renderer side so that integratees can remain able to operate independently
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Lifecycle - Initialization
+
+	constructor(options, context)
 	{
-		view.superview = null // just to be explicit
+		const self = this
+		self.options = options
+		self.context = context
+		//
+		self.menuController = self.context.menuController // on the main process -- so this will be synchronous IPC
+		//
+		self.setup()
 	}
+	setup()
 	{
-		const superlayer = document.body
-		view.superlayer = superlayer
-		// manually attach the rootView to the DOM
-		superlayer.appendChild(view.layer) // the `layer` is actually the DOM element
+		const self = this
+		//
+		self.setupWith_passwordController()
+	}
+	setupWith_passwordController()
+	{
+		const self = this
+		const controller = self.context.passwordController
+		if (controller.HasUserEnteredValidPasswordYet() === true) {
+			self.enableMenuItem_ChangePassword()
+		} else { // or wait til the pw is ready
+			controller.on(
+				controller.EventName_ObtainedNewPassword(),
+				function() 
+				{
+					self.enableMenuItem_ChangePassword()
+				}
+			)
+			controller.on(
+				controller.EventName_ObtainedCorrectExistingPassword(),
+				function() 
+				{
+					self.enableMenuItem_ChangePassword()
+				}
+			)
+		}
 	}
 	//
-	return view
+	//
+	// Runtime - Imperatives
+	//
+	enableMenuItem_ChangePassword()
+	{
+		const self = this
+		self.menuController.SetItemNamedEnabled(
+			self.menuController.MenuItemName_ChangePassword(),
+			true
+		)
+	}
 }
+module.exports = MenuControllerController

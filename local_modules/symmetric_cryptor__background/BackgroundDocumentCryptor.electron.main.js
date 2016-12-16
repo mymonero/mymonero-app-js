@@ -82,7 +82,12 @@ class BackgroundDocumentCryptor
 	setup_window()
 	{
 		const self = this
-		const window = new BrowserWindow({ width: 1, height: 1, show: false })
+		const window = new BrowserWindow({
+			width: 1, 
+			height: 1, 
+			show: false,
+			skipTaskbar: true
+		})
 		self.window = window
 		// start observing
 		window.webContents.on("did-finish-load", function()
