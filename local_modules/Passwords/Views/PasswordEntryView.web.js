@@ -89,7 +89,24 @@ class PasswordEntryView extends View
 		const self = this
 		const options = {}
 		const EnterNewPasswordAndTypeView = require('./EnterNewPasswordAndTypeView.web')
-		self.enterNewPasswordAndTypeView = new EnterNewPasswordAndTypeView(options, self.context)
+		const view = new EnterNewPasswordAndTypeView(options, self.context)
+		self.enterNewPasswordAndTypeView = view
+		{ // observation
+			view.on(
+				view.EventName_UserSubmittedNonZeroPasswordAndPasswordType(),
+				function()
+				{
+					self.submitForm()
+				}
+			)
+			view.on(
+				view.EventName_CancelButtonPressed(),
+				function()
+				{
+					self.cancel()
+				}
+			)
+		}
 	}
 	_setup_enterExistingPasswordView()
 	{
@@ -343,6 +360,7 @@ class PasswordEntryView extends View
 					if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView !== null) {
 						self.enterExistingPasswordView.removeFromSuperview() // TODO: when we support animation, transition out before rmeoving
 		 			}
+					self.enterNewPasswordAndTypeView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
 					self.addSubview(self.enterNewPasswordAndTypeView) // TODO: animate this on if self.enterExistingPasswordView.superview already presented
 					
 					break

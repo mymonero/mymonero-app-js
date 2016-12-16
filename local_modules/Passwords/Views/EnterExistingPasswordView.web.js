@@ -223,7 +223,7 @@ class EnterExistingPasswordView extends View
 				setTimeout(function()
 				{
 					layer.focus()
-				}, 5)
+				}, 100)
 			}
 			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
 				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
