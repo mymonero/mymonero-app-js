@@ -239,7 +239,7 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		const innerHTMLString = ""
+		var innerHTMLString = ""
 		{
 			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // the usual scenario
 				var ulInnerHTMLString = ""
