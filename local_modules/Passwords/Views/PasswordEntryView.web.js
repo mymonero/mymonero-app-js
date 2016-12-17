@@ -171,6 +171,7 @@ class PasswordEntryView extends View
 				// the caller needs to pass it to a general purpose function
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
+				console.log('get pw type from enterNewPasswordAndTypeView', self.enterNewPasswordAndTypeView)
 				return self.enterNewPasswordAndTypeView.PasswordType()
 			case passwordEntryTaskModes.None:
 				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
@@ -414,6 +415,8 @@ class PasswordEntryView extends View
 		{
 			self._clearValidationMessage()
 		}
+		console.log("self.PasswordEnteredInView()", self.PasswordEnteredInView())
+		console.log("self.PasswordTypeSelectedInView()", self.PasswordTypeSelectedInView())
 		// handles validation:
 		self._passwordController_callBack_trampoline(
 			false, // didCancel

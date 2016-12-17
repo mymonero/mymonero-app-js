@@ -182,22 +182,11 @@ class EnterExistingPasswordView extends View
 	_configureUI()
 	{
 		const self = this
-		const availableUserSelectableTypesOfPassword = self.context.passwordController.AvailableUserSelectableTypesOfPassword()
-		var humanReadable_passwordType = 'password'
-		switch (self.userSelectedTypeOfPassword) {
-			case availableUserSelectableTypesOfPassword.FreeformStringPW:
-				humanReadable_passwordType = 'password'
-				break
-			case availableUserSelectableTypesOfPassword.SixCharPIN:
-				humanReadable_passwordType = 'PIN'
-				break
-			default:
-				throw "this switch should be exhaustive but no longer is"
-		}
+		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
 		{ // constructing the innerHTML
 			var htmlString = 
 				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3>Please enter your ${ self.isForChangingPassword ? "existing " : "" }${humanReadable_passwordType}:</h3>`
+				+ `<h3>Please enter your ${ self.isForChangingPassword ? "existing " : "" }${passwordType_humanReadableString}:</h3>`
 				+ self.new_htmlStringFor_inputFieldLayer()
 			if (self.isForChangingPassword === true) {
 				htmlString += self.new_htmlStringFor_cancelButtonLayer()

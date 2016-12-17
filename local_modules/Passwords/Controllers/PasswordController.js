@@ -37,9 +37,14 @@ const CollectionName = "PasswordMeta"
 const plaintextMessageToSaveForUnlockChallenges = "this is just a string that we'll use for checking whether a given password can unlock an encrypted version of this very message"
 const _userSelectedTypesOfPassword =
 {
-	SixCharPIN: "SixCharPIN",
-	FreeformStringPW: "FreeformStringPW"
-} // TODO: add hash with human readable labels for each type
+	FreeformStringPW: "FreeformStringPW", // this goes first as it's recommended to users
+	SixCharPIN: "SixCharPIN"
+}
+const _humanReadable_AvailableUserSelectableTypesOfPassword =
+{
+	FreeformStringPW: "password",
+	SixCharPIN: "PIN"
+}
 //
 //
 // Controller
@@ -179,6 +184,21 @@ class PasswordController extends EventEmitter
 	{
 		return _userSelectedTypesOfPassword
 	}
+	HumanReadable_AvailableUserSelectableTypesOfPassword()
+	{
+		return _humanReadable_AvailableUserSelectableTypesOfPassword
+	}
+	Capitalized_HumanReadable_AvailableUserSelectableTypeOfPassword(passwordType)
+	{
+		const humanReadable_passwordType = _humanReadable_AvailableUserSelectableTypesOfPassword[passwordType]
+		function __capitalizedString(str)
+		{
+			return str.charAt(0).toUpperCase() + str.slice(1)
+		}
+		//
+	    return __capitalizedString(humanReadable_passwordType)
+	}
+	
 	HasUserEnteredValidPasswordYet()
 	{
 		const self = this

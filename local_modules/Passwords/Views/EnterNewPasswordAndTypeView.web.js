@@ -62,7 +62,7 @@ class EnterNewPasswordAndTypeView extends View
 	Password()
 	{
 		const self = this
-		const layer = self.selected_inputFieldLayer()
+		const layer = self.DOMSelected_inputFieldLayer()
 		if (typeof layer === 'undefined' || layer === null) {
 			throw "layer undefined or null in Password()"
 			return ""
@@ -73,7 +73,7 @@ class EnterNewPasswordAndTypeView extends View
 	PasswordType()
 	{
 		const self = this
-		const layer = self.selected_checked_passwordTypeRadioInput()
+		const layer = self.DOMSelected_checked_passwordType_radioInputLayer()
 		if (typeof layer === 'undefined' || layer === null) {
 			throw "layer undefined or null in Password()"
 			return ""
@@ -88,30 +88,6 @@ class EnterNewPasswordAndTypeView extends View
 	idPrefix()
 	{
 		return "EnterNewPasswordAndTypeView"
-	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Text input field
-	//
-	idForChild_inputField()
-	{
-		const self = this
-		//
-		return self.idPrefix() + "_idForChild_inputField"
-	}
-	new_htmlStringFor_inputFieldLayer()
-	{
-		const self = this
-		const htmlString = `<input type="password" id="${ self.idForChild_inputField() }" />`
-		//
-		return htmlString
-	}
-	selected_inputFieldLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`input#${ self.idForChild_inputField() }`)
-		//
-		return layer
 	}
 	//
 	//
@@ -130,12 +106,110 @@ class EnterNewPasswordAndTypeView extends View
 		//
 		return htmlString
 	}
-	selected_validationMessageLabelLayer()
+	DOMSelected_validationMessageLabelLayer()
 	{
 		const self = this
 		const layer = self.layer.querySelector(`span#${ self.idForChild_validationMessageLabelLayer() }`)
 		//
 		return layer
+	}
+	//
+	//
+	// Runtime - Accessors - Internal - UI & UI metrics - Text input field
+	//
+	idForChild_inputField()
+	{
+		const self = this
+		//
+		return self.idPrefix() + "_idForChild_inputField"
+	}
+	new_htmlStringFor_inputFieldLayer()
+	{
+		const self = this
+		const htmlString = `<input type="password" id="${ self.idForChild_inputField() }" />`
+		//
+		return htmlString
+	}
+	DOMSelected_inputFieldLayer()
+	{
+		const self = this
+		const layer = self.layer.querySelector(`input#${ self.idForChild_inputField() }`)
+		//
+		return layer
+	}
+	//
+	//
+	// Runtime - Accessors - Internal - UI & UI metrics - Password type radio input
+	//
+	idForChild_passwordType_fieldset()
+	{
+		const self = this
+		//
+		return self.idPrefix() + "_" + "idForChild_passwordType_fieldset"
+	}
+	nameForChildSet_passwordType_radioInputLayers()
+	{
+		const self = this
+		//
+		return self.idPrefix() + "_" + "nameForChildSet_passwordType_radioInputLayers"
+	}
+	classFor_passwordTypeInputContainers()
+	{
+		return "password-type-input-container"
+	}
+	new_htmlStringFor_passwordType_radioInputLayers()
+	{
+		const self = this
+		var htmlString = `<fieldset id="${self.idForChild_passwordType_fieldset()}">`
+		{
+			const radioInputs_name = self.nameForChildSet_passwordType_radioInputLayers()
+			const availableUserSelectableTypesOfPassword_byName = self.context.passwordController.AvailableUserSelectableTypesOfPassword()
+			const availableUserSelectableTypesOfPassword = Object.keys(availableUserSelectableTypesOfPassword_byName)
+			{
+				for (let passwordType of availableUserSelectableTypesOfPassword) {
+					var isSelected_passwordType = passwordType === self.userSelectedTypeOfPassword
+					var humanReadable_passwordType = self.context.passwordController.Capitalized_HumanReadable_AvailableUserSelectableTypeOfPassword(passwordType)
+					{
+						htmlString += `<div class="${self.classFor_passwordTypeInputContainers()}">`
+						htmlString += `<label>${humanReadable_passwordType}</label>`
+						htmlString += 
+							`<input type="radio"`
+							+ ` name="${radioInputs_name}"`
+							+ ` value="${passwordType}"`
+							+ `${isSelected_passwordType ? " checked" : ""}` // space prefix in ?true case
+							+ ` />`
+						htmlString += `</div>`
+					}
+				}
+			}
+		}
+		htmlString += "</fieldset>"
+		//
+		return htmlString
+	}
+	DOMSelected_checked_passwordType_radioInputLayer()
+	{
+		const self = this
+		const selector = `fieldset#${self.idForChild_passwordType_fieldset()} input:checked`
+		const layer = self.layer.querySelector(selector)
+		//
+		return layer
+	}
+	DOMSelected_all_passwordType_radioInputContainerLayers()
+	{
+		const self = this
+		const selector = `fieldset#${self.idForChild_passwordType_fieldset()} div.${self.classFor_passwordTypeInputContainers()}`
+		const layers = self.layer.querySelectorAll(selector)
+		//
+		return layers
+	}
+	DOMSelected_all_passwordType_radioInputLayers()
+	{
+		const self = this
+		const selector = `fieldset#${self.idForChild_passwordType_fieldset()} input`
+		const layers = self.layer.querySelectorAll(selector)
+		//
+		return layers
 	}
 	//
 	//
@@ -154,16 +228,13 @@ class EnterNewPasswordAndTypeView extends View
 		//
 		return htmlString
 	}
-	selected_cancelButtonLayer()
+	DOMSelected_cancelButtonLayer()
 	{
 		const self = this
 		const layer = self.layer.querySelector(`a#${ self.idForChild_cancelButtonLayer() }`)
 		//
 		return layer
 	}
-	
-	
-	
 	//
 	//
 	// Runtime - Imperatives - Interface - Configuration 
@@ -186,7 +257,7 @@ class EnterNewPasswordAndTypeView extends View
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
-		const validationMessageLabelLayer = self.selected_validationMessageLabelLayer()
+		const validationMessageLabelLayer = self.DOMSelected_validationMessageLabelLayer()
 		validationMessageLabelLayer.innerHTML = validationMessageString || ""
 	}
 	//
@@ -196,23 +267,14 @@ class EnterNewPasswordAndTypeView extends View
 	_configureUI()
 	{
 		const self = this
-		// const availableUserSelectableTypesOfPassword = self.context.passwordController.AvailableUserSelectableTypesOfPassword()
-		// var humanReadable_passwordType = 'password'
-		// switch (self.userSelectedTypeOfPassword) {
-		// 	case availableUserSelectableTypesOfPassword.FreeformStringPW:
-		// 		humanReadable_passwordType = 'password'
-		// 		break
-		// 	case availableUserSelectableTypesOfPassword.SixCharPIN:
-		// 		humanReadable_passwordType = 'PIN'
-		// 		break
-		// 	default:
-		// 		throw "this switch should be exhaustive but no longer is"
-		// }
 		{ // constructing the innerHTML
+			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
 			var htmlString = 
 				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3>Please enter a new password or PIN:</h3>`
+				+ `<h3>Please enter a new ${passwordType_humanReadableString}:</h3>`
 				+ self.new_htmlStringFor_inputFieldLayer()
+				+ `<h4>Password type</h4>`
+				+ self.new_htmlStringFor_passwordType_radioInputLayers()
 			if (self.isForChangingPassword === true) {
 				htmlString += self.new_htmlStringFor_cancelButtonLayer()
 			}
@@ -220,7 +282,7 @@ class EnterNewPasswordAndTypeView extends View
 		}
 		{ // JS-land setup, observation, etc:
 			{ // inputFieldLayer
-				const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
+				const layer = self.DOMSelected_inputFieldLayer() // now we can select it from the DOM
 				layer.addEventListener(
 					"keyup",
 					function(event)
@@ -240,14 +302,14 @@ class EnterNewPasswordAndTypeView extends View
 				}, 100)
 			}
 			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
+				const layer = self.DOMSelected_validationMessageLabelLayer() // now we can select it from the DOM
 				layer.style.color = "red"
 				layer.style.fontWeight = "bold"
 				layer.style.display = "block"
 			}
 			{ // cancel button, if applicable
 				if (self.isForChangingPassword === true) {
-					const layer = self.selected_cancelButtonLayer() // now we can select it from the DOM
+					const layer = self.DOMSelected_cancelButtonLayer() // now we can select it from the DOM
 					layer.style.display = "block"
 					layer.addEventListener(
 						"click",
@@ -260,6 +322,26 @@ class EnterNewPasswordAndTypeView extends View
 						}
 					)
 				}
+			}
+			{ // password type
+				{ // radios
+					const layers = self.DOMSelected_all_passwordType_radioInputLayers()
+					layers.forEach(
+						function(layer, idx)
+						{
+							layer.addEventListener(
+								"click",
+								function(e)
+								{
+									const element = this
+									self.userSelectedTypeOfPassword = element.value
+									self._configureUI()
+								}
+							)
+						}
+					)
+				}
+				
 			}
 		}
 	}
