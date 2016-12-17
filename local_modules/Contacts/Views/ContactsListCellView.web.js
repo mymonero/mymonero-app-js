@@ -98,8 +98,43 @@ class ContactsListCellView extends View
 	}
 	//
 	//
-	// Internal - Runtime - Accessors
+	// Internal - Runtime - Accessors - Child elements - Metrics
 	//
+	//
+	_idPrefix()
+	{
+		const self = this
+		//
+		return "ContactsListCellView" + "_" + self.contact._id // to make it unique as this is a list-cell
+	}
+	//
+	//
+	// Internal - Runtime - Accessors - Child elements - Delete btn
+	//
+	//
+	idForChild_deleteContactWithIDLayer()
+	{
+		const self = this
+		if (typeof self.contact._id === 'undefined' || !self.contact._id) {
+			throw "idForChild_deleteContactWithIDLayer called but nil self.contact._id"
+		}
+		//
+		return self._idPrefix() + "_" + "idForChild_deleteContactWithIDLayer"
+	}
+	new_htmlStringForChild_deleteContactWithIDLayer()
+	{
+		const self = this
+		const htmlString = `<a id="${self.idForChild_deleteContactWithIDLayer()}" href="#">Delete Contact</a>`
+		//
+		return htmlString
+	}
+	DOMSelected_deleteContactWithIDLayer()
+	{
+		const self = this
+		const layer = self.layer.querySelector(`a#${ self.idForChild_deleteContactWithIDLayer() }`)
+		//
+		return layer
+	}
 	//
 	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
@@ -128,10 +163,63 @@ class ContactsListCellView extends View
 		const self = this
 		const contact = self.contact
 		var htmlString = ''
-		htmlString += `<h3>${contact.fullname}</h3>`
-		htmlString += `<p>Address (XMR): ${contact.address__XMR}</p>`
+		{
+			if (contact.didFailToInitialize_flag !== true && contact.didFailToBoot_flag !== true) { // unlikely, but possible
+				htmlString += `<h3>${contact.fullname}</h3>`
+				htmlString += `<p>Address (XMR): ${contact.address__XMR}</p>`
+				{ // buttons
+					htmlString += self.new_htmlStringForChild_deleteContactWithIDLayer()
+				}
+			} else { // failed to initialize
+				{ // header
+					htmlString += 
+					`<h4>Error: Couldn't open this contact.</h4>`
+					+ `<p>Please report this issue to us via Support.</p>`
+				}
+				{ // buttons
+					htmlString += self.new_htmlStringForChild_deleteContactWithIDLayer()
+				}
+			}
+		}
 		self.layer_contactInfo.innerHTML = htmlString
+		{ // setup and observations
+			{ // buttons
+				{ // delete button
+					const layer = self.DOMSelected_deleteContactWithIDLayer()
+					layer.addEventListener(
+						"click",
+						function(e)
+						{
+							e.preventDefault()
+							self.deleteContact()
+							//
+							return false
+						}
+					)
+				}				
+			}
+		}
 	}
+	//
+	//
+	// Internal - Runtime - Imperatives - Contact operations
+	deleteContact()
+	{
+		const self = this
+		self.context.contactsListController.WhenBooted_DeleteContactWithId(
+			self.contact._id,
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to delete contact with error", err)
+					alert("Failed to delete contact.")
+					return
+				}
+				console.log("Deleted contact.")
+			}
+		)
+	}
+	//
 	//
 	//
 	// Internal - Runtime - Imperatives - Observation

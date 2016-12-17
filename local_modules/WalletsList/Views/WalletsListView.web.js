@@ -63,7 +63,6 @@ class WalletsListView extends View
 			walletsListController.EventName_listUpdated(),
 			function()
 			{
-				console.log("trampoline for _WalletsListController_EventName_listUpdated")
 				self._WalletsListController_EventName_listUpdated()
 			}
 		)

@@ -415,8 +415,6 @@ class PasswordEntryView extends View
 		{
 			self._clearValidationMessage()
 		}
-		console.log("self.PasswordEnteredInView()", self.PasswordEnteredInView())
-		console.log("self.PasswordTypeSelectedInView()", self.PasswordTypeSelectedInView())
 		// handles validation:
 		self._passwordController_callBack_trampoline(
 			false, // didCancel
@@ -502,27 +500,28 @@ class PasswordEntryView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		//
-		console.log("Password entry view will appear")
 	}
 	viewWillDisappear()
 	{
 		const self = this
 		super.viewWillDisappear()
-		//
-		console.log("Password entry view will disappear")
 	}
 	viewDidDisappear()
 	{
 		const self = this
 		super.viewDidDisappear()
-		//
-		self.passwordEntryTaskMode = passwordEntryTaskModes.None // reset/clear
-		if (typeof self.enterNewPasswordAndTypeView.superview !== 'undefined' && self.enterNewPasswordAndTypeView.superview !== null) {
-			self.enterNewPasswordAndTypeView.removeFromSuperview()
-		}
-		if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView.superview !== null) {
-			self.enterExistingPasswordView.removeFromSuperview()
+		{
+			{
+				self.passwordEntryTaskMode = passwordEntryTaskModes.None // reset/clear
+			}
+			{
+				if (typeof self.enterNewPasswordAndTypeView.superview !== 'undefined' && self.enterNewPasswordAndTypeView.superview !== null) {
+					self.enterNewPasswordAndTypeView.removeFromSuperview()
+				}
+				if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView.superview !== null) {
+					self.enterExistingPasswordView.removeFromSuperview()
+				}
+			}
 		}
 	}
 }

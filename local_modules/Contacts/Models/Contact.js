@@ -74,28 +74,42 @@ class Contact extends EventEmitter
 	__setup_didBoot()
 	{
 		const self = this
-		self.hasBooted = true
+		{
+			self.hasBooted = true
+		}
 		setTimeout(function()
 		{ // wait til next tick so that instantiator cannot have missed this
 			self.emit(self.EventName_booted())
 		})
 	}
+	__setup_didFailToBoot(err)
+	{
+		const self = this
+		{
+			self.didFailToInitialize_flag = true
+			self.didFailToInitialize_errOrNil = err
+			//
+			self.didFailToBoot_flag = true
+			self.didFailToBoot_errOrNil = err
+		}
+		setTimeout(function()
+		{ // wait til next tick so that instantiator cannot have missed this
+			self.emit(self.EventName_errorWhileBooting(), err)
+		})
+	}		
 	_setup_newDocument()
 	{
 		const self = this
-		//
-		self.fullname = self.options.fullname
-		self.address__XMR = self.options.address__XMR
-		//
+		{
+			self.fullname = self.options.fullname
+			self.address__XMR = self.options.address__XMR
+		}
 		self.saveToDisk(
 			function(err)
 			{
 				if (err) {
 					console.error("Failed to save new contact", err)
-					setTimeout(function()
-					{ // wait til next tick so that instantiator cannot have missed this
-						self.emit(self.EventName_errorWhileBooting(), err)
-					})
+					self.__setup_didFailToBoot(err)
 					return
 				}
 				console.log("Successfully saved new contact.")
@@ -116,20 +130,14 @@ class Contact extends EventEmitter
 			{
 				if (err) {
 					console.error(err.toString())
-					setTimeout(function()
-					{ // wait til next tick so that instantiator cannot have missed this
-						self.emit(self.EventName_errorWhileBooting(), err)
-					})
+					self.__setup_didFailToBoot(err)
 					return
 				}
 				if (docs.length === 0) {
 					const errStr = "❌  Contact with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
-					setTimeout(function()
-					{ // wait til next tick so that instantiator cannot have missed this
-						self.emit(self.EventName_errorWhileBooting(), err)
-					})
+					self.__setup_didFailToBoot(err)
 					return
 				}
 				const encryptedDocument = docs[0]
@@ -146,10 +154,7 @@ class Contact extends EventEmitter
 				{
 					if (err) {
 						console.error("❌  Decryption err: " + err.toString())
-						setTimeout(function()
-						{ // wait til next tick so that instantiator cannot have missed this
-							self.emit(self.EventName_errorWhileBooting(), err)
-						})
+						self.__setup_didFailToBoot(err)
 						return
 					}
 					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
@@ -170,10 +175,7 @@ class Contact extends EventEmitter
 			{
 				const err = new Error(errStr)
 				console.error(errStr)
-				setTimeout(function()
-				{ // wait til next tick so that instantiator cannot have missed this
-					self.emit(self.EventName_errorWhileBooting(), err)
-				})
+				self.__setup_didFailToBoot(err)
 			}
 			// we *could* check if fullname and possibly XMR addr are empty/undef here but not much need/reason
 			// and might lead to awkward UX

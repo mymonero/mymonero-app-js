@@ -91,6 +91,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 		self._id = self.options._id || null // initialize to null if creating wallet
 		self.failedToInitialize_cb = function(err)
 		{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when failure cb called
+			{
+				self.didFailToInitialize_flag = true
+				self.didFailToInitialize_errOrNil = err
+			}
 			setTimeout(function()
 			{
 				(self.options.failedToInitialize_cb || function(err) {})()
@@ -240,13 +244,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 	  // then log into the hosted node server to create an account
 	  //
 		const self = this
-		//
+		//		
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
-			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
-			const err = new Error(errStr)
-			console.error(errStr)
-			fn(err)
+			throw "You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
 			return
 		}
 		//
@@ -262,7 +263,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			const errStr = "❌  informingAndVerifyingMnemonic_cb was undefined."
 			const err = new Error(errStr)
 			console.error(errStr)
-			fn(err)
+			self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 			return
 		}
 		informingAndVerifyingMnemonic_cb(
@@ -273,13 +274,13 @@ class SecretPersistingHostedWallet extends EventEmitter
 				if (trimmed_userConfirmed_mnemonicString === '') {
 					const errStr = "❌  Please enter a private login key"
 					const err = new Error(errStr)
-					fn(err)
+					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 					return
 				}
 				if (trimmed_userConfirmed_mnemonicString.toLocaleLowerCase() !== mnemonicString.trim().toLocaleLowerCase()) {
 					const errStr = "❌  Private login key does not match"
 					const err = new Error(errStr)
-					fn(err)
+					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 					return
 				}
 				// Now we can proceed
@@ -315,10 +316,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
-			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
-			const err = new Error(errStr)
-			console.error(errStr)
-			fn(err)
+			throw "You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
 			return
 		}
 		//
@@ -330,7 +328,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			self.mnemonic_wordsetName = monero_wallet_utils.WordsetNameAccordingToMnemonicString(mnemonicString)
 		} catch (e) {
 			console.error("Error while detecting mnemonic wordset from mnemonic string: ", e)
-			fn(e)
+			self.__trampolineFor_failedToBootWith_fnAndErr(fn, e)
 			return
 		}
 		//
@@ -342,7 +340,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			function(err, seed, keys)
 			{
 				if (err) {
-					fn(err)
+					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 					return
 				}
 				// console.log("keys" , keys)
@@ -366,34 +364,34 @@ class SecretPersistingHostedWallet extends EventEmitter
 		address,
 		view_key__private,
 		spend_key__private,
-		fn
+		fn // (err?) -> Void
 	)
-	{ // fn: (err?) -> Void
+	{
 		const self = this
-		//
-		self.persistencePassword = persistencePassword || null
-		if (persistencePassword === null) {
-			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
-			const err = new Error(errStr)
-			console.error(errStr)
-			fn(err)
-			return
+		{
+			self.persistencePassword = persistencePassword || null
+			if (persistencePassword === null) {
+				throw "You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+				return
+			}
 		}
-		//
-		self.walletLabel = walletLabel || ""
-		//
-		const seed = undefined
-		const wasAGeneratedWallet = false
-		self._boot_byLoggingIn(
-			address,
-			view_key__private,
-			spend_key__private,
-			seed, // seed
-			wasAGeneratedWallet,
-			fn
-		)
+		{
+			self.walletLabel = walletLabel || ""
+		}
+		{
+			const seed = undefined
+			const wasAGeneratedWallet = false
+			self._boot_byLoggingIn(
+				address,
+				view_key__private,
+				spend_key__private,
+				seed, // seed
+				wasAGeneratedWallet,
+				fn
+			)
+		}
 	}
-
+	
 
 	////////////////////////////////////////////////////////////////////////////////
  	// Runtime - Imperatives - Public - Booting - Reading saved wallets
@@ -412,7 +410,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
 			const err = new Error(errStr)
 			console.error(errStr)
-			fn(err)
+			self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 			return
 		}
 		//
@@ -420,7 +418,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		if (typeof encryptedDocument === 'undefined' || encryptedDocument === null) {
 			const errStr = "__boot_decryptInitDoc_andBoot called but encryptedDocument undefined"
 			const err = new Error(err)
-			fn(err)
+			self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 			return
 		}
 		//
@@ -436,7 +434,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 				{
 					if (err) {
 						console.error("❌  Decryption err: " + err.toString())
-						fn(err)
+						self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 						return
 					}
 					self.initialization_encryptedDocument = null // now we can free this
@@ -459,7 +457,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			{
 				const err = new Error(errStr)
 				console.error(errStr)
-				self.failedToInitialize_cb(err)
+				self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 			}
 			if (self.walletLabel === null || typeof self.walletLabel === 'undefined' || self.walletLabel === "") {
 				return _failWithValidationErr("Reconstituted wallet had no valid self.walletLabel")
@@ -501,6 +499,16 @@ class SecretPersistingHostedWallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Booting
 
+	__trampolineFor_failedToBootWith_fnAndErr(fn, err)
+	{
+		const self = this
+		{
+			self.didFailToBoot_flag = true
+			self.didFailToBoot_errOrNil = err
+		}
+		fn(err)
+	}
+
 	_boot_byLoggingIn(
 		address,
 		view_key,
@@ -530,15 +538,14 @@ class SecretPersistingHostedWallet extends EventEmitter
 			)
 			{
 				if (err) {
-					fn(err)
+					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 					return
 				}
 				__proceedTo_loginViaHostedAPI(
 					account_seed,
 					public_keys,
 					private_keys,
-					isInViewOnlyMode,
-					fn
+					isInViewOnlyMode
 				)
 			}
 		)
@@ -546,8 +553,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			account_seed,  // these arguments only get passed through
 			public_keys,  // so they can be set in one place below
 			private_keys,
-			isInViewOnlyMode,
-			fn
+			isInViewOnlyMode
 		)
 		{
 			self.context.hostedMoneroAPIClient.LogIn(
@@ -556,7 +562,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 				function(err, new_address)
 				{
 					if (err) {
-						fn(err)
+						self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 						return
 					}
 					self.public_address = address
@@ -575,7 +581,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 						function(err)
 						{
 							if (err) {
-								fn(err)
+								self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 								return
 							}
 							self._trampolineFor_successfullyBooted(fn)

@@ -52,17 +52,18 @@ class WalletsListController extends EventEmitter
 		const self = this
 		self.options = options
 		self.context = context
-		//
-		self.hasBooted = false // not booted yet - we'll defer things till we have
-		//
+		{
+			self.hasBooted = false // not booted yet - we'll defer things till we have
+		}
 		self.setup()
 	}
 	_setup_didBoot(optlFn)
 	{
 		const self = this
 		optlFn = optlFn || function() {}
-		//
-		self.hasBooted = true // all done!
+		{
+			self.hasBooted = true // all done!
+		}		
 		setTimeout(function()
 		{ // on next tick to avoid instantiator missing this
 			self.emit(self.EventName_booted())
@@ -125,7 +126,7 @@ class WalletsListController extends EventEmitter
 							//
 							failedToInitialize_cb: function(err)
 							{
-								console.error("Failed to read wallet ", err)
+								console.error("Failed to initialize wallet ", err)
 								cb(err)
 							},
 							successfullyInitialized_cb: function()
@@ -137,7 +138,6 @@ class WalletsListController extends EventEmitter
 										if (err) {
 											console.error("Error fetching persisted wallet", err)
 											// but we're not going to call cb with err because that prevents boot - the instance will be marked as 'errored' and we'll display it/able to treat it as such
-											return
 										} else {
 											console.log("💬  Initialized wallet", wallet.Description())
 										}
