@@ -115,7 +115,7 @@ class Contact extends EventEmitter
 			function(err, docs)
 			{
 				if (err) {
-					console.error(err.message)
+					console.error(err.toString())
 					setTimeout(function()
 					{ // wait til next tick so that instantiator cannot have missed this
 						self.emit(self.EventName_errorWhileBooting(), err)
@@ -145,9 +145,7 @@ class Contact extends EventEmitter
 				function(err, plaintextDocument)
 				{
 					if (err) {
-						const errStr = "❌  Decryption err: " + e.toString()
-						const err = new Error(errStr)
-						console.error(errStr)
+						console.error("❌  Decryption err: " + err.toString())
 						setTimeout(function()
 						{ // wait til next tick so that instantiator cannot have missed this
 							self.emit(self.EventName_errorWhileBooting(), err)

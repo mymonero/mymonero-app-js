@@ -435,9 +435,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 				function(err, plaintextDocument)
 				{
 					if (err) {
-						const errStr = "❌  Decryption err: " + e.toString()
-						const err = new Error(errStr)
-						console.error(errStr)
+						console.error("❌  Decryption err: " + err.toString())
 						fn(err)
 						return
 					}
