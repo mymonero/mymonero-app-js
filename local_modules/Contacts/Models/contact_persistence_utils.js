@@ -103,7 +103,7 @@ function SaveToDisk(
 		{
 			_id: self._id // we want to update the existing one
 		}
-		var update = plaintextDocument
+		var update = encryptedDocument
 		var options =
 		{
 			multi: false,

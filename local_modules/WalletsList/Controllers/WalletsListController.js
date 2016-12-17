@@ -63,7 +63,19 @@ class WalletsListController extends EventEmitter
 		optlFn = optlFn || function() {}
 		{
 			self.hasBooted = true // all done!
-		}		
+		}
+		{ // start observing
+			{ // passwordController
+				const controller = self.context.passwordController
+				controller.on(
+					controller.EventName_ChangedPassword(),
+					function()
+					{
+						self._passwordController_EventName_ChangedPassword()
+					}
+				)
+			}
+		}
 		setTimeout(function()
 		{ // on next tick to avoid instantiator missing this
 			self.emit(self.EventName_booted())
@@ -645,5 +657,28 @@ class WalletsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime/Boot - Delegation - Private
 	
+	_passwordController_EventName_ChangedPassword()
+	{
+		const self = this
+		// change all wallet passwords:
+		const toPassword = self.context.passwordController.password // we're just going to directly access it here because getting this event means the passwordController is also saying it's ready
+		self.wallets.forEach(
+			function(wallet, i)
+			{
+				if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) {
+					wallet.ChangePasswordTo(
+						toPassword,
+						function(err)
+						{
+							// err is logged in ChangePasswordTo
+							// TODO: is there any sensible strategy to handle failures here?
+						}
+					)
+				} else {
+					console.warn("This wallet failed to boot. Not messing with its saved data")
+				}
+			}
+		)
+	}
 }
 module.exports = WalletsListController

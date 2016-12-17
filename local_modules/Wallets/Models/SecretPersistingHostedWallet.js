@@ -878,22 +878,12 @@ class SecretPersistingHostedWallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing password
 
-	ChangePasswordFromTo(
-		testWithExisting_persistencePassword,
+	ChangePasswordTo(
 		changeTo_persistencePassword,
 		fn
 	)
 	{
 		const self = this
-		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null || self.persistencePassword == '') {
-			return fn(new Error("Invalid self.persistencePassword"))
-		}
-		if (self.persistencePassword !== testWithExisting_persistencePassword) {
-			return fn(new Error("Unable to unlock wallet with that password"))
-		}
-		if (changeTo_persistencePassword.length < 5) {
-			return fn(new Error("New password must be more than 5 characters"))
-		}
 		console.log("Wallet changing password.")
 		const old_persistencePassword = self.persistencePassword
 		self.persistencePassword = changeTo_persistencePassword

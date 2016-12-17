@@ -64,6 +64,18 @@ class ContactsListController extends EventEmitter
 		function _didBoot()
 		{
 			self.hasBooted = true // nothing to do to boot
+			{ // start observing
+				{ // passwordController
+					const controller = self.context.passwordController
+					controller.on(
+						controller.EventName_ChangedPassword(),
+						function()
+						{
+							self._passwordController_EventName_ChangedPassword()
+						}
+					)
+				}
+			}
 			setTimeout(function()
 			{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 				self.emit(self.EventName_booted())
@@ -318,6 +330,7 @@ class ContactsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
 
@@ -332,6 +345,34 @@ class ContactsListController extends EventEmitter
 	{
 		const self = this
 		self.emit(self.EventName_listUpdated())
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime/Boot - Delegation - Private
+	
+	_passwordController_EventName_ChangedPassword()
+	{
+		const self = this
+		// change all contact passwords:
+		const toPassword = self.context.passwordController.password // we're just going to directly access it here because getting this event means the passwordController is also saying it's ready
+		self.contacts.forEach(
+			function(contact, i)
+			{
+				if (contact.didFailToInitialize_flag !== true && contact.didFailToBoot_flag !== true) {
+					contact.ChangePasswordTo(
+						toPassword,
+						function(err)
+						{
+							// err is logged in ChangePasswordTo
+							// TODO: is there any sensible strategy to handle failures here?
+						}
+					)
+				} else {
+					console.warn("This contact failed to boot. Not messing with its saved data")
+				}
+			}
+		)
 	}
 
 }
