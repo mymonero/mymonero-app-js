@@ -28,8 +28,6 @@
 //
 "use strict"
 //
-console.log("on child!")
-//
 const document_cryptor = require('../symmetric_cryptor/document_cryptor')
 const tasksByName =
 {
