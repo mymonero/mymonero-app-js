@@ -571,8 +571,10 @@ class WalletsListController extends EventEmitter
 					function(err)
 					{
 						if (err) {
-							self.wallets.splice(indexOfWallet, 0, walletInstance) // revert deletion
-							self._atRuntime__wallet_wasSuccessfullyInitialized() // ensure delegate notified
+							walletInstance.Revert_TearDown() // cause we called .TearDown()
+							//
+							self.wallets.splice(putBackAtIndex, 0, walletInstance) // revert deletion
+							self._atRuntime__wallet_wasSuccessfullyInitialized() // start observing, ensure delegate notified
 							fn(err)
 							return
 						}
