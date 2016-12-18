@@ -91,7 +91,7 @@ class PasswordController extends EventEmitter
 				if (docs_length === 0) { //
 					const mocked_doc =
 					{
-						userSelectedTypeOfPassword: self.AvailableUserSelectableTypesOfPassword().SixCharPIN // default
+						userSelectedTypeOfPassword: self.AvailableUserSelectableTypesOfPassword().FreeformStringPW // default…… for desktop anyway. this might change based on UX direction
 					}
 					_proceedTo_loadStateFromModel(
 						false, // never entered pw before
