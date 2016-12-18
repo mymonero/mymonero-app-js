@@ -51,12 +51,25 @@ function HydrateInstance_withUnencryptedValues(
 	//
 	// console.log("encryptedDocument", encryptedDocument)
 	self.isLoggedIn = encryptedDocument.isLoggedIn
-	self.dateThatLast_fetchedAccountInfo = encryptedDocument.dateThatLast_fetchedAccountInfo
-	self.dateThatLast_fetchedAccountTransactions = encryptedDocument.dateThatLast_fetchedAccountTransactions
-	//
-	self.dateWalletFirstSavedLocally = encryptedDocument.dateWalletFirstSavedLocally
-	//
 	self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
+	{
+		function _isNonNil_dateStr(v)
+		{
+			return v && typeof v !== 'undefined' && v !== ""
+		}
+		{
+			const dateStr = encryptedDocument.dateThatLast_fetchedAccountInfo
+			self.dateThatLast_fetchedAccountInfo = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+		}
+		{
+			const dateStr = encryptedDocument.dateThatLast_fetchedAccountTransactions
+			self.dateThatLast_fetchedAccountTransactions = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+		}
+		{
+			const dateStr = encryptedDocument.dateWalletFirstSavedLocally
+			self.dateWalletFirstSavedLocally = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+		}
+	}
 }
 exports.HydrateInstance_withUnencryptedValues = HydrateInstance_withUnencryptedValues
 //

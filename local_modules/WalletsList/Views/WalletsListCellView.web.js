@@ -221,16 +221,18 @@ class WalletsListCellView extends View
 			{ // buttons
 				{ // delete button
 					const layer = self.DOMSelected_deleteWalletWithIDLayer()
-					layer.addEventListener(
-						"click",
-						function(e)
-						{
-							e.preventDefault()
-							self.deleteWallet()
-							//
-							return false
-						}
-					)
+					if (layer && typeof layer !== 'undefined') {
+						layer.addEventListener(
+							"click",
+							function(e)
+							{
+								e.preventDefault()
+								self.deleteWallet()
+								//
+								return false
+							}
+						)
+					}
 				}				
 			}
 		}

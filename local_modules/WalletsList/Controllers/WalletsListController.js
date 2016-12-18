@@ -177,6 +177,12 @@ class WalletsListController extends EventEmitter
 							self._setup_didFailToBootWithError(err)
 							return
 						}
+						{ // before proceeding, just sorting the wallets by date added
+							self.wallets = self.wallets.sort(function(a, b)
+							{
+								return b.dateWalletFirstSavedLocally - a.dateWalletFirstSavedLocally
+							})
+						}
 						self._setup_didBoot(function()
 						{ // in cb to ensure serialization of calls
 							self.__listUpdated_wallets() // emit after booting so this becomes an at-runtime emission
@@ -338,7 +344,7 @@ class WalletsListController extends EventEmitter
 	WhenBooted_CreateAndAddNewlyGeneratedWallet(
 		informingAndVerifyingMnemonic_cb, // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
 										    // confirmation_cb: (userConfirmed_mnemonicString) -> Void
-		fn // fn: (err: Error?, walletInstance, SecretPersistingHostedWallet) -> Void
+		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet) -> Void
 	)
 	{
 		const self = this
@@ -555,9 +561,11 @@ class WalletsListController extends EventEmitter
 					return
 				}
 				//
+				walletInstance.TearDown() // stop polling, etc -- important.
+				//
 				self._stopObserving_wallet(walletInstance) // important
 				self.wallets.splice(indexOfWallet, 1) // pre-emptively remove the wallet from the list
-				self.__listUpdatedAtRuntime_wallets() // ensure delegate notified
+				self.__listUpdated_wallets() // ensure delegate notified
 				//
 				walletInstance.Delete(
 					function(err)
@@ -643,7 +651,7 @@ class WalletsListController extends EventEmitter
 	_atRuntime__wallet_wasSuccessfullyInitialized(walletInstance)
 	{
 		const self = this
-		self.wallets.push(walletInstance)
+		self.wallets.unshift(walletInstance) // so we add it to the top
 		self._startObserving_wallet(walletInstance)
 		self.__listUpdated_wallets()
 	}

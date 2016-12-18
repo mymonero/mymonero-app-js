@@ -1035,6 +1035,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 			self.blockchain_height = blockchain_height
 		}
 		//
+		var wasFirstFetchOf_accountInfo = false
+		if (typeof self.dateThatLast_fetchedAccountInfo === 'undefined' || self.dateThatLast_fetchedAccountInfo === null) {
+			wasFirstFetchOf_accountInfo = true
+		}		
 		self.dateThatLast_fetchedAccountInfo = new Date()
 		//
 		self.saveToDisk(
@@ -1048,7 +1052,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 					//
 					// then we'll check if anything actually changed
 					var anyChanges = false
-					if (accountBalance_didActuallyChange === true) {
+					if (accountBalance_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
 						anyChanges = true
 						self.___didReceiveActualChangeTo_balance(
 							existing_total_received,
@@ -1056,11 +1060,11 @@ class SecretPersistingHostedWallet extends EventEmitter
 							existing_locked_balance
 						)
 					}
-					if (spentOutputs_didActuallyChange === true) {
+					if (spentOutputs_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
 						anyChanges = true
 						self.___didReceiveActualChangeTo_spentOutputs(existing_spent_outputs)
 					}
-					if (heights_didActuallyChange === true) {
+					if (heights_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
 						anyChanges = true
 						self.___didReceiveActualChangeTo_heights()
 					}
@@ -1134,15 +1138,15 @@ class SecretPersistingHostedWallet extends EventEmitter
 					// but technically it's an 'update'…… even though the id change should be opaque to the client
 					if (areObjectsEqual(incoming_tx, existing_same_tx) === false) {
 						transactionsList_didActuallyChange = true // this is likely to happen if tx.height changes while pending confirmation
-						console.log("incoming_tx is not the same as existing_tx")
-						console.log("incoming_tx" , incoming_tx)
-						console.log("existing_same_tx" , existing_same_tx)
+						// console.log("incoming_tx is not the same as existing_tx")
+						// console.log("incoming_tx" , incoming_tx)
+						// console.log("existing_same_tx" , existing_same_tx)
 					}
 					break // no need to keep looking
 				}
 			}
 			if (didFindIncomingTxIdInExistingTxs !== true) { // then we have a new tx
-				console.log("a tx added")
+				// console.log("a tx added")
 				transactionsList_didActuallyChange = true
 				numberOfTransactionsAdded += 1
 				isNewTransaction = true // NOTE: we set isNewTransaction=true so we can push the finalized tx to newTransactions below
@@ -1160,7 +1164,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		self.transactions = finalized_transactions
 		//
-		// do not count this as an actual change to txs
+		var wasFirstFetchOf_transactions = false
+		if (typeof self.dateThatLast_fetchedAccountTransactions === 'undefined' || self.dateThatLast_fetchedAccountTransactions === null) {
+			wasFirstFetchOf_transactions = true
+		}
 		self.dateThatLast_fetchedAccountTransactions = new Date()
 		//
 		self.saveToDisk(
@@ -1175,12 +1182,12 @@ class SecretPersistingHostedWallet extends EventEmitter
 					}
 					//
 					// and here we'll check whether things actually changed
-					if (transactionsList_didActuallyChange === true) {
+					if (transactionsList_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
 						self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, existing_transactions)
 					} else {
 						console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
 					}
-					if (heights_didActuallyChange === true) {
+					if (heights_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
 						self.___didReceiveActualChangeTo_heights()
 					}
 				}
