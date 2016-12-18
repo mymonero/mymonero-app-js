@@ -37,11 +37,6 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../symmetric_cryptor__background/BackgroundDocumentCryptor.electron.main",
-		instance_key: "document_cryptor__background",
-		options: {}
-	},
-	{
 		module_path: __dirname + "/../MainWindow/Controllers/MainWindowController.electron.main",
 		instance_key: "mainWindowController",
 		options: {}

@@ -32,6 +32,11 @@
 var context_object_instantiation_descriptions =
 [
 	{
+		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.electron.main",
+		instance_key: "document_cryptor__background",
+		options: {}
+	},
+	{
 		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
 		instance_key: "persister",
 		options: {}
@@ -68,14 +73,12 @@ var context_object_instantiation_descriptions =
 ]
 function NewHydratedContext(
 	app, 
-	document_cryptor__background, 
 	menuController
 )
 {
 	var initialContext =
 	{
 		app: app,
-		document_cryptor__background: document_cryptor__background,
 		menuController: menuController,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}

@@ -30,11 +30,8 @@
 //
 const uuidV1 = require('uuid/v1')
 //
-const electron = require('electron')
-const BrowserWindow = process.type === 'renderer' ?
-	electron.remote.BrowserWindow :
-	electron.BrowserWindow;
-const {ipcMain} = require('electron')
+const child_process = require('child_process')
+const fork = child_process.fork	
 //
 class BackgroundDocumentCryptor
 {
@@ -48,65 +45,70 @@ class BackgroundDocumentCryptor
 		{
 			self.hasBooted = false
 			self.callbacksByUUID = {}
-		}
-		{
-			self.startObserving_ipcMain()
-		}
-		{
-			const app = self.context.app
-			if (app.isReady() === true) {
-				self.setup_window()
-			} else {
-				app.on('ready', function()
-				{
-					self.setup_window()
-				})
-			}
-		}
-	}
-	//
-	startObserving_ipcMain()
-	{
-		const self = this
-		ipcMain.on('FinishedTask', function(event, taskUUID, err, returnValue)
-		{
-			const callback = self.callbacksByUUID[taskUUID]
-			if (typeof callback === 'undefined') {
-				console.warn("Task callback undefined:", taskUUID)
-				return
-			}
-			callback(err, returnValue)
-		})
-	}
-	//
-	setup_window()
-	{
-		const self = this
-		const window = new BrowserWindow({
-			width: 1, 
-			height: 1, 
-			show: false,
-			skipTaskbar: true
-		})
-		self.window = window
-		// start observing
-		window.webContents.on("did-finish-load", function()
-		{
-			console.log("finished loading")
-			self.hasBooted = true
-		})
-		window.webContents.on("did-fail-load", function(event, errorCode, errorDescription, validatedURL, isMainFrame)
-		{
-			console.error("Failed to load background window… err ", errorCode, errorDescription)
-			throw errorDescription
-			process.exit(-1) // can't really continue
-		})
-		// then call load
-		window.loadURL(`file://${__dirname}/index.electron.html`)
+		}		
 		//
-		// debug:
-		window.show()
-		window.openDevTools()
+		const child = fork( // fork will set up electron properly in the child process for us (e.g. env)
+			__dirname + '/./child.electron.js',
+			[],
+			{
+				stdio: 'ipc'
+			}
+		)
+		self.child = child
+		var timeout_waitingForBoot = setTimeout(
+			function()
+			{ // Wait for child to come up or error
+				timeout_waitingForBoot = null
+				//
+				if (self.hasBooted !== true) {
+					throw "Couldn't bring background process up."
+				} else if (self.hasBooted === true) {
+					throw "Code fault: timeout_waitingForBoot fired after successful boot."
+				}
+			},
+			5000
+		)
+		child.on(
+			'message', 
+			function(message)
+			{
+				if (message === "child is up") {
+					{
+						if (timeout_waitingForBoot === null) {
+							throw "Got message back from child after timeout"
+							return
+						}
+						clearTimeout(timeout_waitingForBoot)
+						timeout_waitingForBoot = null
+					}
+					{
+						console.log("BackgroundDocumentCryptor background process up")
+						self.hasBooted = true
+					}
+				} else {
+					var payload = null
+					if (typeof message === 'string') {
+						try {
+							payload = JSON.parse(message)
+						} catch (e) {
+							console.error("JSON couldn't be parsed in BackgroundDocumentCryptor", e)
+							throw e
+							return
+						}
+					} else if (typeof message === 'object') {
+						payload = message
+					} else {
+						throw "unrecognized typeof message received from child"
+					}
+					self._receivedPayloadFromChild(payload)
+				}
+			}
+		)
+	}
+	//
+	startObserving_workers()
+	{
+		const self = this
 	}
 	//
 	//
@@ -123,9 +125,11 @@ class BackgroundDocumentCryptor
 		self._executeBackgroundTaskNamed(
 			'New_EncryptedDocument',
 			fn, // fn goes as second arg
-			plaintextDocument, 
-			documentCryptScheme, 
-			password
+			[
+				plaintextDocument, 
+				documentCryptScheme, 
+				password
+			]
 		)
 	}
 	New_DecryptedDocument(
@@ -139,9 +143,11 @@ class BackgroundDocumentCryptor
 		self._executeBackgroundTaskNamed(
 			'New_DecryptedDocument',
 			fn, // fn goes as second arg
-			encryptedDocument, 
-			documentCryptScheme, 
-			password
+			[
+				encryptedDocument, 
+				documentCryptScheme, 
+				password
+			]
 		)
 	}
 	//
@@ -166,9 +172,9 @@ class BackgroundDocumentCryptor
 		)
 	}
 	_executeBackgroundTaskNamed(
-		rendererProcess_fnName,
-		fn
-		// …args
+		taskName,
+		fn,
+		args
 	)
 	{
 		const self = this
@@ -176,31 +182,44 @@ class BackgroundDocumentCryptor
 		{ // we need to generate taskUUID now to construct arguments so we might as well also hang onto it here instead of putting that within the call to ExecuteWhenBooted
 			self.callbacksByUUID[taskUUID] = fn
 		}
-		const webContents_send_arguments = [] // to build
-		{
-			webContents_send_arguments.push(rendererProcess_fnName)
-			webContents_send_arguments.push(taskUUID)
-			// apply any remaining arguments that the caller of _executeBackgroundTaskNamed wants to send to the bg method
-			for (let i = 2 ; i < arguments.length ; i++) {
-				// i at 2 to skip method name and fn
-				var i_arg = arguments["" + i] // as it's a hash
-				webContents_send_arguments.push(i_arg)
-			}
-		}
 		self.ExecuteWhenBooted(function()
 		{ // wait til window/threads set up
-			const webContents = self.window.webContents
-			webContents.send.apply(
-				webContents,
-				webContents_send_arguments
-			)
+			const payload = 
+			{
+				taskName: taskName,
+				taskUUID: taskUUID,
+				args: args || []
+			}
+			// console.log("sending ", payload)
+			self.child.send(payload)
 		})
-
 	}	
 	//
 	//
 	// Runtime - Delegation
 	//
-	
+	_receivedPayloadFromChild(payload)
+	{
+		const self = this
+		// console.log("_receivedPayloadFromChild", payload)
+		const eventName = payload.eventName
+		if (eventName !== 'FinishedTask') {
+			throw "child sent eventName !== 'FinishedTask'"
+		} 
+		const taskUUID = payload.taskUUID
+		const err = 
+			payload.err && typeof payload.err !== 'undefined'
+			 ? typeof payload.err === 'string' ? new Error(payload.err) : payload.err
+			 : null
+		const returnValue = payload.returnValue
+		{
+			const callback = self.callbacksByUUID[taskUUID]
+			if (typeof callback === 'undefined') {
+				console.warn("Task callback undefined:", taskUUID)
+				return
+			}
+			callback(err, returnValue)
+		}
+	}
 }
 module.exports = BackgroundDocumentCryptor

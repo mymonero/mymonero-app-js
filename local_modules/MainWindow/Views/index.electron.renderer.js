@@ -45,7 +45,6 @@ function new_rootView()
 	const RootView = require('./RootView.web.js') // electron uses .web files as it has a web DOM
 	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
 		remote__app, 
-		remote__context.document_cryptor__background, // this must live on the main proc for ipc
 		remote__context.menuController // for UI and app runtime access
 	)
 	const options = {}

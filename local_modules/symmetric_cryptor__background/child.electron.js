@@ -28,19 +28,12 @@
 //
 "use strict"
 //
+console.log("on child!")
+//
 const document_cryptor = require('../symmetric_cryptor/document_cryptor')
-//
-const {ipcRenderer} = require('electron')
-//
-function callBack(taskUUID, err, returnValue)
+const tasksByName =
 {
-	ipcRenderer.send('FinishedTask', taskUUID, err, returnValue)
-}	
-//
-ipcRenderer.on(
-	'New_EncryptedDocument', 
-	function(
-		event,
+	New_EncryptedDocument: function(
 		taskUUID,
 		plaintextDocument, 
 		documentCryptScheme, 
@@ -59,12 +52,8 @@ ipcRenderer.on(
 			return
 		}
 		callBack(taskUUID, null, encryptedDocument)
-	}
-)
-ipcRenderer.on(
-	'New_DecryptedDocument',
-	function(
-		event,
+	},
+	New_DecryptedDocument: function(
 		taskUUID,
 		encryptedDocument, 
 		documentCryptScheme, 
@@ -84,4 +73,53 @@ ipcRenderer.on(
 		}
 		callBack(taskUUID, null, plaintextDocument)
 	}
-)
+}
+function callBack(taskUUID, err, returnValue)
+{
+	const payload =
+	{
+		eventName: 'FinishedTask', 
+		taskUUID: taskUUID, 
+		err: err, 
+		returnValue: returnValue
+	}
+	process.send(payload)
+}	
+function _didReceivePayload(payload)
+{
+	const taskName = payload.taskName
+	const taskUUID = payload.taskUUID
+	const payload_args = payload.args
+	const argsToCallWith = payload_args.slice() // copy
+	{ // finalize:
+		argsToCallWith.unshift(taskUUID) // prepend with taskUUID
+	}
+	const taskFn = tasksByName[taskName]
+	taskFn.apply(this, argsToCallWith)
+}
+{ // start observing incoming messages
+	process.on('message', function(m)
+	{
+		var payload;
+		if (typeof m === 'string') {
+			try {
+				payload = JSON.parse(m)
+			} catch (e) {
+				console.error("Child couldn't parse incoming message with error" , e, "\n\nmessage:", m)
+				throw e
+				process.exit(1)
+			}
+		} else if (typeof m === 'object') {
+			payload = m
+		} else {
+			console.error("Child couldn't parse unrecognized typeof incoming message:", m)
+			throw e
+			process.exit(1)
+		}
+		//
+		_didReceivePayload(payload)
+	})
+}
+{ // ack boot
+	process.send("child is up")
+}
