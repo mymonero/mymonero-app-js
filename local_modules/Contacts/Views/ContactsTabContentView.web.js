@@ -32,7 +32,7 @@ const uuidV1 = require('uuid/v1')
 //
 const StackNavigationView = require('../../StackNavigation/Views/StackNavigationView.web')
 //
-class WalletsTabContentView extends StackNavigationView
+class ContactsTabContentView extends StackNavigationView
 {
 	constructor(options, context)
 	{
@@ -44,59 +44,17 @@ class WalletsTabContentView extends StackNavigationView
 		const self = this
 		{ // walletsListView
 			const options = {}
-			const WalletsListView = require('./WalletsListView.web')
-			const view = new WalletsListView(options, self.context)
-			self.walletsListView = view
+			const ContactsListView = require('./ContactsListView.web')
+			const view = new ContactsListView(options, self.context)
+			self.contactsListView = view
 		}
 		{
 			self.SetStackViews(
 				[
-					self.walletsListView
+					self.contactsListView
 				]
 			)
 		}
 	}
-
-	// This is for the nav bar right
-	setup_DEVELOPMENTMOCK_addWalletButton()
-	{
-		// mocking an 'add wallet' button view here to test having to enter a pw for the first time on creating password protected data
-		const self = this
-			const layer = document.createElement("a")
-		{ // setup
-			layer.href = "#"
-			layer.innerHTML = "+" // TODO
-		}
-		{ // run
-			self.layer.appendChild(layer)
-		} // observe
-		{
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					{
-						const informingAndVerifyingMnemonic_cb = function(mnemonicString, confirmation_cb)
-						{ // simulating user correctly entering mnemonic string they needed to have written down
-							confirmation_cb(mnemonicString)
-						}
-						const fn = function(err, walletInstance) {}
-						self.context.walletsListController.WhenBooted_CreateAndAddNewlyGeneratedWallet(
-							informingAndVerifyingMnemonic_cb,
-							fn
-						)					
-					}
-					return false
-				}
-			)
-		}
-	}
 }
-module.exports = WalletsTabContentView
-
-
-
-
-
-
+module.exports = ContactsTabContentView

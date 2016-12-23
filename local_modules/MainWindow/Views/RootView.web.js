@@ -81,20 +81,20 @@ class RootView extends View
 		{ // add tab bar content views
 			{ // walletsListView
 				const options = {}
-				const WalletsListView = require('../../WalletsList/Views/WalletsListView.web')
-				const view = new WalletsListView(options, context)
-				self.walletsListView = view
+				const WalletsTabContentView = require('../../WalletsList/Views/WalletsTabContentView.web')
+				const view = new WalletsTabContentView(options, context)
+				self.walletsTabContentView = view
 			}
 			{ // contactsListView
 				const options = {}
-				const ContactsListView = require('../../Contacts/Views/ContactsListView.web')
-				const view = new ContactsListView(options, context)
-				self.contactsListView = view
+				const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
+				const view = new ContactsTabContentView(options, context)
+				self.contactsTabContentView = view
 			}
 			tabBarViewAndContentView.SetTabBarContentViews(
 				[
-					self.walletsListView,
-					self.contactsListView
+					self.walletsTabContentView,
+					self.contactsTabContentView
 				]
 			)
 		}
