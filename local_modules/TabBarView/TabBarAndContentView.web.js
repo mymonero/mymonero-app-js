@@ -57,12 +57,20 @@ class TabBarAndContentView extends View
 			{
 				const options = {}
 				const view = new View(options, context)
+				{
+					const layer = view.layer
+					layer.style.webkitAppRegion = "drag" // make draggable
+					layer.style.webkitUserSelect = "none"
+				}
 				self.tabBarView = view
 				self.addSubview(view)
 			}
 			{
 				const options = {}
 				const view = new View(options, context)
+				{
+					view.layer.style.overflowY = "scroll"
+				}
 				self.contentAreaView = view
 				self.addSubview(view)
 			}

@@ -42,6 +42,10 @@ class EnterExistingPasswordView extends View
 	setup()
 	{
 		const self = this
+		self.layer.style.width = "100%"
+		self.layer.style.height = "50%"
+		self.layer.style.paddingTop = "25%"
+		self.layer.style.paddingBottom = "25%"
 	}
 	//
 	//
@@ -194,8 +198,36 @@ class EnterExistingPasswordView extends View
 			self.layer.innerHTML = htmlString
 		}
 		{ // JS-land setup, observation, etc:
+			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
+				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
+				layer.style.color = "red"
+				layer.style.fontWeight = "bold"
+				layer.style.fontSize = "16px"
+				layer.style.height = "24px" // fix the height so layout doesn't move when validation error comes in
+				layer.style.textAlign = "center"
+				layer.style.display = "block"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+			}
+			{
+				const layer = self.layer.querySelector("h3")
+				layer.style.textAlign = "center"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+			}
 			{ // inputFieldLayer
 				const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
+				{
+					layer.style.webkitAppRegion = "no-drag"
+					layer.style.textAlign = "center"
+					layer.style.width = "150px"
+					layer.style.height = "40px"
+					layer.style.fontSize = "16px"
+					layer.style.display = "block"
+					layer.style.margin = "20px auto"
+				}
 				layer.addEventListener(
 					"keyup",
 					function(event)
@@ -214,16 +246,16 @@ class EnterExistingPasswordView extends View
 					layer.focus()
 				}, 100)
 			}
-			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
-				layer.style.color = "red"
-				layer.style.fontWeight = "bold"
-				layer.style.display = "block"
-			}
 			{ // cancel button, if applicable
 				if (self.isForChangingPassword === true) {
 					const layer = self.selected_cancelButtonLayer() // now we can select it from the DOM
-					layer.style.display = "block"
+					{
+						layer.style.display = "block"
+						layer.style.textAlign = "center"
+						layer.style.width = "100px"
+						layer.style.marginLeft = "auto"
+						layer.style.marginRight = "auto"
+					}
 					layer.addEventListener(
 						"click",
 						function(event)

@@ -82,6 +82,7 @@ class PasswordEntryView extends View
 			layer.style.zIndex = "9999"
 			layer.style.border = "0px solid orange" // for debug
 			layer.style.background = "#f0f0f0"
+			layer.style.webkitAppRegion = "drag"
 		}
 	}
 	_setup_enterNewPasswordAndTypeView()

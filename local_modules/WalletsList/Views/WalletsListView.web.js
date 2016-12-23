@@ -53,6 +53,9 @@ class WalletsListView extends View
 	_setup_views()
 	{
 		const self = this
+		//
+		self.layer.style.color = "white"
+		//
 		self.walletCellViews = [] // initialize container
 	}
 	_setup_startObserving()

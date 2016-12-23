@@ -42,6 +42,13 @@ class EnterNewPasswordAndTypeView extends View
 	setup()
 	{
 		const self = this
+		{
+			const layer = self.layer
+			layer.style.width = "100%"
+			layer.style.height = "50%"
+			layer.style.paddingTop = "25%"
+			layer.style.paddingBottom = "25%"
+		}
 	}
 	//
 	//
@@ -195,6 +202,14 @@ class EnterNewPasswordAndTypeView extends View
 		//
 		return layer
 	}
+	DOMSelected_all_passwordType_radioInputContainerFieldsetLayer()
+	{
+		const self = this
+		const selector = `fieldset#${self.idForChild_passwordType_fieldset()}`
+		const layer = self.layer.querySelector(selector)
+		//
+		return layer
+	}
 	DOMSelected_all_passwordType_radioInputContainerLayers()
 	{
 		const self = this
@@ -271,9 +286,9 @@ class EnterNewPasswordAndTypeView extends View
 			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
 			var htmlString = 
 				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3>Please enter a new ${passwordType_humanReadableString}:</h3>`
+				+ `<h3 id="EnterNewPasswordAndTypeView_prompt-header">Please enter a new ${passwordType_humanReadableString}:</h3>`
 				+ self.new_htmlStringFor_inputFieldLayer()
-				+ `<h4>Password type</h4>`
+				+ `<h4 id="EnterNewPasswordAndTypeView_password-type-header">Password type</h4>`
 				+ self.new_htmlStringFor_passwordType_radioInputLayers()
 			if (self.isForChangingPassword === true) {
 				htmlString += self.new_htmlStringFor_cancelButtonLayer()
@@ -281,8 +296,45 @@ class EnterNewPasswordAndTypeView extends View
 			self.layer.innerHTML = htmlString
 		}
 		{ // JS-land setup, observation, etc:
+			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
+				const layer = self.DOMSelected_validationMessageLabelLayer() // now we can select it from the DOM
+				layer.style.height = "24px" // fix the height so layout doesn't move when validation error comes in
+				layer.style.textAlign = "center"
+				layer.style.display = "block"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+				//
+				layer.style.color = "red"
+				layer.style.fontWeight = "bold"
+				layer.style.fontSize = "16px"
+			}
+			{
+				const layer = self.layer.querySelector("h3#EnterNewPasswordAndTypeView_prompt-header")
+				layer.style.textAlign = "center"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+			}
+			{
+				const layer = self.layer.querySelector("h4#EnterNewPasswordAndTypeView_password-type-header")
+				layer.style.textAlign = "center"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+			}
 			{ // inputFieldLayer
 				const layer = self.DOMSelected_inputFieldLayer() // now we can select it from the DOM
+				{
+					layer.style.webkitAppRegion = "no-drag" // make clickable
+					//
+					layer.style.textAlign = "center"
+					layer.style.width = "150px"
+					layer.style.height = "40px"
+					layer.style.fontSize = "16px"
+					layer.style.display = "block"
+					layer.style.margin = "20px auto"
+				}
 				layer.addEventListener(
 					"keyup",
 					function(event)
@@ -301,16 +353,16 @@ class EnterNewPasswordAndTypeView extends View
 					layer.focus()
 				}, 100)
 			}
-			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-				const layer = self.DOMSelected_validationMessageLabelLayer() // now we can select it from the DOM
-				layer.style.color = "red"
-				layer.style.fontWeight = "bold"
-				layer.style.display = "block"
-			}
 			{ // cancel button, if applicable
 				if (self.isForChangingPassword === true) {
 					const layer = self.DOMSelected_cancelButtonLayer() // now we can select it from the DOM
-					layer.style.display = "block"
+					{
+						layer.style.display = "block"
+						layer.style.width = "100px"
+						layer.style.textAlign = "center"
+						layer.style.margin = "0 auto"
+						layer.style.webkitAppRegion = "no-drag" // make clickable
+					}
 					layer.addEventListener(
 						"click",
 						function(event)
@@ -324,11 +376,24 @@ class EnterNewPasswordAndTypeView extends View
 				}
 			}
 			{ // password type
+				{ // radios container fieldset
+					const layer = self.DOMSelected_all_passwordType_radioInputContainerFieldsetLayer()
+					{
+						layer.style.margin = "20px auto"
+						layer.style.width = "200px"
+						layer.style.display = "block"
+					}
+				}
 				{ // radios
 					const layers = self.DOMSelected_all_passwordType_radioInputLayers()
 					layers.forEach(
 						function(layer, idx)
 						{
+							layer.style.height = "20px"
+							layer.style.fontSize = "14px"
+							//
+							layer.style.webkitAppRegion = "no-drag" // make clickable
+							//
 							layer.addEventListener(
 								"click",
 								function(e)

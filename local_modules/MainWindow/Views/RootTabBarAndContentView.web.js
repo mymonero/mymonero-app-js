@@ -46,23 +46,17 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		}
 		{
 			const layer = self.tabBarView.layer
-			layer.style.background = "orange"
+			layer.style.background = "#171416"
+			layer.style.borderRight = "1px solid black"
+			layer.style.paddingTop = "44px"
 		}
 		{
 			const layer = self.contentAreaView.layer
-			layer.style.background = "green"
+			layer.style.background = "#282527"
 		}
 		{ // add Settings button
 			
 		}
-	}
-	//
-	//
-	// Accessors - UI - Metrics
-	//
-	overridable_tabBarView_thickness()
-	{
-		return 44
 	}
 }
 module.exports = RootTabBarAndContentView

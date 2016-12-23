@@ -89,17 +89,16 @@ class MainWindowController
 	////////////////////////////////////////////////////////////////////////////////
 	// Accessors - Window
 
-	_new_browserWindowTitle()
-	{
-		return "MyMonero"
-	}
 	_new_window()
 	{
 		const self = this
 		const window = new electron.BrowserWindow({
-			width: 800,
-			height: 600,
-			title: self._new_browserWindowTitle(),
+			width: 560,
+			height: 500,
+			minWidth: 400,
+			minHeight: 420,
+			backgroundColor: "#282527",
+			titleBarStyle: "hidden-inset",
 			webPreferences: { // these are all currently the default values but stating them here to be explicit…
 				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true
 				allowDisplayingInsecureContent: false, // https content only
@@ -139,6 +138,10 @@ class MainWindowController
 		window.on('closed', function() // this is not within new_window because such accessors should never directly or indirectly modify state of anything but within its own fn scope
 		{
 			self.window = null // release
+		})
+		window.webContents.on("will-navigate", function(e)
+		{
+			e.preventDefault() // do not allow navigation when users drop links
 		})
 		{ // hardening
 			const allowDevTools = process.env.NODE_ENV === 'development'

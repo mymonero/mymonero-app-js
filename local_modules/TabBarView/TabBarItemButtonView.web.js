@@ -49,9 +49,14 @@ class TabBarItemButtonView extends View
 	setup_views()
 	{
 		const self = this
+		{
+			const layer = self.layer
+			layer.style.webkitAppRegion = "no-drag" // make clickable
+		}
 		{ // icon
 			const layer = document.createElement("img")
 			{
+				layer.style.webkitAppRegion = "no-drag" // make clickable
 				layer.style.width = `${self.side_px}px`
 				layer.style.height = `${self.side_px}px`
 			}

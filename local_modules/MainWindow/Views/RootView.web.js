@@ -50,16 +50,25 @@ class RootView extends View
 		//
 		{
 			const layer = self.layer
-			layer.style.background = "yellow"
+			layer.style.background = "#282527"
 			layer.style.position = "absolute"
 			layer.style.width = "100%"
 			layer.style.height = "100%"
 			layer.style.left = "0px"
 			layer.style.top = "0px"
+			// layer.style.overflow = "hidden"
 		}
 		//
 		self.setup_tabBarAndContentView()
 		self.setup_passwordEntryViewController() // this is technically a controller, not a view
+		{ // disable space bar to scroll in document
+			window.onkeydown = function(e)
+			{
+				if (e.keyCode == 32 && e.target == document.body) {
+					e.preventDefault()
+				}
+			}
+		}
 	}
 	setup_tabBarAndContentView()
 	{

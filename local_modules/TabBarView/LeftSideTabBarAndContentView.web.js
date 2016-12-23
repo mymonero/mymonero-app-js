@@ -72,7 +72,7 @@ class LeftSideTabBarAndContentView extends TabBarAndContentView
 	//
 	overridable_tabBarView_thickness()
 	{
-		return 75
+		return 78
 	}
 }
 module.exports = LeftSideTabBarAndContentView

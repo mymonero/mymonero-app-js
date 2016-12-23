@@ -448,9 +448,9 @@ class PasswordController extends EventEmitter
 				if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
 					if (obtainedPasswordString.length != 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 						self.unguard_getNewOrExistingPassword()
-						const err = new Error("Invalid PIN length")
+						const err = new Error("Please enter a 6-digit PIN")
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
-						return // bail as we are re-entering
+						return // bail 
 					}
 					// TODO: check if all numbers
 					// TODO: check that numbers are not all just one number
@@ -459,7 +459,7 @@ class PasswordController extends EventEmitter
 						self.unguard_getNewOrExistingPassword()
 						const err = new Error("Password too short")
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
-						return // bail as we are re-entering
+						return // bail 
 					}
 					// TODO: check if password content too weak?
 				} else { // this is weird - code fault or cracking attempt?
@@ -467,6 +467,14 @@ class PasswordController extends EventEmitter
 					const err = new Error("Unrecognized password type")
 					self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 					return
+				}
+				if (isForChangePassword === true) {
+					if (self.password === obtainedPasswordString) { // they are disallowed from using change pw to enter the same pw… despite that being convenient for dev ;)
+						self.unguard_getNewOrExistingPassword()
+						const err = new Error("Please enter a new password")
+						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+						return // bail 
+					}
 				}
 				//
 				// II. hang onto new pw, pw type, and state(s)
