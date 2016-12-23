@@ -54,6 +54,7 @@ class WalletsListCellView extends View
 		const self = this
 		//
 		self.layer.style.border = "1px solid #eee"
+		self.layer.style.wordBreak = "break-all" // just for now 
 		//
 		self.setup_layers_accountInfo()
 		self.setup_layers_transactions()

@@ -44,6 +44,9 @@ class ContactsListView extends View
 	{
 		const self = this
 		//
+		self.layer.style.width = "100%"
+		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
+		//
 		self._setup_views()
 		self._setup_startObserving()
 		//
@@ -67,6 +70,14 @@ class ContactsListView extends View
 				self._ContactsListController_EventName_listUpdated()
 			}
 		)
+	}
+	//
+	//
+	// Runtime - Accessors - Navigation
+	//
+	Navigation_Title()
+	{
+		return "Contacts"
 	}
 	//
 	//
@@ -137,6 +148,7 @@ class ContactsListView extends View
 			throw "missing self.navigationController in viewWillAppear()"
 		}
 		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 	}
 }
 module.exports = ContactsListView

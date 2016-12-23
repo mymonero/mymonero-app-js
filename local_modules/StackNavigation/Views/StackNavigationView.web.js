@@ -58,30 +58,28 @@ class StackNavigationView extends View
 			layer.style.width = "100%"
 			layer.style.height = "100%"
 		}
+		{ // navigationBarView
+			const NavigationBarView = require('./NavigationBarView.web')
+			const view = new NavigationBarView({
+				navigationController: self
+			}, self.context)
+			self.addSubview(view)
+			self.navigationBarView = view
+		}
 		{ // stackViewStageView
 			const view = new View({}, self.context)
 			{
 				const layer = view.layer
 				layer.style.zIndex = "1"
+				layer.style.position = "absolute"
+				layer.style.left = "0"
+				layer.style.top = "0"
 				layer.style.width = "100%"
 				layer.style.height = "100%"
+				layer.style.overflowY = "hidden" // we're going to say subviews are not allowed to hijack scroll - if they want to, they have to create their own wrapper
 			}
 			self.addSubview(view)
 			self.stackViewStageView = view
-		}
-		{ // navigationBarView
-			const view = new View({}, self.context) // TODO: make this into a class
-			{
-				const layer = view.layer
-				layer.style.position = "absolute"
-				layer.style.zIndex = "9"
-				layer.style.width = "100%"
-				layer.style.height = `${self.NavigationBarHeight()}px`
-				layer.style.top = "0px"
-				layer.style.left = "0px"
-			}
-			self.addSubview(view)
-			self.navigationBarView = view
 		}
 	}
 	//
@@ -95,7 +93,9 @@ class StackNavigationView extends View
 	//
 	NavigationBarHeight()
 	{
-		return 44
+		const self = this
+		//
+		return self.navigationBarView.NavigationBarHeight()
 	}
 	//
 	//
@@ -147,8 +147,14 @@ class StackNavigationView extends View
 				self.topStackView.navigationController = self // this way the view can ask the navigation controller for the top margin in viewWillAppear
 				self.stackViewStageView.addSubview(self.topStackView) 
 			}
-			{ // TODO: tell the nav bar that the top stack view updated w/o animation
-				
+			{
+				const isAnimated = false
+				const ifAnimated_isFromRightNotLeft = undefined
+				self.navigationBarView.SetTopStackView(
+					self.topStackView, 
+					isAnimated, 
+					ifAnimated_isFromRightNotLeft
+				)
 			}
 		}
 	}

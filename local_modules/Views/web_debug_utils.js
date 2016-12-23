@@ -28,36 +28,21 @@
 //
 "use strict"
 //
-const LeftSideTabBarAndContentView = require('../../TabBarView/LeftSideTabBarAndContentView.web')
-//
-class RootTabBarAndContentView extends LeftSideTabBarAndContentView
+function DEBUG_BorderSubviews(ofView)
 {
-	constructor(options, context)
-	{
-		super(options, context)
-	}
-	setup()
-	{ // ^ called automatically by super, so
-		const self = this
-		super.setup() // must call this
+	const self = ofView
+	self.subviews.forEach(
+		function(subview, i)
 		{
-			const layer = self.layer
-			layer.style.background = "red"
+			subview.layer.style.border = `1px solid ${RandomColorHexString()}`
+			DEBUG_BorderSubviews(subview) // recursive traversal
 		}
-		{
-			const layer = self.tabBarView.layer
-			layer.style.background = "#171416"
-			layer.style.borderRight = "1px solid black"
-			layer.style.paddingTop = "44px" // since we're setting a padding top, we have to offset it in the height or cause a root view scroll
-			layer.style.height = "calc(100% - 44px)"
-		}
-		{
-			const layer = self.contentAreaView.layer
-			layer.style.background = "#282527"
-		}
-		{ // add Settings button
-			
-		}
-	}
+	)
 }
-module.exports = RootTabBarAndContentView
+exports.DEBUG_BorderSubviews = DEBUG_BorderSubviews
+//
+function RandomColorHexString()
+{
+	return `#${Math.floor(Math.random() * 16777215).toString(16)}`
+}
+exports.RandomColorHexString = RandomColorHexString

@@ -30,6 +30,8 @@
 //
 const EventEmitter = require('events')
 //
+const web_debug_utils = require('./web_debug_utils')	
+//
 class View extends EventEmitter
 {
 	//
@@ -147,6 +149,15 @@ class View extends EventEmitter
 			}
 		)
 		self.subviews = []
+	}
+	//
+	//
+	// Runtime - Imperatives - Debug
+	//
+	DEBUG_BorderSubviews()
+	{
+		const self = this
+		web_debug_utils.DEBUG_BorderSubviews(self)
 	}
 	//
 	//

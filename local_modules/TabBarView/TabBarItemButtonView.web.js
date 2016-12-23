@@ -51,14 +51,18 @@ class TabBarItemButtonView extends View
 		const self = this
 		{
 			const layer = self.layer
+			layer.style.display = "inline-block"
+			layer.style.position = "relative"
 			layer.style.webkitAppRegion = "no-drag" // make clickable
+			layer.style.width = `${self.side_px}px`
+			layer.style.height = `${self.side_px}px`
 		}
 		{ // icon
 			const layer = document.createElement("img")
 			{
 				layer.style.webkitAppRegion = "no-drag" // make clickable
-				layer.style.width = `${self.side_px}px`
-				layer.style.height = `${self.side_px}px`
+				layer.style.width = `100%`
+				layer.style.height = `100%`
 			}
 			self.iconImageLayer = layer
 			self.layer.appendChild(self.iconImageLayer)
@@ -110,11 +114,15 @@ class TabBarItemButtonView extends View
 	{
 		const self = this
 		self.isSelected = true
+		//
+		self.iconImageLayer.style.backgroundColor = "blue"
 	}
 	Deselect()
 	{
 		const self = this
 		self.isSelected = false
+		//
+		self.iconImageLayer.style.backgroundColor = "transparent"
 	}	
 }
 module.exports = TabBarItemButtonView

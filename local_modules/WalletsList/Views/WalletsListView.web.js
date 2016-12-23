@@ -54,7 +54,12 @@ class WalletsListView extends View
 	{
 		const self = this
 		//
-		self.layer.style.color = "white"
+		self.layer.style.width = "calc(100% - 20px)"
+		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
+		//
+		self.layer.style.color = "#c0c0c0"
+		self.layer.style.overflowY = "scroll"
+		self.layer.style.padding = "40px 10px"
 		//
 		self.walletCellViews = [] // initialize container
 	}
@@ -69,6 +74,14 @@ class WalletsListView extends View
 				self._WalletsListController_EventName_listUpdated()
 			}
 		)
+	}
+	//
+	//
+	// Runtime - Accessors - Navigation
+	//
+	Navigation_Title()
+	{
+		return "Wallets"
 	}
 	//
 	//
@@ -138,6 +151,7 @@ class WalletsListView extends View
 			throw "missing self.navigationController in viewWillAppear()"
 		}
 		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 	}
 }
 module.exports = WalletsListView
