@@ -125,5 +125,19 @@ class WalletsListView extends View
 		const self = this
 		self.reloadData()
 	}
+	//
+	//
+	// Runtime - Delegation - Navigation/View lifecycle
+	//
+	viewWillAppear()
+	{
+		const self = this
+		super.viewWillAppear()
+		//
+		if (typeof self.navigationController === 'undefined' || self.navigationController === null) {
+			throw "missing self.navigationController in viewWillAppear()"
+		}
+		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+	}
 }
 module.exports = WalletsListView

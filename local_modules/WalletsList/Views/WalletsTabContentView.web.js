@@ -55,6 +55,10 @@ class WalletsTabContentView extends StackNavigationView
 				]
 			)
 		}
+		{ // navigation bar customization
+			const layer = self.navigationBarView.layer
+			layer.style.backgroundColor = "#282527"
+		}
 	}
 
 	// This is for the nav bar right

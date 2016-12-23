@@ -44,14 +44,20 @@ class StackNavigationView extends View
 	setup()
 	{
 		const self = this
-		//
-		self.uuid = uuidV1()
-		//
-		self.stackViews = []
-		self.topStackView = null
-		//
-		self.layer.style.width = "100%"
-		self.layer.style.height = "100%"
+		{ // initial state
+			self.uuid = uuidV1()
+			//
+			self.stackViews = []
+			self.topStackView = null
+		}
+		{ // self.layer
+			const layer = self.layer
+			layer.style.position = "relative"
+			layer.style.left = "0"
+			layer.style.top = "0"
+			layer.style.width = "100%"
+			layer.style.height = "100%"
+		}
 		{ // stackViewStageView
 			const view = new View({}, self.context)
 			{
@@ -59,8 +65,6 @@ class StackNavigationView extends View
 				layer.style.zIndex = "1"
 				layer.style.width = "100%"
 				layer.style.height = "100%"
-				//
-				layer.style.backgroundColor = "red"
 			}
 			self.addSubview(view)
 			self.stackViewStageView = view
@@ -72,11 +76,9 @@ class StackNavigationView extends View
 				layer.style.position = "absolute"
 				layer.style.zIndex = "9"
 				layer.style.width = "100%"
-				layer.style.height = `{self.NavigationBarHeight()}px`
+				layer.style.height = `${self.NavigationBarHeight()}px`
 				layer.style.top = "0px"
 				layer.style.left = "0px"
-				//
-				layer.style.backgroundColor = "blue"
 			}
 			self.addSubview(view)
 			self.navigationBarView = view
@@ -116,6 +118,17 @@ class StackNavigationView extends View
 		{ // remove existing
 			if (self.topStackView !== null) {
 				self.topStackView.removeFromSuperview() 
+				self.topStackView.navigationController = null
+			}
+			if (self.stackViews.length > 0) {
+				self.stackViews.forEach(
+					function(view, i)
+					{
+						if (view.navigationController === self) { // just to make sure it's actually self we're replacing with nil…
+							view.navigationController = null
+						}
+					}
+				)
 			}
 		}
 		{ // set new state (while freeing all existing)
@@ -131,6 +144,7 @@ class StackNavigationView extends View
 		}
 		{ // config UI with new state
 			if (self.topStackView !== null) {
+				self.topStackView.navigationController = self // this way the view can ask the navigation controller for the top margin in viewWillAppear
 				self.stackViewStageView.addSubview(self.topStackView) 
 			}
 			{ // TODO: tell the nav bar that the top stack view updated w/o animation
