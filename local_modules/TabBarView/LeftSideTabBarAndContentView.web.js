@@ -28,78 +28,51 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
+const TabBarAndContentView = require('./TabBarAndContentView.web')
 //
-class RootView extends View
+class LeftSideTabBarAndContentView extends TabBarAndContentView
 {
 	constructor(options, context)
 	{
 		super(options, context)
-		//
-		const self = this
-		self.setup()
 	}
 	setup()
-	{
+	{ // ^ called automatically by super, so
 		const self = this
-		self.setup_views()
-	}
-	setup_views()
-	{
-		const self = this
-		//
+		super.setup() // must call this
 		{
 			const layer = self.layer
-			layer.style.background = "yellow"
-			layer.style.position = "absolute"
+			layer.style.position = "relative"
+			layer.style.left = "0px"
+			layer.style.right = "0px"
 			layer.style.width = "100%"
 			layer.style.height = "100%"
-			layer.style.left = "0px"
+		}
+		const tabBarView_thickness = self.overridable_tabBarView_thickness()
+		{
+			const layer = self.tabBarView.layer
+			layer.style.position = "absolute"
 			layer.style.top = "0px"
+			layer.style.left = "0px"
+			layer.style.width = `${tabBarView_thickness}px`
+			layer.style.height = "100%"
 		}
-		//
-		self.setup_tabBarAndContentView()
-		self.setup_passwordEntryViewController() // this is technically a controller, not a view
-	}
-	setup_tabBarAndContentView()
-	{
-		const self = this
-		const context = self.context
-		//
-		const options = {}
-		const LeftSideTabBarAndContentView = require('./RootTabBarAndContentView.web')
-		const tabBarViewAndContentView = new LeftSideTabBarAndContentView(options, context)
-		{ // add tab bar content views
-			{ // walletsListView
-				const options = {}
-				const WalletsListView = require('../../WalletsList/Views/WalletsListView.web')
-				const view = new WalletsListView(options, context)
-				self.walletsListView = view
-			}
-			{ // contactsListView
-				const options = {}
-				const ContactsListView = require('../../Contacts/Views/ContactsListView.web')
-				const view = new ContactsListView(options, context)
-				self.contactsListView = view
-			}
-			tabBarViewAndContentView.SetTabBarContentViews(
-				[
-					self.walletsListView,
-					self.contactsListView
-				]
-			)
+		{
+			const layer = self.contentAreaView.layer
+			layer.style.position = "absolute"
+			layer.style.top = "0px"
+			layer.style.left = `${tabBarView_thickness}px`
+			layer.style.width = `calc(100% - ${tabBarView_thickness}px)`
+			layer.style.height = "100%"
 		}
-		self.tabBarViewAndContentView = tabBarViewAndContentView
-		self.addSubview(tabBarViewAndContentView)
 	}
-	setup_passwordEntryViewController()
+	//
+	//
+	// Accessors - UI - Metrics - Overridable
+	//
+	overridable_tabBarView_thickness()
 	{
-		const self = this
-		const passwordController = self.context.passwordController
-		const PasswordEntryViewController = require('../../Passwords/Controllers/PasswordEntryViewController.web')
-		const passwordEntryViewController = new PasswordEntryViewController(self, passwordController)
-		self.passwordEntryViewController = passwordEntryViewController
+		return 75
 	}
-	
 }
-module.exports = RootView
+module.exports = LeftSideTabBarAndContentView

@@ -72,6 +72,17 @@ class View extends EventEmitter
 	}
 	//
 	//
+	// Runtime - Accessors
+	//
+	HasASuperview()
+	{
+		const self = this
+		const hasASuperview = typeof self.superview !== "undefined" && self.superview !== null
+		//
+		return hasASuperview ? true : false
+	}
+	//
+	//
 	// Runtime - Imperatives - View hierarchy
 	//
 	addSubview(view)
@@ -97,7 +108,7 @@ class View extends EventEmitter
 		self.viewDidAppear()
 	}
 	removeFromSuperview()
-	{
+	{ // throws
 		const self = this
 		if (typeof self.superview === 'undefined' || self.superview === null) {
 			throw "no superview"

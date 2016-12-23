@@ -28,99 +28,88 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
-const WalletsListCellView = require('./WalletsListCellView.web')
+const View = require('../Views/View.web')
 //
-class WalletsListView extends View
+class TabBarItemButtonView extends View
 {
 	constructor(options, context)
 	{
 		super(options, context)
-		//
 		const self = this
+		{
+			self.side_px = options.side_px || 44
+		}
 		self.setup()
 	}
 	setup()
 	{
 		const self = this
-		//
-		self._setup_views()
-		self._setup_startObserving()
-		//
-		// configure UI with initial state
-		self.reloadData()
+		self.setup_views()
 	}
-	_setup_views()
+	setup_views()
 	{
 		const self = this
-		self.walletCellViews = [] // initialize container
-	}
-	_setup_startObserving()
-	{
-		const self = this
-		const walletsListController = self.context.walletsListController
-		walletsListController.on(
-			walletsListController.EventName_listUpdated(),
-			function()
+		{ // icon
+			const layer = document.createElement("img")
 			{
-				self._WalletsListController_EventName_listUpdated()
+				layer.style.width = `${self.side_px}px`
+				layer.style.height = `${self.side_px}px`
 			}
-		)
-	}
-	//
-	//
-	// Runtime - Imperatives - View Configuration
-	//
-	reloadData()
-	{
-		const self = this
-		if (self.isAlreadyWaitingForWallets === true) { // because accessing wallets is async
-			return // prevent redundant calls
+			self.iconImageLayer = layer
+			self.layer.appendChild(self.iconImageLayer)
 		}
-		self.isAlreadyWaitingForWallets = true
-		self.context.walletsListController.WhenBooted_Wallets(
-			function(wallets)
-			{
-				self.isAlreadyWaitingForWallets = false // unlock
-				self._configureWith_wallets(wallets)
-			}
-		)
-	}
-	_configureWith_wallets(wallets)
-	{
-		const self = this
-		// TODO: diff these wallets with existing wallets?
-		if (self.walletCellViews.length != 0) {
-			// for now, just flash list:
-			self.walletCellViews.forEach(
-				function(view, i)
+		{ // observation
+			self.layer.addEventListener(
+				"click",
+				function(e)
 				{
-					view.removeFromSuperview()
+					e.preventDefault()
+					{
+						self.emit(self.EventName_clicked(), self)
+					}
+					return false
 				}
 			)
-			self.walletCellViews = []
 		}
-		// now add subviews
-		const context = self.context
-		wallets.forEach(
-			function(wallet, i)
-			{
-				const options = {}
-				const view = new WalletsListCellView(options, context)
-				self.walletCellViews.push(view)
-				view.ConfigureWith_wallet(wallet)
-				self.addSubview(view)
-			}
-		)
 	}
 	//
 	//
-	// Runtime - Delegation - Data source
+	// Setup - Accessors - Overrides
 	//
-	_WalletsListController_EventName_listUpdated()
+	TagName()
+	{
+		return "a" // this is the default; you can override this method to return what you'd like
+	}
+	//
+	//
+	// Runtime - Accessors - Events
+	//
+	EventName_clicked()
+	{
+		return "EventName_clicked"
+	}
+	//
+	//
+	// Runtime - Accessors - Selection
+	//
+	IsSelected()
 	{
 		const self = this
-		self.reloadData()
+		return self.isSelected === true
 	}
+	//
+	//
+	// Runtime - Imperatives - Selection
+	//
+	Select()
+	{
+		const self = this
+		self.isSelected = true
+	}
+	Deselect()
+	{
+		const self = this
+		self.isSelected = false
+	}	
 }
-module.exports = WalletsListView
+module.exports = TabBarItemButtonView
