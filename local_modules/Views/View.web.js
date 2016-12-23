@@ -43,11 +43,21 @@ class View extends EventEmitter
 		super() // must call before can access `this`
 		//
 		const self = this
-		self.options = options
-		self.context = context
-		//
-		// proceed to setup for runtime:
-		self.__View_setup_views() // namespacing to avoid subclass collision
+		{
+			self.options = options
+			self.context = context
+		}
+		{
+			const options_tag = options.tag
+			if (typeof options_tag === 'string' && options_tag !== null && options_tag.length > 0) {
+				self.tag = options_tag
+			} else {
+				self.tag = "div"
+			}
+		}
+		{ // proceed to setup for runtime:
+			self.__View_setup_views() // namespacing to avoid subclass collision
+		}
 	}
 	__View_setup_views()
 	{
@@ -62,7 +72,8 @@ class View extends EventEmitter
 	setup_loadView()
 	{
 		const self = this
-		self.layer = document.createElement(self.TagName())
+		const tagName = self.TagName()
+		self.layer = document.createElement(tagName)
 	}
 	//
 	//
@@ -70,7 +81,8 @@ class View extends EventEmitter
 	//
 	TagName()
 	{
-		return "div" // this is the default; you can override this method to return what you'd like
+		const self = this
+		return self.tag // div is the default; you can either override this method to return what you'd like or pass "tag" in options
 	}
 	//
 	//

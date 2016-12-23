@@ -57,7 +57,8 @@ class WalletsListView extends View
 		self.layer.style.width = "calc(100% - 20px)"
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
-		self.layer.style.color = "#c0c0c0"
+		self.layer.style.color = "#c0c0c0" // temporary
+		//
 		self.layer.style.overflowY = "scroll"
 		self.layer.style.padding = "40px 10px"
 		//
@@ -82,6 +83,55 @@ class WalletsListView extends View
 	Navigation_Title()
 	{
 		return "Wallets"
+	}
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = new View({ tag: "a" }, self.context)
+		const layer = view.layer
+		{ // setup/style
+			layer.href = "#" // to make it clickable
+			layer.innerHTML = "+" // TODO
+		}
+		{
+			layer.style.display = "block"
+			layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+			layer.style.marginTop = "10px"
+			layer.style.width = "26px"
+			layer.style.height = "24px"
+			layer.style.cornerRadius = "2px"
+			layer.style.backgroundColor = "#18bbec"
+			layer.style.textDecoration = "none"
+			layer.style.fontSize = "22px"
+			layer.style.lineHeight = "100%"
+			layer.style.color = "#ffffff"
+			layer.style.fontWeight = "bold"
+			layer.style.textAlign = "center"
+		}
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						const informingAndVerifyingMnemonic_cb = function(mnemonicString, confirmation_cb)
+						{ // simulating user correctly entering mnemonic string they needed to have written down
+							confirmation_cb(mnemonicString)
+						}
+						const fn = function(err, walletInstance) {}
+						
+						// TODO: wrap this in some kind of navigation flow?
+						self.context.walletsListController.WhenBooted_CreateAndAddNewlyGeneratedWallet(
+							informingAndVerifyingMnemonic_cb,
+							fn
+						)					
+					}
+					return false
+				}
+			)
+		}
+		return view
 	}
 	//
 	//

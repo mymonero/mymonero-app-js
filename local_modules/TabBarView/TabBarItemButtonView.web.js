@@ -34,6 +34,8 @@ class TabBarItemButtonView extends View
 {
 	constructor(options, context)
 	{
+		options.tag = "a"
+		//
 		super(options, context)
 		const self = this
 		{
@@ -80,14 +82,6 @@ class TabBarItemButtonView extends View
 				}
 			)
 		}
-	}
-	//
-	//
-	// Setup - Accessors - Overrides
-	//
-	TagName()
-	{
-		return "a" // this is the default; you can override this method to return what you'd like
 	}
 	//
 	//

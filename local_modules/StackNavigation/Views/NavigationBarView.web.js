@@ -91,14 +91,44 @@ class NavigationBarView extends View
 				layer.style.position = "absolute"
 				layer.style.fontFamily = `"Helvetica Neue", Helvetica, Arial, sans-serif`
 				layer.style.top = "0%"
-				layer.style.left = "10%"
-				layer.style.width = "80%"
+				layer.style.left = "calc(15% + 16px)"
+				layer.style.width = `calc(${ 100 - 2*15 }% - ${2 * 16}px`
 				layer.style.height = `${self.NavigationBarHeight()}px`
 				layer.style.textAlign = "center"
 				layer.style.lineHeight = `${self.NavigationBarHeight()}px`
 			}
 			self.layer.appendChild(layer)
 			self.titleLayer = layer
+		}
+		{ // leftBarButtonHolderView
+			const view = new View({}, self.context)
+			const layer = view.layer
+			{
+				layer.style.position = "absolute"
+				layer.style.left = "16px"
+				layer.style.width = "15%"
+				layer.style.minWidth = `${self.NavigationBarHeight()}px`
+				layer.style.height = `${self.NavigationBarHeight()}px`
+				//
+				// layer.style.border = "1px solid green"
+			}
+			self.addSubview(view)
+			self.leftBarButtonHolderView = view
+		}
+		{ // rightBarButtonHolderView
+			const view = new View({}, self.context)
+			const layer = view.layer
+			{
+				layer.style.position = "absolute"
+				layer.style.right = "16px"
+				layer.style.width = "15%"
+				layer.style.minWidth = `${self.NavigationBarHeight()}px`
+				layer.style.height = `${self.NavigationBarHeight()}px`
+				//
+				// layer.style.border = "1px solid red"
+			}
+			self.addSubview(view)
+			self.rightBarButtonHolderView = view
 		}
 	}
 	//
@@ -136,47 +166,98 @@ class NavigationBarView extends View
 	)
 	{
 		const self = this
-		{ // buttons
-			{ // remove existing
-				{
-					const view = self.leftBarButtonView
-					self.leftBarButtonView = null // free
-					if (typeof view !== 'undefined' && view !== null) {
-						if (isAnimated) {
-							// TODO: fade out then remove
-						}
-						view.removeFromSuperview()
+		//
+		self.SetTitleFromTopStackView(stackView, isAnimated, ifAnimated_isFromRightNotLeft)
+		self.SetBarButtonsFromTopStackView(stackView, isAnimated)
+	}
+	SetTitleFromTopStackView(
+		stackView,
+		isAnimated, 
+		ifAnimated_isFromRightNotLeft
+	)
+	{
+		const self = this
+		if (typeof stackView !== 'undefined' && stackView !== null) {
+			if (typeof stackView.Navigation_Title !== 'function') {
+				console.error("Error: stackView didn't define Navigation_Title()", stackView)
+				throw "stackView.Navigation_Title() not a function"
+			}
+			if (isAnimated) {
+				// TODO: transition/fade
+			} else {
+			}
+			
+			const titleString = stackView.Navigation_Title()
+			self.titleLayer.innerHTML = titleString
+			
+			
+		} else {
+			self.titleLayer.innerHTML = "" // clear
+		}
+	}
+	SetBarButtonsFromTopStackView(
+		stackView, 
+		isAnimated
+	)
+	{
+		const self = this
+		{ // remove existing
+			{ // left btn
+				const view = self.leftBarButtonView
+				self.leftBarButtonView = null // free
+				if (typeof view !== 'undefined' && view !== null) {
+					if (isAnimated) {
+						// TODO: fade out then remove
 					}
+					view.removeFromSuperview()
 				}
-				{
-					// TODO: fade/transition title
-				}
-				{
-					const view = self.rightBarButtonView
-					self.rightBarButtonView = null // free
-					if (typeof view !== 'undefined' && view !== null) {
-						if (isAnimated) {
-							// TODO: fade out then remove
-						}
-						view.removeFromSuperview()
+			}
+			{ // right btn
+				const view = self.rightBarButtonView
+				self.rightBarButtonView = null // free
+				if (typeof view !== 'undefined' && view !== null) {
+					if (isAnimated) {
+						// TODO: fade out then remove
 					}
+					view.removeFromSuperview()
 				}
 			}
 		}
-		{ // title label
-			if (isAnimated === false) {
-				if (typeof stackView !== 'undefined' && stackView !== null) {
-					if (typeof stackView.Navigation_Title !== 'function') {
-						console.error("Error: stackView didn't define Navigation_Title()", stackView)
-						throw "stackView.Navigation_Title() not a function"
+		{ // add new
+			if (typeof stackView !== 'undefined' && stackView !== null) {
+				{ // left btn
+					const factoryFn = stackView.Navigation_New_LeftBarButtonView
+					if (typeof factoryFn === 'function') {
+						const buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+						console.log("left buttonView" , buttonView)
+						if (typeof buttonView !== 'undefined' && buttonView !== null) {
+							{
+								buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
+							}
+							self.leftBarButtonView = buttonView
+							if (isAnimated) {
+								// TODO: opacity->0, add, fade in
+							}
+							self.leftBarButtonHolderView.addSubview(buttonView)
+						}
 					}
-					const titleString = stackView.Navigation_Title()
-					self.titleLayer.innerHTML = titleString
-				} else {
-					self.titleLayer.innerHTML = "" // clear
 				}
-			} else {
-				// transition/fade
+				{ // right btn
+					const factoryFn = stackView.Navigation_New_RightBarButtonView
+					if (typeof factoryFn === 'function') {
+						const buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+						if (typeof buttonView !== 'undefined' && buttonView !== null) {
+							{
+								buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
+							}
+							self.rightBarButtonView = buttonView
+							if (isAnimated) {
+								// TODO: opacity->0, add, fade in
+							}
+							self.rightBarButtonHolderView.addSubview(buttonView)
+						}
+					}
+				}
 			}
 		}
 	}
