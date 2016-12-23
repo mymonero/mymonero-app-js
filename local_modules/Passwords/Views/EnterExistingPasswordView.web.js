@@ -190,7 +190,7 @@ class EnterExistingPasswordView extends View
 		{ // constructing the innerHTML
 			var htmlString = 
 				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3>Please enter your ${ self.isForChangingPassword ? "existing " : "" }${passwordType_humanReadableString}:</h3>`
+				+ `<h3>Please enter your ${ self.isForChangingPassword ? "current " : "" }${passwordType_humanReadableString}:</h3>`
 				+ self.new_htmlStringFor_inputFieldLayer()
 			if (self.isForChangingPassword === true) {
 				htmlString += self.new_htmlStringFor_cancelButtonLayer()
