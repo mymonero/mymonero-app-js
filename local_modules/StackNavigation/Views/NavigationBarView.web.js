@@ -90,11 +90,12 @@ class NavigationBarView extends View
 				layer.style.fontSize = "16px"
 				layer.style.position = "absolute"
 				layer.style.fontFamily = `"Helvetica Neue", Helvetica, Arial, sans-serif`
-				layer.style.top = "10%"
+				layer.style.top = "0%"
 				layer.style.left = "10%"
 				layer.style.width = "80%"
-				layer.style.height = "80%"
+				layer.style.height = `${self.NavigationBarHeight()}px`
 				layer.style.textAlign = "center"
+				layer.style.lineHeight = `${self.NavigationBarHeight()}px`
 			}
 			self.layer.appendChild(layer)
 			self.titleLayer = layer
