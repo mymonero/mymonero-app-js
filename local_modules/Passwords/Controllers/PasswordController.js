@@ -448,7 +448,7 @@ class PasswordController extends EventEmitter
 				if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
 					if (obtainedPasswordString.length != 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 						self.unguard_getNewOrExistingPassword()
-						const err = new Error("Please enter a 6-digit PIN")
+						const err = new Error("Please enter a 6-digit PIN.")
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 						return // bail 
 					}
@@ -457,7 +457,7 @@ class PasswordController extends EventEmitter
 				} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().FreeformStringPW) {
 					if (obtainedPasswordString.length < 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 						self.unguard_getNewOrExistingPassword()
-						const err = new Error("Password too short")
+						const err = new Error("Please enter a longer password.")
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 						return // bail 
 					}
@@ -465,13 +465,26 @@ class PasswordController extends EventEmitter
 				} else { // this is weird - code fault or cracking attempt?
 					self.unguard_getNewOrExistingPassword()
 					const err = new Error("Unrecognized password type")
+					throw err
 					self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 					return
 				}
 				if (isForChangePassword === true) {
 					if (self.password === obtainedPasswordString) { // they are disallowed from using change pw to enter the same pw… despite that being convenient for dev ;)
 						self.unguard_getNewOrExistingPassword()
-						const err = new Error("Please enter a new password")
+						
+						var err;
+						if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().FreeformStringPW) {
+							err = new Error("Please enter a new password.")
+						} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
+							err = new Error("Please enter a new PIN.")
+						} else { 
+							self.unguard_getNewOrExistingPassword()
+							const err = new Error("Unrecognized password type")
+							throw err
+							self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+							return
+						}
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 						return // bail 
 					}
