@@ -21,6 +21,7 @@
     "node-notifier": "^4.6.1",
     "underscore": "^1.8.3",
     "uuid": "^3.0.1",
+    "velocity-animate": "^1.4.0",
     "xhr": "^2.3.1"
   },
   "devDependencies": {

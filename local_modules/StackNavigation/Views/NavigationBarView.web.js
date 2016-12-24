@@ -29,6 +29,7 @@
 "use strict"
 //
 const uuidV1 = require('uuid/v1')
+const Animate = require('velocity-animate')
 //
 const View = require('../../Views/View.web')
 //
@@ -141,10 +142,8 @@ class NavigationBarView extends View
 				layer.style.height = "1px" // this can be modified later to display the shadow - maybe with a child element doing the decoration
 				layer.style.backgroundColor = "rgba(17, 17, 17, 0.5)" 
 				//
-				
 				layer.style.opacity = "0" // initial state
 				self.navBarBottomScrollShadowLayer__cached_currentOpacity = "0" // see usage of this below for explanation
-				layer.style.webkitTransition = "opacity 0.1s linear"
 			}
 			self.navBarBottomScrollShadowLayer = layer
 			self.layer.appendChild(layer)
@@ -338,7 +337,8 @@ class NavigationBarView extends View
 			self.navBarBottomScrollShadowLayer__cached_currentOpacity = "0"
 			//
 			const layer = self.navBarBottomScrollShadowLayer
-			layer.style.opacity = "0" // this should implicitly animate (shudder)
+			Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+			Animate(layer, { opacity: 0 }, { duration: 60 });
 		}
 	}
 	_configureNavBarScrollShadowAs_positiveScroll_showShadow()
@@ -348,7 +348,8 @@ class NavigationBarView extends View
 			self.navBarBottomScrollShadowLayer__cached_currentOpacity = "1"
 			//
 			const layer = self.navBarBottomScrollShadowLayer
-			layer.style.opacity = "1" // this should implicitly animate (shudder)
+			Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+			Animate(layer, { opacity: 1 }, { duration: 60 });
 		}
 	}
 }
