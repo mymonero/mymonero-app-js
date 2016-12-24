@@ -103,7 +103,7 @@ class WalletsListView extends View
 			layer.style.backgroundColor = "#18bbec"
 			layer.style.textDecoration = "none"
 			layer.style.fontSize = "22px"
-			layer.style.lineHeight = "100%"
+			layer.style.lineHeight = "115%" // % extra to get + aligned properly
 			layer.style.color = "#ffffff"
 			layer.style.fontWeight = "bold"
 			layer.style.textAlign = "center"

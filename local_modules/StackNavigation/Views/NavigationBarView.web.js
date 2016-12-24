@@ -130,12 +130,30 @@ class NavigationBarView extends View
 			self.addSubview(view)
 			self.rightBarButtonHolderView = view
 		}
+		{ // navBarBottonScrollShadowLayer			
+			const layer = document.createElement("div")
+			{ // navBarBottonScrollShadowLayer
+				layer.style.position = "absolute"
+				layer.style.pointerEvents = "none" // allow to be clicked and scrolled through
+				layer.style.top = `${self.NavigationBarHeight()}px`
+				layer.style.left = "0px"
+				layer.style.width = "100%"
+				layer.style.height = "1px" // this can be modified later to display the shadow - maybe with a child element doing the decoration
+				layer.style.backgroundColor = "rgba(17, 17, 17, 0.5)" 
+				//
+				
+				layer.style.opacity = "0" // initial state
+				self.navBarBottomScrollShadowLayer__cached_currentOpacity = "0" // see usage of this below for explanation
+				layer.style.webkitTransition = "opacity 0.1s linear"
+			}
+			self.navBarBottomScrollShadowLayer = layer
+			self.layer.appendChild(layer)
+		}
 	}
 	//
 	//
 	// Runtime - Accessors - Public - Events
 	//
-
 	//
 	//
 	// Runtime - Accessors - Public - UI Metrics
@@ -157,21 +175,35 @@ class NavigationBarView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives 
+	// Runtime - Imperatives - Public
 	//
 	SetTopStackView(
 		stackView, 
+		old_topStackView,
 		isAnimated, 
 		ifAnimated_isFromRightNotLeft
 	)
 	{
 		const self = this
 		//
-		self.SetTitleFromTopStackView(stackView, isAnimated, ifAnimated_isFromRightNotLeft)
-		self.SetBarButtonsFromTopStackView(stackView, isAnimated)
+		{
+			self.__stopObserving_old_topStackView(old_topStackView)
+		}
+		self.SetTitleFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft)
+		self.SetBarButtonsFromTopStackView(stackView, old_topStackView, isAnimated)
+		{ // configure scroll shadow visibility
+			if (typeof stackView !== 'undefined' && stackView !== null) {
+				const scrollTop = stackView.layer.scrollTop
+				self._configureNavBarScrollShadowWithScrollTop(scrollTop)
+			}
+		}
+		{ // start observing this new top view
+			self.__startObserving_new_topStackView(stackView)
+		}	
 	}
 	SetTitleFromTopStackView(
 		stackView,
+		old_topStackView,
 		isAnimated, 
 		ifAnimated_isFromRightNotLeft
 	)
@@ -197,6 +229,7 @@ class NavigationBarView extends View
 	}
 	SetBarButtonsFromTopStackView(
 		stackView, 
+		old_topStackView,
 		isAnimated
 	)
 	{
@@ -229,7 +262,6 @@ class NavigationBarView extends View
 					const factoryFn = stackView.Navigation_New_LeftBarButtonView
 					if (typeof factoryFn === 'function') {
 						const buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
-						console.log("left buttonView" , buttonView)
 						if (typeof buttonView !== 'undefined' && buttonView !== null) {
 							{
 								buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
@@ -259,6 +291,64 @@ class NavigationBarView extends View
 					}
 				}
 			}
+		}
+	}
+	//
+	//
+	// Runtime - Imperatives - Private - Under-nav-bar scroll shadow visibility - Observation, and configuration
+	//
+	__stopObserving_old_topStackView(old_topStackView)
+	{
+		const self = this
+		if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) {
+			const existing_listenerFn__scroll = self.listenerFn__scroll
+			if (typeof existing_listenerFn__scroll !== 'undefined' && existing_listenerFn__scroll !== null) {
+				old_topStackView.removeEventListener('scroll', existing_listenerFn__scroll)
+				self.listenerFn__scroll = null
+			}
+		}
+	}
+	__startObserving_new_topStackView(stackView)
+	{
+		const self = this
+		if (typeof stackView !== 'undefined' && stackView !== null) {
+			const layer = stackView.layer
+			self.listenerFn__scroll = function(e)
+			{
+				const scrolledLayer = this
+				const scrollTop = scrolledLayer.scrollTop
+				self._configureNavBarScrollShadowWithScrollTop(scrollTop)
+			}
+			layer.addEventListener('scroll', self.listenerFn__scroll)
+		}
+	}
+	_configureNavBarScrollShadowWithScrollTop(scrollTop)
+	{
+		const self = this
+		if (scrollTop <= 0) {
+			self._configureNavBarScrollShadowAs_zeroOrNegScroll_hideShadow()
+		} else {
+			self._configureNavBarScrollShadowAs_positiveScroll_showShadow()
+		}
+	}	
+	_configureNavBarScrollShadowAs_zeroOrNegScroll_hideShadow()
+	{
+		const self = this
+		if (self.navBarBottomScrollShadowLayer__cached_currentOpacity !== "0") { // cache used to prevent having to talk to the DOM
+			self.navBarBottomScrollShadowLayer__cached_currentOpacity = "0"
+			//
+			const layer = self.navBarBottomScrollShadowLayer
+			layer.style.opacity = "0" // this should implicitly animate (shudder)
+		}
+	}
+	_configureNavBarScrollShadowAs_positiveScroll_showShadow()
+	{
+		const self = this
+		if (self.navBarBottomScrollShadowLayer__cached_currentOpacity !== "1") { // cache used to prevent having to talk to the DOM
+			self.navBarBottomScrollShadowLayer__cached_currentOpacity = "1"
+			//
+			const layer = self.navBarBottomScrollShadowLayer
+			layer.style.opacity = "1" // this should implicitly animate (shudder)
 		}
 	}
 }

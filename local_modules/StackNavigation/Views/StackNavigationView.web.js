@@ -115,10 +115,11 @@ class StackNavigationView extends View
 	SetStackViews(to_stackViews)
 	{
 		const self = this
+		const old_topStackView = self.topStackView
 		{ // remove existing
-			if (self.topStackView !== null) {
-				self.topStackView.removeFromSuperview() 
-				self.topStackView.navigationController = null
+			if (old_topStackView !== null) {
+				old_topStackView.removeFromSuperview() 
+				old_topStackView.navigationController = null
 			}
 			if (self.stackViews.length > 0) {
 				self.stackViews.forEach(
@@ -152,6 +153,7 @@ class StackNavigationView extends View
 				const ifAnimated_isFromRightNotLeft = undefined
 				self.navigationBarView.SetTopStackView(
 					self.topStackView, 
+					old_topStackView,
 					isAnimated, 
 					ifAnimated_isFromRightNotLeft
 				)
