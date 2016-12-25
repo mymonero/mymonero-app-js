@@ -306,32 +306,33 @@ class PasswordController extends EventEmitter
 								self.unguard_getNewOrExistingPassword()
 								return // just silently exit after unguarding
 							}
-							var decryptedMessageForUnlockChallenge;
-							try {
-								decryptedMessageForUnlockChallenge = symmetric_string_cryptor.DecryptedPlaintextString(
-									self.encryptedMessageForUnlockChallenge,
-									existingPassword
-								)
-							} catch (e) {
-								const errStr = "Incorrect password"
-								const err = new Error(errStr)
-								self.unguard_getNewOrExistingPassword()
-								self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
-								return
-							}
-							if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
-								const errStr = "Incorrect password"
-								const err = new Error(errStr)
-								self.unguard_getNewOrExistingPassword()
-								self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
-								return
-							}
-							//
-							self._didObtainPassword(existingPassword) // hang onto pw and set state
-							//
-							// yes, that looks good
-							self.unguard_getNewOrExistingPassword()
-							self.emit(self.EventName_ObtainedCorrectExistingPassword())
+							symmetric_string_cryptor.DecryptedPlaintextString__Async(
+								self.encryptedMessageForUnlockChallenge,
+								existingPassword,
+								function(err, decryptedMessageForUnlockChallenge)
+								{
+									if (err) {
+										const errStr = "Incorrect password"
+										const err_toReturn = new Error(errStr)
+										self.unguard_getNewOrExistingPassword()
+										self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err_toReturn)
+										return
+									}
+									if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
+										const errStr = "Incorrect password"
+										const err = new Error(errStr)
+										self.unguard_getNewOrExistingPassword()
+										self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
+										return
+									}
+									//
+									self._didObtainPassword(existingPassword) // hang onto pw and set state
+									//
+									// yes, that looks good
+									self.unguard_getNewOrExistingPassword()
+									self.emit(self.EventName_ObtainedCorrectExistingPassword())
+								}
+							)
 						}
 					)
 				}
@@ -556,19 +557,33 @@ class PasswordController extends EventEmitter
 			fn(new Error(errStr))
 			return
 		}
-		const encryptedMessageForUnlockChallenge = symmetric_string_cryptor.EncryptedBase64String(
+		const encryptedMessageForUnlockChallenge = symmetric_string_cryptor.EncryptedBase64String__Async(
 			plaintextMessageToSaveForUnlockChallenges,
-			self.password
+			self.password,
+			function(err, encryptedMessageForUnlockChallenge)
+			{
+				if (err) {
+					console.error("Error while encrypting message for unlock challenge:", err)
+					throw err
+					fn(err)
+				}
+				self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
+				const persistableDocument =
+				{
+					userSelectedTypeOfPassword: self.userSelectedTypeOfPassword,
+					encryptedMessageForUnlockChallenge: self.encryptedMessageForUnlockChallenge
+				}
+				// console.log("modelObject" , modelObject)
+				// insert & update fn declarations for imminent usage…
+				if (self._id === null || typeof self._id === 'undefined') {
+					_proceedTo_insertNewDocument(persistableDocument)
+				} else {
+					_proceedTo_updateExistingDocument(persistableDocument)
+				}
+			}
 		)
-		self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
-		const persistableDocument =
-		{
-			userSelectedTypeOfPassword: self.userSelectedTypeOfPassword,
-			encryptedMessageForUnlockChallenge: self.encryptedMessageForUnlockChallenge
-		}
-		// console.log("modelObject" , modelObject)
-		// insert & update fn declarations for imminent usage…
-		function _proceedTo_insertNewDocument()
+
+		function _proceedTo_insertNewDocument(persistableDocument)
 		{
 			self.context.persister.InsertDocument(
 				CollectionName,
@@ -593,7 +608,7 @@ class PasswordController extends EventEmitter
 				}
 			)
 		}
-		function _proceedTo_updateExistingDocument()
+		function _proceedTo_updateExistingDocument(persistableDocument)
 		{
 			var query =
 			{
@@ -645,12 +660,6 @@ class PasswordController extends EventEmitter
 					fn()
 				}
 			)
-		}
-		//
-		if (self._id === null || typeof self._id === 'undefined') {
-			_proceedTo_insertNewDocument()
-		} else {
-			_proceedTo_updateExistingDocument()
 		}
 	}
 	//

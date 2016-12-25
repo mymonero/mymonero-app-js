@@ -44,45 +44,33 @@ class BackgroundDocumentCryptor
 	//
 	// Runtime - Accessors - Interface
 	//
-	New_EncryptedDocument(
+	New_EncryptedDocument__Async(
 		plaintextDocument, 
 		documentCryptScheme, 
 		password, 
 		fn // fn: (err?, encryptedDocument) -> Void
 	)
 	{
-		var encryptedDocument;
-		try {
-			encryptedDocument = document_cryptor.New_EncryptedDocument(
-				plaintextDocument, 
-				documentCryptScheme, 
-				password
-			)
-		} catch (e) {
-			fn(e, null)
-			return
-		}
-		fn(null, encryptedDocument)
+		document_cryptor.New_EncryptedDocument__Async(
+			plaintextDocument, 
+			documentCryptScheme, 
+			password,
+			fn
+		)
 	}
-	New_DecryptedDocument(
+	New_DecryptedDocument__Async(
 		encryptedDocument,
 		documentCryptScheme,
 		password,
 		fn // fn: (err?, decryptedDocument) -> Void
 	)
 	{
-		var plaintextDocument;
-		try {
-			plaintextDocument = document_cryptor.New_DecryptedDocument(
-				encryptedDocument,
-				documentCryptScheme,
-				password
-			)
-		} catch (e) {
-			fn(e, null)
-			return
-		}
-		fn(null, plaintextDocument)
+		document_cryptor.New_DecryptedDocument__Async(
+			encryptedDocument,
+			documentCryptScheme,
+			password,
+			fn
+		)
 	}
 }
 module.exports = BackgroundDocumentCryptor

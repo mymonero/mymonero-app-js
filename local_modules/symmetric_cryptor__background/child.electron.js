@@ -31,45 +31,43 @@
 const document_cryptor = require('../symmetric_cryptor/document_cryptor')
 const tasksByName =
 {
-	New_EncryptedDocument: function(
+	New_EncryptedDocument__Async: function(
 		taskUUID,
 		plaintextDocument, 
 		documentCryptScheme, 
 		password
 	)
 	{
-		var encryptedDocument;
-		try {
-			encryptedDocument = document_cryptor.New_EncryptedDocument(
-				plaintextDocument, 
-				documentCryptScheme, 
-				password
-			)
-		} catch (e) {
-			callBack(taskUUID, e, null)
-			return
-		}
-		callBack(taskUUID, null, encryptedDocument)
+		console.time("encrypting " + taskUUID)
+		document_cryptor.New_EncryptedDocument__Async(
+			plaintextDocument, 
+			documentCryptScheme, 
+			password,
+			function(err, encryptedDocument)
+			{
+				console.timeEnd("encrypting " + taskUUID)
+				callBack(taskUUID, err, encryptedDocument)
+			}
+		)
 	},
-	New_DecryptedDocument: function(
+	New_DecryptedDocument__Async: function(
 		taskUUID,
 		encryptedDocument, 
 		documentCryptScheme, 
 		password
 	)
 	{
-		var plaintextDocument;
-		try {
-			plaintextDocument = document_cryptor.New_DecryptedDocument(
-				encryptedDocument,
-				documentCryptScheme,
-				password
-			)
-		} catch (e) {
-			callBack(taskUUID, e, null)
-			return
-		}
-		callBack(taskUUID, null, plaintextDocument)
+		console.time("decrypting " + taskUUID)
+		document_cryptor.New_DecryptedDocument__Async(
+			encryptedDocument,
+			documentCryptScheme,
+			password,
+			function(err, plaintextDocument)
+			{
+				console.timeEnd("decrypting " + taskUUID)
+				callBack(taskUUID, null, plaintextDocument)
+			}
+		)
 	}
 }
 function callBack(taskUUID, err, returnValue)

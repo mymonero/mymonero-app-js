@@ -146,7 +146,7 @@ class Contact extends EventEmitter
 		)
 		function __proceedTo_decryptEncryptedDocument(encryptedDocument)
 		{
-			self.context.document_cryptor__background.New_DecryptedDocument(
+			self.context.document_cryptor__background.New_DecryptedDocument__Async(
 				encryptedDocument,
 				contact_persistence_utils.DocumentCryptScheme,
 				self.persistencePassword,

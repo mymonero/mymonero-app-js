@@ -55,88 +55,135 @@ var cryptor_settings =
 //
 // Encryption
 //
-function EncryptedBase64String(plaintext_msg, password)
+function EncryptedBase64String__Async(
+	plaintext_msg, 
+	password,
+	fn
+)
 {
-	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'utf8')); // we're expecting a string, but might as well check anyway
-
-	var components = 
+	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
+	//
+	const components = 
 	{
 		headers: 
 		{
 			version: String.fromCharCode(currentVersionCryptorFormatVersion),
 			options: String.fromCharCode(cryptor_settings.options)
 		}
-	};
-	components.headers.encryption_salt = _new_random_salt();
-	components.headers.hmac_salt = _new_random_salt();
-	components.headers.iv = _new_random_iv_of_length(cryptor_settings.iv_length);
-
-	var encryption_key = _new_calculated_pbkdf2_key(password, components.headers.encryption_salt);
-	var hmac_key = _new_calculated_pbkdf2_key(password, components.headers.hmac_salt);
-	var iv = components.headers.iv;
-		
-	Buffer.isBuffer(iv) || (iv = new Buffer(iv, 'binary'));
-	Buffer.isBuffer(encryption_key) || (encryption_key = new Buffer(encryption_key, 'binary'));
-	
-	var cipher = crypto.createCipheriv(cryptor_settings.algorithm, encryption_key, iv); 
-	var encrypted_cipherText = cipher.update(plaintext_msg, 'binary', 'binary') + cipher.final('binary');
-	
-	components.cipher_text = encrypted_cipherText;
-
-	var binary_data = '';
-	binary_data += components.headers.version;
-	binary_data += components.headers.options;
-	binary_data += components.headers.encryption_salt ? components.headers.encryption_salt : '';
-	binary_data += components.headers.hmac_salt ? components.headers.hmac_salt : '';
-	binary_data += components.headers.iv;
-	binary_data += components.cipher_text;
-
-	var hmac = _new_generated_hmac(components, hmac_key);
-	var encryptedMessage_binaryBuffer = new Buffer(binary_data + hmac, 'binary');
-	var encryptedMessage_base64String = encryptedMessage_binaryBuffer.toString('base64');
-		
-	return encryptedMessage_base64String;
-};	
-module.exports.EncryptedBase64String = EncryptedBase64String;
+	}
+	components.headers.encryption_salt = _new_random_salt()
+	components.headers.hmac_salt = _new_random_salt()
+	components.headers.iv = _new_random_iv_of_length(cryptor_settings.iv_length)
+	//
+	_new_calculated_pbkdf2_key__async(
+		password, 
+		components.headers.encryption_salt,
+		function(err, encryption_key)
+		{
+			if (err) {
+				fn(err)
+				return
+			}
+			_new_calculated_pbkdf2_key__async(
+				password, 
+				components.headers.hmac_salt,
+				function(err, hmac_key)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					var iv = components.headers.iv
+					Buffer.isBuffer(iv) || (iv = new Buffer(iv, 'binary'))
+					Buffer.isBuffer(encryption_key) || (encryption_key = new Buffer(encryption_key, 'binary'))
+					//
+					const cipher = crypto.createCipheriv(cryptor_settings.algorithm, encryption_key, iv)
+					const encrypted_cipherText = cipher.update(plaintext_msg, 'binary', 'binary') + cipher.final('binary')
+					//
+					components.cipher_text = encrypted_cipherText
+					//
+					var binary_data = ''
+					binary_data += components.headers.version
+					binary_data += components.headers.options
+					binary_data += components.headers.encryption_salt ? components.headers.encryption_salt : ''
+					binary_data += components.headers.hmac_salt ? components.headers.hmac_salt : ''
+					binary_data += components.headers.iv
+					binary_data += components.cipher_text
+					//
+					const hmac = _new_generated_hmac(components, hmac_key)
+					const encryptedMessage_binaryBuffer = new Buffer(binary_data + hmac, 'binary')
+					const encryptedMessage_base64String = encryptedMessage_binaryBuffer.toString('base64')
+					//
+					fn(null, encryptedMessage_base64String)
+				}
+			)
+		}
+	)
+}
+module.exports.EncryptedBase64String__Async = EncryptedBase64String__Async;
 //
 //
 // Decryption
 //
-function DecryptedPlaintextString(encrypted_msg_base64_string, password)
+function DecryptedPlaintextString__Async(
+	encrypted_msg_base64_string, 
+	password, 
+	fn
+)
 {
-	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string);
-	if (!_is_hmac_valid(unpacked_base64_components, password)) {
-		var err = "HMAC is not valid.";
-
-		throw err;
-		return undefined;
-	}
-	var cipherKey_binaryBuffer = new Buffer(_new_calculated_pbkdf2_key(password, unpacked_base64_components.headers.encryption_salt), 'binary');
-	var iv_binaryBuffer = new Buffer(unpacked_base64_components.headers.iv, 'binary');
-	var cipherText_binaryBuffer = new Buffer(unpacked_base64_components.cipher_text, 'binary');
-	var deCipher = crypto.createDecipheriv(cryptor_settings.algorithm, cipherKey_binaryBuffer, iv_binaryBuffer);
-	var decrypted = deCipher.update(cipherText_binaryBuffer, 'binary', 'utf8') + deCipher.final('utf8');
-	
-	return decrypted;
+	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
+	_is_hmac_valid__async(
+		unpacked_base64_components, 
+		password,
+		function(err, isValid)
+		{
+			if (err) {
+				fn(err)
+				return
+			}
+			if (isValid === false) {
+				const err = new Error("HMAC is not valid.")
+				fn(err)
+				return				
+			}
+			_new_calculated_pbkdf2_key__async(
+				password, 
+				unpacked_base64_components.headers.encryption_salt,
+				function(err, cipherKey) 
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					const cipherKey_binaryBuffer = new Buffer(cipherKey, 'binary')
+					const iv_binaryBuffer = new Buffer(unpacked_base64_components.headers.iv, 'binary')
+					const cipherText_binaryBuffer = new Buffer(unpacked_base64_components.cipher_text, 'binary')
+					const deCipher = crypto.createDecipheriv(cryptor_settings.algorithm, cipherKey_binaryBuffer, iv_binaryBuffer)
+					const decrypted = deCipher.update(cipherText_binaryBuffer, 'binary', 'utf8') + deCipher.final('utf8')
+					fn(null, decrypted)
+				}
+			)
+		}
+	)
 }
-module.exports.DecryptedPlaintextString = DecryptedPlaintextString;
+module.exports.DecryptedPlaintextString__Async = DecryptedPlaintextString__Async;
 //
 //
 // Shared
 //
 function _new_encrypted_base64_unpacked_components_object(b64str) 
 {
-	var binary_data = new Buffer(b64str, 'base64').toString('binary');	
+	var binary_data = new Buffer(b64str, 'base64').toString('binary')
 	var components = 
 	{
 		headers: _new_parsed_headers_object(binary_data),
 		hmac: binary_data.substr(-cryptor_settings.hmac.length)
-	};
-	var header_length = components.headers.length;
-	var cipher_text_length = binary_data.length - header_length - components.hmac.length;
-	components.cipher_text = binary_data.substr(header_length, cipher_text_length);
-
-	return components;
+	}
+	var header_length = components.headers.length
+	var cipher_text_length = binary_data.length - header_length - components.hmac.length
+	components.cipher_text = binary_data.substr(header_length, cipher_text_length)
+	//
+	return components
 }
 function _new_parsed_headers_object(bin_data) 
 {
@@ -179,26 +226,45 @@ function validate_schema_version(version)
 		throw err;
 	}
 }
-function _is_hmac_valid(components, password)
+function _is_hmac_valid__async(
+	components, 
+	password, 
+	fn // (err, isValid?) -> Void
+)
 {
-	var hmac_key = _new_calculated_pbkdf2_key(password, components.headers.hmac_salt);
-	var generated_hmac = _new_generated_hmac(components, hmac_key);
-	var isValid = (components.hmac === generated_hmac);
-
-	return isValid;
+	_new_calculated_pbkdf2_key__async(
+		password, 
+		components.headers.hmac_salt,
+		function(err, hmac_key) 
+		{
+			if (err) {
+				fn(err)
+				return
+			}
+			var generated_hmac = _new_generated_hmac(components, hmac_key);
+			var isValid = (components.hmac === generated_hmac);
+			//
+			fn(null, isValid)
+		}
+	)
 }
-
-function _new_calculated_pbkdf2_key(password, salt) 
+function _new_calculated_pbkdf2_key__async(
+	password, 
+	salt, 
+	fn
+)
 { // Apply pseudo-random function HMAC-SHA1 by default
-	var key = crypto.pbkdf2Sync(
+	crypto.pbkdf2(
 		password, 
 		salt, 
 		cryptor_settings.pbkdf2.iterations, 
 		cryptor_settings.pbkdf2.key_length,
-		'sha1'
-	);
-	
-	return key;
+		'sha1',
+		function(err, key)
+		{
+			fn(err, key)
+		}
+	)
 }
 function _new_generated_hmac(components, hmac_key)
 {

@@ -28,6 +28,7 @@
 
 "use strict"
 //
+const async = require('async')
 //
 var symmetric_string_cryptor = require('./symmetric_string_cryptor')
 //
@@ -53,16 +54,39 @@ var __wrappedDataValueRootKey =
 //
 // These functions return shallow copies of all but en/decrypted key values
 //
-function New_EncryptedDocument(plaintextDocument, documentCryptScheme, password)
+function New_EncryptedDocument__Async(
+	plaintextDocument, 
+	documentCryptScheme, 
+	password,
+	fn
+)
 {
 	var encryptedDocument = {}
 	//	
 	const plaintextDocument_keys = Object.keys(plaintextDocument)
-	for (let documentKey of plaintextDocument_keys) {
-		let documentCryptScheme_forKey = documentCryptScheme[documentKey]
-		var plaintextValue = plaintextDocument[documentKey]
-		var finalizedValue // to derive
-		if (typeof documentCryptScheme_forKey !== 'undefined') {
+	async.each(
+		plaintextDocument_keys,
+		function(documentKey, cb)
+		{
+			function __storeFinalizedValue_andCallBack(finalizedValue)
+			{
+				encryptedDocument[documentKey] = finalizedValue
+				cb()
+			}
+			let documentCryptScheme_forKey = documentCryptScheme[documentKey]
+			var plaintextValue = plaintextDocument[documentKey]
+			if (typeof documentCryptScheme_forKey === 'undefined') {
+				// not-encrypted value
+				async.setImmediate(
+					function()
+					{ // ^- to avoid blowing the stack
+						const finalizedValue = plaintextValue // just use plaintext
+						__storeFinalizedValue_andCallBack(finalizedValue)
+					}
+				)
+				// prevent fallthrough
+				return
+			}
 			var keyValue_plaintextType = documentCryptScheme_forKey.type
 			var finalizedPlaintextStringToEncrypt // to derive 
 			// TODO: assert type not nil here?
@@ -77,62 +101,123 @@ function New_EncryptedDocument(plaintextDocument, documentCryptScheme, password)
 			} else if (keyValue_plaintextType === "JSON") {
 				finalizedPlaintextStringToEncrypt = JSON.stringify(plaintextValue)
 			} else {
-				// TODO: assert false/fatalerror
-				console.log("Error: Unrecognized document_cryptor key value type", keyValue_plaintextType)
-				process.exit(1)
+				const errStr = "Error: Unrecognized document_cryptor key value type" + keyValue_plaintextType
+				console.error(errStr)
+				const err = new Error(errStr)
+				async.setImmediate(
+					function()
+					{ // ^- to avoid blowing the stack
+						cb(err)
+					}
+				)
+				return
 			}
-			finalizedValue = symmetric_string_cryptor.EncryptedBase64String(
+			symmetric_string_cryptor.EncryptedBase64String__Async(
 				finalizedPlaintextStringToEncrypt, 
-				password
+				password,
+				function(err, encryptedStorableValue)
+				{
+					if (err) {
+						console.error("Error encrypted value: ", err)
+						cb(err)
+						return
+					}
+					const finalizedValue = encryptedStorableValue
+					__storeFinalizedValue_andCallBack(finalizedValue)
+				}
 			)
-		} else {
-			finalizedValue = plaintextValue // just use plaintext
+		},
+		function(err)
+		{
+			// console.log("encryptedDocument" , encryptedDocument)
+			fn(err, err ? null : encryptedDocument)
 		}
-		//
-		encryptedDocument[documentKey] = finalizedValue
-	}
-	//
-	return encryptedDocument
+	)
 }
-exports.New_EncryptedDocument = New_EncryptedDocument
+exports.New_EncryptedDocument__Async = New_EncryptedDocument__Async
 //
-function New_DecryptedDocument(encryptedDocument, documentCryptScheme, password)
+function New_DecryptedDocument__Async(
+	encryptedDocument, 
+	documentCryptScheme, 
+	password,
+	fn
+)
 {
 	var decryptedDocument = {}
 	//	
 	const encryptedDocument_keys = Object.keys(encryptedDocument)
-	for (let documentKey of encryptedDocument_keys) {
-		let documentCryptScheme_forKey = documentCryptScheme[documentKey]
-		var potentiallyEncryptedValue = encryptedDocument[documentKey]
-		var finalizedValue // to derive
-		if (typeof documentCryptScheme_forKey !== 'undefined') {
-			var keyValue_plaintextType = documentCryptScheme_forKey.type
-			var decryptedStoredValue = symmetric_string_cryptor.DecryptedPlaintextString(
-				potentiallyEncryptedValue, 
-				password
-			)
-			// TODO: check null/undefined here?
-			// TODO: assert type not nil here?
-			if (keyValue_plaintextType === "String") {
-				finalizedValue = decryptedStoredValue
-			} else if (keyValue_plaintextType === "Array") {
-				// wrap in dictionary at __array and patch to JSON codepath
-				var json = JSON.parse(decryptedStoredValue)
-				finalizedValue = json[__wrappedDataValueRootKey.Array]
-			} else if (keyValue_plaintextType === "JSON") {
-				finalizedValue = JSON.parse(decryptedStoredValue)
-			} else {
-				// TODO: assert false/fatalerror
-				console.log("Error: Unrecognized document_cryptor key value type", keyValue_plaintextType)
-				process.exit(1)
+	async.each(
+		encryptedDocument_keys,
+		function(documentKey, cb)
+		{
+			function __storeFinalizedValue_andCallBack(finalizedValue)
+			{
+				decryptedDocument[documentKey] = finalizedValue
+				cb()
 			}
-		} else {
-			finalizedValue = potentiallyEncryptedValue // just use potentiallyEncryptedValue as it should be plaintext
+			const documentCryptScheme_forKey = documentCryptScheme[documentKey]
+			const potentiallyEncryptedValue = encryptedDocument[documentKey]
+			if (typeof documentCryptScheme_forKey !== 'undefined') {
+				const keyValue_plaintextType = documentCryptScheme_forKey.type
+				if (potentiallyEncryptedValue === null || potentiallyEncryptedValue === "") {
+					async.setImmediate(
+						function()
+						{ // ^ so as not to blow the stack
+							// console.log("immediately returning nil/zero val", potentiallyEncryptedValue)
+							__storeFinalizedValue_andCallBack(potentiallyEncryptedValue)
+						}
+					)
+					return
+				}
+				symmetric_string_cryptor.DecryptedPlaintextString__Async(
+					potentiallyEncryptedValue, 
+					password,
+					function(err, decryptedStoredValue)
+					{
+						if (err) {
+							console.error("Error while decrypting document:", err)
+							cb(err)
+							returh
+						}
+						var finalizedValue;
+						// TODO: assert type not nil here?
+						if (keyValue_plaintextType === "String") {
+							finalizedValue = decryptedStoredValue
+						} else if (keyValue_plaintextType === "Array") {
+							// wrap in dictionary at __array and patch to JSON codepath
+							var json = JSON.parse(decryptedStoredValue)
+							finalizedValue = json[__wrappedDataValueRootKey.Array]
+						} else if (keyValue_plaintextType === "JSON") {
+							finalizedValue = JSON.parse(decryptedStoredValue)
+						} else {
+							const errStr = "Error: Unrecognized document_cryptor key value type: " + keyValue_plaintextType
+							const err = new Error(errStr)
+							console.error(errStr)
+							fn(err)
+							return
+						}
+						// console.log("received finalizedValue", finalizedValue)
+						__storeFinalizedValue_andCallBack(finalizedValue)
+					}
+				)
+				// prevent fallthrough to not-encrypted case
+				return
+			}
+			// v-- just use potentiallyEncryptedValue as it should be plaintext
+			const finalizedValue = potentiallyEncryptedValue 
+			async.setImmediate(
+				function()
+				{ // ^ so as not to blow the stack
+					// console.log("immediately returning not-encrypted val")
+					__storeFinalizedValue_andCallBack(finalizedValue)
+				}
+			)
+		},
+		function(err)
+		{
+			// console.log("decryptedDocument" , decryptedDocument)
+			fn(err, err ? null : decryptedDocument)
 		}
-		//
-		decryptedDocument[documentKey] = finalizedValue
-	}
-	//
-	return decryptedDocument
+	)
 }
-exports.New_DecryptedDocument = New_DecryptedDocument
+exports.New_DecryptedDocument__Async = New_DecryptedDocument__Async

@@ -40,68 +40,78 @@ function _proceedTo_test_stringCryptor(fn)
 	//
 	function __proceedTo_test_string_encryption(fn)
 	{
-		encryptedString = symmetric_string_cryptor.EncryptedBase64String(plaintextMessage, password)
-		// ^ kinda brittle - would be nice to pass directly to next test as arg 
-		console.log("Encrypted message to obtain:", encryptedString)
-		//
-		fn()
+		symmetric_string_cryptor.EncryptedBase64String__Async(
+			plaintextMessage, 
+			password,
+			function(err, returned_encryptedString)
+			{
+				if (err) {
+					console.error("❌  Error: Test failed", err)
+					fn(err)
+					return
+				}
+				encryptedString = returned_encryptedString
+				// ^ kinda brittle - would be nice to pass directly to next test as arg 
+				console.log("✅  Encrypted message to obtain:", encryptedString)
+				//
+				fn()
+			}
+		)
 	}
 	function __proceedTo_test_string_decryption(fn)
 	{
 		if (encryptedString === null) {
-			var errStr = "Cannot decrypt message as encrypt didn't succeed"
+			var errStr = "❌  Cannot decrypt message as encrypt didn't succeed"
 			var err = new Error(errStr)
 			console.log(errStr)
 			//
 			fn(err)
 			return
 		}
-		try {
-			var decryptedString = symmetric_string_cryptor.DecryptedPlaintextString(encryptedString, password)
-			if (decryptedString === plaintextMessage) {
-				console.log("Successfully decrypted message to obtain:", decryptedString)
-				//
-				fn()
+		symmetric_string_cryptor.DecryptedPlaintextString__Async(encryptedString, password, function(err, decryptedString)
+		{
+			if (err) {
+				console.log("Decryption err", err.toString())
+			} else if (decryptedString === plaintextMessage) {
+				console.log("✅  Successfully decrypted message to obtain:", decryptedString)
 			} else {
-				var errStr = "Error: Test failed. Decrypted message did not match original plaintext message."
-				var err = new Error(errStr)
+				var errStr = "❌  Error: Test failed. Decrypted message did not match original plaintext message."
+				err = new Error(errStr)
 				console.log(errStr)
-				//
-				fn(err)
 			}
-		} catch (e) {
-			var err = new Error(e)
-			console.log("Decryption err", e)
 			fn(err)
-		}
+		})
 	}
 	function __proceedTo_test_string_decryption_withBadPassword(fn)
 	{
 		if (encryptedString === null) {
-			var errStr = "Cannot decrypt message as encrypt didn't succeed"
+			var errStr = "❌  Cannot decrypt message as encrypt didn't succeed"
 			var err = new Error(errStr)
 			console.log(errStr)
 			//
 			fn(err)
 			return
 		}
-		try {
-			var decryptedString = symmetric_string_cryptor.DecryptedPlaintextString(encryptedString, "obviously wrong password")
-			if (decryptedString === plaintextMessage) {
-				const errStr = "Despite having bad password, successfully decrypted message to obtain: " + decryptedString
-				const err = new Error(errStr)
-				console.error(errStr)
-				fn(err)
-			} else {
-				var errStr = "Despite having bad password, was able to decrypt text... even though decrypted message did not match original plaintext message."
-				const err = new Error(errStr)
-				console.error(errStr)
-				fn(err)
+		symmetric_string_cryptor.DecryptedPlaintextString__Async(
+			encryptedString, 
+			"obviously wrong password", 
+			function(err, decryptedString)
+			{
+				if (err) {
+					console.log("✅  Correctly caught decryption error while trying to decrypt with bad password: ", err)
+				} else if (decryptedString === plaintextMessage) {
+					const errStr = "❌  Despite having bad password, incorrectly successfully decrypted message to obtain: " + decryptedString
+					const err = new Error(errStr)
+					console.error(errStr)
+					fn(err)
+				} else {
+					var errStr = "❌  Despite having bad password, incorrectly was able to decrypt text... even though decrypted message did not match original plaintext message."
+					const err = new Error(errStr)
+					console.error(errStr)
+					fn(err)
+				}
 			}
-		} catch (e) {
-			console.log("Caught decryption error while trying to decrypt with bad password: ", e)
-			fn()
-		}
+		)
 	}
 }
 //
@@ -145,15 +155,27 @@ function _proceedTo_test_documentCryptor(fn)
 	//
 	function __proceedTo_test_string_encryption(fn)
 	{
-		encryptedDocument = document_cryptor.New_EncryptedDocument(plaintextDocument, documentCryptScheme, password)
-		// ^ using a parent scope reference like this is kinda brittle - would be nice to pass directly to next test as arg 
-		console.log("Encrypted document to obtain:", JSON.stringify(encryptedDocument, null, '  '))
-		//
-		fn()
+		document_cryptor.New_EncryptedDocument__Async(
+			plaintextDocument, 
+			documentCryptScheme, 
+			password,
+			function(err, returned_encryptedDocument)
+			{
+				if (err) {
+					fn(err)
+				} else {
+					encryptedDocument = returned_encryptedDocument
+					// ^ using a parent scope reference like this is kinda brittle - would be nice to pass directly to next test as arg 
+					console.log("Encrypted document to obtain:", JSON.stringify(encryptedDocument, null, '  '))
+					//
+					fn()
+				}
+			}
+		)
 	}
 	function __proceedTo_test_string_decryption(fn)
 	{
-		if (decryptedDocument === null) {
+		if (encryptedDocument === null) {
 			var errStr = "Cannot decrypt document as encrypt didn't succeed"
 			var err = new Error(errStr)
 			console.log(errStr)
@@ -161,17 +183,28 @@ function _proceedTo_test_documentCryptor(fn)
 			fn(err)
 			return
 		}
-		var decryptedDocument = document_cryptor.New_DecryptedDocument(encryptedDocument, documentCryptScheme, password)
-		if (JSON.stringify(decryptedDocument) === JSON.stringify(plaintextDocument)) {
-			console.log("Successfully decrypted document to obtain:", decryptedDocument)
-			//
-			fn()
-		} else {
-			var errStr = "Error: Test failed. Decrypted document did not match original plaintext document."
-			var err = new Error(errStr)
-			console.log(errStr)
-			//
-			fn(err)
-		}
+		document_cryptor.New_DecryptedDocument(
+			encryptedDocument, 
+			documentCryptScheme, 
+			password,
+			function(err, decryptedDocument)
+			{
+				if (err) {
+					console.error("Test failed: ", err)
+					fn(err)
+					return
+				}
+				if (JSON.stringify(decryptedDocument) !== JSON.stringify(plaintextDocument)) {
+					var errStr = "Error: Test failed. Decrypted document did not match original plaintext document."
+					var err = new Error(errStr)
+					console.log(errStr)
+					fn(err)
+					return
+				}
+				console.log("Successfully decrypted document to obtain:", decryptedDocument)
+				//
+				fn()
+			}
+		)
 	}
 }

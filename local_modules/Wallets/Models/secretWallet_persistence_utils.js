@@ -200,7 +200,7 @@ function SaveToDisk(
 	// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))
 	//
 	
-	document_cryptor__background.New_EncryptedDocument(
+	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,
 		documentCryptScheme,
 		persistencePassword,

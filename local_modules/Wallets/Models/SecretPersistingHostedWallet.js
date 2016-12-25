@@ -439,7 +439,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		function __proceedTo_decryptDocument(encryptedDocument)
 		{
-			document_cryptor__background.New_DecryptedDocument(
+			document_cryptor__background.New_DecryptedDocument__Async(
 				encryptedDocument,
 				secretWallet_persistence_utils.DocumentCryptScheme,
 				self.persistencePassword,

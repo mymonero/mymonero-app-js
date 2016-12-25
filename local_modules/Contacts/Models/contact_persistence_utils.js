@@ -52,7 +52,7 @@ function SaveToDisk(
 		fullname: self.fullname,
 		address__XMR: self.address__XMR
 	}
-	document_cryptor__background.New_EncryptedDocument(
+	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,
 		documentCryptScheme,
 		persistencePassword,

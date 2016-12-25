@@ -114,7 +114,7 @@ class BackgroundDocumentCryptor
 	//
 	// Runtime - Accessors - Interface
 	//
-	New_EncryptedDocument(
+	New_EncryptedDocument__Async(
 		plaintextDocument, 
 		documentCryptScheme, 
 		password, 
@@ -123,7 +123,7 @@ class BackgroundDocumentCryptor
 	{
 		const self = this
 		self._executeBackgroundTaskNamed(
-			'New_EncryptedDocument',
+			'New_EncryptedDocument__Async',
 			fn, // fn goes as second arg
 			[
 				plaintextDocument, 
@@ -132,7 +132,7 @@ class BackgroundDocumentCryptor
 			]
 		)
 	}
-	New_DecryptedDocument(
+	New_DecryptedDocument__Async(
 		encryptedDocument,
 		documentCryptScheme,
 		password,
@@ -141,7 +141,7 @@ class BackgroundDocumentCryptor
 	{
 		const self = this
 		self._executeBackgroundTaskNamed(
-			'New_DecryptedDocument',
+			'New_DecryptedDocument__Async',
 			fn, // fn goes as second arg
 			[
 				encryptedDocument, 
