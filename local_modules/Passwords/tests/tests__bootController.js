@@ -37,7 +37,7 @@ if (typeof tests_config === 'undefined' || tests_config === null) {
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const theOriginalPassword = "a much stronger password than before"
+const theOriginalPassword = "123456"
 const theNextPassword = "923162"
 //
 var controller; // we'll obtain this with bootController
@@ -149,7 +149,7 @@ function _proceedTo_test_gettingPassword(cb)
 	)
 	controller.on(
 		controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
-		function(enterPasswordAndType_cb)
+		function(isForChangePassword, enterPasswordAndType_cb)
 		{
 			const userDidCancel_orNil = null // set this to true to test
 			var obtained_passwordString;

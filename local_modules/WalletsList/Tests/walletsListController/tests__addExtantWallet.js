@@ -93,7 +93,7 @@ function _proceedTo_test_addingExtantWalletBy_mnemonicString(cb)
 				cb(err)
 				return
 			}
-			console.log("Successfully added extant wallet", walletInstance.Description())
+			console.log("Successfully added wallet via mnemonic str:", walletInstance.Description())
 			if (wasWalletAlreadyInserted === true) {
 				console.warn("⚠️  That wallet had already been added to the database.")
 			}
@@ -123,7 +123,7 @@ function _proceedTo_test_addingExtantWalletBy_addrAndPrivateKeys(cb)
 				cb(err)
 				return
 			}
-			console.log("Successfully added extant wallet", walletInstance.Description())
+			console.log("Successfully added extant wallet via addr + priv keys:", walletInstance.Description())
 			if (wasWalletAlreadyInserted === true) {
 				console.warn("⚠️  That wallet had already been added to the database.")
 			}

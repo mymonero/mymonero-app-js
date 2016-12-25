@@ -70,7 +70,7 @@ function _proceedTo_test_changingWalletPassword(fn)
 	function didFinishAllSyncOperations()
 	{
 		console.log("Proceed to change password ", wallet)
-		const changeTo_persistencePassword = "a much stronger password than before"
+		const changeTo_persistencePassword = "123456"
 		wallet.ChangePasswordTo(
 			changeTo_persistencePassword,
 			function(err)
