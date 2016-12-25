@@ -25,10 +25,12 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 //
 //
-// This module implements the RNCryptor version 3 scheme.
+// NOTE:
+// This module implements the RNCryptor version 3 scheme similarly to JSCryptor,
+// but it uses the native Node.JS crypto, generates keys asynchronously, and changes
+// cryptor_settings.pbkdf2.iterations from 10000 to 157 as an optimization.
 //
 var crypto = require('crypto');
 //
@@ -41,7 +43,9 @@ var cryptor_settings =
 	iv_length: 16,
 	pbkdf2: 
 	{
-		iterations: 10000,
+		iterations: 157, // 10k iterations is rather slow; srcs say you want well below 10k https://coolaj86.com/articles/symmetric-cryptography-aes-with-webcrypto-and-node-js/
+		// This specific number was picked out of the air
+		//
 		key_length: 32
 	},
 	hmac: 
