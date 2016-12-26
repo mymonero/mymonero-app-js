@@ -236,6 +236,27 @@ class StackNavigationView extends View
 			isAnimated_orTrue
 		)
 	}
+	PopToRootView(
+		isAnimated_orTrue
+	)
+	{
+		const self = this
+		if (self.stackViews.length == 0) {
+			throw "PopView called with 0 self.stackViews"
+			return
+		}
+		const root_stackView = self.stackViews[0]
+		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
+			// TODO: assert self.stackViews.length === 1?
+			console.warn("⚠️  PopToRootView called but already at root.")
+			return // bail
+		}
+		self.PopToView(
+			root_stackView,
+			0,
+			isAnimated_orTrue
+		)
+	}
 	PopToView(
 		to_stackView,
 		indexOf_to_stackView, // this is asked for so don't have to search the list
@@ -297,7 +318,6 @@ class StackNavigationView extends View
 				trueIfPoppingToRoot
 			)
 		}
-		
 	}
 }
 module.exports = StackNavigationView
