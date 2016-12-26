@@ -192,7 +192,7 @@ class TabBarAndContentView extends View
 				{ // call special / TabBarAndContentView double-tap notification function if detail view implements it
 					const TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected_fn = detailView_forCurrentlySelectedItemIndex.TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected
 					if (typeof TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected_fn === 'function') {
-						// make sure we notify the detail view, so that if it, e.g. a StackNavigationView, it can PopToRoot
+						// make sure we notify the detail view, so that, e.g. if a StackNavigationView, it can PopToRoot
 						detailView_forCurrentlySelectedItemIndex.TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()
 					}
 				}
