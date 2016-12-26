@@ -209,7 +209,10 @@ class WalletsListView extends View
 			}
 			const view = new WalletDetailsView(options, self.context)
 			//
-			navigationController.PushView(view)
+			navigationController.PushView(
+				view, 
+				true // animated
+			)
 		}
 	}	
 	//

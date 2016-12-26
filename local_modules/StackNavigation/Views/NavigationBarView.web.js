@@ -153,6 +153,10 @@ class NavigationBarView extends View
 	//
 	// Runtime - Accessors - Public - Events
 	//
+	EventName_backButtonTapped()
+	{
+		return "EventName_backButtonTapped"
+	}
 	//
 	//
 	// Runtime - Accessors - Public - UI Metrics
@@ -171,6 +175,49 @@ class NavigationBarView extends View
 		const self = this
 		//
 		return "NavigationBarView" + "-of-" + self.navigationController.idPrefix() // borrow its uuid namespacing
+	}
+	//
+	//
+	//
+	// Runtime - Accessors - Internal - UI elements
+	//
+	new_back_leftBarButtonView()
+	{
+		const self = this
+		const view = new View({ tag: "a" }, self.context)
+		const layer = view.layer
+		{ // setup/style
+			layer.href = "#" // to make it clickable
+			layer.innerHTML = "&lt;" // TODO
+		}
+		{
+			layer.style.display = "block"
+			layer.style.marginTop = "10px"
+			layer.style.width = "26px"
+			layer.style.height = "24px"
+			layer.style.cornerRadius = "2px"
+			layer.style.backgroundColor = "#18bbec"
+			layer.style.textDecoration = "none"
+			layer.style.fontSize = "22px"
+			layer.style.lineHeight = "115%" // % extra to get + aligned properly
+			layer.style.color = "#ffffff"
+			layer.style.fontWeight = "bold"
+			layer.style.textAlign = "center"
+		}
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						self.emit(self.EventName_backButtonTapped()) // animated
+					}
+					return false
+				}
+			)
+		}
+		return view
 	}
 	//
 	//
@@ -258,35 +305,54 @@ class NavigationBarView extends View
 		{ // add new
 			if (typeof stackView !== 'undefined' && stackView !== null) {
 				{ // left btn
+					var buttonView = null
 					const factoryFn = stackView.Navigation_New_LeftBarButtonView
 					if (typeof factoryFn === 'function') {
-						const buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
-						if (typeof buttonView !== 'undefined' && buttonView !== null) {
-							{
-								buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
-							}
-							self.leftBarButtonView = buttonView
-							if (isAnimated) {
-								// TODO: opacity->0, add, fade in
-							}
-							self.leftBarButtonHolderView.addSubview(buttonView)
+						buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+					}
+					if (typeof buttonView === 'undefined' || buttonView === null) { // if no button specified by stackView
+						if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) {
+							// then it means stackView is not the root stackView on the nav controller,
+							// and since the left buttonView is nil here, that means we should throw up a back button
+							// TODO: we could ask the stackView being presented if it wants to explicitly
+							// 		 disallow back buttons here when/if that becomes necessary
+							buttonView = self.new_back_leftBarButtonView()
 						}
+					}
+					if (typeof buttonView !== 'undefined' && buttonView !== null) { 
+						{
+							buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
+						}
+						{ // take over layout
+							buttonView.layer.style.display = "block"
+							buttonView.layer.style.float = "left" // so it sticks to the left of the btn holder view layer
+						}
+						self.leftBarButtonView = buttonView
+						if (isAnimated) {
+							// TODO: opacity->0, add, fade in
+						}
+						self.leftBarButtonHolderView.addSubview(buttonView)
 					}
 				}
 				{ // right btn
+					var buttonView = null
 					const factoryFn = stackView.Navigation_New_RightBarButtonView
 					if (typeof factoryFn === 'function') {
-						const buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
-						if (typeof buttonView !== 'undefined' && buttonView !== null) {
-							{
-								buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
-							}
-							self.rightBarButtonView = buttonView
-							if (isAnimated) {
-								// TODO: opacity->0, add, fade in
-							}
-							self.rightBarButtonHolderView.addSubview(buttonView)
+						buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+					}
+					if (typeof buttonView !== 'undefined' && buttonView !== null) {
+						{
+							buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
 						}
+						{ // take over layout
+							buttonView.layer.style.display = "block"
+							buttonView.layer.style.float = "right" // so it sticks to the right of the btn holder view layer
+						}
+						self.rightBarButtonView = buttonView
+						if (isAnimated) {
+							// TODO: opacity->0, add, fade in
+						}
+						self.rightBarButtonHolderView.addSubview(buttonView)
 					}
 				}
 			}
@@ -302,7 +368,7 @@ class NavigationBarView extends View
 		if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) {
 			const existing_listenerFn__scroll = self.listenerFn__scroll
 			if (typeof existing_listenerFn__scroll !== 'undefined' && existing_listenerFn__scroll !== null) {
-				old_topStackView.removeEventListener('scroll', existing_listenerFn__scroll)
+				old_topStackView.layer.removeEventListener('scroll', existing_listenerFn__scroll)
 				self.listenerFn__scroll = null
 			}
 		}

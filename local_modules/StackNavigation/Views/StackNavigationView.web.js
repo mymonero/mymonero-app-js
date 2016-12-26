@@ -65,6 +65,15 @@ class StackNavigationView extends View
 			}, self.context)
 			self.addSubview(view)
 			self.navigationBarView = view
+			{
+				view.on(
+					view.EventName_backButtonTapped(),
+					function()
+					{
+						self.PopView(true) // animated
+					}
+				)
+			}
 		}
 		{ // stackViewStageView
 			const view = new View({}, self.context)
@@ -160,10 +169,56 @@ class StackNavigationView extends View
 			}
 		}
 	}
-	PushView(stackView)
+	PushView(
+		stackView,
+		isAnimated_orTrue // defaults to true if you don't pass anything here
+	)
 	{
 		const self = this
-		console.log("push... ", stackView)
+		if (stackView === null || typeof stackView === 'undefined') {
+			throw "StackNavigationView asked to PushView nil stackView"
+			return
+		}
+		const isAnimated = 
+			isAnimated_orTrue === true
+			 || typeof isAnimated_orTrue === 'undefined' 
+			 || isAnimated_orTrue == null 
+			? true /* default true */ 
+			: false
+		const old_topStackView = self.topStackView
+		{ // make stackView the new top view
+			stackView.navigationController = self
+			self.stackViews.push(stackView)
+			self.topStackView = stackView
+		}
+		{
+			old_topStackView.removeFromSuperview()
+			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
+		}
+		{
+			const ifAnimated_isFromRightNotLeft = true // because we're pushing
+			self.navigationBarView.SetTopStackView(
+				self.topStackView, 
+				old_topStackView,
+				isAnimated, 
+				ifAnimated_isFromRightNotLeft
+			)
+		}
+	}
+	PopView(
+		isAnimated_orTrue
+	)
+	{
+		const self = this
+		const isAnimated = 
+			isAnimated_orTrue === true
+			 || typeof isAnimated_orTrue === 'undefined' 
+			 || isAnimated_orTrue == null 
+			? true /* default true */ 
+			: false
+		// TODO: check if already root - if so, bail
+		// TODO: grab stackView just under this one and then call a shared function to pop to that view
+		// so that we can call the same function for popping to root
 	}
 }
 module.exports = StackNavigationView
