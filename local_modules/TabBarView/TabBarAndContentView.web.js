@@ -78,6 +78,14 @@ class TabBarAndContentView extends View
 	}
 	//
 	//
+	// Runtime - Accessors - Events
+	//
+	EventName_triedButAlreadySelectedTabBarItemAtIndex()
+	{
+		return "EventName_triedButAlreadySelectedTabBarItemAtIndex"
+	}	
+	//
+	//
 	// Runtime - Accessors - UI - Metrics - Overridable
 	//
 	overridable_tabBarView_thickness()
@@ -165,6 +173,9 @@ class TabBarAndContentView extends View
 	{ // throws
 		const self = this
 		{
+			if (typeof index === 'undefined' || index === null) {
+				throw "index nil"
+			}
 			if (index < 0) {
 				throw "index too small"
 			}
@@ -173,19 +184,28 @@ class TabBarAndContentView extends View
 			}
 		}
 		{
-			if (index === self._currentlySelectedTabBarItemIndex) {
-				console.warn("Already selected index", index)
+			if (index === self._currentlySelectedTabBarItemIndex) { // we already know index isn't going to be undefined or null here
+				const detailView_forCurrentlySelectedItemIndex = self._tabBarContentViews[self._currentlySelectedTabBarItemIndex]
+				// ^ so we can assume the existence of a detailView
+				// console.warn("Already selected index", index)
+				self.emit(self.EventName_triedButAlreadySelectedTabBarItemAtIndex(), index)
+				{ // call special / TabBarAndContentView double-tap notification function if detail view implements it
+					const TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected_fn = detailView_forCurrentlySelectedItemIndex.TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected
+					if (typeof TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected_fn === 'function') {
+						// make sure we notify the detail view, so that if it, e.g. a StackNavigationView, it can PopToRoot
+						detailView_forCurrentlySelectedItemIndex.TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()
+					}
+				}
 				return
 			}
 		}
 		{ // neutralize existing state
 			if (typeof self._currentlySelectedTabBarItemIndex !== 'undefined' && self._currentlySelectedTabBarItemIndex !== null) {
 				// deselect currently selected
-				const index = self._currentlySelectedTabBarItemIndex
-				{ // ^ does index need to be validated?
-					const detailView_forIndex = self._tabBarContentViews[index] // we did the validation when we set the index
+				{
+					const detailView_forCurrentlySelectedItemIndex = self._tabBarContentViews[self._currentlySelectedTabBarItemIndex] // we did the validation when we set the index
 					try {
-						detailView_forIndex.removeFromSuperview()
+						detailView_forCurrentlySelectedItemIndex.removeFromSuperview()
 					} catch (e) {
 						console.error("Exception:", e, e.stack)
 						console.trace()
@@ -193,8 +213,8 @@ class TabBarAndContentView extends View
 					}
 				}
 				{
-					const buttonView_forIndex = self._tabBarItemButtonViews[index]
-					buttonView_forIndex.Deselect()
+					const buttonView_forCurrentlySelectedItemIndex = self._tabBarItemButtonViews[self._currentlySelectedTabBarItemIndex]
+					buttonView_forCurrentlySelectedItemIndex.Deselect()
 				}
 			}
 		}

@@ -319,5 +319,14 @@ class StackNavigationView extends View
 			)
 		}
 	}
+	//
+	//
+	// Runtime - Delegation - Implementation/support for TabBarAndContentView events
+	//
+	TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()
+	{
+		const self = this
+		self.PopToRootView()
+	}
 }
 module.exports = StackNavigationView
