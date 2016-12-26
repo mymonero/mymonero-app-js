@@ -227,7 +227,8 @@ class NavigationBarView extends View
 		stackView, 
 		old_topStackView,
 		isAnimated, 
-		ifAnimated_isFromRightNotLeft
+		ifAnimated_isFromRightNotLeft,
+		trueIfPoppingToRoot
 	)
 	{
 		const self = this
@@ -235,8 +236,8 @@ class NavigationBarView extends View
 		{
 			self.__stopObserving_old_topStackView(old_topStackView)
 		}
-		self.SetTitleFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft)
-		self.SetBarButtonsFromTopStackView(stackView, old_topStackView, isAnimated)
+		self.SetTitleFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft, trueIfPoppingToRoot)
+		self.SetBarButtonsFromTopStackView(stackView, old_topStackView, isAnimated, trueIfPoppingToRoot)
 		{ // configure scroll shadow visibility
 			if (typeof stackView !== 'undefined' && stackView !== null) {
 				const scrollTop = stackView.layer.scrollTop
@@ -251,7 +252,8 @@ class NavigationBarView extends View
 		stackView,
 		old_topStackView,
 		isAnimated, 
-		ifAnimated_isFromRightNotLeft
+		ifAnimated_isFromRightNotLeft,
+		trueIfPoppingToRoot
 	)
 	{
 		const self = this
@@ -276,7 +278,8 @@ class NavigationBarView extends View
 	SetBarButtonsFromTopStackView(
 		stackView, 
 		old_topStackView,
-		isAnimated
+		isAnimated,
+		trueIfPoppingToRoot
 	)
 	{
 		const self = this
@@ -316,7 +319,9 @@ class NavigationBarView extends View
 							// and since the left buttonView is nil here, that means we should throw up a back button
 							// TODO: we could ask the stackView being presented if it wants to explicitly
 							// 		 disallow back buttons here when/if that becomes necessary
-							buttonView = self.new_back_leftBarButtonView()
+							if (trueIfPoppingToRoot !== true) { // because we don't want a back button in this case
+								buttonView = self.new_back_leftBarButtonView()
+							}
 						}
 					}
 					if (typeof buttonView !== 'undefined' && buttonView !== null) { 

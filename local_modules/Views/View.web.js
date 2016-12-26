@@ -29,6 +29,7 @@
 "use strict"
 //
 const EventEmitter = require('events')
+const uuidV1 = require('uuid/v1')
 //
 const web_debug_utils = require('./web_debug_utils')	
 //
@@ -54,6 +55,9 @@ class View extends EventEmitter
 			} else {
 				self.tag = "div"
 			}
+		}
+		{
+			self.__view_uuid = uuidV1() // set a UUID so we can do equality checks
 		}
 		{ // proceed to setup for runtime:
 			self.__View_setup_views() // namespacing to avoid subclass collision
@@ -86,7 +90,7 @@ class View extends EventEmitter
 	}
 	//
 	//
-	// Runtime - Accessors
+	// Runtime - Accessors - Hierarchy
 	//
 	HasASuperview()
 	{
@@ -94,6 +98,35 @@ class View extends EventEmitter
 		const hasASuperview = typeof self.superview !== "undefined" && self.superview !== null
 		//
 		return hasASuperview ? true : false
+	}
+	//
+	//
+	// Runtime - Accessors - Identity
+	//
+	View_UUID()
+	{
+		const self = this
+		//
+		return self.__view_uuid
+	}
+	IsEqualTo(view)
+	{
+		const self = this
+		//
+		return self.IsEqualToView(view)
+	}
+	IsEqualToView(view)
+	{
+		const self = this
+		//
+		return view.View_UUID() === self.View_UUID()
+	}
+	Description()
+	{
+		const self = this
+		const actualClassName = self.constructor.name
+		//
+		return `${actualClassName} ${self.View_UUID()}`
 	}
 	//
 	//
@@ -110,14 +143,58 @@ class View extends EventEmitter
 		const self = this
 		//
 		self.viewWillAppear()
-		{
-			// local state:
+		{ // state:
+			// local:
 			self.subviews.push(view)
-			// subview's dependency setup:
-			view.superview = self
-			view.superlayer = superlayer
-			// DOM:
+			// subview:
+			self._configureViewStateForInsertionIntoHierarchy(view, superlayer)
+		}
+		{ // DOM:
 			superlayer.appendChild(view.layer)
+		}
+		self.viewDidAppear()
+	}
+	_configureViewStateForInsertionIntoHierarchy(view, superlayer)
+	{
+		const self = this
+		// subview's dependency setup:
+		view.superview = self
+		view.superlayer = superlayer
+	}
+	insertSubview(view, atIndex)
+	{
+		const self = this
+		const toLayer = self.layer
+		const superlayer = toLayer
+		//
+		self.viewWillAppear()
+		{ // state:
+			// local:
+			self.subviews.splice(atIndex, 0, view)
+			// subview:
+			self._configureViewStateForInsertionIntoHierarchy(view, superlayer)
+		}
+		{ // DOM
+			const numberOf_subviews = self.subviews.length
+			// console.log(`numberOf_subviews (${numberOf_subviews}) > atIndex + 1 (${atIndex + 1})`)
+			if (numberOf_subviews > atIndex + 1) { // if we're inserting under a subview
+				const subviewAbove_view_atIndex = self.subviews[atIndex + 1]
+				// console.log(`insert under subview ${subviewAbove_view_atIndex.Description()}`)
+				const layerOf_subviewAbove = subviewAbove_view_atIndex.layer
+				// console.log("layerOf_subviewAbove" , layerOf_subviewAbove)
+				if (layerOf_subviewAbove.parentNode !== superlayer) {
+					throw "View hierarchy error - layerOf_subviewAbove.parentNode !== superlayer"
+					return
+				}
+				superlayer.insertBefore(
+					view.layer,
+					layerOf_subviewAbove
+				)
+			} else { // then we're able to just append the view
+				superlayer.appendChild(
+					view.layer
+				)
+			}
 		}
 		self.viewDidAppear()
 	}
@@ -145,7 +222,9 @@ class View extends EventEmitter
 			if (superview_indexOf_self === -1) {
 				throw "superview didn't have self as subview"
 			}
+			// console.log("self.superview.subviews was", self.superview.subviews)
 			self.superview.subviews.splice(superview_indexOf_self, 1)
+			// console.log("self.superview.subviews is now", self.superview.subviews)
 			// and now we can free the superview
 			self.superview = null
 		}

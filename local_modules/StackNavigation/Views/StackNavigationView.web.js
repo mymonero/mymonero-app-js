@@ -160,11 +160,13 @@ class StackNavigationView extends View
 			{
 				const isAnimated = false
 				const ifAnimated_isFromRightNotLeft = undefined
+				const trueIfPoppingToRoot = false
 				self.navigationBarView.SetTopStackView(
 					self.topStackView, 
 					old_topStackView,
 					isAnimated, 
-					ifAnimated_isFromRightNotLeft
+					ifAnimated_isFromRightNotLeft,
+					trueIfPoppingToRoot // not popping
 				)
 			}
 		}
@@ -190,22 +192,53 @@ class StackNavigationView extends View
 			stackView.navigationController = self
 			self.stackViews.push(stackView)
 			self.topStackView = stackView
+			// finally, actually present the view:
+			self.stackViewStageView.addSubview(stackView)
 		}
-		{
+		{ // after fully presenting new view, remove old top stack view
 			old_topStackView.removeFromSuperview()
 			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
 		}
 		{
 			const ifAnimated_isFromRightNotLeft = true // because we're pushing
+			const trueIfPoppingToRoot = false // cause we're pushing
 			self.navigationBarView.SetTopStackView(
 				self.topStackView, 
 				old_topStackView,
 				isAnimated, 
-				ifAnimated_isFromRightNotLeft
+				ifAnimated_isFromRightNotLeft,
+				trueIfPoppingToRoot
 			)
 		}
 	}
 	PopView(
+		isAnimated_orTrue
+	)
+	{
+		const self = this
+		if (self.stackViews.length == 0) {
+			throw "PopView called with 0 self.stackViews"
+			return
+		}
+		const root_stackView = self.stackViews[0]
+		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
+			// TODO: assert self.stackViews.length === 1?
+			console.warn("⚠️  PopView called but already at root.")
+			return // bail
+		}
+		// TODO: assert self.stackView.length >= 2?
+		const indexOf_justPrevious_stackView = self.stackViews.length - 2
+		const justPrevious_stackView = self.stackViews[indexOf_justPrevious_stackView]
+		//
+		self.PopToView(
+			justPrevious_stackView,
+			indexOf_justPrevious_stackView,
+			isAnimated_orTrue
+		)
+	}
+	PopToView(
+		to_stackView,
+		indexOf_to_stackView, // this is asked for so don't have to search the list
 		isAnimated_orTrue
 	)
 	{
@@ -216,9 +249,55 @@ class StackNavigationView extends View
 			 || isAnimated_orTrue == null 
 			? true /* default true */ 
 			: false
-		// TODO: check if already root - if so, bail
-		// TODO: grab stackView just under this one and then call a shared function to pop to that view
-		// so that we can call the same function for popping to root
+		if (to_stackView === null || typeof to_stackView === 'undefined') {
+			throw "StackNavigationView asked to PopToView nil to_stackView"
+			return
+		}
+		const old_topStackView = self.topStackView
+		{ // make to_stackView the new top view
+			to_stackView.navigationController = self
+			self.topStackView = to_stackView
+		}
+		{ // pre-insert the new top view, to_stackView, underneath the old_topStackView
+			const subviewUUIDs = self.stackViewStageView.subviews.map(function(v) { return v.View_UUID() })
+			// console.log("subviewUUIDs", subviewUUIDs)
+			const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
+			if (indexOf_old_topStackView_inSubviews === -1) {
+				throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.Description()} subviews.`
+				return
+			}
+			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
+			self.stackViewStageView.insertSubview(
+				to_stackView,
+				indexOf_old_topStackView_inSubviews
+			)
+		}
+		{
+			// console.log("old_topStackView" , old_topStackView.Description())
+			old_topStackView.removeFromSuperview()
+			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
+		}
+		{ // pop all views 
+			const popped_stackViews = self.stackViews.slice(0, indexOf_to_stackView + 1) // +1 as end is end idx not included in slice
+			// console.log("popped_stackViews", popped_stackViews)
+			self.stackViews = popped_stackViews
+			if (to_stackView.IsEqualTo(self.stackViews[self.stackViews.length - 1]) === false) {
+				throw `Popped to to_stackView ${to_stackView.Description()} at idx ${indexOf_to_stackView} but it was not the last of self.stackViews after pop all views until that idx.`
+				return 
+			}
+		}
+		{
+			const ifAnimated_isFromRightNotLeft = false // from left, because we're popping
+			const trueIfPoppingToRoot = indexOf_to_stackView === 0
+			self.navigationBarView.SetTopStackView(
+				self.topStackView, 
+				old_topStackView,
+				isAnimated, 
+				ifAnimated_isFromRightNotLeft,
+				trueIfPoppingToRoot
+			)
+		}
+		
 	}
 }
 module.exports = StackNavigationView

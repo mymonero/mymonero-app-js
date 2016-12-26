@@ -76,7 +76,7 @@ class WalletHostPollingController
 		})
 		//
 		// and kick off the polling call to pull latest updates
-		const syncPollingInterval = 10 * 1000 // ms
+		const syncPollingInterval = 30 * 1000 // ms
 		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
 		self.intervalTimeout = setInterval(function()
 		{

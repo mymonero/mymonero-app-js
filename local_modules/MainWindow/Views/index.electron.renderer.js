@@ -42,7 +42,7 @@ process.on('uncaughtException', function (error)
   // that the exceptions are prevented from bubbling up to the UI.
 	console.error("Observed uncaught exception", error)
 	// TODO: re-emit and send this to the error reporting service
-	alert("An unexpected error occurred.\n"+ error.toString())
+	alert("An unexpected application error occurred. Please let us know of the following error message if this issue persists:\n\n"+ error.toString())
 })
 //
 //
