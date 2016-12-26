@@ -289,9 +289,23 @@ class NavigationBarView extends View
 				self.leftBarButtonView = null // free
 				if (typeof view !== 'undefined' && view !== null) {
 					if (isAnimated) {
-						// TODO: fade out then remove
+						// fade out then remove
+						const layer = view.layer
+						Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+						Animate(
+							layer, 
+							{ opacity: 0 }, 
+							{
+								duration: 150,
+								complete: function()
+								{
+									view.removeFromSuperview()
+								}
+							}
+						)
+					} else {
+						view.removeFromSuperview()
 					}
-					view.removeFromSuperview()
 				}
 			}
 			{ // right btn
@@ -299,9 +313,23 @@ class NavigationBarView extends View
 				self.rightBarButtonView = null // free
 				if (typeof view !== 'undefined' && view !== null) {
 					if (isAnimated) {
-						// TODO: fade out then remove
+						// fade out then remove
+						const layer = view.layer
+						Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+						Animate(
+							layer, 
+							{ opacity: 0 }, 
+							{
+								duration: 150,
+								complete: function()
+								{
+									view.removeFromSuperview()
+								}
+							}
+						)
+					} else {
+						view.removeFromSuperview()
 					}
-					view.removeFromSuperview()
 				}
 			}
 		}
@@ -333,10 +361,25 @@ class NavigationBarView extends View
 							buttonView.layer.style.float = "left" // so it sticks to the left of the btn holder view layer
 						}
 						self.leftBarButtonView = buttonView
-						if (isAnimated) {
-							// TODO: opacity->0, add, fade in
+						{ // now present
+							if (isAnimated === true) {
+								const layer = buttonView.layer
+								Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+								layer.style.opacity = "0" // first make invisible 
+								self.leftBarButtonHolderView.addSubview(buttonView) // then add to the view
+								// then fade in
+								Animate(
+									layer, 
+									{ opacity: 1 }, 
+									{
+										duration: 150,
+										complete: function() {}
+									}
+								)
+							} else {
+								self.leftBarButtonHolderView.addSubview(buttonView)
+							}
 						}
-						self.leftBarButtonHolderView.addSubview(buttonView)
 					}
 				}
 				{ // right btn
@@ -354,10 +397,25 @@ class NavigationBarView extends View
 							buttonView.layer.style.float = "right" // so it sticks to the right of the btn holder view layer
 						}
 						self.rightBarButtonView = buttonView
-						if (isAnimated) {
-							// TODO: opacity->0, add, fade in
+						{ // now present
+							if (isAnimated === true) {
+								const layer = buttonView.layer
+								Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+								layer.style.opacity = "0" // first make invisible 
+								self.rightBarButtonHolderView.addSubview(buttonView) // then add to the view
+								// then fade in
+								Animate(
+									layer, 
+									{ opacity: 1 }, 
+									{
+										duration: 150,
+										complete: function() {}
+									}
+								)
+							} else {
+								self.rightBarButtonHolderView.addSubview(buttonView)
+							}
 						}
-						self.rightBarButtonHolderView.addSubview(buttonView)
 					}
 				}
 			}
