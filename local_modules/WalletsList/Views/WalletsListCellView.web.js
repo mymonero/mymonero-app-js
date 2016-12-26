@@ -37,6 +37,9 @@ class WalletsListCellView extends View
 		super(options, context)
 		//
 		const self = this
+		{
+			self.cell_tapped_fn = options.cell_tapped_fn || function(cellView) {}
+		}
 		self.setup()
 	}
 	setup()
@@ -68,6 +71,18 @@ class WalletsListCellView extends View
 		//
 		self.layer_accountInfo = layer
 		self.layer.appendChild(layer)
+		{ // observation
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault() // not that there would be any
+					self.cell_tapped_fn(self)
+					//
+					return false
+				}
+			)
+		}
 	}
 	setup_layers_transactions()
 	{

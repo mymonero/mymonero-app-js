@@ -30,6 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const WalletsListCellView = require('./WalletsListCellView.web')
+const WalletDetailsView = require('./WalletDetailsView.web')
 //
 class WalletsListView extends View
 {
@@ -54,7 +55,7 @@ class WalletsListView extends View
 	{
 		const self = this
 		//
-		self.layer.style.width = "calc(100% - 20px)"
+		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
 		self.layer.style.color = "#c0c0c0" // temporary
@@ -171,7 +172,13 @@ class WalletsListView extends View
 		wallets.forEach(
 			function(wallet, i)
 			{
-				const options = {}
+				const options = 
+				{
+					cell_tapped_fn: function(cellView)
+					{
+						self.pushWalletDetailsView(cellView.wallet)
+					}
+				}
 				const view = new WalletsListCellView(options, context)
 				self.walletCellViews.push(view)
 				view.ConfigureWith_wallet(wallet)
@@ -179,6 +186,32 @@ class WalletsListView extends View
 			}
 		)
 	}
+	//
+	//
+	// Runtime - Internal - Imperatives - Navigation/presentation
+	//
+	pushWalletDetailsView(wallet)
+	{
+		const self = this
+		if (typeof wallet === 'undefined' || wallet === null) {
+			throw "WalletsListView requires self.wallet to pushWalletDetailsView"
+			return
+		}
+		const navigationController = self.navigationController
+		if (typeof navigationController === 'undefined' || navigationController === null) {
+			throw "WalletsListView requires navigationController to pushWalletDetailsView"
+			return
+		}
+		{
+			const options = 
+			{
+				wallet: wallet
+			}
+			const view = new WalletDetailsView(options, self.context)
+			//
+			navigationController.PushView(view)
+		}
+	}	
 	//
 	//
 	// Runtime - Delegation - Data source

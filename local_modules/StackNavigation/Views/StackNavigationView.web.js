@@ -117,7 +117,7 @@ class StackNavigationView extends View
 		const self = this
 		const old_topStackView = self.topStackView
 		{ // remove existing
-			if (old_topStackView !== null) {
+			if (old_topStackView !== null) { 
 				old_topStackView.removeFromSuperview() 
 				old_topStackView.navigationController = null
 			}
@@ -159,6 +159,11 @@ class StackNavigationView extends View
 				)
 			}
 		}
+	}
+	PushView(stackView)
+	{
+		const self = this
+		console.log("push... ", stackView)
 	}
 }
 module.exports = StackNavigationView

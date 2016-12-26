@@ -28,44 +28,71 @@
 //
 "use strict"
 //
-const setup_utils = require('../../electron_renderer_utils/renderer_setup_utils')
-setup_utils()
+const View = require('../../Views/View.web')
 //
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const rootView = new_rootView() // hang onto reference
-//
-process.on('uncaughtException', function (error)
-{ // We're going to observe this here (for electron especially) so
-  // that the exceptions are prevented from bubbling up to the UI.
-	console.error("Observed uncaught exception", error)
-	// TODO: re-emit and send this to the error reporting service
-	alert("An unexpected error occurred.\n"+ error.toString())
-})
-//
-//
-// Accessors - Factories
-//
-function new_rootView()
+class WalletDetailsView extends View
 {
-	const RootView = require('./RootView.web.js') // electron uses .web files as it has a web DOM
-	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-		remote__app, 
-		remote__context.menuController // for UI and app runtime access
-	)
-	const options = {}
-	const view = new RootView(options, renderer_context)
+	constructor(options, context)
 	{
-		view.superview = null // just to be explicit
+		super(options, context)
+		//
+		const self = this
+		{
+			self.wallet = options.wallet
+			if (self.wallet === null || typeof self.wallet === 'undefined') {
+				throw "options.wallet nil but required for WalletDetailsView"
+				return
+			}
+		}
+		self.setup()
 	}
+	setup()
 	{
-		const superlayer = document.body
-		view.superlayer = superlayer
-		// manually attach the rootView to the DOM
-		superlayer.appendChild(view.layer) // the `layer` is actually the DOM element
+		const self = this
+		//
+		self._setup_views()
+		self._setup_startObserving()
+	}
+	_setup_views()
+	{
+		const self = this
+		//
+		self.layer.style.width = "calc(100% - 20px)"
+		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
+		//
+		self.layer.style.color = "#c0c0c0" // temporary
+		//
+		self.layer.style.overflowY = "scroll"
+		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+	}
+	_setup_startObserving()
+	{
+		const self = this
 	}
 	//
-	return view
+	//
+	// Runtime - Accessors - Navigation
+	//
+	Navigation_Title()
+	{
+		const self = this
+		const wallet = self.wallet
+		//
+		return wallet.walletLabel || "Wallet"
+	}
+	//
+	// Runtime - Delegation - Navigation/View lifecycle
+	//
+	viewWillAppear()
+	{
+		const self = this
+		super.viewWillAppear()
+		{
+			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+			}
+		}
+	}
 }
+module.exports = WalletDetailsView
