@@ -286,12 +286,13 @@ class NavigationBarView extends View
 		const layer_fadeOutPosition_leftmost = "0px"
 		const layer_fadeOutPosition_rightmost = `${parentWidth - titleLayer_width}px`
 		const successor_starting_left = ifAnimated_isFromRightNotLeft ? layer_fadeOutPosition_rightmost : layer_fadeOutPosition_leftmost
-		const successor_final_left = `${parentWidth * self.titleLayer_marginX_pctComponent + self.titleLayer_marginX_pxComponent}px`
 		{
 			successor_titleLayer.style.opacity = "0"
 			successor_titleLayer.style.left = successor_starting_left
 		}
 		self.titleLayer.parentNode.appendChild(successor_titleLayer) 
+		// animate successor onto screen
+		const successor_final_left = `${parentWidth * self.titleLayer_marginX_pctComponent + self.titleLayer_marginX_pxComponent}px`
 		Animate(
 			successor_titleLayer,
 			{
@@ -312,7 +313,7 @@ class NavigationBarView extends View
 				}
 			}
 		)
-
+		// old title layer:
 		const old_titleLayer_final_left = ifAnimated_isFromRightNotLeft ? layer_fadeOutPosition_leftmost : layer_fadeOutPosition_rightmost
 		Animate(
 			old_titleLayer,
