@@ -92,8 +92,10 @@ class NavigationBarView extends View
 				layer.style.position = "absolute"
 				layer.style.fontFamily = `"Helvetica Neue", Helvetica, Arial, sans-serif`
 				layer.style.top = "0%"
-				layer.style.left = "calc(15% + 16px)"
-				layer.style.width = `calc(${ 100 - 2*15 }% - ${2 * 16}px`
+				self.titleLayer_marginX_pxComponent = 16
+				self.titleLayer_marginX_pctComponent = .15
+				layer.style.left = `calc(${100*self.titleLayer_marginX_pctComponent}% + ${self.titleLayer_marginX_pxComponent}px)`
+				layer.style.width = `calc(${ 100 - 2*100*self.titleLayer_marginX_pctComponent }% - ${2 * self.titleLayer_marginX_pxComponent}px`
 				layer.style.height = `${self.NavigationBarHeight()}px`
 				layer.style.textAlign = "center"
 				layer.style.lineHeight = `${self.NavigationBarHeight()}px`
@@ -176,6 +178,10 @@ class NavigationBarView extends View
 		//
 		return "NavigationBarView" + "-of-" + self.navigationController.idPrefix() // borrow its uuid namespacing
 	}
+	_animationDuration_ms_navigationPush()
+	{
+		return 200
+	}
 	//
 	//
 	//
@@ -257,24 +263,71 @@ class NavigationBarView extends View
 	)
 	{
 		const self = this
-		if (typeof stackView !== 'undefined' && stackView !== null) {
-			if (typeof stackView.Navigation_Title !== 'function') {
-				console.error("Error: stackView didn't define Navigation_Title()", stackView)
-				throw "stackView.Navigation_Title() not a function"
-			}
-			if (isAnimated) {
-				// TODO: transition/fade
-			} else {
-			}
-			
-			const titleString = stackView.Navigation_Title()
-			self.titleLayer.innerHTML = titleString
-			
-			
-		} else {
+		if (typeof stackView === 'undefined' || stackView === null) {
 			self.titleLayer.innerHTML = "" // clear
+			return
 		}
-	}
+		if (typeof stackView.Navigation_Title !== 'function') {
+			console.error("Error: stackView didn't define Navigation_Title()", stackView)
+			throw "stackView.Navigation_Title() not a function"
+		}
+		const titleString = stackView.Navigation_Title()
+		if (isAnimated === false) {
+			self.titleLayer.innerHTML = titleString
+			return
+		}
+		const old_titleLayer = self.titleLayer
+		const successor_titleLayer = self.titleLayer.cloneNode()
+		{
+			successor_titleLayer.innerHTML = titleString // set up with new title
+		}
+		const parentWidth = self.titleLayer.parentNode.offsetWidth
+		const titleLayer_width = self.titleLayer.offsetWidth
+		const layer_fadeOutPosition_leftmost = "0px"
+		const layer_fadeOutPosition_rightmost = `${parentWidth - titleLayer_width}px`
+		const successor_starting_left = ifAnimated_isFromRightNotLeft ? layer_fadeOutPosition_rightmost : layer_fadeOutPosition_leftmost
+		const successor_final_left = `${parentWidth * self.titleLayer_marginX_pctComponent + self.titleLayer_marginX_pxComponent}px`
+		{
+			successor_titleLayer.style.opacity = "0"
+			successor_titleLayer.style.left = successor_starting_left
+		}
+		self.titleLayer.parentNode.appendChild(successor_titleLayer) 
+		Animate(
+			successor_titleLayer,
+			{
+				opacity: 1,
+				left: successor_final_left
+			},
+			{
+				duration: self._animationDuration_ms_navigationPush(),
+				complete: function()
+				{
+					successor_titleLayer.style.left = `calc(${100*self.titleLayer_marginX_pctComponent}% + ${self.titleLayer_marginX_pxComponent}px)`
+					// ^ setting this to maintain some consistency in the starting state of the above animation
+					// and more importantly to retain flexibility of layout
+					//
+					self.titleLayer = successor_titleLayer
+					//
+					old_titleLayer.parentNode.removeChild(old_titleLayer)
+				}
+			}
+		)
+
+		const old_titleLayer_final_left = ifAnimated_isFromRightNotLeft ? layer_fadeOutPosition_leftmost : layer_fadeOutPosition_rightmost
+		Animate(
+			old_titleLayer,
+			{
+				opacity: 0,
+				left: old_titleLayer_final_left
+			},
+			{
+				duration: self._animationDuration_ms_navigationPush(),
+				complete: function()
+				{
+				}
+			}
+		)
+	}	
 	SetBarButtonsFromTopStackView(
 		stackView, 
 		old_topStackView,
@@ -296,7 +349,7 @@ class NavigationBarView extends View
 							layer, 
 							{ opacity: 0 }, 
 							{
-								duration: 150,
+								duration: self._animationDuration_ms_navigationPush(),
 								complete: function()
 								{
 									view.removeFromSuperview()
@@ -320,7 +373,7 @@ class NavigationBarView extends View
 							layer, 
 							{ opacity: 0 }, 
 							{
-								duration: 150,
+								duration: self._animationDuration_ms_navigationPush(),
 								complete: function()
 								{
 									view.removeFromSuperview()
@@ -372,7 +425,7 @@ class NavigationBarView extends View
 									layer, 
 									{ opacity: 1 }, 
 									{
-										duration: 150,
+										duration: self._animationDuration_ms_navigationPush(),
 										complete: function() {}
 									}
 								)
@@ -408,7 +461,7 @@ class NavigationBarView extends View
 									layer, 
 									{ opacity: 1 }, 
 									{
-										duration: 150,
+										duration: self._animationDuration_ms_navigationPush(),
 										complete: function() {}
 									}
 								)
