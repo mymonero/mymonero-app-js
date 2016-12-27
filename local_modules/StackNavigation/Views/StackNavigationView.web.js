@@ -29,6 +29,7 @@
 "use strict"
 //
 const uuidV1 = require('uuid/v1')
+const Animate = require('velocity-animate')
 //
 const View = require('../../Views/View.web')
 //
@@ -117,6 +118,10 @@ class StackNavigationView extends View
 		//
 		return "StackNavigationView" + "-" + self.uuid
 	}
+	_animationDuration_ms_navigationPush()
+	{
+		return 200
+	}
 	//
 	//
 	// Runtime - Imperatives 
@@ -192,14 +197,44 @@ class StackNavigationView extends View
 			stackView.navigationController = self
 			self.stackViews.push(stackView)
 			self.topStackView = stackView
-			// finally, actually present the view:
-			self.stackViewStageView.addSubview(stackView)
 		}
-		{ // after fully presenting new view, remove old top stack view
+		{ // and then actually present the view:
+			const stackView_layer = stackView.layer
+			if (isAnimated === true) { // prepare for animation
+				old_topStackView.layer.style.position = "absolute"
+				old_topStackView.layer.style.zIndex = "0"
+				//
+				stackView_layer.style.position = "absolute"
+				stackView_layer.style.zIndex = "2" // 2 because we'll want to insert a semi-trans curtain view under the stackView_layer above the old_topStackView
+				stackView_layer.style.left = `${self.stackViewStageView.layer.offsetWidth}px` // we use the stackViewStageView because it's already in the DOM and sized
+			}
+			self.stackViewStageView.addSubview(stackView)
+			if (isAnimated === false) { // no need to animate anything - straight to end state
+				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+				return
+			}
+			Animate(
+				stackView_layer,
+				{
+					left: "0px"
+				},
+				{
+					duration: self._animationDuration_ms_navigationPush(),
+					easing: "ease-in-out",
+					complete: function()
+					{
+						stackView_layer.style.zIndex = "0" 
+						_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+					}
+				}
+			)
+		}		
+		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+		{
 			old_topStackView.removeFromSuperview()
 			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
 		}
-		{
+		{ // nav bar
 			const ifAnimated_isFromRightNotLeft = true // because we're pushing
 			const trueIfPoppingToRoot = false // cause we're pushing
 			self.navigationBarView.SetTopStackView(
@@ -288,11 +323,37 @@ class StackNavigationView extends View
 				return
 			}
 			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
+			if (isAnimated === true) { // prepare for animation
+				old_topStackView.layer.style.position = "absolute"
+				old_topStackView.layer.style.zIndex = "2"
+				//
+				to_stackView.layer.style.position = "absolute"
+				to_stackView.layer.style.zIndex = "0" // because we want to make sure it goes under the current top stack view
+			}
 			self.stackViewStageView.insertSubview(
 				to_stackView,
 				indexOf_old_topStackView_inSubviews
 			)
-		}
+			if (isAnimated === false) { // no need to animate anything - straight to end state
+				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+				return
+			}
+			Animate(
+				old_topStackView.layer,
+				{
+					left: `${self.stackViewStageView.layer.offsetWidth}px`
+				},
+				{
+					duration: self._animationDuration_ms_navigationPush(),
+					easing: "ease-in-out",
+					complete: function()
+					{
+						_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+					}
+				}
+			)
+		}		
+		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
 			// console.log("old_topStackView" , old_topStackView.Description())
 			old_topStackView.removeFromSuperview()

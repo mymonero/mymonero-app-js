@@ -58,7 +58,9 @@ class WalletDetailsView extends View
 		const self = this
 		//
 		self.layer.style.width = "calc(100% - 20px)"
-		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
+		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		//
+		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
 		self.layer.style.color = "#c0c0c0" // temporary
 		//

@@ -180,7 +180,9 @@ class NavigationBarView extends View
 	}
 	_animationDuration_ms_navigationPush()
 	{
-		return 200
+		const self = this
+		//
+		return self.navigationController._animationDuration_ms_navigationPush()
 	}
 	//
 	//
