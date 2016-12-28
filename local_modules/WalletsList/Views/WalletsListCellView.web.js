@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
 //
 class WalletsListCellView extends View
 {
@@ -46,57 +47,24 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		self.setup_views()
-		self.setup_layers()
 	}
 	setup_views()
 	{
 		const self = this
-	}
-	setup_layers()
-	{
-		const self = this
-		//
-		self.layer.style.border = "1px solid #eee"
-		self.layer.style.borderRadius = "5px"
-		self.layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		//
-		self.setup_layers_accountInfo()
-		self.setup_layers_transactions()
-	}
-	setup_layers_accountInfo()
-	{
-		const self = this
-		//
-		const layer = document.createElement("div")
-		layer.className = "accountInfo"
-		//
-		self.layer_accountInfo = layer
-		self.layer.appendChild(layer)
-		{ // observation
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault() // not that there would be any
-					self.cell_tapped_fn(self)
-					//
-					return false
-				}
-			)
+		{
+			self.layer.style.border = "1px solid #eee"
+			self.layer.style.borderRadius = "5px"
+			self.layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset
 		}
-	}
-	setup_layers_transactions()
-	{
-		const self = this
-		//
-		const layer = document.createElement("div")
-		layer.className = "transactions"
-		layer.style.borderTop = "1px solid #ccc"
-		//
-		self.layer_transactions = layer
-		self.layer.appendChild(layer)
+		{
+			const options = 
+			{
+				cell_tapped_fn: self.cell_tapped_fn
+			}
+			const view = new WalletCellContentsView(options, self.context)
+			self.cellContentsView = view
+			self.addSubview(view)
+		}
 	}
 	//
 	//
@@ -107,7 +75,7 @@ class WalletsListCellView extends View
 		super.TearDown()
 		//
 		const self = this
-		self.stopObserving_wallet()
+		self.cellContentsView.TearDown()
 		self.wallet = null
 	}
 	//
@@ -117,67 +85,8 @@ class WalletsListCellView extends View
 	PrepareForReuse()
 	{
 		const self = this
-		self.stopObserving_wallet()
+		self.cellContentsView.PrepareForReuse()
 		self.wallet = null
-	}
-	stopObserving_wallet()
-	{
-		const self = this
-		if (typeof self.wallet === 'undefined' || !self.wallet) {
-			return
-		}
-		function doesListenerFunctionExist(fn)
-		{
-			if (typeof fn !== 'undefined' && fn !== null) {
-				return true
-			}
-			return false
-		}
-		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
-			self.wallet.removeListener(
-				self.wallet.EventName_balanceChanged(),
-				self.wallet_EventName_balanceChanged_listenerFunction
-			)
-		}
-	}
-	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Metrics
-	//
-	//
-	_idPrefix()
-	{ // TODO: maybe this can be replaced with self.View_UUID ?
-		const self = this
-		//
-		return "WalletsListCellView" + "_" + self.wallet._id // to make it unique as this is a list-cell
-	}
-	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Delete btn
-	//
-	//
-	idForChild_deleteWalletWithIDLayer()
-	{
-		const self = this
-		if (typeof self.wallet._id === 'undefined' || !self.wallet._id) {
-			throw "idForChild_deleteWalletWithIDLayer called but nil self.wallet._id"
-		}
-		//
-		return self._idPrefix() + "_" + "idForChild_deleteWalletWithIDLayer"
-	}
-	new_htmlStringForChild_deleteWalletWithIDLayer()
-	{
-		const self = this
-		const htmlString = `<a id="${self.idForChild_deleteWalletWithIDLayer()}" href="#">Delete Wallet</a>`
-		//
-		return htmlString
-	}
-	DOMSelected_deleteWalletWithIDLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`a#${ self.idForChild_deleteWalletWithIDLayer() }`)
-		//
-		return layer
 	}
 	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
@@ -189,129 +98,7 @@ class WalletsListCellView extends View
 			self.PrepareForReuse()
 		}
 		self.wallet = wallet
-		self._configureUIWithWallet()
-		self.startObserving_wallet()
-	}
-	//
-	//
-	// Internal - Runtime - Imperatives - State/UI Configuration
-	//
-	_configureUIWithWallet()
-	{
-		const self = this
-		self._configureUIWithWallet__accountInfo()
-	}
-	_configureUIWithWallet__accountInfo()
-	{
-		const self = this
-		const wallet = self.wallet
-		var htmlString = ''
-		{
-			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // unlikely, but possible
-				{ // header
-					htmlString += `<h3>${wallet.walletLabel}</h3>`
-					if (wallet.HasEverFetched_accountInfo() === false) {
-						htmlString += `<p>Balance: Loading…</p>`
-						htmlString += `<p>Locked balance: Loading…</P`
-					} else {
-						htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.HumanReadable_walletCurrency()}</p>`
-						htmlString += `<p>Locked balance: ${wallet.LockedBalance()} ${wallet.HumanReadable_walletCurrency()}</p>`
-					}
-				}
-				{ // buttons
-					htmlString += self.new_htmlStringForChild_deleteWalletWithIDLayer()
-				}
-				{ // info
-					htmlString += `<h4>Wallet Info</h4>`
-					htmlString += `<p>Address: ${wallet.public_address}</p>`
-					htmlString += `<h5>Secret keys:</h5>`
-					htmlString += `<p>Secret Seed: ${wallet.mnemonicString}</p>`
-					htmlString += `<p>View key: ${wallet.private_keys.view}</p>`
-					htmlString += `<p>Spend key: ${wallet.private_keys.spend}</p>`
-				}
-			} else { // failed to initialize
-				{ // header
-					htmlString += 
-						`<h4>Error: Couldn't unlock this wallet.</h4>`
-						+ `<p>Please report this issue to us via Support. To repair this wallet and continue, please delete the wallet and re-import it:</p>`
-				}
-				{ // buttons
-					htmlString += self.new_htmlStringForChild_deleteWalletWithIDLayer()
-				}
-			}
-		}
-		self.layer_accountInfo.innerHTML = htmlString
-		{ // setup and observations
-			{ // buttons
-				{ // delete button
-					const layer = self.DOMSelected_deleteWalletWithIDLayer()
-					if (layer && typeof layer !== 'undefined') {
-						layer.addEventListener(
-							"click",
-							function(e)
-							{
-								e.preventDefault()
-								self.deleteWallet()
-								//
-								return false
-							}
-						)
-					}
-				}				
-			}
-		}
-	}
-	//
-	//
-	// Internal - Runtime - Imperatives - Wallet operations
-	deleteWallet()
-	{
-		const self = this
-		self.context.walletsListController.WhenBooted_DeleteWalletWithId(
-			self.wallet._id,
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to delete wallet")
-					return
-				}
-				// this change will be picked up by the list change listener
-			}
-		)
-	}
-	//
-	//
-	//
-	// Internal - Runtime - Imperatives - Observation
-	//
-	startObserving_wallet()
-	{
-		const self = this
-		if (typeof self.wallet === 'undefined' || self.wallet === null) {
-			throw "wallet undefined in start observing"
-			return
-		}
-		// here, we're going to store a bunch of functions as instance properties
-		// because if we need to stopObserving we need to have access to the listener fns
-		//
-		// account info updated
-		self.wallet_EventName_balanceChanged_listenerFunction = function()
-		{
-			self.wallet_EventName_balanceChanged()
-		}
-		self.wallet.on(
-			self.wallet.EventName_balanceChanged(),
-			self.wallet_EventName_balanceChanged_listenerFunction
-		)
-	}
-	//
-	//
-	// Internal - Runtime - Delegation - Event handlers - Wallet
-	//
-	wallet_EventName_balanceChanged()
-	{
-		const self = this
-		self._configureUIWithWallet__accountInfo()
+		self.cellContentsView.ConfigureWith_wallet(self.wallet)
 	}
 }
 module.exports = WalletsListCellView

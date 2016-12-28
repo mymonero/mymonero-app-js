@@ -724,7 +724,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		return (self.blockchain_height - self.account_scanned_block_height) >= 10
 	}
 	//
-	Balance()
+	Balance_FormattedString()
 	{
 		const self = this
 		var total_received = self.total_received
@@ -739,7 +739,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		return monero_utils.formatMoney(balance_JSBigInt)
 	}
-	LockedBalance()
+	LockedBalance_FormattedString()
 	{
 		const self = this
 		var locked_balance_JSBigInt = self.locked_balance
@@ -748,6 +748,19 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		//
 		return monero_utils.formatMoney(locked_balance_JSBigInt)
+	}
+	HasLockedFunds()
+	{
+		const self = this
+		var locked_balance_JSBigInt = self.locked_balance
+		if (typeof locked_balance_JSBigInt === 'undefined') {
+			return false
+		}
+		if (locked_balance_JSBigInt === new JSBigInt(0)) {
+			return false
+		}
+		//
+		return true
 	}
 	HumanReadable_walletCurrency()
 	{
@@ -765,7 +778,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	{
 		const self = this
 		//
-		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance()
+		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance_FormattedString()
 	}
 
 

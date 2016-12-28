@@ -204,8 +204,8 @@ class WalletDetailsView extends View
 						htmlString += `<p>Balance: Loading…</p>`
 						htmlString += `<p>Locked balance: Loading…</P`
 					} else {
-						htmlString += `<p>Balance: ${wallet.Balance()} ${wallet.HumanReadable_walletCurrency()}</p>`
-						htmlString += `<p>Locked balance: ${wallet.LockedBalance()} ${wallet.HumanReadable_walletCurrency()}</p>`
+						htmlString += `<p>Balance: ${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}</p>`
+						htmlString += `<p>Locked balance: ${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}</p>`
 					}
 				}
 				{ // buttons
