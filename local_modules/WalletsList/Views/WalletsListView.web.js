@@ -30,7 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const WalletsListCellView = require('./WalletsListCellView.web')
-const WalletDetailsView = require('./WalletDetailsView.web')
+const WalletDetailsView = require('../../Wallets/Views/WalletDetailsView.web')
 //
 class WalletsListView extends View
 {
