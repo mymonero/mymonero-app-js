@@ -44,7 +44,9 @@ class WalletsListView extends View
 	setup()
 	{
 		const self = this
-		//
+		{ // initialization / zeroing / declarations 
+			self.current_walletDetailsView = null
+		}
 		self._setup_views()
 		self._setup_startObserving()
 		//
@@ -164,6 +166,8 @@ class WalletsListView extends View
 			self.walletCellViews.forEach(
 				function(view, i)
 				{
+					view.TearDown() // important so the event listeners get deregistered
+					//
 					view.removeFromSuperview()
 				}
 			)
@@ -199,6 +203,14 @@ class WalletsListView extends View
 			throw "WalletsListView requires self.wallet to pushWalletDetailsView"
 			return
 		}
+		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) { // unlikely, but possible
+			console.log("Not pushing as wallet failed to init or boot.")
+			return // just don't push - no need to error 
+		}
+		if (self.current_walletDetailsView !== null) {
+			throw "Asked to pushWalletDetailsView while self.current_walletDetailsView !== null"
+			return
+		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {
 			throw "WalletsListView requires navigationController to pushWalletDetailsView"
@@ -210,11 +222,14 @@ class WalletsListView extends View
 				wallet: wallet
 			}
 			const view = new WalletDetailsView(options, self.context)
-			//
 			navigationController.PushView(
 				view, 
 				true // animated
 			)
+			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
+			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
+			// by tearing it down on self.viewDidAppear() below
+			self.current_walletDetailsView = view
 		}
 	}	
 	//
@@ -240,6 +255,16 @@ class WalletsListView extends View
 		}
 		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		//
+		if (self.current_walletDetailsView !== null) {
+			self.current_walletDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_walletDetailsView = null // must zero again and should free
+		}
 	}
 }
 module.exports = WalletsListView

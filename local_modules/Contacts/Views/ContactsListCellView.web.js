@@ -90,7 +90,7 @@ class ContactsListCellView extends View
 			return false
 		}
 		if (doesListenerFunctionExist(self.contact_EventName_contactInfoUpdated_listenerFunction) === true) {
-			self.contact.remoteListener(
+			self.contact.removeListener(
 				self.contact.EventName_contactInfoUpdated(),
 				self.contact_EventName_contactInfoUpdated_listenerFunction
 			)

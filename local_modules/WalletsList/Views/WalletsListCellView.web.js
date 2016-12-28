@@ -57,7 +57,10 @@ class WalletsListCellView extends View
 		const self = this
 		//
 		self.layer.style.border = "1px solid #eee"
-		self.layer.style.wordBreak = "break-all" // just for now 
+		self.layer.style.borderRadius = "5px"
+		self.layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset
+		//
+		self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		//
 		self.setup_layers_accountInfo()
 		self.setup_layers_transactions()
@@ -97,9 +100,21 @@ class WalletsListCellView extends View
 	}
 	//
 	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		super.TearDown()
+		//
+		const self = this
+		self.stopObserving_wallet()
+		self.wallet = null
+	}
+	//
+	//
 	// Internal - Teardown/Recycling
 	//
-	prepareForReuse()
+	PrepareForReuse()
 	{
 		const self = this
 		self.stopObserving_wallet()
@@ -119,15 +134,9 @@ class WalletsListCellView extends View
 			return false
 		}
 		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
-			self.wallet.remoteListener(
+			self.wallet.removeListener(
 				self.wallet.EventName_balanceChanged(),
 				self.wallet_EventName_balanceChanged_listenerFunction
-			)
-		}
-		if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
-			self.wallet.remoteListener(
-				self.wallet.EventName_transactionsChanged(),
-				self.wallet_EventName_transactionsChanged_listenerFunction
 			)
 		}
 	}
@@ -137,7 +146,7 @@ class WalletsListCellView extends View
 	//
 	//
 	_idPrefix()
-	{
+	{ // TODO: maybe this can be replaced with self.View_UUID ?
 		const self = this
 		//
 		return "WalletsListCellView" + "_" + self.wallet._id // to make it unique as this is a list-cell
@@ -177,7 +186,7 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		if (typeof self.wallet !== 'undefined') {
-			self.prepareForReuse()
+			self.PrepareForReuse()
 		}
 		self.wallet = wallet
 		self._configureUIWithWallet()
@@ -191,7 +200,6 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		self._configureUIWithWallet__accountInfo()
-		self._configureUIWithWallet__transactions()
 	}
 	_configureUIWithWallet__accountInfo()
 	{
@@ -253,46 +261,6 @@ class WalletsListCellView extends View
 			}
 		}
 	}
-	_configureUIWithWallet__transactions()
-	{
-		const self = this
-		const wallet = self.wallet
-		var innerHTMLString = ""
-		{
-			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // the usual scenario
-				var ulInnerHTMLString = ""
-				const stateCachedTransactions = wallet.New_StateCachedTransactions()
-				stateCachedTransactions.forEach(
-					function(tx, i)
-					{
-						var liInnerHTMLString = ""
-						liInnerHTMLString += `<p>${tx.approx_float_amount} ${wallet.wallet_currency}</p>`
-						if (tx.isConfirmed === false) {
-							liInnerHTMLString += `<p>(unconfirmed)</p>`
-						}
-						if (tx.isUnlocked === false) {
-							liInnerHTMLString += `<p>(locked) ${tx.lockedReason}</p>`
-						}
-						liInnerHTMLString += `<p>${tx.timestamp.toString()}</p>`
-						liInnerHTMLString += `<p>Mixin: ${tx.mixin}</p>`
-						liInnerHTMLString += `<p>Hash: ${tx.hash}</p>`
-						liInnerHTMLString += `<p>Payment ID: ${tx.payment_id || "N/A"}</p>`
-						//
-						ulInnerHTMLString += `<li>${liInnerHTMLString}</li>`
-					}
-				)
-				// TODO: optimize this by maybe not using innerHTML?
-				innerHTMLString += "<h3>Transactions</h3>"
-				if (wallet.HasEverFetched_transactions() === false) {
-					innerHTMLString += "<p>Loading…</p>" 
-				} else {
-					innerHTMLString += `<ul>${ulInnerHTMLString}</ul>`
-				}		
-			} else { // otherwise, it errored, which gets handled in _configureUIWithWallet__accountInfo			
-			}
-		}
-		self.layer_transactions.innerHTML = innerHTMLString
-	}
 	//
 	//
 	// Internal - Runtime - Imperatives - Wallet operations
@@ -335,16 +303,6 @@ class WalletsListCellView extends View
 			self.wallet.EventName_balanceChanged(),
 			self.wallet_EventName_balanceChanged_listenerFunction
 		)
-		//
-		// txs updated
-		self.wallet_EventName_transactionsChanged_listenerFunction = function()
-		{
-			self.wallet_EventName_transactionsChanged()
-		}
-		self.wallet.on(
-			self.wallet.EventName_transactionsChanged(),
-			self.wallet_EventName_transactionsChanged_listenerFunction
-		)
 	}
 	//
 	//
@@ -354,11 +312,6 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		self._configureUIWithWallet__accountInfo()
-	}
-	wallet_EventName_transactionsChanged()
-	{
-		const self = this
-		self._configureUIWithWallet__transactions()
 	}
 }
 module.exports = WalletsListCellView

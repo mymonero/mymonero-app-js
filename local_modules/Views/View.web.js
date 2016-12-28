@@ -37,7 +37,7 @@ class View extends EventEmitter
 {
 	//
 	//
-	// Setup
+	// Lifecycle - Setup
 	//
 	constructor(options, context)
 	{
@@ -86,7 +86,17 @@ class View extends EventEmitter
 	TagName()
 	{
 		const self = this
+		//
 		return self.tag // div is the default; you can either override this method to return what you'd like or pass "tag" in options
+	}
+	//
+	//
+	// Lifecycle - Teardown - Overridable
+	//
+	TearDown()
+	{ // IMPORTANT: Please note that you must manually call this function! There is no destructor per se in JS
+		const self = this // You can override this function, but be sure to call on super
+		console.log("Tearing down ", self.Description())
 	}
 	//
 	//
@@ -142,7 +152,7 @@ class View extends EventEmitter
 	{ // this is exposed so you can inject subviews into manually created children elements of your choice
 		const self = this
 		//
-		self.viewWillAppear()
+		view.viewWillAppear()
 		{ // state:
 			// local:
 			self.subviews.push(view)
@@ -152,7 +162,7 @@ class View extends EventEmitter
 		{ // DOM:
 			superlayer.appendChild(view.layer)
 		}
-		self.viewDidAppear()
+		view.viewDidAppear()
 	}
 	_configureViewStateForInsertionIntoHierarchy(view, superlayer)
 	{
@@ -167,7 +177,7 @@ class View extends EventEmitter
 		const toLayer = self.layer
 		const superlayer = toLayer
 		//
-		self.viewWillAppear()
+		view.viewWillAppear()
 		{ // state:
 			// local:
 			self.subviews.splice(atIndex, 0, view)
@@ -196,7 +206,7 @@ class View extends EventEmitter
 				)
 			}
 		}
-		self.viewDidAppear()
+		view.viewDidAppear()
 	}
 	removeFromSuperview()
 	{ // throws
