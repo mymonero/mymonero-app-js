@@ -63,6 +63,8 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		//
+		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		//
 		self.layer.style.width = "calc(100% - 20px)"
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		//
@@ -274,6 +276,9 @@ class WalletDetailsView extends View
 				}
 			}
 		}
+		//
+		// TODO: Rebuild this without using html (w/element objs) and eliminate the DOMSelected_ stuff
+		//
 		self.layer_accountInfo.innerHTML = htmlString
 		{ // setup and observations
 			{ // buttons
@@ -341,6 +346,8 @@ class WalletDetailsView extends View
 										td.style.width = "75%"
 										td.style.fontFamily = "monospace" // TODO
 										td.style.color = tx.approx_float_amount < 0 ? "red" : "#f0f0f0"
+										//
+										// td.style.webkitUserSelect = "all" // decided to comment this because it interferes with cell click
 									}
 									tr_1.appendChild(td)
 								}
@@ -433,6 +440,10 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const _cmd = "pushDetailsViewFor_transaction"
+		if (typeof self.wallet === 'undefined' || self.wallet === null) {
+			throw self.constructor.name + " requires self.wallet to " + _cmd
+			return
+		}
 		if (typeof transaction === 'undefined' || transaction === null) {
 			throw self.constructor.name + " requires transaction to " + _cmd
 			return
@@ -449,6 +460,7 @@ class WalletDetailsView extends View
 		{
 			const options = 
 			{
+				wallet: self.wallet,
 				transaction: transaction
 			}
 			const view = new TransactionDetailsView(options, self.context)

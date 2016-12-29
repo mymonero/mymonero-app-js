@@ -43,6 +43,12 @@ class TransactionDetailsView extends View
 				throw "options.transaction nil but required for " + self.constructor.name
 				return
 			}
+			//
+			self.wallet = options.wallet
+			if (self.wallet === null || typeof self.wallet === 'undefined') {
+				throw "options.wallet nil but required for " + self.constructor.name
+				return
+			}
 		}
 		self.setup()
 	}
@@ -59,6 +65,8 @@ class TransactionDetailsView extends View
 	_setup_views()
 	{
 		const self = this
+		//
+		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
 		self.layer.style.width = "calc(100% - 20px)"
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
@@ -105,7 +113,14 @@ class TransactionDetailsView extends View
 		//
 		return transaction.approx_float_amount || ""
 	}
-	// TODO: send up font color to nav bar based on transaction.approx_float_amount
+	Navigation_TitleColor()
+	{
+		const self = this
+		const transaction = self.transaction
+		const colorHexString_orNil = transaction.approx_float_amount < 0 ? "red" : null
+		//
+		return colorHexString_orNil // null meaning go with the default
+	}
 	//
 	//
 	// Internal - Runtime - Accessors - Child elements - Metrics
@@ -124,6 +139,247 @@ class TransactionDetailsView extends View
 	_configureUIWithTransaction()
 	{
 		const self = this
+		const wallet = self.wallet
+		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
+			throw self.constructor.name + " opened while wallet failed to init or boot."
+			return
+		}
+		const transaction = self.transaction
+		function _new_fieldContainerLayer()
+		{
+			const layer = document.createElement("div")
+			layer.style.padding = "18px 0"
+			//
+			return layer
+		}
+		function _new_fieldTitle_labelLayer(labelText)
+		{
+			const layer = document.createElement("span")
+			{
+				layer.innerHTML = labelText
+				layer.style.float = "left"
+				layer.style.textAlign = "left"
+				layer.style.fontSize = "14px"
+				layer.style.fontWeight = "bold"
+				layer.style.color = "#ccc"
+				layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
+			}				
+			return layer
+		}
+		function _new_fieldValue_labelLayer(labelText)
+		{
+			const layer = document.createElement("span")
+			{
+				layer.innerHTML = labelText
+				layer.style.float = "right"
+				layer.style.textAlign = "right"
+				layer.style.fontSize = "14px"
+				layer.style.color = "#aaa"
+				layer.style.fontFamily = "monospace"
+			}				
+			return layer
+		}
+		function _new_separatorLayer()
+		{
+			const layer = document.createElement("div")
+			{
+				layer.style.width = "calc(100% - 15px)"
+				layer.style.marginLeft = "15px"
+				layer.style.height = "1px"
+				layer.style.backgroundColor = "#666"
+				layer.style.color = "#ccc"
+			}				
+			return layer
+		}
+		function _new_copyButton_aLayer(value, enabled_orTrue)
+		{
+			const layer = document.createElement("a")
+			{
+				layer.innerHTML = "COPY"
+				layer.style.float = "right"
+				layer.style.textAlign = "right"
+				layer.style.fontSize = "15px"
+				layer.style.fontWeight = "bold"
+				//
+				layer.style.color = enabled_orTrue !== false ? "#6666ff" : "#444"
+				if (enabled_orTrue === true) {
+					layer.href = "#" // to make it look clickable
+				}
+				
+			}
+			if (enabled_orTrue !== false) {
+				layer.addEventListener(
+					"click",
+					function(e)
+					{
+						e.preventDefault()
+						{ // this should capture value
+							console.log("TODO: copy ", value)
+						}
+						return false
+					}
+				)
+			}
+			//
+			return layer
+		}
+		function _new_clearingBreakLayer()
+		{
+			const layer = document.createElement("br")
+			layer.clear = "both"
+			//
+			return layer
+		}
+		//
+		{ // clear layer children
+			while (self.layer.firstChild) {
+			    self.layer.removeChild(self.layer.firstChild)
+			}
+		}
+		const details_containerLayer = document.createElement("div")
+		{
+			details_containerLayer.style.border = "1px solid #888"
+			details_containerLayer.style.borderRadius = "5px"
+		}
+		{
+			{ // Date
+				const div = _new_fieldContainerLayer()
+				{
+					const labelLayer = _new_fieldTitle_labelLayer("Date")
+					div.appendChild(labelLayer)
+					//
+					const valueLayer = _new_fieldValue_labelLayer(transaction.timestamp.toString()) // TODO: format
+					div.appendChild(valueLayer)
+				}
+				details_containerLayer.appendChild(div)
+			}
+			{
+				details_containerLayer.appendChild(_new_clearingBreakLayer())
+				details_containerLayer.appendChild(_new_separatorLayer())
+			}
+			{ // Amount
+				const div = _new_fieldContainerLayer()
+				{
+					const labelLayer = _new_fieldTitle_labelLayer("Amount")
+					div.appendChild(labelLayer)
+					//
+					const value = transaction.approx_float_amount
+					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					{
+						if (value < 0) {
+							valueLayer.style.color = "red"
+						} else {
+							valueLayer.style.color = "#aaa"
+						}
+						//
+						valueLayer.style.webkitUserSelect = "all"
+					}					
+					div.appendChild(valueLayer)
+				}
+				details_containerLayer.appendChild(div)
+			}
+			{
+				details_containerLayer.appendChild(_new_clearingBreakLayer())
+				details_containerLayer.appendChild(_new_separatorLayer())
+			}
+			{ // Mixin
+				const div = _new_fieldContainerLayer()
+				{
+					const labelLayer = _new_fieldTitle_labelLayer("Mixin")
+					div.appendChild(labelLayer)
+					//
+					const value = transaction.mixin
+					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					div.appendChild(valueLayer)
+				}
+				details_containerLayer.appendChild(div)
+			}
+			{
+				details_containerLayer.appendChild(_new_clearingBreakLayer())
+				details_containerLayer.appendChild(_new_separatorLayer())
+			}
+			{ // Transaction ID
+				const div = _new_fieldContainerLayer()
+				{
+					const hash = transaction.hash
+					const isTxHashNil = hash === null || typeof hash === 'undefined' || hash === ""
+					{ // left
+						const labelLayer = _new_fieldTitle_labelLayer("Transaction ID")
+						div.appendChild(labelLayer)
+					}
+					{ // right
+						const buttonLayer = _new_copyButton_aLayer(
+							hash,
+							isTxHashNil === false ? true : false
+						)
+						buttonLayer.style.float = "right"
+						div.appendChild(buttonLayer)
+					}
+					{ // to put the tx hash on the next line in the UI to make way for the COPY button
+						const clearingBreakLayer = document.createElement("br")
+						clearingBreakLayer.clear = "both"
+						div.appendChild(clearingBreakLayer)
+					}
+					const value = isTxHashNil === false ? hash : "N/A"
+					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					{ // special case
+						valueLayer.style.float = "left"
+						valueLayer.style.textAlign = "left"
+						//
+						valueLayer.style.width = "270px"
+						//
+						valueLayer.style.webkitUserSelect = "all"
+					}
+					div.appendChild(valueLayer)
+				}
+				details_containerLayer.appendChild(div)
+			}
+			{
+				details_containerLayer.appendChild(_new_clearingBreakLayer())
+				details_containerLayer.appendChild(_new_separatorLayer())
+			}
+			{ // Payment ID
+				const div = _new_fieldContainerLayer()
+				{
+					const payment_id = transaction.payment_id
+					const isTxPaymentIDNil = typeof payment_id === 'undefined' || payment_id === null || payment_id === ""
+					{ // left
+						const labelLayer = _new_fieldTitle_labelLayer("Payment ID")
+						div.appendChild(labelLayer)
+					}
+					{ // right
+						const buttonLayer = _new_copyButton_aLayer(
+							payment_id,
+							isTxPaymentIDNil === false ? true : false
+						)
+						buttonLayer.style.float = "right"
+						div.appendChild(buttonLayer)
+					}
+					{ // to put the tx hash on the next line in the UI to make way for the COPY button
+						const clearingBreakLayer = document.createElement("br")
+						clearingBreakLayer.clear = "both"
+						div.appendChild(clearingBreakLayer)
+					}
+					const value = isTxPaymentIDNil === false ? payment_id : "N/A"
+					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					{ // special case
+						valueLayer.style.float = "left"
+						valueLayer.style.textAlign = "left"
+						//
+						valueLayer.style.width = "270px"
+						//
+						valueLayer.style.webkitUserSelect = "all"
+					}
+					div.appendChild(valueLayer)
+				}
+				details_containerLayer.appendChild(div)
+			}
+			{
+				details_containerLayer.appendChild(_new_clearingBreakLayer())
+			}
+		}
+		self.layer.appendChild(details_containerLayer)
+		// self.DEBUG_BorderChildLayers()
 	}
 	//
 	//

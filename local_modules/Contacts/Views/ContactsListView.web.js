@@ -66,7 +66,6 @@ class ContactsListView extends View
 			contactsListController.EventName_listUpdated(),
 			function()
 			{
-				console.log("trampoline for _ContactsListController_EventName_listUpdated")
 				self._ContactsListController_EventName_listUpdated()
 			}
 		)
@@ -132,7 +131,6 @@ class ContactsListView extends View
 	_ContactsListController_EventName_listUpdated()
 	{
 		const self = this
-		console.log("contacts list view hears list updated")
 		self.reloadData()
 	}
 	//

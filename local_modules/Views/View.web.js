@@ -260,6 +260,11 @@ class View extends EventEmitter
 		const self = this
 		web_debug_utils.DEBUG_BorderSubviews(self)
 	}
+	DEBUG_BorderChildLayers()
+	{
+		const self = this
+		web_debug_utils.DEBUG_BorderChildLayers(self.layer)
+	}
 	//
 	//
 	// Runtime - Delegation - View visibility - Overridable - Be sure to call on super

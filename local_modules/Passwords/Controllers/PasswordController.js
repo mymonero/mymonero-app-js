@@ -277,7 +277,7 @@ class PasswordController extends EventEmitter
 				}
 				{ // guard
 					if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
-						console.log("isAlreadyGettingExistingOrNewPWFromUser. Exiting instead of re-initiating.")
+						// console.log("isAlreadyGettingExistingOrNewPWFromUser. Exiting instead of re-initiating.")
 						return // only need to wait for it to be obtained
 					}
 					self.isAlreadyGettingExistingOrNewPWFromUser = true

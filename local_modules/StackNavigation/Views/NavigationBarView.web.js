@@ -87,7 +87,8 @@ class NavigationBarView extends View
 		{
 			const layer = document.createElement("span")
 			{
-				layer.style.color = "#F8F7F8"
+				self.defaultNavigationBarTitleColor = "#F8F7F8" // so we can use it at runtime
+				layer.style.color = self.defaultNavigationBarTitleColor
 				layer.style.fontSize = "16px"
 				layer.style.position = "absolute"
 				layer.style.fontFamily = `"Helvetica Neue", Helvetica, Arial, sans-serif`
@@ -269,18 +270,29 @@ class NavigationBarView extends View
 			self.titleLayer.innerHTML = "" // clear
 			return
 		}
-		if (typeof stackView.Navigation_Title !== 'function') {
-			console.error("Error: stackView didn't define Navigation_Title()", stackView)
-			throw "stackView.Navigation_Title() not a function"
+		{
+			if (typeof stackView.Navigation_Title !== 'function') {
+				console.error("Error: stackView didn't define Navigation_Title()", stackView)
+				throw "stackView.Navigation_Title() not a function"
+			}
+		}
+		var titleTextColor = self.defaultNavigationBarTitleColor
+		if (typeof stackView.Navigation_TitleColor === 'function') {
+			const read_titleColor = stackView.Navigation_TitleColor()
+			if (read_titleColor !== null && typeof read_titleColor !== 'undefined' && read_titleColor.length !== 0) {
+				titleTextColor = read_titleColor
+			}
 		}
 		const titleString = stackView.Navigation_Title()
 		if (isAnimated === false) {
+			self.titleLayer.style.color = titleTextColor
 			self.titleLayer.innerHTML = titleString
 			return
 		}
 		const old_titleLayer = self.titleLayer
 		const successor_titleLayer = self.titleLayer.cloneNode()
 		{
+			successor_titleLayer.style.color = titleTextColor
 			successor_titleLayer.innerHTML = titleString // set up with new title
 		}
 		const parentWidth = self.titleLayer.parentNode.offsetWidth
