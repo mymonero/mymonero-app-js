@@ -46,6 +46,22 @@ class EnterExistingPasswordView extends View
 		self.layer.style.height = "50%"
 		self.layer.style.paddingTop = "25%"
 		self.layer.style.paddingBottom = "25%"
+		{
+			self.layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						const inputFieldLayer = self.selected_inputFieldLayer() // now we can select it from the DOM
+						if (typeof inputFieldLayer !== 'undefined' && inputFieldLayer !== null) {
+							inputFieldLayer.focus()
+						}
+					}
+					return false
+				}
+			)
+		}
 	}
 	//
 	//
@@ -197,7 +213,7 @@ class EnterExistingPasswordView extends View
 			}
 			self.layer.innerHTML = htmlString
 		}
-		{ // JS-land setup, observation, etc:
+		{ // DOM select -> setup, observe, etc:
 			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
 				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
 				layer.style.color = "red"

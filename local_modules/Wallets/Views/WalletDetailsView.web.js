@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const TransactionDetailsView = require("./TransactionDetailsView.web")
 //
 class WalletDetailsView extends View
 {
@@ -40,7 +41,7 @@ class WalletDetailsView extends View
 		{
 			self.wallet = options.wallet
 			if (self.wallet === null || typeof self.wallet === 'undefined') {
-				throw "options.wallet nil but required for WalletDetailsView"
+				throw "options.wallet nil but required for " + self.constructor.name
 				return
 			}
 		}
@@ -49,7 +50,9 @@ class WalletDetailsView extends View
 	setup()
 	{
 		const self = this
-		//
+		{ // zeroing / initialization
+			self.current_transactionDetailsView = null
+		}
 		self._setup_views()
 		self._setup_startObserving()
 		//
@@ -138,6 +141,20 @@ class WalletDetailsView extends View
 	}
 	//
 	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{ // We're going to make sure we tear this down here as well as in VDA in case we get popped over back to root (thus never calling VDA but calling this)
+		const self = this
+		super.TearDown()
+		//
+		if (self.current_transactionDetailsView !== null) {
+			self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_transactionDetailsView = null // must zero again and should free
+		}
+	}
+	//
+	//
 	// Runtime - Accessors - Navigation
 	//
 	Navigation_Title()
@@ -160,15 +177,43 @@ class WalletDetailsView extends View
 	}
 	//
 	//
+	// Internal - Runtime - Accessors - Child elements - Transactions elements
+	//
+	idForChild_transactionsUL()
+	{
+		const self = this
+		//
+		return self._idPrefix() + "_" + "transactionsUL"
+	}
+	DOMSelected_transactionsUL()
+	{
+		const self = this
+		const layer = self.layer.querySelector(`ul#${ self.idForChild_transactionsUL() }`)
+		//
+		return layer
+	}
+	classForChild_transactionsLI()
+	{
+		const self = this
+		//
+		return self._idPrefix() + "_" + "transactionsLI"
+	}
+	DOMSelected_transactionsLIs()
+	{
+		const self = this
+		const layers = self.layer.querySelectorAll(`li.${ self.classForChild_transactionsLI() }`) // we can use a class here cause the class is namespaced to self via prefix's self.View_UUID()
+		//
+		return layers
+	}
+	//
+	//
+	//
 	// Internal - Runtime - Accessors - Child elements - Delete btn
 	//
 	//
 	idForChild_deleteWalletWithIDLayer()
 	{
 		const self = this
-		if (typeof self.wallet._id === 'undefined' || !self.wallet._id) {
-			throw "idForChild_deleteWalletWithIDLayer called but nil self.wallet._id"
-		}
 		//
 		return self._idPrefix() + "_" + "idForChild_deleteWalletWithIDLayer"
 	}
@@ -194,7 +239,6 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		console.log("_idPrefix", self._idPrefix())
 		var htmlString = ''
 		{
 			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // unlikely, but possible
@@ -255,42 +299,170 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		var innerHTMLString = ""
-		{
-			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // the usual scenario
-				var ulInnerHTMLString = ""
-				const stateCachedTransactions = wallet.New_StateCachedTransactions()
-				stateCachedTransactions.forEach(
-					function(tx, i)
-					{
-						var liInnerHTMLString = ""
-						liInnerHTMLString += `<p>${tx.approx_float_amount} ${wallet.wallet_currency}</p>`
-						if (tx.isConfirmed === false) {
-							liInnerHTMLString += `<p>(unconfirmed)</p>`
-						}
-						if (tx.isUnlocked === false) {
-							liInnerHTMLString += `<p>(locked) ${tx.lockedReason}</p>`
-						}
-						liInnerHTMLString += `<p>${tx.timestamp.toString()}</p>`
-						liInnerHTMLString += `<p>Mixin: ${tx.mixin}</p>`
-						liInnerHTMLString += `<p>Hash: ${tx.hash}</p>`
-						liInnerHTMLString += `<p>Payment ID: ${tx.payment_id || "N/A"}</p>`
-						//
-						ulInnerHTMLString += `<li>${liInnerHTMLString}</li>`
-					}
-				)
-				// TODO: optimize this by maybe not using innerHTML?
-				innerHTMLString += "<h3>Transactions</h3>"
-				if (wallet.HasEverFetched_transactions() === false) {
-					innerHTMLString += "<p>Loading…</p>" 
-				} else {
-					innerHTMLString += `<ul>${ulInnerHTMLString}</ul>`
-				}		
-			} else { // otherwise, it errored, which gets handled in _configureUIWithWallet__accountInfo			
+		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
+			throw "WalletDetailsView opened while wallet failed to init or boot."
+			return
+		}
+		const layer_transactions = self.layer_transactions
+		{ // clear layer_transactions
+			while (layer_transactions.firstChild) {
+			    layer_transactions.removeChild(layer_transactions.firstChild)
 			}
 		}
-		self.layer_transactions.innerHTML = innerHTMLString
+		if (wallet.HasEverFetched_transactions() === false) {
+			{
+				const p = document.createElement("p")
+				{
+					p.innerHTML = "Loading…"
+				}
+				layer_transactions.appendChild(p)
+			}
+			//
+			return
+		}
+		const ul = document.createElement("ul")
+		{
+			const stateCachedTransactions = wallet.New_StateCachedTransactions()
+			stateCachedTransactions.forEach(
+				function(tx, i)
+				{
+					const li = document.createElement("li")
+					{
+						const table = document.createElement("table")
+						{ // tables forever
+							const tr_1 = document.createElement("tr")
+							{
+								{ // Amount
+									const td = document.createElement("td")
+									{
+										td.innerHTML = tx.approx_float_amount
+										td.style.textAlign = "left"
+										td.style.fontSize = "14px"
+										td.style.width = "75%"
+										td.style.fontFamily = "monospace" // TODO
+										td.style.color = tx.approx_float_amount < 0 ? "red" : "#f0f0f0"
+									}
+									tr_1.appendChild(td)
+								}
+								{ // Date
+									const td = document.createElement("td")
+									{
+										td.innerHTML = `${tx.timestamp.toString()}` // TODO: format per design (e.g. 27 NOV 2016)
+										td.style.textAlign = "right"
+										td.style.fontSize = "14px"
+										td.style.width = "25%"
+										td.style.fontFamily = "monospace" // TODO
+										td.style.color = "#ccc"
+									}
+									tr_1.appendChild(td)
+								}
+							}
+							table.appendChild(tr_1)
+							//
+							const tr_2 = document.createElement("tr")
+							{
+								{ // Payment ID (or contact name?)
+									const td = document.createElement("td")
+									{
+										td.style.textAlign = "left"
+										td.style.width = "75%"
+									}
+									{
+										const paymentID_span = document.createElement("span")
+										{ // wrap to create ellipsis											
+											paymentID_span.style.display = "block" // to get width behavior
+											paymentID_span.style.width = "184px" // it would be nice to make this '70%' of the above '75%' but that doesn't seem to work properly
+											//
+											paymentID_span.style.whiteSpace = "nowrap"
+											paymentID_span.style.overflow = "hidden"
+											paymentID_span.style.textOverflow = "ellipsis"
+											paymentID_span.style.fontFamily = "monospace" // TODO
+											paymentID_span.style.fontSize = "14px"
+											paymentID_span.style.color = "#909090"
+											paymentID_span.style.textAlign = "left"
+											//
+											paymentID_span.innerHTML = `${ tx.payment_id || "N/A" }`
+										}
+										td.appendChild(paymentID_span)
+									}
+									tr_2.appendChild(td)
+								}
+								{ // Date
+									const td = document.createElement("td")
+									{
+										td.innerHTML = `${ tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED" }`
+										td.style.textAlign = "right"
+										td.style.fontSize = "11px"
+										td.style.width = "25%"
+										td.style.fontFamily = "monospace" // TODO
+										td.style.color = "#666"
+									}
+									tr_2.appendChild(td)
+								}
+							}
+							table.appendChild(tr_2)
+						}
+						li.appendChild(table)
+					}
+					{ // observations
+						li.addEventListener(
+							"click",
+							function(e)
+							{
+								e.preventDefault() // not that there would be one
+								{
+									const clicked_layer = this
+									// NOTE: here, we can safely capture the parent scope's `tx` or `i`
+									self._didClickTransaction(tx, i)
+								}
+								return false
+							}
+						)
+					}
+					ul.appendChild(li)
+				}
+			)
+		}
+		layer_transactions.appendChild(ul)
 	}
+	//
+	//
+	// Runtime - Imperatives - Navigation
+	//
+	pushDetailsViewFor_transaction(transaction)
+	{
+		const self = this
+		const _cmd = "pushDetailsViewFor_transaction"
+		if (typeof transaction === 'undefined' || transaction === null) {
+			throw self.constructor.name + " requires transaction to " + _cmd
+			return
+		}
+		if (self.current_transactionDetailsView !== null) {
+			throw "Asked to " + _cmd + " while self.current_transactionDetailsView !== null"
+			return
+		}
+		const navigationController = self.navigationController
+		if (typeof navigationController === 'undefined' || navigationController === null) {
+			throw self.constructor.name + " requires navigationController to " + _cmd
+			return
+		}
+		{
+			const options = 
+			{
+				transaction: transaction
+			}
+			const view = new TransactionDetailsView(options, self.context)
+			navigationController.PushView(
+				view, 
+				true // animated
+			)
+			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
+			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
+			// by tearing it down on self.viewDidAppear() below and on TearDown()
+			self.current_transactionDetailsView = view
+		}
+	}
+	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
 	//
@@ -302,6 +474,17 @@ class WalletDetailsView extends View
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+			}
+		}
+	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		{
+			if (self.current_transactionDetailsView !== null) {
+				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+				self.current_transactionDetailsView = null // must zero again and should free
 			}
 		}
 	}
@@ -318,6 +501,15 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		self._configureUIWithWallet__transactions()
+	}
+	//
+	//
+	// Runtime - Delegation - Interactions
+	//
+	_didClickTransaction(transaction, atIndex)
+	{
+		const self = this
+		self.pushDetailsViewFor_transaction(transaction)
 	}
 }
 module.exports = WalletDetailsView

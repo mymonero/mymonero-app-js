@@ -413,8 +413,8 @@ class NavigationBarView extends View
 							buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
 						}
 						{ // take over layout
-							buttonView.layer.style.display = "block"
-							buttonView.layer.style.float = "left" // so it sticks to the left of the btn holder view layer
+							buttonView.layer.style.position = "absolute"
+							buttonView.layer.style.left = "0" // so it sticks to the left of the btn holder view layer
 						}
 						self.leftBarButtonView = buttonView
 						{ // now present
@@ -449,8 +449,8 @@ class NavigationBarView extends View
 							buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
 						}
 						{ // take over layout
-							buttonView.layer.style.display = "block"
-							buttonView.layer.style.float = "right" // so it sticks to the right of the btn holder view layer
+							buttonView.layer.style.position = "absolute"
+							buttonView.layer.style.right = "0" // so it sticks to the left of the btn holder view layer
 						}
 						self.rightBarButtonView = buttonView
 						{ // now present

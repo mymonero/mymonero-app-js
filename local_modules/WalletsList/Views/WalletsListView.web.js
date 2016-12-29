@@ -83,6 +83,20 @@ class WalletsListView extends View
 	}
 	//
 	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		const self = this
+		super.TearDown()
+		//
+		if (self.current_walletDetailsView !== null) {
+			self.current_walletDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_walletDetailsView = null // must zero again and should free
+		}
+	}
+	//
+	//
 	// Runtime - Accessors - Navigation
 	//
 	Navigation_Title()
@@ -228,7 +242,8 @@ class WalletsListView extends View
 			)
 			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
 			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
-			// by tearing it down on self.viewDidAppear() below
+			// by tearing it down on self.viewDidAppear() below and on TearDown() (although since this is a root stackView
+			// the latter ought not to happen)
 			self.current_walletDetailsView = view
 		}
 	}	
@@ -249,12 +264,12 @@ class WalletsListView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		//
-		if (typeof self.navigationController === 'undefined' || self.navigationController === null) {
-			throw "missing self.navigationController in viewWillAppear()"
+		{
+			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+			}
 		}
-		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 	}
 	viewDidAppear()
 	{
