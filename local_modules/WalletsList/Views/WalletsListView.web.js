@@ -56,6 +56,8 @@ class WalletsListView extends View
 	_setup_views()
 	{
 		const self = this
+		// 
+		self.layer.style.webkitUserSelect = "none"
 		//
 		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
@@ -213,17 +215,21 @@ class WalletsListView extends View
 	pushWalletDetailsView(wallet)
 	{
 		const self = this
-		if (typeof wallet === 'undefined' || wallet === null) {
-			throw "WalletsListView requires self.wallet to pushWalletDetailsView"
-			return
-		}
-		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) { // unlikely, but possible
-			console.log("Not pushing as wallet failed to init or boot.")
-			return // just don't push - no need to error 
-		}
 		if (self.current_walletDetailsView !== null) {
-			throw "Asked to pushWalletDetailsView while self.current_walletDetailsView !== null"
+			// Commenting this throw as we are going to use this as the official way to lock this function,
+			// e.g. if the user is double-clicking on a cell to push a details view
+			// throw "Asked to pushWalletDetailsView while self.current_walletDetailsView !== null"
 			return
+		}
+		{ // check wallet
+			if (typeof wallet === 'undefined' || wallet === null) {
+				throw "WalletsListView requires self.wallet to pushWalletDetailsView"
+				return
+			}
+			if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) { // unlikely, but possible
+				console.log("Not pushing as wallet failed to init or boot.")
+				return // just don't push - no need to error 
+			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {

@@ -440,17 +440,20 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const _cmd = "pushDetailsViewFor_transaction"
-		if (typeof self.wallet === 'undefined' || self.wallet === null) {
-			throw self.constructor.name + " requires self.wallet to " + _cmd
-			return
-		}
-		if (typeof transaction === 'undefined' || transaction === null) {
-			throw self.constructor.name + " requires transaction to " + _cmd
-			return
-		}
 		if (self.current_transactionDetailsView !== null) {
-			throw "Asked to " + _cmd + " while self.current_transactionDetailsView !== null"
+			// commenting this throw so we can use this as the official way to block double-clicks, etc
+			// throw "Asked to " + _cmd + " while self.current_transactionDetailsView !== null"
 			return
+		}
+		{ // validate wallet and tx
+			if (typeof self.wallet === 'undefined' || self.wallet === null) {
+				throw self.constructor.name + " requires self.wallet to " + _cmd
+				return
+			}
+			if (typeof transaction === 'undefined' || transaction === null) {
+				throw self.constructor.name + " requires transaction to " + _cmd
+				return
+			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {

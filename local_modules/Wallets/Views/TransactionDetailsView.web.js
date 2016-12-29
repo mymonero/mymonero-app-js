@@ -272,7 +272,7 @@ class TransactionDetailsView extends View
 							valueLayer.style.color = "#aaa"
 						}
 						//
-						valueLayer.style.webkitUserSelect = "all"
+						// valueLayer.style.webkitUserSelect = "all" // commenting for now
 					}					
 					div.appendChild(valueLayer)
 				}
@@ -328,7 +328,7 @@ class TransactionDetailsView extends View
 						//
 						valueLayer.style.width = "270px"
 						//
-						valueLayer.style.webkitUserSelect = "all"
+						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
 					}
 					div.appendChild(valueLayer)
 				}
@@ -368,7 +368,7 @@ class TransactionDetailsView extends View
 						//
 						valueLayer.style.width = "270px"
 						//
-						valueLayer.style.webkitUserSelect = "all"
+						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
 					}
 					div.appendChild(valueLayer)
 				}
