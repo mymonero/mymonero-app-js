@@ -263,10 +263,33 @@ class TransactionDetailsView extends View
 			//
 			return layer
 		}
+		function _new_inlineMessageDialogLayer(messageString)
+		{
+			const layer = document.createElement("div")
+			layer.innerHTML = messageString
+			layer.style.border = "1px solid #ccc"
+			layer.style.backgroundColor = "#333"
+			layer.style.margin = "0 0 10px 0"
+			//
+			return layer
+		}
 		//
 		{ // clear layer children
 			while (self.layer.firstChild) {
 			    self.layer.removeChild(self.layer.firstChild)
+			}
+		}
+		{ // messages/alerts
+			if (transaction.isConfirmed !== true) {
+				const messageString = "This transaction is still pending."
+				const layer = _new_inlineMessageDialogLayer(messageString)
+				self.layer.appendChild(layer)
+			}
+			if (transaction.isUnlocked !== true) {
+				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
+				var messageString = "This transaction is currently locked. " + lockedReason
+				const layer = _new_inlineMessageDialogLayer(messageString)
+				self.layer.appendChild(layer)
 			}
 		}
 		const details_containerLayer = document.createElement("div")
@@ -416,6 +439,33 @@ class TransactionDetailsView extends View
 	}
 	//
 	//
+	// Runtime - Delegation - Event handlers - Wallet
+	//
+	wallet_EventName_transactionsChanged()
+	{
+		const self = this
+		var updated_transaction = null // to find
+		const transactions = self.wallet.New_StateCachedTransactions() // important to use this instead of .transactions
+		const transactions_length = transactions.length
+		for (let i = 0 ; i < transactions_length ; i++) {
+			const this_transaction = transactions[i]
+			if (this_transaction.hash === self.transaction.hash) {
+				updated_transaction = this_transaction
+				break
+			}
+		}
+		if (updated_transaction !== null) {
+			self.transaction = updated_transaction
+			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+				self.navigationController.SetNavigationBarTitleNeedsUpdate()
+			}
+			self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
+		} else {
+			throw "Didn't find same transaction in already open details view. Probably a server bug."
+		}
+	}
+	//
+	//
 	// Runtime - Delegation - Navigation/View lifecycle
 	//
 	viewWillAppear()
@@ -433,30 +483,6 @@ class TransactionDetailsView extends View
 	{
 		const self = this
 		super.viewDidAppear()
-	}
-	//
-	//
-	// Runtime - Delegation - Event handlers - Wallet
-	//
-	wallet_EventName_transactionsChanged()
-	{
-		const self = this
-		var updated_transaction = null // to find
-		const transactions = self.wallet.transactions
-		const transactions_length = transactions.length
-		for (let i = 0 ; i < transactions_length ; i++) {
-			const this_transaction = transactions[i]
-			if (this_transaction.hash === self.transaction.hash) {
-				updated_transaction = this_transaction
-				break
-			}
-		}
-		if (updated_transaction !== null) {
-			self.transaction = updated_transaction
-			self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
-		} else {
-			throw "Didn't find same transaction in already open details view. Probably a server bug."
-		}
 	}
 }
 module.exports = TransactionDetailsView

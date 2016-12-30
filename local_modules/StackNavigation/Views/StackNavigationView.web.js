@@ -401,6 +401,17 @@ class StackNavigationView extends View
 	}
 	//
 	//
+	// Runtime - Imperatives - Navigation bar updates
+	//
+	SetNavigationBarTitleNeedsUpdate()
+	{
+		const self = this
+		self.navigationBarView.SetTitleNeedsUpdate(
+			self.topStackView
+		)
+	}
+	//
+	//
 	// Runtime - Delegation - Implementation/support for TabBarAndContentView events
 	//
 	TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()

@@ -257,6 +257,31 @@ class NavigationBarView extends View
 			self.__startObserving_new_topStackView(stackView)
 		}	
 	}
+	SetTitleNeedsUpdate(stackView)
+	{
+		const self = this
+		if (typeof stackView === 'undefined' || stackView === null) {
+			self.titleLayer.innerHTML = "" // clear
+			return
+		}
+		{
+			if (typeof stackView.Navigation_Title !== 'function') {
+				console.error("Error: stackView didn't define Navigation_Title()", stackView)
+				throw "stackView.Navigation_Title() not a function"
+			}
+		}
+		var titleTextColor = self.defaultNavigationBarTitleColor
+		if (typeof stackView.Navigation_TitleColor === 'function') {
+			const read_titleColor = stackView.Navigation_TitleColor()
+			if (read_titleColor !== null && typeof read_titleColor !== 'undefined' && read_titleColor.length !== 0) {
+				titleTextColor = read_titleColor
+			}
+		}
+		const titleString = stackView.Navigation_Title()
+		//
+		self.titleLayer.style.color = titleTextColor
+		self.titleLayer.innerHTML = titleString
+	}
 	SetTitleFromTopStackView(
 		stackView,
 		old_topStackView,
