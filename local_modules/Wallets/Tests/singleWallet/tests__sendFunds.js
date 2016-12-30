@@ -43,7 +43,7 @@ function _proceedTo_test_sendFunds_1(fn)
 		const target_address = "donate.getmonero.org"
 		const amount = 0.001
 		const mixin = 3
-		const payment_id = null
+		const payment_id = "f3ca9d6e6cc95d42e9b3e7acd5310a1d0183ca964fa4b814640e570522b71329"
 		wallet.SendFunds(
 			target_address,
 			amount,

@@ -150,11 +150,38 @@ class WalletDetailsView extends View
 		const self = this
 		super.TearDown()
 		//
-		if (self.current_transactionDetailsView !== null) {
-			self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_transactionDetailsView = null // must zero again and should free
+		self._stopObserving()
+		{
+			if (self.current_transactionDetailsView !== null) {
+				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+				self.current_transactionDetailsView = null // must zero again and should free
+			}
 		}
 	}
+	_stopObserving()
+	{
+		const self = this
+		function doesListenerFunctionExist(fn)
+		{
+			if (typeof fn !== 'undefined' && fn !== null) {
+				return true
+			}
+			return false
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_balanceChanged(),
+				self.wallet_EventName_balanceChanged_listenerFunction
+			)
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_transactionsChanged(),
+				self.wallet_EventName_transactionsChanged_listenerFunction
+			)
+		}
+	}
+	
 	//
 	//
 	// Runtime - Accessors - Navigation

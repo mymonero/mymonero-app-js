@@ -83,6 +83,27 @@ class TransactionDetailsView extends View
 	_setup_startObserving()
 	{
 		const self = this
+		self._setup_startObserving_wallet()
+	}
+	_setup_startObserving_wallet()
+	{
+		const self = this
+		if (typeof self.wallet === 'undefined' || self.wallet === null) {
+			throw "nil self.wallet undefined in " + self.constructor.name + "/" + "_setup_startObserving_wallet`"
+			return
+		}
+		// here, we're going to store the listener functions as instance properties
+		// because when we need to stopObserving we need to have access to the listener fns
+		//
+		// txs updated
+		self.wallet_EventName_transactionsChanged_listenerFunction = function()
+		{
+			self.wallet_EventName_transactionsChanged()
+		}
+		self.wallet.on(
+			self.wallet.EventName_transactionsChanged(),
+			self.wallet_EventName_transactionsChanged_listenerFunction
+		)
 	}
 	//
 	//
@@ -94,13 +115,25 @@ class TransactionDetailsView extends View
 		super.TearDown()
 		//
 		self.transaction = null
-		self.stopObserving_wallet()
+		self._stopObserving()
 		self.wallet = null
 	}
-	stopObserving_wallet()
+	_stopObserving()
 	{
 		const self = this
-		// TODO:
+		function doesListenerFunctionExist(fn)
+		{
+			if (typeof fn !== 'undefined' && fn !== null) {
+				return true
+			}
+			return false
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_transactionsChanged(),
+				self.wallet_EventName_transactionsChanged_listenerFunction
+			)
+		}
 	}
 	//
 	//
@@ -400,6 +433,30 @@ class TransactionDetailsView extends View
 	{
 		const self = this
 		super.viewDidAppear()
+	}
+	//
+	//
+	// Runtime - Delegation - Event handlers - Wallet
+	//
+	wallet_EventName_transactionsChanged()
+	{
+		const self = this
+		var updated_transaction = null // to find
+		const transactions = self.wallet.transactions
+		const transactions_length = transactions.length
+		for (let i = 0 ; i < transactions_length ; i++) {
+			const this_transaction = transactions[i]
+			if (this_transaction.hash === self.transaction.hash) {
+				updated_transaction = this_transaction
+				break
+			}
+		}
+		if (updated_transaction !== null) {
+			self.transaction = updated_transaction
+			self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
+		} else {
+			throw "Didn't find same transaction in already open details view. Probably a server bug."
+		}
 	}
 }
 module.exports = TransactionDetailsView
