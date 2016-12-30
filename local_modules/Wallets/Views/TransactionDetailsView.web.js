@@ -281,7 +281,7 @@ class TransactionDetailsView extends View
 		}
 		{ // messages/alerts
 			if (transaction.isConfirmed !== true) {
-				const messageString = "This transaction is still pending."
+				const messageString = "This transaction is still pending confirmation."
 				const layer = _new_inlineMessageDialogLayer(messageString)
 				self.layer.appendChild(layer)
 			}
