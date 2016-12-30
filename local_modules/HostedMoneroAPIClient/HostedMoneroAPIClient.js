@@ -308,7 +308,15 @@ class HostedMoneroAPIClient
 			const data_outputs = data.outputs
 			const finalized_unspentOutputs = data.outputs || [] // to finalize:
 			for (var i = 0; i < finalized_unspentOutputs.length; i++) {
-				for (var j = 0; finalized_unspentOutputs[i] && j < finalized_unspentOutputs[i].spend_key_images.length; j++) {
+				const unspent_output = finalized_unspentOutputs[i]
+				if (unspent_output === null || typeof unspent_output === 'undefined') {
+					throw "unspent_output at index " + i + " was null"
+				}
+				const spend_key_images = unspent_output.spend_key_images
+				if (spend_key_images === null || typeof spend_key_images === 'undefined') {
+					throw "spend_key_images of unspent_output at index " + i + " was null"
+				}
+				for (var j = 0; j < spend_key_images.length; j++) {
 					var key_image = TransactionKeyImageCache.Lazy_KeyImage(
 						finalized_unspentOutputs[i].tx_pub_key,
 						finalized_unspentOutputs[i].index,
