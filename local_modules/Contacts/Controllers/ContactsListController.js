@@ -217,6 +217,7 @@ class ContactsListController extends EventEmitter
 	WhenBooted_AddContact(
 		fullname,
 		address__XMR,
+		payment_id,
 		fn // fn: (err: Error?, instance: Contact?) -> Void
 	)
 	{
@@ -234,6 +235,7 @@ class ContactsListController extends EventEmitter
 							//
 							fullname: fullname,
 							address__XMR: address__XMR,
+							payment_id: payment_id
 						}
 						const instance = new Contact(options, context)
 						instance.on(instance.EventName_booted(), function()

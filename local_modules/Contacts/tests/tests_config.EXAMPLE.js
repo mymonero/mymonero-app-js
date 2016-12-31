@@ -32,8 +32,9 @@ module.exports =
 {
 	persistencePassword: "…",
 	//
-	fullname: "…",
-	address__XMR: "…",
+	fullname: "GetMonero.org Donation",
+	address__XMR: "donate.getmonero.org",
+	payment_id: "…"
 	//
 	// after creating, populate:
 	getAddressFromContactWith_id: "", // to run addressFromContact

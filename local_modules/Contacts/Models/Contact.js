@@ -103,6 +103,7 @@ class Contact extends EventEmitter
 		{
 			self.fullname = self.options.fullname
 			self.address__XMR = self.options.address__XMR
+			self.payment_id = self.options.payment_id
 		}
 		self.saveToDisk(
 			function(err)
@@ -193,7 +194,7 @@ class Contact extends EventEmitter
 	{
 		const self = this
 		//
-		return "Contact with _id " + self._id + " named " + self.fullname + ", XMR address:" + self.address__XMR
+		return `Contact with _id ${self._id} named ${self.fullname}, XMR address: ${self.address__XMR}, payment id: ${self.payment_id}.`
 	}
 	//
 	EventName_booted()
@@ -301,6 +302,26 @@ class Contact extends EventEmitter
 					console.error("Failed to save new address__XMR", err)
 				} else {
 					console.log("Successfully saved new address__XMR.")
+					self._atRuntime_contactInfoUpdated()
+				}
+				fn(err)
+			}
+		)
+	}
+	Set_payment_id(
+		toValue,
+		fn
+	)
+	{
+		const self = this
+		self.payment_id = payment_id
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save new payment_id", err)
+				} else {
+					console.log("Successfully saved new payment_id")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)

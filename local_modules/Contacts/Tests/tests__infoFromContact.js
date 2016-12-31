@@ -75,6 +75,7 @@ function _proceedTo_test_gettingAddressFromContact(fn)
 	{
 		console.log("Contact is ", instance)
 		console.log("Address is ", instance.address__XMR)
+		console.log("Payment ID is ", instance.payment_id)
 		fn()
 	})
 	instance.on(instance.EventName_errorWhileBooting(), function(err)

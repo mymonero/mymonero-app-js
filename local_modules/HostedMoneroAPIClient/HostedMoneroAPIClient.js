@@ -309,7 +309,11 @@ class HostedMoneroAPIClient
 			const finalized_unspentOutputs = data.outputs || [] // to finalize:
 			for (var i = 0; i < finalized_unspentOutputs.length; i++) {
 				const unspent_output = finalized_unspentOutputs[i]
-				if (unspent_output === null || typeof unspent_output === 'undefined') {
+				if (
+					unspent_output === null 
+					|| typeof unspent_output === 'undefined' 
+					|| !unspent_output // just preserving what was in the original code
+				) {
 					throw "unspent_output at index " + i + " was null"
 				}
 				const spend_key_images = unspent_output.spend_key_images

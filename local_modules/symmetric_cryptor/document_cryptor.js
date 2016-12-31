@@ -112,6 +112,11 @@ function New_EncryptedDocument__Async(
 				)
 				return
 			}
+			if (typeof finalizedPlaintextStringToEncrypt === 'undefined' || finalizedPlaintextStringToEncrypt === null) {
+				const finalizedValue = finalizedPlaintextStringToEncrypt // do not attempt to encrypt
+				__storeFinalizedValue_andCallBack(finalizedValue)
+				return
+			}
 			symmetric_string_cryptor.EncryptedBase64String__Async(
 				finalizedPlaintextStringToEncrypt, 
 				password,
