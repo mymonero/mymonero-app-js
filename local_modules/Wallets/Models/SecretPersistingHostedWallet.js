@@ -629,6 +629,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Events - Updates
 
+	EventName_walletLabelChanged()
+	{
+		return "EventName_walletLabelChanged"
+	}
 	EventName_balanceChanged()
 	{
 		return "EventName_balanceChanged"
@@ -938,7 +942,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
 
-	SetWalletLabel(
+	Set_WalletLabel(
 		toLabel,
 		fn
 	)
@@ -946,6 +950,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 		const self = this
 		if (typeof toLabel === 'undefined' || toLabel === null || toLabel.length < 1) {
 			return fn(new Error("Please enter a wallet name"))
+		}
+		if (self.walletLabel === toLabel) {
+			fn() // nothing to do
+			return
 		}
 		self.walletLabel = toLabel
 		self.saveToDisk(
@@ -956,6 +964,10 @@ class SecretPersistingHostedWallet extends EventEmitter
 				} else {
 					console.log("Successfully saved new wallet name.")
 				}
+				setTimeout(function()
+				{
+					self.emit(self.EventName_walletLabelChanged(), toLabel)
+				})
 				fn(err)
 			}
 		)
