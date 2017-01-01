@@ -176,6 +176,7 @@ class WalletsListView extends View
 	_configureWith_wallets(wallets)
 	{
 		const self = this
+		const context = self.context
 		// TODO: diff these wallets with existing wallets?
 		if (self.walletCellViews.length != 0) {
 			// for now, just flash list:
@@ -189,24 +190,24 @@ class WalletsListView extends View
 			)
 			self.walletCellViews = []
 		}
-		// now add subviews
-		const context = self.context
-		wallets.forEach(
-			function(wallet, i)
-			{
-				const options = 
+		{ // add subviews
+			wallets.forEach(
+				function(wallet, i)
 				{
-					cell_tapped_fn: function(cellView)
+					const options = 
 					{
-						self.pushWalletDetailsView(cellView.wallet)
+						cell_tapped_fn: function(cellView)
+						{
+							self.pushWalletDetailsView(cellView.wallet)
+						}
 					}
+					const view = new WalletsListCellView(options, context)
+					self.walletCellViews.push(view)
+					view.ConfigureWith_wallet(wallet)
+					self.addSubview(view)
 				}
-				const view = new WalletsListCellView(options, context)
-				self.walletCellViews.push(view)
-				view.ConfigureWith_wallet(wallet)
-				self.addSubview(view)
-			}
-		)
+			)
+		}
 	}
 	//
 	//

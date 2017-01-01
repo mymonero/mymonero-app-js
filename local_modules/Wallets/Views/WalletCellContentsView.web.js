@@ -118,6 +118,12 @@ class WalletCellContentsView extends View
 			}
 			return false
 		}
+		if (doesListenerFunctionExist(self.wallet_EventName_walletLabelChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_walletLabelChanged(),
+				self.wallet_EventName_walletLabelChanged_listenerFunction
+			)
+		}
 		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_balanceChanged(),
@@ -267,24 +273,24 @@ class WalletCellContentsView extends View
 		// here, we're going to store a bunch of functions as instance properties
 		// because if we need to stopObserving we need to have access to the listener fns
 		//
-		// account info updated
+		// wallet label
+		self.wallet_EventName_walletLabelChanged_listenerFunction = function()
+		{
+			self._configureUIWithWallet__accountInfo()
+		}
+		self.wallet.on(
+			self.wallet.EventName_walletLabelChanged(),
+			self.wallet_EventName_walletLabelChanged_listenerFunction
+		)
+		// balance
 		self.wallet_EventName_balanceChanged_listenerFunction = function()
 		{
-			self.wallet_EventName_balanceChanged()
+			self._configureUIWithWallet__accountInfo()
 		}
 		self.wallet.on(
 			self.wallet.EventName_balanceChanged(),
 			self.wallet_EventName_balanceChanged_listenerFunction
 		)
-	}
-	//
-	//
-	// Internal - Runtime - Delegation - Event handlers - Wallet
-	//
-	wallet_EventName_balanceChanged()
-	{
-		const self = this
-		self._configureUIWithWallet__accountInfo()
 	}
 }
 module.exports = WalletCellContentsView
