@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 //
 class TransactionDetailsView extends View
 {
@@ -178,102 +179,6 @@ class TransactionDetailsView extends View
 			return
 		}
 		const transaction = self.transaction
-		function _new_fieldContainerLayer()
-		{
-			const layer = document.createElement("div")
-			layer.style.padding = "18px 0"
-			//
-			return layer
-		}
-		function _new_fieldTitle_labelLayer(labelText)
-		{
-			const layer = document.createElement("span")
-			{
-				layer.innerHTML = labelText
-				layer.style.float = "left"
-				layer.style.textAlign = "left"
-				layer.style.fontSize = "14px"
-				layer.style.fontWeight = "bold"
-				layer.style.color = "#ccc"
-				layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
-			}				
-			return layer
-		}
-		function _new_fieldValue_labelLayer(labelText)
-		{
-			const layer = document.createElement("span")
-			{
-				layer.innerHTML = labelText
-				layer.style.float = "right"
-				layer.style.textAlign = "right"
-				layer.style.fontSize = "14px"
-				layer.style.color = "#aaa"
-				layer.style.fontFamily = "monospace"
-			}				
-			return layer
-		}
-		function _new_separatorLayer()
-		{
-			const layer = document.createElement("div")
-			{
-				layer.style.width = "calc(100% - 15px)"
-				layer.style.marginLeft = "15px"
-				layer.style.height = "1px"
-				layer.style.backgroundColor = "#666"
-				layer.style.color = "#ccc"
-			}				
-			return layer
-		}
-		function _new_copyButton_aLayer(value, enabled_orTrue)
-		{
-			const layer = document.createElement("a")
-			{
-				layer.innerHTML = "COPY"
-				layer.style.float = "right"
-				layer.style.textAlign = "right"
-				layer.style.fontSize = "15px"
-				layer.style.fontWeight = "bold"
-				//
-				layer.style.color = enabled_orTrue !== false ? "#6666ff" : "#444"
-				if (enabled_orTrue === true) {
-					layer.href = "#" // to make it look clickable
-				}
-				
-			}
-			if (enabled_orTrue !== false) {
-				layer.addEventListener(
-					"click",
-					function(e)
-					{
-						e.preventDefault()
-						{ // this should capture value
-							self.context.pasteboard.CopyString(value)
-						}
-						return false
-					}
-				)
-			}
-			//
-			return layer
-		}
-		function _new_clearingBreakLayer()
-		{
-			const layer = document.createElement("br")
-			layer.clear = "both"
-			//
-			return layer
-		}
-		function _new_inlineMessageDialogLayer(messageString)
-		{
-			const layer = document.createElement("div")
-			layer.innerHTML = messageString
-			layer.style.border = "1px solid #ccc"
-			layer.style.backgroundColor = "#333"
-			layer.style.margin = "0 0 10px 0"
-			//
-			return layer
-		}
-		//
 		{ // clear layer children
 			while (self.layer.firstChild) {
 			    self.layer.removeChild(self.layer.firstChild)
@@ -282,13 +187,13 @@ class TransactionDetailsView extends View
 		{ // messages/alerts
 			if (transaction.isConfirmed !== true) {
 				const messageString = "This transaction is still pending confirmation."
-				const layer = _new_inlineMessageDialogLayer(messageString)
+				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString)
 				self.layer.appendChild(layer)
 			}
 			if (transaction.isUnlocked !== true) {
 				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
 				var messageString = "This transaction is currently locked. " + lockedReason
-				const layer = _new_inlineMessageDialogLayer(messageString)
+				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString)
 				self.layer.appendChild(layer)
 			}
 		}
@@ -299,28 +204,28 @@ class TransactionDetailsView extends View
 		}
 		{
 			{ // Date
-				const div = _new_fieldContainerLayer()
+				const div = commonComponents_tables.New_fieldContainerLayer()
 				{
-					const labelLayer = _new_fieldTitle_labelLayer("Date")
+					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date")
 					div.appendChild(labelLayer)
 					//
-					const valueLayer = _new_fieldValue_labelLayer(transaction.timestamp.toString()) // TODO: format
+					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(transaction.timestamp.toString()) // TODO: format
 					div.appendChild(valueLayer)
 				}
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(_new_clearingBreakLayer())
-				details_containerLayer.appendChild(_new_separatorLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Amount
-				const div = _new_fieldContainerLayer()
+				const div = commonComponents_tables.New_fieldContainerLayer()
 				{
-					const labelLayer = _new_fieldTitle_labelLayer("Amount")
+					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Amount")
 					div.appendChild(labelLayer)
 					//
 					const value = transaction.approx_float_amount
-					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
 					{
 						if (value < 0) {
 							valueLayer.style.color = "red"
@@ -335,38 +240,39 @@ class TransactionDetailsView extends View
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(_new_clearingBreakLayer())
-				details_containerLayer.appendChild(_new_separatorLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Mixin
-				const div = _new_fieldContainerLayer()
+				const div = commonComponents_tables.New_fieldContainerLayer()
 				{
-					const labelLayer = _new_fieldTitle_labelLayer("Mixin")
+					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Mixin")
 					div.appendChild(labelLayer)
 					//
 					const value = transaction.mixin
-					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
 					div.appendChild(valueLayer)
 				}
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(_new_clearingBreakLayer())
-				details_containerLayer.appendChild(_new_separatorLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Transaction ID
-				const div = _new_fieldContainerLayer()
+				const div = commonComponents_tables.New_fieldContainerLayer()
 				{
 					const hash = transaction.hash
 					const isTxHashNil = hash === null || typeof hash === 'undefined' || hash === ""
 					{ // left
-						const labelLayer = _new_fieldTitle_labelLayer("Transaction ID")
+						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Transaction ID")
 						div.appendChild(labelLayer)
 					}
 					{ // right
-						const buttonLayer = _new_copyButton_aLayer(
+						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 							hash,
-							isTxHashNil === false ? true : false
+							isTxHashNil === false ? true : false,
+							self.context.pasteboard
 						)
 						buttonLayer.style.float = "right"
 						div.appendChild(buttonLayer)
@@ -377,7 +283,7 @@ class TransactionDetailsView extends View
 						div.appendChild(clearingBreakLayer)
 					}
 					const value = isTxHashNil === false ? hash : "N/A"
-					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
 					{ // special case
 						valueLayer.style.float = "left"
 						valueLayer.style.textAlign = "left"
@@ -391,22 +297,23 @@ class TransactionDetailsView extends View
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(_new_clearingBreakLayer())
-				details_containerLayer.appendChild(_new_separatorLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Payment ID
-				const div = _new_fieldContainerLayer()
+				const div = commonComponents_tables.New_fieldContainerLayer()
 				{
 					const payment_id = transaction.payment_id
 					const isTxPaymentIDNil = typeof payment_id === 'undefined' || payment_id === null || payment_id === ""
 					{ // left
-						const labelLayer = _new_fieldTitle_labelLayer("Payment ID")
+						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Payment ID")
 						div.appendChild(labelLayer)
 					}
 					{ // right
-						const buttonLayer = _new_copyButton_aLayer(
+						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 							payment_id,
-							isTxPaymentIDNil === false ? true : false
+							isTxPaymentIDNil === false ? true : false,
+							self.context.pasteboard
 						)
 						buttonLayer.style.float = "right"
 						div.appendChild(buttonLayer)
@@ -417,7 +324,7 @@ class TransactionDetailsView extends View
 						div.appendChild(clearingBreakLayer)
 					}
 					const value = isTxPaymentIDNil === false ? payment_id : "N/A"
-					const valueLayer = _new_fieldValue_labelLayer("" + value)
+					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
 					{ // special case
 						valueLayer.style.float = "left"
 						valueLayer.style.textAlign = "left"
@@ -431,7 +338,7 @@ class TransactionDetailsView extends View
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(_new_clearingBreakLayer())
+				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			}
 		}
 		self.layer.appendChild(details_containerLayer)
