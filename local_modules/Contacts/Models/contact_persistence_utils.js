@@ -11,7 +11,8 @@ const documentCryptScheme =
 {
 	fullname: { type: CryptSchemeFieldValueTypes.String },
 	address__XMR: { type: CryptSchemeFieldValueTypes.String },
-	payment_id: { type: CryptSchemeFieldValueTypes.String }
+	payment_id: { type: CryptSchemeFieldValueTypes.String },
+	emoji: { type: CryptSchemeFieldValueTypes.String }
 }
 exports.DocumentCryptScheme = documentCryptScheme
 //
@@ -27,6 +28,7 @@ function HydrateInstance(
 	self.fullname = plaintextDocument.fullname
 	self.address__XMR = plaintextDocument.address__XMR
 	self.payment_id = plaintextDocument.payment_id
+	self.emoji = plaintextDocument.emoji
 }
 exports.HydrateInstance = HydrateInstance
 //
@@ -53,7 +55,8 @@ function SaveToDisk(
 	{
 		fullname: self.fullname,
 		address__XMR: self.address__XMR,
-		payment_id: self.payment_id
+		payment_id: self.payment_id,
+		emoji: self.emoji
 	}
 	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,

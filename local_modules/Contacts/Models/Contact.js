@@ -25,13 +25,14 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
 const EventEmitter = require('events')
 //
-const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
+const Emojis = require('../../Emoji/emoji').Emojis
 //
+const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const contact_persistence_utils = require('./contact_persistence_utils')
 //
 class Contact extends EventEmitter
@@ -104,6 +105,7 @@ class Contact extends EventEmitter
 			self.fullname = self.options.fullname
 			self.address__XMR = self.options.address__XMR
 			self.payment_id = self.options.payment_id
+			self.emoji = self.options.emoji
 		}
 		self.saveToDisk(
 			function(err)
@@ -194,7 +196,7 @@ class Contact extends EventEmitter
 	{
 		const self = this
 		//
-		return `Contact with _id ${self._id} named ${self.fullname}, XMR address: ${self.address__XMR}, payment id: ${self.payment_id}.`
+		return `${self.constructor.name}<${self._id}> "${self.emoji}  ${self.fullname}, XMR addr: ${self.address__XMR}, payment id: ${self.payment_id}".`
 	}
 	//
 	EventName_booted()
@@ -322,6 +324,34 @@ class Contact extends EventEmitter
 					console.error("Failed to save new payment_id", err)
 				} else {
 					console.log("Successfully saved new payment_id")
+					self._atRuntime_contactInfoUpdated()
+				}
+				fn(err)
+			}
+		)
+	}
+	Set_emoji(
+		toValue,
+		fn
+	)
+	{
+		const self = this
+		{ // validate
+			if (Emojis.indexOf(emoji) === -1) {
+				const errStr = "input to Set_emoji was not a known emoji"
+				throw errStr
+				fn(new Error(errStr))
+				return
+			}
+		}
+		self.emoji = toValue
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save new emoji", err)
+				} else {
+					console.log("Successfully saved new emoji")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)

@@ -108,7 +108,6 @@ function startObserving_passwordController(context)
 		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
 		function(isForChangePassword, enterPassword_cb)
 		{
-			console.log("~ entering new pw ", password)
 			enterPassword_cb(
 				null, // not a cancel
 				password
@@ -119,7 +118,6 @@ function startObserving_passwordController(context)
 		controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
 		function(isForChangePassword, enterPasswordAndType_cb)
 		{
-			console.log("~ entering existing", passwordType, "pw ", password)
 			enterPasswordAndType_cb(
 				null, // not a cancel
 				password,
