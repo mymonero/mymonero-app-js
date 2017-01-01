@@ -273,6 +273,7 @@ class WalletDetailsView extends View
 			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // unlikely, but possible
 				{ // header
 					htmlString += `<h3>${wallet.walletLabel}</h3>`
+					htmlString += `<p>Swatch: ${wallet.swatch}</p>`
 					if (wallet.HasEverFetched_accountInfo() === false) {
 						htmlString += `<p>Balance: Loading…</p>`
 						htmlString += `<p>Locked balance: Loading…</P`

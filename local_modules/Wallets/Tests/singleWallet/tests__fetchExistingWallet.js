@@ -78,9 +78,12 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 		{
 			console.log("Wallet is ", wallet)
 			//
+			const swatches = require('../../Models/wallet_swatches')
+			const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
 			wallet.Boot_byLoggingIntoHostedService_withMnemonic(
 				wallets__tests_config.persistencePassword,
 				"Checking",
+				swatch,
 				wallets__tests_config.initWithMnemonic__mnemonicString,
 				function(err)
 				{
@@ -128,6 +131,8 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
 	var wallet;
+	const swatches = require('../../Models/wallet_swatches')
+	const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
 	const options =
 	{
 		failedToInitialize_cb: function(err)
@@ -141,6 +146,7 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 			wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
 				wallets__tests_config.persistencePassword,
 				"Checking",
+				swatch,
 				wallets__tests_config.initWithKeys__address,
 				wallets__tests_config.initWithKeys__view_key__private,
 				wallets__tests_config.initWithKeys__spend_key__private,

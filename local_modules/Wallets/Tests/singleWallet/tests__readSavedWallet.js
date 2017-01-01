@@ -72,6 +72,8 @@ function _proceedTo_test_openingSavedWallet(fn)
 		console.log("New_StateCachedTransactions", wallet.New_StateCachedTransactions())
 		fn()
 	}
+	const swatches = require('../../Models/wallet_swatches')
+	const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
 	var wallet;
 	const options =
 	{

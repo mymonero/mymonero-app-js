@@ -243,6 +243,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	Boot_byLoggingIntoHostedService_byCreatingNewWallet(
 		persistencePassword,
 		walletLabel,
+		swatch,
 		informingAndVerifyingMnemonic_cb,
 		fn
 	)
@@ -265,6 +266,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		//
 		self.walletLabel = walletLabel || ""
+		self.swatch = swatch || ""
 		//
 		const generatedOnInit_walletDescription = self.generatedOnInit_walletDescription
 		const seed = generatedOnInit_walletDescription.seed
@@ -321,6 +323,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	Boot_byLoggingIntoHostedService_withMnemonic(
 		persistencePassword,
 		walletLabel,
+		swatch,
 		mnemonicString,
 		fn
 	)
@@ -334,6 +337,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		//
 		self.walletLabel = walletLabel || ""
+		self.swatch = swatch || ""
 		 
 		// TODO: remove wordset name from this function signature and autodetect the wordset based on checking the presence of all the words in a given wordset.
 		// error if wordset comparison issue		
@@ -374,6 +378,8 @@ class SecretPersistingHostedWallet extends EventEmitter
 	}
 	Boot_byLoggingIntoHostedService_withAddressAndKeys(
 		persistencePassword,
+		walletLabel,
+		swatch,
 		address,
 		view_key__private,
 		spend_key__private,
@@ -390,6 +396,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		{
 			self.walletLabel = walletLabel || ""
+			self.swatch = swatch || ""
 		}
 		{
 			const seed = undefined

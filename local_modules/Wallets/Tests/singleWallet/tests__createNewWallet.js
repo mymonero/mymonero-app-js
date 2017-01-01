@@ -67,6 +67,8 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
+	const swatches = require('../../Models/wallet_swatches')
+	const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
 	var wallet;
 	const options =
 	{
@@ -82,6 +84,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 			wallet.Boot_byLoggingIntoHostedService_byCreatingNewWallet(
 				wallets__tests_config.persistencePassword,
 				"Checking",
+				swatch,
 				function(mnemonicString, confirmation_cb)
 				{
 					console.log("🔁  Simulating correct user input of mnemonicString", mnemonicString)

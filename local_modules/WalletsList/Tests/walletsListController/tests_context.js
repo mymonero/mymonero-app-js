@@ -111,7 +111,7 @@ function startObserving_passwordController(context)
 	// supplying the password:
 	controller.on(
 		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
-		function(enterPassword_cb)
+		function(isForChangePassword, enterPassword_cb)
 		{
 			enterPassword_cb(
 				null, // not a cancel

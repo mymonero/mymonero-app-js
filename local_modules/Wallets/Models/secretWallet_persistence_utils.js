@@ -9,6 +9,7 @@ const documentCryptScheme =
 {
 	walletLabel: { type: CryptSchemeFieldValueTypes.String },
 	wallet_currency: { type: CryptSchemeFieldValueTypes.String },
+	swatch: { type: CryptSchemeFieldValueTypes.String },
 	//
 	public_address: { type: CryptSchemeFieldValueTypes.String },
 	mnemonic_wordsetName: { type: CryptSchemeFieldValueTypes.String },
@@ -82,6 +83,7 @@ function HydrateInstance_withDecryptedValues(
 	//
 	self.walletLabel = plaintextDocument.walletLabel
 	self.wallet_currency = plaintextDocument.wallet_currency
+	self.swatch = plaintextDocument.swatch
 	//
 	// console.log("plaintextDocument", plaintextDocument)
 	self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
@@ -175,6 +177,7 @@ function SaveToDisk(
 	{
 		walletLabel: self.walletLabel,
 		wallet_currency: self.wallet_currency,
+		swatch: self.swatch,
 		mnemonic_wordsetName: self.mnemonic_wordsetName,
 		//
 		account_seed: self.account_seed,
