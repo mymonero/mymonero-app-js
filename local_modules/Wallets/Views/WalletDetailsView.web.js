@@ -118,10 +118,17 @@ class WalletDetailsView extends View
 			throw "wallet undefined in start observing"
 			return
 		}
-		// here, we're going to store a bunch of functions as instance properties
-		// because if we need to stopObserving we need to have access to the listener fns
 		//
-		// account info updated
+		// label
+		self.wallet_EventName_walletLabelChanged_listenerFunction = function()
+		{
+			self.wallet_EventName_walletLabelChanged()
+		}
+		self.wallet.on(
+			self.wallet.EventName_walletLabelChanged(),
+			self.wallet_EventName_walletLabelChanged_listenerFunction
+		)
+		// balance
 		self.wallet_EventName_balanceChanged_listenerFunction = function()
 		{
 			self.wallet_EventName_balanceChanged()
@@ -167,6 +174,12 @@ class WalletDetailsView extends View
 				return true
 			}
 			return false
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_walletLabelChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_walletLabelChanged(),
+				self.wallet_EventName_walletLabelChanged_listenerFunction
+			)
 		}
 		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
@@ -535,10 +548,16 @@ class WalletDetailsView extends View
 	//
 	// Runtime - Delegation - Event handlers - Wallet
 	//
+	wallet_EventName_walletLabelChanged()
+	{
+		const self = this
+		self.navigationController.SetNavigationBarTitleNeedsUpdate() 
+		self._configureUIWithWallet__accountInfo() // TODO: just update the label
+	}
 	wallet_EventName_balanceChanged()
 	{
 		const self = this
-		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__accountInfo() // TODO: update just balance
 	}
 	wallet_EventName_transactionsChanged()
 	{
