@@ -57,7 +57,32 @@ class RequestFundsView extends View
 			}
 			{ // hierarchy
 				{
-					
+					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+					{
+						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("To Wallet")
+						div.appendChild(labelLayer)
+						//
+						const valueLayer = commonComponents_forms.New_fieldValue_walletSelectLayer({
+							walletsListController: self.context.walletsListController,
+							didChangeWalletSelection_fn: function(selectedWallet)
+							{
+								// TODO: trigger request rebuild
+							}
+						})
+						div.appendChild(valueLayer)
+						//
+						valueLayer.ExecuteWhenBooted(
+							function()
+							{
+								// now that controller booted, we can access valueLayer.CurrentlySelectedWallet
+								// TODO: trigger request rebuild? need contact/addr for it, so probably not necessary
+							}
+						)
+					}
+					{ // to get the height
+						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+					}
+					containerLayer.appendChild(div)
 				}
 				{
 					containerLayer.appendChild(commonComponents_tables.New_separatorLayer())

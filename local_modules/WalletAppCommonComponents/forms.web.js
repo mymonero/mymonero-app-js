@@ -86,3 +86,116 @@ function _new_fieldValue_textInputLayer(params)
 	return layer
 }
 exports.New_fieldValue_textInputLayer = _new_fieldValue_textInputLayer
+//
+function _new_fieldValue_walletSelectLayer(params)
+{
+	const didChangeWalletSelection_fn = params.didChangeWalletSelection_fn || function(selectedWallet) {}
+	const walletsListController = params.walletsListController
+	{
+		if (!walletsListController || typeof walletsListController === 'undefined') {
+			throw "_new_fieldValue_walletSelectLayer requires params.walletsListController"
+			return null
+		}
+	}
+	const layer = document.createElement("select")
+	{
+		layer.style.display = "inline-block"
+		layer.style.height = "30px"
+		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
+		layer.style.border = "1px inset #666"
+		layer.style.borderRadius = "4px"
+ 		layer.style.float = "left"
+		layer.style.textAlign = "left"
+		layer.style.fontSize = "14px"
+		layer.style.color = "#fff"
+		layer.style.backgroundColor = "#999"
+		layer.style.padding = "0 10px"
+		layer.style.fontFamily = "monospace"
+	}
+	{ // NOTES:
+		// layer.CurrentlySelectedWallet and layer.Lookup_CurrentlySelectedWallet() are defined after walletsListController booted. Use the following function to defer execution til they're ready
+		layer.isBooted = false
+		layer.ExecuteWhenBooted = function(fn)
+		{
+			if (layer.isBooted === false) {
+				setTimeout(
+					function()
+					{
+						layer.ExecuteWhenBooted(fn)
+					},
+					100 // ms -- small delay should be ok here
+				)
+				return false
+			}
+			fn()
+			return true
+		}
+	}
+	walletsListController.WhenBooted_Wallets(
+		function(wallets)
+		{
+			const numberOf_wallets = wallets.length
+			{
+				for (let i = 0 ; i < numberOf_wallets ; i++) {
+					const wallet = wallets[i]
+					const optionLayer = document.createElement("option")
+					{
+						optionLayer.text = `${wallet.walletLabel} (${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()})`
+						optionLayer.value = wallet._id
+					}
+					layer.appendChild(optionLayer)
+				}
+			}
+			{
+				layer.Lookup_CurrentlySelectedWallet = function()
+				{
+					const selectedIndex = layer.selectedIndex
+					const selectedOption = layer.options[selectedIndex]
+					const selectedValue = selectedOption.value
+					const selectedWallet_id = selectedValue;
+					var selectedWallet = null;
+					for (let i = 0 ; i < numberOf_wallets ; i++) {
+						const wallet = wallets[i]
+						if (wallet._id === selectedWallet_id) {
+							selectedWallet = wallet
+							break
+						}
+					}
+					//
+					return selectedWallet
+				}
+				layer.CurrentlySelectedWallet = wallets.length == 0 ? null : wallets[0] // trailing tracker for diffing
+				//
+				layer.isBooted = true // now we can finally set this to true
+			}
+		}
+	)
+	{
+		layer.addEventListener(
+			"change",
+			function(e)
+			{
+				e.preventDefault()
+				{
+					var selectedWallet = layer.Lookup_CurrentlySelectedWallet()
+					if (selectedWallet === null) {
+						throw "couldn't find selectedWallet wallet select onchange"
+						layer.CurrentlySelectedWallet = null
+						didChangeWalletSelection_fn(layer.CurrentlySelectedWallet)
+						return
+					}
+					if (
+						layer.CurrentlySelectedWallet === null // no prev selection
+						|| layer.CurrentlySelectedWallet._id !== selectedWallet._id // or different selection
+					) {
+						layer.CurrentlySelectedWallet = selectedWallet
+						didChangeWalletSelection_fn(layer.CurrentlySelectedWallet)
+					}
+				}
+				return false
+			}
+		)
+	}
+	return layer
+}
+exports.New_fieldValue_walletSelectLayer = _new_fieldValue_walletSelectLayer
