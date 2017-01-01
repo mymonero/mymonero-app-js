@@ -31,6 +31,11 @@
 // Hydrate context
 var context_object_instantiation_descriptions =
 [
+	{ // might as well put it in the renderer proc so we don't have to do IPC to pasteboard
+		module_path: __dirname + "/../../Pasteboard/Pasteboard.electron",
+		instance_key: "pasteboard",
+		options: {}
+	},
 	{
 		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.electron.main",
 		instance_key: "document_cryptor__background",

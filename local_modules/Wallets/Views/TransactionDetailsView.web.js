@@ -247,7 +247,7 @@ class TransactionDetailsView extends View
 					{
 						e.preventDefault()
 						{ // this should capture value
-							console.log("TODO: copy ", value)
+							self.context.pasteboard.CopyString(value)
 						}
 						return false
 					}
