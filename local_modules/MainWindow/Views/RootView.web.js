@@ -85,6 +85,18 @@ class RootView extends View
 				const view = new WalletsTabContentView(options, context)
 				self.walletsTabContentView = view
 			}
+			{ // sendTabContentView
+				const options = {}
+				const SendTabContentView = require('../../SendFundsTab/Views/SendTabContentView.web')
+				const view = new SendTabContentView(options, context)
+				self.sendTabContentView = view
+			}
+			{ // requestTabContentView
+				const options = {}
+				const RequestTabContentView = require('../../RequestFundsTab/Views/RequestTabContentView.web')
+				const view = new RequestTabContentView(options, context)
+				self.requestTabContentView = view
+			}
 			{ // contactsListView
 				const options = {}
 				const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
@@ -94,6 +106,8 @@ class RootView extends View
 			tabBarViewAndContentView.SetTabBarContentViews(
 				[
 					self.walletsTabContentView,
+					self.sendTabContentView,
+					self.requestTabContentView,
 					self.contactsTabContentView
 				]
 			)

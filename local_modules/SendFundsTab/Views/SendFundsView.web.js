@@ -28,9 +28,9 @@
 //
 "use strict"
 //
-const StackNavigationView = require('../../StackNavigation/Views/StackNavigationView.web')
+const View = require('../../Views/View.web')
 //
-class WalletsTabContentView extends StackNavigationView
+class SendFundsView extends View
 {
 	constructor(options, context)
 	{
@@ -40,22 +40,17 @@ class WalletsTabContentView extends StackNavigationView
 	{
 		super.setup() // we must call on super
 		const self = this
-		{ // walletsListView
-			const options = {}
-			const WalletsListView = require('./WalletsListView.web')
-			const view = new WalletsListView(options, self.context)
-			self.walletsListView = view
-		}
-		{
-			self.SetStackViews(
-				[
-					self.walletsListView
-				]
-			)
-		}
+	}
+	//
+	//
+	// Runtime - Accessors - Navigation
+	//
+	Navigation_Title()
+	{
+		return "Send Monero"
 	}
 }
-module.exports = WalletsTabContentView
+module.exports = SendFundsView
 
 
 

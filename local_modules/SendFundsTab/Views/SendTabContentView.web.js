@@ -30,7 +30,7 @@
 //
 const StackNavigationView = require('../../StackNavigation/Views/StackNavigationView.web')
 //
-class WalletsTabContentView extends StackNavigationView
+class SendTabContentView extends StackNavigationView
 {
 	constructor(options, context)
 	{
@@ -42,20 +42,20 @@ class WalletsTabContentView extends StackNavigationView
 		const self = this
 		{ // walletsListView
 			const options = {}
-			const WalletsListView = require('./WalletsListView.web')
-			const view = new WalletsListView(options, self.context)
-			self.walletsListView = view
+			const SendFundsView = require('./SendFundsView.web')
+			const view = new SendFundsView(options, self.context)
+			self.sendFundsView = view
 		}
 		{
 			self.SetStackViews(
 				[
-					self.walletsListView
+					self.sendFundsView
 				]
 			)
 		}
 	}
 }
-module.exports = WalletsTabContentView
+module.exports = SendTabContentView
 
 
 
