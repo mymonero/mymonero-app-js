@@ -56,9 +56,3 @@ class RequestTabContentView extends StackNavigationView
 	}
 }
 module.exports = RequestTabContentView
-
-
-
-
-
-

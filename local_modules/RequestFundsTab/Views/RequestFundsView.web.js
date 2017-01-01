@@ -29,17 +29,58 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
+const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web.js')
 //
 class RequestFundsView extends View
 {
 	constructor(options, context)
 	{
-		super(options, context)
+		super(options, context) // call super before `this`
+		//
+		const self = this 
+		self.setup()
 	}
 	setup()
 	{
-		super.setup() // we must call on super
 		const self = this
+		self.setup_views()
+	}
+	setup_views()
+	{
+		const self = this
+		{ // containerLayer
+			const containerLayer = document.createElement("div")
+			{ // parameters
+				containerLayer.style.border = "1px solid #888"
+				containerLayer.style.borderRadius = "5px"
+			}
+			{ // hierarchy
+				{
+					
+				}
+				{
+					containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+				}
+				{ // Request funds from sender
+					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+					{
+						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("From") // note use of _forms.
+						div.appendChild(labelLayer)
+						//
+						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+							placeholderText: "Contact, OpenAlias, or address"
+						})
+						div.appendChild(valueLayer)
+					}
+					{ // to get the height
+						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+					}
+					containerLayer.appendChild(div)
+				}
+			}
+			self.layer.appendChild(containerLayer)
+		}
 	}
 	//
 	//
@@ -49,11 +90,27 @@ class RequestFundsView extends View
 	{
 		return "Request Monero"
 	}
+
+	//
+	//
+	// Runtime - Delegation - Navigation/View lifecycle
+	//
+	viewWillAppear()
+	{
+		const self = this
+		super.viewWillAppear()
+		{
+			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+			}
+		}
+	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		// teardown any child/referenced stack navigation views if necessary…
+	}
 }
 module.exports = RequestFundsView
-
-
-
-
-
-

@@ -28,3 +28,61 @@
 //
 "use strict"
 //
+function _new_fieldContainerLayer()
+{
+	const layer = document.createElement("div")
+	layer.style.padding = "18px 10px"
+	//
+	return layer
+}
+exports.New_fieldContainerLayer = _new_fieldContainerLayer
+//
+const titleLabelWidth = 90
+//
+function _new_fieldTitle_labelLayer(labelText)
+{
+	const layer = document.createElement("span")
+	{
+		layer.innerHTML = labelText
+		layer.style.display = "inline-block"
+		layer.style.float = "left"
+		layer.style.width = `${titleLabelWidth}px`
+		layer.style.textAlign = "left"
+		layer.style.fontSize = "14px"
+		layer.style.fontWeight = "bold"
+		layer.style.color = "#ccc"
+		layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
+	}				
+	return layer
+}
+exports.New_fieldTitle_labelLayer = _new_fieldTitle_labelLayer
+//
+function _new_fieldValue_textInputLayer(params)
+{
+	const layer = document.createElement("input")
+	{
+		layer.type = "text"
+		const existingValue = params.existingValue
+		if (typeof existingValue !== 'undefined' && existingValue) {
+			layer.value = existingValue
+		}
+		const placeholderText = params.placeholderText
+		if (typeof placeholderText !== 'undefined' && placeholderText) {
+			layer.placeholder = placeholderText
+		}
+		layer.style.display = "inline-block"
+		layer.style.height = "30px"
+		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
+		layer.style.border = "1px inset #222"
+		layer.style.borderRadius = "4px"
+ 		layer.style.float = "left"
+		layer.style.textAlign = "left"
+		layer.style.fontSize = "14px"
+		layer.style.color = "#ccc"
+		layer.style.backgroundColor = "#444"
+		layer.style.padding = "0 10px"
+		layer.style.fontFamily = "monospace"
+	}				
+	return layer
+}
+exports.New_fieldValue_textInputLayer = _new_fieldValue_textInputLayer
