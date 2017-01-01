@@ -212,10 +212,10 @@ class TransactionDetailsView extends View
 					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(transaction.timestamp.toString()) // TODO: format
 					div.appendChild(valueLayer)
 				}
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Amount
@@ -237,10 +237,10 @@ class TransactionDetailsView extends View
 					}					
 					div.appendChild(valueLayer)
 				}
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Mixin
@@ -253,10 +253,10 @@ class TransactionDetailsView extends View
 					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
 					div.appendChild(valueLayer)
 				}
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Transaction ID
@@ -294,10 +294,10 @@ class TransactionDetailsView extends View
 					}
 					div.appendChild(valueLayer)
 				}
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 				details_containerLayer.appendChild(div)
 			}
 			{
-				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Payment ID
@@ -335,10 +335,8 @@ class TransactionDetailsView extends View
 					}
 					div.appendChild(valueLayer)
 				}
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 				details_containerLayer.appendChild(div)
-			}
-			{
-				details_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			}
 		}
 		self.layer.appendChild(details_containerLayer)
