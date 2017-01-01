@@ -115,6 +115,7 @@ function _new_fieldValue_walletSelectLayer(params)
 	{ // NOTES:
 		// layer.CurrentlySelectedWallet and layer.Lookup_CurrentlySelectedWallet() are defined after walletsListController booted. Use the following function to defer execution til they're ready
 		layer.isBooted = false
+		layer.CurrentlySelectedWallet = null // zeroing
 		layer.ExecuteWhenBooted = function(fn)
 		{
 			if (layer.isBooted === false) {
@@ -131,53 +132,70 @@ function _new_fieldValue_walletSelectLayer(params)
 			return true
 		}
 	}
-	walletsListController.WhenBooted_Wallets(
-		function(wallets)
-		{
-			const numberOf_wallets = wallets.length
-			{
-				for (let i = 0 ; i < numberOf_wallets ; i++) {
-					const wallet = wallets[i]
-					const optionLayer = document.createElement("option")
-					{
-						optionLayer.text = `${wallet.walletLabel} (${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()})`
-						optionLayer.value = wallet._id
-					}
-					layer.appendChild(optionLayer)
-				}
-			}
-			{
-				layer.Lookup_CurrentlySelectedWallet = function()
-				{
-					const selectedIndex = layer.selectedIndex
-					const selectedOption = layer.options[selectedIndex]
-					const selectedValue = selectedOption.value
-					const selectedWallet_id = selectedValue;
-					var selectedWallet = null;
-					for (let i = 0 ; i < numberOf_wallets ; i++) {
-						const wallet = wallets[i]
-						if (wallet._id === selectedWallet_id) {
-							selectedWallet = wallet
-							break
-						}
-					}
-					//
-					return selectedWallet
-				}
-				layer.CurrentlySelectedWallet = wallets.length == 0 ? null : wallets[0] // trailing tracker for diffing
-				//
-				layer.isBooted = true // now we can finally set this to true
+	layer.__givenBooted_lookup_currentlySelectedWallet = function()
+	{ // Not to be called until isBooted = true
+		const selectedIndex = layer.selectedIndex
+		const selectedOption = layer.options[selectedIndex]
+		const selectedValue = selectedOption.value
+		const selectedWallet_id = selectedValue;
+		var selectedWallet = null;
+		const wallets = walletsListController.wallets
+		const numberOf_wallets = wallets.length
+		for (let i = 0 ; i < numberOf_wallets ; i++) {
+			const wallet = wallets[i]
+			if (wallet._id === selectedWallet_id) {
+				selectedWallet = wallet
+				break
 			}
 		}
-	)
+		//
+		return selectedWallet
+	}
+	layer.__givenBooted_configureWithWallets = function()
 	{
+		{ // remove options
+			while (layer.firstChild) {
+			    layer.removeChild(layer.firstChild)
+			}
+		}
+		const wallets = walletsListController.wallets
+		const numberOf_wallets = wallets.length
+		{
+			for (let i = 0 ; i < numberOf_wallets ; i++) {
+				const wallet = wallets[i]
+				const optionLayer = document.createElement("option")
+				{
+					optionLayer.text = `${wallet.walletLabel} (${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()})`
+					optionLayer.value = wallet._id
+				}
+				layer.appendChild(optionLayer)
+			}
+		}
+		{
+			if (layer.CurrentlySelectedWallet !== null) { // reconstitute selection if possible
+				layer.value = layer.CurrentlySelectedWallet._id
+			}
+			// cache/update selection state
+			layer.CurrentlySelectedWallet = layer.__givenBooted_lookup_currentlySelectedWallet() // trailing tracker for diff
+		}
+	}
+	{ // Initiate or wait for boot
+		walletsListController.ExecuteWhenBooted(
+			function()
+			{
+				layer.__givenBooted_configureWithWallets()
+				layer.isBooted = true // now we can finally set this to true
+			}
+		)
+	}
+	{ // Observe interactions
 		layer.addEventListener(
 			"change",
 			function(e)
 			{
 				e.preventDefault()
 				{
-					var selectedWallet = layer.Lookup_CurrentlySelectedWallet()
+					var selectedWallet = layer.__givenBooted_lookup_currentlySelectedWallet()
 					if (selectedWallet === null) {
 						throw "couldn't find selectedWallet wallet select onchange"
 						layer.CurrentlySelectedWallet = null
@@ -195,6 +213,27 @@ function _new_fieldValue_walletSelectLayer(params)
 				return false
 			}
 		)
+	}
+	{ // Observe wallet & list changes
+		layer._walletsListController_EventName_listUpdated = function()
+		{
+			layer.__givenBooted_configureWithWallets()
+		}
+		walletsListController.on(
+			walletsListController.EventName_listUpdated(),
+			layer._walletsListController_EventName_listUpdated
+		)
+	}
+	{
+		layer.TearDown = function()
+		{ // You can call this function if you need to remove the layer from the DOM. You should call
+			// it so that it stops observing
+			console.log("Tearing down wallet select layer", layer)
+			walletsListController.removeListener(
+				walletsListController.EventName_listUpdated(),
+				layer._walletsListController_EventName_listUpdated
+			)
+		}
 	}
 	return layer
 }
