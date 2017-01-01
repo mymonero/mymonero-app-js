@@ -49,7 +49,7 @@ class RequestFundsView extends View
 	setup_views()
 	{
 		const self = this
-		{ // containerLayer
+		{ // inputs
 			const containerLayer = document.createElement("div")
 			{ // parameters
 				containerLayer.style.border = "1px solid #888"
@@ -66,7 +66,8 @@ class RequestFundsView extends View
 							walletsListController: self.context.walletsListController,
 							didChangeWalletSelection_fn: function(selectedWallet)
 							{
-								// TODO: trigger request rebuild
+								self.wallet = selectedWallet
+								self._tryToRegenerateRequest()
 							}
 						})
 						div.appendChild(valueLayer)
@@ -74,8 +75,8 @@ class RequestFundsView extends View
 						valueLayer.ExecuteWhenBooted(
 							function()
 							{
-								// now that controller booted, we can access valueLayer.CurrentlySelectedWallet
-								// TODO: trigger request rebuild? need contact/addr for it, so probably not necessary
+								self.wallet = valueLayer.CurrentlySelectedWallet
+								self._tryToRegenerateRequest() // technically, this is not necessary since we don't have an address
 							}
 						)
 					}
@@ -96,6 +97,35 @@ class RequestFundsView extends View
 						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
 							placeholderText: "Contact, OpenAlias, or address"
 						})
+						{
+							var __valueLayer_debounceTimeout = null
+							valueLayer.addEventListener(
+								"keyup",
+								function(event)
+								{
+									{ // (re)set state
+										self.address = valueLayer.value
+										self.hasAnalyzedAndResolveAddressInfo = false
+									}									
+									if (__valueLayer_debounceTimeout !== null) {
+										clearTimeout(__valueLayer_debounceTimeout)
+										__valueLayer_debounceTimeout = null
+									}
+									if (event.keyCode === 13) {
+										self._tryToRegenerateRequest()
+										return
+									}
+									__valueLayer_debounceTimeout = setTimeout(
+										function()
+										{
+											__valueLayer_debounceTimeout = null
+											self._tryToRegenerateRequest()
+										},
+										500
+									)
+								}
+							)
+						}
 						div.appendChild(valueLayer)
 					}
 					{ // to get the height
@@ -104,6 +134,16 @@ class RequestFundsView extends View
 					containerLayer.appendChild(div)
 				}
 			}
+			self.layer.appendChild(containerLayer)
+		}
+		{
+			self.layer.appendChild(commonComponents_tables.New_separatorLayer())
+		}
+		{ // generatedRequest_layer
+			const containerLayer = document.createElement("div")
+			{
+			}
+			self.generatedRequest_layer = containerLayer
 			self.layer.appendChild(containerLayer)
 		}
 	}
@@ -115,7 +155,83 @@ class RequestFundsView extends View
 	{
 		return "Request Monero"
 	}
-
+	//
+	//
+	// Runtime - Imperatives - Request generation
+	//
+	_tryToRegenerateRequest()
+	{
+		const self = this
+		console.log("_tryToRegenerateRequest")
+		if (typeof self.wallet === 'undefined' || !self.wallet) {
+			self._clearRequestResultUI()
+			return
+		}
+		if (typeof self.address === 'undefined' || !self.address) {
+			self._clearRequestResultUI()
+			return
+		}
+		if (self.hasAnalyzedAndResolveAddressInfo === false) {
+			// mark as "currently resolving" and configure the 'resolving…' activity indicator
+			console.log("TODO: now check if the address has been looked up. if it hasn't, look it up, and then try to re-enter")
+			// I. Resolve/validate payment ID
+			// II. mark hasAnalyzedAndResolveAddressInfo true
+			// III. re-enter self._tryToRegenerateRequest()
+			return
+		}
+		if (self.payment_id === 'undefined' || !self.payment_id) {
+			throw "true self.hasAnalyzedAndResolveAddressInfo but no self.payment_id"
+		}
+		{
+			self.uri = `monero:`
+			// TODO: generate QR code image ... store in mem as base64 / buffer to avoid disk storage?
+		}
+		self.__givenRequest_configureRequestUI()
+	}
+	_clearRequestResultUI()
+	{
+		const self = this
+		self.__removeAllRequestUIChildren()
+	}
+	__removeAllRequestUIChildren()
+	{
+		const self = this
+		var firstChild = self.generatedRequest_layer.firstChild
+		while (firstChild !== null) {
+			self.generatedRequest_layer.removeChild(firstChild)
+			firstChild = self.generatedRequest_layer.firstChild
+		}
+	}
+	__givenRequest_configureRequestUI()
+	{
+		const self = this
+		{ // clear
+			var firstChild = self.generatedRequest_layer.firstChild
+			while (firstChild !== null) {
+				self.generatedRequest_layer.removeChild(firstChild)
+				firstChild = self.generatedRequest_layer.firstChild
+			}
+		}
+		{ // build
+			{ // URI
+				const layer = document.createElement("p")
+				{
+					layer.innerHTML = self.uri 
+				}
+				self.generatedRequest_layer.appendChild(layer)
+			}
+			{ // QR code
+				const layer = document.createElement("img")
+				{
+					layer.alt = self.uri
+					// layer.src = ""
+				}
+				self.generatedRequest_layer.appendChild(layer)
+			}
+		}
+	}
+	
+	
 	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
