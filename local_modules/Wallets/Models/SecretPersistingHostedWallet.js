@@ -1124,7 +1124,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 						self.___didReceiveActualChangeTo_heights()
 					}
 					if (anyChanges == false) {
-						console.log("💬  No actual changes to balance, heights, or spent outputs")
+						// console.log("💬  No actual changes to balance, heights, or spent outputs")
 					}
 				}
 			}
@@ -1240,7 +1240,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 					if (transactionsList_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
 						self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, existing_transactions)
 					} else {
-						console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
+						// console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
 					}
 					if (heights_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
 						self.___didReceiveActualChangeTo_heights()
@@ -1273,7 +1273,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	___didReceiveActualChangeTo_heights()
 	{
 		const self = this
-		console.log("💬  Received an update to heights")
+		// console.log("💬  Received an update to heights")
 		self.emit(self.EventName_heightsUpdated(), self)
 	}
 	___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, oldTransactions)

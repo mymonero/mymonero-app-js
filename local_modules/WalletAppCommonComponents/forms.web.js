@@ -101,7 +101,7 @@ function _new_fieldValue_walletSelectLayer(params)
 	{
 		layer.style.display = "inline-block"
 		layer.style.height = "30px"
-		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
+		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px)`
 		layer.style.border = "1px inset #666"
 		layer.style.borderRadius = "4px"
  		layer.style.float = "left"
@@ -151,24 +151,88 @@ function _new_fieldValue_walletSelectLayer(params)
 		//
 		return selectedWallet
 	}
+	layer.__removeAllOptionLayers = function()
+	{
+		var firstChild = layer.firstChild
+		while (firstChild !== null) {
+			const optionLayer = firstChild
+			{
+				layer.___removeListenersForOptionLayer(optionLayer)
+				optionLayer.wallet = null // not strictly necessary
+			}
+			//
+		    layer.removeChild(firstChild)
+			//
+			firstChild = layer.firstChild
+		}
+	}
+	layer.___removeListenersForOptionLayer = function(optionLayer)
+	{
+		const wallet = optionLayer.wallet
+		{
+			if (typeof wallet === 'undefined' || wallet === null) {
+				throw "nil wallet"
+			}
+			if (typeof optionLayer._wallet_EventName_walletLabelChanged === 'undefined' || optionLayer._wallet_EventName_walletLabelChanged === null) {
+				throw "nil optionLayer._wallet_EventName_walletLabelChanged"
+			}
+			wallet.removeListener(
+				wallet.EventName_walletLabelChanged(),
+				optionLayer._wallet_EventName_walletLabelChanged
+			)
+			if (typeof optionLayer._wallet_EventName_balanceChanged === 'undefined' || optionLayer._wallet_EventName_balanceChanged === null) {
+				throw "nil optionLayer._wallet_EventName_balanceChanged"
+			}
+			wallet.removeListener(
+				wallet.EventName_balanceChanged(),
+				optionLayer._wallet_EventName_balanceChanged
+			)
+		}
+	}
 	layer.__givenBooted_configureWithWallets = function()
 	{
-		{ // remove options
-			while (layer.firstChild) {
-			    layer.removeChild(layer.firstChild)
-			}
-		}
+		layer.__removeAllOptionLayers() // (and stop observing)
+		//
 		const wallets = walletsListController.wallets
 		const numberOf_wallets = wallets.length
 		{
 			for (let i = 0 ; i < numberOf_wallets ; i++) {
 				const wallet = wallets[i]
 				const optionLayer = document.createElement("option")
+				optionLayer.wallet = wallet // for later access
+				function _configureOptionLayerText()
 				{
-					optionLayer.text = `${wallet.walletLabel} (${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()})`
+					var text = `${wallet.walletLabel} (${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()})`
+					if (wallet.HasLockedFunds() === true) {
+						text += ` (${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()} 🔒)`
+					}
+					optionLayer.text = text
+					
+				}
+				{
+					_configureOptionLayerText()
 					optionLayer.value = wallet._id
 				}
 				layer.appendChild(optionLayer)
+				{ // observe wallet changes
+					optionLayer._wallet_EventName_walletLabelChanged = function()
+					{
+						_configureOptionLayerText()
+					}
+					wallet.on(
+						wallet.EventName_walletLabelChanged(),
+						optionLayer._wallet_EventName_walletLabelChanged
+					)
+					//
+					optionLayer._wallet_EventName_balanceChanged = function()
+					{
+						_configureOptionLayerText()
+					}
+					wallet.on(
+						wallet.EventName_balanceChanged(),
+						optionLayer._wallet_EventName_balanceChanged
+					)
+				}
 			}
 		}
 		{
@@ -214,7 +278,8 @@ function _new_fieldValue_walletSelectLayer(params)
 			}
 		)
 	}
-	{ // Observe wallet & list changes
+	{ // Observe list changes
+		// List changes
 		layer._walletsListController_EventName_listUpdated = function()
 		{
 			layer.__givenBooted_configureWithWallets()
