@@ -115,7 +115,7 @@ class Contact extends EventEmitter
 					self.__setup_didFailToBoot(err)
 					return
 				}
-				console.log("Successfully saved new contact.")
+				console.log("📝  Successfully saved new contact.")
 				//
 				self.__setup_didBoot()
 			}
@@ -283,7 +283,7 @@ class Contact extends EventEmitter
 				if (err) {
 					console.error("Failed to save new fullname", err)
 				} else {
-					console.log("Successfully saved new fullname.")
+					console.log("📝  Successfully saved new fullname.")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)
@@ -303,7 +303,7 @@ class Contact extends EventEmitter
 				if (err) {
 					console.error("Failed to save new address__XMR", err)
 				} else {
-					console.log("Successfully saved new address__XMR.")
+					console.log("📝  Successfully saved new address__XMR.")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)
@@ -323,7 +323,7 @@ class Contact extends EventEmitter
 				if (err) {
 					console.error("Failed to save new payment_id", err)
 				} else {
-					console.log("Successfully saved new payment_id")
+					console.log("📝  Successfully saved new payment_id")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)
@@ -351,7 +351,7 @@ class Contact extends EventEmitter
 				if (err) {
 					console.error("Failed to save new emoji", err)
 				} else {
-					console.log("Successfully saved new emoji")
+					console.log("📝  Successfully saved new emoji")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)

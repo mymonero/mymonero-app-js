@@ -962,7 +962,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 				if (err) {
 					console.error("Failed to save new wallet name", err)
 				} else {
-					console.log("Successfully saved new wallet name.")
+					console.log("📝  Successfully saved new wallet name.")
 				}
 				setTimeout(function()
 				{

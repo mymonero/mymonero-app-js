@@ -68,8 +68,6 @@ class GeneratedRequestView extends View
 			//
 			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
-		// TODO:
-		
 		{ // URI
 			const layer = document.createElement("p")
 			{
@@ -78,10 +76,16 @@ class GeneratedRequestView extends View
 			self.layer.appendChild(layer)
 		}
 		{ // QR code
-			const layer = document.createElement("img")
+			const layer = document.createElement("div")
 			{
-				layer.alt = "QR Code"
-				// layer.src = ""
+				const QRCode = require('../Vendor/qrcode.min')
+	            const qrCode = new QRCode(
+					layer,
+					{
+	                	correctLevel: QRCode.CorrectLevel.L
+					}
+				)
+				qrCode.makeCode(self.fundsRequest.Lazy_URI())
 			}
 			self.layer.appendChild(layer)
 		}

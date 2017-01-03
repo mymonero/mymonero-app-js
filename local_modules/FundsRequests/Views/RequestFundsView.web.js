@@ -285,7 +285,6 @@ class RequestFundsView extends View
 					// TODO: show "validation" error here
 					return
 				}
-				console.log("fundsRequest", fundsRequest)
 				const GeneratedRequestView = require('./GeneratedRequestView.web')
 				const options = 
 				{

@@ -116,7 +116,7 @@ class FundsRequest extends EventEmitter
 					self.__setup_didFailToBoot(err)
 					return
 				}
-				console.log("Successfully saved new fundsRequest.")
+				console.log("📝  Successfully saved new fundsRequest.")
 				//
 				self.__setup_didBoot()
 			}
@@ -231,6 +231,8 @@ class FundsRequest extends EventEmitter
 		}
 		return self.uri
 	}
+	
+	// NOTE: QR code is generated in the UI as it needs a document element
 
 
 	////////////////////////////////////////////////////////////////////////////////
