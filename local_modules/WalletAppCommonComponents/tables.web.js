@@ -132,7 +132,21 @@ function _new_inlineMessageDialogLayer(messageString)
 	layer.style.border = "1px solid #ccc"
 	layer.style.backgroundColor = "#333"
 	layer.style.margin = "0 0 10px 0"
-	//
+	{
+		layer.SetValidationError = function(to_messageString)
+		{
+			layer.innerHTML = to_messageString
+			layer.display = "block"
+		}
+		layer.ClearAndHideMessage = function()
+		{
+			layer.innerHTML = ""
+			layer.display = "none"
+		}
+	}
+	{
+		// TODO: add X button which removes layer from parent (i think)
+	}
 	return layer
 }
 exports.New_inlineMessageDialogLayer = _new_inlineMessageDialogLayer

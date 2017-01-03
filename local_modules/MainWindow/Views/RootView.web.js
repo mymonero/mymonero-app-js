@@ -93,7 +93,7 @@ class RootView extends View
 			}
 			{ // requestTabContentView
 				const options = {}
-				const RequestTabContentView = require('../../RequestFundsTab/Views/RequestTabContentView.web')
+				const RequestTabContentView = require('../../FundsRequests/Views/RequestTabContentView.web')
 				const view = new RequestTabContentView(options, context)
 				self.requestTabContentView = view
 			}

@@ -31,15 +31,16 @@ const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
 //
 // Constants
 //
-const CollectionName = "Contacts"
+const CollectionName = "FundsRequests"
 exports.CollectionName = CollectionName
 //
 const documentCryptScheme =
 {
-	fullname: { type: CryptSchemeFieldValueTypes.String },
-	address__XMR: { type: CryptSchemeFieldValueTypes.String },
+	to_address: { type: CryptSchemeFieldValueTypes.String },
 	payment_id: { type: CryptSchemeFieldValueTypes.String },
-	emoji: { type: CryptSchemeFieldValueTypes.String }
+	amount: { type: CryptSchemeFieldValueTypes.String },
+	message: { type: CryptSchemeFieldValueTypes.String },
+	description: { type: CryptSchemeFieldValueTypes.String }
 }
 exports.DocumentCryptScheme = documentCryptScheme
 //
@@ -52,10 +53,11 @@ function HydrateInstance(
 	const self = instance
 	//
 	// console.log("plaintextDocument", plaintextDocument)
-	self.fullname = plaintextDocument.fullname
-	self.address__XMR = plaintextDocument.address__XMR
+	self.to_address = plaintextDocument.to_address
 	self.payment_id = plaintextDocument.payment_id
-	self.emoji = plaintextDocument.emoji
+	self.amount = plaintextDocument.amount
+	self.message = plaintextDocument.message
+	self.description = plaintextDocument.description
 }
 exports.HydrateInstance = HydrateInstance
 //
@@ -66,13 +68,13 @@ function SaveToDisk(
 {
 	const self = instance
 	const document_cryptor__background = self.context.document_cryptor__background
-	console.log("📝  Saving contact to disk ", self.Description())
-	//
-	fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
-	//
+	console.log("📝  Saving fundsRequest to disk ", self.Description())
+	{
+		fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
+	}
 	const persistencePassword = self.persistencePassword
 	if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
-		const errStr = "❌  Cannot save contact to disk as persistencePassword was missing."
+		const errStr = "❌  Cannot save fundsRequest to disk as persistencePassword was missing."
 		const err = new Error(errStr)
 		fn(err)
 		return
@@ -80,10 +82,11 @@ function SaveToDisk(
 	//
 	const plaintextDocument =
 	{
-		fullname: self.fullname,
-		address__XMR: self.address__XMR,
+		to_address: self.to_address,
 		payment_id: self.payment_id,
-		emoji: self.emoji
+		amount: "" + self.amount, // we're storing this as a string
+		message: self.message || "",
+		description: self.description || ""
 	}
 	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,
@@ -116,16 +119,16 @@ function SaveToDisk(
 			)
 			{
 				if (err) {
-					console.error("Error while saving contact:", err)
+					console.error("Error while saving fundsRequest:", err)
 					fn(err)
 					return
 				}
 				if (newDocument._id === null) { // not that this would happen…
-					fn(new Error("❌  Inserted contact but _id after saving was null"))
+					fn(new Error("❌  Inserted fundsRequest but _id after saving was null"))
 					return // bail
 				}
 				self._id = newDocument._id // so we know it at runtime now
-				console.log("✅  Saved newly inserted contact with _id " + self._id + ".")
+				console.log("✅  Saved newly inserted fundsRequest with _id " + self._id + ".")
 				fn()
 			}
 		)
@@ -157,7 +160,7 @@ function SaveToDisk(
 			{
 
 				if (err) {
-					console.error("Error while saving contact:", err)
+					console.error("Error while saving fundsRequest:", err)
 					fn(err)
 					return
 				}
@@ -168,18 +171,18 @@ function SaveToDisk(
 					affectedDocument = affectedDocuments
 				}
 				if (affectedDocument._id === null) { // not that this would happen…
-					fn(new Error("❌  Updated contact but _id after saving was null"))
+					fn(new Error("❌  Updated fundsRequest but _id after saving was null"))
 					return // bail
 				}
 				if (affectedDocument._id !== self._id) {
-					fn(new Error("❌  Updated contact but _id after saving was not equal to non-null _id before saving"))
+					fn(new Error("❌  Updated fundsRequest but _id after saving was not equal to non-null _id before saving"))
 					return // bail
 				}
 				if (numAffected === 0) {
 					fn(new Error("❌  Number of documents affected by _id'd update was 0"))
 					return // bail
 				}
-				console.log("✅  Saved update to contact with _id " + self._id + ".")
+				console.log("✅  Saved update to fundsRequest with _id " + self._id + ".")
 				fn()
 			}
 		)
@@ -193,7 +196,7 @@ function DeleteFromDisk(
 )
 {
 	const self = instance
-	console.log("📝  Deleting contact ", self.Description())
+	console.log("📝  Deleting fundsRequest ", self.Description())
 	const query =
 	{
 		_id: self._id
@@ -209,7 +212,7 @@ function DeleteFromDisk(
 		)
 		{
 			if (err) {
-				console.error("Error while removing contact:", err)
+				console.error("Error while removing fundsRequest:", err)
 				fn(err)
 				return
 			}
@@ -217,7 +220,7 @@ function DeleteFromDisk(
 				fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
 				return // bail
 			}
-			console.log("🗑  Deleted saved contact with _id " + self._id + ".")
+			console.log("🗑  Deleted saved fundsRequest with _id " + self._id + ".")
 			fn()
 		}
 	)

@@ -49,6 +49,27 @@ class RequestFundsView extends View
 	setup_views()
 	{
 		const self = this
+		{
+			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+			//
+			self.layer.style.width = "calc(100% - 20px)"
+			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+			//
+			self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
+			//
+			self.layer.style.color = "#c0c0c0" // temporary
+			//
+			self.layer.style.overflowY = "scroll"
+			self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+			//
+			self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		}
+		{ // validation message
+			const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
+			layer.ClearAndHideMessage()
+			self.validationMessageLayer = layer
+			self.layer.appendChild(layer)				
+		}
 		{ // inputs
 			const containerLayer = document.createElement("div")
 			{ // parameters
@@ -67,7 +88,6 @@ class RequestFundsView extends View
 							didChangeWalletSelection_fn: function(selectedWallet)
 							{
 								self.wallet = selectedWallet
-								self._tryToRegenerateRequest()
 							}
 						})
 						div.appendChild(valueLayer)
@@ -76,9 +96,42 @@ class RequestFundsView extends View
 							function()
 							{
 								self.wallet = valueLayer.CurrentlySelectedWallet
-								self._tryToRegenerateRequest() // technically, this is not necessary since we don't have an address
 							}
 						)
+					}
+					{ // to get the height
+						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+					}
+					containerLayer.appendChild(div)
+				}
+				{ // Request funds from sender
+					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+					{
+						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Amount") // note use of _forms.
+						div.appendChild(labelLayer)
+						//
+						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+							placeholderText: "XMR"
+						})
+						self.amountInputLayer = valueLayer
+						{
+							var __valueLayer_debounceTimeout = null
+							valueLayer.addEventListener(
+								"keyup",
+								function(event)
+								{
+									{ // (re)set state
+										self.amount = valueLayer.value
+										self.hasAnalyzedAndResolveAmountInfo = false
+									}									
+									if (event.keyCode === 13) {
+										self._tryToGenerateRequest()
+										return
+									}
+								}
+							)
+						}
+						div.appendChild(valueLayer)
 					}
 					{ // to get the height
 						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
@@ -95,8 +148,9 @@ class RequestFundsView extends View
 						div.appendChild(labelLayer)
 						//
 						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-							placeholderText: "Contact, OpenAlias, or address"
+							placeholderText: "Contact"
 						})
+						self.contactInputLayer = valueLayer
 						{
 							var __valueLayer_debounceTimeout = null
 							valueLayer.addEventListener(
@@ -104,25 +158,13 @@ class RequestFundsView extends View
 								function(event)
 								{
 									{ // (re)set state
-										self.address = valueLayer.value
-										self.hasAnalyzedAndResolveAddressInfo = false
+										self.contact_id = valueLayer.value
+										self.hasAnalyzedAndResolveContactInfo = false
 									}									
-									if (__valueLayer_debounceTimeout !== null) {
-										clearTimeout(__valueLayer_debounceTimeout)
-										__valueLayer_debounceTimeout = null
-									}
 									if (event.keyCode === 13) {
-										self._tryToRegenerateRequest()
+										self._tryToGenerateRequest()
 										return
 									}
-									__valueLayer_debounceTimeout = setTimeout(
-										function()
-										{
-											__valueLayer_debounceTimeout = null
-											self._tryToRegenerateRequest()
-										},
-										500
-									)
 								}
 							)
 						}
@@ -155,83 +197,108 @@ class RequestFundsView extends View
 	{
 		return "Request Monero"
 	}
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = new View({ tag: "a" }, self.context)
+		const layer = view.layer
+		{ // setup/style
+			layer.href = "#" // to make it clickable
+			layer.innerHTML = "Generate"
+		}
+		{
+			layer.style.display = "block"
+			layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+			layer.style.marginTop = "10px"
+			layer.style.width = "90px"
+			layer.style.height = "24px"
+			layer.style.cornerRadius = "2px"
+			layer.style.backgroundColor = "#18bbec"
+			layer.style.textDecoration = "none"
+			layer.style.fontSize = "22px"
+			layer.style.lineHeight = "112%" // % extra to get + aligned properly
+			layer.style.color = "#ffffff"
+			layer.style.fontWeight = "bold"
+			layer.style.textAlign = "center"
+		}
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						self._tryToGenerateRequest()
+					}
+					return false
+				}
+			)
+		}
+		return view
+	}
 	//
 	//
 	// Runtime - Imperatives - Request generation
 	//
-	_tryToRegenerateRequest()
+	_tryToGenerateRequest()
 	{
 		const self = this
-		console.log("_tryToRegenerateRequest")
+		//
 		if (typeof self.wallet === 'undefined' || !self.wallet) {
-			self._clearRequestResultUI()
+			self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
 			return
 		}
-		if (typeof self.address === 'undefined' || !self.address) {
-			self._clearRequestResultUI()
+		if (typeof self.amount === 'undefined' || !self.amount) {
+			self.validationMessageLayer.SetValidationError("Please enter a Monero amount to request.")
 			return
 		}
-		if (self.hasAnalyzedAndResolveAddressInfo === false) {
-			// mark as "currently resolving" and configure the 'resolving…' activity indicator
-			console.log("TODO: now check if the address has been looked up. if it hasn't, look it up, and then try to re-enter")
-			// I. Resolve/validate payment ID
-			// II. mark hasAnalyzedAndResolveAddressInfo true
-			// III. re-enter self._tryToRegenerateRequest()
-			return
+		if (self.hasAnalyzedAndResolveAmountInfo === false) {
+			// TODO: validate amount here
+			const amount_isValid = true // TODO: just for now
+			if (amount_isValid === true) {
+				self.hasAnalyzedAndResolveAmountInfo = undefined // reset
+			}
 		}
-		if (self.payment_id === 'undefined' || !self.payment_id) {
-			throw "true self.hasAnalyzedAndResolveAddressInfo but no self.payment_id"
+		//
+		// We can assume that we have a password by this point, because we have a wallet (above)
+		//
+		var payment_id = null
+		if (typeof self.contact !== 'undefined' && self.contact) {
+			payment_id = contact.payment_id
 		}
 		{
-			self.uri = `monero:`
-			// TODO: generate QR code image ... store in mem as base64 / buffer to avoid disk storage?
-		}
-		self.__givenRequest_configureRequestUI()
-	}
-	_clearRequestResultUI()
-	{
-		const self = this
-		self.__removeAllRequestUIChildren()
-	}
-	__removeAllRequestUIChildren()
-	{
-		const self = this
-		var firstChild = self.generatedRequest_layer.firstChild
-		while (firstChild !== null) {
-			self.generatedRequest_layer.removeChild(firstChild)
-			firstChild = self.generatedRequest_layer.firstChild
-		}
-	}
-	__givenRequest_configureRequestUI()
-	{
-		const self = this
-		{ // clear
-			var firstChild = self.generatedRequest_layer.firstChild
-			while (firstChild !== null) {
-				self.generatedRequest_layer.removeChild(firstChild)
-				firstChild = self.generatedRequest_layer.firstChild
-			}
-		}
-		{ // build
-			{ // URI
-				const layer = document.createElement("p")
-				{
-					layer.innerHTML = self.uri 
+			self.validationMessageLayer.ClearAndHideMessage()
+			//
+			self.amountInputLayer.value = ""
+			self.contactInputLayer.value = "" // TODO: update this when we build the contacts selector
+		}		
+		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
+			self.wallet.public_address,
+			payment_id,
+			self.amount,
+			self.description, // AKA label; no support yet?
+			self.message, // no support yet?
+			function(err, fundsRequest)
+			{
+				if (err) {
+					console.error("Error while creating funds request", err)
+					// TODO: show "validation" error here
+					return
 				}
-				self.generatedRequest_layer.appendChild(layer)
-			}
-			{ // QR code
-				const layer = document.createElement("img")
+				console.log("fundsRequest", fundsRequest)
+				const GeneratedRequestView = require('./GeneratedRequestView.web')
+				const options = 
 				{
-					layer.alt = self.uri
-					// layer.src = ""
+					fundsRequest: fundsRequest
 				}
-				self.generatedRequest_layer.appendChild(layer)
+				const view = new GeneratedRequestView(options, self.context)
+				self.navigationController.PushView(
+					view,
+					true
+				)
 			}
-		}
+		)
 	}
-	
-	
 	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
