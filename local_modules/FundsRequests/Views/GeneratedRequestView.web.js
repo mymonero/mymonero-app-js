@@ -69,88 +69,124 @@ class GeneratedRequestView extends View
 			//
 			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
-		{ // table container (needed?)
+		{ // QR code container
 			const containerLayer = document.createElement("div")
 			{
 				containerLayer.style.border = "1px solid #888"
 				containerLayer.style.borderRadius = "5px"
 			}
-			{
-				{ // QR code
-					const div = commonComponents_tables.New_fieldContainerLayer()
-					{ // qrcode div
-						const layer = document.createElement("div")
-						{
-							layer.style.width = "75px"
-							layer.style.height = "75px"
-							layer.style.display = "inline-block"
-							layer.style.float = "left"
-						}
-						self.qrCode_div = layer
-						{
-							const QRCode = require('../Vendor/qrcode.min')
-				            const qrCode = new QRCode(
-								layer,
-								{
-				                	correctLevel: QRCode.CorrectLevel.L
-								}
-							)
-							qrCode.makeCode(self.fundsRequest.Lazy_URI())
-						}
-						div.appendChild(layer)
-					}
-					const qrCode_imgLayer = self.qrCode_div.querySelector("img")
+			{ // QR code field
+				const div = commonComponents_tables.New_fieldContainerLayer()
+				{ // qrcode div
+					const layer = document.createElement("div")
 					{
-						const layer = qrCode_imgLayer
 						layer.style.width = "75px"
 						layer.style.height = "75px"
+						layer.style.display = "inline-block"
+						layer.style.float = "left"
 					}
-					{ // Download button
-						const layer = document.createElement("a")
-						{
-							layer.innerHTML = "DOWNLOAD"
-							layer.style.float = "right"
-							layer.style.textAlign = "right"
-							layer.style.fontSize = "15px"
-							layer.style.fontWeight = "bold"
-							//
-							layer.style.color = "#6666ff" 
-							layer.href = "#" // to make it look clickable
-						}
-						layer.addEventListener(
-							"click",
-							function(e)
+					self.qrCode_div = layer
+					{
+						const QRCode = require('../Vendor/qrcode.min')
+			            const qrCode = new QRCode(
+							layer,
 							{
-								e.preventDefault()
-								{ // this should capture value
-
-									const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
-									self.context.filesystemUI.OpenDialogToSaveBase64ImageStringAsImageFile(
-										qrCode_imgData_base64String,
-										function(err)
-										{
-											if (err) {
-												throw err
-											}
-											// console.log("Downloaded QR code")
-										}
-									)
-								}
-								return false
+			                	correctLevel: QRCode.CorrectLevel.L
 							}
 						)
-						div.appendChild(layer)
+						qrCode.makeCode(self.fundsRequest.Lazy_URI())
 					}
-					div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-					containerLayer.appendChild(div)
+					div.appendChild(layer)
 				}
+				const qrCode_imgLayer = self.qrCode_div.querySelector("img")
+				{ // cache the qrCode_imgLayer reference --^; style --v
+					const layer = qrCode_imgLayer
+					layer.style.width = "75px"
+					layer.style.height = "75px"
+				}
+				{ // Download button
+					const layer = document.createElement("a")
+					{
+						layer.innerHTML = "DOWNLOAD"
+						layer.style.float = "right"
+						layer.style.textAlign = "right"
+						layer.style.fontSize = "15px"
+						layer.style.fontWeight = "bold"
+						//
+						layer.style.color = "#6666ff" 
+						layer.href = "#" // to make it look clickable
+					}
+					layer.addEventListener(
+						"click",
+						function(e)
+						{
+							e.preventDefault()
+							{ // this should capture value
+
+								const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
+								self.context.filesystemUI.OpenDialogToSaveBase64ImageStringAsImageFile(
+									qrCode_imgData_base64String,
+									function(err)
+									{
+										if (err) {
+											throw err
+										}
+										// console.log("Downloaded QR code")
+									}
+								)
+							}
+							return false
+						}
+					)
+					div.appendChild(layer)
+				}
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+				containerLayer.appendChild(div)
 			}
-			{ // URI
-				const layer = document.createElement("p")
+			self.layer.appendChild(containerLayer)
+		}
+		{ // URI container
+			const containerLayer = document.createElement("div")
+			{
+				containerLayer.style.border = "1px solid #888"
+				containerLayer.style.borderRadius = "5px"
+			}
+			{ // URI field
+				const div = commonComponents_tables.New_fieldContainerLayer()
 				{
-					layer.innerHTML = self.fundsRequest.Lazy_URI() 
+					const uri = self.fundsRequest.Lazy_URI()
+					{ // left
+						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link")
+						div.appendChild(labelLayer)
+					}
+					{ // right
+						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+							uri,
+							true,
+							self.context.pasteboard
+						)
+						buttonLayer.style.float = "right"
+						div.appendChild(buttonLayer)
+					}
+					{ // to put the tx hash on the next line in the UI to make way for the COPY button
+						const clearingBreakLayer = document.createElement("br")
+						clearingBreakLayer.clear = "both"
+						div.appendChild(clearingBreakLayer)
+					}
+					const value = uri
+					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+					{ // special case
+						valueLayer.style.float = "left"
+						valueLayer.style.textAlign = "left"
+						//
+						valueLayer.style.width = "270px"
+						//
+						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
+					}
+					div.appendChild(valueLayer)
 				}
-				containerLayer.appendChild(layer)
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+				containerLayer.appendChild(div)
 			}
 			self.layer.appendChild(containerLayer)
 		}
