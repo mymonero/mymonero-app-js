@@ -72,10 +72,6 @@ class RequestFundsView extends View
 		}
 		{ // inputs
 			const containerLayer = document.createElement("div")
-			{ // parameters
-				containerLayer.style.border = "1px solid #888"
-				containerLayer.style.borderRadius = "5px"
-			}
 			{ // hierarchy
 				{
 					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
@@ -86,18 +82,17 @@ class RequestFundsView extends View
 						const valueLayer = commonComponents_forms.New_fieldValue_walletSelectLayer({
 							walletsListController: self.context.walletsListController,
 							didChangeWalletSelection_fn: function(selectedWallet)
-							{
-								self.wallet = selectedWallet
+							{ // nothing to do
 							}
 						})
+						self.walletSelectLayer = valueLayer
 						div.appendChild(valueLayer)
-						//
-						valueLayer.ExecuteWhenBooted(
-							function()
-							{
-								self.wallet = valueLayer.CurrentlySelectedWallet
-							}
-						)
+						// valueLayer.ExecuteWhenBooted(
+						// 	function()
+						// 	{
+						// 		// nothing to do
+						// 	}
+						// )
 					}
 					{ // to get the height
 						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
@@ -120,10 +115,6 @@ class RequestFundsView extends View
 								"keyup",
 								function(event)
 								{
-									{ // (re)set state
-										self.amount = valueLayer.value
-										self.hasAnalyzedAndResolveAmountInfo = false
-									}									
 									if (event.keyCode === 13) {
 										self._tryToGenerateRequest()
 										return
@@ -139,7 +130,37 @@ class RequestFundsView extends View
 					containerLayer.appendChild(div)
 				}
 				{
-					containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+					containerLayer.appendChild(commonComponents_tables.New_spacerLayer())
+				}
+				{ // Memo
+					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+					{
+						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Memo") // note use of _forms.
+						div.appendChild(labelLayer)
+						//
+						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+							placeholderText: "A description for this Monero request"
+						})
+						self.memoInputLayer = valueLayer
+						{
+							var __valueLayer_debounceTimeout = null
+							valueLayer.addEventListener(
+								"keyup",
+								function(event)
+								{
+									if (event.keyCode === 13) { // return key
+										self._tryToGenerateRequest()
+										return
+									}
+								}
+							)
+						}
+						div.appendChild(valueLayer)
+					}
+					{ // to get the height
+						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+					}
+					containerLayer.appendChild(div)
 				}
 				{ // Request funds from sender
 					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
@@ -157,10 +178,6 @@ class RequestFundsView extends View
 								"keyup",
 								function(event)
 								{
-									{ // (re)set state
-										self.contact_id = valueLayer.value
-										self.hasAnalyzedAndResolveContactInfo = false
-									}									
 									if (event.keyCode === 13) {
 										self._tryToGenerateRequest()
 										return
@@ -176,16 +193,6 @@ class RequestFundsView extends View
 					containerLayer.appendChild(div)
 				}
 			}
-			self.layer.appendChild(containerLayer)
-		}
-		{
-			self.layer.appendChild(commonComponents_tables.New_separatorLayer())
-		}
-		{ // generatedRequest_layer
-			const containerLayer = document.createElement("div")
-			{
-			}
-			self.generatedRequest_layer = containerLayer
 			self.layer.appendChild(containerLayer)
 		}
 	}
@@ -244,40 +251,44 @@ class RequestFundsView extends View
 	{
 		const self = this
 		//
-		if (typeof self.wallet === 'undefined' || !self.wallet) {
+		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
+		const amount = self.amountInputLayer.value
+		const memo = self.memoInputLayer.value
+		const contact_id = self.contactInputLayer.value // TODO when picker built
+		//
+		if (typeof wallet === 'undefined' || !wallet) {
 			self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
 			return
 		}
-		if (typeof self.amount === 'undefined' || !self.amount) {
+		if (typeof amount === 'undefined' || !amount) {
 			self.validationMessageLayer.SetValidationError("Please enter a Monero amount to request.")
 			return
 		}
 		if (self.hasAnalyzedAndResolveAmountInfo === false) {
 			// TODO: validate amount here
 			const amount_isValid = true // TODO: just for now
-			if (amount_isValid === true) {
-				self.hasAnalyzedAndResolveAmountInfo = undefined // reset
+			if (amount_isValid !== true) {
+				self.validationMessageLayer.SetValidationError("Please enter a valid amount.")
+				return
 			}
 		}
 		//
 		// We can assume that we have a password by this point, because we have a wallet (above)
 		//
 		var payment_id = null
-		if (typeof self.contact !== 'undefined' && self.contact) {
+		const contact = null // TODO: resolve contact from contact_id -- or just get the contact objs directly 
+		if (typeof contact !== 'undefined' && contact) {
 			payment_id = contact.payment_id
 		}
-		{
-			self.validationMessageLayer.ClearAndHideMessage()
-			//
-			self.amountInputLayer.value = ""
-			self.contactInputLayer.value = "" // TODO: update this when we build the contacts selector
-		}		
+		//
+		const message = undefined // no support yet?
+		//
 		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
-			self.wallet.public_address,
+			wallet.public_address,
 			payment_id,
-			self.amount,
-			self.description, // AKA label; no support yet?
-			self.message, // no support yet?
+			amount,
+			memo, // description, AKA memo or label; no support yet?
+			message,
 			function(err, fundsRequest)
 			{
 				if (err) {
@@ -285,6 +296,17 @@ class RequestFundsView extends View
 					// TODO: show "validation" error here
 					return
 				}
+				{
+					self.validationMessageLayer.ClearAndHideMessage()
+					//
+					self.hasAnalyzedAndResolveAmountInfo = undefined // reset
+					//
+					// TODO: reset wallet to first choice?…… do we even need to reset these fields? this will probably be presented as a modal and so will be dismissed and then torn down – and so it wouldn't be self which is doing the PushView of the below GeneratedRequestView
+					self.amountInputLayer.value = ""
+					self.memoInputLayer.value = ""
+					self.contactInputLayer.value = "" // TODO: update this when we build the contacts selector
+					//
+				}		
 				const GeneratedRequestView = require('./GeneratedRequestView.web')
 				const options = 
 				{

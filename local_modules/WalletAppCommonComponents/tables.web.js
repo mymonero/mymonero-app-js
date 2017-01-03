@@ -63,7 +63,7 @@ function _new_fieldValue_labelLayer(labelText)
 		layer.style.fontSize = "14px"
 		layer.style.color = "#aaa"
 		layer.style.fontFamily = "monospace"
-	}				
+	}
 	return layer
 }
 exports.New_fieldValue_labelLayer = _new_fieldValue_labelLayer
@@ -124,6 +124,16 @@ function _new_clearingBreakLayer()
 	return layer
 }
 exports.New_clearingBreakLayer = _new_clearingBreakLayer
+//
+function _new_spacerLayer()
+{
+	const layer = document.createElement("div")
+	layer.style.width = "100%"
+	layer.style.height = "40px" // just tentative - feel free to customize
+	//
+	return layer
+}
+exports.New_spacerLayer = _new_spacerLayer
 //
 function _new_inlineMessageDialogLayer(messageString)
 {
