@@ -29,10 +29,10 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const WalletsListCellView = require('./WalletsListCellView.web')
-const WalletDetailsView = require('../../Wallets/Views/WalletDetailsView.web')
+const GeneratedRequestView = require('./GeneratedRequestView.web')
+const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
 //
-class WalletsListView extends View
+class FundsRequestsListView extends View
 {
 	constructor(options, context)
 	{
@@ -44,9 +44,7 @@ class WalletsListView extends View
 	setup()
 	{
 		const self = this
-		{ // initialization / zeroing / declarations 
-			self.current_walletDetailsView = null
-		}
+		//
 		self._setup_views()
 		self._setup_startObserving()
 		//
@@ -56,32 +54,38 @@ class WalletsListView extends View
 	_setup_views()
 	{
 		const self = this
-		// 
-		self.layer.style.webkitUserSelect = "none"
-		//
-		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
-		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
-		//
-		self.layer.style.backgroundColor = "#282527"
-		//
-		self.layer.style.color = "#c0c0c0" // temporary
-		//
-		self.layer.style.overflowY = "scroll"
-		self.layer.style.padding = "40px 10px"
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		//
-		self.walletCellViews = [] // initialize container
+		{
+			self.current_generatedRequestView = null // zeroing for comparison
+			self.fundsRequestCellViews = [] // initialize container
+		}
+		{ // styles
+			self.layer.style.webkitUserSelect = "none"
+			//
+			self.padding_top = 20
+			self.padding_bottom = 40
+			//
+			self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
+			self.layer.style.height = `calc(100% - ${self.padding_top}px - ${self.padding_bottom}px)` // in viewWillAppear we query the nav controller bar height to re-set self height
+			//
+			self.layer.style.backgroundColor = "#282527"
+			//
+			self.layer.style.color = "#c0c0c0" // temporary
+			//
+			self.layer.style.overflowY = "scroll"
+			self.layer.style.padding = `${self.padding_top}px 10px ${self.padding_bottom}px 10px`
+			//
+			self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		}
 	}
 	_setup_startObserving()
 	{
 		const self = this
-		const walletsListController = self.context.walletsListController
-		walletsListController.on(
-			walletsListController.EventName_listUpdated(),
+		const fundsRequestsListController = self.context.fundsRequestsListController
+		fundsRequestsListController.on(
+			fundsRequestsListController.EventName_listUpdated(),
 			function()
 			{
-				self._WalletsListController_EventName_listUpdated()
+				self._FundsRequestsListController_EventName_listUpdated()
 			}
 		)
 	}
@@ -94,9 +98,9 @@ class WalletsListView extends View
 		const self = this
 		super.TearDown()
 		//
-		if (self.current_walletDetailsView !== null) {
-			self.current_walletDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_walletDetailsView = null // must zero again and should free
+		if (self.current_generatedRequestView !== null) {
+			self.current_generatedRequestView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_generatedRequestView = null // must zero again and should free
 		}
 	}
 	//
@@ -105,10 +109,11 @@ class WalletsListView extends View
 	//
 	Navigation_Title()
 	{
-		return "Wallets"
+		return "Monero Requests"
 	}
 	Navigation_New_RightBarButtonView()
-	{
+	{ // TODO: use single factory fn, probably in WalletAppCommonComponents, for this + button
+		// same for other btns like the back btn etc. (how to extract back btn style from StackNavBarView domain?)
 		const self = this
 		const view = new View({ tag: "a" }, self.context)
 		const layer = view.layer
@@ -138,17 +143,16 @@ class WalletsListView extends View
 				{
 					e.preventDefault()
 					{
-						const informingAndVerifyingMnemonic_cb = function(mnemonicString, confirmation_cb)
-						{ // simulating user correctly entering mnemonic string they needed to have written down
-							confirmation_cb(mnemonicString)
-						}
-						const fn = function(err, walletInstance) {}
+						// TODO: modally present view in tab (ModalView + TabModalView) instead of in stack
+						// for now, just pushing
 						
-						// TODO: wrap this in some kind of navigation flow?
-						self.context.walletsListController.WhenBooted_CreateAndAddNewlyGeneratedWallet(
-							informingAndVerifyingMnemonic_cb,
-							fn
-						)					
+						const options = {}
+						const RequestFundsView = require('./RequestFundsView.web')
+						const view = new RequestFundsView(options, self.context)
+						self.navigationController.PushView(
+							view,
+							true
+						)
 					}
 					return false
 				}
@@ -163,88 +167,87 @@ class WalletsListView extends View
 	reloadData()
 	{
 		const self = this
-		if (self.isAlreadyWaitingForWallets === true) { // because accessing wallets is async
+		if (self.isAlreadyWaitingForFundsRequests === true) { // because accessing fundsRequests is async
 			return // prevent redundant calls
 		}
-		self.isAlreadyWaitingForWallets = true
-		self.context.walletsListController.WhenBooted_Wallets(
-			function(wallets)
+		self.isAlreadyWaitingForFundsRequests = true
+		self.context.fundsRequestsListController.WhenBooted_FundsRequests(
+			function(fundsRequests)
 			{
-				self.isAlreadyWaitingForWallets = false // unlock
-				self._configureWith_wallets(wallets)
+				self.isAlreadyWaitingForFundsRequests = false // unlock
+				{ // before proceeding, just sorting the records by date created
+					fundsRequests = fundsRequests.sort(function(a, b)
+					{
+						return b.dateCreated - a.dateCreated
+					})
+				}
+				self._configureWith_fundsRequests(fundsRequests)
 			}
 		)
 	}
-	_configureWith_wallets(wallets)
+	_configureWith_fundsRequests(fundsRequests)
 	{
 		const self = this
-		const context = self.context
-		// TODO: diff these wallets with existing wallets?
-		if (self.walletCellViews.length != 0) {
+		// TODO: diff these fundsRequests with existing fundsRequests?
+		if (self.fundsRequestCellViews.length != 0) {
 			// for now, just flash list:
-			self.walletCellViews.forEach(
+			self.fundsRequestCellViews.forEach(
 				function(view, i)
 				{
-					view.TearDown() // important so the event listeners get deregistered
-					//
 					view.removeFromSuperview()
 				}
 			)
-			self.walletCellViews = []
+			self.fundsRequestCellViews = []
 		}
-		{ // add subviews
-			wallets.forEach(
-				function(wallet, i)
+		// now add subviews
+		const context = self.context
+		fundsRequests.forEach(
+			function(fundsRequest, i)
+			{
+				const options = 
 				{
-					const options = 
+					cell_tapped_fn: function(cellView)
 					{
-						cell_tapped_fn: function(cellView)
-						{
-							self.pushWalletDetailsView(cellView.wallet)
-						}
+						self.pushFundsRequestDetailsView(cellView.fundsRequest)
 					}
-					const view = new WalletsListCellView(options, context)
-					self.walletCellViews.push(view)
-					view.ConfigureWith_wallet(wallet)
-					self.addSubview(view)
 				}
-			)
-		}
+				const view = new FundsRequestsListCellView(options, context)
+				self.fundsRequestCellViews.push(view)
+				view.ConfigureWith_fundsRequest(fundsRequest)
+				self.addSubview(view)
+			}
+		)
 	}
 	//
 	//
 	// Runtime - Internal - Imperatives - Navigation/presentation
 	//
-	pushWalletDetailsView(wallet)
+	pushFundsRequestDetailsView(fundsRequest)
 	{
 		const self = this
-		if (self.current_walletDetailsView !== null) {
+		if (self.current_generatedRequestView !== null) {
 			// Commenting this throw as we are going to use this as the official way to lock this function,
 			// e.g. if the user is double-clicking on a cell to push a details view
-			// throw "Asked to pushWalletDetailsView while self.current_walletDetailsView !== null"
+			// throw "Asked to pushFundsRequestDetailsView while self.current_generatedRequestView !== null"
 			return
 		}
-		{ // check wallet
-			if (typeof wallet === 'undefined' || wallet === null) {
-				throw "WalletsListView requires self.wallet to pushWalletDetailsView"
+		{ // check fundsRequest
+			if (typeof fundsRequest === 'undefined' || fundsRequest === null) {
+				throw self.constructor.name + " requires self.wallet to pushFundsRequestDetailsView"
 				return
-			}
-			if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) { // unlikely, but possible
-				console.log("Not pushing as wallet failed to init or boot.")
-				return // just don't push - no need to error 
 			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {
-			throw "WalletsListView requires navigationController to pushWalletDetailsView"
+			throw self.constructor.name + " requires navigationController to pushFundsRequestDetailsView"
 			return
 		}
 		{
 			const options = 
 			{
-				wallet: wallet
+				fundsRequest: fundsRequest
 			}
-			const view = new WalletDetailsView(options, self.context)
+			const view = new GeneratedRequestView(options, self.context)
 			navigationController.PushView(
 				view, 
 				true // animated
@@ -253,14 +256,14 @@ class WalletsListView extends View
 			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
 			// by tearing it down on self.viewDidAppear() below and on TearDown() (although since this is a root stackView
 			// the latter ought not to happen)
-			self.current_walletDetailsView = view
+			self.current_generatedRequestView = view
 		}
 	}
 	//
 	//
 	// Runtime - Delegation - Data source
 	//
-	_WalletsListController_EventName_listUpdated()
+	_FundsRequestsListController_EventName_listUpdated()
 	{
 		const self = this
 		self.reloadData()
@@ -273,22 +276,22 @@ class WalletsListView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
-			}
+		//
+		if (typeof self.navigationController === 'undefined' || self.navigationController === null) {
+			throw "missing self.navigationController in viewWillAppear()"
 		}
+		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight() + self.padding_top}px`
+		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight() + self.padding_top + self.padding_bottom}px)`
 	}
 	viewDidAppear()
 	{
 		const self = this
 		super.viewDidAppear()
 		//
-		if (self.current_walletDetailsView !== null) {
-			self.current_walletDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_walletDetailsView = null // must zero again and should free
+		if (self.current_generatedRequestView !== null) {
+			self.current_generatedRequestView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_generatedRequestView = null // must zero again and should free
 		}
 	}
 }
-module.exports = WalletsListView
+module.exports = FundsRequestsListView

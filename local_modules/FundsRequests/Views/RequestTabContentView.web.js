@@ -42,14 +42,14 @@ class RequestTabContentView extends StackNavigationView
 		const self = this
 		{ // walletsListView
 			const options = {}
-			const RequestFundsView = require('./RequestFundsView.web')
-			const view = new RequestFundsView(options, self.context)
-			self.requestFundsView = view
+			const FundsRequestsListView = require('./FundsRequestsListView.web')
+			const view = new FundsRequestsListView(options, self.context)
+			self.fundsRequestsListView = view
 		}
 		{
 			self.SetStackViews(
 				[
-					self.requestFundsView
+					self.fundsRequestsListView
 				]
 			)
 		}

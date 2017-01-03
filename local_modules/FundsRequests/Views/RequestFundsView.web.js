@@ -305,8 +305,7 @@ class RequestFundsView extends View
 					self.amountInputLayer.value = ""
 					self.memoInputLayer.value = ""
 					self.contactInputLayer.value = "" // TODO: update this when we build the contacts selector
-					//
-				}		
+				}
 				const GeneratedRequestView = require('./GeneratedRequestView.web')
 				const options = 
 				{

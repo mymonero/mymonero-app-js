@@ -36,6 +36,7 @@ exports.CollectionName = CollectionName
 //
 const documentCryptScheme =
 {
+	dateCreated: { type: CryptSchemeFieldValueTypes.String }, // think this doesn't strictly have to be encrypted
 	to_address: { type: CryptSchemeFieldValueTypes.String },
 	payment_id: { type: CryptSchemeFieldValueTypes.String },
 	amount: { type: CryptSchemeFieldValueTypes.String },
@@ -45,6 +46,7 @@ const documentCryptScheme =
 exports.DocumentCryptScheme = documentCryptScheme
 //
 // Utility functions
+//
 function HydrateInstance(
 	instance,
 	plaintextDocument
@@ -53,6 +55,14 @@ function HydrateInstance(
 	const self = instance
 	//
 	// console.log("plaintextDocument", plaintextDocument)
+	function _isNonNil_dateStr(v)
+	{
+		return v && typeof v !== 'undefined' && v !== ""
+	}
+	{
+		const dateStr = plaintextDocument.dateCreated
+		self.dateCreated = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+	}
 	self.to_address = plaintextDocument.to_address
 	self.payment_id = plaintextDocument.payment_id
 	self.amount = plaintextDocument.amount
@@ -79,14 +89,20 @@ function SaveToDisk(
 		fn(err)
 		return
 	}
-	//
+	{ // defaults/onces
+		if (typeof self.dateCreated === 'undefined') {
+			self.dateCreated = new Date()
+		}	
+	}
 	const plaintextDocument =
 	{
+		dateCreated: self.dateCreated,
+		//
 		to_address: self.to_address,
 		payment_id: self.payment_id,
 		amount: "" + self.amount, // we're storing this as a string
 		message: self.message || "",
-		description: self.description || ""
+		description: self.description || "",
 	}
 	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,
