@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
 //
 class GeneratedRequestView extends View
 {
@@ -68,26 +69,90 @@ class GeneratedRequestView extends View
 			//
 			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
-		{ // URI
-			const layer = document.createElement("p")
+		{ // table container (needed?)
+			const containerLayer = document.createElement("div")
 			{
-				layer.innerHTML = self.fundsRequest.Lazy_URI() 
+				containerLayer.style.border = "1px solid #888"
+				containerLayer.style.borderRadius = "5px"
 			}
-			self.layer.appendChild(layer)
-		}
-		{ // QR code
-			const layer = document.createElement("div")
 			{
-				const QRCode = require('../Vendor/qrcode.min')
-	            const qrCode = new QRCode(
-					layer,
-					{
-	                	correctLevel: QRCode.CorrectLevel.L
+				{ // QR code
+					const div = commonComponents_tables.New_fieldContainerLayer()
+					{ // qrcode div
+						const layer = document.createElement("div")
+						{
+							layer.style.width = "75px"
+							layer.style.height = "75px"
+							layer.style.display = "inline-block"
+							layer.style.float = "left"
+						}
+						self.qrCode_div = layer
+						{
+							const QRCode = require('../Vendor/qrcode.min')
+				            const qrCode = new QRCode(
+								layer,
+								{
+				                	correctLevel: QRCode.CorrectLevel.L
+								}
+							)
+							qrCode.makeCode(self.fundsRequest.Lazy_URI())
+						}
+						div.appendChild(layer)
 					}
-				)
-				qrCode.makeCode(self.fundsRequest.Lazy_URI())
+					const qrCode_imgLayer = self.qrCode_div.querySelector("img")
+					{
+						const layer = qrCode_imgLayer
+						layer.style.width = "75px"
+						layer.style.height = "75px"
+					}
+					{ // Download button
+						const layer = document.createElement("a")
+						{
+							layer.innerHTML = "DOWNLOAD"
+							layer.style.float = "right"
+							layer.style.textAlign = "right"
+							layer.style.fontSize = "15px"
+							layer.style.fontWeight = "bold"
+							//
+							layer.style.color = "#6666ff" 
+							layer.href = "#" // to make it look clickable
+						}
+						layer.addEventListener(
+							"click",
+							function(e)
+							{
+								e.preventDefault()
+								{ // this should capture value
+
+									const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
+									self.context.filesystemUI.OpenDialogToSaveBase64ImageStringAsImageFile(
+										qrCode_imgData_base64String,
+										function(err)
+										{
+											if (err) {
+												throw err
+											}
+											// console.log("Downloaded QR code")
+										}
+									)
+								}
+								return false
+							}
+						)
+						div.appendChild(layer)
+					}
+					div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+					containerLayer.appendChild(div)
+				}
 			}
-			self.layer.appendChild(layer)
+			{ // URI
+				const layer = document.createElement("p")
+				{
+					layer.innerHTML = self.fundsRequest.Lazy_URI() 
+				}
+				containerLayer.appendChild(layer)
+			}
+			self.layer.appendChild(containerLayer)
 		}
 	}
 	//

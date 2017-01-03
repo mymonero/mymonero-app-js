@@ -179,7 +179,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 			// for now, we'll assume this is electron
 			const monero_wallet_locale = require('../../monero_utils/monero_wallet_locale.electron') // include other lib when supporting other platforms
 			self.mnemonic_wordsetName = monero_wallet_locale.MnemonicWordsetNameAccordingToLocaleWithApp(self.context.app) // will default to english if no match
-			console.log("self.mnemonic_wordsetName" , self.mnemonic_wordsetName)
 		}
 		//
 		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work

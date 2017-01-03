@@ -36,6 +36,12 @@ var context_object_instantiation_descriptions =
 		instance_key: "pasteboard",
 		options: {}
 	},
+	{ // might as well put it in the renderer proc so we don't have to do IPC to pasteboard
+		module_path: __dirname + "/../../FilesystemUI/FilesystemUI.electron",
+		instance_key: "filesystemUI",
+		options: {}
+	},
+	// services
 	{
 		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.electron.main",
 		instance_key: "document_cryptor__background",
@@ -51,6 +57,7 @@ var context_object_instantiation_descriptions =
 		instance_key: "hostedMoneroAPIClient",
 		options: {}
 	},
+	// app controllers
 	{
 		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
 		instance_key: "passwordController",
