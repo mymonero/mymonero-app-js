@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -28,16 +28,24 @@
 //
 "use strict"
 //
-class DocumentPersister_Interface
+const BackgroundTaskExecutor = require('../electron_background/BackgroundTaskExecutor.electron')
+//
+class BackgroundDocumentPersister extends BackgroundTaskExecutor
 {
-	constructor(options)
+	constructor(options, context)
 	{
-		var self = this
-		{
-			self.options = options
+		options = options || {}
+		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentPersister.NeDB.child.js'
+		//
+		const databaseFileParentDirectory = context.userDataAbsoluteFilepath
+		if (!databaseFileParentDirectory) {
+			throw self.constructor.name + " requires a databaseFileParentDirectory"
 		}
+		options.argsForChild = [ databaseFileParentDirectory ]
+		//
+		super(options, context)
 	}
-
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
@@ -45,8 +53,15 @@ class DocumentPersister_Interface
 	DocumentsWithQuery(collectionName, query, options, fn)
 	{
 		var self = this
-		//
-		self.__documentsWithQuery(collectionName, query, options, fn)
+		self.executeBackgroundTaskNamed(
+			'DocumentsWithQuery',
+			fn, // fn goes as second arg
+			[
+				collectionName, 
+				query, 
+				options
+			]
+		)
 	}
 
 
@@ -56,78 +71,58 @@ class DocumentPersister_Interface
 	InsertDocument(collectionName, savableDocument, fn)
 	{
 		const self = this
-		//
-		self.__insertDocuments(collectionName, savableDocument, fn)
+		self.executeBackgroundTaskNamed(
+			'InsertDocument',
+			function(err, newDocument) // fn goes as second arg
+			{
+				fn(err, newDocument)
+			},
+			[
+				collectionName, 
+				savableDocument
+			]
+		)
 	}
 	UpdateDocuments(collectionName, query, update, options, fn)
 	{
 		const self = this
-		//
-		self.__updateDocuments(collectionName, query, update, options, fn)
+		self.executeBackgroundTaskNamed(
+			'UpdateDocuments',
+			function(err, returnValuesByKey) // fn goes as second arg
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				// unpack returnValuesByKey to maintain DBPersister_Interface interface
+				const numAffected = returnValuesByKey.numAffected
+				const affectedDocuments = returnValuesByKey.affectedDocuments
+				const upsert = returnValuesByKey.upsert
+				fn(err, numAffected, affectedDocuments, upsert)
+			},
+			[
+				collectionName, 
+				query, 
+				update,
+				options
+			]
+		)
 	}
 	RemoveDocuments(collectionName, query, options, fn)
 	{
 		const self = this
-		//
-		self.__removeDocuments(collectionName, query, options, fn)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Private
-	
-	__documentsWithQuery(collectionName, query, options, fn)
-	{ // fn: (err, docs) -> Void
-		const self = this
-		//
-		console.log("Error: You must override __documentsWithQuery in ", self)
-		console.log(
-			"options:\n{"
-			+ "\n\tsort: (-1,1) or QueryDict"
-			+ "\n\tskip: UInteger "
-			+ "\n\tlimit: UInteger"
-			+ "\n}"
+		self.executeBackgroundTaskNamed(
+			'RemoveDocuments',
+			function(err, numRemoved) // fn goes as second arg
+			{
+				fn(err, numRemoved)
+			},
+			[
+				collectionName, 
+				query, 
+				options
+			]
 		)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private
-
-	__insertDocuments(collectionName, savableDocument, fn)
-	{ // fn: (err, newDocument) -> Void
-		const self = this
-		//
-		console.log("Error: You must override __insertDocuments in", self)
-	}
-	__updateDocuments(collectionName, query, update, options, fn)
-	{ // fn: (err, numAffected, affectedDocuments, upsert) -> Void
-		const self = this
-		//
-		console.log("Error: You must override __updateDocuments in", self)
-		console.log(
-			"options:\n{"
-			+ "\n\tupsert: Boolean(false)"
-			+ "\n\tmulti: Boolean(false)"
-			+ "\n\treturnUpdatedDocs: Boolean(false)"
-			+ "\n}"
-		)
-	}
-	__removeDocuments(collectionName, query, options, fn)
-	{ // fn: (err, numRemoved) -> Void
-		const self = this
-		//
-		console.log("Error: You must override __removeDocuments in", self)
-		console.log(
-			"options:\n{"
-			+ "\n\tmulti: Boolean(false)"
-			+ "\n}"
-		)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private
-
+	}	
 }
-module.exports = DocumentPersister_Interface
+module.exports = BackgroundDocumentPersister

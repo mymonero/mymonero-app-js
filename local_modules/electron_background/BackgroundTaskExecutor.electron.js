@@ -47,6 +47,8 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 			if (typeof self.absolutePathToChildProcessSourceFile === 'undefined' || !self.absolutePathToChildProcessSourceFile) {
 				throw `absolutePathToChildProcessSourceFile required in ${self.constructor.name}`
 			}
+			//
+			self.argsForChild = self.options.argsForChild || []
 		}
 		{
 			self.hasBooted = false
@@ -55,7 +57,7 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 		//
 		const child = fork( // fork will set up electron properly in the child process for us (e.g. env)
 			self.absolutePathToChildProcessSourceFile,
-			[],
+			self.argsForChild,
 			{ stdio: 'ipc' }
 		)
 		self.child = child

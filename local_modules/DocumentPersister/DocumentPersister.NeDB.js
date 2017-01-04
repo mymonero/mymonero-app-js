@@ -35,15 +35,22 @@ const DocumentPersister_Interface = require('./DocumentPersister_Interface')
 //
 class NeDB_DocumentPersister extends DocumentPersister_Interface
 {
-
-	setup()
+	constructor(options)
 	{
+		super(options) // must call on super before accessing options
+		//
 		var self = this
-		//
-		super.setup()
-		//
-		var dbHandles = {}
-		self.dbHandles = dbHandles
+		{
+			var options = self.options
+			self.userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
+			if (!self.userDataAbsoluteFilepath || typeof self.userDataAbsoluteFilepath === 'undefined') {
+				throw "options.userDataAbsoluteFilepath required"
+			}
+		}
+		{
+			var dbHandles = {}
+			self.dbHandles = dbHandles
+		}
 	}
 
 
@@ -53,8 +60,8 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 	_new_dbHandle_forCollectionNamed(collectionName)
 	{
 		var self = this
-		var context = self.context
-		var userDataAbsoluteFilepath = context.userDataAbsoluteFilepath
+		var options = self.options
+		var userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
 		var pathTo_dataFile = path.join(userDataAbsoluteFilepath, '/' + collectionName + '.nedb_datafile')
 		var dbHandle = new Datastore({ 
 			filename: pathTo_dataFile,

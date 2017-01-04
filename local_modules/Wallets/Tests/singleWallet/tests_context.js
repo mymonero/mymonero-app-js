@@ -39,7 +39,9 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../../../DocumentPersister/DocumentPersister.NeDB",
 		instance_key: "persister",
-		options: {}
+		options: {
+			userDataAbsoluteFilepath: "./test_products"
+		}
 	},
 	{
 		module_path: __dirname + "/../../../symmetric_cryptor__background/BackgroundDocumentCryptor.interfaceForTests",
@@ -51,7 +53,6 @@ function NewHydratedContext()
 {
 	var initialContext =
 	{
-		userDataAbsoluteFilepath: "./test_products"
 	}
 
 	return require("../../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)

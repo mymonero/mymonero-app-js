@@ -48,7 +48,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../DocumentPersister/DocumentPersister.NeDB",
+		module_path: __dirname + "/../../DocumentPersister/BackgroundDocumentPersister.NeDB.electron",
 		instance_key: "persister",
 		options: {}
 	},
