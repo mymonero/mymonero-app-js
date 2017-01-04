@@ -35,10 +35,6 @@ const SecretPersistingHostedWallet = require('../../Wallets/Models/SecretPersist
 const secretWallet_persistence_utils = require('../../Wallets/Models/secretWallet_persistence_utils')
 const wallet_swatches = require('../../Wallets/Models/wallet_swatches')
 //
-//
-////////////////////////////////////////////////////////////////////////////////
-// Principal class
-//
 class WalletsListController extends EventEmitter
 {
 

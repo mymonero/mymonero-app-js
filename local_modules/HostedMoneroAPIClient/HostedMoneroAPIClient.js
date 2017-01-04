@@ -38,10 +38,6 @@ const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
 const TransactionKeyImageCache = require('./TransactionKeyImageCache')
 const config__MyMonero = require('./config__MyMonero')
 //
-//
-////////////////////////////////////////////////////////////////////////////////
-// Principal class
-//
 class HostedMoneroAPIClient
 {
 

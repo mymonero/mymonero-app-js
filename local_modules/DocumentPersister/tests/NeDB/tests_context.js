@@ -32,7 +32,7 @@
 var context_object_instantiation_descriptions = 
 [ 
 	{
-		module_path: __dirname + "/../NeDBPersister",
+		module_path: __dirname + "/../../DocumentPersister.NeDB",
 		instance_key: "persister",
 		options: {}
 	}
@@ -44,6 +44,6 @@ function NewHydratedContext()
 		userDataAbsoluteFilepath: "./test_products"
 	}
 
-	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	return require("../../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
 }
 module.exports.NewHydratedContext = NewHydratedContext

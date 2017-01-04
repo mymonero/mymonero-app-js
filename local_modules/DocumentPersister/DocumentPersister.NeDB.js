@@ -25,18 +25,15 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
-
-const Persister = require('../persister/Persister')
-const Datastore = require('nedb')
+//
 const path = require('path')
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Principal class
-
-class NeDBPersister extends Persister
+const Datastore = require('nedb')
+//
+const DocumentPersister_Interface = require('./DocumentPersister_Interface')
+//
+class NeDB_DocumentPersister extends DocumentPersister_Interface
 {
 
 	setup()
@@ -148,4 +145,4 @@ class NeDBPersister extends Persister
 	// Runtime - Delegation - 
 
 }
-module.exports = NeDBPersister
+module.exports = NeDB_DocumentPersister

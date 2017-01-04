@@ -31,7 +31,7 @@
 var context_object_instantiation_descriptions = 
 [ 
 	{
-		module_path: __dirname + "/../../NeDBPersister/NeDBPersister",
+		module_path: __dirname + "/../../DocumentPersister/DocumentPersister.NeDB",
 		instance_key: "persister",
 		options: {}
 	}
