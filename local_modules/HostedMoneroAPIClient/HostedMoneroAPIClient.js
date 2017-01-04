@@ -34,9 +34,10 @@ const async = require('async')
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const monero_config = require('../monero_utils/monero_config')
 const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+const monero_keyImage_cache_utils = require('../monero_utils/monero_keyImage_cache_utils')
 //
-const TransactionKeyImageCache = require('./TransactionKeyImageCache')
 const config__MyMonero = require('./config__MyMonero')
+const BackgroundAPIResponseParser = require('./BackgroundAPIResponseParser.electron')
 //
 class HostedMoneroAPIClient
 {
@@ -45,11 +46,16 @@ class HostedMoneroAPIClient
 	////////////////////////////////////////////////////////////////////////////////
 	// Lifecycle - Initialization
 
-	constructor(options, context)
+	constructor(options)
 	{
 		var self = this
-		self.options = options
-		self.context = context		
+		self.options = options 
+		//
+		self.setup()
+	}
+	setup()
+	{
+		var self = this
 		//
 		self.scheme = config__MyMonero.API__protocolScheme
 		self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // later will be configurable
@@ -57,11 +63,10 @@ class HostedMoneroAPIClient
 		//
 		self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
 		//
-		self.setup()
-	}
-	setup()
-	{
-		var self = this
+		{
+			const options = {}
+			self.responseParser = new BackgroundAPIResponseParser(options)
+		}
 	}
 
 
@@ -139,45 +144,56 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			// const DEBUG_console_time_name = "processing reply from " + endpointPath + " for " + address
-			// console.time(DEBUG_console_time_name)
-			const total_received = new JSBigInt(data.total_received || 0);
-			const locked_balance = new JSBigInt(data.locked_funds || 0);
-			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
-			//
-			const account_scanned_tx_height = data.scanned_height || 0;
-			const account_scanned_block_height = data.scanned_block_height || 0;
-			const account_scan_start_height = data.start_height || 0;
-			const transaction_height = data.transaction_height || 0;
-			const blockchain_height = data.blockchain_height || 0;
-			const spent_outputs = data.spent_outputs || []
-			//
-			for (let spent_output of spent_outputs) {
-				var key_image = TransactionKeyImageCache.Lazy_KeyImage(
-					spent_output.tx_pub_key,
-					spent_output.out_index,
-					address,
-					view_key__private,
-					spend_key__public,
-					spend_key__private
-				)
-				if (spent_output.key_image !== key_image) {
-					// console.log('💬  Output used as mixin (' + spent_output.key_image + '/' + key_image + ')')
-					total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
+			self.responseParser.Parse_AddressInfo(
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private,
+				function(err, returnValuesByKey)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					var total_received_JSBigInt;
+					const total_received_String = returnValuesByKey.total_received_String
+					if (total_received_String) {
+						total_received_JSBigInt = new JSBigInt(total_received_String)
+					} else {
+						total_received_JSBigInt = new JSBigInt(0)
+					}
+					//
+					var locked_balance_JSBigInt;
+					const locked_balance_String = returnValuesByKey.locked_balance_String
+					if (locked_balance_String) {
+						locked_balance_JSBigInt = new JSBigInt(locked_balance_String)
+					} else {
+						locked_balance_JSBigInt = new JSBigInt(0)
+					}
+					//
+					var total_sent_JSBigInt;
+					const total_sent_String = returnValuesByKey.total_sent_String
+					if (total_sent_String) {
+						total_sent_JSBigInt = new JSBigInt(total_sent_String)
+					} else {
+						total_sent_JSBigInt = new JSBigInt(0)
+					}
+					fn(
+						err,
+						//
+						total_received_JSBigInt,
+						locked_balance_JSBigInt,
+						total_sent_JSBigInt,
+						//
+						returnValuesByKey.spent_outputs,
+						returnValuesByKey.account_scanned_tx_height,
+						returnValuesByKey.account_scanned_block_height,
+						returnValuesByKey.account_scan_start_height,
+						returnValuesByKey.transaction_height,
+						returnValuesByKey.blockchain_height
+					)
 				}
-			}
-			// console.timeEnd(DEBUG_console_time_name)
-			fn(
-				null,
-				total_received,
-				locked_balance,
-				total_sent,
-				spent_outputs,
-				account_scanned_tx_height,
-				account_scanned_block_height,
-				account_scan_start_height,
-				transaction_height,
-				blockchain_height
 			)
 		}
 		//
@@ -218,10 +234,11 @@ class HostedMoneroAPIClient
 			//
 			const transactions = data.transactions || []
 			//
+			// TODO: rewrite this with more clarity
 			for (let i = 0; i < transactions.length; ++i) {
 				if ((transactions[i].spent_outputs || []).length > 0) {
 					for (var j = 0; j < transactions[i].spent_outputs.length; ++j) {
-						var key_image = TransactionKeyImageCache.Lazy_KeyImage(
+						var key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
 							transactions[i].spent_outputs[j].tx_pub_key,
 							transactions[i].spent_outputs[j].out_index,
 							address,
@@ -320,7 +337,7 @@ class HostedMoneroAPIClient
 					throw "spend_key_images of unspent_output at index " + i + " was null"
 				}
 				for (var j = 0; j < spend_key_images.length; j++) {
-					var key_image = TransactionKeyImageCache.Lazy_KeyImage(
+					var key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
 						finalized_unspentOutputs[i].tx_pub_key,
 						finalized_unspentOutputs[i].index,
 						address,

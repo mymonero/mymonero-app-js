@@ -28,7 +28,6 @@
 //
 "use strict"
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
 const child_ipc = require('../electron_background/child_ipc.electron')
 //
 const databaseFileParentDirectory = process.argv[2]
@@ -55,14 +54,14 @@ const tasksByName =
 		options
 	)
 	{
-		console.time("DocumentsWithQuery " + taskUUID)
+		// console.time("DocumentsWithQuery " + taskUUID)
 		persister.DocumentsWithQuery(
 			collectionName, 
 			query, 
 			options,
 			function(err, docs)
 			{
-				console.timeEnd("DocumentsWithQuery " + taskUUID)
+				// console.timeEnd("DocumentsWithQuery " + taskUUID)
 				child_ipc.CallBack(taskUUID, err, docs)
 			}
 		)
@@ -73,13 +72,13 @@ const tasksByName =
 		savableDocument
 	)
 	{
-		console.time("InsertDocument " + taskUUID)
+		// console.time("InsertDocument " + taskUUID)
 		persister.InsertDocument(
 			collectionName, 
 			savableDocument,
 			function(err, newDocument)
 			{
-				console.timeEnd("InsertDocument " + taskUUID)
+				// console.timeEnd("InsertDocument " + taskUUID)
 				child_ipc.CallBack(taskUUID, err, newDocument)
 			}
 		)
@@ -92,7 +91,7 @@ const tasksByName =
 		options
 	)
 	{
-		console.time("UpdateDocuments " + taskUUID)
+		// console.time("UpdateDocuments " + taskUUID)
 		persister.UpdateDocuments(
 			collectionName, 
 			query, 
@@ -100,7 +99,7 @@ const tasksByName =
 			options,
 			function(err, numAffected, affectedDocuments, upsert)
 			{
-				console.timeEnd("UpdateDocuments " + taskUUID)
+				// console.timeEnd("UpdateDocuments " + taskUUID)
 				const returnValuesByKey =
 				{
 					numAffected: numAffected,
@@ -118,14 +117,14 @@ const tasksByName =
 		options
 	)
 	{
-		console.time("RemoveDocuments " + taskUUID)
+		// console.time("RemoveDocuments " + taskUUID)
 		persister.RemoveDocuments(
 			collectionName, 
 			query, 
 			options,
 			function(err, numRemoved)
 			{
-				console.timeEnd("RemoveDocuments " + taskUUID)
+				// console.timeEnd("RemoveDocuments " + taskUUID)
 				child_ipc.CallBack(taskUUID, err, numRemoved)
 			}
 		)

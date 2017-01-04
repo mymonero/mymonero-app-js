@@ -1272,7 +1272,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	___didReceiveActualChangeTo_heights()
 	{
 		const self = this
-		console.log("💬  Received an update to heights")
+		// console.log("💬  Received an update to heights")
 		self.emit(self.EventName_heightsUpdated(), self)
 	}
 	___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, oldTransactions)
