@@ -28,55 +28,28 @@
 //
 "use strict"
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
-const child_ipc = require('../electron_background/child_ipc.electron')
-//
-//
-// Declaring tasks:
-//
-const tasksByName =
+class BackgroundTaskExecutor_Interface 
 {
-	New_EncryptedDocument__Async: function(
-		taskUUID,
-		plaintextDocument, 
-		documentCryptScheme, 
-		password
+	constructor(options, context)
+	{
+		const self = this
+		{
+			self.options = options
+			self.context = context
+		}
+	}
+	//
+	//
+	// Runtime - Imperatives - Interface
+	//
+	executeBackgroundTaskNamed(
+		taskName,
+		fn,
+		args
 	)
 	{
-		console.time("encrypting " + taskUUID)
-		document_cryptor.New_EncryptedDocument__Async(
-			plaintextDocument, 
-			documentCryptScheme, 
-			password,
-			function(err, encryptedDocument)
-			{
-				console.timeEnd("encrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, err, encryptedDocument)
-			}
-		)
-	},
-	New_DecryptedDocument__Async: function(
-		taskUUID,
-		encryptedDocument, 
-		documentCryptScheme, 
-		password
-	)
-	{
-		console.time("decrypting " + taskUUID)
-		document_cryptor.New_DecryptedDocument__Async(
-			encryptedDocument,
-			documentCryptScheme,
-			password,
-			function(err, plaintextDocument)
-			{
-				console.timeEnd("decrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, null, plaintextDocument)
-			}
-		)
+		const self = this
+		throw `You must override / implement executeBackgroundTaskNamed in ${self.constructor.name}`
 	}
 }
-//
-//
-// Kicking off runtime:
-//
-child_ipc.InitWithTasks_AndStartListening(tasksByName)
+module.exports = BackgroundTaskExecutor_Interface

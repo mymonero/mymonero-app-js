@@ -43,7 +43,7 @@ var context_object_instantiation_descriptions =
 	},
 	// services
 	{
-		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.electron.main",
+		module_path: __dirname + "/../../symmetric_cryptor__background/BackgroundDocumentCryptor.electron",
 		instance_key: "document_cryptor__background",
 		options: {}
 	},

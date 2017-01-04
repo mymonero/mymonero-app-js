@@ -28,55 +28,56 @@
 //
 "use strict"
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
-const child_ipc = require('../electron_background/child_ipc.electron')
+const BackgroundTaskExecutor = require('../electron_background/BackgroundTaskExecutor.electron')
 //
-//
-// Declaring tasks:
-//
-const tasksByName =
+class BackgroundDocumentCryptor extends BackgroundTaskExecutor
 {
-	New_EncryptedDocument__Async: function(
-		taskUUID,
+	constructor(options, context)
+	{
+		options = options || {}
+		options.absolutePathToChildProcessSourceFile = __dirname + '/./child.electron.js'
+		//
+		super(options, context)
+	}
+	//
+	//
+	// Runtime - Accessors - Interface
+	//
+	New_EncryptedDocument__Async(
 		plaintextDocument, 
 		documentCryptScheme, 
-		password
+		password, 
+		fn // fn: (err?, encryptedDocument) -> Void
 	)
 	{
-		console.time("encrypting " + taskUUID)
-		document_cryptor.New_EncryptedDocument__Async(
-			plaintextDocument, 
-			documentCryptScheme, 
-			password,
-			function(err, encryptedDocument)
-			{
-				console.timeEnd("encrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, err, encryptedDocument)
-			}
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'New_EncryptedDocument__Async',
+			fn, // fn goes as second arg
+			[
+				plaintextDocument, 
+				documentCryptScheme, 
+				password
+			]
 		)
-	},
-	New_DecryptedDocument__Async: function(
-		taskUUID,
-		encryptedDocument, 
-		documentCryptScheme, 
-		password
+	}
+	New_DecryptedDocument__Async(
+		encryptedDocument,
+		documentCryptScheme,
+		password,
+		fn // fn: (err?, decryptedDocument) -> Void
 	)
 	{
-		console.time("decrypting " + taskUUID)
-		document_cryptor.New_DecryptedDocument__Async(
-			encryptedDocument,
-			documentCryptScheme,
-			password,
-			function(err, plaintextDocument)
-			{
-				console.timeEnd("decrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, null, plaintextDocument)
-			}
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'New_DecryptedDocument__Async',
+			fn, // fn goes as second arg
+			[
+				encryptedDocument, 
+				documentCryptScheme, 
+				password
+			]
 		)
 	}
 }
-//
-//
-// Kicking off runtime:
-//
-child_ipc.InitWithTasks_AndStartListening(tasksByName)
+module.exports = BackgroundDocumentCryptor

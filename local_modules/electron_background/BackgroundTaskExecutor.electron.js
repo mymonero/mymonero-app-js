@@ -33,14 +33,20 @@ const uuidV1 = require('uuid/v1')
 const child_process = require('child_process')
 const fork = child_process.fork	
 //
-class BackgroundDocumentCryptor
+const BackgroundTaskExecutor_Interface = require('./BackgroundTaskExecutor_Interface')
+//
+class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 {
 	constructor(options, context)
 	{
+		super(options, context) // must call super before we can access `this` and this.options
+		//
 		const self = this
 		{
-			self.options = options
-			self.context = context
+			self.absolutePathToChildProcessSourceFile = self.options.absolutePathToChildProcessSourceFile
+			if (typeof self.absolutePathToChildProcessSourceFile === 'undefined' || !self.absolutePathToChildProcessSourceFile) {
+				throw `absolutePathToChildProcessSourceFile required in ${self.constructor.name}`
+			}
 		}
 		{
 			self.hasBooted = false
@@ -48,11 +54,9 @@ class BackgroundDocumentCryptor
 		}		
 		//
 		const child = fork( // fork will set up electron properly in the child process for us (e.g. env)
-			__dirname + '/./child.electron.js',
+			self.absolutePathToChildProcessSourceFile,
 			[],
-			{
-				stdio: 'ipc'
-			}
+			{ stdio: 'ipc' }
 		)
 		self.child = child
 		var timeout_waitingForBoot = setTimeout(
@@ -82,7 +86,7 @@ class BackgroundDocumentCryptor
 						timeout_waitingForBoot = null
 					}
 					{
-						console.log("BackgroundDocumentCryptor background process up")
+						console.log(self.constructor.name + " background process up")
 						self.hasBooted = true
 					}
 				} else {
@@ -91,7 +95,7 @@ class BackgroundDocumentCryptor
 						try {
 							payload = JSON.parse(message)
 						} catch (e) {
-							console.error("JSON couldn't be parsed in BackgroundDocumentCryptor", e)
+							console.error("JSON couldn't be parsed in " + self.constructor.name, e)
 							throw e
 							return
 						}
@@ -109,46 +113,6 @@ class BackgroundDocumentCryptor
 	startObserving_workers()
 	{
 		const self = this
-	}
-	//
-	//
-	// Runtime - Accessors - Interface
-	//
-	New_EncryptedDocument__Async(
-		plaintextDocument, 
-		documentCryptScheme, 
-		password, 
-		fn // fn: (err?, encryptedDocument) -> Void
-	)
-	{
-		const self = this
-		self._executeBackgroundTaskNamed(
-			'New_EncryptedDocument__Async',
-			fn, // fn goes as second arg
-			[
-				plaintextDocument, 
-				documentCryptScheme, 
-				password
-			]
-		)
-	}
-	New_DecryptedDocument__Async(
-		encryptedDocument,
-		documentCryptScheme,
-		password,
-		fn // fn: (err?, decryptedDocument) -> Void
-	)
-	{
-		const self = this
-		self._executeBackgroundTaskNamed(
-			'New_DecryptedDocument__Async',
-			fn, // fn goes as second arg
-			[
-				encryptedDocument, 
-				documentCryptScheme, 
-				password
-			]
-		)
 	}
 	//
 	//
@@ -171,7 +135,7 @@ class BackgroundDocumentCryptor
 			10 // ms
 		)
 	}
-	_executeBackgroundTaskNamed(
+	executeBackgroundTaskNamed(
 		taskName,
 		fn,
 		args
@@ -222,4 +186,4 @@ class BackgroundDocumentCryptor
 		}
 	}
 }
-module.exports = BackgroundDocumentCryptor
+module.exports = BackgroundTaskExecutor

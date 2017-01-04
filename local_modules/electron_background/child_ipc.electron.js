@@ -28,55 +28,72 @@
 //
 "use strict"
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
-const child_ipc = require('../electron_background/child_ipc.electron')
-//
-//
-// Declaring tasks:
-//
-const tasksByName =
-{
-	New_EncryptedDocument__Async: function(
-		taskUUID,
-		plaintextDocument, 
-		documentCryptScheme, 
-		password
-	)
-	{
-		console.time("encrypting " + taskUUID)
-		document_cryptor.New_EncryptedDocument__Async(
-			plaintextDocument, 
-			documentCryptScheme, 
-			password,
-			function(err, encryptedDocument)
-			{
-				console.timeEnd("encrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, err, encryptedDocument)
+// Public - Setup - Entrypoints:
+function InitWithTasks_AndStartListening(tasksByName)
+{ // Call this to set up the child
+	{ // start observing incoming messages
+		process.on('message', function(m)
+		{
+			var payload;
+			if (typeof m === 'string') {
+				try {
+					payload = JSON.parse(m)
+				} catch (e) {
+					console.error("Child couldn't parse incoming message with error" , e, "\n\nmessage:", m)
+					throw e
+					process.exit(1)
+				}
+			} else if (typeof m === 'object') {
+				payload = m
+			} else {
+				console.error("Child couldn't parse unrecognized typeof incoming message:", m)
+				throw e
+				process.exit(1)
 			}
-		)
-	},
-	New_DecryptedDocument__Async: function(
-		taskUUID,
-		encryptedDocument, 
-		documentCryptScheme, 
-		password
-	)
-	{
-		console.time("decrypting " + taskUUID)
-		document_cryptor.New_DecryptedDocument__Async(
-			encryptedDocument,
-			documentCryptScheme,
-			password,
-			function(err, plaintextDocument)
-			{
-				console.timeEnd("decrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, null, plaintextDocument)
-			}
-		)
+			//
+			_didReceiveIPCPayload(
+				tasksByName, // exposed dependency to avoid having to nest fns
+				payload
+			)
+		})
+	}
+	{ // ack boot
+		process.send("child is up")
 	}
 }
+exports.InitWithTasks_AndStartListening = InitWithTasks_AndStartListening
 //
 //
-// Kicking off runtime:
+// Public - Imperatives - Yielding task products
 //
-child_ipc.InitWithTasks_AndStartListening(tasksByName)
+function CallBack(taskUUID, err, returnValue)
+{
+	const payload =
+	{
+		eventName: 'FinishedTask', 
+		taskUUID: taskUUID, 
+		err: err, 
+		returnValue: returnValue
+	}
+	process.send(payload)
+}	
+exports.CallBack = CallBack
+//
+//
+// Internal - Delegation
+//
+function _didReceiveIPCPayload(tasksByName, payload)
+{
+	const taskName = payload.taskName
+	const taskUUID = payload.taskUUID
+	const payload_args = payload.args
+	const argsToCallWith = payload_args.slice() // copy
+	{ // finalize:
+		argsToCallWith.unshift(taskUUID) // prepend with taskUUID
+	}
+	const taskFn = tasksByName[taskName]
+	taskFn.apply(
+		this, // this might need to be exposed as an arg later
+		argsToCallWith
+	)
+}
