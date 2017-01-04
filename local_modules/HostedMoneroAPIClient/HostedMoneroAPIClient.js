@@ -143,6 +143,8 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
+			// const DEBUG_console_time_name = "processing reply from " + endpointPath + " for " + address
+			// console.time(DEBUG_console_time_name)
 			const total_received = new JSBigInt(data.total_received || 0);
 			const locked_balance = new JSBigInt(data.locked_funds || 0);
 			var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
@@ -168,7 +170,7 @@ class HostedMoneroAPIClient
 					total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
 				}
 			}
-			// yield
+			// console.timeEnd(DEBUG_console_time_name)
 			fn(
 				null,
 				total_received,
@@ -196,7 +198,6 @@ class HostedMoneroAPIClient
 		const self = this
 		const endpointPath = "get_address_txs"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
-		//
 		const requestHandle = self._API_doRequest_returningRequestHandle(
 			endpointPath,
 			parameters,
@@ -211,6 +212,8 @@ class HostedMoneroAPIClient
 		)
 		function __parseAndCallBack(data)
 		{
+			// const DEBUG_console_time_name = "processing reply from " + endpointPath + " for " + address
+			// console.time(DEBUG_console_time_name)
 			const account_scanned_height = data.scanned_height || 0
 			const account_scanned_block_height = data.scanned_block_height || 0
 			const account_scan_start_height = data.start_height || 0
@@ -251,7 +254,7 @@ class HostedMoneroAPIClient
 			{
 				return b.id - a.id
 			})
-			//
+			// console.timeEnd(DEBUG_console_time_name)
 			fn(
 				null, // no error
 				account_scanned_height,
