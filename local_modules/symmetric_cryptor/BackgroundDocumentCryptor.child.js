@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const document_cryptor = require('./document_cryptor')
 const child_ipc = require('../electron_background/child_ipc.electron')
 //
 //

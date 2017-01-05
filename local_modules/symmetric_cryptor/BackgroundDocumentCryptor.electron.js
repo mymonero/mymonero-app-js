@@ -28,17 +28,16 @@
 //
 "use strict"
 //
-const document_cryptor = require('../symmetric_cryptor/document_cryptor')
+const BackgroundTaskExecutor = require('../electron_background/BackgroundTaskExecutor.electron')
 //
-class BackgroundDocumentCryptor 
-{ // NOTE: This is not really a "background" processor - just a way to access the same functionality for tests in Node.JS
+class BackgroundDocumentCryptor extends BackgroundTaskExecutor
+{
 	constructor(options, context)
 	{
-		const self = this
-		{
-			self.options = options
-			self.context = context
-		}
+		options = options || {}
+		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentCryptor.child.js'
+		//
+		super(options, context)
 	}
 	//
 	//
@@ -51,11 +50,15 @@ class BackgroundDocumentCryptor
 		fn // fn: (err?, encryptedDocument) -> Void
 	)
 	{
-		document_cryptor.New_EncryptedDocument__Async(
-			plaintextDocument, 
-			documentCryptScheme, 
-			password,
-			fn
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'New_EncryptedDocument__Async',
+			fn, // fn goes as second arg
+			[
+				plaintextDocument, 
+				documentCryptScheme, 
+				password
+			]
 		)
 	}
 	New_DecryptedDocument__Async(
@@ -65,11 +68,15 @@ class BackgroundDocumentCryptor
 		fn // fn: (err?, decryptedDocument) -> Void
 	)
 	{
-		document_cryptor.New_DecryptedDocument__Async(
-			encryptedDocument,
-			documentCryptScheme,
-			password,
-			fn
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'New_DecryptedDocument__Async',
+			fn, // fn goes as second arg
+			[
+				encryptedDocument, 
+				documentCryptScheme, 
+				password
+			]
 		)
 	}
 }

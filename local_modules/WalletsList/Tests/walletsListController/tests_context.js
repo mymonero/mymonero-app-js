@@ -51,7 +51,7 @@ var context_object_instantiation_descriptions =
 		}
 	},
 	{
-		module_path: __dirname + "/../../../symmetric_cryptor__background/BackgroundDocumentCryptor.interfaceForTests",
+		module_path: __dirname + "/../../../symmetric_cryptor/BackgroundDocumentCryptor.interfaceForTests",
 		instance_key: "document_cryptor__background",
 		options: {}
 	},
