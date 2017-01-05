@@ -31,6 +31,7 @@
 const child_ipc = require('../electron_background/child_ipc.electron')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
+const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
 const monero_keyImage_cache_utils = require('../monero_utils/monero_keyImage_cache_utils')
 //
 // Declaring tasks:
@@ -79,18 +80,101 @@ const tasksByName =
 		{
 			console.timeEnd("Parse_AddressInfo " + taskUUID)
 		}
-		const returnValuesByKey = {}
+		const returnValuesByKey = 
 		{
-			returnValuesByKey.total_received_String = total_received ? total_received.toString() : null
-			returnValuesByKey.locked_balance_String = locked_balance ? locked_balance.toString() : null
-			returnValuesByKey.total_sent_String = total_sent ? total_sent.toString() : null
+			total_received_String: total_received ? total_received.toString() : null,
+			locked_balance_String: locked_balance ? locked_balance.toString() : null,
+			total_sent_String: total_sent ? total_sent.toString() : null,
 			// ^serialized JSBigInt
-			returnValuesByKey.spent_outputs = spent_outputs
-			returnValuesByKey.account_scanned_tx_height = account_scanned_tx_height
-			returnValuesByKey.account_scanned_block_height = account_scanned_block_height
-			returnValuesByKey.account_scan_start_height = account_scan_start_height
-			returnValuesByKey.transaction_height = transaction_height
-			returnValuesByKey.blockchain_height = blockchain_height
+			spent_outputs: spent_outputs,
+			account_scanned_tx_height: account_scanned_tx_height,
+			account_scanned_block_height: account_scanned_block_height,
+			account_scan_start_height: account_scan_start_height,
+			transaction_height: transaction_height,
+			blockchain_height: blockchain_height
+		}
+		child_ipc.CallBack(taskUUID, err, returnValuesByKey)
+	},
+	Parse_AddressTransactions: function(
+		taskUUID, // child_ipc inserts the task UUID so we have it
+		data,
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private
+	)
+	{
+		{
+			console.time("Parse_AddressTransactions " + taskUUID)
+		}
+		const err = null
+		//
+
+		// const DEBUG_console_time_name = "processing reply from " + endpointPath + " for " + address
+		// console.time(DEBUG_console_time_name)
+		const account_scanned_height = data.scanned_height || 0
+		const account_scanned_block_height = data.scanned_block_height || 0
+		const account_scan_start_height = data.start_height || 0
+		const transaction_height = data.transaction_height || 0
+		const blockchain_height = data.blockchain_height || 0
+		//
+		const transactions = data.transactions || []
+		//
+		// TODO: rewrite this with more clarity if possible
+		for (let i = 0; i < transactions.length; ++i) {
+			if ((transactions[i].spent_outputs || []).length > 0) {
+				for (var j = 0; j < transactions[i].spent_outputs.length; ++j) {
+					var key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
+						transactions[i].spent_outputs[j].tx_pub_key,
+						transactions[i].spent_outputs[j].out_index,
+						address,
+						view_key__private,
+						spend_key__public,
+						spend_key__private
+					)
+					if (transactions[i].spent_outputs[j].key_image !== key_image) {
+						// console.log('Output used as mixin, ignoring (' + transactions[i].spent_outputs[j].key_image + '/' + key_image + ')')
+						transactions[i].total_sent = new JSBigInt(transactions[i].total_sent).subtract(transactions[i].spent_outputs[j].amount).toString()
+						transactions[i].spent_outputs.splice(j, 1)
+						j--
+					}
+				}
+			}
+			if (new JSBigInt(transactions[i].total_received || 0).add(transactions[i].total_sent || 0).compare(0) <= 0) {
+				transactions.splice(i, 1)
+				i--
+				continue
+			}
+			transactions[i].amount = new JSBigInt(transactions[i].total_received || 0).subtract(transactions[i].total_sent || 0).toString()
+			transactions[i].approx_float_amount = parseFloat(monero_utils.formatMoney(transactions[i].amount))
+			transactions[i].timestamp = transactions[i].timestamp
+		}
+		transactions.sort(function(a, b)
+		{
+			return b.id - a.id
+		})
+		// console.timeEnd(DEBUG_console_time_name)
+		// prepare transactions to be serialized
+
+		for (let transaction of transactions) {
+			transaction.amount = transaction.amount.toString() // JSBigInt -> String
+			if (typeof total_sent !== 'undefined' && total_sent !== null) {
+				transaction.total_sent = transaction.total_sent.toString()
+			}
+		}
+		// todo: on the other side, convert transactions timestamp to Date
+
+		{
+			console.timeEnd("Parse_AddressTransactions " + taskUUID)
+		}
+		const returnValuesByKey =
+		{
+			account_scanned_height: account_scanned_height,
+			account_scanned_block_height: account_scanned_block_height,
+			account_scan_start_height: account_scan_start_height,
+			transaction_height: transaction_height,
+			blockchain_height: blockchain_height,
+			serialized_transactions: transactions
 		}
 		child_ipc.CallBack(taskUUID, err, returnValuesByKey)
 	}

@@ -70,5 +70,31 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 			]
 		)
 	}
+
+	Parse_AddressTransactions(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
+	{
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'Parse_AddressTransactions',
+			function(err, returnValuesByKey) // fn goes as second arg
+			{
+				fn(err, returnValuesByKey)
+			},
+			[
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private				
+			]
+		)
+	}
 }
 module.exports = BackgroundAPIResponseParser
