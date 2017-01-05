@@ -177,6 +177,69 @@ const tasksByName =
 			serialized_transactions: transactions
 		}
 		child_ipc.CallBack(taskUUID, err, returnValuesByKey)
+	},
+	Parse_UnspentOuts: function(
+		taskUUID, // child_ipc inserts the task UUID so we have it
+		data,
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private
+	)
+	{
+		{
+			console.time("Parse_UnspentOuts " + taskUUID)
+		}
+		const err = null
+		//
+		const data_outputs = data.outputs
+		const finalized_unspentOutputs = data.outputs || [] // to finalize:
+		for (var i = 0; i < finalized_unspentOutputs.length; i++) {
+			const unspent_output = finalized_unspentOutputs[i]
+			if (
+				unspent_output === null 
+				|| typeof unspent_output === 'undefined' 
+				|| !unspent_output // just preserving what was in the original code
+			) {
+				throw "unspent_output at index " + i + " was null"
+			}
+			const spend_key_images = unspent_output.spend_key_images
+			if (spend_key_images === null || typeof spend_key_images === 'undefined') {
+				throw "spend_key_images of unspent_output at index " + i + " was null"
+			}
+			for (var j = 0; j < spend_key_images.length; j++) {
+				var key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
+					finalized_unspentOutputs[i].tx_pub_key,
+					finalized_unspentOutputs[i].index,
+					address,
+					view_key__private,
+					spend_key__public,
+					spend_key__private
+				)
+				if (key_image === finalized_unspentOutputs[i].spend_key_images[j]) {
+					// console.log("💬  Output was spent; key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_unspentOutputs[i].amount));
+					// Remove output from list
+					finalized_unspentOutputs.splice(i, 1);
+					if (finalized_unspentOutputs[i]) {
+						j = finalized_unspentOutputs[i].spend_key_images.length;
+					}
+					i--;
+				} else {
+					// console.log("💬  Output used as mixin (" + key_image + "/" + finalized_unspentOutputs[i].spend_key_images[j] + ")");
+				}
+			}
+		}
+		// console.log("Unspent outs: " + JSON.stringify(finalized_unspentOutputs));
+		const unusedOuts = finalized_unspentOutputs.slice(0)
+		{
+			console.timeEnd("Parse_UnspentOuts " + taskUUID)
+		}
+		const returnValuesByKey =
+		{
+			unspentOutputs: finalized_unspentOutputs,
+			unusedOuts: unusedOuts
+		}
+		child_ipc.CallBack(taskUUID, err, returnValuesByKey)
 	}
 }
 //
