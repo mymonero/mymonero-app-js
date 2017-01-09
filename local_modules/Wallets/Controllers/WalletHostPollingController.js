@@ -100,7 +100,7 @@ class WalletHostPollingController
 		if (typeof self.intervalTimeout === 'undefined' || self.intervalTimeout === null) {
 			throw "_tearDown_stopTimers called but self.intervalTimeout already nil"
 		}
-		console.log("💬  Clearing polling intervalTimeout.")
+		// console.log("💬  Clearing polling intervalTimeout.")
 		clearInterval(self.intervalTimeout)
 		self.intervalTimeout = null
 	}
@@ -148,7 +148,7 @@ class WalletHostPollingController
 		const wallet = self.wallet
 		const fn = function(errOrNil)
 		{
-			if (err) {
+			if (errOrNil) {
 				// TODO: how to handle this? we'll retry soon enough
 			}
 			// success
@@ -234,7 +234,7 @@ class WalletHostPollingController
 		const wallet = self.wallet
 		const fn = function(errOrNil)
 		{
-			if (err) {
+			if (errOrNil) {
 				// TODO: how to handle this? we'll retry soon enough
 			}
 			// success

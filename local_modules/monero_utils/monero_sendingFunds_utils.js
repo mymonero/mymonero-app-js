@@ -488,6 +488,7 @@ function new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescrip
 				}
                 console.log(domain + ": ", records);
 				monero_openalias_utils.CurrencyReadyAddressFromTXTRecords(
+					domain,
 					records,
 					dnssec_used,
 					secured,

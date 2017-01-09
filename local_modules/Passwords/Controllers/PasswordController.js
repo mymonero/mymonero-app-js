@@ -134,6 +134,34 @@ class PasswordController extends EventEmitter
 			self.hasBooted = true // all done!
 		}
 	}
+	//
+	//
+	// Setup - Called on post-whole-context-boot (see Delegation below)
+	//
+	_startObserving_userIdleInWindowController()
+	{
+		const self = this
+		const controller = self.context.userIdleInWindowController
+		if (typeof controller === 'undefined' || controller === null) {
+			throw "nil self.context.userIdleInWindowController"
+		}
+		controller.on(
+			controller.EventName_userDidBecomeIdle(),
+			function()
+			{
+				if (self.hasUserEverEnteredPassword !== true) {
+					// nothing to do here because the app is not unlocked and/or has no data which would be locked
+					console.log("💬  User became idle but no password has ever been entered/no saved data should exist.")
+					return
+				} else if (self.HasUserEnteredValidPasswordYet() !== true) {
+					// user has saved data but hasn't unlocked the app yet
+					console.log("💬  User became idle and saved data/pw exists, but user hasn't unlocked app yet.")
+					return
+				}
+				self._didBecomeIdleAfterHavingPreviouslyEnteredPassword()
+			}
+		)
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +208,15 @@ class PasswordController extends EventEmitter
 		return "EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB"
 	}
 	//
+	EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+	{
+		return "EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword"
+	}
+	EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+	{
+		return "EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword"
+	}
+	//
 	AvailableUserSelectableTypesOfPassword()
 	{
 		return _userSelectedTypesOfPassword
@@ -198,7 +235,7 @@ class PasswordController extends EventEmitter
 		//
 	    return __capitalizedString(humanReadable_passwordType)
 	}
-	
+	//
 	HasUserEnteredValidPasswordYet()
 	{
 		const self = this
@@ -242,7 +279,7 @@ class PasswordController extends EventEmitter
 					// guard call to callBack()
 					if (hasObtainedPassword === true) {
 						console.log("PasswordController/WhenBootedAndPasswordObtained_PasswordAndType _aPasswordWasObtained called redundantly")
-						return // shouldn't happen but just in case…
+						return // ^- shouldn't happen but just in case…
 					}
 					hasObtainedPassword = true
 					//
@@ -672,5 +709,34 @@ class PasswordController extends EventEmitter
 		self.password = password
 		self.hasUserEverEnteredPassword = true // we can now flip this to true
 	}
+	//
+	//
+	// Runtime - Delegation - User having become idle -> teardown booted state and require pw
+	//
+	_didBecomeIdleAfterHavingPreviouslyEnteredPassword()
+	{
+		const self = this
+		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
+		{ // indicate to consumers they should tear down and await the "did" event to re-request
+			self.emit(self.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword())
+		}
+		{ // trigger deconstruction of booted state and require password
+			self.password = undefined
+		}
+		{ // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
+			self.emit(self.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword())
+		}
+	}	
+	//
+	//
+	// Runtime - Delegation - Post-instantiation hook
+	//
+	RuntimeContext_postWholeContextInit_setup()
+	{
+		const self = this
+		// We have to wait until post-whole-context-init to guarantee all controllers exist
+		self._startObserving_userIdleInWindowController()
+	}
+
 }
 module.exports = PasswordController

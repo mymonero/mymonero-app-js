@@ -61,16 +61,48 @@ class WalletsListController extends EventEmitter
 		{
 			self.hasBooted = true // all done!
 		}
-		{ // start observing
+		{ // start observing (but not redundantly because we call _stopObserving_passwordController if we need to call _setup_didBoot again)
 			{ // passwordController
 				const controller = self.context.passwordController
-				controller.on(
-					controller.EventName_ChangedPassword(),
-					function()
+				{ // EventName_ChangedPassword
+					if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+					}
+					self._passwordController_EventName_ChangedPassword_listenerFn = function()
 					{
 						self._passwordController_EventName_ChangedPassword()
 					}
-				)
+					controller.on(
+						controller.EventName_ChangedPassword(),
+						self._passwordController_EventName_ChangedPassword_listenerFn
+					)
+				}
+				{ // EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword
+					if (self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+					}
+					self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn = function()
+					{
+						self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+					}
+					controller.on(
+						controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
+						self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn
+					)
+				}
+				{ // EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword
+					if (self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+					}
+					self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn = function()
+					{
+						self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+					}
+					controller.on(
+						controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+						self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn
+					)
+				}
 			}
 		}
 		setTimeout(function()
@@ -90,24 +122,25 @@ class WalletsListController extends EventEmitter
 	setup()
 	{
 		const self = this
-		const context = self.context
-		if (typeof context.persister === 'undefined') { // self should only be after persister in the context module load list
-			throw "context.persister undefined in WalletsListController setup()"
-		}
-		//
-		// reconsitute persisted wallets
-		self._new_idsOfPersistedWallets(
-			function(err, ids)
-			{
-				if (err) {
-					const errStr = "Error fetching persisted wallet ids: " + err.message
-					const err = new Error(errStr)
-					self._setup_didFailToBootWithError(err)
-					return
+		self._setup_fetchAndReconstituteExistingRecords()
+	}
+	_setup_fetchAndReconstituteExistingRecords()
+	{
+		const self = this
+		{ // load
+			self._new_idsOfPersistedWallets(
+				function(err, ids)
+				{
+					if (err) {
+						const errStr = "Error fetching persisted wallet ids: " + err.message
+						const err = new Error(errStr)
+						self._setup_didFailToBootWithError(err)
+						return
+					}
+					__proceedTo_loadWalletsWithIds(ids)
 				}
-				__proceedTo_loadWalletsWithIds(ids)
-			}
-		)
+			)
+		}
 		function __proceedTo_loadWalletsWithIds(ids)
 		{
 			self.wallets = []
@@ -165,7 +198,7 @@ class WalletsListController extends EventEmitter
 							{ // TODO: bubble?
 							}
 						}
-						wallet = new SecretPersistingHostedWallet(options, context)
+						wallet = new SecretPersistingHostedWallet(options, self.context)
 					},
 					function(err)
 					{
@@ -192,7 +225,7 @@ class WalletsListController extends EventEmitter
 	
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Lifecycle - Teardown
+	// Lifecycle/Runtime - Teardown
 	
 	_tearDown()
 	{
@@ -202,12 +235,49 @@ class WalletsListController extends EventEmitter
 	_tearDown_wallets()
 	{
 		const self = this
-		const wallets_length = self.wallets.length
+		const wallets = self.wallets
+		const wallets_length = wallets.length
 		for (let i = 0 ; i < wallets_length ; i++) {
-			const wallet = self.wallets[i]
+			const wallet = wallets[i]
 			wallet.TearDown()
 		}
-	}	
+	}
+	//
+	_stopObserving_passwordController()
+	{
+		const self = this
+		const controller = self.context.passwordController
+		{ // EventName_ChangedPassword
+			if (typeof self._passwordController_EventName_ChangedPassword_listenerFn === 'undefined' || self._passwordController_EventName_ChangedPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_ChangedPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_ChangedPassword(),
+				self._passwordController_EventName_ChangedPassword_listenerFn
+			)
+			self._passwordController_EventName_ChangedPassword_listenerFn = null
+		}
+		{ // EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword
+			if (typeof self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn = null
+		}
+		{ // EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword
+			if (typeof self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn = null
+		}
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -709,6 +779,27 @@ class WalletsListController extends EventEmitter
 				}
 			}
 		)
+	}
+	_passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+	{
+		const self = this
+		self._tearDown_wallets()
+		self.wallets = []
+		self.hasBooted = false
+		// now we'll wait for the "did" event ---v before emiting anything like list updated, etc
+	}
+	_passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+	{
+		const self = this
+		{ // now that we're gotten the final notification in the password reset process we can stop observing w/o missing the "did" event
+			self._stopObserving_passwordController() // this prevents duplicative observation when we boot up again - as well as illegal stuff like trying to change the pw when not booted
+		}
+		{ // this will re-request the pw and lead to loading records & booting self 
+			self._setup_fetchAndReconstituteExistingRecords()
+		}
+		{ // and then at the end we're going to manually emit so that the UI updates to empty list after the pw entry screen is shown
+			self.__listUpdated_wallets()
+		}
 	}
 }
 module.exports = WalletsListController

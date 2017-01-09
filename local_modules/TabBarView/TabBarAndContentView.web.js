@@ -238,6 +238,27 @@ class TabBarAndContentView extends View
 	}
 	//
 	//
+	// Runtime - Imperatives - Convenience - State management
+	//
+	ResetAllTabContentViewsToRootState(isAnimated_orFalse)
+	{
+		const self = this
+		var isAnimated
+		{
+			isAnimated = isAnimated_orFalse === true ? true : false // aka default false unless non-nil and true
+		}
+		self._tabBarContentViews.forEach(
+			function(view, idx)
+			{
+				const TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState_fn = view.TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState
+				if (typeof TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState_fn === 'function') {
+					view.TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
+				}
+			}
+		)
+	}
+	//
+	//
 	// Runtime - Delegation - 
 }
 module.exports = TabBarAndContentView

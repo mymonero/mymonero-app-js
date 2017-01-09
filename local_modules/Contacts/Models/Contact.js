@@ -187,6 +187,15 @@ class Contact extends EventEmitter
 			self.__setup_didBoot()
 		}
 	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		const self = this
+		// no .on calls in self (yet) so nothing to do here
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////

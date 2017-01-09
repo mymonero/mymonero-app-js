@@ -125,7 +125,6 @@ class FundsRequest extends EventEmitter
 	_setup_fetchExistingDocumentWithId()
 	{
 		const self = this
-		//
 		self.context.persister.DocumentsWithQuery(
 			fundsRequest_persistence_utils.CollectionName,
 			{ _id: self._id }, // cause we're saying we have an _id passed in…
@@ -187,6 +186,15 @@ class FundsRequest extends EventEmitter
 			// all done
 			self.__setup_didBoot()
 		}
+	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		const self = this
+		// no .on calls in self (yet) so nothing to do here
 	}
 
 

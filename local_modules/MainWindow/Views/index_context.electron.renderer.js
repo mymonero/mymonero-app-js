@@ -63,6 +63,11 @@ var context_object_instantiation_descriptions =
 		instance_key: "passwordController",
 		options: {}
 	},
+	{
+		module_path: __dirname + "/../../UserIdle/UserIdleInWindowController",
+		instance_key: "userIdleInWindowController",
+		options: {}
+	},
 	//
 	// The following should go after the passwordController, persister, etc
 	{

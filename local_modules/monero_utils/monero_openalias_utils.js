@@ -34,6 +34,7 @@ const openalias_utils = require('../openalias_utils/openalias_utils')
 const currency_openAliasPrefix = monero_config.openAliasPrefix
 //
 function CurrencyReadyAddressFromTXTRecords(
+	domain,
 	records,
 	dnssec_used,
 	secured,
@@ -44,6 +45,7 @@ function CurrencyReadyAddressFromTXTRecords(
 	var oaRecords
 	try {
 		oaRecords = openalias_utils.ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
+			domain,
 			records, 
 			dnssec_used, 
 			secured, 

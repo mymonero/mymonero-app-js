@@ -212,28 +212,28 @@ class StackNavigationView extends View
 			self.stackViewStageView.addSubview(stackView)
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
-				return
-			}
-			setTimeout(
-				function()
-				{ // wait til not blocked
-					Animate(
-						stackView_layer,
-						{
-							left: "0px"
-						},
-						{
-							duration: self._animationDuration_ms_navigationPush(),
-							easing: "ease-in-out",
-							complete: function()
+			} else {
+				setTimeout(
+					function()
+					{ // wait til not blocked or animation is choppy
+						Animate(
+							stackView_layer,
 							{
-								stackView_layer.style.zIndex = "0" 
-								_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+								left: "0px"
+							},
+							{
+								duration: self._animationDuration_ms_navigationPush(),
+								easing: "ease-in-out",
+								complete: function()
+								{
+									stackView_layer.style.zIndex = "0" 
+									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+								}
 							}
-						}
-					)
-				}
-			)
+						)
+					}
+				)
+			}
 		}		
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
@@ -360,27 +360,27 @@ class StackNavigationView extends View
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
-				return
-			}
-			setTimeout(
-				function()
-				{ // wait til not blocked
-					Animate(
-						old_topStackView.layer,
-						{
-							left: `${self.stackViewStageView.layer.offsetWidth}px`
-						},
-						{
-							duration: self._animationDuration_ms_navigationPush(),
-							easing: "ease-in-out",
-							complete: function()
+			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
+				setTimeout(
+					function()
+					{ // wait til not blocked or we get choppiness
+						Animate(
+							old_topStackView.layer,
 							{
-								_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+								left: `${self.stackViewStageView.layer.offsetWidth}px`
+							},
+							{
+								duration: self._animationDuration_ms_navigationPush(),
+								easing: "ease-in-out",
+								complete: function()
+								{
+									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+								}
 							}
-						}
-					)
-				}
-			)
+						)
+					}
+				)
+			}
 		}		
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
@@ -388,7 +388,7 @@ class StackNavigationView extends View
 			old_topStackView.removeFromSuperview()
 			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
 		}
-		{ // pop all views 
+		{ // pop all views in model
 			const popped_stackViews = self.stackViews.slice(0, indexOf_to_stackView + 1) // +1 as end is end idx not included in slice
 			// console.log("popped_stackViews", popped_stackViews)
 			self.stackViews = popped_stackViews
@@ -428,6 +428,11 @@ class StackNavigationView extends View
 	{
 		const self = this
 		self.PopToRootView()
+	}
+	TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
+	{
+		const self = this
+		self.PopToRootView(isAnimated)
 	}
 }
 module.exports = StackNavigationView

@@ -55,13 +55,14 @@ class HostedMoneroAPIClient
 	setup()
 	{
 		var self = this
-		//
-		self.scheme = config__MyMonero.API__protocolScheme
-		self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // later will be configurable
-		self.baseURL = self.scheme + "://" + self.host
-		//
-		self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
-		//
+		{
+			self.scheme = config__MyMonero.API__protocolScheme
+			self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // later will be configurable
+			self.baseURL = self.scheme + "://" + self.host
+		}
+		{
+			self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
+		}
 		{
 			const options = {}
 			self.responseParser = new BackgroundAPIResponseParser(options)

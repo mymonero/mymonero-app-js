@@ -28,6 +28,7 @@
 
 
 function ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
+	domain,
 	records,
 	dnssec_used,
 	secured,

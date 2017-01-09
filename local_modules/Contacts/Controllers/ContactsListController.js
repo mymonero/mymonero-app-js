@@ -58,33 +58,64 @@ class ContactsListController extends EventEmitter
 	setup()
 	{
 		const self = this
-		const context = self.context
-		if (typeof context.persister === 'undefined') { // self should only be after persister in the context module load list
-			throw "context.persister undefined in ContactsListController setup()"
-		}
-		//
-		function _didBoot()
-		{
-			self.hasBooted = true // nothing to do to boot
-			{ // start observing
-				{ // passwordController
-					const controller = self.context.passwordController
+		self._setup_fetchAndReconstituteExistingRecords()
+	}
+	_setup_didBoot()
+	{ // pre-emptive declaration
+		const self = this
+		self.hasBooted = true // nothing to do to boot
+		{ // start observing (but not redundantly because we call _stopObserving_passwordController if we need to call _setup_didBoot again)
+			{ // passwordController
+				const controller = self.context.passwordController
+				{ // EventName_ChangedPassword
+					if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+					}
+					self._passwordController_EventName_ChangedPassword_listenerFn = function()
+					{
+						self._passwordController_EventName_ChangedPassword()
+					}
 					controller.on(
 						controller.EventName_ChangedPassword(),
-						function()
-						{
-							self._passwordController_EventName_ChangedPassword()
-						}
+						self._passwordController_EventName_ChangedPassword_listenerFn
+					)
+				}
+				{ // EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword
+					if (self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+					}
+					self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn = function()
+					{
+						self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+					}
+					controller.on(
+						controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
+						self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn
+					)
+				}
+				{ // EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword
+					if (self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+					}
+					self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn = function()
+					{
+						self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+					}
+					controller.on(
+						controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+						self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn
 					)
 				}
 			}
-			setTimeout(function()
-			{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-				self.emit(self.EventName_booted())
-			})
 		}
-		//
-		// reconstitute existing contacts
+		setTimeout(function()
+		{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+			self.emit(self.EventName_booted())
+		})
+	}
+	_setup_fetchAndReconstituteExistingRecords()
+	{
+		const self = this
 		self._new_idsOfPersisted_contacts(
 			function(err, ids)
 			{
@@ -104,7 +135,7 @@ class ContactsListController extends EventEmitter
 			self.contacts = []
 			//
 			if (ids.length === 0) { // then don't cause the pw to be requested yet
-				_didBoot()
+				self._setup_didBoot()
 				return
 			}
 			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
@@ -126,7 +157,7 @@ class ContactsListController extends EventEmitter
 						_id: _id,
 						persistencePassword: persistencePassword
 					}
-					const instance = new Contact(options, context)
+					const instance = new Contact(options, self.context)
 					instance.on(instance.EventName_booted(), function()
 					{
 						// we are going to take responsibility to manually add contact and emit event below when all done
@@ -153,7 +184,7 @@ class ContactsListController extends EventEmitter
 						return
 					}
 					//
-					_didBoot()
+					self._setup_didBoot()
 					//
 					setTimeout(function()
 					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
@@ -161,6 +192,45 @@ class ContactsListController extends EventEmitter
 					})
 				}
 			)
+		}
+	}
+	//
+	//
+	// Lifecycle/Runtime - Teardown
+	// 
+	_stopObserving_passwordController()
+	{
+		const self = this
+		const controller = self.context.passwordController
+		{ // EventName_ChangedPassword
+			if (typeof self._passwordController_EventName_ChangedPassword_listenerFn === 'undefined' || self._passwordController_EventName_ChangedPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_ChangedPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_ChangedPassword(),
+				self._passwordController_EventName_ChangedPassword_listenerFn
+			)
+			self._passwordController_EventName_ChangedPassword_listenerFn = null
+		}
+		{ // EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword
+			if (typeof self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn = null
+		}
+		{ // EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword
+			if (typeof self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn = null
 		}
 	}
 
@@ -407,6 +477,31 @@ class ContactsListController extends EventEmitter
 			}
 		)
 	}
-
+	_passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+	{
+		const self = this
+		self.contacts.forEach(
+			function(instance, i)
+			{
+				instance.TearDown()
+			}
+		)
+		self.contacts = []
+		self.hasBooted = false
+		// now we'll wait for the "did" event ---v
+	}
+	_passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+	{
+		const self = this
+		{ // now that we're gotten the final notification in the password reset process we can stop observing w/o missing the "did" event
+			self._stopObserving_passwordController() // this prevents duplicative observation when we boot up again - as well as illegal stuff like trying to change the pw when not booted
+		}
+		{ // this will re-request the pw and lead to loading records & booting self 
+			self._setup_fetchAndReconstituteExistingRecords()
+		}
+		{ // and then at the end we're going to emit so that the UI updates to empty list after the pw entry screen is shown
+			self.__listUpdated_contacts()
+		}
+	}
 }
 module.exports = ContactsListController

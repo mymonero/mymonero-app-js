@@ -40,6 +40,12 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 	{ // ^ called automatically by super, so
 		const self = this
 		super.setup() // must call this
+		self._setup_views()
+		self._setup_startObserving()
+	}
+	_setup_views()
+	{
+		const self = this
 		{
 			const layer = self.layer
 			layer.style.background = "red"
@@ -57,6 +63,20 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		}
 		{ // add Settings button
 			
+		}
+	}
+	_setup_startObserving()
+	{
+		const self = this
+		{ // passwordController
+			const controller = self.context.passwordController
+			controller.on(
+				controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+				function()
+				{ // stuff like popping stack nav views to root views
+					self.ResetAllTabContentViewsToRootState(false) // not animated
+				}
+			)
 		}
 	}
 }
