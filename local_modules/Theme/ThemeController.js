@@ -28,43 +28,31 @@
 //
 "use strict"
 //
-const TabBarAndContentView = require('./TabBarAndContentView.web')
-//
-class LeftSideTabBarAndContentView extends TabBarAndContentView
+class ThemeController
 {
 	constructor(options, context)
 	{
-		super(options, context)
-	}
-	setup()
-	{ // ^ called automatically by super, so
 		const self = this
-		super.setup() // must call this
-		{
-			const layer = self.layer
-			layer.style.position = "relative"
-			layer.style.left = "0px"
-			layer.style.right = "0px"
-			layer.style.width = "100%"
-			layer.style.height = "100%"
-		}
-		const tabBarView_thickness = self.overridable_tabBarView_thickness()
-		{
-			const layer = self.tabBarView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = "0px"
-			layer.style.width = `${tabBarView_thickness}px`
-			layer.style.height = "100%"
-		}
-		{
-			const layer = self.contentAreaView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = `${tabBarView_thickness}px`
-			layer.style.width = `calc(100% - ${tabBarView_thickness}px)`
-			layer.style.height = "100%"
-		}
+		self.options = options
+		self.context = context
 	}
+	//
+	//
+	// Accessors - UI - Metrics - Layout
+	//
+	TabBarView_thickness()
+	{
+		return 78
+	}
+	//
+	//
+	// Accessors - UI - Metrics - Fonts
+	//
+	
+	//
+	//
+	// Accessors - UI - Metrics - Colors
+	//
+	
 }
-module.exports = LeftSideTabBarAndContentView
+module.exports = ThemeController

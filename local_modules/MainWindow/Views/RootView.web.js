@@ -113,6 +113,12 @@ class RootView extends View
 			)
 		}
 		self.tabBarViewAndContentView = tabBarViewAndContentView
+		{
+			const passwordController = self.context.passwordController
+			if (passwordController.HasUserEnteredValidPasswordYet() === false) {
+				self.tabBarViewAndContentView.DisableTabBarItemButtons()
+			}
+		}
 		self.addSubview(tabBarViewAndContentView)
 	}
 	setup_passwordEntryViewController()
@@ -122,6 +128,22 @@ class RootView extends View
 		const PasswordEntryViewController = require('../../Passwords/Controllers/PasswordEntryViewController.web')
 		const passwordEntryViewController = new PasswordEntryViewController(self, passwordController)
 		self.passwordEntryViewController = passwordEntryViewController
+		{
+			passwordEntryViewController.on(
+				passwordEntryViewController.EventName_willDismissView(),
+				function()
+				{
+					self.tabBarViewAndContentView.EnableTabBarItemButtons()
+				}
+			)
+			passwordEntryViewController.on(
+				passwordEntryViewController.EventName_willPresentInView(),
+				function()
+				{
+					self.tabBarViewAndContentView.DisableTabBarItemButtons()
+				}
+			)
+		}
 	}
 	
 }

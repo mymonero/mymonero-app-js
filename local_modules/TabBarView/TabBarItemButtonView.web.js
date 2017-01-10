@@ -46,6 +46,10 @@ class TabBarItemButtonView extends View
 	setup()
 	{
 		const self = this
+		{ // state defaults
+			self.isEnabled = true
+			self.isSelected = false
+		}
 		self.setup_views()
 	}
 	setup_views()
@@ -76,7 +80,9 @@ class TabBarItemButtonView extends View
 				{
 					e.preventDefault()
 					{
-						self.emit(self.EventName_clicked(), self)
+						if (self.isEnabled !== false) {
+							self.emit(self.EventName_clicked(), self)
+						}
 					}
 					return false
 				}
@@ -93,12 +99,17 @@ class TabBarItemButtonView extends View
 	}
 	//
 	//
-	// Runtime - Accessors - Selection
+	// Runtime - Accessors - State
 	//
 	IsSelected()
 	{
 		const self = this
 		return self.isSelected === true
+	}
+	IsEnabled()
+	{
+		const self = this
+		return self.isEnabled === true
 	}
 	//
 	//
@@ -118,5 +129,23 @@ class TabBarItemButtonView extends View
 		//
 		self.iconImageLayer.style.backgroundColor = "transparent"
 	}	
+	//
+	//
+	// Runtime - Imperatives - Selection
+	//
+	Enable()
+	{
+		const self = this
+		self.isEnabled = true
+		//
+		self.iconImageLayer.style.opacity = "1.0"
+	}
+	Disable()
+	{
+		const self = this
+		self.isEnabled = false
+		//
+		self.iconImageLayer.style.opacity = "0.3"
+	}
 }
 module.exports = TabBarItemButtonView

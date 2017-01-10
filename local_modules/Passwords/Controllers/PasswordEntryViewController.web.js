@@ -65,7 +65,24 @@ class PasswordEntryViewController extends EventEmitter
 		const self = this
 		{
 			const options = {}
-			self.view = new PasswordEntryView(options, self.inSuperview.context)
+			const view = new PasswordEntryView(options, self.inSuperview.context)
+			self.view = view
+			{
+				view.on(
+					view.EventName_willDismissView(),
+					function()
+					{
+						self.emit(self.EventName_willDismissView())
+					}
+				)
+				view.on(
+					view.EventName_willPresentInView(),
+					function()
+					{
+						self.emit(self.EventName_willPresentInView())
+					}
+				)
+			}
 		}
 	}
 	setup_startObserving()
@@ -169,7 +186,17 @@ class PasswordEntryViewController extends EventEmitter
 			}
 		)
 	}
-		
-	
+	//
+	//
+	// Runtime - Accessors - Events
+	//
+	EventName_willDismissView()
+	{
+		return "EventName_willDismissView"
+	}
+	EventName_willPresentInView()
+	{
+		return "EventName_willPresentInView"
+	}
 }
 module.exports = PasswordEntryViewController

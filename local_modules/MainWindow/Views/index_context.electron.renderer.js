@@ -85,6 +85,11 @@ var context_object_instantiation_descriptions =
 		instance_key: "contactsListController",
 		options: {}
 	},
+	{
+		module_path: __dirname + "/../../Theme/ThemeController",
+		instance_key: "themeController",
+		options: {}
+	},
 	//
 	{ // Silly as it sounds, this class exists to integrate the main process menuController with event 
   	  // emissions from the renderer side so that integratees can remain able to operate independently.

@@ -47,6 +47,8 @@ class TabBarAndContentView extends View
 		{
 			self._tabBarContentViews = []
 			self._tabBarItemButtonViews = []
+			//
+			self.isEnabled = true
 		}
 		{
 			const layer = self.layer
@@ -74,6 +76,21 @@ class TabBarAndContentView extends View
 				self.contentAreaView = view
 				self.addSubview(view)
 			}
+		}
+		{
+			self.eventListener_didClick_fn = function(e)
+			{ // just an extra layer of protection on clicks
+				if (self.isEnabled === false) {
+					e.preventDefault()
+					return false
+				} else {
+					return true
+				}
+			}
+			self.layer.addEventListener(
+				"click",
+				self.eventListener_didClick_fn
+			)
 		}
 	}
 	//
@@ -238,7 +255,7 @@ class TabBarAndContentView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives - Convenience - State management
+	// Runtime - Imperatives - Hierarchy management convenience functions
 	//
 	ResetAllTabContentViewsToRootState(isAnimated_orFalse)
 	{
@@ -254,6 +271,42 @@ class TabBarAndContentView extends View
 				if (typeof TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState_fn === 'function') {
 					view.TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
 				}
+			}
+		)
+	}
+	//
+	//
+	// Runtime - Imperatives - Convenience - Interactivity management
+	//
+	EnableTabBarItemButtons()
+	{
+		const self = this
+		if (self.isEnabled !== false) {
+			return // redundant
+		}
+		{
+			self.isEnabled = true
+		}
+		self._tabBarItemButtonViews.forEach(
+			function(view, idx)
+			{
+				view.Enable()
+			}
+		)
+	}
+	DisableTabBarItemButtons()
+	{
+		const self = this
+		if (self.isEnabled === false) {
+			return // redundant
+		}
+		{
+			self.isEnabled = false
+		}
+		self._tabBarItemButtonViews.forEach(
+			function(view, idx)
+			{
+				view.Disable()
 			}
 		)
 	}

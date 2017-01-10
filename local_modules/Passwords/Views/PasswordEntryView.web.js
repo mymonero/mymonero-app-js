@@ -76,8 +76,9 @@ class PasswordEntryView extends View
 		{ // appearance
 			layer.style.position = "fixed"
 			layer.style.top = "0"
-			layer.style.left = "0"
-			layer.style.width = "100%"
+			const margin_left = self.context.themeController.TabBarView_thickness()
+			layer.style.left = `${ margin_left }px`
+			layer.style.width = `calc(100% - ${ margin_left }px)`
 			layer.style.height = "100%"
 			layer.style.zIndex = "9999"
 			layer.style.border = "0px solid orange" // for debug
@@ -137,6 +138,18 @@ class PasswordEntryView extends View
 	_setup_startObserving()
 	{
 		const self = this
+	}
+	//
+	//
+	// Runtime - Accessors - Events
+	//
+	EventName_willDismissView()
+	{
+		return "EventName_willDismissView"
+	}
+	EventName_willPresentInView()
+	{
+		return "EventName_willPresentInView"
 	}
 	//
 	//
@@ -314,6 +327,7 @@ class PasswordEntryView extends View
 			return
 		}
 		// TODO: animation
+		self.emit(self.EventName_willDismissView())
 		self.removeFromSuperview()
 		//
 		{ // clear both callbacks as well since we're no longer going to call back with either of the current values
@@ -328,6 +342,8 @@ class PasswordEntryView extends View
 	presentInView(superview)
 	{
 		const self = this
+		self.emit(self.EventName_willPresentInView())
+		// TODO: animation?
 		superview.addSubview(self)
 	}
 	//

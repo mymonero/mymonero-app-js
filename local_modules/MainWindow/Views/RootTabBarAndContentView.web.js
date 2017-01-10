@@ -79,5 +79,15 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 			)
 		}
 	}
+	//
+	//
+	// Accessors - UI - Metrics - Overridable
+	//
+	overridable_tabBarView_thickness()
+	{
+		const self = this
+		//
+		return self.context.themeController.TabBarView_thickness()
+	}
 }
 module.exports = RootTabBarAndContentView
