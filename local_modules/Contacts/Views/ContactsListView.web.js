@@ -48,6 +48,8 @@ class ContactsListView extends View
 			self.current_contactDetailsView = null // zeroing for comparison
 		}
 		self.layer.style.width = "100%"
+		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		//
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
 		self._setup_views()
@@ -117,35 +119,51 @@ class ContactsListView extends View
 	_configureWith_contacts(contacts)
 	{
 		const self = this
-		// TODO: diff these contacts with existing contacts?
-		if (self.contactCellViews.length != 0) {
-			// for now, just flash list:
-			self.contactCellViews.forEach(
-				function(view, i)
+		{
+			if (typeof self.cellsContainerView !== 'undefined' && self.cellsContainerView) {
+				self.cellsContainerView.removeFromSuperview()
+				self.cellsContainerView = null
+			}
+			if (self.contactCellViews.length !== 0) {
+				// for now, just flash list:
+				self.contactCellViews.forEach(
+					function(view, i)
+					{
+						view.removeFromSuperview()
+					}
+				)
+				self.contactCellViews = []
+			}
+		}
+		{
+			const view = new View({}, self.context)
+			{
+				view.layer.style.borderRadius = "5px"
+				view.layer.style.backgroundColor = "#999"
+				view.layer.style.border = "1px outset #ccc"
+			}
+			self.cellsContainerView = view
+			self.addSubview(self.cellsContainerView)
+		}
+		{ // now add cells
+			const context = self.context
+			contacts.forEach(
+				function(contact, i)
 				{
-					view.removeFromSuperview()
+					const options = 
+					{
+						cell_tapped_fn: function(cellView)
+						{
+							self.pushContactDetailsView(cellView.contact)
+						}
+					}
+					const view = new ContactsListCellView(options, context)
+					self.contactCellViews.push(view)
+					view.ConfigureWith_contact(contact)
+					self.cellsContainerView.addSubview(view)
 				}
 			)
-			self.contactCellViews = []
 		}
-		// now add subviews
-		const context = self.context
-		contacts.forEach(
-			function(contact, i)
-			{
-				const options = 
-				{
-					cell_tapped_fn: function(cellView)
-					{
-						self.pushContactDetailsView(cellView.contact)
-					}
-				}
-				const view = new ContactsListCellView(options, context)
-				self.contactCellViews.push(view)
-				view.ConfigureWith_contact(contact)
-				self.addSubview(view)
-			}
-		)
 	}
 	//
 	//

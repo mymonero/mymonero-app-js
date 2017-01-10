@@ -55,21 +55,8 @@ class ContactsListCellView extends View
 	setup_layers()
 	{
 		const self = this
-		//
-		self.layer.style.border = "1px solid #eee"
-		//
-		self.setup_layers_contactInfo()
-	}
-	setup_layers_contactInfo()
-	{
-		const self = this
-		//
-		const layer = document.createElement("div")
-		//
-		self.layer_contactInfo = layer
-		self.layer.appendChild(layer)
 		{ // observation
-			layer.addEventListener(
+			self.layer.addEventListener(
 				"click",
 				function(e)
 				{
@@ -124,34 +111,6 @@ class ContactsListCellView extends View
 	}
 	//
 	//
-	// Internal - Runtime - Accessors - Child elements - Delete btn
-	//
-	//
-	idForChild_deleteContactWithIDLayer()
-	{
-		const self = this
-		if (typeof self.contact._id === 'undefined' || !self.contact._id) {
-			throw "idForChild_deleteContactWithIDLayer called but nil self.contact._id"
-		}
-		//
-		return self._idPrefix() + "_" + "idForChild_deleteContactWithIDLayer"
-	}
-	new_htmlStringForChild_deleteContactWithIDLayer()
-	{
-		const self = this
-		const htmlString = `<a id="${self.idForChild_deleteContactWithIDLayer()}" href="#">Delete Contact</a>`
-		//
-		return htmlString
-	}
-	DOMSelected_deleteContactWithIDLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`a#${ self.idForChild_deleteContactWithIDLayer() }`)
-		//
-		return layer
-	}
-	//
-	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
 	ConfigureWith_contact(contact)
@@ -177,42 +136,30 @@ class ContactsListCellView extends View
 	{
 		const self = this
 		const contact = self.contact
-		var htmlString = ''
-		{
-			if (contact.didFailToInitialize_flag !== true && contact.didFailToBoot_flag !== true) { // unlikely, but possible
-				htmlString += `<h3>${contact.fullname}</h3>`
-				htmlString += `<p>Address (XMR): ${contact.address}</p>`
-				{ // buttons
-					htmlString += self.new_htmlStringForChild_deleteContactWithIDLayer()
-				}
-			} else { // failed to initialize
-				{ // header
-					htmlString += 
-					`<h4>Error: Couldn't open this contact.</h4>`
-					+ `<p>Please report this issue to us via Support.</p>`
-				}
-				{ // buttons
-					htmlString += self.new_htmlStringForChild_deleteContactWithIDLayer()
-				}
-			}
+		if (
+			contact.didFailToInitialize_flag === true 
+			|| contact.didFailToBoot_flag === true
+		) { // unlikely, but possible
+			self.layer.innerHTML += 
+				`<h4>Error: Couldn't open this contact.</h4>`
+				+ `<p>Please report this issue to us via Support.</p>`
+			return
 		}
-		self.layer_contactInfo.innerHTML = htmlString
-		{ // setup and observations
-			{ // buttons
-				{ // delete button
-					const layer = self.DOMSelected_deleteContactWithIDLayer()
-					layer.addEventListener(
-						"click",
-						function(e)
-						{
-							e.preventDefault()
-							self.deleteContact()
-							//
-							return false
-						}
-					)
-				}				
-			}
+		self.convenience_removeAllSublayers()
+		{ // emoji
+			const layer = document.createElement("span")
+			layer.innerHTML = contact.emoji
+			self.layer.appendChild(layer)
+		}
+		{ // name
+			const layer = document.createElement("span")
+			layer.innerHTML = contact.fullname
+			self.layer.appendChild(layer)
+		}
+		{ // address
+			const layer = document.createElement("span")
+			layer.innerHTML = contact.address
+			self.layer.appendChild(layer)
 		}
 	}
 	//

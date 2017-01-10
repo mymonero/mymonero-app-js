@@ -253,6 +253,20 @@ class View extends EventEmitter
 	}
 	//
 	//
+	// Runtime - Imperatives - Convenience methods
+	//
+	convenience_removeAllSublayers()
+	{ // you should/would probably only use this when you're not using any subviews
+		const self = this
+		const layer = self.layer
+		var firstChild = layer.firstChild
+		while (firstChild !== null) {
+		    layer.removeChild(firstChild)
+			firstChild = layer.firstChild
+		}
+	}
+	//
+	//
 	// Runtime - Imperatives - Debug
 	//
 	DEBUG_BorderSubviews()
