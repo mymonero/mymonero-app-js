@@ -233,7 +233,7 @@ class FundsRequestsListView extends View
 		}
 		{ // check fundsRequest
 			if (typeof fundsRequest === 'undefined' || fundsRequest === null) {
-				throw self.constructor.name + " requires self.wallet to pushFundsRequestDetailsView"
+				throw self.constructor.name + " requires contact to pushFundsRequestDetailsView"
 				return
 			}
 		}

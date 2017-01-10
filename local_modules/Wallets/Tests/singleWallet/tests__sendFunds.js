@@ -40,7 +40,7 @@ function _proceedTo_test_sendFunds_1(fn)
 	}
 	function _didFinishAllSyncOperations()
 	{
-		const target_address = "44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A"//"donate.getmonero.org"
+		const target_address = "donate.getmonero.org" // 44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A
 		const amount = 0.001
 		const mixin = 3
 		const payment_id = "f3ca9d6e6cc95d42e9b3e7acd5310a1d0183ca964fa4b814640e570522b71329"

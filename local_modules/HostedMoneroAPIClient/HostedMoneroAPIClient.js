@@ -513,7 +513,7 @@ class HostedMoneroAPIClient
 				}
 				var errStr = "HostedMoneroAPIClient Error: " + statusCode + " " + res.statusMessage + " " + completeURL
 				console.error("❌  " + errStr);
-				console.error("Body:", body)
+				// console.error("Body:", body)
 				var err = new Error(errStr)
 				fn(err, null)
 			}

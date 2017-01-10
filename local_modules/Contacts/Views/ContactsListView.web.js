@@ -30,6 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const ContactsListCellView = require('./ContactsListCellView.web')
+const ContactDetailsView = require('./ContactDetailsView.web')
 //
 class ContactsListView extends View
 {
@@ -43,7 +44,9 @@ class ContactsListView extends View
 	setup()
 	{
 		const self = this
-		//
+		{
+			self.current_contactDetailsView = null // zeroing for comparison
+		}
 		self.layer.style.width = "100%"
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
@@ -69,6 +72,20 @@ class ContactsListView extends View
 				self._ContactsListController_EventName_listUpdated()
 			}
 		)
+	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		const self = this
+		super.TearDown()
+		//
+		if (self.current_contactDetailsView !== null) {
+			self.current_contactDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_contactDetailsView = null // must zero again and should free
+		}
 	}
 	//
 	//
@@ -116,13 +133,60 @@ class ContactsListView extends View
 		contacts.forEach(
 			function(contact, i)
 			{
-				const options = {}
+				const options = 
+				{
+					cell_tapped_fn: function(cellView)
+					{
+						self.pushContactDetailsView(cellView.contact)
+					}
+				}
 				const view = new ContactsListCellView(options, context)
 				self.contactCellViews.push(view)
 				view.ConfigureWith_contact(contact)
 				self.addSubview(view)
 			}
 		)
+	}
+	//
+	//
+	// Runtime - Internal - Imperatives - Navigation/presentation
+	//
+	pushContactDetailsView(contact)
+	{
+		const self = this
+		if (self.current_contactDetailsView !== null) {
+			// Commenting this throw as we are going to use this as the official way to lock this function,
+			// e.g. if the user is double-clicking on a cell to push a details view
+			// throw "Asked to pushFundsRequestDetailsView while self.current_contactDetailsView !== null"
+			return
+		}
+		{ // check fundsRequest
+			if (typeof contact === 'undefined' || contact === null) {
+				throw self.constructor.name + " requires contact to pushFundsRequestDetailsView"
+				return
+			}
+		}
+		const navigationController = self.navigationController
+		if (typeof navigationController === 'undefined' || navigationController === null) {
+			throw self.constructor.name + " requires navigationController to pushFundsRequestDetailsView"
+			return
+		}
+		{
+			const options = 
+			{
+				contact: contact
+			}
+			const view = new ContactDetailsView(options, self.context)
+			navigationController.PushView(
+				view, 
+				true // animated
+			)
+			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
+			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
+			// by tearing it down on self.viewDidAppear() below and on TearDown() (although since this is a root stackView
+			// the latter ought not to happen)
+			self.current_contactDetailsView = view
+		}
 	}
 	//
 	//
@@ -147,6 +211,16 @@ class ContactsListView extends View
 		}
 		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		//
+		if (self.current_contactDetailsView !== null) {
+			self.current_contactDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.current_contactDetailsView = null // must zero again and should free
+		}
 	}
 }
 module.exports = ContactsListView
