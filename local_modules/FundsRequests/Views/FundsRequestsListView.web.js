@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const GeneratedRequestView = require('./GeneratedRequestView.web')
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
 //
 class FundsRequestsListView extends View
 {
@@ -112,32 +113,11 @@ class FundsRequestsListView extends View
 		return "Monero Requests"
 	}
 	Navigation_New_RightBarButtonView()
-	{ // TODO: use single factory fn, probably in WalletAppCommonComponents, for this + button
-		// same for other btns like the back btn etc. (how to extract back btn style from StackNavBarView domain?)
+	{
 		const self = this
-		const view = new View({ tag: "a" }, self.context)
-		const layer = view.layer
-		{ // setup/style
-			layer.href = "#" // to make it clickable
-			layer.innerHTML = "+" // TODO
-		}
-		{
-			layer.style.display = "block"
-			layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
-			layer.style.marginTop = "10px"
-			layer.style.width = "26px"
-			layer.style.height = "24px"
-			layer.style.cornerRadius = "2px"
-			layer.style.backgroundColor = "#18bbec"
-			layer.style.textDecoration = "none"
-			layer.style.fontSize = "22px"
-			layer.style.lineHeight = "112%" // % extra to get + aligned properly
-			layer.style.color = "#ffffff"
-			layer.style.fontWeight = "bold"
-			layer.style.textAlign = "center"
-		}
+		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
 		{ // observe
-			layer.addEventListener(
+			view.layer.addEventListener(
 				"click",
 				function(e)
 				{

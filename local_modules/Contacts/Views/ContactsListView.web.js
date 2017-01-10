@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const ContactsListCellView = require('./ContactsListCellView.web')
 const ContactDetailsView = require('./ContactDetailsView.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
 //
 class ContactsListView extends View
 {
@@ -96,6 +97,35 @@ class ContactsListView extends View
 	Navigation_Title()
 	{
 		return "Contacts"
+	}
+	Navigation_New_RightBarButtonView()
+	{ // TODO: use single factory fn, probably in WalletAppCommonComponents, for this + button
+		// same for other btns like the back btn etc. (how to extract back btn style from StackNavBarView domain?)
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
+		{ // observe
+			view.layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						// TODO: modally present view in tab (ModalView + TabModalView) instead of in stack
+						// for now, just pushing
+						
+						const options = {}
+						const CreateContactView = require('./CreateContactView.web')
+						const view = new CreateContactView(options, self.context)
+						self.navigationController.PresentView(
+							view,
+							true
+						)
+					}
+					return false
+				}
+			)
+		}
+		return view
 	}
 	//
 	//

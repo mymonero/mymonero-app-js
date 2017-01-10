@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const WalletsListCellView = require('./WalletsListCellView.web')
 const WalletDetailsView = require('../../Wallets/Views/WalletDetailsView.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
 //
 class WalletsListView extends View
 {
@@ -110,27 +111,8 @@ class WalletsListView extends View
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
-		const view = new View({ tag: "a" }, self.context)
+		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
 		const layer = view.layer
-		{ // setup/style
-			layer.href = "#" // to make it clickable
-			layer.innerHTML = "+" // TODO
-		}
-		{
-			layer.style.display = "block"
-			layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
-			layer.style.marginTop = "10px"
-			layer.style.width = "26px"
-			layer.style.height = "24px"
-			layer.style.cornerRadius = "2px"
-			layer.style.backgroundColor = "#18bbec"
-			layer.style.textDecoration = "none"
-			layer.style.fontSize = "22px"
-			layer.style.lineHeight = "112%" // % extra to get + aligned properly
-			layer.style.color = "#ffffff"
-			layer.style.fontWeight = "bold"
-			layer.style.textAlign = "center"
-		}
 		{ // observe
 			layer.addEventListener(
 				"click",
