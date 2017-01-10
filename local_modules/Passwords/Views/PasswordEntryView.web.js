@@ -66,7 +66,7 @@ class PasswordEntryView extends View
 		const self = this
 		//
 		self._setup_self_layer()
-		self._setup_enterNewPasswordAndTypeView()
+		self._setup_enterNewPasswordView()
 		self._setup_enterExistingPasswordView()
 	}
 	_setup_self_layer()
@@ -86,13 +86,13 @@ class PasswordEntryView extends View
 			layer.style.webkitAppRegion = "drag"
 		}
 	}
-	_setup_enterNewPasswordAndTypeView()
+	_setup_enterNewPasswordView()
 	{
 		const self = this
 		const options = {}
-		const EnterNewPasswordAndTypeView = require('./EnterNewPasswordAndTypeView.web')
-		const view = new EnterNewPasswordAndTypeView(options, self.context)
-		self.enterNewPasswordAndTypeView = view
+		const EnterNewPasswordView = require('./EnterNewPasswordView.web')
+		const view = new EnterNewPasswordView(options, self.context)
+		self.enterNewPasswordView = view
 		{ // observation
 			view.on(
 				view.EventName_UserSubmittedNonZeroPasswordAndPasswordType(),
@@ -164,7 +164,7 @@ class PasswordEntryView extends View
 				return self.enterExistingPasswordView.Password()
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-				return self.enterNewPasswordAndTypeView.Password()
+				return self.enterNewPasswordView.Password()
 			case passwordEntryTaskModes.None:
 				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
 				break
@@ -175,7 +175,7 @@ class PasswordEntryView extends View
 		//
 		return undefined
 	}
-	PasswordTypeSelectedInView()
+	PasswordTypeChosenWithPasswordIfNewPassword_orUndefined(withPassword)
 	{
 		const self = this
 		switch (self.passwordEntryTaskMode) {
@@ -185,8 +185,8 @@ class PasswordEntryView extends View
 				// the caller needs to pass it to a general purpose function
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-				console.log('get pw type from enterNewPasswordAndTypeView', self.enterNewPasswordAndTypeView)
-				return self.enterNewPasswordAndTypeView.PasswordType()
+				return self.context.passwordController.DetectedPasswordTypeFromPassword(withPassword) // since we're not letting the user enter their pw type with this UI, let's auto-detect 
+
 			case passwordEntryTaskModes.None:
 				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
 				break
@@ -365,8 +365,8 @@ class PasswordEntryView extends View
 			switch (self.passwordEntryTaskMode) {
 				case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 				case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
-					if (typeof self.enterNewPasswordAndTypeView.superview !== 'undefined' && self.enterNewPasswordAndTypeView.superview !== null) {
-						throw "enterNewPasswordAndTypeView should never be visible when transitioning to ExistingPasswordGivenType task mode"
+					if (typeof self.enterNewPasswordView.superview !== 'undefined' && self.enterNewPasswordView.superview !== null) {
+						throw "enterNewPasswordView should never be visible when transitioning to ExistingPasswordGivenType task mode"
 						return
 		 			}
 					self.enterExistingPasswordView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
@@ -378,8 +378,8 @@ class PasswordEntryView extends View
 					if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView !== null) {
 						self.enterExistingPasswordView.removeFromSuperview() // TODO: when we support animation, transition out before rmeoving
 		 			}
-					self.enterNewPasswordAndTypeView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
-					self.addSubview(self.enterNewPasswordAndTypeView) // TODO: animate this on if self.enterExistingPasswordView.superview already presented
+					self.enterNewPasswordView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
+					self.addSubview(self.enterNewPasswordView) // TODO: animate this on if self.enterExistingPasswordView.superview already presented
 					
 					break
 				//
@@ -405,7 +405,7 @@ class PasswordEntryView extends View
 			//	
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-				self.enterNewPasswordAndTypeView.SetValidationMessage(validationMessageString)
+				self.enterNewPasswordView.SetValidationMessage(validationMessageString)
 				break
 			//
 			case passwordEntryTaskModes.None:
@@ -433,10 +433,12 @@ class PasswordEntryView extends View
 			self._clearValidationMessage()
 		}
 		// handles validation:
+		const password = self.PasswordEnteredInView()
+		const passwordType = self.PasswordTypeChosenWithPasswordIfNewPassword_orUndefined(password)
 		self._passwordController_callBack_trampoline(
 			false, // didCancel
-			self.PasswordEnteredInView(),
-			self.PasswordTypeSelectedInView()
+			password,
+			passwordType
 		)
 	}
 	cancel()
@@ -532,8 +534,8 @@ class PasswordEntryView extends View
 				self.passwordEntryTaskMode = passwordEntryTaskModes.None // reset/clear
 			}
 			{
-				if (typeof self.enterNewPasswordAndTypeView.superview !== 'undefined' && self.enterNewPasswordAndTypeView.superview !== null) {
-					self.enterNewPasswordAndTypeView.removeFromSuperview()
+				if (typeof self.enterNewPasswordView.superview !== 'undefined' && self.enterNewPasswordView.superview !== null) {
+					self.enterNewPasswordView.removeFromSuperview()
 				}
 				if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView.superview !== null) {
 					self.enterExistingPasswordView.removeFromSuperview()

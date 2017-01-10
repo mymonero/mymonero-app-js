@@ -245,6 +245,20 @@ class PasswordController extends EventEmitter
 			return true
 		}
 	}
+	//
+	DetectedPasswordTypeFromPassword(password)
+	{
+		const self = this
+		{
+			if (password.length === 6) { // if is 6 chars…
+				if (/^\d+$/.test(password) === true) { // and contains only numbers
+					return self.AvailableUserSelectableTypesOfPassword().SixCharPIN
+				}
+			}
+		}
+		return self.AvailableUserSelectableTypesOfPassword().FreeformStringPW
+	}
+	
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -513,9 +527,9 @@ class PasswordController extends EventEmitter
 						
 						var err;
 						if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().FreeformStringPW) {
-							err = new Error("Please enter a new password.")
+							err = new Error("Please enter a fresh password.")
 						} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
-							err = new Error("Please enter a new PIN.")
+							err = new Error("Please enter a fresh PIN.")
 						} else { 
 							self.unguard_getNewOrExistingPassword()
 							const err = new Error("Unrecognized password type")

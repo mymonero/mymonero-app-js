@@ -30,7 +30,7 @@
 //
 const View = require('../../Views/View.web')
 //
-class EnterNewPasswordAndTypeView extends View
+class EnterNewPasswordView extends View
 {
 	constructor(options, context)
 	{
@@ -77,24 +77,13 @@ class EnterNewPasswordAndTypeView extends View
 		//
 		return layer.value
 	}
-	PasswordType()
-	{
-		const self = this
-		const layer = self.DOMSelected_checked_passwordType_radioInputLayer()
-		if (typeof layer === 'undefined' || layer === null) {
-			throw "layer undefined or null in Password()"
-			return ""
-		}
-		//
-		return layer.value
-	}
 	//
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
 	idPrefix()
 	{
-		return "EnterNewPasswordAndTypeView"
+		return "EnterNewPasswordView"
 	}
 	//
 	//
@@ -143,88 +132,6 @@ class EnterNewPasswordAndTypeView extends View
 		const layer = self.layer.querySelector(`input#${ self.idForChild_inputField() }`)
 		//
 		return layer
-	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Password type radio input
-	//
-	idForChild_passwordType_fieldset()
-	{
-		const self = this
-		//
-		return self.idPrefix() + "_" + "idForChild_passwordType_fieldset"
-	}
-	nameForChildSet_passwordType_radioInputLayers()
-	{
-		const self = this
-		//
-		return self.idPrefix() + "_" + "nameForChildSet_passwordType_radioInputLayers"
-	}
-	classFor_passwordTypeInputContainers()
-	{
-		return "password-type-input-container"
-	}
-	new_htmlStringFor_passwordType_radioInputLayers()
-	{
-		const self = this
-		var htmlString = `<fieldset id="${self.idForChild_passwordType_fieldset()}">`
-		{
-			const radioInputs_name = self.nameForChildSet_passwordType_radioInputLayers()
-			const availableUserSelectableTypesOfPassword_byName = self.context.passwordController.AvailableUserSelectableTypesOfPassword()
-			const availableUserSelectableTypesOfPassword = Object.keys(availableUserSelectableTypesOfPassword_byName)
-			{
-				for (let passwordType of availableUserSelectableTypesOfPassword) {
-					var isSelected_passwordType = passwordType === self.userSelectedTypeOfPassword
-					var humanReadable_passwordType = self.context.passwordController.Capitalized_HumanReadable_AvailableUserSelectableTypeOfPassword(passwordType)
-					{
-						htmlString += `<div class="${self.classFor_passwordTypeInputContainers()}">`
-						htmlString += `<label>${humanReadable_passwordType}</label>`
-						htmlString += 
-							`<input type="radio"`
-							+ ` name="${radioInputs_name}"`
-							+ ` value="${passwordType}"`
-							+ `${isSelected_passwordType ? " checked" : ""}` // space prefix in ?true case
-							+ ` />`
-						htmlString += `</div>`
-					}
-				}
-			}
-		}
-		htmlString += "</fieldset>"
-		//
-		return htmlString
-	}
-	DOMSelected_checked_passwordType_radioInputLayer()
-	{
-		const self = this
-		const selector = `fieldset#${self.idForChild_passwordType_fieldset()} input:checked`
-		const layer = self.layer.querySelector(selector)
-		//
-		return layer
-	}
-	DOMSelected_all_passwordType_radioInputContainerFieldsetLayer()
-	{
-		const self = this
-		const selector = `fieldset#${self.idForChild_passwordType_fieldset()}`
-		const layer = self.layer.querySelector(selector)
-		//
-		return layer
-	}
-	DOMSelected_all_passwordType_radioInputContainerLayers()
-	{
-		const self = this
-		const selector = `fieldset#${self.idForChild_passwordType_fieldset()} div.${self.classFor_passwordTypeInputContainers()}`
-		const layers = self.layer.querySelectorAll(selector)
-		//
-		return layers
-	}
-	DOMSelected_all_passwordType_radioInputLayers()
-	{
-		const self = this
-		const selector = `fieldset#${self.idForChild_passwordType_fieldset()} input`
-		const layers = self.layer.querySelectorAll(selector)
-		//
-		return layers
 	}
 	//
 	//
@@ -286,10 +193,8 @@ class EnterNewPasswordAndTypeView extends View
 			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
 			var htmlString = 
 				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3 id="EnterNewPasswordAndTypeView_prompt-header">Please enter a new ${passwordType_humanReadableString}:</h3>`
+				+ `<h3 id="EnterNewPasswordView_prompt-header">Please enter a new password:</h3>`
 				+ self.new_htmlStringFor_inputFieldLayer()
-				+ `<h4 id="EnterNewPasswordAndTypeView_password-type-header">Password type</h4>`
-				+ self.new_htmlStringFor_passwordType_radioInputLayers()
 			if (self.isForChangingPassword === true) {
 				htmlString += self.new_htmlStringFor_cancelButtonLayer()
 			}
@@ -310,14 +215,7 @@ class EnterNewPasswordAndTypeView extends View
 				layer.style.fontSize = "16px"
 			}
 			{
-				const layer = self.layer.querySelector("h3#EnterNewPasswordAndTypeView_prompt-header")
-				layer.style.textAlign = "center"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-			}
-			{
-				const layer = self.layer.querySelector("h4#EnterNewPasswordAndTypeView_password-type-header")
+				const layer = self.layer.querySelector("h3#EnterNewPasswordView_prompt-header")
 				layer.style.textAlign = "center"
 				layer.style.width = "calc(100% - 60px)"
 				layer.style.paddingLeft = "30px"
@@ -375,39 +273,6 @@ class EnterNewPasswordAndTypeView extends View
 					)
 				}
 			}
-			{ // password type
-				{ // radios container fieldset
-					const layer = self.DOMSelected_all_passwordType_radioInputContainerFieldsetLayer()
-					{
-						layer.style.margin = "20px auto"
-						layer.style.width = "200px"
-						layer.style.display = "block"
-					}
-				}
-				{ // radios
-					const layers = self.DOMSelected_all_passwordType_radioInputLayers()
-					layers.forEach(
-						function(layer, idx)
-						{
-							layer.style.height = "20px"
-							layer.style.fontSize = "14px"
-							//
-							layer.style.webkitAppRegion = "no-drag" // make clickable
-							//
-							layer.addEventListener(
-								"click",
-								function(e)
-								{
-									const element = this
-									self.userSelectedTypeOfPassword = element.value
-									self._configureUI()
-								}
-							)
-						}
-					)
-				}
-				
-			}
 		}
 	}
 	_yield_nonZeroPasswordAndPasswordType()
@@ -426,4 +291,4 @@ class EnterNewPasswordAndTypeView extends View
 	}
 	
 }
-module.exports = EnterNewPasswordAndTypeView
+module.exports = EnterNewPasswordView
