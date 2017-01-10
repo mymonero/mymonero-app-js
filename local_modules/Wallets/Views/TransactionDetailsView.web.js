@@ -260,82 +260,30 @@ class TransactionDetailsView extends View
 				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Transaction ID
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					const hash = transaction.hash
-					const isTxHashNil = hash === null || typeof hash === 'undefined' || hash === ""
-					{ // left
-						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Transaction ID")
-						div.appendChild(labelLayer)
-					}
-					{ // right
-						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
-							hash,
-							isTxHashNil === false ? true : false,
-							self.context.pasteboard
-						)
-						buttonLayer.style.float = "right"
-						div.appendChild(buttonLayer)
-					}
-					{ // to put the tx hash on the next line in the UI to make way for the COPY button
-						const clearingBreakLayer = document.createElement("br")
-						clearingBreakLayer.clear = "both"
-						div.appendChild(clearingBreakLayer)
-					}
-					const value = isTxHashNil === false ? hash : "N/A"
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
-					{ // special case
-						valueLayer.style.float = "left"
-						valueLayer.style.textAlign = "left"
-						//
-						valueLayer.style.width = "270px"
-						//
-						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
-					}
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+				const fieldLabelTitle = "Transaction ID"
+				const value = transaction.hash
+				const valueToDisplayIfValueNil = "N/A"
+				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+					fieldLabelTitle, 
+					value,
+					self.context.pasteboard, 
+					valueToDisplayIfValueNil
+				)
 				details_containerLayer.appendChild(div)
 			}
 			{
 				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			}
 			{ // Payment ID
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					const payment_id = transaction.payment_id
-					const isTxPaymentIDNil = typeof payment_id === 'undefined' || payment_id === null || payment_id === ""
-					{ // left
-						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Payment ID")
-						div.appendChild(labelLayer)
-					}
-					{ // right
-						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
-							payment_id,
-							isTxPaymentIDNil === false ? true : false,
-							self.context.pasteboard
-						)
-						buttonLayer.style.float = "right"
-						div.appendChild(buttonLayer)
-					}
-					{ // to put the tx hash on the next line in the UI to make way for the COPY button
-						const clearingBreakLayer = document.createElement("br")
-						clearingBreakLayer.clear = "both"
-						div.appendChild(clearingBreakLayer)
-					}
-					const value = isTxPaymentIDNil === false ? payment_id : "N/A"
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
-					{ // special case
-						valueLayer.style.float = "left"
-						valueLayer.style.textAlign = "left"
-						//
-						valueLayer.style.width = "270px"
-						//
-						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
-					}
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+				const fieldLabelTitle = "Payment ID"
+				const value = transaction.payment_id
+				const valueToDisplayIfValueNil = "N/A"
+				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+					fieldLabelTitle, 
+					value,
+					self.context.pasteboard, 
+					valueToDisplayIfValueNil
+				)
 				details_containerLayer.appendChild(div)
 			}
 		}
