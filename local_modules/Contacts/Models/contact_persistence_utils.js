@@ -37,7 +37,7 @@ exports.CollectionName = CollectionName
 const documentCryptScheme =
 {
 	fullname: { type: CryptSchemeFieldValueTypes.String },
-	address__XMR: { type: CryptSchemeFieldValueTypes.String },
+	address: { type: CryptSchemeFieldValueTypes.String },
 	payment_id: { type: CryptSchemeFieldValueTypes.String },
 	emoji: { type: CryptSchemeFieldValueTypes.String }
 }
@@ -53,7 +53,7 @@ function HydrateInstance(
 	//
 	// console.log("plaintextDocument", plaintextDocument)
 	self.fullname = plaintextDocument.fullname
-	self.address__XMR = plaintextDocument.address__XMR
+	self.address = plaintextDocument.address
 	self.payment_id = plaintextDocument.payment_id
 	self.emoji = plaintextDocument.emoji
 }
@@ -81,7 +81,7 @@ function SaveToDisk(
 	const plaintextDocument =
 	{
 		fullname: self.fullname,
-		address__XMR: self.address__XMR,
+		address: self.address,
 		payment_id: self.payment_id,
 		emoji: self.emoji
 	}

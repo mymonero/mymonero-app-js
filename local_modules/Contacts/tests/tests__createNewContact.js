@@ -86,7 +86,7 @@ function _proceedTo_test_createNewContact(fn)
 	}
 	contactsListController.WhenBooted_AddContact(
 		tests_config.fullname,
-		tests_config.address__XMR,
+		tests_config.address,
 		tests_config.payment_id,
 		function(err, instance)
 		{

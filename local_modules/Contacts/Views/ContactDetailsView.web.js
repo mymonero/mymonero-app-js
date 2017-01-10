@@ -78,44 +78,16 @@ class ContactDetailsView extends View
 						
 			// TODO: encapsulate the following copyable long string value component_fieldContainerLayer in table
 
-			{ // Address
+			{
 				const fieldLabelTitle = "Address"
+				const value = self.contact.address
 				const valueToDisplayIfValueNil = "N/A"
-				const value = self.contact.address__XMR
-				const isValueNil = value === null || typeof value === 'undefined' || value === ""
-				const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					{ // left
-						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(fieldLabelTitle)
-						div.appendChild(labelLayer)
-					}
-					{ // right
-						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
-							value,
-							isValueNil === false ? true : false,
-							self.context.pasteboard
-						)
-						buttonLayer.style.float = "right"
-						div.appendChild(buttonLayer)
-					}
-					{ // to put the tx hash on the next line in the UI to make way for the COPY button
-						const clearingBreakLayer = document.createElement("br")
-						clearingBreakLayer.clear = "both"
-						div.appendChild(clearingBreakLayer)
-					}
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + valueToDisplay)
-					{ // special case
-						valueLayer.style.float = "left"
-						valueLayer.style.textAlign = "left"
-						//
-						valueLayer.style.width = "270px"
-						//
-						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
-					}
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+					fieldLabelTitle, 
+					value,
+					self.context.pasteboard, 
+					valueToDisplayIfValueNil
+				)
 				containerLayer.appendChild(div)
 			}
 			{
@@ -123,42 +95,14 @@ class ContactDetailsView extends View
 			}
 			{ // Payment ID
 				const fieldLabelTitle = "Payment ID"
-				const valueToDisplayIfValueNil = "N/A"
 				const value = self.contact.payment_id
-				const isValueNil = value === null || typeof value === 'undefined' || value === ""
-				const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					{ // left
-						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(fieldLabelTitle)
-						div.appendChild(labelLayer)
-					}
-					{ // right
-						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
-							value,
-							isValueNil === false ? true : false,
-							self.context.pasteboard
-						)
-						buttonLayer.style.float = "right"
-						div.appendChild(buttonLayer)
-					}
-					{ // to put the tx hash on the next line in the UI to make way for the COPY button
-						const clearingBreakLayer = document.createElement("br")
-						clearingBreakLayer.clear = "both"
-						div.appendChild(clearingBreakLayer)
-					}
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + valueToDisplay)
-					{ // special case
-						valueLayer.style.float = "left"
-						valueLayer.style.textAlign = "left"
-						//
-						valueLayer.style.width = "270px"
-						//
-						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
-					}
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+				const valueToDisplayIfValueNil = "N/A"
+				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+					fieldLabelTitle, 
+					value,
+					self.context.pasteboard, 
+					valueToDisplayIfValueNil
+				)
 				containerLayer.appendChild(div)
 			}
 			self.layer.appendChild(containerLayer)

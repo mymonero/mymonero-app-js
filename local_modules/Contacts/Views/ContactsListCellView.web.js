@@ -181,7 +181,7 @@ class ContactsListCellView extends View
 		{
 			if (contact.didFailToInitialize_flag !== true && contact.didFailToBoot_flag !== true) { // unlikely, but possible
 				htmlString += `<h3>${contact.fullname}</h3>`
-				htmlString += `<p>Address (XMR): ${contact.address__XMR}</p>`
+				htmlString += `<p>Address (XMR): ${contact.address}</p>`
 				{ // buttons
 					htmlString += self.new_htmlStringForChild_deleteContactWithIDLayer()
 				}

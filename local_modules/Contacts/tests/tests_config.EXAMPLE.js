@@ -33,7 +33,7 @@ module.exports =
 	persistencePassword: "…",
 	//
 	fullname: "GetMonero.org Donation",
-	address__XMR: "donate.getmonero.org",
+	address: "donate.getmonero.org",
 	payment_id: "…"
 	//
 	// after creating, populate:

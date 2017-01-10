@@ -314,7 +314,7 @@ class ContactsListController extends EventEmitter
 
 	WhenBooted_AddContact(
 		fullname,
-		address__XMR,
+		address,
 		payment_id,
 		fn // fn: (err: Error?, instance: Contact?) -> Void
 	)
@@ -334,7 +334,7 @@ class ContactsListController extends EventEmitter
 							persistencePassword: obtainedPasswordString,
 							//
 							fullname: fullname,
-							address__XMR: address__XMR,
+							address: address,
 							payment_id: payment_id,
 							emoji: emoji
 						}

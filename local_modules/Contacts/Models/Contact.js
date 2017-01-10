@@ -103,7 +103,7 @@ class Contact extends EventEmitter
 		const self = this
 		{
 			self.fullname = self.options.fullname
-			self.address__XMR = self.options.address__XMR
+			self.address = self.options.address
 			self.payment_id = self.options.payment_id
 			self.emoji = self.options.emoji
 		}
@@ -205,7 +205,7 @@ class Contact extends EventEmitter
 	{
 		const self = this
 		//
-		return `${self.constructor.name}<${self._id}> "${self.emoji}  ${self.fullname}, XMR addr: ${self.address__XMR}, payment id: ${self.payment_id}".`
+		return `${self.constructor.name}<${self._id}> "${self.emoji}  ${self.fullname}, XMR addr: ${self.address}, payment id: ${self.payment_id}".`
 	}
 	//
 	EventName_booted()
@@ -299,20 +299,20 @@ class Contact extends EventEmitter
 			}
 		)
 	}
-	Set_address__XMR(
+	Set_address(
 		toValue,
 		fn
 	)
 	{
 		const self = this
-		self.address__XMR = address__XMR
+		self.address = address
 		self.saveToDisk(
 			function(err)
 			{
 				if (err) {
-					console.error("Failed to save new address__XMR", err)
+					console.error("Failed to save new address", err)
 				} else {
-					console.log("📝  Successfully saved new address__XMR.")
+					console.log("📝  Successfully saved new address.")
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)

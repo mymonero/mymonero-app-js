@@ -28,16 +28,16 @@
 //
 "use strict"
 //
-function _new_fieldContainerLayer()
+function New_fieldContainerLayer()
 {
 	const layer = document.createElement("div")
 	layer.style.padding = "18px 0"
 	//
 	return layer
 }
-exports.New_fieldContainerLayer = _new_fieldContainerLayer
+exports.New_fieldContainerLayer = New_fieldContainerLayer
 //
-function _new_fieldTitle_labelLayer(labelText)
+function New_fieldTitle_labelLayer(labelText)
 {
 	const layer = document.createElement("span")
 	{
@@ -51,9 +51,9 @@ function _new_fieldTitle_labelLayer(labelText)
 	}				
 	return layer
 }
-exports.New_fieldTitle_labelLayer = _new_fieldTitle_labelLayer
+exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
-function _new_fieldValue_labelLayer(labelText)
+function New_fieldValue_labelLayer(labelText)
 {
 	const layer = document.createElement("span")
 	{
@@ -66,9 +66,9 @@ function _new_fieldValue_labelLayer(labelText)
 	}
 	return layer
 }
-exports.New_fieldValue_labelLayer = _new_fieldValue_labelLayer
+exports.New_fieldValue_labelLayer = New_fieldValue_labelLayer
 //
-function _new_separatorLayer()
+function New_separatorLayer()
 {
 	const layer = document.createElement("div")
 	{
@@ -80,9 +80,9 @@ function _new_separatorLayer()
 	}				
 	return layer
 }
-exports.New_separatorLayer = _new_separatorLayer
+exports.New_separatorLayer = New_separatorLayer
 //
-function _new_copyButton_aLayer(value, enabled_orTrue, pasteboard)
+function New_copyButton_aLayer(value, enabled_orTrue, pasteboard)
 {
 	const layer = document.createElement("a")
 	{
@@ -114,18 +114,18 @@ function _new_copyButton_aLayer(value, enabled_orTrue, pasteboard)
 	//
 	return layer
 }
-exports.New_copyButton_aLayer = _new_copyButton_aLayer
+exports.New_copyButton_aLayer = New_copyButton_aLayer
 //
-function _new_clearingBreakLayer()
+function New_clearingBreakLayer()
 {
 	const layer = document.createElement("br")
 	layer.clear = "both"
 	//
 	return layer
 }
-exports.New_clearingBreakLayer = _new_clearingBreakLayer
+exports.New_clearingBreakLayer = New_clearingBreakLayer
 //
-function _new_spacerLayer()
+function New_spacerLayer()
 {
 	const layer = document.createElement("div")
 	layer.style.width = "100%"
@@ -133,9 +133,9 @@ function _new_spacerLayer()
 	//
 	return layer
 }
-exports.New_spacerLayer = _new_spacerLayer
+exports.New_spacerLayer = New_spacerLayer
 //
-function _new_inlineMessageDialogLayer(messageString)
+function New_inlineMessageDialogLayer(messageString)
 {
 	const layer = document.createElement("div")
 	layer.innerHTML = messageString
@@ -159,4 +159,50 @@ function _new_inlineMessageDialogLayer(messageString)
 	}
 	return layer
 }
-exports.New_inlineMessageDialogLayer = _new_inlineMessageDialogLayer
+exports.New_inlineMessageDialogLayer = New_inlineMessageDialogLayer
+//
+function New_copyable_longStringValueField_component_fieldContainerLayer(
+	fieldLabelTitle, 
+	value,
+	pasteboard, 
+	valueToDisplayIfValueNil_orDefault
+)
+{ 
+	const isValueNil = value === null || typeof value === 'undefined' || value === ""
+	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
+	const div = New_fieldContainerLayer()
+	{
+		{ // left
+			const labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle)
+			div.appendChild(labelLayer)
+		}
+		{ // right
+			const buttonLayer = New_copyButton_aLayer(
+				value,
+				isValueNil === false ? true : false,
+				pasteboard
+			)
+			buttonLayer.style.float = "right"
+			div.appendChild(buttonLayer)
+		}
+		{ // to put the tx hash on the next line in the UI to make way for the COPY button
+			const clearingBreakLayer = document.createElement("br")
+			clearingBreakLayer.clear = "both"
+			div.appendChild(clearingBreakLayer)
+		}
+		const valueLayer = New_fieldValue_labelLayer("" + valueToDisplay)
+		{ // special case
+			valueLayer.style.float = "left"
+			valueLayer.style.textAlign = "left"
+			//
+			valueLayer.style.width = "270px"
+			//
+			// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
+		}
+		div.appendChild(valueLayer)
+	}
+	div.appendChild(New_clearingBreakLayer()) // preserve height; better way?
+	//
+	return div
+}
+exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_copyable_longStringValueField_component_fieldContainerLayer
