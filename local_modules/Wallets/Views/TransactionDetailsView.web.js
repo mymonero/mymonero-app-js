@@ -183,6 +183,7 @@ class TransactionDetailsView extends View
 			while (self.layer.firstChild) {
 			    self.layer.removeChild(self.layer.firstChild)
 			}
+			self.tableSection_containerLayer = null // was just removed; free
 		}
 		{ // messages/alerts
 			if (transaction.isConfirmed !== true) {
@@ -197,98 +198,106 @@ class TransactionDetailsView extends View
 				self.layer.appendChild(layer)
 			}
 		}
-		const details_containerLayer = document.createElement("div")
+		const containerLayer = document.createElement("div")
 		{
-			details_containerLayer.style.border = "1px solid #888"
-			details_containerLayer.style.borderRadius = "5px"
+			containerLayer.style.border = "1px solid #888"
+			containerLayer.style.borderRadius = "5px"
 		}
+		self.tableSection_containerLayer = containerLayer
 		{
-			{ // Date
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date")
-					div.appendChild(labelLayer)
-					//
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(transaction.timestamp.toString()) // TODO: format
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-				details_containerLayer.appendChild(div)
-			}
-			{
-				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			}
-			{ // Amount
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Amount")
-					div.appendChild(labelLayer)
-					//
-					const value = transaction.approx_float_amount
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
-					{
-						if (value < 0) {
-							valueLayer.style.color = "red"
-						} else {
-							valueLayer.style.color = "#aaa"
-						}
-						//
-						// valueLayer.style.webkitUserSelect = "all" // commenting for now
-					}					
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-				details_containerLayer.appendChild(div)
-			}
-			{
-				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			}
-			{ // Mixin
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Mixin")
-					div.appendChild(labelLayer)
-					//
-					const value = transaction.mixin
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
-					div.appendChild(valueLayer)
-				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-				details_containerLayer.appendChild(div)
-			}
-			{
-				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			}
-			{ // Transaction ID
-				const fieldLabelTitle = "Transaction ID"
-				const value = transaction.hash
-				const valueToDisplayIfValueNil = "N/A"
-				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-					fieldLabelTitle, 
-					value,
-					self.context.pasteboard, 
-					valueToDisplayIfValueNil
-				)
-				details_containerLayer.appendChild(div)
-			}
-			{
-				details_containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			}
-			{ // Payment ID
-				const fieldLabelTitle = "Payment ID"
-				const value = transaction.payment_id
-				const valueToDisplayIfValueNil = "N/A"
-				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-					fieldLabelTitle, 
-					value,
-					self.context.pasteboard, 
-					valueToDisplayIfValueNil
-				)
-				details_containerLayer.appendChild(div)
-			}
+			self._addTableFieldLayer_date()
+			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+			self._addTableFieldLayer_amount()
+			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+			self._addTableFieldLayer_mixin()
+			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+			self._addTableFieldLayer_transactionID()
+			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+			self._addTableFieldLayer_paymentID()
 		}
-		self.layer.appendChild(details_containerLayer)
+		self.layer.appendChild(containerLayer)
 		// self.DEBUG_BorderChildLayers()
+	}
+	_addTableFieldLayer_date()
+	{
+		const self = this
+		const div = commonComponents_tables.New_fieldContainerLayer()
+		{
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date")
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(self.transaction.timestamp.toString()) // TODO: format
+			div.appendChild(valueLayer)
+		}
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_addTableFieldLayer_amount()
+	{
+		const self = this
+		const div = commonComponents_tables.New_fieldContainerLayer()
+		{
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Amount")
+			div.appendChild(labelLayer)
+			//
+			const value = self.transaction.approx_float_amount
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+			{
+				if (value < 0) {
+					valueLayer.style.color = "red"
+				} else {
+					valueLayer.style.color = "#aaa"
+				}
+				//
+				// valueLayer.style.webkitUserSelect = "all" // commenting for now
+			}					
+			div.appendChild(valueLayer)
+		}
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_addTableFieldLayer_mixin()
+	{
+		const self = this
+		const div = commonComponents_tables.New_fieldContainerLayer()
+		{
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Mixin")
+			div.appendChild(labelLayer)
+			//
+			const value = self.transaction.mixin
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+			div.appendChild(valueLayer)
+		}
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_addTableFieldLayer_transactionID()
+	{
+		const self = this
+		const fieldLabelTitle = "Transaction ID"
+		const value = self.transaction.hash
+		const valueToDisplayIfValueNil = "N/A"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			fieldLabelTitle, 
+			value,
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_addTableFieldLayer_paymentID()
+	{
+		const self = this
+		const fieldLabelTitle = "Payment ID"
+		const value = self.transaction.payment_id
+		const valueToDisplayIfValueNil = "N/A"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			fieldLabelTitle, 
+			value,
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		self.tableSection_containerLayer.appendChild(div)
 	}
 	//
 	//

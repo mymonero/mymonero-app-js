@@ -75,38 +75,44 @@ class ContactDetailsView extends View
 				containerLayer.style.border = "1px solid #888"
 				containerLayer.style.borderRadius = "5px"
 			}
-						
-			// TODO: encapsulate the following copyable long string value component_fieldContainerLayer in table
-
+			self.tableSection_containerLayer = containerLayer
 			{
-				const fieldLabelTitle = "Address"
-				const value = self.contact.address
-				const valueToDisplayIfValueNil = "N/A"
-				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-					fieldLabelTitle, 
-					value,
-					self.context.pasteboard, 
-					valueToDisplayIfValueNil
-				)
-				containerLayer.appendChild(div)
-			}
-			{
-				containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			}
-			{ // Payment ID
-				const fieldLabelTitle = "Payment ID"
-				const value = self.contact.payment_id
-				const valueToDisplayIfValueNil = "N/A"
-				const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-					fieldLabelTitle, 
-					value,
-					self.context.pasteboard, 
-					valueToDisplayIfValueNil
-				)
-				containerLayer.appendChild(div)
+				self._setup_field_address()
+				{
+					containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+				}
+				self._setup_field_paymentID()
 			}
 			self.layer.appendChild(containerLayer)
 		}
+	}
+	_setup_field_address()
+	{
+		const self = this
+		const fieldLabelTitle = "Address"
+		const value = self.contact.address
+		const valueToDisplayIfValueNil = "N/A"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			fieldLabelTitle, 
+			value,
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_setup_field_paymentID()
+	{
+		const self = this
+		const fieldLabelTitle = "Payment ID"
+		const value = self.contact.payment_id
+		const valueToDisplayIfValueNil = "N/A"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			fieldLabelTitle, 
+			value,
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		self.tableSection_containerLayer.appendChild(div)
 	}
 	//
 	//
