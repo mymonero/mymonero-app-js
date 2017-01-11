@@ -57,7 +57,7 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	//
 	//
-	// Runtime - Imperatives 
+	// Runtime - Imperatives - Modal presentation & dismissal
 	//
 	PresentView(
 		modalView,
@@ -157,27 +157,6 @@ class StackAndModalNavigationView extends StackNavigationView
 		const justPrevious_modalView = self.modalViews[indexOf_justPrevious_modalView]
 		self.DismissModalViewsToView(
 			justPrevious_modalView,
-			isAnimated_orTrue
-		)
-	}
-	PopToRootView(
-		isAnimated_orTrue
-	)
-	{
-		const self = this
-		if (self.stackViews.length == 0) {
-			throw "PopView called with 0 self.stackViews"
-			return
-		}
-		const root_stackView = self.stackViews[0]
-		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
-			// TODO: assert self.stackViews.length === 1?
-			console.warn("⚠️  PopToRootView called but already at root.")
-			return // bail
-		}
-		self.PopToView(
-			root_stackView,
-			0,
 			isAnimated_orTrue
 		)
 	}
@@ -326,6 +305,55 @@ class StackAndModalNavigationView extends StackNavigationView
 				return
 			}
 		}
+	}
+	//
+	//
+	// Runtime - Imperatives - Overrides - Disallowing stackView operations while modal is up - not sure if these are strictly necessary
+	//
+	SetStackViews(to_stackViews)
+	{
+		const self = this
+		if (self.modalViews.length != 0) {
+			console.warn(`⚠️  Disallowing ${self.constructor.name}/SetStackViews while modal view(s) presented.`)
+			return
+		}
+		super.SetStackViews(to_stackViews)
+	}
+	PushView(
+		stackView,
+		isAnimated_orTrue
+	)
+	{
+		const self = this
+		if (self.modalViews.length != 0) {
+			console.warn(`⚠️  Disallowing ${self.constructor.name}/PushView while modal view(s) presented.`)
+			return
+		}
+		super.PushView(stackView, isAnimated_orTrue)
+	}
+	PopToView(
+		to_stackView,
+		indexOf_to_stackView,
+		isAnimated_orTrue
+	)
+	{
+		const self = this
+		if (self.modalViews.length != 0) {
+			console.warn(`⚠️  Disallowing ${self.constructor.name}/PopToView while modal view(s) presented.`)
+			return
+		}
+		super.PopToView(to_stackView, indexOf_to_stackView, isAnimated_orTrue)
+	}
+	PopToRootView(
+		isAnimated_orTrue
+	)
+	{
+		const self = this
+		if (self.modalViews.length != 0) {
+			console.warn(`⚠️  Disallowing ${self.constructor.name}/PopToRootView while modal view(s) presented.`)
+			return
+		}
+		super.PopToRootView(isAnimated_orTrue)
 	}
 }
 module.exports = StackAndModalNavigationView
