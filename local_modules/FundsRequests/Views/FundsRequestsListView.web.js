@@ -32,6 +32,8 @@ const View = require('../../Views/View.web')
 const GeneratedRequestView = require('./GeneratedRequestView.web')
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
+const RequestFundsView = require('./RequestFundsView.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
 class FundsRequestsListView extends View
 {
@@ -123,16 +125,10 @@ class FundsRequestsListView extends View
 				{
 					e.preventDefault()
 					{
-						// TODO: modally present view in tab (ModalView + TabModalView) instead of in stack
-						// for now, just pushing
-						
-						const options = {}
-						const RequestFundsView = require('./RequestFundsView.web')
-						const view = new RequestFundsView(options, self.context)
-						self.navigationController.PushView(
-							view,
-							true
-						)
+						const view = new RequestFundsView({}, self.context)
+						const navigationView = new StackAndModalNavigationView({}, self.context)
+						navigationView.SetStackViews([ view ])
+						self.navigationController.PresentView(navigationView, true)
 					}
 					return false
 				}

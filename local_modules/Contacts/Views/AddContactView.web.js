@@ -261,8 +261,7 @@ class AddContactView extends View
 				function(e)
 				{
 					e.preventDefault()
-					{
-						// v--- self.navigationController because self is presented packaged in a StackNavigationView
+					{ // v--- self.navigationController because self is presented packaged in a StackNavigationView
 						self.navigationController.modalParentView.DismissTopModalView(true)
 					}
 					return false

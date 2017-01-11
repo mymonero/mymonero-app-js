@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web.js')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
 //
 class RequestFundsView extends View
 {
@@ -201,14 +202,34 @@ class RequestFundsView extends View
 	{
 		return "Request Monero"
 	}
-	Navigation_New_RightBarButtonView()
+	Navigation_New_LeftBarButtonView()
 	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{ // v--- self.navigationController because self is presented packaged in a StackNavigationView
+						self.navigationController.modalParentView.DismissTopModalView(true)
+					}
+					return false
+				}
+			)
+		}
+		return view
+	}
+	Navigation_New_RightBarButtonView()
+	{ // TODO: factor/encapsulate in navigationBarButtons.web.js
 		const self = this
 		const view = new View({ tag: "a" }, self.context)
 		const layer = view.layer
 		{ // setup/style
 			layer.href = "#" // to make it clickable
-			layer.innerHTML = "Generate"
+			layer.innerHTML = "Save"
 		}
 		{
 			layer.style.display = "block"
@@ -297,11 +318,6 @@ class RequestFundsView extends View
 					self.validationMessageLayer.ClearAndHideMessage()
 					//
 					self.hasAnalyzedAndResolveAmountInfo = undefined // reset
-					//
-					// TODO: reset wallet to first choice?…… do we even need to reset these fields? this will probably be presented as a modal and so will be dismissed and then torn down – and so it wouldn't be self which is doing the PushView of the below GeneratedRequestView
-					self.amountInputLayer.value = ""
-					self.memoInputLayer.value = ""
-					self.contactInputLayer.value = "" // TODO: update this when we build the contacts selector
 				}
 				const GeneratedRequestView = require('./GeneratedRequestView.web')
 				const options = 
@@ -309,10 +325,13 @@ class RequestFundsView extends View
 					fundsRequest: fundsRequest
 				}
 				const view = new GeneratedRequestView(options, self.context)
-				self.navigationController.PushView(
-					view,
-					true
-				)
+				const modalParentView = self.navigationController.modalParentView
+				const underlying_navigationController = modalParentView
+				underlying_navigationController.PushView(view, false) // not animated
+				setTimeout(function()
+				{ // just to make sure the PushView finished
+					modalParentView.DismissTopModalView(true)
+				})
 			}
 		)
 	}

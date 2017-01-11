@@ -101,31 +101,20 @@ class ContactsListView extends View
 		return "Contacts"
 	}
 	Navigation_New_RightBarButtonView()
-	{ // TODO: use single factory fn, probably in WalletAppCommonComponents, for this + button
-		// same for other btns like the back btn etc. (how to extract back btn style from StackNavBarView domain?)
+	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
-		{ // observe
+		{
 			view.layer.addEventListener(
 				"click",
 				function(e)
 				{
 					e.preventDefault()
 					{
-						// TODO: modally present view in tab (ModalView + TabModalView) instead of in stack
-						// for now, just pushing
-						
 						const view = new AddContactView({}, self.context)
 						const navigationView = new StackAndModalNavigationView({}, self.context)
-						navigationView.SetStackViews(
-							[
-								view
-							]
-						)
-						self.navigationController.PresentView(
-							navigationView,
-							true
-						)
+						navigationView.SetStackViews([ view ])
+						self.navigationController.PresentView(navigationView, true)
 					}
 					return false
 				}
