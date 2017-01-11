@@ -53,7 +53,7 @@ class StackAndModalNavigationView extends StackNavigationView
 	//
 	_animationDuration_ms_modalPresent()
 	{
-		return 200
+		return 170
 	}
 	//
 	//

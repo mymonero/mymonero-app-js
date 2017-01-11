@@ -279,6 +279,8 @@ class Contact extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
 
+	// TODO: rework these methods into a single method which diffs
+
 	Set_fullname(
 		toValue,
 		fn

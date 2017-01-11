@@ -34,8 +34,6 @@ const EventEmitter = require('events')
 const Contact = require('../Models/Contact')
 const contact_persistence_utils = require('../Models/contact_persistence_utils')
 //
-const emoji_selection = require('../../Emoji/emoji_selection')
-//
 class ContactsListController extends EventEmitter
 {
 
@@ -314,6 +312,7 @@ class ContactsListController extends EventEmitter
 
 	WhenBooted_AddContact(
 		fullname,
+		emoji,
 		address,
 		payment_id,
 		fn // fn: (err: Error?, instance: Contact?) -> Void
@@ -327,8 +326,6 @@ class ContactsListController extends EventEmitter
 				self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
 					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						const inUseEmojis = self.GivenBooted_CurrentlyInUseEmojis()
-						const emoji = emoji_selection.EmojiWhichIsNotAlreadyInUse(inUseEmojis)
 						const options =
 						{
 							persistencePassword: obtainedPasswordString,

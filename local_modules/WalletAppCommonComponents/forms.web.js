@@ -39,7 +39,7 @@ exports.New_fieldContainerLayer = _new_fieldContainerLayer
 //
 const titleLabelWidth = 90
 //
-function _new_fieldTitle_labelLayer(labelText)
+function New_fieldTitle_labelLayer(labelText)
 {
 	const layer = document.createElement("span")
 	{
@@ -52,22 +52,22 @@ function _new_fieldTitle_labelLayer(labelText)
 		layer.style.fontWeight = "bold"
 		layer.style.color = "#ccc"
 		layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
-	}				
+	}
 	return layer
 }
-exports.New_fieldTitle_labelLayer = _new_fieldTitle_labelLayer
+exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
-function _new_fieldValue_textInputLayer(params)
+function New_fieldValue_textInputLayer(params)
 {
 	const layer = document.createElement("input")
 	{
 		layer.type = "text"
 		const existingValue = params.existingValue
-		if (typeof existingValue !== 'undefined' && existingValue) {
+		if (typeof existingValue !== 'undefined' && existingValue !== null) {
 			layer.value = existingValue
 		}
 		const placeholderText = params.placeholderText
-		if (typeof placeholderText !== 'undefined' && placeholderText) {
+		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 			layer.placeholder = placeholderText
 		}
 		layer.style.display = "inline-block"
@@ -85,9 +85,9 @@ function _new_fieldValue_textInputLayer(params)
 	}				
 	return layer
 }
-exports.New_fieldValue_textInputLayer = _new_fieldValue_textInputLayer
+exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
 //
-function _new_fieldValue_walletSelectLayer(params)
+function New_fieldValue_walletSelectLayer(params)
 {
 	const didChangeWalletSelection_fn = params.didChangeWalletSelection_fn || function(selectedWallet) {}
 	const walletsListController = params.walletsListController
@@ -302,4 +302,4 @@ function _new_fieldValue_walletSelectLayer(params)
 	}
 	return layer
 }
-exports.New_fieldValue_walletSelectLayer = _new_fieldValue_walletSelectLayer
+exports.New_fieldValue_walletSelectLayer = New_fieldValue_walletSelectLayer

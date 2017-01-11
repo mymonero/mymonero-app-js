@@ -33,6 +33,7 @@ module.exports =
 	persistencePassword: "…",
 	//
 	fullname: "GetMonero.org Donation",
+	emoji: "😀",
 	address: "donate.getmonero.org",
 	payment_id: "…"
 	//

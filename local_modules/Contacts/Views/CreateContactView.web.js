@@ -33,6 +33,8 @@ const commonComponents_tables = require('../../WalletAppCommonComponents/tables.
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web.js')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
 //
+const emoji_selection = require('../../Emoji/emoji_selection')
+//
 class CreateContactView extends View
 {
 	constructor(options, context)
@@ -71,13 +73,174 @@ class CreateContactView extends View
 			self.validationMessageLayer = layer
 			self.layer.appendChild(layer)				
 		}
-		{ // inputs
+		{ // form
 			const containerLayer = document.createElement("div")
-			{ // hierarchy
-				
+			self.form_containerLayer = containerLayer
+			{
+				self._setup_field_fullname()
+				self._setup_field_emoji()
+				self._setup_field_address()
+				self._setup_field_paymentID()
 			}
 			self.layer.appendChild(containerLayer)
 		}
+	}
+	_setup_field_fullname()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.width = `calc(100% - 75px - ${div.style.paddingLeft} - ${div.style.paddingRight})`
+		div.style.display = "inline-block"
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Name")
+			div.appendChild(labelLayer)
+		}
+		{
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "Something memorable"
+			})
+			self.fullnameInputLayer = valueLayer
+			{
+				valueLayer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						if (event.keyCode === 13) { // return key
+							self._tryToCreateContact()
+							return
+						}
+					}
+				)
+			}
+			div.appendChild(valueLayer)
+		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_field_emoji()
+	{
+		const self = this
+		const inUseEmojis = self.context.contactsListController.GivenBooted_CurrentlyInUseEmojis()
+		const emoji = emoji_selection.EmojiWhichIsNotAlreadyInUse(inUseEmojis)
+		const value = emoji // to retain code portability
+		//					
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.width = "75px"
+		div.style.display = "inline-block"
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Emoji")
+		
+			div.appendChild(labelLayer)
+		}
+		{ // TODO: make this into a custom picker
+			const valueLayer = document.createElement("input")
+			{
+				valueLayer.type = "text"
+				valueLayer.value = value
+				valueLayer.style.display = "inline-block"
+				valueLayer.style.height = "30px"
+				valueLayer.style.width = `calc(100% - 4px)`
+				valueLayer.style.border = "1px inset #222"
+				valueLayer.style.borderRadius = "4px"
+		 		valueLayer.style.float = "left"
+				valueLayer.style.textAlign = "left"
+				valueLayer.style.fontSize = "14px"
+				valueLayer.style.color = "#ccc"
+				valueLayer.style.backgroundColor = "#444"
+				valueLayer.style.padding = "0"
+				valueLayer.style.fontFamily = "monospace"
+			}
+			self.emojiInputLayer = valueLayer
+			div.appendChild(valueLayer)
+		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_field_address()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.width = `calc(100%)`
+		div.style.display = "inline-block"
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Address")
+			div.appendChild(labelLayer)
+		}
+		{
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "Enter integrated address or OpenAlias"
+			})
+			self.addressInputLayer = valueLayer
+			{
+				valueLayer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						if (event.keyCode === 13) { // return key
+							self._tryToCreateContact()
+							return
+						}
+					}
+				)
+			}
+			div.appendChild(valueLayer)
+		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_field_paymentID()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.width = `calc(100%)`
+		div.style.display = "inline-block"
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID")
+			div.appendChild(labelLayer)
+		}
+		{
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "Optional"
+			})
+			self.paymentIDInputLayer = valueLayer
+			{
+				valueLayer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						if (event.keyCode === 13) { // return key
+							self._tryToCreateContact()
+							return
+						}
+					}
+				)
+			}
+			div.appendChild(valueLayer)
+		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		{
+			const layer = document.createElement("span")
+			{
+				layer.innerHTML = "If you don't provide a payment ID, one will be generated."
+				layer.style.width = "100%"
+				layer.style.fontSize = "14px"
+				layer.style.fontWeight = "bold"
+				layer.style.color = "#ccc"
+				layer.style.fontFamily = "monospace"
+				//
+				layer.style.wordBreak = "keep-all" // to get the text to wrap only at the word, not letter
+			}
+			div.appendChild(layer)
+		}
+		self.form_containerLayer.appendChild(div)
 	}
 	//
 	//

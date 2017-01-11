@@ -110,7 +110,6 @@ class RequestFundsView extends View
 						})
 						self.amountInputLayer = valueLayer
 						{
-							var __valueLayer_debounceTimeout = null
 							valueLayer.addEventListener(
 								"keyup",
 								function(event)
@@ -143,7 +142,6 @@ class RequestFundsView extends View
 						})
 						self.memoInputLayer = valueLayer
 						{
-							var __valueLayer_debounceTimeout = null
 							valueLayer.addEventListener(
 								"keyup",
 								function(event)
@@ -173,7 +171,6 @@ class RequestFundsView extends View
 						})
 						self.contactInputLayer = valueLayer
 						{
-							var __valueLayer_debounceTimeout = null
 							valueLayer.addEventListener(
 								"keyup",
 								function(event)
