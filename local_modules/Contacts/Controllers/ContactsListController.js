@@ -183,9 +183,8 @@ class ContactsListController extends EventEmitter
 						})
 						return
 					}
-					//
+					self._sortContactsArray()
 					self._setup_didBoot()
-					//
 					setTimeout(function()
 					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 						self.__listUpdated_contacts() // emit after booting so this becomes an at-runtime emission
@@ -438,6 +437,15 @@ class ContactsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
+	_sortContactsArray()
+	{
+		const self = this
+		self.contacts = self.contacts.sort(function(a, b)
+		{
+		    return a.fullname.localeCompare(b.fullname) // to get unicode support
+		})
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
@@ -446,6 +454,7 @@ class ContactsListController extends EventEmitter
 	{
 		const self = this
 		self.contacts.push(instance)
+		self._sortContactsArray() // TODO: insert at correct place instead of re-sorting entire array
 		self.__listUpdated_contacts() // ensure delegate notified
 	}
 
