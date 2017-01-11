@@ -30,9 +30,9 @@
 //
 const uuidV1 = require('uuid/v1')
 //
-const StackNavigationView = require('../../StackNavigation/Views/StackNavigationView.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
-class ContactsTabContentView extends StackNavigationView
+class ContactsTabContentView extends StackAndModalNavigationView
 {
 	constructor(options, context)
 	{

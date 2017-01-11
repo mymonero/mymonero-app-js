@@ -57,6 +57,33 @@ function New_RightSide_AddButtonView(context)
 }
 exports.New_RightSide_AddButtonView = New_RightSide_AddButtonView
 //
+function New_LeftSide_CancelButtonView(context)
+{
+	const view = new View({ tag: "a" }, context)
+	const layer = view.layer
+	{ // setup/style
+		layer.href = "#" // to make it clickable
+		layer.innerHTML = "Cancel"
+	}
+	{
+		layer.style.display = "block"
+		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+		layer.style.marginTop = "10px"
+		layer.style.width = "90px"
+		layer.style.height = "24px"
+		layer.style.cornerRadius = "2px"
+		layer.style.backgroundColor = "#ccc"
+		layer.style.textDecoration = "none"
+		layer.style.fontSize = "22px"
+		layer.style.lineHeight = "112%" // % extra to get + aligned properly
+		layer.style.color = "#ffffff"
+		layer.style.fontWeight = "bold"
+		layer.style.textAlign = "center"
+	}
+	return view
+}
+exports.New_LeftSide_CancelButtonView = New_LeftSide_CancelButtonView
+//
 function New_RightSide_SaveButtonView(context)
 {
 	const view = new View({ tag: "a" }, context)
@@ -80,6 +107,6 @@ function New_RightSide_SaveButtonView(context)
 		layer.style.fontWeight = "bold"
 		layer.style.textAlign = "center"
 	}
-	
+	return view
 }
 exports.New_RightSide_SaveButtonView = New_RightSide_SaveButtonView

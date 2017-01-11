@@ -28,9 +28,9 @@
 //
 "use strict"
 //
-const StackNavigationView = require('../../StackNavigation/Views/StackNavigationView.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
-class WalletsTabContentView extends StackNavigationView
+class WalletsTabContentView extends StackAndModalNavigationView
 {
 	constructor(options, context)
 	{

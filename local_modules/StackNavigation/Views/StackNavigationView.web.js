@@ -332,7 +332,7 @@ class StackNavigationView extends View
 			// console.log("subviewUUIDs", subviewUUIDs)
 			const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
 			if (indexOf_old_topStackView_inSubviews === -1) {
-				throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.Description()} subviews.`
+				throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
 				return
 			}
 			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
@@ -389,9 +389,9 @@ class StackNavigationView extends View
 			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
 		}
 		{ // pop all views in model
-			const popped_stackViews = self.stackViews.slice(0, indexOf_to_stackView + 1) // +1 as end is end idx not included in slice
-			// console.log("popped_stackViews", popped_stackViews)
-			self.stackViews = popped_stackViews
+			const stackViews_afterPop = self.stackViews.slice(0, indexOf_to_stackView + 1) // +1 as end is end idx not included in slice
+			// console.log("stackViews_afterPop", stackViews_afterPop)
+			self.stackViews = stackViews_afterPop
 			if (to_stackView.IsEqualTo(self.stackViews[self.stackViews.length - 1]) === false) {
 				throw `Popped to to_stackView ${to_stackView.Description()} at idx ${indexOf_to_stackView} but it was not the last of self.stackViews after pop all views until that idx.`
 				return 

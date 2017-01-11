@@ -37,19 +37,21 @@ const remote__context = remote__electron.getGlobal("context")
 //
 const rootView = new_rootView() // hang onto reference
 //
-process.on('uncaughtException', function (error)
-{ // We're going to observe this here (for electron especially) so
-  // that the exceptions are prevented from bubbling up to the UI.
-	console.error("Observed uncaught exception", error)
-	// TODO: re-emit and send this to the error reporting service
-	var errStr;
-	if (error) {
-		errStr = "An unexpected application error occurred.\n\nPlease let us know of the following error message via Support, especially if this issue persists:\n\n"+ error.toString()
-	} else {
-		errStr = "An unexpected application error occurred.\n\nPlease let us know via Support if this issue persists."
-	}
-	alert(errStr)
-})
+if (process.env.NODE_ENV !== 'development') {
+	process.on('uncaughtException', function (error)
+	{ // We're going to observe this here (for electron especially) so
+	  // that the exceptions are prevented from bubbling up to the UI.
+		console.error("Observed uncaught exception", error)
+		// TODO: re-emit and send this to the error reporting service
+		var errStr;
+		if (error) {
+			errStr = "An unexpected application error occurred.\n\nPlease let us know of the following error message via Support, especially if this issue persists:\n\n"+ error.toString()
+		} else {
+			errStr = "An unexpected application error occurred.\n\nPlease let us know via Support if this issue persists."
+		}
+		alert(errStr)
+	})
+}
 //
 //
 // Accessors - Factories

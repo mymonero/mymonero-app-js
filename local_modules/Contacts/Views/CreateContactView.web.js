@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web.js')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
 //
 class CreateContactView extends View
 {
@@ -86,6 +87,27 @@ class CreateContactView extends View
 	{
 		return "New Contact"
 	}
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						// v--- self.navigationController because self is presented packaged in a StackNavigationView
+						self.navigationController.modalParentView.DismissTopModalView(true)
+					}
+					return false
+				}
+			)
+		}
+		return view
+	}
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
@@ -98,6 +120,9 @@ class CreateContactView extends View
 				{
 					e.preventDefault()
 					{
+						// TODO: grab info
+						// tell contacts list controller to create new contact
+						// then dismiss top modal view
 					}
 					return false
 				}
