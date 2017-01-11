@@ -35,7 +35,7 @@ const commonComponents_navigationBarButtons = require('../../WalletAppCommonComp
 //
 const emoji_selection = require('../../Emoji/emoji_selection')
 //
-class CreateContactView extends View
+class AddContactView extends View
 {
 	constructor(options, context)
 	{
@@ -283,9 +283,7 @@ class CreateContactView extends View
 				{
 					e.preventDefault()
 					{
-						// TODO: grab info
-						// tell contacts list controller to create new contact
-						// then dismiss top modal view
+						self._tryToCreateContact()
 					}
 					return false
 				}
@@ -297,75 +295,60 @@ class CreateContactView extends View
 	//
 	// Runtime - Imperatives - Request generation
 	//
-	_tryToGenerateRequest()
+	_tryToCreateContact()
 	{
 		const self = this
 		//
-		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
-		const amount = self.amountInputLayer.value
-		const memo = self.memoInputLayer.value
-		const contact_id = self.contactInputLayer.value // TODO when picker built
+		const fullname = self.fullnameInputLayer.value
+		const emoji = self.emojiInputLayer.value // TODO: when picker built
+		const address = self.addressInputLayer.value
+		const paymentID = self.paymentIDInputLayer.value
 		//
-		if (typeof wallet === 'undefined' || !wallet) {
-			self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
+		if (typeof fullname === 'undefined' || !fullname) {
+			self.validationMessageLayer.SetValidationError("Please enter a name for this contact.")
 			return
 		}
-		if (typeof amount === 'undefined' || !amount) {
-			self.validationMessageLayer.SetValidationError("Please enter a Monero amount to request.")
+		if (typeof emoji === 'undefined' || !emoji) {
+			self.validationMessageLayer.SetValidationError("Please select an emoji for this contact.")
 			return
 		}
-		if (self.hasAnalyzedAndResolveAmountInfo === false) {
-			// TODO: validate amount here
-			const amount_isValid = true // TODO: just for now
-			if (amount_isValid !== true) {
-				self.validationMessageLayer.SetValidationError("Please enter a valid amount.")
-				return
-			}
+		if (typeof address === 'undefined' || !address) {
+			self.validationMessageLayer.SetValidationError("Please enter an address for this contact.")
+			return
 		}
-		//
-		// We can assume that we have a password by this point, because we have a wallet (above)
-		//
-		var payment_id = null
-		const contact = null // TODO: resolve contact from contact_id -- or just get the contact objs directly 
-		if (typeof contact !== 'undefined' && contact) {
-			payment_id = contact.payment_id
+		var paymentID_orNullForNew;
+		if (paymentID === "" || typeof paymentID === 'undefined') {
+			paymentID_orNullForNew = null // so we conform to WhenBooted_AddContact interface to get a paymentID generated for us
+		} else {
+			paymentID_orNullForNew = paymentID
 		}
-		//
-		const message = undefined // no support yet?
-		//
-		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
-			wallet.public_address,
-			payment_id,
-			amount,
-			memo, // description, AKA memo or label; no support yet?
-			message,
-			function(err, fundsRequest)
+		self.context.contactsListController.WhenBooted_AddContact(
+			fullname,
+			emoji,
+			address,
+			paymentID_orNullForNew,
+			function(err, contact)
 			{
 				if (err) {
-					console.error("Error while creating funds request", err)
+					console.error("Error while creating contact", err)
 					// TODO: show "validation" error here
 					return
 				}
-				{
-					self.validationMessageLayer.ClearAndHideMessage()
-					//
-					self.hasAnalyzedAndResolveAmountInfo = undefined // reset
-					//
-					// TODO: reset wallet to first choice?…… do we even need to reset these fields? this will probably be presented as a modal and so will be dismissed and then torn down – and so it wouldn't be self which is doing the PushView of the below GeneratedRequestView
-					self.amountInputLayer.value = ""
-					self.memoInputLayer.value = ""
-					self.contactInputLayer.value = "" // TODO: update this when we build the contacts selector
-				}
-				const GeneratedRequestView = require('./GeneratedRequestView.web')
+				self.validationMessageLayer.ClearAndHideMessage()
+				//
+				const ContactDetailsView = require('./ContactDetailsView.web')
 				const options = 
 				{
-					fundsRequest: fundsRequest
+					contact: contact
 				}
-				const view = new GeneratedRequestView(options, self.context)
-				self.navigationController.PushView(
-					view,
-					true
-				)
+				const view = new ContactDetailsView(options, self.context)
+				const modalParentView = self.navigationController.modalParentView
+				const underlying_navigationController = modalParentView
+				underlying_navigationController.PushView(view, false) // not animated
+				setTimeout(function()
+				{ // just to make sure the PushView finished
+					modalParentView.DismissTopModalView(true)
+				})
 			}
 		)
 	}
@@ -391,4 +374,4 @@ class CreateContactView extends View
 		// teardown any child/referenced stack navigation views if necessary…
 	}
 }
-module.exports = CreateContactView
+module.exports = AddContactView

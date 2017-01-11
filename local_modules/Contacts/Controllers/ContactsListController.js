@@ -34,6 +34,8 @@ const EventEmitter = require('events')
 const Contact = require('../Models/Contact')
 const contact_persistence_utils = require('../Models/contact_persistence_utils')
 //
+const monero_requestingFunds_utils = require('../../monero_utils/monero_requestingFunds_utils')
+//
 class ContactsListController extends EventEmitter
 {
 
@@ -314,12 +316,18 @@ class ContactsListController extends EventEmitter
 		fullname,
 		emoji,
 		address,
-		payment_id,
+		paymentID_orNullForNew,
 		fn // fn: (err: Error?, instance: Contact?) -> Void
 	)
 	{
 		const self = this
 		const context = self.context
+		var payment_id;
+		if (paymentID_orNullForNew === null) {
+			payment_id = monero_requestingFunds_utils.New_TransactionID()
+		} else {
+			payment_id = paymentID_orNullForNew
+		}
 		self.ExecuteWhenBooted(
 			function()
 			{

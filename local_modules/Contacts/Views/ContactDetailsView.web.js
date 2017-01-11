@@ -124,7 +124,7 @@ class ContactDetailsView extends View
 		var title = ""
 		const emoji = self.contact.emoji
 		if (typeof emoji !== 'undefined' && emoji) {
-			title += emoji + " "
+			title += emoji + "&nbsp;&nbsp;&nbsp;&nbsp;" // extra spaces for emoji
 		}
 		title += self.contact.fullname
 		//

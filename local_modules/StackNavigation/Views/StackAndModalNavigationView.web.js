@@ -308,52 +308,21 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	//
 	//
-	// Runtime - Imperatives - Overrides - Disallowing stackView operations while modal is up - not sure if these are strictly necessary
+	// Runtime - Delegation - Overrides - Disallowing operations while modal is up
 	//
-	SetStackViews(to_stackViews)
+
+	//
+	//
+	// Runtime - Delegation - Implementation/support for TabBarAndContentView events
+	//
+	TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()
 	{
 		const self = this
 		if (self.modalViews.length != 0) {
-			console.warn(`⚠️  Disallowing ${self.constructor.name}/SetStackViews while modal view(s) presented.`)
+			console.warn(`⚠️  Disallowing ${self.constructor.name}/TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected while modal view(s) presented.`)
 			return
 		}
-		super.SetStackViews(to_stackViews)
-	}
-	PushView(
-		stackView,
-		isAnimated_orTrue
-	)
-	{
-		const self = this
-		if (self.modalViews.length != 0) {
-			console.warn(`⚠️  Disallowing ${self.constructor.name}/PushView while modal view(s) presented.`)
-			return
-		}
-		super.PushView(stackView, isAnimated_orTrue)
-	}
-	PopToView(
-		to_stackView,
-		indexOf_to_stackView,
-		isAnimated_orTrue
-	)
-	{
-		const self = this
-		if (self.modalViews.length != 0) {
-			console.warn(`⚠️  Disallowing ${self.constructor.name}/PopToView while modal view(s) presented.`)
-			return
-		}
-		super.PopToView(to_stackView, indexOf_to_stackView, isAnimated_orTrue)
-	}
-	PopToRootView(
-		isAnimated_orTrue
-	)
-	{
-		const self = this
-		if (self.modalViews.length != 0) {
-			console.warn(`⚠️  Disallowing ${self.constructor.name}/PopToRootView while modal view(s) presented.`)
-			return
-		}
-		super.PopToRootView(isAnimated_orTrue)
+		super.TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()
 	}
 }
 module.exports = StackAndModalNavigationView
