@@ -33,7 +33,7 @@ const ContactsListCellView = require('./ContactsListCellView.web')
 const ContactDetailsView = require('./ContactDetailsView.web')
 const AddContactView = require('./AddContactView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class ContactsListView extends View
 {

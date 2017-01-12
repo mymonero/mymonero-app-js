@@ -29,9 +29,9 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web.js')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class RequestFundsView extends View
 {
@@ -223,7 +223,7 @@ class RequestFundsView extends View
 		return view
 	}
 	Navigation_New_RightBarButtonView()
-	{ // TODO: factor/encapsulate in navigationBarButtons.web.js
+	{ // TODO: factor/encapsulate in navigationBarButtons.web
 		const self = this
 		const view = new View({ tag: "a" }, self.context)
 		const layer = view.layer
@@ -237,7 +237,7 @@ class RequestFundsView extends View
 			layer.style.marginTop = "10px"
 			layer.style.width = "90px"
 			layer.style.height = "24px"
-			layer.style.cornerRadius = "2px"
+			layer.style.borderRadius = "2px"
 			layer.style.backgroundColor = "#18bbec"
 			layer.style.textDecoration = "none"
 			layer.style.fontSize = "22px"

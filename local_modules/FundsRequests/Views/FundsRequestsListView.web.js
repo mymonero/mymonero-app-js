@@ -31,7 +31,7 @@
 const View = require('../../Views/View.web')
 const GeneratedRequestView = require('./GeneratedRequestView.web')
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 const RequestFundsView = require('./RequestFundsView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //

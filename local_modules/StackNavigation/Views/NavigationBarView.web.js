@@ -204,7 +204,7 @@ class NavigationBarView extends View
 			layer.style.marginTop = "10px"
 			layer.style.width = "26px"
 			layer.style.height = "24px"
-			layer.style.cornerRadius = "2px"
+			layer.style.borderRadius = "2px"
 			layer.style.backgroundColor = "#18bbec"
 			layer.style.textDecoration = "none"
 			layer.style.fontSize = "22px"

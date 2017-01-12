@@ -29,7 +29,8 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
 //
 class ContactDetailsView extends View
 {
@@ -54,10 +55,13 @@ class ContactDetailsView extends View
 	setup_views()
 	{
 		const self = this
+		const margin_h = 10
 		{
 			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 			//
-			self.layer.style.width = "calc(100% - 20px)"
+			self.layer.style.position = "relativZ"
+			// self.layer.style.webkitTransform = "translateZ(0)"
+			self.layer.style.width = `calc(100% - ${2 * margin_h}px)`
 			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 			//
 			self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -65,7 +69,7 @@ class ContactDetailsView extends View
 			self.layer.style.color = "#c0c0c0" // temporary
 			//
 			self.layer.style.overflowY = "scroll"
-			self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+			self.layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 			//
 			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
@@ -84,6 +88,17 @@ class ContactDetailsView extends View
 				self._setup_field_paymentID()
 			}
 			self.layer.appendChild(containerLayer)
+		}
+		{ // action buttons toolbar
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = margin_h
+			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
+			self.actionButtonsContainerView = view
+			{
+				self._setup_actionButton_send()
+				self._setup_actionButton_request()
+			}
+			self.addSubview(view)
 		}
 	}
 	_setup_field_address()
@@ -113,6 +128,36 @@ class ContactDetailsView extends View
 			valueToDisplayIfValueNil
 		)
 		self.tableSection_containerLayer.appendChild(div)
+	}
+	_setup_actionButton_send()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Send", 
+			"send_actionButton_iconImage", 
+			false,
+			function(layer, e)
+			{
+				console.log("send clicked")
+			},
+			self.context
+		)
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	_setup_actionButton_request()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Request", 
+			"request_actionButton_iconImage", 
+			true,
+			function(layer, e)
+			{
+				console.log("request clicked")
+			},
+			self.context
+		)
+		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	//
 	//

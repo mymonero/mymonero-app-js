@@ -29,9 +29,9 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web.js')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web.js')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 const emoji_selection = require('../../Emoji/emoji_selection')
 //

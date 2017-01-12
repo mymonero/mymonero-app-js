@@ -29,7 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web.js')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 //
 class GeneratedRequestView extends View
 {
