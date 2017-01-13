@@ -200,7 +200,7 @@ class RequestFundsView extends View
 		// if (self.fromContact && typeof self.fromContact !== 'undefined') {
 		// 	layer.SelectContact(self.fromContact)
 		// }
-		self.contactInputLayer = layer
+		self.contactPickerLayer = layer
 		self.form_containerLayer.appendChild(layer)
 	}
 	//
@@ -276,21 +276,19 @@ class RequestFundsView extends View
 	_tryToGenerateRequest()
 	{
 		const self = this
-		//
 		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
+		{
+			if (typeof wallet === 'undefined' || !wallet) {
+				self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
+				return
+			}
+		}
 		const amount = self.amountInputLayer.value
-		const memo = self.memoInputLayer.value
-		const contact_id = self.contactInputLayer.value // TODO when picker built
-		//
-		if (typeof wallet === 'undefined' || !wallet) {
-			self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
-			return
-		}
-		if (typeof amount === 'undefined' || !amount) {
-			self.validationMessageLayer.SetValidationError("Please enter a Monero amount to request.")
-			return
-		}
-		if (self.hasAnalyzedAndResolveAmountInfo === false) {
+		{
+			if (typeof amount === 'undefined' || !amount) {
+				self.validationMessageLayer.SetValidationError("Please enter a Monero amount to request.")
+				return
+			}
 			// TODO: validate amount here
 			const amount_isValid = true // TODO: just for now
 			if (amount_isValid !== true) {
@@ -298,17 +296,23 @@ class RequestFundsView extends View
 				return
 			}
 		}
-		//
-		// We can assume that we have a password by this point, because we have a wallet (above)
-		//
+		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact
+		if (
+			self.contactPickerLayer.ContactPicker_inputLayer.value !== "" // they have entered something but not picked a contact
+			&& hasPickedAContact == false // not strictly necessary to check hasPickedAContact, but for clarity
+		) {
+			self.validationMessageLayer.SetValidationError("Please select a contact or clear the contact field below to generate this request.")
+			return
+		}
 		var payment_id = null
-		if (typeof self.pickedContact !== 'undefined' && self.pickedContact) {
+		if (hasPickedAContact === true) {
 			// TODO: detect whether this is an OA address. if it is, look up the payment ID again (and show the "resolving UI")
 			payment_id = self.pickedContact.payment_id
 			if (!payment_id || typeof payment_id === 'undefined') {
 				throw "Payment ID was null despite user having selected a contact"
 			}
 		}
+		const memo = self.memoInputLayer.value
 		const message = undefined // no support yet?
 		self.__generateRequestWith(
 			wallet.public_address,
@@ -342,8 +346,6 @@ class RequestFundsView extends View
 				}
 				{
 					self.validationMessageLayer.ClearAndHideMessage()
-					//
-					self.hasAnalyzedAndResolveAmountInfo = undefined // reset
 				}
 				const GeneratedRequestView = require('./GeneratedRequestView.web')
 				const options = 

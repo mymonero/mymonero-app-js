@@ -46,10 +46,10 @@ function New_contactPickerLayer(
 		containerLayer.style.height = "30px"
 	}
 	const inputLayer = _new_inputLayer(placeholderText)
-	containerLayer.__inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
+	containerLayer.ContactPicker_inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
 	containerLayer.appendChild(inputLayer)
 	{ // observation of inputLayer
-		const isFocused = false
+		var isFocused = false
 		var hideResultsOnBlur_timeout = null
 		inputLayer.addEventListener(
 			"blur",
