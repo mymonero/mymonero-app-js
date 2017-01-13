@@ -78,40 +78,6 @@ class RootView extends View
 		const options = {}
 		const LeftSideTabBarAndContentView = require('./RootTabBarAndContentView.web')
 		const tabBarViewAndContentView = new LeftSideTabBarAndContentView(options, context)
-		{ // add tab bar content views
-			{ // walletsListView
-				const options = {}
-				const WalletsTabContentView = require('../../WalletsList/Views/WalletsTabContentView.web')
-				const view = new WalletsTabContentView(options, context)
-				self.walletsTabContentView = view
-			}
-			{ // sendTabContentView
-				const options = {}
-				const SendTabContentView = require('../../SendFundsTab/Views/SendTabContentView.web')
-				const view = new SendTabContentView(options, context)
-				self.sendTabContentView = view
-			}
-			{ // requestTabContentView
-				const options = {}
-				const RequestTabContentView = require('../../FundsRequests/Views/RequestTabContentView.web')
-				const view = new RequestTabContentView(options, context)
-				self.requestTabContentView = view
-			}
-			{ // contactsListView
-				const options = {}
-				const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
-				const view = new ContactsTabContentView(options, context)
-				self.contactsTabContentView = view
-			}
-			tabBarViewAndContentView.SetTabBarContentViews(
-				[
-					self.walletsTabContentView,
-					self.sendTabContentView,
-					self.requestTabContentView,
-					self.contactsTabContentView
-				]
-			)
-		}
 		self.tabBarViewAndContentView = tabBarViewAndContentView
 		{
 			const passwordController = self.context.passwordController

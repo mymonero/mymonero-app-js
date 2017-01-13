@@ -83,14 +83,26 @@ class FundsRequestsListView extends View
 	_setup_startObserving()
 	{
 		const self = this
-		const fundsRequestsListController = self.context.fundsRequestsListController
-		fundsRequestsListController.on(
-			fundsRequestsListController.EventName_listUpdated(),
-			function()
-			{
-				self._FundsRequestsListController_EventName_listUpdated()
-			}
-		)
+		{
+			const emitter = self.context.fundsRequestsListController
+			emitter.on(
+				emitter.EventName_listUpdated(),
+				function()
+				{
+					self._FundsRequestsListController_EventName_listUpdated()
+				}
+			)
+		}
+		{ // walletAppCoordinator
+			const emitter = self.context.walletAppCoordinator
+			emitter.on(
+				emitter.EventName_didTrigger_requestFundsFromContact(), // observe 'did' so we're guaranteed to already be on right tab
+				function(contact)
+				{
+					self.presentRequestFundsView_withContact(contact)
+				}
+			)
+		}
 	}
 	//
 	//
@@ -125,10 +137,7 @@ class FundsRequestsListView extends View
 				{
 					e.preventDefault()
 					{
-						const view = new RequestFundsView({}, self.context)
-						const navigationView = new StackAndModalNavigationView({}, self.context)
-						navigationView.SetStackViews([ view ])
-						self.navigationController.PresentView(navigationView, true)
+						self.presentRequestFundsView_withoutValues()
 					}
 					return false
 				}
@@ -235,6 +244,32 @@ class FundsRequestsListView extends View
 			self.current_generatedRequestView = view
 		}
 	}
+	//
+	//
+	//
+	//
+	presentRequestFundsView_withoutValues()
+	{
+		const self = this
+		self._presentRequestFundsView_withOptions()
+	}
+	presentRequestFundsView_withContact(contact)
+	{
+		const self = this
+		self._presentRequestFundsView_withOptions({
+			fromContact: contact
+		})
+	}
+	_presentRequestFundsView_withOptions(options_orNilForDefault)
+	{
+		const self = this
+		const options = options_orNilForDefault || {}
+		const view = new RequestFundsView(options, self.context)
+		const navigationView = new StackAndModalNavigationView({}, self.context)
+		navigationView.SetStackViews([ view ])
+		self.navigationController.PresentView(navigationView, true)
+	}
+	
 	//
 	//
 	// Runtime - Delegation - Data source

@@ -59,8 +59,7 @@ class ContactDetailsView extends View
 		{
 			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 			//
-			self.layer.style.position = "relativZ"
-			// self.layer.style.webkitTransform = "translateZ(0)"
+			self.layer.style.position = "relative" // to make sure children with position:fixed are laid out relative to parent
 			self.layer.style.width = `calc(100% - ${2 * margin_h}px)`
 			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 			//
@@ -138,7 +137,7 @@ class ContactDetailsView extends View
 			false,
 			function(layer, e)
 			{
-				console.log("send clicked")
+				self.context.walletAppCoordinator.Trigger_sendFundsToContact(self.contact)
 			},
 			self.context
 		)
@@ -153,7 +152,7 @@ class ContactDetailsView extends View
 			true,
 			function(layer, e)
 			{
-				console.log("request clicked")
+				self.context.walletAppCoordinator.Trigger_requestFundsFromContact(self.contact)
 			},
 			self.context
 		)

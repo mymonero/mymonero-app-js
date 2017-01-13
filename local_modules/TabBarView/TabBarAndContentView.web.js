@@ -109,7 +109,19 @@ class TabBarAndContentView extends View
 	{
 		return 75
 	}
-	
+	//
+	//
+	// Runtime - Accessors - Tabs - Lookups
+	//
+	IndexOfTabBarContentView(tabBarContentView)
+	{
+		const self = this
+		const index = self._tabBarContentViews.indexOf(tabBarContentView)
+		if (index === -1) {
+			throw "tabBarContentView not found in tabs"
+		}
+		return index
+	}
 	//
 	//
 	// Runtime - Imperatives - View setup

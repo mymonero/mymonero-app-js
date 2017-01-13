@@ -40,6 +40,9 @@ class RequestFundsView extends View
 		super(options, context) // call super before `this`
 		//
 		const self = this 
+		{
+			self.fromContact = options.fromContact || null
+		}
 		self.setup()
 	}
 	setup()
@@ -50,149 +53,175 @@ class RequestFundsView extends View
 	setup_views()
 	{
 		const self = this
+		self._setup_self_layer()
+		self._setup_validationMessageLayer()
+		self._setup_form_containerLayer()
+	}
+	_setup_self_layer()
+	{
+		const self = this
+		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		//
+		self.layer.style.width = "calc(100% - 20px)"
+		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		//
+		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
+		//
+		self.layer.style.color = "#c0c0c0" // temporary
+		//
+		self.layer.style.overflowY = "scroll"
+		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		//
+		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+	}
+	_setup_validationMessageLayer()
+	{ // validation message
+		const self = this
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
+		layer.ClearAndHideMessage()
+		self.validationMessageLayer = layer
+		self.layer.appendChild(layer)				
+	}
+	_setup_form_containerLayer()
+	{
+		const self = this
+		const containerLayer = document.createElement("div")
+		self.form_containerLayer = containerLayer
 		{
-			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-			//
-			self.layer.style.width = "calc(100% - 20px)"
-			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-			//
-			self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
-			//
-			self.layer.style.color = "#c0c0c0" // temporary
-			//
-			self.layer.style.overflowY = "scroll"
-			self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-			//
-			self.layer.style.wordBreak = "break-all" // to get the text to wrap
+			self._setup_form_walletSelectLayer()
+			self._setup_form_amountInputLayer()
+			self.form_containerLayer.appendChild(commonComponents_tables.New_spacerLayer())
+			self._setup_form_memoInputLayer()
+			self._setup_form_contactPickerLayer()
 		}
-		{ // validation message
-			const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
-			layer.ClearAndHideMessage()
-			self.validationMessageLayer = layer
-			self.layer.appendChild(layer)				
+		self.layer.appendChild(containerLayer)
+	}
+	_setup_form_walletSelectLayer()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("To Wallet")
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_walletSelectLayer({
+				walletsListController: self.context.walletsListController,
+				didChangeWalletSelection_fn: function(selectedWallet)
+				{ // nothing to do
+				}
+			})
+			self.walletSelectLayer = valueLayer
+			div.appendChild(valueLayer)
+			// valueLayer.ExecuteWhenBooted(
+			// 	function()
+			// 	{
+			// 		// nothing to do
+			// 	}
+			// )
 		}
-		{ // inputs
-			const containerLayer = document.createElement("div")
-			{ // hierarchy
-				{
-					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_amountInputLayer()
+	{ // Request funds from sender
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Amount") // note use of _forms.
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "XMR"
+			})
+			self.amountInputLayer = valueLayer
+			{
+				valueLayer.addEventListener(
+					"keyup",
+					function(event)
 					{
-						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("To Wallet")
-						div.appendChild(labelLayer)
-						//
-						const valueLayer = commonComponents_forms.New_fieldValue_walletSelectLayer({
-							walletsListController: self.context.walletsListController,
-							didChangeWalletSelection_fn: function(selectedWallet)
-							{ // nothing to do
-							}
-						})
-						self.walletSelectLayer = valueLayer
-						div.appendChild(valueLayer)
-						// valueLayer.ExecuteWhenBooted(
-						// 	function()
-						// 	{
-						// 		// nothing to do
-						// 	}
-						// )
-					}
-					{ // to get the height
-						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-					}
-					containerLayer.appendChild(div)
-				}
-				{ // Request funds from sender
-					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
-					{
-						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Amount") // note use of _forms.
-						div.appendChild(labelLayer)
-						//
-						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-							placeholderText: "XMR"
-						})
-						self.amountInputLayer = valueLayer
-						{
-							valueLayer.addEventListener(
-								"keyup",
-								function(event)
-								{
-									if (event.keyCode === 13) {
-										self._tryToGenerateRequest()
-										return
-									}
-								}
-							)
+						if (event.keyCode === 13) {
+							self._tryToGenerateRequest()
+							return
 						}
-						div.appendChild(valueLayer)
 					}
-					{ // to get the height
-						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-					}
-					containerLayer.appendChild(div)
-				}
-				{
-					containerLayer.appendChild(commonComponents_tables.New_spacerLayer())
-				}
-				{ // Memo
-					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
-					{
-						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Memo") // note use of _forms.
-						div.appendChild(labelLayer)
-						//
-						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-							placeholderText: "A description for this Monero request"
-						})
-						self.memoInputLayer = valueLayer
-						{
-							valueLayer.addEventListener(
-								"keyup",
-								function(event)
-								{
-									if (event.keyCode === 13) { // return key
-										self._tryToGenerateRequest()
-										return
-									}
-								}
-							)
-						}
-						div.appendChild(valueLayer)
-					}
-					{ // to get the height
-						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-					}
-					containerLayer.appendChild(div)
-				}
-				{ // Request funds from sender
-					const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
-					{
-						const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("From") // note use of _forms.
-						div.appendChild(labelLayer)
-						//
-						const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-							placeholderText: "Contact"
-						})
-						self.contactInputLayer = valueLayer
-						{
-							valueLayer.addEventListener(
-								"keyup",
-								function(event)
-								{
-									if (event.keyCode === 13) {
-										self._tryToGenerateRequest()
-										return
-									}
-								}
-							)
-						}
-						div.appendChild(valueLayer)
-					}
-					{ // to get the height
-						div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-					}
-					containerLayer.appendChild(div)
-				}
+				)
 			}
-			self.layer.appendChild(containerLayer)
+			div.appendChild(valueLayer)
 		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_memoInputLayer()
+	{ // Memo
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Memo") // note use of _forms.
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "A description for this Monero request"
+			})
+			self.memoInputLayer = valueLayer
+			{
+				valueLayer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						if (event.keyCode === 13) { // return key
+							self._tryToGenerateRequest()
+							return
+						}
+					}
+				)
+			}
+			div.appendChild(valueLayer)
+		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_contactPickerLayer()
+	{ // Request funds from sender
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("From") // note use of _forms.
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "Enter contact name"
+			})
+			{ // hydrate with initialization values
+				// TODO: 
+				// if (self.fromContact && typeof self.fromContact !== 'undefined') {
+				// 	valueLayer.SelectContact(self.fromContact)
+				// }
+			}
+			self.contactInputLayer = valueLayer
+			{
+				valueLayer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						if (event.keyCode === 13) {
+							self._tryToGenerateRequest()
+							return
+						}
+					}
+				)
+			}
+			div.appendChild(valueLayer)
+		}
+		{ // to get the height
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		}
+		self.form_containerLayer.appendChild(div)
 	}
 	//
 	//

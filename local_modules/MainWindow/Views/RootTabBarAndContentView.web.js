@@ -46,6 +46,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 	_setup_views()
 	{
 		const self = this
+		const context = self.context
 		{
 			const layer = self.layer
 			layer.style.background = "red"
@@ -61,6 +62,40 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 			const layer = self.contentAreaView.layer
 			layer.style.background = "#282527"
 		}
+		{ // add tab bar content views
+			{ // walletsListView
+				const options = {}
+				const WalletsTabContentView = require('../../WalletsList/Views/WalletsTabContentView.web')
+				const view = new WalletsTabContentView(options, context)
+				self.walletsTabContentView = view
+			}
+			{ // sendTabContentView
+				const options = {}
+				const SendTabContentView = require('../../SendFundsTab/Views/SendTabContentView.web')
+				const view = new SendTabContentView(options, context)
+				self.sendTabContentView = view
+			}
+			{ // requestTabContentView
+				const options = {}
+				const RequestTabContentView = require('../../FundsRequests/Views/RequestTabContentView.web')
+				const view = new RequestTabContentView(options, context)
+				self.requestTabContentView = view
+			}
+			{ // contactsListView
+				const options = {}
+				const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
+				const view = new ContactsTabContentView(options, context)
+				self.contactsTabContentView = view
+			}
+			self.SetTabBarContentViews(
+				[
+					self.walletsTabContentView,
+					self.sendTabContentView,
+					self.requestTabContentView,
+					self.contactsTabContentView
+				]
+			)
+		}
 		{ // add Settings button
 			
 		}
@@ -69,12 +104,29 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 	{
 		const self = this
 		{ // passwordController
-			const controller = self.context.passwordController
-			controller.on(
-				controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+			const emitter = self.context.passwordController
+			emitter.on(
+				emitter.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
 				function()
 				{ // stuff like popping stack nav views to root views
 					self.ResetAllTabContentViewsToRootState(false) // not animated
+				}
+			)
+		}
+		{ // walletAppCoordinator
+			const emitter = self.context.walletAppCoordinator
+			emitter.on(
+				emitter.EventName_willTrigger_sendFundsToContact(),
+				function()
+				{
+					self.selectTab_sendFunds()
+				}
+			)
+			emitter.on(
+				emitter.EventName_willTrigger_requestFundsFromContact(),
+				function()
+				{
+					self.selectTab_requestFunds()
 				}
 			)
 		}
@@ -88,6 +140,24 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		const self = this
 		//
 		return self.context.themeController.TabBarView_thickness()
+	}
+	//
+	//
+	// Runtime - Imperatives - Tab selection
+	//
+	selectTab_sendFunds()
+	{
+		const self = this
+		const tabBarContentView = self.sendTabContentView
+		const index = self.IndexOfTabBarContentView(tabBarContentView)
+		self.SelectTabBarItemAtIndex(index)
+	}
+	selectTab_requestFunds()
+	{
+		const self = this
+		const tabBarContentView = self.requestTabContentView
+		const index = self.IndexOfTabBarContentView(tabBarContentView)
+		self.SelectTabBarItemAtIndex(index)
 	}
 }
 module.exports = RootTabBarAndContentView
