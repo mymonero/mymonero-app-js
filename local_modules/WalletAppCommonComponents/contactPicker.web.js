@@ -60,10 +60,10 @@ function New_contactPickerLayer(
 				{ // wait for a few ms in case this blur is happening because of it a click - because if it is,
 					// it prevents a click on the result as the results are hidden (due to blur) before the result
 					// layer can receive the click
-					if (isFocused === false) {
+					if (isFocused === false) { // user did not refocus
 						_removeAllAndHideAutocompleteResults()
 					}
-				}, 50)
+				}, 100) // 50ms didn't do it (which is kind of concerning)
 			}
 		)
 		inputLayer.addEventListener(
