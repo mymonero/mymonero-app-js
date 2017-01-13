@@ -187,6 +187,7 @@ class RequestFundsView extends View
 		const layer = commonComponents_contactPicker.New_contactPickerLayer(
 			"Enter contact name",
 			self.context.contactsListController,
+			self.fromContact,
 			function(contact)
 			{ // did pick
 				self.pickedContact = contact

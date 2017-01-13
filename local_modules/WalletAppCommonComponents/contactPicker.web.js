@@ -31,6 +31,7 @@
 function New_contactPickerLayer(
 	placeholderText, 
 	contactsListController,
+	alreadySelected_contact,
 	didPickContact_fn,
 	didClearPickedContact_fn
 )
@@ -45,9 +46,9 @@ function New_contactPickerLayer(
 		containerLayer.style.height = "30px"
 	}
 	const inputLayer = _new_inputLayer(placeholderText)
-	{
-		containerLayer.appendChild(inputLayer)
-		//
+	containerLayer.__inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
+	containerLayer.appendChild(inputLayer)
+	{ // observation of inputLayer
 		const isFocused = false
 		var hideResultsOnBlur_timeout = null
 		inputLayer.addEventListener(
@@ -191,6 +192,9 @@ function New_contactPickerLayer(
 			}
 		)
 		containerLayer.appendChild(selectedContactLayer)
+	}
+	if (alreadySelected_contact !== null && typeof alreadySelected_contact !== 'undefined') {
+		_selectContact(alreadySelected_contact)
 	}
 	//
 	return containerLayer
