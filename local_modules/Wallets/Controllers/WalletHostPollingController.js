@@ -203,8 +203,7 @@ class WalletHostPollingController
 				// immediately unlock this request fetch
 				self.requestHandle_for_accountInfo = null 
 				//
-				if (err) {
-					console.error(err.message)
+				if (err) { // already logged
 					fn(err)
 					return
 				}
@@ -286,8 +285,7 @@ class WalletHostPollingController
 				// immediately unlock this request fetch
 				self.requestHandle_for_transactions = null 
 				//
-				if (err) {
-					console.error(err)
+				if (err) { // already logged
 					fn(err)
 					return
 				}

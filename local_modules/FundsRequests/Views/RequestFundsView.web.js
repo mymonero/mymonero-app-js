@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_contactPicker = require('../../WalletAppCommonComponents/contactPicker.web')
 //
 class RequestFundsView extends View
 {
@@ -60,8 +61,10 @@ class RequestFundsView extends View
 	_setup_self_layer()
 	{
 		const self = this
+
 		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
+		self.layer.style.position = "relative"
 		self.layer.style.width = "calc(100% - 20px)"
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		//
@@ -106,18 +109,10 @@ class RequestFundsView extends View
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_walletSelectLayer({
 				walletsListController: self.context.walletsListController,
-				didChangeWalletSelection_fn: function(selectedWallet)
-				{ // nothing to do
-				}
+				didChangeWalletSelection_fn: function(selectedWallet) { /* nothing to do */ }
 			})
 			self.walletSelectLayer = valueLayer
 			div.appendChild(valueLayer)
-			// valueLayer.ExecuteWhenBooted(
-			// 	function()
-			// 	{
-			// 		// nothing to do
-			// 	}
-			// )
 		}
 		{ // to get the height
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
@@ -189,39 +184,23 @@ class RequestFundsView extends View
 	_setup_form_contactPickerLayer()
 	{ // Request funds from sender
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("From") // note use of _forms.
-			div.appendChild(labelLayer)
-			//
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-				placeholderText: "Enter contact name"
-			})
-			{ // hydrate with initialization values
-				// TODO: 
-				// if (self.fromContact && typeof self.fromContact !== 'undefined') {
-				// 	valueLayer.SelectContact(self.fromContact)
-				// }
-			}
-			self.contactInputLayer = valueLayer
+		const layer = commonComponents_contactPicker.New_contactPickerLayer(
+			"Enter contact name",
+			self.context.contactsListController,
+			function(contact)
+			{ // did pick
+				self.pickedContact = contact
+			},
+			function()
 			{
-				valueLayer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) {
-							self._tryToGenerateRequest()
-							return
-						}
-					}
-				)
+				self.pickedContact = null
 			}
-			div.appendChild(valueLayer)
-		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
-		self.form_containerLayer.appendChild(div)
+		)
+		// if (self.fromContact && typeof self.fromContact !== 'undefined') {
+		// 	layer.SelectContact(self.fromContact)
+		// }
+		self.contactInputLayer = layer
+		self.form_containerLayer.appendChild(layer)
 	}
 	//
 	//
@@ -259,8 +238,7 @@ class RequestFundsView extends View
 		{ // setup/style
 			layer.href = "#" // to make it clickable
 			layer.innerHTML = "Save"
-		}
-		{
+			//
 			layer.style.display = "block"
 			layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 			layer.style.marginTop = "10px"
@@ -323,15 +301,33 @@ class RequestFundsView extends View
 		// We can assume that we have a password by this point, because we have a wallet (above)
 		//
 		var payment_id = null
-		const contact = null // TODO: resolve contact from contact_id -- or just get the contact objs directly 
-		if (typeof contact !== 'undefined' && contact) {
-			payment_id = contact.payment_id
+		if (typeof self.pickedContact !== 'undefined' && self.pickedContact) {
+			// TODO: detect whether this is an OA address. if it is, look up the payment ID again (and show the "resolving UI")
+			payment_id = self.pickedContact.payment_id
+			if (!payment_id || typeof payment_id === 'undefined') {
+				throw "Payment ID was null despite user having selected a contact"
+			}
 		}
-		//
 		const message = undefined // no support yet?
-		//
-		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
+		self.__generateRequestWith(
 			wallet.public_address,
+			payment_id,
+			amount,
+			memo, // description, AKA memo or label; no support yet?
+			message
+		)
+	}
+	__generateRequestWith(
+		receiveTo_address,
+		payment_id,
+		amount,
+		memo,
+		message
+	)
+	{
+		const self = this
+		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
+			receiveTo_address,
 			payment_id,
 			amount,
 			memo, // description, AKA memo or label; no support yet?

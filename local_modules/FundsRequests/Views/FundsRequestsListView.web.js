@@ -136,9 +136,7 @@ class FundsRequestsListView extends View
 				function(e)
 				{
 					e.preventDefault()
-					{
-						self.presentRequestFundsView_withoutValues()
-					}
+					self.presentRequestFundsView_withoutValues()
 					return false
 				}
 			)
@@ -246,7 +244,7 @@ class FundsRequestsListView extends View
 	}
 	//
 	//
-	//
+	// Runtime - Imperatives - Modal view presentation
 	//
 	presentRequestFundsView_withoutValues()
 	{
@@ -269,7 +267,6 @@ class FundsRequestsListView extends View
 		navigationView.SetStackViews([ view ])
 		self.navigationController.PresentView(navigationView, true)
 	}
-	
 	//
 	//
 	// Runtime - Delegation - Data source

@@ -313,9 +313,6 @@ class HostedMoneroAPIClient
 						fn(err)
 						return
 					}
-					//
-					
-					//
 					fn(
 						err, // no error
 						returnValuesByKey.unspentOutputs,
@@ -368,7 +365,6 @@ class HostedMoneroAPIClient
 		{
 			// console.log("debug: info: random outs: data", data)
 			const amount_outs = data.amount_outs
-			//
 			// yield
 			fn(
 				null, // no error
@@ -453,7 +449,6 @@ class HostedMoneroAPIClient
 		function __proceedTo_parseAndCallBack(data)
 		{
 			// console.log("debug: info: submit_raw_tx: data", data)
-			//
 			fn(null)
 		}
 	}

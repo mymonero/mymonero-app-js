@@ -142,16 +142,17 @@ function New_inlineMessageDialogLayer(messageString)
 	layer.style.border = "1px solid #ccc"
 	layer.style.backgroundColor = "#333"
 	layer.style.margin = "0 0 10px 0"
+	layer.style.display = "none" // initial visibility
 	{
 		layer.SetValidationError = function(to_messageString)
 		{
 			layer.innerHTML = to_messageString
-			layer.display = "block"
+			layer.style.display = "block"
 		}
 		layer.ClearAndHideMessage = function()
 		{
 			layer.innerHTML = ""
-			layer.display = "none"
+			layer.style.display = "none"
 		}
 	}
 	{
