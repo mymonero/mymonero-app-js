@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_walletSelect = require('../../WalletAppCommonComponents/walletSelect.web')
 const commonComponents_contactPicker = require('../../WalletAppCommonComponents/contactPicker.web')
 //
 class RequestFundsView extends View
@@ -107,7 +108,7 @@ class RequestFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("To Wallet")
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_forms.New_fieldValue_walletSelectLayer({
+			const valueLayer = commonComponents_walletSelect.New_fieldValue_walletSelectLayer({
 				walletsListController: self.context.walletsListController,
 				didChangeWalletSelection_fn: function(selectedWallet) { /* nothing to do */ }
 			})
