@@ -47,9 +47,6 @@ const tasksByName =
 		spend_key__private
 	)
 	{
-		{
-			console.time("Parse_AddressInfo " + taskUUID)
-		}
 		const err = null
 		//
 		const total_received = new JSBigInt(data.total_received || 0);
@@ -77,9 +74,6 @@ const tasksByName =
 				total_sent = new JSBigInt(total_sent).subtract(spent_output.amount)
 			}
 		}
-		{
-			console.timeEnd("Parse_AddressInfo " + taskUUID)
-		}
 		const returnValuesByKey = 
 		{
 			total_received_String: total_received ? total_received.toString() : null,
@@ -104,14 +98,8 @@ const tasksByName =
 		spend_key__private
 	)
 	{
-		{
-			console.time("Parse_AddressTransactions " + taskUUID)
-		}
 		const err = null
 		//
-
-		// const DEBUG_console_time_name = "processing reply from " + endpointPath + " for " + address
-		// console.time(DEBUG_console_time_name)
 		const account_scanned_height = data.scanned_height || 0
 		const account_scanned_block_height = data.scanned_block_height || 0
 		const account_scan_start_height = data.start_height || 0
@@ -153,20 +141,14 @@ const tasksByName =
 		{
 			return b.id - a.id
 		})
-		// console.timeEnd(DEBUG_console_time_name)
 		// prepare transactions to be serialized
-
 		for (let transaction of transactions) {
 			transaction.amount = transaction.amount.toString() // JSBigInt -> String
 			if (typeof total_sent !== 'undefined' && total_sent !== null) {
 				transaction.total_sent = transaction.total_sent.toString()
 			}
 		}
-		// todo: on the other side, convert transactions timestamp to Date
-
-		{
-			console.timeEnd("Parse_AddressTransactions " + taskUUID)
-		}
+		// on the other side, we convert transactions timestamp to Date obj
 		const returnValuesByKey =
 		{
 			account_scanned_height: account_scanned_height,
@@ -187,9 +169,6 @@ const tasksByName =
 		spend_key__private
 	)
 	{
-		{
-			console.time("Parse_UnspentOuts " + taskUUID)
-		}
 		const err = null
 		//
 		const data_outputs = data.outputs
@@ -231,9 +210,6 @@ const tasksByName =
 		}
 		// console.log("Unspent outs: " + JSON.stringify(finalized_unspentOutputs));
 		const unusedOuts = finalized_unspentOutputs.slice(0)
-		{
-			console.timeEnd("Parse_UnspentOuts " + taskUUID)
-		}
 		const returnValuesByKey =
 		{
 			unspentOutputs: finalized_unspentOutputs,

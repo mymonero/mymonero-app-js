@@ -25,8 +25,9 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
+//
+"use strict"
+//
 function ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
 	domain,
 	records,
@@ -93,6 +94,7 @@ function New_ParsedDescriptionFromOpenAliasRecordWithOpenAliasPrefix(
     }
     parsedDescription.address = parsed_paramValueWithName("recipient_address")
     parsedDescription.name = parsed_paramValueWithName("recipient_name")
+	parsedDescription.tx_payment_id = parsed_paramValueWithName("tx_payment_id")
     parsedDescription.description = parsed_paramValueWithName("tx_description")
 	//
     return parsedDescription

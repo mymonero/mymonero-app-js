@@ -25,7 +25,7 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
 const async = require('async')
@@ -796,7 +796,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	// Runtime - Imperatives - Public - Sending funds
 
 	SendFunds(
-		target_address, // currency-ready wallet public address or OpenAlias address
+		target_address, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 		amount, // number
 		mixin,
 		payment_id,
@@ -814,8 +814,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	)
 	{
 		const self = this
-		//
-		// state-lock function
+		// state-lock the function
 		if (self.isSendingFunds === true) {
 			const errStr = "Currently already sending funds. Please try again when complete."
 			const err = new Error(errStr)

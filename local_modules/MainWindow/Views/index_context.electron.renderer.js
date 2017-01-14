@@ -41,6 +41,7 @@ var context_object_instantiation_descriptions =
 		instance_key: "filesystemUI",
 		options: {}
 	},
+	//
 	// services
 	{
 		module_path: __dirname + "/../../symmetric_cryptor/BackgroundDocumentCryptor.electron",
@@ -57,6 +58,17 @@ var context_object_instantiation_descriptions =
 		instance_key: "hostedMoneroAPIClient",
 		options: {}
 	},
+	{
+		module_path: __dirname + "/../../OpenAlias/OpenAliasResolver",
+		instance_key: "OpenAliasResolver",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../../Theme/ThemeController",
+		instance_key: "themeController",
+		options: {}
+	},
+	//
 	// app controllers
 	{
 		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
@@ -68,7 +80,6 @@ var context_object_instantiation_descriptions =
 		instance_key: "userIdleInWindowController",
 		options: {}
 	},
-	//
 	// The following should go after the passwordController, persister, etc
 	{
 		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",
@@ -83,11 +94,6 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../../Contacts/Controllers/ContactsListController",
 		instance_key: "contactsListController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../Theme/ThemeController",
-		instance_key: "themeController",
 		options: {}
 	},
 	{

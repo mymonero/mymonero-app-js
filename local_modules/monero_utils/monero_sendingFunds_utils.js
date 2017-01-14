@@ -30,15 +30,15 @@
 //
 const async = require('async')
 //
-const monero_config = require('../monero_utils/monero_config')
-const monero_openalias_utils = require('../monero_utils/monero_openalias_utils')
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+const monero_config = require('./monero_config')
+const monero_utils = require('./monero_cryptonote_utils_instance')
+const monero_openalias_utils = require('../OpenAlias/monero_openalias_utils')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
 //
 function SendFunds(
-	target_address, // currency-ready wallet public address or OpenAlias address
+	target_address, // currency-ready wallet address, but not an OA address (resolve before calling)
 	amount, // number
 	wallet__public_address,
 	wallet__private_keys,
@@ -50,7 +50,6 @@ function SendFunds(
 	// success_fn: (
 	//		moneroReady_targetDescription_address?,
 	//		sentAmount?,
-	//		targetDescription_domain_orNone?,
 	//		final__payment_id?,
 	//		tx_hash?,
 	//		tx_fee?
@@ -69,7 +68,6 @@ function SendFunds(
 	function __trampolineFor_success(
 		moneroReady_targetDescription_address,
 		sentAmount,
-		targetDescription_domain_orNone,
 		final__payment_id,
 		tx_hash,
 		tx_fee
@@ -78,7 +76,6 @@ function SendFunds(
 		success_fn(
 			moneroReady_targetDescription_address,
 			sentAmount,
-			targetDescription_domain_orNone,
 			final__payment_id,
 			tx_hash,
 			tx_fee
@@ -102,15 +99,11 @@ function SendFunds(
 		address: target_address, 
 		amount: amount
 	}
-	new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescriptions(
-		[ targetDescription ], // requires a list of descriptions - but
-		// SendFunds was not written with multiple target support as MyMonero
-		// does not yet support it
-		hostedMoneroAPIClient,
-		confirmWithUser_openAliasAddress_cb,
+	new_moneroReadyTargetDescriptions_fromTargetDescriptions(
+		[ targetDescription ], // requires a list of descriptions - but SendFunds was
+		// not written with multiple target support as MyMonero does not yet support it
 		function(err, moneroReady_targetDescriptions)
 		{
-			
 			if (err) {
 				__trampolineFor_err_withErr(err)
 				return
@@ -132,7 +125,6 @@ function SendFunds(
 	{
 		var moneroReady_targetDescription_address = moneroReady_targetDescription.address
 		var moneroReady_targetDescription_amount = moneroReady_targetDescription.amount
-		const targetDescription_domain_orNone = moneroReady_targetDescription.domain // or undefined
 		//
         var totalAmountWithoutFee_JSBigInt = (new JSBigInt(0)).add(moneroReady_targetDescription_amount)
         console.log("💬  Total to send, before fee: " + monero_utils.formatMoney(totalAmountWithoutFee_JSBigInt));
@@ -167,16 +159,14 @@ function SendFunds(
 			moneroReady_targetDescription_address,
 			totalAmountWithoutFee_JSBigInt,
 			final__payment_id,
-			final__pid_encrypt,
-			targetDescription_domain_orNone
+			final__pid_encrypt
 		)
 	}
 	function _proceedTo_getUnspentOutsUsableForMixin(
 		moneroReady_targetDescription_address,
 		totalAmountWithoutFee_JSBigInt,
 		final__payment_id, // non-existent or valid
-		final__pid_encrypt, // true or false
-		targetDescription_domain_orNone
+		final__pid_encrypt // true or false
 	)
 	{
 		hostedMoneroAPIClient.UnspentOuts(
@@ -200,7 +190,6 @@ function SendFunds(
 					totalAmountWithoutFee_JSBigInt,
 					final__payment_id,
 					final__pid_encrypt,
-					targetDescription_domain_orNone,
 					unusedOuts
 				)
 			}
@@ -211,7 +200,6 @@ function SendFunds(
 		totalAmountWithoutFee_JSBigInt,
 		final__payment_id,
 		final__pid_encrypt,
-		targetDescription_domain_orNone,
 		unusedOuts
     ) 
 	{
@@ -224,7 +212,6 @@ function SendFunds(
 			totalAmountWithoutFee_JSBigInt,
 			final__payment_id,
 			final__pid_encrypt,
-			targetDescription_domain_orNone,
 			unusedOuts,
 			network_minimumFee
 		)
@@ -234,7 +221,6 @@ function SendFunds(
 		totalAmountWithoutFee_JSBigInt,
 		final__payment_id,
 		final__pid_encrypt,
-		targetDescription_domain_orNone,
 		unusedOuts,
 		attemptAt_network_minimumFee
     ) 
@@ -349,7 +335,6 @@ function SendFunds(
 					totalAmountWithoutFee_JSBigInt,
 					final__payment_id,
 					final__pid_encrypt,
-					targetDescription_domain_orNone,
 					unusedOuts,
 					feeActuallyNeededByNetwork // we are re-entering this codepath after changing this feeActuallyNeededByNetwork
 				)
@@ -375,7 +360,6 @@ function SendFunds(
 					__trampolineFor_success(
 						moneroReady_targetDescription_address,
 						amount,
-						targetDescription_domain_orNone,
 						final__payment_id,
 						tx_hash,
 						tx_fee
@@ -422,117 +406,19 @@ function SendFunds(
             console.log("signed tx: ", JSON.stringify(signedTx))
             var serialized_signedTx = monero_utils.serialize_tx(signedTx)
             console.log("tx serialized: " + serialized_signedTx)
-            
+            //
 			return serialized_signedTx
         }
     }
 }
 exports.SendFunds = SendFunds
 //
-function new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescriptions( 
+function new_moneroReadyTargetDescriptions_fromTargetDescriptions( 
 	targetDescriptions,
-	hostedMoneroAPIClient,
-	confirmWithUser_openAliasAddress_cb,
 	fn
 ) // fn: (err, moneroReady_targetDescriptions) -> Void
 { // parse & normalize the target descriptions by mapping them to currency (Monero)-ready addresses & amounts
 	// some pure function declarations for the map we'll do on targetDescriptions
-	function new_moneroReady_targetDescription_fromCurrencyAddress(
-		moneroReady_address,
-		moneroReady_amountToSend,
-		cb
-	)
-	{
-        try {
-            monero_utils.decode_address(moneroReady_address) // verify that the address is valid
-        } catch (e) {
-            const errStr = "Couldn't decode address " + moneroReady_address + ": " + e
-			const err = new Error(errStr)
-			cb(err)
-            return
-        }
-        cb(null, { 
-            address: moneroReady_address,
-            amount: moneroReady_amountToSend
-        })
-	}
-	function new_moneroReady_targetDescription_fromOpenAliasAddress(
-		targetDescription_address,
-		moneroReady_amountToSend,
-		confirmWithUser_openAliasAddress_cb,
-		cb
-	)
-	{
-		if (typeof confirmWithUser_openAliasAddress_cb === 'undefined' || confirmWithUser_openAliasAddress_cb === null) {
-			const errStr = "You must supply a confirmWithUser_openAliasAddress_cb to support OpenAlias address confirmation"
-			const err = new Error(errStr)
-			cb(err)
-			return
-		}
-        var domain = targetDescription_address.replace(/@/g, ".");
-		hostedMoneroAPIClient.TXTRecords(
-			domain,
-			function(
-				err,
-				records,
-				dnssec_used,
-				secured,
-				dnssec_fail_reason
-			)
-			{
-				if (err) {
-					const errStr = "Failed to resolve DNS records for '" + domain + "': " + err
-					const err = new Error(errStr)
-					cb(err)
-					return
-				}
-                console.log(domain + ": ", records);
-				monero_openalias_utils.CurrencyReadyAddressFromTXTRecords(
-					domain,
-					records,
-					dnssec_used,
-					secured,
-					dnssec_fail_reason,
-					function(
-						err, 
-						moneroReady_address,
-						oaRecords_0_name,
-						oaRecords_0_description,
-						dnssec_used_and_secured
-					)
-					{
-						if (err) {
-							cb(err)
-							return 
-						}
-						confirmWithUser_openAliasAddress_cb(
-				            domain,
-				            moneroReady_address,
-							oaRecords_0_name, 
-							oaRecords_0_description, 
-				            dnssec_used_and_secured,
-				            function()
-							{ // if user has confirmed
-				                console.log("User confirmed OpenAlias resolution for " + domain + " to " + moneroReady_address);
-								cb(null, { // return for map
-	                                address: moneroReady_address,
-	                                amount: moneroReady_amountToSend,
-	                                domain: domain
-	                            })
-				            },
-				            function()
-							{ // if user has cancelled
-				                console.log("User rejected OpenAlias resolution for " + domain + " to " + moneroReady_address);
-								const errStr = "OpenAlias resolution rejected by user"
-								const err = new Error(errStr)
-								cb(err)
-				            }
-						)
-					}						
-				)
-			}
-		)
-	}
 	async.mapSeries(
 		targetDescriptions,
 		function(targetDescription, cb)
@@ -545,6 +431,20 @@ function new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescrip
             }
 			const targetDescription_address = targetDescription.address
 			const targetDescription_amount = "" + targetDescription.amount // we are converting it to a string here because parseMoney expects a string
+			// now verify/parse address and amount
+            if (monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(targetDescription_address) == true) {
+				throw "You must resolve this OA address to a Monero address before calling SendFunds"
+            }
+			// otherwise this should be a normal, single Monero public address
+	        try {
+	            monero_utils.decode_address(targetDescription_address) // verify that the address is valid
+	        } catch (e) {
+	            const errStr = "Couldn't decode address " + targetDescription_address + ": " + e
+				const err = new Error(errStr)
+				cb(err)
+	            return
+	        }
+			// amount:
             var moneroReady_amountToSend; // possibly need this ; here for the JS parser
             try {
                 moneroReady_amountToSend = monero_utils.parseMoney(targetDescription_amount)
@@ -554,21 +454,10 @@ function new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescrip
 				cb(err)
                 return
             }
-            if (targetDescription_address.indexOf('.') === -1) { // then this is assumed to be a normal single Monero public address
-				new_moneroReady_targetDescription_fromCurrencyAddress(
-					targetDescription_address,
-					moneroReady_amountToSend,
-					cb
-				)
-				return
-            }
-			// otherwise, at present, this would be an open alias address which requires dns lookup
-			new_moneroReady_targetDescription_fromOpenAliasAddress(
-				targetDescription_address,
-				moneroReady_amountToSend,
-				confirmWithUser_openAliasAddress_cb,
-				cb
-			)
+	        cb(null, { 
+	            address: targetDescription_address,
+	            amount: moneroReady_amountToSend
+	        })
 		},
 		function(err, moneroReady_targetDescriptions)
 		{
@@ -576,7 +465,6 @@ function new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescrip
 		}
 	)
 }
-exports.new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescriptions = new_resolvedMoneroTargetDescriptions_fromPossibleOpenAliasTargetDescriptions
 //
 function IsValidPaymentIDOrNoPaymentID(payment_id)
 {

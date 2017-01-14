@@ -28,8 +28,8 @@
 //
 "use strict"
 //
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
-const monero_config = require('../monero_utils/monero_config')
+const monero_utils = require('./monero_cryptonote_utils_instance')
+const monero_config = require('./monero_config')
 //
 function New_TransactionID()
 {
