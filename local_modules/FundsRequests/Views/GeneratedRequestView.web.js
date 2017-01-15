@@ -54,142 +54,223 @@ class GeneratedRequestView extends View
 	setup_views()
 	{
 		const self = this
+		self._setup_self_layer()
+		self._setup_qrCodeContainerLayer()
+		self._setup_URIContainerLayer()
+		self._setup_requesteeMessageLayer()
+	}
+	_setup_self_layer()
+	{
+		const self = this
+		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		//
+		self.layer.style.width = "calc(100% - 20px)"
+		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		//
+		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
+		//
+		self.layer.style.color = "#c0c0c0" // temporary
+		//
+		self.layer.style.overflowY = "scroll"
+		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		//
+		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+	}
+	_setup_qrCodeContainerLayer()
+	{
+		const self = this
+		const containerLayer = document.createElement("div")
 		{
-			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-			//
-			self.layer.style.width = "calc(100% - 20px)"
-			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-			//
-			self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
-			//
-			self.layer.style.color = "#c0c0c0" // temporary
-			//
-			self.layer.style.overflowY = "scroll"
-			self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-			//
-			self.layer.style.wordBreak = "break-all" // to get the text to wrap
+			containerLayer.style.border = "1px solid #888"
+			containerLayer.style.borderRadius = "5px"
 		}
-		{ // QR code container
-			const containerLayer = document.createElement("div")
-			{
-				containerLayer.style.border = "1px solid #888"
-				containerLayer.style.borderRadius = "5px"
-			}
-			{ // QR code field
-				const div = commonComponents_tables.New_fieldContainerLayer()
-				{ // qrcode div
-					const layer = document.createElement("div")
-					{
-						layer.style.width = "75px"
-						layer.style.height = "75px"
-						layer.style.display = "inline-block"
-						layer.style.float = "left"
-					}
-					self.qrCode_div = layer
-					{
-						const QRCode = require('../Vendor/qrcode.min')
-			            const qrCode = new QRCode(
-							layer,
-							{
-			                	correctLevel: QRCode.CorrectLevel.L
-							}
-						)
-						qrCode.makeCode(self.fundsRequest.Lazy_URI())
-					}
-					div.appendChild(layer)
-				}
-				const qrCode_imgLayer = self.qrCode_div.querySelector("img")
-				{ // cache the qrCode_imgLayer reference --^; style --v
-					const layer = qrCode_imgLayer
+		{ // QR code field
+			const div = commonComponents_tables.New_fieldContainerLayer()
+			{ // qrcode div
+				const layer = document.createElement("div")
+				{
 					layer.style.width = "75px"
 					layer.style.height = "75px"
+					layer.style.display = "inline-block"
+					layer.style.float = "left"
 				}
-				{ // Download button
-					const layer = document.createElement("a")
-					{
-						layer.innerHTML = "DOWNLOAD"
-						layer.style.float = "right"
-						layer.style.textAlign = "right"
-						layer.style.fontSize = "15px"
-						layer.style.fontWeight = "bold"
-						//
-						layer.style.color = "#6666ff" 
-						layer.href = "#" // to make it look clickable
-					}
-					layer.addEventListener(
-						"click",
-						function(e)
+				self.qrCode_div = layer
+				{
+					const QRCode = require('../Vendor/qrcode.min')
+		            const qrCode = new QRCode(
+						layer,
 						{
-							e.preventDefault()
-							{ // this should capture value
-
-								const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
-								self.context.filesystemUI.OpenDialogToSaveBase64ImageStringAsImageFile(
-									qrCode_imgData_base64String,
-									function(err)
-									{
-										if (err) {
-											throw err
-										}
-										// console.log("Downloaded QR code")
-									}
-								)
-							}
-							return false
+		                	correctLevel: QRCode.CorrectLevel.L
 						}
 					)
-					div.appendChild(layer)
+					qrCode.makeCode(self.fundsRequest.Lazy_URI())
 				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-				containerLayer.appendChild(div)
+				div.appendChild(layer)
 			}
-			self.layer.appendChild(containerLayer)
-		}
-		{ // URI container
-			const containerLayer = document.createElement("div")
-			{
-				containerLayer.style.border = "1px solid #888"
-				containerLayer.style.borderRadius = "5px"
+			const qrCode_imgLayer = self.qrCode_div.querySelector("img")
+			{ // cache the qrCode_imgLayer reference --^; style --v
+				const layer = qrCode_imgLayer
+				layer.style.width = "75px"
+				layer.style.height = "75px"
 			}
-			{ // URI field
-				const div = commonComponents_tables.New_fieldContainerLayer()
+			{ // Download button
+				const layer = document.createElement("a")
 				{
-					const uri = self.fundsRequest.Lazy_URI()
-					{ // left
-						const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link")
-						div.appendChild(labelLayer)
-					}
-					{ // right
-						const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
-							uri,
-							true,
-							self.context.pasteboard
-						)
-						buttonLayer.style.float = "right"
-						div.appendChild(buttonLayer)
-					}
-					{ // to put the tx hash on the next line in the UI to make way for the COPY button
-						const clearingBreakLayer = document.createElement("br")
-						clearingBreakLayer.clear = "both"
-						div.appendChild(clearingBreakLayer)
-					}
-					const value = uri
-					const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
-					{ // special case
-						valueLayer.style.float = "left"
-						valueLayer.style.textAlign = "left"
-						//
-						valueLayer.style.width = "270px"
-						//
-						// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
-					}
-					div.appendChild(valueLayer)
+					layer.innerHTML = "DOWNLOAD"
+					layer.style.float = "right"
+					layer.style.textAlign = "right"
+					layer.style.fontSize = "15px"
+					layer.style.fontWeight = "bold"
+					//
+					layer.style.color = "#6666ff" 
+					layer.href = "#" // to make it look clickable
 				}
-				div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-				containerLayer.appendChild(div)
+				layer.addEventListener(
+					"click",
+					function(e)
+					{
+						e.preventDefault()
+						{ // this should capture value
+
+							const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
+							self.context.filesystemUI.OpenDialogToSaveBase64ImageStringAsImageFile(
+								qrCode_imgData_base64String,
+								function(err)
+								{
+									if (err) {
+										throw err
+									}
+									// console.log("Downloaded QR code")
+								}
+							)
+						}
+						return false
+					}
+				)
+				div.appendChild(layer)
 			}
-			self.layer.appendChild(containerLayer)
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+			containerLayer.appendChild(div)
 		}
+		self.layer.appendChild(containerLayer)
+	}
+	_setup_URIContainerLayer()
+	{
+		const self = this
+		const containerLayer = document.createElement("div")
+		{
+			containerLayer.style.border = "1px solid #888"
+			containerLayer.style.borderRadius = "5px"
+		}
+		{
+			const div = commonComponents_tables.New_fieldContainerLayer()
+			{
+				const uri = self.fundsRequest.Lazy_URI()
+				{ // left
+					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link")
+					div.appendChild(labelLayer)
+				}
+				{ // right
+					const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+						uri,
+						true,
+						self.context.pasteboard
+					)
+					buttonLayer.style.float = "right"
+					div.appendChild(buttonLayer)
+				}
+				{
+					const clearingBreakLayer = document.createElement("br")
+					clearingBreakLayer.clear = "both"
+					div.appendChild(clearingBreakLayer)
+				}
+				const value = uri
+				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+				{ // special case
+					valueLayer.style.float = "left"
+					valueLayer.style.textAlign = "left"
+					//
+					valueLayer.style.width = "270px"
+					//
+					// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
+				}
+				div.appendChild(valueLayer)
+			}
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+			containerLayer.appendChild(div)
+		}
+		self.layer.appendChild(containerLayer)
+	}
+	_setup_requesteeMessageLayer()
+	{
+		const self = this
+		const containerLayer = document.createElement("div")
+		{
+			containerLayer.style.border = "1px solid #888"
+			containerLayer.style.borderRadius = "5px"
+		}
+		const div = commonComponents_tables.New_fieldContainerLayer()
+		{
+			const htmlString = self.new_requesteeMessageHTMLString()
+			{ // left
+				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Message for Requestee")
+				div.appendChild(labelLayer)
+			}
+			{ // right
+				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+					htmlString,
+					true,
+					self.context.pasteboard,
+					self.context.pasteboard.CopyContentTypes().HTML
+				)
+				buttonLayer.style.float = "right"
+				div.appendChild(buttonLayer)
+			}
+			{
+				const clearingBreakLayer = document.createElement("br")
+				clearingBreakLayer.clear = "both"
+				div.appendChild(clearingBreakLayer)
+			}
+			{
+				div.appendChild(commonComponents_tables.New_separatorLayer())
+			}
+			{
+				const value = htmlString
+				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value)
+				div.appendChild(valueLayer)
+			}
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		}
+		containerLayer.appendChild(div)
+		self.layer.appendChild(containerLayer)
+	}
+	//
+	//
+	// Constructor - Accessors
+	//
+	new_requesteeMessageHTMLString()
+	{
+		const self = this
+		var value = ""
+		value += "<p>Someone wants some Monero.</p>"
+		value += "<p>---------------------------</p>"
+		value += `<p>${self.fundsRequest.amount} XMR`
+		{ // within same p tag to get visual grouping/line-height
+			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
+				value += `</br>${self.fundsRequest.message}`
+			}
+			if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
+				value += `<br/>${self.fundsRequest.description}`
+			}
+		}
+		value += "</p>"
+		value += "<p>---------------------------</p>"
+		value += `<p>If you have MyMonero installed, <a href="${self.fundsRequest.Lazy_URI()}">press this link to send the funds</a>.`
+		const appDownloadLink_domainAndPath = "mymonero.com/desktop"
+		const appDownloadLink_fullURL = "https://" + appDownloadLink_domainAndPath
+		value += `<p>If you don't have MyMonero installed, download it from <a href="${appDownloadLink_fullURL}">${appDownloadLink_domainAndPath}</a>.`
+		//
+		return value
 	}
 	//
 	//

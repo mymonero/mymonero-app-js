@@ -82,7 +82,7 @@ function New_separatorLayer()
 }
 exports.New_separatorLayer = New_separatorLayer
 //
-function New_copyButton_aLayer(value, enabled_orTrue, pasteboard)
+function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText)
 {
 	const layer = document.createElement("a")
 	{
@@ -105,7 +105,7 @@ function New_copyButton_aLayer(value, enabled_orTrue, pasteboard)
 			{
 				e.preventDefault()
 				{ // this should capture value
-					pasteboard.CopyString(value)
+					pasteboard.CopyString(value, pasteboard_valueContentType_orText)
 				}
 				return false
 			}

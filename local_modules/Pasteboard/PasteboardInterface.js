@@ -28,6 +28,12 @@
 //
 "use strict"
 //
+const _contentTypes = 
+{
+	Text: "Text", // the default
+	HTML: "HTML"
+}
+//
 class Pasteboard
 {
 	constructor(options, context)
@@ -38,10 +44,23 @@ class Pasteboard
 			self.context = context
 		}
 	}
-	CopyString(string)
+	//
+	//
+	//
+	//
+	CopyContentTypes()
+	{
+		return _contentTypes
+	}
+	
+	//
+	//
+	// Imperatives
+	//
+	CopyString(string, contentType_orText)
 	{
 		const self = this
-		const _cmd = "CopyString(string)"
+		const _cmd = "CopyString(string, contentType_orText)"
 		throw `You must override and implement ${_cmd} ${self.costructor.name}`
 	}
 }
