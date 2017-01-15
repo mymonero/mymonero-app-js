@@ -189,6 +189,7 @@ function New_contactPickerLayer(
 				containerLayer.removeChild(this_selectedContactLayer)
 				_redisplayInputLayer()
 				didClearPickedContact_fn()
+				inputLayer.focus()
 			}
 		)
 		containerLayer.appendChild(selectedContactLayer)
@@ -279,10 +280,16 @@ function _new_autocompleteResultRowLayer(contact, clicked_fn)
 function _new_selectedContactLayer(contact, didClickCloseBtn_fn)
 {
 	const layer = document.createElement("div")
-	{
-		layer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
-		layer.style.padding = "5px 10px"
+	const contentLayer = document.createElement("div")
+	{ // ^-- using a content layer here so we can get width-of-content behavior with inline-block
+		// while getting parent to give us display:block behavior
+		contentLayer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
+		contentLayer.style.padding = "5px 10px"
+		contentLayer.style.border = "1px outset #999"
+		contentLayer.style.borderRadius = "4px"
+		contentLayer.style.display = "inline-block"
 	}
+	layer.appendChild(contentLayer)
 	const xButtonLayer = document.createElement("a")
 	{
 		xButtonLayer.innerHTML = "X" // TODO
@@ -292,12 +299,12 @@ function _new_selectedContactLayer(contact, didClickCloseBtn_fn)
 		{
 			e.preventDefault()
 			const this_a = this
-			const this_selectedContactLayer = this_a.parentNode
+			const this_selectedContactLayer = this_a.parentNode.parentNode // two levels due to contentLayer
 			didClickCloseBtn_fn(this_selectedContactLayer)
 			return false
 		})
 		//
-		layer.appendChild(xButtonLayer)
+		contentLayer.appendChild(xButtonLayer)
 	}
 	return layer
 }

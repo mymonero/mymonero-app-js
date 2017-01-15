@@ -60,7 +60,7 @@ var context_object_instantiation_descriptions =
 	},
 	{
 		module_path: __dirname + "/../../OpenAlias/OpenAliasResolver",
-		instance_key: "OpenAliasResolver",
+		instance_key: "openAliasResolver",
 		options: {}
 	},
 	{

@@ -95,7 +95,7 @@ function New_ParsedDescriptionFromOpenAliasRecordWithOpenAliasPrefix(
     parsedDescription.address = parsed_paramValueWithName("recipient_address")
     parsedDescription.name = parsed_paramValueWithName("recipient_name")
 	parsedDescription.tx_payment_id = parsed_paramValueWithName("tx_payment_id")
-    parsedDescription.description = parsed_paramValueWithName("tx_description")
+    parsedDescription.tx_description = parsed_paramValueWithName("tx_description")
 	//
     return parsedDescription
 }

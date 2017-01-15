@@ -220,7 +220,17 @@ class Contact extends EventEmitter
 	{
 		return "EventName_contactInfoUpdated"
 	}
-
+	//
+	HasOpenAliasAddress()
+	{
+		const self = this
+		const address = self.address
+		if (!address || typeof address === 'undefined') {
+			throw "HasOpenAliasAddress() called but address nil."
+		}
+		//
+		return self.context.openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Persistence

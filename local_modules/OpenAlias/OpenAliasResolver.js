@@ -79,6 +79,7 @@ class OpenAliasResolver extends EventEmitter
 				err,
 				moneroReady_address,
 				payment_id, // may be undefined
+				tx_description,
 				openAlias_domain,
 				oaRecords_0_name,
 				oaRecords_0_description,
@@ -99,6 +100,7 @@ class OpenAliasResolver extends EventEmitter
 							//
 							moneroReady_address,
 							payment_id, // may be undefined
+							tx_description, // may be undefined
 							//
 							openAlias_domain,
 							oaRecords_0_name,
@@ -113,6 +115,7 @@ class OpenAliasResolver extends EventEmitter
 						//
 						moneroReady_address,
 						payment_id, // may be undefined
+						tx_description, // may be undefined
 						//
 						openAlias_domain,
 						oaRecords_0_name,
