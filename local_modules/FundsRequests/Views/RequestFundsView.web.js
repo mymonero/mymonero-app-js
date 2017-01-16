@@ -467,8 +467,7 @@ class RequestFundsView extends View
 		self.fromContact = fromContact
 		self.contactPickerLayer.ContactPicker_selectContact(fromContact) // simulate user picking the contact
 		self._didPickContact(fromContact)
-	}
-	
+	}	
 	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
@@ -492,7 +491,7 @@ class RequestFundsView extends View
 	}
 	//
 	//
-	// Runtime/Setup - Imperatives - Contact selection
+	// Runtime/Setup - Delegation - Contact selection
 	//
 	_didPickContact(contact)
 	{
