@@ -70,9 +70,9 @@ class OpenAliasResolver extends EventEmitter
 	// Runtime - Imperatives (not Accessors because these cause emits and so have [side-]effects)
 	//
 	ResolveOpenAliasAddress(openAliasAddress, fn)
-	{
+	{ // -> HostedMoneroAPIClient_RequestHandle
 		const self = this
-		monero_openalias_utils.ResolvedMoneroAddressInfoFromOpenAliasAddress( 
+		const requestHandle = monero_openalias_utils.ResolvedMoneroAddressInfoFromOpenAliasAddress( 
 			openAliasAddress,
 			self.context.hostedMoneroAPIClient,
 			function(
@@ -87,7 +87,10 @@ class OpenAliasResolver extends EventEmitter
 			)
 			{
 				if (err) {
-					fn(err)
+					fn(
+						err,
+						openAliasAddress // for consumer reference
+					)
 					return
 				}
 				setTimeout(
@@ -112,6 +115,7 @@ class OpenAliasResolver extends EventEmitter
 				if (fn) {
 					fn(
 						null,
+						openAliasAddress, // for consumer reference
 						//
 						moneroReady_address,
 						payment_id, // may be undefined
@@ -125,6 +129,7 @@ class OpenAliasResolver extends EventEmitter
 				}
 			}
 		)
+		return requestHandle
 	}
 }
 module.exports = OpenAliasResolver

@@ -142,7 +142,7 @@ class WalletHostPollingController
 	// Runtime - Imperatives - Private - Requests
 
 	_fetch_accountInfo()
-	{
+	{ // -> HostedMoneroAPIClient_RequestHandle
 		var __debug_fnName = "_fetch_accountInfo"
 		const self = this
 		const wallet = self.wallet
@@ -227,7 +227,7 @@ class WalletHostPollingController
 		self.requestHandle_for_accountInfo = requestHandle
 	}
 	_fetch_transactionHistory()
-	{ // fn: (err?) -> Void
+	{ // fn: (err?) -> HostedMoneroAPIClient_RequestHandle
 		var __debug_fnName = "_fetch_transactionHistory"
 		const self = this
 		const wallet = self.wallet

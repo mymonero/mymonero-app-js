@@ -31,7 +31,6 @@
 function New_contactPickerLayer(
 	placeholderText, 
 	contactsListController,
-	alreadyPicked_contact,
 	didPickContact_fn,
 	didClearPickedContact_fn
 )
@@ -180,7 +179,7 @@ function New_contactPickerLayer(
 		//
 		didPickContact_fn(contact)
 	}
-	containerLayer.ContactPicker_selectContact = _selectContact // exposing this as consumers need it
+	containerLayer.ContactPicker_pickContact = _selectContact // exposing this as consumers need it
 	var __pickedContactLayer = null;
 	function _removeExistingPickedContact()
 	{
@@ -208,9 +207,6 @@ function New_contactPickerLayer(
 			}
 		)
 		containerLayer.appendChild(__pickedContactLayer)
-	}
-	if (alreadyPicked_contact !== null && typeof alreadyPicked_contact !== 'undefined') {
-		_selectContact(alreadyPicked_contact)
 	}
 	//
 	return containerLayer

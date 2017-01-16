@@ -62,6 +62,17 @@ class RequestFundsView extends View
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
+		{ // initial config
+			if (self.fromContact !== null) {
+				setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
+					function()
+					{
+						self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
+					},
+					1
+				)
+			}
+		}
 	}
 	_setup_self_layer()
 	{
@@ -193,13 +204,15 @@ class RequestFundsView extends View
 		const layer = commonComponents_contactPicker.New_contactPickerLayer(
 			"Enter contact name",
 			self.context.contactsListController,
-			self.fromContact,
 			function(contact)
 			{ // did pick
 				self._didPickContact(contact)
 			},
 			function()
 			{
+				self.cancelAny_requestHandle_for_oaResolution()
+				//
+				self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
 				self._hideResolvedPaymentID()
 				self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact
 				self.pickedContact = null
@@ -210,7 +223,7 @@ class RequestFundsView extends View
 		// }
 		self.contactPickerLayer = layer
 		self.form_containerLayer.appendChild(layer)
-	}
+	}	
 	_setup_form_resolving_activityIndicatorLayer()
 	{
 		const self = this
@@ -246,6 +259,28 @@ class RequestFundsView extends View
 		}
 		self.resolvedPaymentID_containerLayer = containerLayer
 		self.form_containerLayer.appendChild(containerLayer)
+	}
+	//
+	//
+	// Lifecycle - Teardown - Overrides
+	//
+	TearDown()
+	{
+		{ // cancel any requests
+			self.cancelAny_requestHandle_for_oaResolution()
+		}
+		super.TearDown()
+	}
+	cancelAny_requestHandle_for_oaResolution()
+	{
+		const self = this
+		//
+		let req = self.requestHandle_for_oaResolution
+		if (typeof req !== 'undefined' && req !== null) {
+			console.log("💬  Aborting requestHandle_for_oaResolution")
+			req.abort()
+		}
+		self.requestHandle_for_oaResolution = null
 	}
 	//
 	//
@@ -344,7 +379,7 @@ class RequestFundsView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives - 
+	// Runtime - Imperatives - Element visibility
 	//
 	_displayResolvedPaymentID(payment_id)
 	{
@@ -352,7 +387,7 @@ class RequestFundsView extends View
 		if (!payment_id) {
 			throw "nil payment_id passed to _displayResolvedPaymentID"
 		}
-		if (typeof self.resolvedPaymentID_containerLayer !== 'undefined' && self.resolvedPaymentID_containerLayer) {
+		if (typeof self.resolvedPaymentID_containerLayer === 'undefined' || !self.resolvedPaymentID_containerLayer) {
 			throw "_displayResolvedPaymentID expects a non-nil self.resolvedPaymentID_containerLayer"
 		}
 		self.resolvedPaymentID_valueLayer.innerHTML = payment_id
@@ -365,6 +400,13 @@ class RequestFundsView extends View
 			self.resolvedPaymentID_containerLayer.style.display = "none"
 		}
 	}
+	//
+	_dismissValidationMessageLayer()
+	{
+		const self = this
+		self.validationMessageLayer.SetValidationError("") 
+		self.validationMessageLayer.style.display = "none"
+	}	
 	//
 	//
 	// Runtime - Imperatives - Request generation
@@ -474,9 +516,7 @@ class RequestFundsView extends View
 		}
 		{
 			self.fromContact = fromContact
-			console.log("just selected")
-			self.contactPickerLayer.ContactPicker_selectContact(fromContact) // simulate user picking the contact
-			self._didPickContact(fromContact)
+			self.contactPickerLayer.ContactPicker_pickContact(fromContact) // simulate user picking the contact
 		}
 	}
 	//
@@ -504,30 +544,9 @@ class RequestFundsView extends View
 	//
 	// Runtime/Setup - Delegation - Contact selection
 	//
-	_didPickContact(contact, __numberOfTimesCalled_orUndefForEntry)
+	_didPickContact(contact)
 	{
 		const self = this
-		{ // because _didPickContact is called by the contact picker and because we initialize it with fromContact we will initially get _didPickContact too soon
-			// this is /slightly/ janky and could probably be fixed by not configuring the contactsPicker with fromContact until after the layer is setup in the init/setup chain
-			if (typeof self.resolving_activityIndicatorLayer === 'undefined' || self.resolving_activityIndicatorLayer === null) {
-				console.warn("Deferring call of _didPickContact until self.resolving_activityIndicatorLayer available (due to self init completion)")
-				if (typeof __numberOfTimesCalled_orUndefForEntry === 'undefined' || !__numberOfTimesCalled_orUndefForEntry) {
-					__numberOfTimesCalled_orUndefForEntry = 0
-				}
-				const delay = 10
-				if (__numberOfTimesCalled_orUndefForEntry * delay > 1000) {
-					throw "self.resolving_activityIndicatorLayer still not available after long delay. Likely code fault"
-					return
-				}
-				setTimeout(
-					function()
-					{
-						self._didPickContact(contact, __numberOfTimesCalled_orUndefForEntry + 1)
-					}, 10
-				)
-				return
-			}
-		}		
 		self.pickedContact = contact
 		{ // payment id - if we already have one
 			if (self.pickedContact.HasOpenAliasAddress() === false) {
@@ -546,11 +565,17 @@ class RequestFundsView extends View
 		{ // (and show the "resolving UI")
 			self.resolving_activityIndicatorLayer.style.display = "block"
 			self.disable_submitButton()
+			//
+			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
 		}
-		self.context.openAliasResolver.ResolveOpenAliasAddress(
+		{
+			self.cancelAny_requestHandle_for_oaResolution()
+		}
+		self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 			contact.address,
 			function(
 				err,
+				addressWhichWasPassedIn,
 				moneroReady_address,
 				payment_id, // may be undefined
 				tx_description,
@@ -562,6 +587,21 @@ class RequestFundsView extends View
 			{
 				self.resolving_activityIndicatorLayer.style.display = "none"
 				self.enable_submitButton()
+				//
+				if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
+					console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
+					return
+				}
+				self.requestHandle_for_oaResolution = null
+				//
+				if (typeof self.pickedContact === 'undefined' || !self.pickedContact) {
+					console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.pickedContact. Bailing")
+					return
+				}
+				if (self.pickedContact.address !== addressWhichWasPassedIn) {
+					console.warn("⚠️  The addressWhichWasPassedIn to the ResolveOpenAliasAddress call of which this is a callback is different than the currently selected self.pickedContact.address. Bailing")
+					return
+				}
 				if (err) {
 					self.validationMessageLayer.SetValidationError(err.toString())
 					return

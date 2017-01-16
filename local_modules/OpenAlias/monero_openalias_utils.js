@@ -57,7 +57,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 	// 	oaRecords_0_name,
 	// 	oaRecords_0_description,
 	// 	dnssec_used_and_secured
-	// ) -> Void
+	// ) -> HostedMoneroAPIClient_RequestHandle
 )
 {
     if (IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) === false) {
@@ -65,14 +65,14 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 		return
     }
     var openAlias_domain = openAliasAddress.replace(/@/g, ".");
-	hostedMoneroAPIClient.TXTRecords(
+	const requestHandle = hostedMoneroAPIClient.TXTRecords(
 		openAlias_domain,
 		function(err, records, dnssec_used, secured, dnssec_fail_reason)
 		{
 			if (err) {
 				const errStr = "Failed to resolve DNS records for '" + openAlias_domain + "': " + err
-				const err = new Error(errStr)
-				fn(err)
+				const returnableErr = new Error(errStr)
+				fn(returnableErr)
 				return
 			}
             console.log(openAlias_domain + ": ", records);
@@ -124,5 +124,6 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 			)
 		}
 	)
+	return requestHandle
 }
 exports.ResolvedMoneroAddressInfoFromOpenAliasAddress = ResolvedMoneroAddressInfoFromOpenAliasAddress

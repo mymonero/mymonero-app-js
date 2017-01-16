@@ -90,7 +90,7 @@ class HostedMoneroAPIClient
 	// Runtime - Accessors - Public - Requests
 
 	LogIn(address, view_key__private, fn)
-	{ // fn: (err?, new_address?)
+	{ // fn: (err?, new_address?) -> RequestHandle
 		const self = this
 		const endpointPath = "login"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
@@ -116,6 +116,7 @@ class HostedMoneroAPIClient
 			//
 			fn(null, new_address)
 		}
+		return requestHandle
 	}
 	//
 	// Syncing
@@ -125,7 +126,7 @@ class HostedMoneroAPIClient
 		spend_key__public,
 		spend_key__private,
 		fn
-	)
+	)  // -> RequestHandle
 	{
 		const self = this
 		const endpointPath = "get_address_info"
@@ -196,7 +197,6 @@ class HostedMoneroAPIClient
 				}
 			)
 		}
-		//
 		return requestHandle
 	}
 	AddressTransactions_returningRequestHandle(
@@ -205,7 +205,7 @@ class HostedMoneroAPIClient
 		spend_key__public,
 		spend_key__private,
 		fn
-	)
+	) // -> RequestHandle
 	{
 		const self = this
 		const endpointPath = "get_address_txs"
@@ -260,7 +260,6 @@ class HostedMoneroAPIClient
 				}
 			)
 		}
-		//
 		return requestHandle
 	}
 	//
@@ -272,7 +271,7 @@ class HostedMoneroAPIClient
 		spend_key__private,
 		mixinNumber,
 		fn
-	)
+	) // -> RequestHandle
 	{
 		const self = this
 		mixinNumber = parseInt(mixinNumber) // jic
@@ -321,12 +320,13 @@ class HostedMoneroAPIClient
 				}
 			)
 		}
+		return requestHandle
 	}
 	RandomOuts(
 		using_outs,
 		mixinNumber,
 		fn
-	)
+	) // -> RequestHandle
 	{
 		const self = this
 		//
@@ -371,11 +371,12 @@ class HostedMoneroAPIClient
 				amount_outs
 			)
 		}
+		return requestHandle
 	}
 	TXTRecords(
 		domain,
 		fn
-	)
+	) // -> RequestHandle
 	{
 		const self = this
 		//
@@ -412,6 +413,7 @@ class HostedMoneroAPIClient
 				dnssec_fail_reason
 			)
 		}
+		return requestHandle
 	}
 
 
@@ -422,7 +424,7 @@ class HostedMoneroAPIClient
 		address,
 		view_key__private,
 		serializedSignedTx,
-		fn // (err?) -> Void
+		fn // (err?) -> RequestHandle
 	)
 	{
 		const self = this
@@ -451,6 +453,7 @@ class HostedMoneroAPIClient
 			// console.log("debug: info: submit_raw_tx: data", data)
 			fn(null)
 		}
+		return requestHandle
 	}
 
 
