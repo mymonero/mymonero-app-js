@@ -133,6 +133,24 @@ function New_deleteRecordNamedButton_aLayer(lowercased_humanReadable_recordName)
 }
 exports.New_deleteRecordNamedButton_aLayer = New_deleteRecordNamedButton_aLayer
 //
+function New_createNewRecordNamedButton_aLayer(lowercased_humanReadable_recordName)
+{
+	const layer = document.createElement("a")
+	{
+		layer.innerHTML = "+ CREATE NEW " + lowercased_humanReadable_recordName
+		layer.href = "#" // to make it look clickable
+		//
+		layer.display = "block" // own line
+		//
+		layer.style.textDecoration = "none"
+		layer.style.fontSize = "12px"
+		layer.style.fontWeight = "bold"
+		layer.style.color = "blue" // TODO
+	}
+	return layer
+}
+exports.New_createNewRecordNamedButton_aLayer = New_createNewRecordNamedButton_aLayer
+//
 function New_clearingBreakLayer()
 {
 	const layer = document.createElement("br")

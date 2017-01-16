@@ -42,7 +42,6 @@ function New_contactPickerLayer(
 	{
 		containerLayer.style.position = "relative"
 		containerLayer.style.width = "100%"
-		containerLayer.style.height = "30px"
 		containerLayer.style.webkitUserSelect = "none" // disable selection
 	}
 	const inputLayer = _new_inputLayer(placeholderText)
@@ -225,7 +224,6 @@ function _new_inputLayer(placeholderText)
 		layer.style.width = `calc(100% - ${2 * 10}px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
- 		layer.style.float = "left"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "14px"
 		layer.style.color = "#ccc"

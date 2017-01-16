@@ -55,6 +55,7 @@ class RequestFundsView extends View
 			self.numberOfRequestsToLockToDisable_submitButton = 0
 		}
 		self.setup_views()
+		
 	}
 	setup_views()
 	{
@@ -113,6 +114,7 @@ class RequestFundsView extends View
 			self._setup_form_contactPickerLayer()
 			self._setup_form_resolving_activityIndicatorLayer()
 			self._setup_form_resolvedPaymentID_containerLayer()
+			self._setup_form_createNewRecordNamedButton_aLayer()
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -259,6 +261,24 @@ class RequestFundsView extends View
 		}
 		self.resolvedPaymentID_containerLayer = containerLayer
 		self.form_containerLayer.appendChild(containerLayer)
+	}
+	_setup_form_createNewRecordNamedButton_aLayer()
+	{
+		const self = this
+		const layer = commonComponents_tables.New_createNewRecordNamedButton_aLayer("CONTACT")
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				{
+					console.log("CREATE NEW CONTACT")
+				}
+				return false
+			}
+		)
+		self.createNewRecordNamedButton_aLayer = layer
+		self.form_containerLayer.appendChild(layer)
 	}
 	//
 	//
