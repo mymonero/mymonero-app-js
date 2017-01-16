@@ -352,13 +352,18 @@ class RequestFundsView extends View
 		if (!payment_id) {
 			throw "nil payment_id passed to _displayResolvedPaymentID"
 		}
+		if (typeof self.resolvedPaymentID_containerLayer !== 'undefined' && self.resolvedPaymentID_containerLayer) {
+			throw "_displayResolvedPaymentID expects a non-nil self.resolvedPaymentID_containerLayer"
+		}
 		self.resolvedPaymentID_valueLayer.innerHTML = payment_id
 		self.resolvedPaymentID_containerLayer.style.display = "block"
 	}
 	_hideResolvedPaymentID()
 	{
 		const self = this
-		self.resolvedPaymentID_containerLayer.style.display = "none"
+		if (typeof self.resolvedPaymentID_containerLayer !== 'undefined' && self.resolvedPaymentID_containerLayer) {
+			self.resolvedPaymentID_containerLayer.style.display = "none"
+		}
 	}
 	//
 	//
@@ -459,15 +464,21 @@ class RequestFundsView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives - Using a new fromContact when a self had already been presented
+	// Runtime - Imperatives - Public - Using a new fromContact when a self had already been presented
 	//
-	configureWith_fromContact(fromContact)
+	AtRuntime_reconfigureWith_fromContact(fromContact)
 	{
 		const self = this
-		self.fromContact = fromContact
-		self.contactPickerLayer.ContactPicker_selectContact(fromContact) // simulate user picking the contact
-		self._didPickContact(fromContact)
-	}	
+		{ // figure that since this method is called when user is trying to initiate a new request we should clear the amount
+			self.amountInputLayer.value = ""
+		}
+		{
+			self.fromContact = fromContact
+			console.log("just selected")
+			self.contactPickerLayer.ContactPicker_selectContact(fromContact) // simulate user picking the contact
+			self._didPickContact(fromContact)
+		}
+	}
 	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
@@ -493,9 +504,30 @@ class RequestFundsView extends View
 	//
 	// Runtime/Setup - Delegation - Contact selection
 	//
-	_didPickContact(contact)
+	_didPickContact(contact, __numberOfTimesCalled_orUndefForEntry)
 	{
 		const self = this
+		{ // because _didPickContact is called by the contact picker and because we initialize it with fromContact we will initially get _didPickContact too soon
+			// this is /slightly/ janky and could probably be fixed by not configuring the contactsPicker with fromContact until after the layer is setup in the init/setup chain
+			if (typeof self.resolving_activityIndicatorLayer === 'undefined' || self.resolving_activityIndicatorLayer === null) {
+				console.warn("Deferring call of _didPickContact until self.resolving_activityIndicatorLayer available (due to self init completion)")
+				if (typeof __numberOfTimesCalled_orUndefForEntry === 'undefined' || !__numberOfTimesCalled_orUndefForEntry) {
+					__numberOfTimesCalled_orUndefForEntry = 0
+				}
+				const delay = 10
+				if (__numberOfTimesCalled_orUndefForEntry * delay > 1000) {
+					throw "self.resolving_activityIndicatorLayer still not available after long delay. Likely code fault"
+					return
+				}
+				setTimeout(
+					function()
+					{
+						self._didPickContact(contact, __numberOfTimesCalled_orUndefForEntry + 1)
+					}, 10
+				)
+				return
+			}
+		}		
 		self.pickedContact = contact
 		{ // payment id - if we already have one
 			if (self.pickedContact.HasOpenAliasAddress() === false) {

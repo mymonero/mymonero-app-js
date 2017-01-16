@@ -37,7 +37,7 @@ const remote__context = remote__electron.getGlobal("context")
 //
 const rootView = new_rootView() // hang onto reference
 //
-if (process.env.NODE_ENV !== 'development') {
+if (process.env.NODE_ENV !== 'development') { // cause it's slightly intrusive to the dev process and obscures stack trace
 	process.on('uncaughtException', function (error)
 	{ // We're going to observe this here (for electron especially) so
 	  // that the exceptions are prevented from bubbling up to the UI.

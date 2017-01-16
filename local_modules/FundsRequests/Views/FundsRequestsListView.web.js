@@ -283,7 +283,7 @@ class FundsRequestsListView extends View
 		console.log("self.currentlyPresented_RequestFundsView" , self.currentlyPresented_RequestFundsView)
 		const fromContact = options.fromContact
 		if (fromContact && typeof fromContact !== 'undefined') {
-			self.currentlyPresented_RequestFundsView.configureWith_fromContact(fromContact)
+			self.currentlyPresented_RequestFundsView.AtRuntime_reconfigureWith_fromContact(fromContact)
 		}
 	}
 	//
