@@ -31,7 +31,7 @@
 const View = require('../../Views/View.web')
 const ContactsListCellView = require('./ContactsListCellView.web')
 const ContactDetailsView = require('./ContactDetailsView.web')
-const AddContactView = require('./AddContactView.web')
+const AddContactFromContactsTabView = require('./AddContactFromContactsTabView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
@@ -111,7 +111,7 @@ class ContactsListView extends View
 				{
 					e.preventDefault()
 					{
-						const view = new AddContactView({}, self.context)
+						const view = new AddContactFromContactsTabView({}, self.context)
 						const navigationView = new StackAndModalNavigationView({}, self.context)
 						navigationView.SetStackViews([ view ])
 						self.navigationController.PresentView(navigationView, true)

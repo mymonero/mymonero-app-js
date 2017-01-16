@@ -37,7 +37,7 @@ const commonComponents_contactPicker = require('../../WalletAppCommonComponents/
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-const AddContactView = require('../../Contacts/Views/AddContactView.web')
+const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
 //
 class RequestFundsView extends View
 {
@@ -272,7 +272,12 @@ class RequestFundsView extends View
 			{
 				e.preventDefault()
 				{
-					const view = new AddContactView({}, self.context)
+					const view = new AddContactFromOtherTabView({
+						emitNewlySavedContact_fn: function(contact)
+						{
+							self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
+						}
+					}, self.context)
 					const navigationView = new StackAndModalNavigationView({}, self.context)
 					navigationView.SetStackViews([ view ])
 					self.navigationController.PresentView(navigationView, true)

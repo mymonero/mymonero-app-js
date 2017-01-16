@@ -335,19 +335,7 @@ class AddContactView extends View
 				}
 				self.validationMessageLayer.ClearAndHideMessage()
 				//
-				const ContactDetailsView = require('./ContactDetailsView.web')
-				const options = 
-				{
-					contact: contact
-				}
-				const view = new ContactDetailsView(options, self.context)
-				const modalParentView = self.navigationController.modalParentView
-				const underlying_navigationController = modalParentView
-				underlying_navigationController.PushView(view, false) // not animated
-				setTimeout(function()
-				{ // just to make sure the PushView finished
-					modalParentView.DismissTopModalView(true)
-				})
+				self._didSaveNewContact(contact)
 			}
 		)
 	}
@@ -371,6 +359,20 @@ class AddContactView extends View
 		const self = this
 		super.viewDidAppear()
 		// teardown any child/referenced stack navigation views if necessary…
+	}
+	//
+	//
+	// Runtime - Delegation - Yield
+	//
+	_didSaveNewContact(contact)
+	{
+		const self = this
+		//
+		const modalParentView = self.navigationController.modalParentView
+		setTimeout(function()
+		{ // just to make sure the PushView finished
+			modalParentView.DismissTopModalView(true)
+		})
 	}
 }
 module.exports = AddContactView
