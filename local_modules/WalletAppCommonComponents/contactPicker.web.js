@@ -303,6 +303,7 @@ function _new_pickedContactLayer(contact, didClickCloseBtn_fn)
 		contentLayer.style.border = "1px outset #999"
 		contentLayer.style.borderRadius = "4px"
 		contentLayer.style.display = "inline-block"
+		contentLayer.style.cursor = "default"
 	}
 	layer.appendChild(contentLayer)
 	const xButtonLayer = document.createElement("a")
@@ -310,6 +311,7 @@ function _new_pickedContactLayer(contact, didClickCloseBtn_fn)
 		xButtonLayer.innerHTML = "X" // TODO
 		xButtonLayer.style.display = "inline-block" // to get margin
 		xButtonLayer.style.marginLeft = "20px"
+		xButtonLayer.style.cursor = "pointer"
 		xButtonLayer.addEventListener("click", function(e)
 		{
 			e.preventDefault()
