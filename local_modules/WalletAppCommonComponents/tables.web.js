@@ -104,7 +104,7 @@ function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_val
 			function(e)
 			{
 				e.preventDefault()
-				{ // this should capture value
+				{
 					pasteboard.CopyString(value, pasteboard_valueContentType_orText)
 				}
 				return false
@@ -115,6 +115,23 @@ function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_val
 	return layer
 }
 exports.New_copyButton_aLayer = New_copyButton_aLayer
+//
+function New_deleteRecordNamedButton_aLayer(lowercased_humanReadable_recordName)
+{
+	const layer = document.createElement("a")
+	{
+		layer.innerHTML = "Delete this " + lowercased_humanReadable_recordName
+		layer.href = "#" // to make it look clickable
+		//
+		layer.display = "block" // own line
+		//
+		layer.style.fontSize = "15px"
+		layer.style.fontWeight = "bold"
+		layer.style.color = "red" // TODO
+	}
+	return layer
+}
+exports.New_deleteRecordNamedButton_aLayer = New_deleteRecordNamedButton_aLayer
 //
 function New_clearingBreakLayer()
 {

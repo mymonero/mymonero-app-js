@@ -96,7 +96,7 @@ class View extends EventEmitter
 	TearDown()
 	{ // IMPORTANT: Please note that you must manually call this function! There is no destructor per se in JS
 		const self = this // You can override this function, but be sure to call on super
-		console.log("Tearing down ", self.Description())
+		console.log("♻️  Tearing down ", self.Description())
 	}
 	//
 	//

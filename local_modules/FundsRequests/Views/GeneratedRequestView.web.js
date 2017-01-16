@@ -58,6 +58,7 @@ class GeneratedRequestView extends View
 		self._setup_qrCodeContainerLayer()
 		self._setup_URIContainerLayer()
 		self._setup_requesteeMessageLayer()
+		self._setup_deleteRecordButtonLayer()
 	}
 	_setup_self_layer()
 	{
@@ -244,6 +245,36 @@ class GeneratedRequestView extends View
 		containerLayer.appendChild(div)
 		self.layer.appendChild(containerLayer)
 	}
+	_setup_deleteRecordButtonLayer()
+	{
+		const self = this
+		const layer = commonComponents_tables.New_deleteRecordNamedButton_aLayer("request")
+		{
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						const record_id = self.fundsRequest._id
+						self.context.fundsRequestsListController.WhenBooted_DeleteFundsRequestWithId(
+							record_id,
+							function(err)
+							{
+								if (err) {
+									throw err
+									return
+								}
+								self._thisRecordWasDeleted()
+							}
+						)
+					}
+					return false
+				}
+			)
+		}
+		self.layer.appendChild(layer)
+	}
 	//
 	//
 	// Constructor - Accessors
@@ -300,6 +331,15 @@ class GeneratedRequestView extends View
 		const self = this
 		super.viewDidAppear()
 		// teardown any child/referenced stack navigation views if necessary…
+	}
+	//
+	//
+	// Runtime - Delegation - Deletion -> navigation handling
+	//
+	_thisRecordWasDeleted()
+	{
+		const self = this
+		self.navigationController.PopView(true)
 	}
 }
 module.exports = GeneratedRequestView
