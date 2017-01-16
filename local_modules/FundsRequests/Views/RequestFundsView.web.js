@@ -36,6 +36,9 @@ const commonComponents_walletSelect = require('../../WalletAppCommonComponents/w
 const commonComponents_contactPicker = require('../../WalletAppCommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+const AddContactView = require('../../Contacts/Views/AddContactView.web')
+//
 class RequestFundsView extends View
 {
 	constructor(options, context)
@@ -63,17 +66,6 @@ class RequestFundsView extends View
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
-		{ // initial config
-			if (self.fromContact !== null) {
-				setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
-					function()
-					{
-						self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
-					},
-					1
-				)
-			}
-		}
 	}
 	_setup_self_layer()
 	{
@@ -220,11 +212,19 @@ class RequestFundsView extends View
 				self.pickedContact = null
 			}
 		)
-		// if (self.fromContact && typeof self.fromContact !== 'undefined') {
-		// 	layer.SelectContact(self.fromContact)
-		// }
 		self.contactPickerLayer = layer
 		self.form_containerLayer.appendChild(layer)
+		{ // initial config
+			if (self.fromContact !== null) {
+				setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
+					function()
+					{
+						self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
+					},
+					1
+				)
+			}
+		}
 	}	
 	_setup_form_resolving_activityIndicatorLayer()
 	{
@@ -272,7 +272,13 @@ class RequestFundsView extends View
 			{
 				e.preventDefault()
 				{
-					console.log("CREATE NEW CONTACT")
+					const view = new AddContactView({}, self.context)
+					const navigationView = new StackAndModalNavigationView({}, self.context)
+					navigationView.SetStackViews([ view ])
+					self.navigationController.PresentView(navigationView, true)
+					
+					// TODO: wait for this to hit "add", grab the contact which was created, and then tell the contact picker to select it
+					
 				}
 				return false
 			}
@@ -286,6 +292,7 @@ class RequestFundsView extends View
 	//
 	TearDown()
 	{
+		const self = this
 		{ // cancel any requests
 			self.cancelAny_requestHandle_for_oaResolution()
 		}
