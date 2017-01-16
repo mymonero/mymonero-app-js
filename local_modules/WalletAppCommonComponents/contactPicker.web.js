@@ -31,7 +31,7 @@
 function New_contactPickerLayer(
 	placeholderText, 
 	contactsListController,
-	alreadySelected_contact,
+	alreadyPicked_contact,
 	didPickContact_fn,
 	didClearPickedContact_fn
 )
@@ -44,6 +44,7 @@ function New_contactPickerLayer(
 		containerLayer.style.position = "relative"
 		containerLayer.style.width = "100%"
 		containerLayer.style.height = "30px"
+		containerLayer.style.webkitUserSelect = "none" // disable selection
 	}
 	const inputLayer = _new_inputLayer(placeholderText)
 	containerLayer.ContactPicker_inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
@@ -71,12 +72,7 @@ function New_contactPickerLayer(
 			function(event)
 			{
 				isFocused = true
-				//
-				const this_inputLayer = this
-				const value = this_inputLayer.value
-				if (!value || value.length === 0) {
-					return
-				}
+				// always search, even if no query, as long as focused
 				_searchForAndDisplaySearchResults()
 			}
 		)
@@ -93,11 +89,6 @@ function New_contactPickerLayer(
 				{ // to prevent searching too fast
 					typingDebounceTimeout = null // clear for next
 					//
-					const value = this_inputLayer.value
-					if (!value || value.length === 0) {
-						_removeAllAndHideAutocompleteResults()
-						return
-					}
 					_searchForAndDisplaySearchResults()
 				}, 170)
 			}
@@ -116,17 +107,25 @@ function New_contactPickerLayer(
 	}
 	function _searchForAndDisplaySearchResults()
 	{
-		var results = []
+		var results;
 		{
-			const searchString = inputLayer.value
-			const search_regex = new RegExp(searchString, "i") // case insensitive
 			const contacts = contactsListController.contacts
-			const numberOf_contacts = contacts.length // we're assuming we've booted by the time they're using the RequestFunds form
-			for (var i = 0 ; i < numberOf_contacts ; i++) {
-				const contact = contacts[i]
-				const isMatch = contact.fullname.search(search_regex) !== -1 // positional rather than boolean
-				if (isMatch === true) {
-					results.push(contact)
+			// filter?
+			const searchString = inputLayer.value
+			if (typeof searchString === 'undefined' || !searchString || searchString === "") {
+				results = contacts
+			} else {
+				results = []
+				{ // finalize
+					const search_regex = new RegExp(searchString, "i") // case insensitive
+					const numberOf_contacts = contacts.length // we're assuming we've booted by the time they're using the RequestFunds form
+					for (var i = 0 ; i < numberOf_contacts ; i++) {
+						const contact = contacts[i]
+						const isMatch = contact.fullname.search(search_regex) !== -1 // positional rather than boolean
+						if (isMatch === true) {
+							results.push(contact)
+						}
+					}
 				}
 			}
 		}
@@ -175,27 +174,43 @@ function New_contactPickerLayer(
 	function _selectContact(contact)
 	{
 		_removeAllAndHideAutocompleteResults()
+		_removeExistingPickedContact() // but don't do stuff like focusing the input layer
 		_clearAndHideInputLayer()
-		_displaySelectedContact(contact)
+		_displayPickedContact(contact)
 		//
 		didPickContact_fn(contact)
 	}
-	function _displaySelectedContact(contact)
+	containerLayer.ContactPicker_selectContact = _selectContact // exposing this as consumers need it
+	var __pickedContactLayer = null;
+	function _removeExistingPickedContact()
 	{
-		const selectedContactLayer = _new_selectedContactLayer(
+		if (__pickedContactLayer !== null) {
+			containerLayer.removeChild(__pickedContactLayer)
+			__pickedContactLayer = null
+		}
+		if (didClearPickedContact_fn) {
+			didClearPickedContact_fn()
+		}
+	}
+	function _displayPickedContact(contact)
+	{
+		__pickedContactLayer = _new_pickedContactLayer(
 			contact,
-			function(this_selectedContactLayer)
+			function(this_pickedContactLayer)
 			{
-				containerLayer.removeChild(this_selectedContactLayer)
+				_removeExistingPickedContact()
 				_redisplayInputLayer()
-				didClearPickedContact_fn()
-				inputLayer.focus()
+				setTimeout(function()
+				{ // to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
+					inputLayer.focus() 
+				})
+				
 			}
 		)
-		containerLayer.appendChild(selectedContactLayer)
+		containerLayer.appendChild(__pickedContactLayer)
 	}
-	if (alreadySelected_contact !== null && typeof alreadySelected_contact !== 'undefined') {
-		_selectContact(alreadySelected_contact)
+	if (alreadyPicked_contact !== null && typeof alreadyPicked_contact !== 'undefined') {
+		_selectContact(alreadyPicked_contact)
 	}
 	//
 	return containerLayer
@@ -253,14 +268,18 @@ function _new_autocompleteResultRowLayer(contact, clicked_fn)
 		layer.style.lineHeight = "200%"
 		layer.style.padding = `0 ${padding_h}px`
 		layer.style.height = "32px"
+		layer.style.webkitUserSelect = "none" // redundant but for explicitness
+		layer.style.cursor = "pointer"
 		layer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
 	}
 	{
 		layer.addEventListener("mouseover", function() { this.highlight() })
 		layer.addEventListener("mouseleave", function() { this.unhighlight() }) // will this be enough?
-		layer.addEventListener("click", function(e)
-		{
+		layer.addEventListener("drag", function(e) { e.preventDefault(); e.stopPropagation(); return false; }) // prevent accidental drag from interfering with user's expectation of a successful click
+		layer.addEventListener("mousedown", function(e)
+		{ // not click, because of race conditions w/ the input focus and drags etc; plus it's snappier
 			e.preventDefault()
+			e.stopPropagation()
 			clicked_fn(contact)
 			return false
 		})
@@ -277,7 +296,7 @@ function _new_autocompleteResultRowLayer(contact, clicked_fn)
 	}
 	return layer
 }
-function _new_selectedContactLayer(contact, didClickCloseBtn_fn)
+function _new_pickedContactLayer(contact, didClickCloseBtn_fn)
 {
 	const layer = document.createElement("div")
 	const contentLayer = document.createElement("div")
@@ -299,8 +318,8 @@ function _new_selectedContactLayer(contact, didClickCloseBtn_fn)
 		{
 			e.preventDefault()
 			const this_a = this
-			const this_selectedContactLayer = this_a.parentNode.parentNode // two levels due to contentLayer
-			didClickCloseBtn_fn(this_selectedContactLayer)
+			const this_pickedContactLayer = this_a.parentNode.parentNode // two levels due to contentLayer
+			didClickCloseBtn_fn(this_pickedContactLayer)
 			return false
 		})
 		//

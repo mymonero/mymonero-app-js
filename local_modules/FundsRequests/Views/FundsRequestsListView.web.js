@@ -57,8 +57,11 @@ class FundsRequestsListView extends View
 	_setup_views()
 	{
 		const self = this
-		{
-			self.current_generatedRequestView = null // zeroing for comparison
+		{ // zeroing for comparison
+			self.current_generatedRequestView = null 
+			self.currentlyPresented_RequestFundsView = null
+		}
+		{ // collections
 			self.fundsRequestCellViews = [] // initialize container
 		}
 		{ // styles
@@ -116,6 +119,12 @@ class FundsRequestsListView extends View
 		if (self.current_generatedRequestView !== null) {
 			self.current_generatedRequestView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
 			self.current_generatedRequestView = null // must zero again and should free
+		}
+		{
+			if (self.currentlyPresented_RequestFundsView !== null) {
+				self.currentlyPresented_RequestFundsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+				self.currentlyPresented_RequestFundsView = null // must zero again and should free
+			}
 		}
 	}
 	//
@@ -262,10 +271,20 @@ class FundsRequestsListView extends View
 	{
 		const self = this
 		const options = options_orNilForDefault || {}
-		const view = new RequestFundsView(options, self.context)
-		const navigationView = new StackAndModalNavigationView({}, self.context)
-		navigationView.SetStackViews([ view ])
-		self.navigationController.PresentView(navigationView, true)
+		if (typeof self.currentlyPresented_RequestFundsView === 'undefined' || !self.currentlyPresented_RequestFundsView) {
+			const view = new RequestFundsView(options, self.context)
+			self.currentlyPresented_RequestFundsView = view
+			const navigationView = new StackAndModalNavigationView({}, self.context)
+			navigationView.SetStackViews([ view ])
+			self.navigationController.PresentView(navigationView, true)
+			//
+			return
+		}
+		console.log("self.currentlyPresented_RequestFundsView" , self.currentlyPresented_RequestFundsView)
+		const fromContact = options.fromContact
+		if (fromContact && typeof fromContact !== 'undefined') {
+			self.currentlyPresented_RequestFundsView.configureWith_fromContact(fromContact)
+		}
 	}
 	//
 	//
@@ -299,6 +318,10 @@ class FundsRequestsListView extends View
 		if (self.current_generatedRequestView !== null) {
 			self.current_generatedRequestView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
 			self.current_generatedRequestView = null // must zero again and should free
+		}
+		if (self.currentlyPresented_RequestFundsView !== null) {
+			self.currentlyPresented_RequestFundsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+			self.currentlyPresented_RequestFundsView = null // must zero again and should free
 		}
 	}
 }

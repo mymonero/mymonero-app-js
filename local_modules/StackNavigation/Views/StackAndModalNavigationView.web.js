@@ -77,6 +77,9 @@ class StackAndModalNavigationView extends StackNavigationView
 			: false
 		//
 		const old_topStackView = self.topStackView
+		if (typeof old_topStackView === 'undefined' || old_topStackView == null) {
+			throw self.constructor.name + " PresentView currently expects there to be an old_topStackView"
+		}
 		const old_topModalView = self.topModalView
 		const old_topModalOrStackView = old_topModalView ? old_topModalView : old_topStackView
 		const old_topModalOrStackView_wasModal = old_topModalView ? true : false
@@ -97,7 +100,13 @@ class StackAndModalNavigationView extends StackNavigationView
 				modalView_layer.style.zIndex = "20" // 2 because we'll want to insert a semi-trans curtain view under the modalView_layer above the old_topStackView
 				modalView_layer.style.top = `${ self.layer.offsetHeight }px`
 			}
+			{ // manually simulate a view visibility events
+				old_topStackView.viewWillDisappear()
+			}
 			self.addSubview(modalView)
+			{ // manually simulate a view visibility events
+				old_topStackView.viewDidDisappear()
+			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewModalView_removeOldTopModalView()
 			} else {
@@ -172,6 +181,10 @@ class StackAndModalNavigationView extends StackNavigationView
 			 || isAnimated_orTrue == null
 			? true /* default true */
 			: false
+		const old_topStackView = self.topStackView
+		if (typeof old_topStackView === 'undefined' || old_topStackView == null) {
+			throw self.constructor.name + " DismissModalViewsToView currently expects there to be an old_topStackView"
+		}
 		const old_topModalView = self.topModalView
 		if (typeof old_topModalView === 'undefined' || old_topModalView == null) {
 			throw self.constructor.name + " DismissModalViewsToView requires there to be a modal view"
@@ -181,6 +194,9 @@ class StackAndModalNavigationView extends StackNavigationView
 			// console.log("old_topModalView" , old_topModalView.Description())
 			old_topModalView.removeFromSuperview()
 			old_topModalView.modalParentView = null
+			{ // manually simulate a view visibility events
+				old_topStackView.viewDidAppear()
+			}
 		}
 		if (to_modalView_orNullForTopStackView === null) { // pop all modalViews to top stackView
 			old_topModalView.layer.style.position = "absolute"
@@ -252,6 +268,9 @@ class StackAndModalNavigationView extends StackNavigationView
 				//
 				to_modalView.layer.style.position = "absolute"
 				to_modalView.layer.style.zIndex = "9" // because we want to make sure it goes under the current top modal view
+			}
+			{ // manually simulate a view visibility events
+				old_topStackView.viewWillAppear()
 			}
 			self.stackViewStageView.insertSubview(
 				to_modalView,

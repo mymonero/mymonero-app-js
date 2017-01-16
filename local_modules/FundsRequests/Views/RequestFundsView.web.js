@@ -196,54 +196,12 @@ class RequestFundsView extends View
 			self.fromContact,
 			function(contact)
 			{ // did pick
-				self.pickedContact = contact
-				if (self.pickedContact.HasOpenAliasAddress() !== true) {
-					const payment_id = contact.payment_id
-					if (payment_id && typeof payment_id !== 'undefined') {
-						self._displayResolvedPaymentID(payment_id)
-					} else {
-						self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
-					}
-					return // no need to re-resolve what is not an OA addr
-				}
-				// look up the payment ID again (and show the "resolving UI")
-				self.resolving_activityIndicatorLayer.style.display = "block"
-				self.disable_submitButton()
-				self.context.openAliasResolver.ResolveOpenAliasAddress(
-					contact.address,
-					function(
-						err,
-						moneroReady_address,
-						payment_id, // may be undefined
-						tx_description,
-						openAlias_domain,
-						oaRecords_0_name,
-						oaRecords_0_description,
-						dnssec_used_and_secured
-					)
-					{
-						self.resolving_activityIndicatorLayer.style.display = "none"
-						self.enable_submitButton()
-						if (err) {
-							self.validationMessageLayer.SetValidationError(err.toString())
-							return
-						}
-						if (typeof tx_description !== 'undefined' && tx_description) {
-							if (!self.memoInputLayer.value) { // if one wasn't already entered
-								self.memoInputLayer.value = tx_description
-							}
-						}
-						// there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-							console.log("obtained payment_id", payment_id)
-						if (typeof payment_id !== 'undefined' && payment_id) {
-							self._displayResolvedPaymentID(payment_id)
-						}
-					}
-				)
+				self._didPickContact(contact)
 			},
 			function()
 			{
 				self._hideResolvedPaymentID()
+				self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact
 				self.pickedContact = null
 			}
 		)
@@ -501,6 +459,18 @@ class RequestFundsView extends View
 	}
 	//
 	//
+	// Runtime - Imperatives - Using a new fromContact when a self had already been presented
+	//
+	configureWith_fromContact(fromContact)
+	{
+		const self = this
+		self.fromContact = fromContact
+		self.contactPickerLayer.ContactPicker_selectContact(fromContact) // simulate user picking the contact
+		self._didPickContact(fromContact)
+	}
+	
+	//
+	//
 	// Runtime - Delegation - Navigation/View lifecycle
 	//
 	viewWillAppear()
@@ -519,6 +489,66 @@ class RequestFundsView extends View
 		const self = this
 		super.viewDidAppear()
 		// teardown any child/referenced stack navigation views if necessary…
+	}
+	//
+	//
+	// Runtime/Setup - Imperatives - Contact selection
+	//
+	_didPickContact(contact)
+	{
+		const self = this
+		self.pickedContact = contact
+		{ // payment id - if we already have one
+			if (self.pickedContact.HasOpenAliasAddress() === false) {
+				const payment_id = contact.payment_id
+				if (payment_id && typeof payment_id !== 'undefined') {
+					self._displayResolvedPaymentID(payment_id)
+				} else {
+					self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
+				}
+				return // no need to re-resolve what is not an OA addr
+			} else { // they're using an OA addr, so we still need to check if they still have one
+				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
+			}
+		}
+		// look up the payment ID again 
+		{ // (and show the "resolving UI")
+			self.resolving_activityIndicatorLayer.style.display = "block"
+			self.disable_submitButton()
+		}
+		self.context.openAliasResolver.ResolveOpenAliasAddress(
+			contact.address,
+			function(
+				err,
+				moneroReady_address,
+				payment_id, // may be undefined
+				tx_description,
+				openAlias_domain,
+				oaRecords_0_name,
+				oaRecords_0_description,
+				dnssec_used_and_secured
+			)
+			{
+				self.resolving_activityIndicatorLayer.style.display = "none"
+				self.enable_submitButton()
+				if (err) {
+					self.validationMessageLayer.SetValidationError(err.toString())
+					return
+				}
+				{ // memo field
+					tx_description = tx_description || "" // to facilitate clearing the memo field 
+					self.memoInputLayer.value = tx_description // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.				
+				}
+				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+					console.log("obtained payment_id", payment_id)
+					if (typeof payment_id !== 'undefined' && payment_id) {
+						self._displayResolvedPaymentID(payment_id)
+					} else {
+						// we already hid it above
+					}
+				}
+			}
+		)
 	}
 }
 module.exports = RequestFundsView
