@@ -45,9 +45,9 @@ if (process.env.NODE_ENV !== 'development') {
 		// TODO: re-emit and send this to the error reporting service
 		var errStr;
 		if (error) {
-			errStr = "An unexpected application error occurred.\n\nPlease let us know of the following error message via Support, especially if this issue persists:\n\n"+ error.toString()
+			errStr = "An unexpected application error occurred.\n\nPlease let us know of the following error message as it could be a bug:\n\n"+ error.toString()
 		} else {
-			errStr = "An unexpected application error occurred.\n\nPlease let us know via Support if this issue persists."
+			errStr = "An unexpected application error occurred.\n\nPlease let us know of this issue as it could be a bug."
 		}
 		alert(errStr)
 	})
