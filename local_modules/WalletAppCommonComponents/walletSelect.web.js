@@ -234,7 +234,7 @@ function New_fieldValue_walletSelectLayer(params)
 		layer.TearDown = function()
 		{ // You can call this function if you need to remove the layer from the DOM. You should call
 			// it so that it stops observing
-			console.log("Tearing down wallet select layer", layer)
+			console.log("♻️  Will tear down wallet select layer", layer)
 			walletsListController.removeListener(
 				walletsListController.EventName_listUpdated(),
 				layer._walletsListController_EventName_listUpdated
