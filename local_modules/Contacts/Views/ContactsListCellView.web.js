@@ -72,6 +72,13 @@ class ContactsListCellView extends View
 	//
 	// Internal - Teardown/Recycling
 	//
+	TearDown()
+	{
+		super.TearDown()
+		//
+		const self = this
+		self.prepareForReuse()
+	}
 	prepareForReuse()
 	{
 		const self = this
