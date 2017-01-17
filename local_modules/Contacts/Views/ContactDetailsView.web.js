@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class ContactDetailsView extends View
 {
@@ -186,6 +187,7 @@ class ContactDetailsView extends View
 		const self = this
 		self._contact_EventName_contactInfoUpdated_fn = function()
 		{
+			self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from the contact values
 			self._configureUIWith_contact(self.contact)
 		}
 		self.contact.on(
@@ -228,6 +230,37 @@ class ContactDetailsView extends View
 		//
 		return title
 	}
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{ // v--- self.navigationController because self is presented packaged in a StackNavigationView				
+						const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+						const EditContactFromContactsTabView = require('./EditContactFromContactsTabView.web')
+						//
+						const options = 
+						{
+							contact: self.contact
+						}
+						const view = new EditContactFromContactsTabView(options, self.context)
+						const navigationView = new StackAndModalNavigationView({}, self.context)
+						navigationView.SetStackViews([ view ])
+						self.navigationController.PresentView(navigationView, true)
+					}
+					return false
+				}
+			)
+		}
+		return view
+	}
+	
 	//
 	//
 	// Runtime - Imperatives - Configuration

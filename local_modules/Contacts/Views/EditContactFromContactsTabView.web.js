@@ -28,17 +28,27 @@
 //
 "use strict"
 //
-const ContactFormView = require('./ContactFormView.web')
+const ContactFormView = require('../../Contacts/Views/ContactFormView.web')
 //
-class AddContactView extends ContactFormView
+class EditContactFromContactsTabView extends ContactFormView
 {
-	constructor(options, context)
-	{
-		super(options, context) // call super before `this`
-	}
 	setup()
 	{
 		super.setup()
+		//
+		const self = this
+		{ // options
+			self.contact = self.options.contact
+			if (!self.contact) {
+				throw self.constructor.name + " requires an options.contact"
+			}
+		}
+		{ // initial view config
+			self.fullnameInputLayer.value = self.contact.fullname || ""
+			self.emojiInputLayer.value = self.contact.emoji || "" // TODO: when picker built
+			self.addressInputLayer.value = self.contact.address || ""
+			self.paymentIDInputLayer.value = self.contact.payment_id || "" // to avoid 'undefined'
+		}
 	}
 	//
 	//
@@ -46,13 +56,13 @@ class AddContactView extends ContactFormView
 	//
 	Navigation_Title()
 	{
-		return "New Contact"
+		return "Edit Contact"
 	}
 	//
 	//
 	// Runtime - Imperatives - Contact operation
 	//
-	_tryToCreateContact()
+	_tryToSaveContact()
 	{
 		const self = this
 		//
@@ -73,27 +83,24 @@ class AddContactView extends ContactFormView
 			self.validationMessageLayer.SetValidationError("Please enter an address for this contact.")
 			return
 		}
-		var paymentID_orNullForNew;
-		if (paymentID === "" || typeof paymentID === 'undefined') {
-			paymentID_orNullForNew = null // so we conform to WhenBooted_AddContact interface to get a paymentID generated for us
-		} else {
-			paymentID_orNullForNew = paymentID
-		}
-		self.context.contactsListController.WhenBooted_AddContact(
-			fullname,
-			emoji,
-			address,
-			paymentID_orNullForNew,
-			function(err, contact)
+		//
+		self.contact.Set_valuesByKey(
+			{
+				fullname: fullname,
+				emoji: emoji,
+				address: address,
+				payment_id: paymentID,
+			},
+			function(err)
 			{
 				if (err) {
-					console.error("Error while creating contact", err)
-					// TODO: show "validation" error here
+					console.error("Error while saving contact", err)
+					self.validationMessageLayer.SetValidationError(err.message)
 					return
 				}
 				self.validationMessageLayer.ClearAndHideMessage()
 				//
-				self._didSaveNewContact(contact)
+				self._didSaveContact()
 			}
 		)
 	}
@@ -106,13 +113,13 @@ class AddContactView extends ContactFormView
 		super._saveButtonView_pressed()
 		//
 		const self = this
-		self._tryToCreateContact()
+		self._tryToSaveContact()
 	}
 	//
 	//
 	// Runtime - Delegation - Yield
 	//
-	_didSaveNewContact(contact)
+	_didSaveContact()
 	{
 		const self = this
 		//
@@ -123,4 +130,4 @@ class AddContactView extends ContactFormView
 		})
 	}
 }
-module.exports = AddContactView
+module.exports = EditContactFromContactsTabView

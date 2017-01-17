@@ -281,9 +281,6 @@ class RequestFundsView extends View
 					const navigationView = new StackAndModalNavigationView({}, self.context)
 					navigationView.SetStackViews([ view ])
 					self.navigationController.PresentView(navigationView, true)
-					
-					// TODO: wait for this to hit "add", grab the contact which was created, and then tell the contact picker to select it
-					
 				}
 				return false
 			}

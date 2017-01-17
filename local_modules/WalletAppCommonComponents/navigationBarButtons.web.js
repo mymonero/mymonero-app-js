@@ -110,3 +110,30 @@ function New_RightSide_SaveButtonView(context)
 	return view
 }
 exports.New_RightSide_SaveButtonView = New_RightSide_SaveButtonView
+//
+function New_RightSide_EditButtonView(context)
+{
+	const view = new View({ tag: "a" }, context)
+	const layer = view.layer
+	{ // setup/style
+		layer.href = "#" // to make it clickable
+		layer.innerHTML = "Edit"
+	}
+	{
+		layer.style.display = "block"
+		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+		layer.style.marginTop = "10px"
+		layer.style.width = "90px"
+		layer.style.height = "24px"
+		layer.style.borderRadius = "2px"
+		layer.style.backgroundColor = "#383638"
+		layer.style.textDecoration = "none"
+		layer.style.fontSize = "22px"
+		layer.style.lineHeight = "112%" // % extra to get + aligned properly
+		layer.style.color = "#ffffff"
+		layer.style.fontWeight = "bold"
+		layer.style.textAlign = "center"
+	}
+	return view	
+}
+exports.New_RightSide_EditButtonView = New_RightSide_EditButtonView
