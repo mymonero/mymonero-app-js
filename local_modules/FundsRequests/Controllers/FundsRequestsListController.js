@@ -345,7 +345,6 @@ class FundsRequestsListController extends EventEmitter
 			{
 				var indexOfFundsRequest = null;
 				var fundsRequestToDelete = null;
-				console.log("_id" , _id)
 				for (let i = 0 ; i < fundsRequests_length ; i++) {
 					const fundsRequest = self.fundsRequests[i]
 					if (fundsRequest._id === _id) {

@@ -185,6 +185,7 @@ class ContactDetailsView extends View
 	startObserving_contact()
 	{
 		const self = this
+		// info update
 		self._contact_EventName_contactInfoUpdated_fn = function()
 		{
 			self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from the contact values
@@ -193,6 +194,21 @@ class ContactDetailsView extends View
 		self.contact.on(
 			self.contact.EventName_contactInfoUpdated(),
 			self._contact_EventName_contactInfoUpdated_fn
+		)
+		// deletion
+		self._contact_EventName_deleted_fn = function()
+		{
+			const current_topStackView = self.navigationController.topStackView
+			const isOnTop = current_topStackView.IsEqualTo(self) == true
+			if (isOnTop) {
+				self.navigationController.PopView(true) // animated
+			} else { // or, we're not on top, so let's just remove self from the list of views
+				self.navigationController.ImmediatelyExtractStackView(self)
+			}
+		}
+		self.contact.on(
+			self.contact.EventName_deleted(),
+			self._contact_EventName_deleted_fn
 		)
 	}
 	//
@@ -211,6 +227,10 @@ class ContactDetailsView extends View
 		self.contact.removeListener(
 			self.contact.EventName_contactInfoUpdated(),
 			self._contact_EventName_contactInfoUpdated_fn
+		)
+		self.contact.removeListener(
+			self.contact.EventName_deleted(),
+			self._contact_EventName_deleted_fn
 		)
 	}
 	

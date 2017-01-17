@@ -117,10 +117,7 @@ class AddContactView extends ContactFormView
 		const self = this
 		//
 		const modalParentView = self.navigationController.modalParentView
-		setTimeout(function()
-		{ // just to make sure the PushView finished
-			modalParentView.DismissTopModalView(true)
-		})
+		modalParentView.DismissTopModalView(true)
 	}
 }
 module.exports = AddContactView

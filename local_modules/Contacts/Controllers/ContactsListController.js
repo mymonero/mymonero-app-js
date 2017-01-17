@@ -369,7 +369,6 @@ class ContactsListController extends EventEmitter
 			{
 				var indexOfContact = null;
 				var contactToDelete = null;
-				console.log("_id" , _id)
 				for (let i = 0 ; i < contacts_length ; i++) {
 					const contact = self.contacts[i]
 					if (contact._id === _id) {

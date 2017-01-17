@@ -271,6 +271,10 @@ class Contact extends EventEmitter
 	{
 		return "EventName_contactInfoUpdated"
 	}
+	EventName_deleted()
+	{
+		return "EventName_deleted"
+	}
 	//
 	HasOpenAliasAddress()
 	{
@@ -306,7 +310,14 @@ class Contact extends EventEmitter
 		const self = this
 		contact_persistence_utils.DeleteFromDisk(
 			self,
-			fn
+			function(err) {
+				if (err) {
+					fn(err)
+					return
+				}
+				self.emit(self.EventName_deleted(), self._id)
+				fn()
+			}
 		)
 	}
 	

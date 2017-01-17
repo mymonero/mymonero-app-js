@@ -29,6 +29,7 @@
 "use strict"
 //
 const ContactFormView = require('../../Contacts/Views/ContactFormView.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 //
 class EditContactFromContactsTabView extends ContactFormView
 {
@@ -43,12 +44,45 @@ class EditContactFromContactsTabView extends ContactFormView
 				throw self.constructor.name + " requires an options.contact"
 			}
 		}
+		{ // addtl UI elements
+			self._setup_deleteRecordButtonLayer()
+		}
 		{ // initial view config
 			self.fullnameInputLayer.value = self.contact.fullname || ""
 			self.emojiInputLayer.value = self.contact.emoji || "" // TODO: when picker built
 			self.addressInputLayer.value = self.contact.address || ""
 			self.paymentIDInputLayer.value = self.contact.payment_id || "" // to avoid 'undefined'
 		}
+	}
+	_setup_deleteRecordButtonLayer()
+	{
+		const self = this
+		const layer = commonComponents_tables.New_deleteRecordNamedButton_aLayer("contact")
+		{
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						const record_id = self.contact._id
+						self.context.contactsListController.WhenBooted_DeleteContactWithId(
+							record_id,
+							function(err)
+							{
+								if (err) {
+									throw err
+									return
+								}
+								self._thisRecordWasDeleted()
+							}
+						)
+					}
+					return false
+				}
+			)
+		}
+		self.layer.appendChild(layer)
 	}
 	//
 	//
@@ -57,6 +91,19 @@ class EditContactFromContactsTabView extends ContactFormView
 	Navigation_Title()
 	{
 		return "Edit Contact"
+	}
+	//
+	//
+	// Runtime - Imperatives - UI
+	//
+	popView()
+	{
+		const self = this
+		const modalParentView = self.navigationController.modalParentView
+		setTimeout(function()
+		{ // just to make sure the PushView is finished
+			modalParentView.DismissTopModalView(true)
+		})
 	}
 	//
 	//
@@ -117,17 +164,21 @@ class EditContactFromContactsTabView extends ContactFormView
 	}
 	//
 	//
+	// Runtime - Delegation - Deletion -> navigation handling
+	//
+	_thisRecordWasDeleted()
+	{
+		const self = this
+		self.popView()
+	}
+	//
+	//
 	// Runtime - Delegation - Yield
 	//
 	_didSaveContact()
 	{
 		const self = this
-		//
-		const modalParentView = self.navigationController.modalParentView
-		setTimeout(function()
-		{ // just to make sure the PushView finished
-			modalParentView.DismissTopModalView(true)
-		})
+		self.popView()
 	}
 }
 module.exports = EditContactFromContactsTabView
