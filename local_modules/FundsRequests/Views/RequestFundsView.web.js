@@ -298,6 +298,9 @@ class RequestFundsView extends View
 		{ // cancel any requests
 			self.cancelAny_requestHandle_for_oaResolution()
 		}
+		{
+			self.contactPickerLayer.Component_TearDown() // important! so it stops observing
+		}
 		super.TearDown()
 	}
 	cancelAny_requestHandle_for_oaResolution()

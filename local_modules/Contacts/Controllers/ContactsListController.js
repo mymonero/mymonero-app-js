@@ -269,6 +269,10 @@ class ContactsListController extends EventEmitter
 	{
 		return "EventName_listUpdated"
 	}
+	EventName_deletedContactWithId()
+	{
+		return "EventName_deletedContactWithId"
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -394,6 +398,7 @@ class ContactsListController extends EventEmitter
 							fn(err)
 							return
 						}
+						self.emit(self.EventName_deletedContactWithId(), contactToDelete._id)
 						contactToDelete = null // free
 						fn()
 					}

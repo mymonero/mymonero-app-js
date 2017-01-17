@@ -33,8 +33,8 @@ function New_contactPickerLayer(
 	contactsListController,
 	didPickContact_fn,
 	didClearPickedContact_fn
-)
-{
+) //  -> Component (which is just a customized DOM element obj)
+{ // NOTE: You must call Component_TearDown when you're done with this component
 	if (!contactsListController) {
 		throw "New_contactPickerLayer requires a contactsListController"
 	}
@@ -145,7 +145,7 @@ function New_contactPickerLayer(
 				contact, 
 				function(clicked_contact)
 				{
-					_selectContact(clicked_contact)
+					_pickContact(clicked_contact)
 				}
 			)
 			autocompleteResultsLayer.appendChild(layer)
@@ -169,19 +169,23 @@ function New_contactPickerLayer(
 	{
 		inputLayer.style.display = "block"
 	}
-	function _selectContact(contact)
+	var __pickedContact = null
+	function _pickContact(contact)
 	{
 		_removeAllAndHideAutocompleteResults()
 		_removeExistingPickedContact() // but don't do stuff like focusing the input layer
 		_clearAndHideInputLayer()
+		//
+		__pickedContact = contact
 		_displayPickedContact(contact)
 		//
 		didPickContact_fn(contact)
 	}
-	containerLayer.ContactPicker_pickContact = _selectContact // exposing this as consumers need it
+	containerLayer.ContactPicker_pickContact = _pickContact // exposing this as consumers need it
 	var __pickedContactLayer = null;
 	function _removeExistingPickedContact()
 	{
+		__pickedContact = null
 		if (__pickedContactLayer !== null) {
 			containerLayer.removeChild(__pickedContactLayer)
 			__pickedContactLayer = null
@@ -190,22 +194,45 @@ function New_contactPickerLayer(
 			didClearPickedContact_fn()
 		}
 	}
+	function _unpickExistingContact_andRedisplayPickInput()
+	{
+		_removeExistingPickedContact()
+		_redisplayInputLayer()
+		setTimeout(function()
+		{ // to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
+			inputLayer.focus() 
+		})
+	}
 	function _displayPickedContact(contact)
 	{
 		__pickedContactLayer = _new_pickedContactLayer(
 			contact,
 			function(this_pickedContactLayer)
 			{
-				_removeExistingPickedContact()
-				_redisplayInputLayer()
-				setTimeout(function()
-				{ // to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
-					inputLayer.focus() 
-				})
-				
+				_unpickExistingContact_andRedisplayPickInput()
 			}
 		)
 		containerLayer.appendChild(__pickedContactLayer)
+	}
+	//
+	// observing contacts list controller for deletions 
+	var _contactsListController_EventName_deletedContactWithId_fn = function(_id)
+	{ // the currently picked contact was deleted, so unpick it
+		if (__pickedContact && __pickedContact._id === _id) {
+			_unpickExistingContact_andRedisplayPickInput()
+		}
+	}
+	contactsListController.on(
+		contactsListController.EventName_deletedContactWithId(),
+		_contactsListController_EventName_deletedContactWithId_fn
+	)
+	containerLayer.Component_TearDown = function()
+	{ // IMPORTANT: You must call this when you're done with this component
+		console.log("♻️  Tearing down contacts picker.")
+		contactsListController.removeListener(
+			contactsListController.EventName_deletedContactWithId(),
+			_contactsListController_EventName_deletedContactWithId_fn
+		)
 	}
 	//
 	return containerLayer

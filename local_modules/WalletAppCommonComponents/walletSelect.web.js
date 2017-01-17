@@ -130,8 +130,10 @@ function New_fieldValue_walletSelectLayer(params)
 			)
 		}
 	}
-	layer.__givenBooted_configureWithWallets = function()
+	layer.__givenBooted_configureWithWallets = function(fn)
 	{
+		fn = fn || function() {}
+		//
 		layer.__removeAllOptionLayers() // (and stop observing)
 		//
 		const wallets = walletsListController.wallets
@@ -180,16 +182,21 @@ function New_fieldValue_walletSelectLayer(params)
 			if (layer.CurrentlySelectedWallet !== null) { // reconstitute selection if possible
 				layer.value = layer.CurrentlySelectedWallet._id
 			}
-			// cache/update selection state
-			layer.CurrentlySelectedWallet = layer.__givenBooted_lookup_currentlySelectedWallet() // trailing tracker for diff
+			setTimeout(function() {
+				// cache/update selection state - and on next tick because it races
+				layer.CurrentlySelectedWallet = layer.__givenBooted_lookup_currentlySelectedWallet() // trailing tracker for diff
+				fn()
+			})
 		}
 	}
 	{ // Initiate or wait for boot
 		walletsListController.ExecuteWhenBooted(
 			function()
 			{
-				layer.__givenBooted_configureWithWallets()
-				layer.isBooted = true // now we can finally set this to true
+				layer.__givenBooted_configureWithWallets(function()
+				{
+					layer.isBooted = true // now we can finally set this to true
+				})
 			}
 		)
 	}
