@@ -88,8 +88,8 @@ class ContactsListView extends View
 		super.TearDown()
 		//
 		if (self.current_contactDetailsView !== null) {
-			self.current_contactDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_contactDetailsView = null // must zero again and should free
+			self.current_contactDetailsView.TearDown()
+			self.current_contactDetailsView = null
 		}
 	}
 	//

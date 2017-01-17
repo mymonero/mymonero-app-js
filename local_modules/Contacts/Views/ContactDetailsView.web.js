@@ -220,6 +220,12 @@ class ContactDetailsView extends View
 		super.TearDown()
 		const self = this
 		self.stopObserving_contact()
+		{
+			if (typeof self.current_EditContactFromContactsTabView !== 'undefined' && self.current_EditContactFromContactsTabView) {
+				self.current_EditContactFromContactsTabView.TearDown()
+				self.current_EditContactFromContactsTabView = null
+			}
+		}
 	}
 	stopObserving_contact()
 	{
@@ -270,6 +276,7 @@ class ContactDetailsView extends View
 							contact: self.contact
 						}
 						const view = new EditContactFromContactsTabView(options, self.context)
+						self.current_EditContactFromContactsTabView = view
 						const navigationView = new StackAndModalNavigationView({}, self.context)
 						navigationView.SetStackViews([ view ])
 						self.navigationController.PresentView(navigationView, true)
@@ -330,6 +337,10 @@ class ContactDetailsView extends View
 		const self = this
 		super.viewDidAppear()
 		// teardown any child/referenced stack navigation views if necessary…
+		if (typeof self.current_EditContactFromContactsTabView !== 'undefined' && self.current_EditContactFromContactsTabView) {
+			self.current_EditContactFromContactsTabView.TearDown()
+			self.current_EditContactFromContactsTabView = null
+		}
 	}
 }
 module.exports = ContactDetailsView
