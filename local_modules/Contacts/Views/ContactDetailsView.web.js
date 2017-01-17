@@ -51,6 +51,7 @@ class ContactDetailsView extends View
 	{
 		const self = this
 		self.setup_views()
+		self.startObserving_contact()
 	}
 	setup_views()
 	{
@@ -81,6 +82,7 @@ class ContactDetailsView extends View
 			self.tableSection_containerLayer = containerLayer
 			{
 				self._setup_field_address()
+				self._setup_field__cached_OAResolved_XMR_address()
 				{
 					containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 				}
@@ -112,6 +114,25 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		self.address__valueField_component = div
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_setup_field__cached_OAResolved_XMR_address()
+	{
+		const self = this
+		const fieldLabelTitle = "Resolved Address (XMR)"
+		const value = self.contact.cached_OAResolved_XMR_address
+		const valueToDisplayIfValueNil = "N/A"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			fieldLabelTitle, 
+			value,
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		self.cached_OAResolved_XMR_address__valueField_component = div
+		if (typeof value === 'undefined' || !value) {
+			div.style.display = "none"
+		}
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	_setup_field_paymentID()
@@ -126,6 +147,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		self.payment_id__valueField_component = div
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	_setup_actionButton_send()
@@ -159,6 +181,38 @@ class ContactDetailsView extends View
 		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	//
+	startObserving_contact()
+	{
+		const self = this
+		self._contact_EventName_contactInfoUpdated_fn = function()
+		{
+			self._configureUIWith_contact(self.contact)
+		}
+		self.contact.on(
+			self.contact.EventName_contactInfoUpdated(),
+			self._contact_EventName_contactInfoUpdated_fn
+		)
+	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		super.TearDown()
+		const self = this
+		self.stopObserving_contact()
+	}
+	stopObserving_contact()
+	{
+		const self = this
+		self.contact.removeListener(
+			self.contact.EventName_contactInfoUpdated(),
+			self._contact_EventName_contactInfoUpdated_fn
+		)
+	}
+	
+	//
 	//
 	// Runtime - Accessors - Navigation
 	//
@@ -174,6 +228,35 @@ class ContactDetailsView extends View
 		//
 		return title
 	}
+	//
+	//
+	// Runtime - Imperatives - Configuration
+	//
+	_configureUIWith_contact()
+	{
+		const self = this
+		// TODO: diffing might be nice here
+		{
+			const value = self.contact.address
+			const layer = self.address__valueField_component
+			layer.Component_SetValue(value)
+		}
+		{
+			const value = self.contact.cached_OAResolved_XMR_address
+			const layer = self.cached_OAResolved_XMR_address__valueField_component
+			if (!value || typeof value === 'undefined') {
+				layer.style.display = "none"
+			} else {
+				layer.Component_SetValue(value)
+				layer.style.display = "block"
+			}
+		}
+		{
+			const value = self.contact.payment_id
+			const layer = self.payment_id__valueField_component
+			layer.Component_SetValue(value)
+		}
+	}	
 	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle

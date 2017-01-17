@@ -76,6 +76,8 @@ class Contact extends EventEmitter
 	{
 		const self = this
 		{
+			self._startObserving_openAliasResolver()
+			//
 			self.hasBooted = true
 		}
 		setTimeout(function()
@@ -188,13 +190,62 @@ class Contact extends EventEmitter
 		}
 	}
 	//
+	_startObserving_openAliasResolver()
+	{
+		const self = this
+		const emitter = self.context.openAliasResolver
+		self._EventName_resolvedOpenAliasAddress_fn = function(
+			openAliasAddress,
+			//
+			moneroReady_address,
+			payment_id, // may be undefined
+			tx_description, // may be undefined
+			//
+			openAlias_domain,
+			oaRecords_0_name,
+			oaRecords_0_description,
+			dnssec_used_and_secured
+		)
+		{
+			if (self.address === openAliasAddress) {
+				// ^-- this update is for self
+				self.Set_valuesByKey(
+					{
+						payment_id: payment_id, // always overwrite, regardless of content
+						cached_OAResolved_XMR_address: moneroReady_address
+					},
+					function(err)
+					{
+						if (err) {
+							throw err
+						}
+					}
+				)
+			}
+		}
+		emitter.on(
+			emitter.EventName_resolvedOpenAliasAddress(),
+			self._EventName_resolvedOpenAliasAddress_fn
+		)
+	}
+	//
 	//
 	// Lifecycle - Teardown
 	//
 	TearDown()
 	{
 		const self = this
-		// no .on calls in self (yet) so nothing to do here
+		//
+		self._stopObserving_openAliasResolver()
+	}
+	_stopObserving_openAliasResolver()
+	{
+		const self = this
+		const emitter = self.context.openAliasResolver
+		emitter.removeListener(
+			emitter.EventName_resolvedOpenAliasAddress(),
+			self._EventName_resolvedOpenAliasAddress_fn
+		)
 	}
 
 
@@ -289,97 +340,51 @@ class Contact extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
 
-	// TODO: rework these methods into a single method which diffs
-
-	Set_fullname(
-		toValue,
-		fn
+	Set_valuesByKey(
+		valuesByKey, // keys like "emoji", "fullname", "address", "cached_OAResolved_XMR_address"
+		fn // (err?) -> Void
 	)
 	{
 		const self = this
-		self.toValue = toValue
-		self.saveToDisk(
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to save new fullname", err)
-				} else {
-					console.log("📝  Successfully saved new fullname.")
-					self._atRuntime_contactInfoUpdated()
+		const valueKeys = Object.keys(valuesByKey)
+		for (let valueKey of valueKeys) {
+					console.log("valueKey", valueKey)
+			const value = valuesByKey[valueKey]
+			{ // validate
+				if (valueKey === "emoji") {
+					const supposedEmoji = value
+					if (Emojis.indexOf(supposedEmoji) === -1) {
+						const errStr = "Input to set emoji was not a known emoji."
+						throw errStr
+						fn(new Error(errStr))
+						return
+					}
+				} else if (valueKey === "address") {
+					const address = value
+					if (self.context.openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) { // if new one is not OA addr, clear cached OA-resolved info
+						console.log("clearing self.cached_OAResolved_XMR_address ", self.cached_OAResolved_XMR_address)
+						self.cached_OAResolved_XMR_address = null
+					}
 				}
-				fn(err)
 			}
-		)
-	}
-	Set_address(
-		toValue,
-		fn
-	)
-	{
-		const self = this
-		self.address = address
-		self.saveToDisk(
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to save new address", err)
-				} else {
-					console.log("📝  Successfully saved new address.")
-					self._atRuntime_contactInfoUpdated()
-				}
-				fn(err)
-			}
-		)
-	}
-	Set_payment_id(
-		toValue,
-		fn
-	)
-	{
-		const self = this
-		self.payment_id = payment_id
-		self.saveToDisk(
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to save new payment_id", err)
-				} else {
-					console.log("📝  Successfully saved new payment_id")
-					self._atRuntime_contactInfoUpdated()
-				}
-				fn(err)
-			}
-		)
-	}
-	Set_emoji(
-		toValue,
-		fn
-	)
-	{
-		const self = this
-		{ // validate
-			if (Emojis.indexOf(emoji) === -1) {
-				const errStr = "input to Set_emoji was not a known emoji"
-				throw errStr
-				fn(new Error(errStr))
-				return
+			{ // set
+				self[valueKey] = value
 			}
 		}
-		self.emoji = toValue
 		self.saveToDisk(
 			function(err)
 			{
 				if (err) {
-					console.error("Failed to save new emoji", err)
+					console.error("Failed to save new valuesByKey", err)
 				} else {
-					console.log("📝  Successfully saved new emoji")
+					console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)
 			}
 		)
 	}
-
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private

@@ -85,33 +85,59 @@ exports.New_separatorLayer = New_separatorLayer
 function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText)
 {
 	const layer = document.createElement("a")
-	{
+	{ // setup
 		layer.innerHTML = "COPY"
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
 		layer.style.fontSize = "15px"
 		layer.style.fontWeight = "bold"
-		//
-		layer.style.color = enabled_orTrue !== false ? "#6666ff" : "#444"
-		if (enabled_orTrue === true) {
-			layer.href = "#" // to make it look clickable
-		}
-		
 	}
-	if (enabled_orTrue !== false) {
+	var runtime_valueToCopy = value
+	var runtime_pasteboard_valueContentType_orText = pasteboard_valueContentType_orText
+	{ // component fns
+		layer.Component_SetEnabled = function(enabled)
+		{
+			layer.Component_IsEnabled = enabled
+			if (enabled !== false) {
+				layer.href = "#" // to make it look clickable
+				layer.style.color = "#6666ff"
+			} else {
+				layer.href = ""
+				layer.style.color = "#444"
+			}
+		}
+		layer.Component_SetValue = function(to_value, to_pasteboard_valueContentType_orText)
+		{
+			runtime_valueToCopy = to_value
+			runtime_pasteboard_valueContentType_orText = to_pasteboard_valueContentType_orText
+			if (to_value === "" || typeof to_value === 'undefined' || !to_value) {
+				layer.Component_SetEnabled(false)
+			} else {
+				layer.Component_SetEnabled(true)
+			}
+		}
+	}
+	{ // initial config
+		layer.Component_SetEnabled(enabled_orTrue)
+	}
+	{ // start observing
 		layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
 				{
-					pasteboard.CopyString(value, pasteboard_valueContentType_orText)
+					if (layer.Component_IsEnabled !== false) {
+						pasteboard.CopyString(
+							runtime_valueToCopy, 
+							runtime_pasteboard_valueContentType_orText
+						)
+					}
 				}
 				return false
 			}
 		)
 	}
-	//
 	return layer
 }
 exports.New_copyButton_aLayer = New_copyButton_aLayer
@@ -207,9 +233,12 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
 	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
 	const div = New_fieldContainerLayer()
+	var labelLayer;
+	var copy_buttonLayer; // functionally namespaced for scope clarity in call to SetValue below
+	var valueLayer;
 	{
 		{ // left
-			const labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle)
+			labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle)
 			div.appendChild(labelLayer)
 		}
 		{ // right
@@ -218,6 +247,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 				isValueNil === false ? true : false,
 				pasteboard
 			)
+			copy_buttonLayer = buttonLayer // essential
 			buttonLayer.style.float = "right"
 			div.appendChild(buttonLayer)
 		}
@@ -226,7 +256,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			clearingBreakLayer.clear = "both"
 			div.appendChild(clearingBreakLayer)
 		}
-		const valueLayer = New_fieldValue_labelLayer("" + valueToDisplay)
+		valueLayer = New_fieldValue_labelLayer("" + valueToDisplay)
 		{ // special case
 			valueLayer.style.float = "left"
 			valueLayer.style.textAlign = "left"
@@ -238,6 +268,14 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 		div.appendChild(valueLayer)
 	}
 	div.appendChild(New_clearingBreakLayer()) // preserve height; better way?
+	{
+		div.Component_SetValue = function(to_value)
+		{
+			const to_valueToDisplay = isValueNil === false ? "" + to_value : valueToDisplayIfValueNil_orDefault
+			valueLayer.innerHTML = to_valueToDisplay
+			copy_buttonLayer.Component_SetValue(to_value)
+		}
+	}
 	//
 	return div
 }
