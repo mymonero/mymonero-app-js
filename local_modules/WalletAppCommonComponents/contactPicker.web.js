@@ -237,6 +237,7 @@ function New_contactPickerLayer(
 			contactsListController.EventName_deletedContactWithId(),
 			_contactsListController_EventName_deletedContactWithId_fn
 		)
+		_contactsListController_EventName_deletedContactWithId_fn = null
 	}
 	//
 	return containerLayer

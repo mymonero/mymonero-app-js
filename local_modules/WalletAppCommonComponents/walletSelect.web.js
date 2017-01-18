@@ -246,6 +246,7 @@ function New_fieldValue_walletSelectLayer(params)
 				walletsListController.EventName_listUpdated(),
 				layer._walletsListController_EventName_listUpdated
 			)
+			layer._walletsListController_EventName_listUpdated = null
 		}
 	}
 	return layer
