@@ -402,31 +402,6 @@ class Contact extends EventEmitter
 				self[valueKey] = value
 			}
 		}
-		
-		//
-		// const isAnOAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) == true
-		// var paymentID_toSave;
-		// if (paymentID === "" || typeof paymentID === 'undefined') {
-		// 	if (!isAnOAAddress) {
-		// 		// TODO: detect integrated addr, extract payment id
-		// 	}
-		// } else {
-		// 	paymentID_orNullForNew = paymentID
-		// }
-		// // check for whether need to generate payment id
-		//         if (isAnOAAddress) {
-		// 	// then do not generate a payment id for it, and do not use the payment id entered, but instead, disable the save button, look up the payment id from the openAliasResolver, and then, making sure to get onto the next tick to avoid any possibility of contact observing OA resolve racing, call set_valuseByKey with eaxactly what's passed back
-		//         } else {
-		// 	var payment_id;
-		// 	if (paymentID_orNullForNew === null) {
-		// 		payment_id = monero_requestingFunds_utils.New_TransactionID()
-		// 	} else {
-		// 		payment_id = paymentID_orNullForNew
-		// 	}
-		//
-		//         }
-		//
-		
 		self.saveToDisk(
 			function(err)
 			{

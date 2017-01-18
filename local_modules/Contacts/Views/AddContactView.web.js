@@ -30,7 +30,7 @@
 //
 const ContactFormView = require('./ContactFormView.web')
 const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
-const monero_requestingFunds_utils = require('../../monero_utils/monero_requestingFunds_utils')
+const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_utils')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
 class AddContactView extends ContactFormView
@@ -104,14 +104,14 @@ class AddContactView extends ContactFormView
 			try {
 				address__decode_result = monero_utils.decode_address(address)
 			} catch (e) {
-				self.validationMessageLayer.SetValidationError(typeof e === 'string' ? e : e.toString())
+				self.validationMessageLayer.SetValidationError("Please enter a valid Monero address") // not using the error here cause it can be pretty unhelpful to the lay user
 				return
 			}
 			const integratedAddress_paymentId = address__decode_result.intPaymentId
 			const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
 			if (isIntegratedAddress !== true) { // not an integrated addr - normal wallet addr
 				if (paymentID === "" || typeof paymentID === 'undefined') { // if no existing payment ID
-					paymentID = monero_requestingFunds_utils.New_TransactionID() // generate new one for them
+					paymentID = monero_paymentID_utils.New_TransactionID() // generate new one for them
 					self.paymentIDInputLayer.value = paymentID
 				} else { // just use entered paymentID
 				}
@@ -172,6 +172,12 @@ class AddContactView extends ContactFormView
 		//
 		function _proceedTo_addContact_paymentID(paymentID__toSave, cached_OAResolved_XMR_address__orUndefined)
 		{
+			const paymentID_exists = paymentID__toSave && typeof paymentID__toSave !== 'undefined'
+			const paymentID_existsAndIsNotValid = paymentID_exists && monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(paymentID__toSave) === false
+			if (paymentID_existsAndIsNotValid === true) {
+				self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
+				return
+			}
 			self.context.contactsListController.WhenBooted_AddContact(
 				{
 					fullname: fullname,

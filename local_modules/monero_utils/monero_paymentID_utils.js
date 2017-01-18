@@ -28,38 +28,29 @@
 //
 "use strict"
 //
-const monero_config = require('./monero_config')
+const monero_utils = require('./monero_cryptonote_utils_instance')
 //
-function New_RequestFunds_URI(
-	args
-)// -> String?
+function New_TransactionID()
 {
-	const address = args.address
-	if (!address) {
-		throw "missing address"
-		return null
-	}
-    var uri = monero_config.coinUriPrefix + address 
-	var isAppendingParam0 = true
-    function addParam(parameterName, value)
-	{
-        if (!value || typeof value === 'undefined') {
-            return
-        }
-		var conjunctionStr = "&"
-        if (isAppendingParam0 === true) {
-            isAppendingParam0 = false
-			conjunctionStr = "?"
-        }
-		uri += conjunctionStr
-        uri += parameterName + '=' + encodeURIComponent(value)
-    }
-	{
-	    addParam('tx_amount', args.amount)
-	    addParam('tx_description', args.description)
-	    addParam('tx_payment_id', args.payment_id)
-	    addParam('tx_message', args.message)
-	}
-	return uri
+	return monero_utils.rand_32()
 }
-exports.New_RequestFunds_URI = New_RequestFunds_URI
+exports.New_TransactionID = New_TransactionID
+//
+function IsValidPaymentIDOrNoPaymentID(payment_id)
+{
+	if (
+		payment_id 
+			&&
+		(
+			payment_id.length !== 64 
+				|| 
+			!(/^[0-9a-fA-F]{64}$/.test(payment_id))
+		) 
+			&& 
+		payment_id.length !== 16
+	) {
+		return false
+	}
+	return true
+}
+exports.IsValidPaymentIDOrNoPaymentID = IsValidPaymentIDOrNoPaymentID

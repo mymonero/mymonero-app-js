@@ -32,6 +32,7 @@ const async = require('async')
 //
 const monero_config = require('./monero_config')
 const monero_utils = require('./monero_cryptonote_utils_instance')
+const monero_paymentID_utils = require('./monero_paymentID_utils')
 const monero_openalias_utils = require('../OpenAlias/monero_openalias_utils')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
@@ -155,7 +156,7 @@ function SendFunds(
         }
 		//
 		// Validation
-        if (IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
+        if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
 			const errStr = "The payment ID you've entered is not valid"
 			__trampolineFor_err_withStr(errStr)
             return
@@ -471,25 +472,6 @@ function new_moneroReadyTargetDescriptions_fromTargetDescriptions(
 		}
 	)
 }
-//
-function IsValidPaymentIDOrNoPaymentID(payment_id)
-{
-	if (
-		payment_id 
-			&&
-		(
-			payment_id.length !== 64 
-				|| 
-			!(/^[0-9a-fA-F]{64}$/.test(payment_id))
-		) 
-			&& 
-		payment_id.length !== 16
-	) {
-		return false
-	}
-	return true
-}
-exports.IsValidPaymentIDOrNoPaymentID = IsValidPaymentIDOrNoPaymentID
 //
 function OutputsAndAmountToUseForMixin(
 	target_amount,
