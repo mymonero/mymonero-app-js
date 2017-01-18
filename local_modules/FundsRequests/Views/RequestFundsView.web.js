@@ -202,13 +202,15 @@ class RequestFundsView extends View
 			{ // did pick
 				self._didPickContact(contact)
 			},
-			function()
+			function(clearedContact)
 			{
 				self.cancelAny_requestHandle_for_oaResolution()
 				//
 				self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
 				self._hideResolvedPaymentID()
-				self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact
+				if (clearedContact && clearedContact.HasOpenAliasAddress() === true) {
+					self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
+				}
 				self.pickedContact = null
 			}
 		)
@@ -470,7 +472,7 @@ class RequestFundsView extends View
 				return
 			}
 		}
-		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact
+		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
 		if (
 			self.contactPickerLayer.ContactPicker_inputLayer.value !== "" // they have entered something but not picked a contact
 			&& hasPickedAContact == false // not strictly necessary to check hasPickedAContact, but for clarity
@@ -482,9 +484,14 @@ class RequestFundsView extends View
 		const message = undefined // no support yet 
 		var payment_id = null
 		if (hasPickedAContact === true) { // we have already re-resolved the payment_id
-			payment_id = self.pickedContact.payment_id
-			if (!payment_id || typeof payment_id === 'undefined') {
-				throw "Payment ID was null despite user having selected a contact"
+			if (self.pickedContact.HasIntegratedAddress() === true) {
+				payment_id = null // we don't want to use this because it's a compact payment_id which isn't appropriate for a request... TODO?
+				console.warn("⚠️  Ignoring Contact's integrated address payment ID.", self.pickedContact)
+			} else {
+				payment_id = self.pickedContact.payment_id
+				if (!payment_id || typeof payment_id === 'undefined') {
+					throw "Payment ID was null despite user having selected a contact"
+				}
 			}
 		}
 		self.__generateRequestWith(
@@ -588,6 +595,8 @@ class RequestFundsView extends View
 				} else {
 					self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
 				}
+				// and exit early
+				//
 				return // no need to re-resolve what is not an OA addr
 			} else { // they're using an OA addr, so we still need to check if they still have one
 				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
@@ -643,7 +652,6 @@ class RequestFundsView extends View
 					self.memoInputLayer.value = tx_description // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.				
 				}
 				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
-					console.log("obtained payment_id", payment_id)
 					if (typeof payment_id !== 'undefined' && payment_id) {
 						self._displayResolvedPaymentID(payment_id)
 					} else {

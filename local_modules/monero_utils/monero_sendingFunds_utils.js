@@ -137,7 +137,13 @@ function SendFunds(
 		// Derive/finalize some values…
 		var final__payment_id = payment_id
         var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one
-        var address__decode_result = monero_utils.decode_address(moneroReady_targetDescription_address)
+        var address__decode_result; 
+		try {
+			address__decode_result = monero_utils.decode_address(moneroReady_targetDescription_address)
+		} catch (e) {
+			__trampolineFor_err_withStr(typeof e === 'string' ? e : e.toString())
+			return
+		}
         if (address__decode_result.intPaymentId && payment_id) {
 			const errStr = "Payment ID field must be blank when using an Integrated Address"
 			__trampolineFor_err_withStr(errStr)

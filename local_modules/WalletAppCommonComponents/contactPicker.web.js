@@ -185,13 +185,17 @@ function New_contactPickerLayer(
 	var __pickedContactLayer = null;
 	function _removeExistingPickedContact()
 	{
+		const existing__pickedContact = __pickedContact
+		const hadExistingContact = existing__pickedContact !== null
 		__pickedContact = null
 		if (__pickedContactLayer !== null) {
 			containerLayer.removeChild(__pickedContactLayer)
 			__pickedContactLayer = null
 		}
-		if (didClearPickedContact_fn) {
-			didClearPickedContact_fn()
+		if (hadExistingContact) {
+			if (didClearPickedContact_fn) {
+				didClearPickedContact_fn(existing__pickedContact)
+			}
 		}
 	}
 	function _unpickExistingContact_andRedisplayPickInput()

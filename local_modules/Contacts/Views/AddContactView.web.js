@@ -29,6 +29,7 @@
 "use strict"
 //
 const ContactFormView = require('./ContactFormView.web')
+const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 const monero_requestingFunds_utils = require('../../monero_utils/monero_requestingFunds_utils')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
@@ -51,7 +52,6 @@ class AddContactView extends ContactFormView
 		super._setup_field_address()
 		// we're hooking into this function purely to get called just after the corresponding field layer's setup
 		const self = this 
-		console.log("_setup_field_address", self)
 		self._setup_form_resolving_activityIndicatorLayer()
 	}
 	_setup_form_resolving_activityIndicatorLayer()
@@ -61,28 +61,6 @@ class AddContactView extends ContactFormView
 		layer.style.display = "none" // initial state
 		self.resolving_activityIndicatorLayer = layer
 		self.form_containerLayer.appendChild(layer)
-	}
-	//
-	//
-	// Lifecycle - Teardown
-	//
-	TearDown()
-	{
-		super.TearDown()
-		//
-		const self = this
-		self.cancelAny_requestHandle_for_oaResolution()
-	}
-	cancelAny_requestHandle_for_oaResolution()
-	{
-		const self = this
-		//
-		let req = self.requestHandle_for_oaResolution
-		if (typeof req !== 'undefined' && req !== null) {
-			console.log("💬  Aborting requestHandle_for_oaResolution")
-			req.abort()
-		}
-		self.requestHandle_for_oaResolution = null
 	}
 	//
 	//
@@ -104,10 +82,6 @@ class AddContactView extends ContactFormView
 		const emoji = self.emojiInputLayer.value // TODO: when picker built
 		const address = self.addressInputLayer.value
 		var paymentID = self.paymentIDInputLayer.value
-		if (paymentID === "" || typeof paymentID === 'undefined') {
-			paymentID = monero_requestingFunds_utils.New_TransactionID() // generate new one for them
-		} else { // just use entered paymentID
-		}
 		//
 		if (typeof fullname === 'undefined' || !fullname) {
 			self.validationMessageLayer.SetValidationError("Please enter a name for this contact.")
@@ -126,6 +100,26 @@ class AddContactView extends ContactFormView
 		//
 		const openAliasResolver = self.context.openAliasResolver
 		if (openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) {
+		    var address__decode_result; 
+			try {
+				address__decode_result = monero_utils.decode_address(address)
+			} catch (e) {
+				self.validationMessageLayer.SetValidationError(typeof e === 'string' ? e : e.toString())
+				return
+			}
+			const integratedAddress_paymentId = address__decode_result.intPaymentId
+			const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
+			if (isIntegratedAddress !== true) { // not an integrated addr - normal wallet addr
+				if (paymentID === "" || typeof paymentID === 'undefined') { // if no existing payment ID
+					paymentID = monero_requestingFunds_utils.New_TransactionID() // generate new one for them
+					self.paymentIDInputLayer.value = paymentID
+				} else { // just use entered paymentID
+				}
+			} else { // is integrated address
+				paymentID = integratedAddress_paymentId // use this one instead
+				self.paymentIDInputLayer.value = paymentID
+			}
+			//
 			_proceedTo_addContact_paymentID(paymentID)
 		} else {
 			{
@@ -199,32 +193,6 @@ class AddContactView extends ContactFormView
 					self._didSaveNewContact(contact)
 				}
 			)
-		}
-	}
-	//
-	//
-	// Runtime - Imperatives - Submit button enabled state
-	//
-	disable_submitButton()
-	{
-		const self = this
-		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
-		self.numberOfRequestsToLockToDisable_submitButton += 1
-		if (wasEnabled == true) {
-			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "0.5"
-		}
-	}
-	enable_submitButton()
-	{
-		const self = this
-		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
-		if (self.numberOfRequestsToLockToDisable_submitButton > 0) { // if is currently disabled
-			self.numberOfRequestsToLockToDisable_submitButton -= 1
-			if (wasEnabled != true && self.numberOfRequestsToLockToDisable_submitButton == 0) { // if not currently enable and can be enabled (i.e. not locked)
-				const buttonLayer = self.rightBarButtonView.layer
-				buttonLayer.style.opacity = "1.0"
-			}
 		}
 	}
 	//

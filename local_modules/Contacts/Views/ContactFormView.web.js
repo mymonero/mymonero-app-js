@@ -229,7 +229,7 @@ class ContactFormView extends View
 		{
 			const layer = document.createElement("span")
 			{
-				layer.innerHTML = "If you don't provide a payment ID, one will be generated."
+				layer.innerHTML = "Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated."
 				layer.style.width = "100%"
 				layer.style.fontSize = "14px"
 				layer.style.fontWeight = "bold"
@@ -241,6 +241,28 @@ class ContactFormView extends View
 			div.appendChild(layer)
 		}
 		self.form_containerLayer.appendChild(div)
+	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		super.TearDown()
+		//
+		const self = this
+		self.cancelAny_requestHandle_for_oaResolution()
+	}
+	cancelAny_requestHandle_for_oaResolution()
+	{
+		const self = this
+		//
+		let req = self.requestHandle_for_oaResolution
+		if (typeof req !== 'undefined' && req !== null) {
+			console.log("💬  Aborting requestHandle_for_oaResolution")
+			req.abort()
+		}
+		self.requestHandle_for_oaResolution = null
 	}
 	//
 	//
@@ -291,6 +313,32 @@ class ContactFormView extends View
 			)
 		}
 		return view
+	}
+	//
+	//
+	// Runtime - Imperatives - Submit button enabled state
+	//
+	disable_submitButton()
+	{
+		const self = this
+		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
+		self.numberOfRequestsToLockToDisable_submitButton += 1
+		if (wasEnabled == true) {
+			const buttonLayer = self.rightBarButtonView.layer
+			buttonLayer.style.opacity = "0.5"
+		}
+	}
+	enable_submitButton()
+	{
+		const self = this
+		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
+		if (self.numberOfRequestsToLockToDisable_submitButton > 0) { // if is currently disabled
+			self.numberOfRequestsToLockToDisable_submitButton -= 1
+			if (wasEnabled != true && self.numberOfRequestsToLockToDisable_submitButton == 0) { // if not currently enable and can be enabled (i.e. not locked)
+				const buttonLayer = self.rightBarButtonView.layer
+				buttonLayer.style.opacity = "1.0"
+			}
+		}
 	}
 	//
 	//

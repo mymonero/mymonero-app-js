@@ -56,7 +56,7 @@ function New_RequestFunds_URI(
 		var conjunctionStr = "&"
         if (isAppendingParam0 === true) {
             isAppendingParam0 = false
-			conjunctionStr += "?"
+			conjunctionStr = "?"
         }
 		uri += conjunctionStr
         uri += parameterName + '=' + encodeURIComponent(value)

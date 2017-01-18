@@ -35,6 +35,8 @@ const Emojis = require('../../Emoji/emoji').Emojis
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const contact_persistence_utils = require('./contact_persistence_utils')
 //
+const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
+//
 class Contact extends EventEmitter
 {
 	//
@@ -282,15 +284,30 @@ class Contact extends EventEmitter
 	}
 	//
 	HasOpenAliasAddress()
-	{
+	{ // throws
 		const self = this
 		const address = self.address
-		if (!address || typeof address === 'undefined') {
-			throw "HasOpenAliasAddress() called but address nil."
-		}
 		//
 		return self.context.openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
 	}
+	HasIntegratedAddress()
+	{ // throws
+		const self = this
+		const address = self.address
+		if (!address || typeof address === 'undefined') {
+			throw "HasIntegratedAddress() called but address nil."
+		}
+		if (self.HasOpenAliasAddress() === true) {
+			return false
+		}
+		// TODO: how to cache this? would need to invalidate every time .address is touched
+        const address__decode_result = monero_utils.decode_address(address) // just letting it throw
+		const integratedAddress_paymentId = address__decode_result.intPaymentId
+		const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
+		//
+		return isIntegratedAddress
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Persistence
@@ -377,7 +394,6 @@ class Contact extends EventEmitter
 				} else if (valueKey === "address") {
 					const address = value
 					if (self.context.openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) { // if new one is not OA addr, clear cached OA-resolved info
-						console.log("clearing self.cached_OAResolved_XMR_address ", self.cached_OAResolved_XMR_address)
 						self.cached_OAResolved_XMR_address = null
 					}
 				}
