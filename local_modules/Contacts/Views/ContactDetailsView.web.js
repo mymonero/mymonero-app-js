@@ -203,7 +203,9 @@ class ContactDetailsView extends View
 			if (isOnTop) {
 				self.navigationController.PopView(true) // animated
 			} else { // or, we're not on top, so let's just remove self from the list of views
-				self.navigationController.ImmediatelyExtractStackView(self)
+				throw "A contact details view expected to be on top of navigatino stack when its contact was deleted."
+				// which means the following line should be uncommented and the method ImmediatelyExtractStackView needs to be implemented (which will w/o animation snatch self out of the stack)
+				// self.navigationController.ImmediatelyExtractStackView(self)
 			}
 		}
 		self.contact.on(
