@@ -37,6 +37,14 @@ const monero_openalias_utils = require('../OpenAlias/monero_openalias_utils')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
+function New_ApproximateMoneroNetworkFeeForSendTransaction(
+	amount
+) // -> JSBigInt (TODO: ?)
+{
+	console.log("⚠️  TODO! New_ApproximateMoneroNetworkFeeForSendTransaction")
+	
+	return -1
+}
 //
 function SendFunds(
 	target_address, // currency-ready wallet address, but not an OA address (resolve before calling)

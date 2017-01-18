@@ -115,7 +115,7 @@ class RequestFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("To Wallet")
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO")
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_walletSelect.New_fieldValue_walletSelectLayer({
@@ -135,7 +135,7 @@ class RequestFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Amount") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT") // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -166,7 +166,7 @@ class RequestFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Memo") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO") // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -196,7 +196,7 @@ class RequestFundsView extends View
 	{ // Request funds from sender
 		const self = this
 		const layer = commonComponents_contactPicker.New_contactPickerLayer(
-			"Enter contact name",
+			"Enter contact's name",
 			self.context.contactsListController,
 			function(contact)
 			{ // did pick
@@ -492,7 +492,7 @@ class RequestFundsView extends View
 			} else {
 				payment_id = self.pickedContact.payment_id
 				if (!payment_id || typeof payment_id === 'undefined') {
-					throw "Payment ID was null despite user having selected a contact"
+					// not throwing
 				}
 			}
 		}

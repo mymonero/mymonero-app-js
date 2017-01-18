@@ -159,7 +159,9 @@ function New_deleteRecordNamedButton_aLayer(lowercased_humanReadable_recordName)
 }
 exports.New_deleteRecordNamedButton_aLayer = New_deleteRecordNamedButton_aLayer
 //
-function New_createNewRecordNamedButton_aLayer(lowercased_humanReadable_recordName)
+function New_createNewRecordNamedButton_aLayer(
+	lowercased_humanReadable_recordName
+)
 {
 	const layer = document.createElement("a")
 	{
@@ -172,6 +174,20 @@ function New_createNewRecordNamedButton_aLayer(lowercased_humanReadable_recordNa
 		layer.style.fontSize = "12px"
 		layer.style.fontWeight = "bold"
 		layer.style.color = "blue" // TODO
+		layer.addEventListener(
+			"mouseenter",
+			function()
+			{
+				layer.style.textDecoration = "underline"
+			}
+		)
+		layer.addEventListener(
+			"mouseleave",
+			function()
+			{
+				layer.style.textDecoration = "none"
+			}
+		)
 	}
 	return layer
 }

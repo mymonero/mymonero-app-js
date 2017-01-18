@@ -257,7 +257,7 @@ function _new_inputLayer(placeholderText)
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
-		layer.style.fontSize = "14px"
+		layer.style.fontSize = "13px"
 		layer.style.color = "#ccc"
 		layer.style.backgroundColor = "#444"
 		layer.style.padding = "0 10px"
@@ -289,6 +289,7 @@ function _new_autocompleteResultRowLayer(contact, clicked_fn)
 	{
 		const padding_h = 10
 		layer.style.color = "#111" // TODO
+		layer.style.fontSize = "14px"
 		layer.style.fontFamily = '"Helvetica Neue", Helvetica, sans-serif' // TODO
 		layer.style.width = `calc(100% - ${2 * padding_h}px)`
 		layer.style.lineHeight = "200%"

@@ -44,12 +44,12 @@ function New_fieldTitle_labelLayer(labelText)
 	const layer = document.createElement("span")
 	{
 		layer.innerHTML = labelText
-		layer.style.display = "inline-block"
-		layer.style.float = "left"
+		layer.style.display = "block" // own line
+		layer.style.margin = "0 0 4px 0"
 		layer.style.width = `${titleLabelWidth}px`
 		layer.style.textAlign = "left"
-		layer.style.fontSize = "14px"
-		layer.style.fontWeight = "bold"
+		layer.style.fontSize = "11px"
+		layer.style.fontWeight = "light"
 		layer.style.color = "#ccc"
 		layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
 	}
@@ -62,6 +62,7 @@ function New_fieldValue_textInputLayer(params)
 	const layer = document.createElement("input")
 	{
 		layer.type = "text"
+		layer.style.display = "block" // own line
 		const existingValue = params.existingValue
 		if (typeof existingValue !== 'undefined' && existingValue !== null) {
 			layer.value = existingValue
@@ -69,6 +70,42 @@ function New_fieldValue_textInputLayer(params)
 		const placeholderText = params.placeholderText
 		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 			layer.placeholder = placeholderText
+		}
+		layer.style.height = "30px"
+		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
+		layer.style.border = "1px inset #222"
+		layer.style.borderRadius = "4px"
+ 		layer.style.float = "left"
+		layer.style.textAlign = "left"
+		layer.style.fontSize = "13px"
+		layer.style.color = "#ccc"
+		layer.style.backgroundColor = "#444"
+		layer.style.padding = "0 10px"
+		layer.style.fontFamily = "monospace"
+	}				
+	return layer
+}
+exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
+//
+function New_fieldValue_selectLayer(params)
+{
+	const values = params.values || []
+	const layer = document.createElement("select")
+	{
+		values.forEach(
+			function(value, i)
+			{
+				const optionLayer = document.createElement("option")
+				optionLayer.value = value
+				optionLayer.innerHTML = "" + value
+				layer.appendChild(optionLayer)
+			}
+		)
+	}
+	{
+		const existingValue = params.existingValue
+		if (typeof existingValue !== 'undefined' && existingValue !== null) {
+			layer.value = existingValue
 		}
 		layer.style.display = "inline-block"
 		layer.style.height = "30px"
@@ -85,4 +122,4 @@ function New_fieldValue_textInputLayer(params)
 	}				
 	return layer
 }
-exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
+exports.New_fieldValue_selectLayer = New_fieldValue_selectLayer
