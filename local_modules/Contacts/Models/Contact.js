@@ -108,6 +108,7 @@ class Contact extends EventEmitter
 			self.address = self.options.address
 			self.payment_id = self.options.payment_id
 			self.emoji = self.options.emoji
+			self.cached_OAResolved_XMR_address = self.options.cached_OAResolved_XMR_address
 		}
 		self.saveToDisk(
 			function(err)
@@ -271,6 +272,10 @@ class Contact extends EventEmitter
 	{
 		return "EventName_contactInfoUpdated"
 	}
+	EventName_willBeDeleted()
+	{
+		return "EventName_willBeDeleted"
+	}
 	EventName_deleted()
 	{
 		return "EventName_deleted"
@@ -308,6 +313,7 @@ class Contact extends EventEmitter
 	)
 	{
 		const self = this
+		self.emit(self.EventName_willBeDeleted(), self._id)
 		contact_persistence_utils.DeleteFromDisk(
 			self,
 			function(err) {

@@ -85,10 +85,12 @@ function _proceedTo_test_createNewContact(fn)
 		return
 	}
 	contactsListController.WhenBooted_AddContact(
-		tests_config.fullname,
-		tests_config.emoji,
-		tests_config.address,
-		tests_config.payment_id,
+		{
+			fullname: fullname,
+			emoji: emoji,
+			address: address,
+			payment_id: payment_id
+		},
 		function(err, instance)
 		{
 			if (err) {

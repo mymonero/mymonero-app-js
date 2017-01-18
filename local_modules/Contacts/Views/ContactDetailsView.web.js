@@ -196,8 +196,8 @@ class ContactDetailsView extends View
 			self._contact_EventName_contactInfoUpdated_fn
 		)
 		// deletion
-		self._contact_EventName_deleted_fn = function()
-		{
+		self._contact_EventName_willBeDeleted_fn = function()
+		{ // ^-- we observe /will/ instead of /did/ because if we didn't, self.navigationController races to get freed
 			const current_topStackView = self.navigationController.topStackView
 			const isOnTop = current_topStackView.IsEqualTo(self) == true
 			if (isOnTop) {
@@ -207,8 +207,8 @@ class ContactDetailsView extends View
 			}
 		}
 		self.contact.on(
-			self.contact.EventName_deleted(),
-			self._contact_EventName_deleted_fn
+			self.contact.EventName_willBeDeleted(),
+			self._contact_EventName_willBeDeleted_fn
 		)
 	}
 	//
@@ -235,8 +235,8 @@ class ContactDetailsView extends View
 			self._contact_EventName_contactInfoUpdated_fn
 		)
 		self.contact.removeListener(
-			self.contact.EventName_deleted(),
-			self._contact_EventName_deleted_fn
+			self.contact.EventName_willBeDeleted(),
+			self._contact_EventName_willBeDeleted_fn
 		)
 	}
 	

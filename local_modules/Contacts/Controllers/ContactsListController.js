@@ -34,8 +34,6 @@ const EventEmitter = require('events')
 const Contact = require('../Models/Contact')
 const contact_persistence_utils = require('../Models/contact_persistence_utils')
 //
-const monero_requestingFunds_utils = require('../../monero_utils/monero_requestingFunds_utils')
-//
 class ContactsListController extends EventEmitter
 {
 
@@ -316,36 +314,21 @@ class ContactsListController extends EventEmitter
 	// Booted - Imperatives - Public - List management
 
 	WhenBooted_AddContact(
-		fullname,
-		emoji,
-		address,
-		paymentID_orNullForNew,
-		fn // fn: (err: Error?, instance: Contact?) -> Void
+		valuesByKey,
+		fn // (err: Error?, instance: Contact?) -> Void
 	)
 	{
 		const self = this
 		const context = self.context
-		var payment_id;
-		if (paymentID_orNullForNew === null) {
-			payment_id = monero_requestingFunds_utils.New_TransactionID()
-		} else {
-			payment_id = paymentID_orNullForNew
-		}
 		self.ExecuteWhenBooted(
 			function()
 			{
 				self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
 					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
-						const options =
-						{
-							persistencePassword: obtainedPasswordString,
-							//
-							fullname: fullname,
-							address: address,
-							payment_id: payment_id,
-							emoji: emoji
-						}
+						const options = valuesByKey || {}
+						options.persistencePassword = obtainedPasswordString
+						//
 						const instance = new Contact(options, context)
 						instance.on(instance.EventName_booted(), function()
 						{
@@ -361,6 +344,7 @@ class ContactsListController extends EventEmitter
 			}
 		)
 	}
+
 	WhenBooted_DeleteContactWithId(
 		_id,
 		fn // fn: (err: Error?) -> Void

@@ -254,6 +254,7 @@ class ContactFormView extends View
 	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		self.leftBarButtonView = view
 		const layer = view.layer
 		{ // observe
 			layer.addEventListener(
@@ -274,6 +275,7 @@ class ContactFormView extends View
 	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
+		self.rightBarButtonView = view
 		const layer = view.layer
 		{ // observe
 			layer.addEventListener(

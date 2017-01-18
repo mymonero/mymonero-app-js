@@ -29,6 +29,8 @@
 "use strict"
 //
 const ContactFormView = require('./ContactFormView.web')
+const monero_requestingFunds_utils = require('../../monero_utils/monero_requestingFunds_utils')
+const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
 class AddContactView extends ContactFormView
 {
@@ -38,7 +40,49 @@ class AddContactView extends ContactFormView
 	}
 	setup()
 	{
+		const self = this
+		{
+			self.numberOfRequestsToLockToDisable_submitButton = 0
+		}
 		super.setup()
+	}
+	_setup_field_address()
+	{
+		super._setup_field_address()
+		// we're hooking into this function purely to get called just after the corresponding field layer's setup
+		const self = this 
+		console.log("_setup_field_address", self)
+		self._setup_form_resolving_activityIndicatorLayer()
+	}
+	_setup_form_resolving_activityIndicatorLayer()
+	{
+		const self = this
+		const layer = commonComponents_activityIndicators.New_Resolving_ActivityIndicator()
+		layer.style.display = "none" // initial state
+		self.resolving_activityIndicatorLayer = layer
+		self.form_containerLayer.appendChild(layer)
+	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		super.TearDown()
+		//
+		const self = this
+		self.cancelAny_requestHandle_for_oaResolution()
+	}
+	cancelAny_requestHandle_for_oaResolution()
+	{
+		const self = this
+		//
+		let req = self.requestHandle_for_oaResolution
+		if (typeof req !== 'undefined' && req !== null) {
+			console.log("💬  Aborting requestHandle_for_oaResolution")
+			req.abort()
+		}
+		self.requestHandle_for_oaResolution = null
 	}
 	//
 	//
@@ -59,7 +103,11 @@ class AddContactView extends ContactFormView
 		const fullname = self.fullnameInputLayer.value
 		const emoji = self.emojiInputLayer.value // TODO: when picker built
 		const address = self.addressInputLayer.value
-		const paymentID = self.paymentIDInputLayer.value
+		var paymentID = self.paymentIDInputLayer.value
+		if (paymentID === "" || typeof paymentID === 'undefined') {
+			paymentID = monero_requestingFunds_utils.New_TransactionID() // generate new one for them
+		} else { // just use entered paymentID
+		}
 		//
 		if (typeof fullname === 'undefined' || !fullname) {
 			self.validationMessageLayer.SetValidationError("Please enter a name for this contact.")
@@ -73,29 +121,111 @@ class AddContactView extends ContactFormView
 			self.validationMessageLayer.SetValidationError("Please enter an address for this contact.")
 			return
 		}
-		var paymentID_orNullForNew;
-		if (paymentID === "" || typeof paymentID === 'undefined') {
-			paymentID_orNullForNew = null // so we conform to WhenBooted_AddContact interface to get a paymentID generated for us
+		//
+		self.cancelAny_requestHandle_for_oaResolution() // jic
+		//
+		const openAliasResolver = self.context.openAliasResolver
+		if (openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) {
+			_proceedTo_addContact_paymentID(paymentID)
 		} else {
-			paymentID_orNullForNew = paymentID
-		}
-		self.context.contactsListController.WhenBooted_AddContact(
-			fullname,
-			emoji,
-			address,
-			paymentID_orNullForNew,
-			function(err, contact)
 			{
-				if (err) {
-					console.error("Error while creating contact", err)
-					// TODO: show "validation" error here
-					return
-				}
-				self.validationMessageLayer.ClearAndHideMessage()
-				//
-				self._didSaveNewContact(contact)
+				self.resolving_activityIndicatorLayer.style.display = "block"
+				self.disable_submitButton()
 			}
-		)
+			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
+				address,
+				function(
+					err,
+					addressWhichWasPassedIn,
+					moneroReady_address,
+					returned__payment_id, // may be undefined
+					tx_description,
+					openAlias_domain,
+					oaRecords_0_name,
+					oaRecords_0_description,
+					dnssec_used_and_secured
+				)
+				{
+					self.resolving_activityIndicatorLayer.style.display = "none"
+					self.enable_submitButton()
+					//
+					if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
+						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
+						return
+					}
+					self.requestHandle_for_oaResolution = null
+					//
+					if (address !== addressWhichWasPassedIn) {
+						console.warn("⚠️  The addressWhichWasPassedIn to the ResolveOpenAliasAddress call of which this is a callback is different than the currently selected address. Bailing")
+						return
+					}
+					if (err) {
+						self.validationMessageLayer.SetValidationError(err.toString())
+						return
+					}
+					console.log("resolved/obtained payment_id", returned__payment_id)
+					self.paymentIDInputLayer.value = returned__payment_id || ""
+					//
+					const payment_id__toSave = returned__payment_id || ""
+					const cached_OAResolved_XMR_address = moneroReady_address
+					_proceedTo_addContact_paymentID(
+						payment_id__toSave, // aka use no/zero/emptystr payment id rather than null as null will create a new
+						cached_OAResolved_XMR_address // it's ok if this is undefined
+					) 
+				}
+			)
+		}
+		//
+		function _proceedTo_addContact_paymentID(paymentID__toSave, cached_OAResolved_XMR_address__orUndefined)
+		{
+			self.context.contactsListController.WhenBooted_AddContact(
+				{
+					fullname: fullname,
+					emoji: emoji,
+					address: address,
+					payment_id: paymentID__toSave,
+					cached_OAResolved_XMR_address: cached_OAResolved_XMR_address__orUndefined
+				},
+				function(err, contact)
+				{
+					if (err) {
+						console.error("Error while creating contact", err)
+						// TODO: show "validation" error here
+						return
+					}
+					self.validationMessageLayer.ClearAndHideMessage()
+					self.enable_submitButton()
+					//
+					self._didSaveNewContact(contact)
+				}
+			)
+		}
+	}
+	//
+	//
+	// Runtime - Imperatives - Submit button enabled state
+	//
+	disable_submitButton()
+	{
+		const self = this
+		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
+		self.numberOfRequestsToLockToDisable_submitButton += 1
+		if (wasEnabled == true) {
+			const buttonLayer = self.rightBarButtonView.layer
+			buttonLayer.style.opacity = "0.5"
+		}
+	}
+	enable_submitButton()
+	{
+		const self = this
+		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
+		if (self.numberOfRequestsToLockToDisable_submitButton > 0) { // if is currently disabled
+			self.numberOfRequestsToLockToDisable_submitButton -= 1
+			if (wasEnabled != true && self.numberOfRequestsToLockToDisable_submitButton == 0) { // if not currently enable and can be enabled (i.e. not locked)
+				const buttonLayer = self.rightBarButtonView.layer
+				buttonLayer.style.opacity = "1.0"
+			}
+		}
 	}
 	//
 	//
