@@ -44,7 +44,6 @@ function New_contactOrAddressPickerLayer(
 		didClearPickedContact_fn
 	)
 	{
-		
 	}
 	return componentLayer
 }

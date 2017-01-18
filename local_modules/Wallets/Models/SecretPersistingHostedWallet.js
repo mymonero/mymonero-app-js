@@ -800,7 +800,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		amount, // number
 		mixin,
 		payment_id,
-		fn,
+		fn
 		// fn: (
 		//		err?,
 		//		currencyReady_targetDescription_address?,
@@ -810,7 +810,6 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//		tx_hash?,
 		//		tx_fee?
 		// )
-		confirmWithUser_openAliasAddress_cb
 	)
 	{
 		const self = this
@@ -876,8 +875,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 			mixin,
 			payment_id,
 			__trampolineFor_success,
-			__trampolineFor_err_withErr,
-			confirmWithUser_openAliasAddress_cb
+			__trampolineFor_err_withErr
 		)
 	}
 

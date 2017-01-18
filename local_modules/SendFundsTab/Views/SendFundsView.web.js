@@ -442,6 +442,9 @@ class SendFundsView extends View
 	_tryToGenerateSend()
 	{
 		const self = this
+		//
+		self._dismissValidationMessageLayer()
+		//
 		if (self.numberOfRequestsToLockToDisable_submitButton > 0) {
 			console.warn("Submit button currently disabled.")
 			return
@@ -466,50 +469,89 @@ class SendFundsView extends View
 				return
 			}
 		}
+		const amount_float = parseFloat(amount)
+		//
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
-		if (
-			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value !== "" // they have entered something but not picked a contact
-			&& hasPickedAContact == false // not strictly necessary to check hasPickedAContact, but for clarity
-		) {
-			const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
-			if (!enteredAddressValue || typeof enteredAddressValue === 'undefined') {
-				self.validationMessageLayer.SetValidationError("Please specify the recipient of this transfer.")
-				return
-			}
-			console.log("TODO: parse; user selected an address, not a contact: ", enteredAddressValue)
+		const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
+		const notPickedContactBut_enteredAddressValue = !hasPickedAContact && enteredAddressValue ? true : false
+		if (notPickedContactBut_enteredAddressValue) {
+			self.validationMessageLayer.SetValidationError("Please specify the recipient of this transfer.")
+			return
 		}
-		const mixin = self.mixinSelectLayer.value
+		const mixin_int = parseInt(self.mixinSelectLayer.value)
+		var target_address = null
 		var payment_id = null
 		if (hasPickedAContact === true) { // we have already re-resolved the payment_id
-			if (self.pickedContact.HasIntegratedAddress() === true) {
-				// TODO: use fluffypony's compact payment id patch?
-				console.log("an integrated addr on that contact")
-			} else {
+			if (self.pickedContact.HasOpenAliasAddress() === true) {
 				payment_id = self.pickedContact.payment_id
 				if (!payment_id || typeof payment_id === 'undefined') {
-					// not throwing
+					// not throwing - it's ok if this payment has no payment id
 				}
-				console.log("contact payment id", payment_id)
+				console.log("self.pickedContact" , self.pickedContact)
+				target_address = self.pickedContact.cached_OAResolved_XMR_address
+			// } else if (self.pickedContact.HasIntegratedAddress() === true) {
+			// // TODO: use fluffypony's compact payment id patch?
+			} else {
+				target_address = self.pickedContact.address // whatever it may be
+			}
+			if (!target_address || typeof target_address === 'undefined') {
+				self.validationMessageLayer.SetValidationError("Contact unexpectedly lacked XMR address. This may be a bug.")
+				return
+			}
+		} else {
+			target_address = enteredAddressValue
+		}
+		{ // final validation
+			if (!target_address) {
+				self.validationMessageLayer.SetValidationError("Unable to derive a target address for this transfer. This may be a bug.")
+				return
 			}
 		}
 		self.__generateSendTransactionWith(
-			wallet,
+			wallet, // FROM wallet
+			target_address, // TO address
 			payment_id,
-			amount,
-			mixin
+			amount_float,
+			mixin_int
 		)
 	}
 	__generateSendTransactionWith(
 		sendFrom_wallet,
+		target_address,
 		payment_id,
-		amount,
-		mixin
+		amount_float,
+		mixin_int
 	)
 	{
 		const self = this
 		const sendFrom_address = sendFrom_wallet.public_address
 		sendFrom_wallet.SendFunds(
-			// …
+			target_address,
+			amount_float,
+			mixin_int,
+			payment_id,
+			function(
+				err,
+				currencyReady_targetDescription_address,
+				sentAmount,
+				final__payment_id,
+				tx_hash,
+				tx_fee
+			)
+			{
+				if (err) {
+					self.validationMessageLayer.SetValidationError(typeof err === 'string' ? err : err.message)
+					return
+				}
+				console.log(
+					"SENT",
+					currencyReady_targetDescription_address,
+					sentAmount,
+					final__payment_id,
+					tx_hash,
+					tx_fee
+				)
+			}
 		)
 		// self.context..WhenBooted_AddFundsRequest(
 		// 	sendFrom_address,

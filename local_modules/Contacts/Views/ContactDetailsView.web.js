@@ -188,7 +188,11 @@ class ContactDetailsView extends View
 		// info update
 		self._contact_EventName_contactInfoUpdated_fn = function()
 		{
-			self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from the contact values
+			if (self.navigationController) {
+				self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from the contact values
+			} else {
+				console.warn("⚠️  Contact info updated observed while self.navigationController nil.")
+			}
 			self._configureUIWith_contact(self.contact)
 		}
 		self.contact.on(

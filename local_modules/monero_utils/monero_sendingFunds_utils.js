@@ -63,11 +63,10 @@ function SendFunds(
 	//		tx_hash?,
 	//		tx_fee?
 	// )
-	failWithErr_fn,
+	failWithErr_fn
 	// failWithErr_fn: (
 	//		err
 	// )
-	confirmWithUser_openAliasAddress_cb
 )
 {
 	// arg sanitization
