@@ -300,8 +300,10 @@ class RequestFundsView extends View
 		{ // cancel any requests
 			self.cancelAny_requestHandle_for_oaResolution()
 		}
-		{
-			self.contactPickerLayer.Component_TearDown() // important! so it stops observing
+		{ // Tear down components that require us to call their TearDown
+			// // important! so they stop observing
+			self.walletSelectLayer.Component_TearDown()
+			self.contactPickerLayer.Component_TearDown()
 		}
 		super.TearDown()
 	}
