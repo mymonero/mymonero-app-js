@@ -39,7 +39,7 @@ const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
 const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 //
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
-const secretWallet_persistence_utils = require('./secretWallet_persistence_utils')
+const wallet_persistence_utils = require('./wallet_persistence_utils')
 const WalletHostPollingController = require('../Controllers/WalletHostPollingController')
 //
 const wallet_currencies =
@@ -71,7 +71,7 @@ function areObjectsEqual(x, y)
 }
 //
 //
-class SecretPersistingHostedWallet extends EventEmitter
+class Wallet extends EventEmitter
 {
 
 	
@@ -124,7 +124,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	{
 		const self = this
 		self.context.persister.DocumentsWithQuery(
-			secretWallet_persistence_utils.CollectionName,
+			wallet_persistence_utils.CollectionName,
 			{ _id: self._id }, // cause we're saying we have an _id passed in…
 			{},
 			function(err, docs)
@@ -144,7 +144,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 				const encryptedDocument = docs[0]
 				//
 				// we can pull out unencrypted values like metadata
-				secretWallet_persistence_utils.HydrateInstance_withUnencryptedValues(
+				wallet_persistence_utils.HydrateInstance_withUnencryptedValues(
 					self,
 					encryptedDocument
 				)
@@ -260,7 +260,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//		
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
-			throw "You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
 			return
 		}
 		//
@@ -331,7 +331,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		//
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
-			throw "You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
 			return
 		}
 		//
@@ -389,7 +389,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		{
 			self.persistencePassword = persistencePassword || null
 			if (persistencePassword === null) {
-				throw "You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+				throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
 				return
 			}
 		}
@@ -422,11 +422,11 @@ class SecretPersistingHostedWallet extends EventEmitter
 	{
 		const self = this
 		const document_cryptor__background = self.context.document_cryptor__background
-		// TODO: move this function's contents to secretWallet_persistence_utils?
+		// TODO: move this function's contents to wallet_persistence_utils?
 		//
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
-			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of SecretPersistingHostedWallet"
+			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
 			const err = new Error(errStr)
 			console.error(errStr)
 			self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
@@ -447,7 +447,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		{
 			document_cryptor__background.New_DecryptedDocument__Async(
 				encryptedDocument,
-				secretWallet_persistence_utils.DocumentCryptScheme,
+				wallet_persistence_utils.DocumentCryptScheme,
 				self.persistencePassword,
 				function(err, plaintextDocument)
 				{
@@ -464,7 +464,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…
-			secretWallet_persistence_utils.HydrateInstance_withDecryptedValues(
+			wallet_persistence_utils.HydrateInstance_withDecryptedValues(
 				self,
 				plaintextDocument
 			)
@@ -886,7 +886,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	saveToDisk(fn)
 	{
 		const self = this
-		secretWallet_persistence_utils.SaveToDisk(
+		wallet_persistence_utils.SaveToDisk(
 			self,
 			fn
 		)
@@ -901,7 +901,7 @@ class SecretPersistingHostedWallet extends EventEmitter
 	)
 	{
 		const self = this
-		secretWallet_persistence_utils.DeleteFromDisk(
+		wallet_persistence_utils.DeleteFromDisk(
 			self,
 			fn
 		)
@@ -1283,4 +1283,4 @@ class SecretPersistingHostedWallet extends EventEmitter
 		}
 	}
 }
-module.exports = SecretPersistingHostedWallet
+module.exports = Wallet

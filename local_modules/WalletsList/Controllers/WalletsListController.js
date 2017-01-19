@@ -31,8 +31,8 @@
 const EventEmitter = require('events')
 const async = require('async')
 //
-const SecretPersistingHostedWallet = require('../../Wallets/Models/SecretPersistingHostedWallet')
-const secretWallet_persistence_utils = require('../../Wallets/Models/secretWallet_persistence_utils')
+const Wallet = require('../../Wallets/Models/Wallet')
+const wallet_persistence_utils = require('../../Wallets/Models/wallet_persistence_utils')
 const wallet_swatches = require('../../Wallets/Models/wallet_swatches')
 //
 class WalletsListController extends EventEmitter
@@ -198,7 +198,7 @@ class WalletsListController extends EventEmitter
 							{ // TODO: bubble?
 							}
 						}
-						wallet = new SecretPersistingHostedWallet(options, self.context)
+						wallet = new Wallet(options, self.context)
 					},
 					function(err)
 					{
@@ -315,7 +315,7 @@ class WalletsListController extends EventEmitter
 	{
 		const self = this
 		self.context.persister.DocumentsWithQuery(
-			secretWallet_persistence_utils.CollectionName,
+			wallet_persistence_utils.CollectionName,
 			{}, // blank query - find all
 			{},
 			function(err, docs)
@@ -428,7 +428,7 @@ class WalletsListController extends EventEmitter
 	WhenBooted_CreateAndAddNewlyGeneratedWallet(
 		informingAndVerifyingMnemonic_cb, // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
 										    // confirmation_cb: (userConfirmed_mnemonicString) -> Void
-		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet) -> Void
+		fn // fn: (err: Error?, walletInstance: Wallet) -> Void
 	)
 	{
 		const self = this
@@ -482,14 +482,14 @@ class WalletsListController extends EventEmitter
 						{ // TODO: bubble?
 						}
 					}
-					wallet = new SecretPersistingHostedWallet(options, context)
+					wallet = new Wallet(options, context)
 				}
 			}
 		)
 	}
 	WhenBooted_AddExtantWalletWith_mnemonicString(
 		mnemonicString,
-		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet, wasWalletAlreadyInserted: Bool?) -> Void
+		fn // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
 	)
 	{
 		const self = this
@@ -552,7 +552,7 @@ class WalletsListController extends EventEmitter
 						{ // TODO: bubble?
 						}
 					}
-					wallet = new SecretPersistingHostedWallet(options, context)
+					wallet = new Wallet(options, context)
 				}
 			}
 		)
@@ -561,7 +561,7 @@ class WalletsListController extends EventEmitter
 		address,
 		view_key__private,
 		spend_key__private,
-		fn // fn: (err: Error?, walletInstance: SecretPersistingHostedWallet, wasWalletAlreadyInserted: Bool?) -> Void
+		fn // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
 	)
 	{
 		const self = this
@@ -627,7 +627,7 @@ class WalletsListController extends EventEmitter
 						{ // TODO: bubble?
 						}
 					}
-					wallet = new SecretPersistingHostedWallet(options, context)
+					wallet = new Wallet(options, context)
 				}
 			}
 		)

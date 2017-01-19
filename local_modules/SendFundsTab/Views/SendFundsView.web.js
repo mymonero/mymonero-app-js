@@ -493,6 +493,7 @@ class SendFundsView extends View
 			// // TODO: use fluffypony's compact payment id patch?
 			} else {
 				target_address = self.pickedContact.address // whatever it may be
+				// ^ for integrated addrs, we don't want to extract the payment id and then use the integrated addr as well (unless we use fluffy's patch?)
 			}
 			if (!target_address || typeof target_address === 'undefined') {
 				self.validationMessageLayer.SetValidationError("Contact unexpectedly lacked XMR address. This may be a bug.")

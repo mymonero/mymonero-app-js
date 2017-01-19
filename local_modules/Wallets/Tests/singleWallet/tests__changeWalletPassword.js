@@ -39,7 +39,7 @@ if (typeof wallets__tests_config === 'undefined' || wallets__tests_config === nu
 //
 const context = require('./tests_context').NewHydratedContext()
 //
-const SecretPersistingHostedWallet = require('../../Models/SecretPersistingHostedWallet')
+const Wallet = require('../../Models/Wallet')
 //
 async.series(
 	[
@@ -131,5 +131,5 @@ function _proceedTo_test_changingWalletPassword(fn)
 			}
 		}
 	}
-	wallet = new SecretPersistingHostedWallet(options, context)
+	wallet = new Wallet(options, context)
 }
