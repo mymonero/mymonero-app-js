@@ -46,6 +46,7 @@ class OpenAliasResolver extends EventEmitter
 			self.options = options
 			self.context = context
 		}
+		self.setMaxListeners(10000) // in case we have many contacts… :P
 	}
 	//
 	//

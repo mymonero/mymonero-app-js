@@ -42,9 +42,6 @@ class AddContactView extends ContactFormView
 	setup()
 	{
 		const self = this
-		{
-			self.numberOfRequestsToLockToDisable_submitButton = 0
-		}
 		super.setup()
 	}
 	_setup_field_address()

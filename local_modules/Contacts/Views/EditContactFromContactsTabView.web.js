@@ -40,9 +40,6 @@ class EditContactFromContactsTabView extends ContactFormView
 	setup()
 	{
 		const self = this
-		{
-			self.numberOfRequestsToLockToDisable_submitButton = 0
-		}
 		super.setup()
 		//
 		{ // options

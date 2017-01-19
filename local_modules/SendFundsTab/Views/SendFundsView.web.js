@@ -58,9 +58,7 @@ class SendFundsView extends View
 	setup()
 	{
 		const self = this
-		{
-			self.numberOfRequestsToLockToDisable_submitButton = 0
-		}
+		self.isSubmitButtonDisabled = false
 		self.setup_views()
 		
 	}
@@ -375,7 +373,7 @@ class SendFundsView extends View
 				{
 					e.preventDefault()
 					{
-						if (self.numberOfRequestsToLockToDisable_submitButton == 0) { // button is enabled
+						if (self.isSubmitButtonDisabled !== true) { // button is enabled
 							self._tryToGenerateSend()
 						}
 					}
@@ -392,9 +390,8 @@ class SendFundsView extends View
 	disable_submitButton()
 	{
 		const self = this
-		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
-		self.numberOfRequestsToLockToDisable_submitButton += 1
-		if (wasEnabled == true) {
+		if (self.isSubmitButtonDisabled !== true) {
+			self.isSubmitButtonDisabled = true
 			const buttonLayer = self.rightBarButtonView.layer
 			buttonLayer.style.opacity = "0.5"
 		}
@@ -402,13 +399,10 @@ class SendFundsView extends View
 	enable_submitButton()
 	{
 		const self = this
-		const wasEnabled = self.numberOfRequestsToLockToDisable_submitButton == 0
-		if (self.numberOfRequestsToLockToDisable_submitButton > 0) { // if is currently disabled
-			self.numberOfRequestsToLockToDisable_submitButton -= 1
-			if (wasEnabled != true && self.numberOfRequestsToLockToDisable_submitButton == 0) { // if not currently enable and can be enabled (i.e. not locked)
-				const buttonLayer = self.rightBarButtonView.layer
-				buttonLayer.style.opacity = "1.0"
-			}
+		if (self.isSubmitButtonDisabled !== false) {
+			self.isSubmitButtonDisabled = false
+			const buttonLayer = self.rightBarButtonView.layer
+			buttonLayer.style.opacity = "1.0"
 		}
 	}
 	//
@@ -451,7 +445,7 @@ class SendFundsView extends View
 		//
 		self._dismissValidationMessageLayer()
 		//
-		if (self.numberOfRequestsToLockToDisable_submitButton > 0) {
+		if (self.isSubmitButtonDisabled) {
 			console.warn("Submit button currently disabled.")
 			return
 		}
