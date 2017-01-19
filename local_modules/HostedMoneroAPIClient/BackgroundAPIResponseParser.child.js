@@ -187,28 +187,40 @@ const tasksByName =
 				throw "spend_key_images of unspent_output at index " + i + " was null"
 			}
 			for (var j = 0; j < spend_key_images.length; j++) {
+				const finalized_unspentOutput_atI_beforeSplice = finalized_unspentOutputs[i]
+				if (!finalized_unspentOutput_atI_beforeSplice || typeof finalized_unspentOutput_atI_beforeSplice === 'undefined') {
+					console.warn(`This unspent output at i ${i} was literally undefined! Skipping.`)
+					continue
+				}
+				const beforeSplice__tx_pub_key = finalized_unspentOutput_atI_beforeSplice.tx_pub_key
+				const beforeSplice__index = finalized_unspentOutput_atI_beforeSplice.index
+				if (typeof beforeSplice__tx_pub_key === 'undefined' || !beforeSplice__tx_pub_key) {
+					console.warn("This unspent out was missing a tx_pub_key! Skipping.", finalized_unspentOutput_atI_beforeSplice)
+					continue
+				}
 				var key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
-					finalized_unspentOutputs[i].tx_pub_key,
-					finalized_unspentOutputs[i].index,
+					beforeSplice__tx_pub_key,
+					beforeSplice__index,
 					address,
 					view_key__private,
 					spend_key__public,
 					spend_key__private
 				)
-				if (key_image === finalized_unspentOutputs[i].spend_key_images[j]) {
+				if (key_image === finalized_unspentOutput_atI_beforeSplice.spend_key_images[j]) {
 					// console.log("💬  Output was spent; key image: " + key_image + " amount: " + monero_utils.formatMoneyFull(finalized_unspentOutputs[i].amount));
 					// Remove output from list
 					finalized_unspentOutputs.splice(i, 1);
-					if (finalized_unspentOutputs[i]) {
-						j = finalized_unspentOutputs[i].spend_key_images.length;
+					const finalized_unspentOutput_atI_afterSplice = finalized_unspentOutputs[i]
+					if (finalized_unspentOutput_atI_afterSplice) {
+						j = finalized_unspentOutput_atI_afterSplice.spend_key_images.length;
 					}
 					i--;
 				} else {
-					// console.log("💬  Output used as mixin (" + key_image + "/" + finalized_unspentOutputs[i].spend_key_images[j] + ")");
+					console.log("💬  Output used as mixin (" + key_image + "/" + finalized_unspentOutputs[i].spend_key_images[j] + ")");
 				}
 			}
 		}
-		// console.log("Unspent outs: " + JSON.stringify(finalized_unspentOutputs));
+		console.log("Unspent outs: " + JSON.stringify(finalized_unspentOutputs));
 		const unusedOuts = finalized_unspentOutputs.slice(0)
 		const returnValuesByKey =
 		{

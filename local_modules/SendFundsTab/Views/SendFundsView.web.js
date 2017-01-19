@@ -543,6 +543,26 @@ class SendFundsView extends View
 					self.validationMessageLayer.SetValidationError(typeof err === 'string' ? err : err.message)
 					return
 				}
+				self.amountInputLayer.value = ""
+				self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
+				if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
+					self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+						false // do not focus input
+					)
+					self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = ""
+				}
+				setTimeout(
+					function()
+					{
+						sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fiddle around with the API for this
+					}
+				)
+				// TODO: push tx details page
+				console.log("TODO: push details page")
+				if (notPickedContactBut_enteredAddressValue == true) {
+					// TODO: pop the New Contact view
+					console.log("TODO: Pop the new contact view")
+				}
 				console.log(
 					"SENT",
 					currencyReady_targetDescription_address,

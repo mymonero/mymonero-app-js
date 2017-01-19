@@ -198,22 +198,25 @@ function New_contactPickerLayer(
 			}
 		}
 	}
-	function _unpickExistingContact_andRedisplayPickInput()
+	function _unpickExistingContact_andRedisplayPickInput(andDoNotFocus)
 	{
 		_removeExistingPickedContact()
 		_redisplayInputLayer()
-		setTimeout(function()
-		{ // to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
-			inputLayer.focus() 
-		})
+		if (andDoNotFocus !== true) {
+			setTimeout(function()
+			{ // to decouple redisplay of input layer and un-picking from the display of the unfiltered results triggered by this focus:
+				inputLayer.focus() 
+			})
+		}
 	}
+	containerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput = _unpickExistingContact_andRedisplayPickInput
 	function _displayPickedContact(contact)
 	{
 		__pickedContactLayer = _new_pickedContactLayer(
 			contact,
 			function(this_pickedContactLayer)
 			{
-				_unpickExistingContact_andRedisplayPickInput()
+				_unpickExistingContact_andRedisplayPickInput() // allow to autofocus layer
 			}
 		)
 		containerLayer.appendChild(__pickedContactLayer)
@@ -223,7 +226,7 @@ function New_contactPickerLayer(
 	var _contactsListController_EventName_deletedContactWithId_fn = function(_id)
 	{ // the currently picked contact was deleted, so unpick it
 		if (__pickedContact && __pickedContact._id === _id) {
-			_unpickExistingContact_andRedisplayPickInput()
+			_unpickExistingContact_andRedisplayPickInput(true)
 		}
 	}
 	contactsListController.on(
