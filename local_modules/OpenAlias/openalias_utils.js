@@ -85,12 +85,14 @@ function New_ParsedDescriptionFromOpenAliasRecordWithOpenAliasPrefix(
 	{
         var pos = record.indexOf(valueName + "=")
         if (pos === -1) { // Record does not contain param
+			console.log(valueName + " not found in OA record.")
             return undefined
         }
         pos += valueName.length + 1
         var pos2 = record.indexOf(";", pos)
+		const parsedValue = record.substr(pos, pos2 - pos)
 		//
-        return record.substr(pos, pos2 - pos)
+        return parsedValue
     }
     parsedDescription.address = parsed_paramValueWithName("recipient_address")
     parsedDescription.name = parsed_paramValueWithName("recipient_name")
