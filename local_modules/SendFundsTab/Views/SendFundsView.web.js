@@ -33,13 +33,15 @@ const commonComponents_tables = require('../../WalletAppCommonComponents/tables.
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 const commonComponents_walletSelect = require('../../WalletAppCommonComponents/walletSelect.web')
-const commonComponents_contactOrAddressPicker = require('../../WalletAppCommonComponents/contactOrAddressPicker.web')
+const commonComponents_contactPicker = require('../../WalletAppCommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
 //
 const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
+const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
+const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 //
 class SendFundsView extends View
 {
@@ -211,7 +213,7 @@ class SendFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO") // note use of _forms.
 			div.appendChild(labelLayer)
 			//
-			const layer = commonComponents_contactOrAddressPicker.New_contactOrAddressPickerLayer(
+			const layer = commonComponents_contactPicker.New_contactPickerLayer(
 				"Enter contact name, or OpenAlias or integrated address",
 				self.context.contactsListController,
 				function(contact)
@@ -229,6 +231,10 @@ class SendFundsView extends View
 					self.addPaymentIDButton_aLayer.style.display = "block" // can re-show this
 					//
 					self.pickedContact = null
+				},
+				function()
+				{ // didFinishTypingInInput_fn
+					self._didFinishTypingInContactPickerInput()
 				}
 			)
 			self.contactOrAddressPickerLayer = layer
@@ -656,8 +662,8 @@ class SendFundsView extends View
 				} else {
 					self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
 				}
+				self.enable_submitButton()
 				// and exit early
-				//
 				return // no need to re-resolve what is not an OA addr
 			} else { // they're using an OA addr, so we still need to check if they still have one
 				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
@@ -688,7 +694,6 @@ class SendFundsView extends View
 			)
 			{
 				self.resolving_activityIndicatorLayer.style.display = "none"
-				self.enable_submitButton()
 				//
 				if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
 					console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
@@ -708,7 +713,93 @@ class SendFundsView extends View
 					self.validationMessageLayer.SetValidationError(err.toString())
 					return
 				}
+				self.enable_submitButton() // only enable if no err
 				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
+					if (typeof payment_id !== 'undefined' && payment_id) {
+						self._displayResolvedPaymentID(payment_id)
+					} else {
+						// we already hid it above
+					}
+				}
+			}
+		)
+	}
+	_didFinishTypingInContactPickerInput()
+	{
+		const self = this
+		//
+		self.disable_submitButton()
+		self.cancelAny_requestHandle_for_oaResolution()
+		//
+		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
+		if (!enteredPossibleAddress || typeof enteredPossibleAddress === 'undefined') {
+			self.addPaymentIDButton_aLayer.style.display = "block"
+			self._hideResolvedPaymentID()
+			return
+		}
+		
+		const isOAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(enteredPossibleAddress)
+		if (isOAAddress !== true) {
+			var address__decode_result; 
+			try {
+				address__decode_result = monero_utils.decode_address(enteredPossibleAddress)
+			} catch (e) {
+				console.warn("Couldn't decode as a Monero address.", e)
+				self.disable_submitButton()
+				return // just return silently
+			}
+			if (address__decode_result.intPaymentId) {
+				self._displayResolvedPaymentID(address__decode_result.intPaymentId)
+				self.addPaymentIDButton_aLayer.style.display = "none"
+	        } else {
+				self._hideResolvedPaymentID()
+				self.addPaymentIDButton_aLayer.style.display = "block"
+	        }
+			self.enable_submitButton()
+			return
+		}
+		// then this could be an OA address…
+		{ // (and show the "resolving UI")
+			self.resolving_activityIndicatorLayer.style.display = "block"
+			self.addPaymentIDButton_aLayer.style.display = "none"
+			//
+			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
+		}
+		self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
+			enteredPossibleAddress,
+			function(
+				err,
+				addressWhichWasPassedIn,
+				moneroReady_address,
+				payment_id, // may be undefined
+				tx_description,
+				openAlias_domain,
+				oaRecords_0_name,
+				oaRecords_0_description,
+				dnssec_used_and_secured
+			)
+			{
+				self.resolving_activityIndicatorLayer.style.display = "none"
+				//
+				if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
+					console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
+					return
+				}
+				self.requestHandle_for_oaResolution = null
+				//
+				if (enteredPossibleAddress !== addressWhichWasPassedIn) {
+					console.warn("⚠️  The addressWhichWasPassedIn to the ResolveOpenAliasAddress call of which this is a callback is different than the enteredPossibleAddress. Bailing")
+					return
+				}
+				if (err) { // no need to display since it's likely to be 
+					console.log("err.toString()" , err.toString())
+					self.disable_submitButton()
+					return
+				}
+				// only re-enable the button if no error 
+				console.log("payment_id", payment_id)
+				self.enable_submitButton()
+				{
 					if (typeof payment_id !== 'undefined' && payment_id) {
 						self._displayResolvedPaymentID(payment_id)
 					} else {
