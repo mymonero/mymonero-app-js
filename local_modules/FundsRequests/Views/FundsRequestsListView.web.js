@@ -272,6 +272,8 @@ class FundsRequestsListView extends View
 		const self = this
 		const options = options_orNilForDefault || {}
 		if (typeof self.currentlyPresented_RequestFundsView === 'undefined' || !self.currentlyPresented_RequestFundsView) {
+			self.navigationController.PopToRootView(false) // not animated (since we're coming from another tab)
+			//
 			const view = new RequestFundsView(options, self.context)
 			self.currentlyPresented_RequestFundsView = view
 			const navigationView = new StackAndModalNavigationView({}, self.context)

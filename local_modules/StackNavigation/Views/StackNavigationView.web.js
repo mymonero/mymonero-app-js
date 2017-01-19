@@ -245,7 +245,6 @@ class StackNavigationView extends View
 				}
 			}
 			old_topStackView.removeFromSuperview()
-			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
 		}
 		{ // nav bar
 			const ifAnimated_isFromRightNotLeft = true // because we're pushing
@@ -386,10 +385,10 @@ class StackNavigationView extends View
 		{
 			// console.log("old_topStackView" , old_topStackView.Description())
 			old_topStackView.removeFromSuperview()
-			old_topStackView.navigationController = null // is this necessary? if not, maybe we should just set navigationController=self in SetStackViews's stackViews.forEach where we nil navigationController
 		}
 		{ // pop all views in model
 			const stackViews_afterPop = self.stackViews.slice(0, indexOf_to_stackView + 1) // +1 as end is end idx not included in slice
+			// TODO: set the popped views' navigation controllers to null ^
 			// console.log("stackViews_afterPop", stackViews_afterPop)
 			self.stackViews = stackViews_afterPop
 			if (to_stackView.IsEqualTo(self.stackViews[self.stackViews.length - 1]) === false) {
