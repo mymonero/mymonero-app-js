@@ -487,7 +487,8 @@ class SendFundsView extends View
 				if (!payment_id || typeof payment_id === 'undefined') {
 					// not throwing - it's ok if this payment has no payment id
 				}
-				console.log("self.pickedContact" , self.pickedContact)
+				// we can just use the cached_OAResolved_XMR_address because in order to have picked this
+				// contact and for the user to hit send, we'd need to have gone through an OA resolve (_didPickContact)
 				target_address = self.pickedContact.cached_OAResolved_XMR_address
 			// } else if (self.pickedContact.HasIntegratedAddress() === true) {
 			// // TODO: use fluffypony's compact payment id patch?
