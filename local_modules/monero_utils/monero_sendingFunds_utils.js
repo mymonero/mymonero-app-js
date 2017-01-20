@@ -37,15 +37,99 @@ const monero_openalias_utils = require('../OpenAlias/monero_openalias_utils')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 //
-function New_ApproximateMoneroNetworkFeeForSendTransaction(
-	amount
-) // -> JSBigInt (TODO: ?)
+//
+// Fee calculation port from Monero baseline
+// https://github.com/monero-project/monero/blob/master/src/wallet/wallet2.cpp
+//
+const APPROXIMATE_INPUT_BYTES = 80 // used to choose when to stop adding outputs to a tx
+//
+function calculate_fee(fee_per_kb_JSBigInt, numberOf_bytes, fee_multiplier)
 {
-	console.log("⚠️  TODO! New_ApproximateMoneroNetworkFeeForSendTransaction")
-	
-	return -1
+	const numberOf_kB_JSBigInt = new JSBigInt((bytes + 1023.0) / 1024.0)
+	const fee = fee_per_kb_JSBigInt.multiply(fee_multiplier).multiply(numberOf_kB_JSBigInt)
+	//
+	return fee
 }
 //
+//
+// Fee estimation for SendFunds
+//
+function EstimatedTransaction_networkFee(
+	numberOf_inputs,
+	nonZero_mixin_int,
+	numberOf_outputs,
+	doesUseRingCT_orTrue
+)
+{
+	const doesUseRingCT = doesUseRingCT_orTrue === false ? false : true // default to true unless false
+	const fee_per_kb_JSBigInt = monero_config.feePerKB_JSBigInt
+            const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
+	
+	var estimated_txSize;
+	if (doesUseRingCT) {
+		estimated_txSize = EstimatedTransaction_ringCT_txSize(numberOf_inputs, nonZero_mixin_int, numberOf_outputs)
+	} else {
+		estimated_txSize = EstimatedTransaction_preRingCT_txSize(numberOf_inputs, nonZero_mixin_int)
+	}
+	const fee_multiplier = 1 // just stubbing this for now because
+	// the C++ code appears to set priority of 0 ("1") -> mult of 1
+    const estimated_fee = calculate_fee(fee_per_kb_JSBigInt, estimated_txSize, fee_multiplier)
+	//
+	return estimated_fee
+}
+exports.EstimatedTransaction_networkFee = EstimatedTransaction_networkFee
+//
+function EstimatedTransaction_preRingCT_txSize(
+	numberOf_inputs,
+	nonZero_mixin_int
+)
+{
+    const numberOf_fakeOuts = nonZero_mixin_int
+    const size = numberOf_inputs * (numberOf_fakeOuts + 1) * APPROXIMATE_INPUT_BYTES //
+	//
+	return size
+}
+function EstimatedTransaction_ringCT_txSize(
+	numberOf_inputs,
+	mixin_int,
+	numberOf_outputs
+)
+{
+	var size = 0;
+	// tx prefix
+	// first few bytes
+	size += 1 + 6;
+	size += numberOf_inputs * (1+6+(mixin+1)*3+32); // original implementation is *2+32 but luigi1111 said change 2 to 3
+	// vout
+	size += numberOf_outputs * (6+32);
+	// extra
+	size += 40;
+	// rct signatures
+	// type
+	size += 1;
+	// rangeSigs
+	size += (2*64*32+32+64*32) * numberOf_outputs;
+	// MGs
+	size += numberOf_inputs * (32 * (mixin_int+1) + 32);
+	// mixRing - not serialized, can be reconstructed
+	/* size += 2 * 32 * (mixin_int+1) * numberOf_inputs; */
+	// pseudoOuts
+	size += 32 * numberOf_inputs;
+	// ecdhInfo
+	size += 2 * 32 * numberOf_outputs;
+	// outPk - only commitment is saved
+	size += 32 * numberOf_outputs;
+	// txnFee
+	size += 4;
+	const logStr = `estimated rct tx size for ${numberOf_inputs} at mixin ${mixin_int} and ${numberOf_outputs} : ${size}  (${((32 * numberOf_inputs/*+1*/) + 2 * 32 * (mixin_int+1) * numberOf_inputs + 32 * numberOf_outputs)}) saved)`
+	console.log(logStr)
+
+	return size;
+}
+//
+//
+// Actually sending funds
+// 
 function SendFunds(
 	target_address, // currency-ready wallet address, but not an OA address (resolve before calling)
 	amount, // number
@@ -218,7 +302,7 @@ function SendFunds(
     ) 
 	{
 		// status: constructing transaction…
-		const network_minimumFee = monero_config.feePerKB // we're going to try using this but the codepath
+		const network_minimumFee = monero_config.feePerKB_JSBigInt // we're going to try using this but the codepath
 		// has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb
 		// than the minimum fee we're attempting to send it off with
 		__reenterable_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin_findingLowestNetworkFee(
@@ -340,7 +424,7 @@ function SendFunds(
                 numKB++
             }
             console.log(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(prevFee) + ")")
-            const feeActuallyNeededByNetwork = monero_config.feePerKB.multiply(numKB)
+            const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
             // if we need a higher fee
             if (feeActuallyNeededByNetwork.compare(prevFee) > 0) {
                 console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + cnUtil.formatMoneyFull(prevFee) + " New fee: " + cnUtil.formatMoneyFull(feeActuallyNeededByNetwork))
