@@ -75,7 +75,6 @@ function New_fieldValue_textInputLayer(params)
 		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
- 		layer.style.float = "left"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
 		layer.style.color = "#ccc"
@@ -112,7 +111,6 @@ function New_fieldValue_selectLayer(params)
 		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
- 		layer.style.float = "left"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "14px"
 		layer.style.color = "#ccc"

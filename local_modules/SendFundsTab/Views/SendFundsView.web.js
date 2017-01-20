@@ -68,6 +68,8 @@ class SendFundsView extends View
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
+		//
+		// self.DEBUG_BorderChildLayers()
 	}
 	_setup_self_layer()
 	{
@@ -102,8 +104,15 @@ class SendFundsView extends View
 		self.form_containerLayer = containerLayer
 		{
 			self._setup_form_walletSelectLayer()
-			self._setup_form_amountInputLayer()
-			self._setup_form_mixinSelectLayer()
+			{
+				const table = document.createElement("table")
+				table.style.width = "100%"
+				const tr_1 = document.createElement("tr")
+				self._setup_form_amountInputLayer(tr_1)
+				self._setup_form_mixinSelectLayer(tr_1)
+				table.appendChild(tr_1)
+				self.form_containerLayer.appendChild(table)
+			}
 			self.form_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer()) // as amt and mixin float
 			self._setup_form_contactOrAddressPickerLayer()
 			self._setup_form_resolving_activityIndicatorLayer()
@@ -126,17 +135,16 @@ class SendFundsView extends View
 			})
 			self.walletSelectLayer = valueLayer
 			div.appendChild(valueLayer)
-		}
-		{ // to get the height
+			
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 		}
 		self.form_containerLayer.appendChild(div)
 	}
-	_setup_form_amountInputLayer()
+	_setup_form_amountInputLayer(tr)
 	{ // Request funds from sender
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
-		div.style.display = "inline-block"
+		div.style.display = "block"
 		div.style.width = "210px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT") // note use of _forms.
@@ -160,17 +168,27 @@ class SendFundsView extends View
 			}
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		{
+			const layer = document.createElement("div")
+			layer.style.textAlign = "left"
+			layer.style.fontSize = "11px"
+			layer.style.fontFamily = "monospace"
+			layer.innerHTML = self._new_estimatedTransactionFee_displayString()
+			self.feeEstimateLayer = layer
+			div.appendChild(layer)
 		}
-		self.form_containerLayer.appendChild(div)
+		const td = document.createElement("td")
+		td.style.verticalAlign = "top"
+		td.appendChild(div)
+		tr.appendChild(td)
 	}
-	_setup_form_mixinSelectLayer()
+	_setup_form_mixinSelectLayer(tr)
 	{ // Mixin
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
-		div.style.display = "inline-block"
 		div.style.width = "95px"
+		div.style.display = "block"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MIXIN") // note use of _forms.
 			div.appendChild(labelLayer)
@@ -186,22 +204,19 @@ class SendFundsView extends View
 			self.mixinSelectLayer = valueLayer
 			{
 				valueLayer.addEventListener(
-					"keyup",
+					"change",
 					function(event)
 					{
-						if (event.keyCode === 13) { // return key
-							self._tryToGenerateSend()
-							return
-						}
+						self.refresh_feeEstimateLayer()
 					}
 				)
 			}
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
-		self.form_containerLayer.appendChild(div)
+		const td = document.createElement("td")
+		td.style.verticalAlign = "top"
+		td.appendChild(div)
+		tr.appendChild(td)
 	}
 	_setup_form_contactOrAddressPickerLayer()
 	{ // Request funds from sender
@@ -281,9 +296,6 @@ class SendFundsView extends View
 			detectedMessage.innerHTML = '<img src="detectedCheckmark.png" />&nbsp;<span>Detected</span>'
 			containerLayer.appendChild(detectedMessage)
 		}
-		{ // to get the height
-			containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
 		self.resolvedPaymentID_containerLayer = containerLayer
 		self.form_containerLayer.appendChild(containerLayer)
 	}
@@ -298,7 +310,7 @@ class SendFundsView extends View
 			{
 				e.preventDefault()
 				{
-					console.log("Add payment id…… ")
+					console.log("Show the payment id input field here…… ")
 				}
 				return false
 			}
@@ -385,6 +397,41 @@ class SendFundsView extends View
 	}
 	//
 	//
+	// Accessors - Factories - Values
+	//
+	_new_estimatedTransactionFee_displayString()
+	{
+		const self = this
+		var mixin_str;
+		if (typeof self.mixinSelectLayer === 'undefined' || !self.mixinSelectLayer) {
+			mixin_str = "3"
+		} else {
+			mixin_str = self.mixinSelectLayer.value
+		}
+		var mixin_int = parseInt(mixin_str)
+		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_ringCT_networkFee(
+			mixin_int
+		)
+		const hostingServiceFee_JSBigInt = self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
+			estimatedNetworkFee_JSBigInt
+		)
+		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
+		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
+		var displayString = `+ ${estimatedTotalFee_str} fee`
+		//
+		return displayString
+	}
+	//
+	//
+	// Imperatives - UI - Config
+	//
+	refresh_feeEstimateLayer()
+	{
+		const self = this
+		self.feeEstimateLayer.innerHTML = self._new_estimatedTransactionFee_displayString()
+	}
+	//
+	//
 	// Runtime - Imperatives - Submit button enabled state
 	//
 	disable_submitButton()
@@ -434,7 +481,7 @@ class SendFundsView extends View
 		const self = this
 		self.validationMessageLayer.SetValidationError("") 
 		self.validationMessageLayer.style.display = "none"
-	}	
+	}
 	//
 	//
 	// Runtime - Imperatives - Request generation

@@ -45,7 +45,7 @@ const APPROXIMATE_INPUT_BYTES = 80 // used to choose when to stop adding outputs
 //
 function calculate_fee(fee_per_kb_JSBigInt, numberOf_bytes, fee_multiplier)
 {
-	const numberOf_kB_JSBigInt = new JSBigInt((bytes + 1023.0) / 1024.0)
+	const numberOf_kB_JSBigInt = new JSBigInt((numberOf_bytes + 1023.0) / 1024.0)
 	const fee = fee_per_kb_JSBigInt.multiply(fee_multiplier).multiply(numberOf_kB_JSBigInt)
 	//
 	return fee
@@ -59,12 +59,13 @@ function EstimatedTransaction_ringCT_networkFee(
 )
 {
 	return EstimatedTransaction_networkFee(
-		2,
+		2, // this might change - might select inputs
 		nonZero_mixin_int,
 		3, // dest + change + mymonero fee
 		true // to be sure
 	)
 }
+exports.EstimatedTransaction_ringCT_networkFee = EstimatedTransaction_ringCT_networkFee
 //
 function EstimatedTransaction_networkFee(
 	numberOf_inputs,
@@ -75,16 +76,13 @@ function EstimatedTransaction_networkFee(
 {
 	const doesUseRingCT = doesUseRingCT_orTrue === false ? false : true // default to true unless false
 	const fee_per_kb_JSBigInt = monero_config.feePerKB_JSBigInt
-            const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
-	
 	var estimated_txSize;
 	if (doesUseRingCT) {
 		estimated_txSize = EstimatedTransaction_ringCT_txSize(numberOf_inputs, nonZero_mixin_int, numberOf_outputs)
 	} else {
 		estimated_txSize = EstimatedTransaction_preRingCT_txSize(numberOf_inputs, nonZero_mixin_int)
 	}
-	const fee_multiplier = 1 // just stubbing this for now because
-	// the C++ code appears to set priority of 0 ("1") -> mult of 1
+	const fee_multiplier = 1 // TODO: expose this
     const estimated_fee = calculate_fee(fee_per_kb_JSBigInt, estimated_txSize, fee_multiplier)
 	//
 	return estimated_fee
@@ -111,7 +109,7 @@ function EstimatedTransaction_ringCT_txSize(
 	// tx prefix
 	// first few bytes
 	size += 1 + 6;
-	size += numberOf_inputs * (1+6+(mixin+1)*3+32); // original implementation is *2+32 but luigi1111 said change 2 to 3
+	size += numberOf_inputs * (1+6+(mixin_int+1)*3+32); // original implementation is *2+32 but luigi1111 said change 2 to 3
 	// vout
 	size += numberOf_outputs * (6+32);
 	// extra
@@ -133,8 +131,8 @@ function EstimatedTransaction_ringCT_txSize(
 	size += 32 * numberOf_outputs;
 	// txnFee
 	size += 4;
-	const logStr = `estimated rct tx size for ${numberOf_inputs} at mixin ${mixin_int} and ${numberOf_outputs} : ${size}  (${((32 * numberOf_inputs/*+1*/) + 2 * 32 * (mixin_int+1) * numberOf_inputs + 32 * numberOf_outputs)}) saved)`
-	console.log(logStr)
+	// const logStr = `estimated rct tx size for ${numberOf_inputs} at mixin ${mixin_int} and ${numberOf_outputs} : ${size}  (${((32 * numberOf_inputs/*+1*/) + 2 * 32 * (mixin_int+1) * numberOf_inputs + 32 * numberOf_outputs)}) saved)`
+	// console.log(logStr)
 
 	return size;
 }
