@@ -149,10 +149,12 @@ class SendFundsView extends View
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT") // note use of _forms.
 			div.appendChild(labelLayer)
-			//
+			// ^ block
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-				placeholderText: "XMR"
+				placeholderText: "00.00"
 			})
+			valueLayer.style.textAlign = "right"
+			valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
 			self.amountInputLayer = valueLayer
 			{
 				valueLayer.addEventListener(
@@ -167,12 +169,24 @@ class SendFundsView extends View
 				)
 			}
 			div.appendChild(valueLayer)
+			//
+			const currencyLabel = document.createElement("span")
+			currencyLabel.display = "inline-block"
+			currencyLabel.innerHTML = "XMR"
+			currencyLabel.style.marginLeft = "5px"
+			currencyLabel.style.fontSize = "11px"
+			currencyLabel.style.color = "#eee"
+			currencyLabel.style.fontFamily = "monospace"
+			currencyLabel.style.verticalAlign = "middle"
+			div.appendChild(currencyLabel)
 		}
 		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 		{
 			const layer = document.createElement("div")
 			layer.style.textAlign = "left"
+			layer.style.marginTop = "9px"
 			layer.style.fontSize = "11px"
+			layer.style.color = "#999"
 			layer.style.fontFamily = "monospace"
 			layer.innerHTML = self._new_estimatedTransactionFee_displayString()
 			self.feeEstimateLayer = layer
