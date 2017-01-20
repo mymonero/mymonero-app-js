@@ -54,6 +54,18 @@ function calculate_fee(fee_per_kb_JSBigInt, numberOf_bytes, fee_multiplier)
 //
 // Fee estimation for SendFunds
 //
+function EstimatedTransaction_ringCT_networkFee(
+	nonZero_mixin_int
+)
+{
+	return EstimatedTransaction_networkFee(
+		2,
+		nonZero_mixin_int,
+		3, // dest + change + mymonero fee
+		true // to be sure
+	)
+}
+//
 function EstimatedTransaction_networkFee(
 	numberOf_inputs,
 	nonZero_mixin_int,
