@@ -251,6 +251,7 @@ class SendFundsView extends View
 				{ // did pick
 					self.addPaymentIDButton_aLayer.style.display = "none"
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+					self.manualPaymentIDInputLayer.value = ""
 					//
 					self._didPickContact(contact)
 				},
@@ -264,6 +265,7 @@ class SendFundsView extends View
 					//
 					self.addPaymentIDButton_aLayer.style.display = "block" // can re-show this
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
+					self.manualPaymentIDInputLayer.value = ""
 					//
 					self.pickedContact = null
 				},
@@ -758,6 +760,7 @@ class SendFundsView extends View
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 					self._hideResolvedAddress()
 					self._hideResolvedPaymentID()
+					//
 					self.addPaymentIDButton_aLayer.style.display = "block"
 					//
 					setTimeout(
@@ -946,6 +949,7 @@ class SendFundsView extends View
 				self._displayResolvedPaymentID(address__decode_result.intPaymentId)
 				self.addPaymentIDButton_aLayer.style.display = "none"
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+				self.manualPaymentIDInputLayer.value = ""
 	        } else {
 				self._hideResolvedPaymentID() // not that it would be showing
 	        }
@@ -956,6 +960,7 @@ class SendFundsView extends View
 		{ // (and show the "resolving UI")
 			self.resolving_activityIndicatorLayer.style.display = "block"
 			self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+			self.manualPaymentIDInputLayer.value = ""
 			//
 			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
 		}
@@ -1005,6 +1010,7 @@ class SendFundsView extends View
 					if (typeof payment_id !== 'undefined' && payment_id) {
 						self.addPaymentIDButton_aLayer.style.display = "none"
 						self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+						self.manualPaymentIDInputLayer.value = ""
 						self._displayResolvedPaymentID(payment_id)
 					} else {
 						// we already hid resolved payment it above
