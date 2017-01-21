@@ -92,7 +92,7 @@ function New_contactPickerLayer(
 						didFinishTypingInInput_fn()
 					}
 					_searchForAndDisplaySearchResults()
-				}, 170)
+				}, 250)
 			}
 		)
 	}

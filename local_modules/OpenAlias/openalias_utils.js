@@ -49,7 +49,7 @@ function ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
 	}
 	for (var i = 0; i < records.length; i++) {
 	    var record = records[i];
-	    console.log("Found OpenAlias record: " + record);
+	    // console.log("Found OpenAlias record: " + record);
 		var parsedDescription;
 		try {
 			parsedDescription = New_ParsedDescriptionFromOpenAliasRecordWithOpenAliasPrefix(record, openAliasPrefix)
@@ -83,13 +83,15 @@ function New_ParsedDescriptionFromOpenAliasRecordWithOpenAliasPrefix(
     }
     function parsed_paramValueWithName(valueName)
 	{
+		
         var pos = record.indexOf(valueName + "=")
         if (pos === -1) { // Record does not contain param
-			console.log(valueName + " not found in OA record.")
+			console.log("⚠️  " + valueName + " not found in OA record.")
             return undefined
         }
         pos += valueName.length + 1
-        var pos2 = record.indexOf(";", pos)
+		const posOfNextDelimiter = record.indexOf(";", pos)
+        var pos2 = posOfNextDelimiter == -1 ? record.length : posOfNextDelimiter // cause we may be at end
 		const parsedValue = record.substr(pos, pos2 - pos)
 		//
         return parsedValue

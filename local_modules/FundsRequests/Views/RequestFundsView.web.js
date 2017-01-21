@@ -125,9 +125,6 @@ class RequestFundsView extends View
 			self.walletSelectLayer = valueLayer
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_amountInputLayer()
@@ -156,9 +153,6 @@ class RequestFundsView extends View
 			}
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_memoInputLayer()
@@ -186,9 +180,6 @@ class RequestFundsView extends View
 				)
 			}
 			div.appendChild(valueLayer)
-		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 		}
 		self.form_containerLayer.appendChild(div)
 	}
@@ -243,8 +234,6 @@ class RequestFundsView extends View
 		containerLayer.style.display = "none" // initial state
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID") // note use of _forms.
-			labelLayer.style.display = "block" // temporary -- TODO: create a version of the labelLayer which stays on its own line (come up with concrete name for it obvs)
-			labelLayer.style.float = "none" // temporary as well
 			containerLayer.appendChild(labelLayer)
 			//
 			const valueLayer = document.createElement("div")
@@ -257,9 +246,6 @@ class RequestFundsView extends View
 			const detectedMessage = document.createElement("div")
 			detectedMessage.innerHTML = '<img src="detectedCheckmark.png" />&nbsp;<span>Detected</span>'
 			containerLayer.appendChild(detectedMessage)
-		}
-		{ // to get the height
-			containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 		}
 		self.resolvedPaymentID_containerLayer = containerLayer
 		self.form_containerLayer.appendChild(containerLayer)
@@ -377,9 +363,7 @@ class RequestFundsView extends View
 				{
 					e.preventDefault()
 					{
-						if (self.isSubmitButtonDisabled !== true) { // button is enabled
-							self._tryToGenerateRequest()
-						}
+						self._tryToGenerateRequest() // ok to call directly w/o checking enabled as method will chk
 					}
 					return false
 				}
@@ -394,6 +378,7 @@ class RequestFundsView extends View
 	disable_submitButton()
 	{
 		const self = this
+		console.log("disable_submitButton disabled?", self.isSubmitButtonDisabled)
 		if (self.isSubmitButtonDisabled !== true) {
 			self.isSubmitButtonDisabled = true
 			const buttonLayer = self.rightBarButtonView.layer
@@ -403,6 +388,7 @@ class RequestFundsView extends View
 	enable_submitButton()
 	{
 		const self = this
+		console.log("enable_submitButton disabled?", self.isSubmitButtonDisabled)
 		if (self.isSubmitButtonDisabled !== false) {
 			self.isSubmitButtonDisabled = false
 			const buttonLayer = self.rightBarButtonView.layer
@@ -446,10 +432,11 @@ class RequestFundsView extends View
 	_tryToGenerateRequest()
 	{
 		const self = this
-		if (self.isSubmitButtonDisabled !== true) {
-			console.warn("Submit button currently disabled.")
+		if (self.isSubmitButtonDisabled) {
+			console.warn("Submit button currently disabled with isSubmitButtonDisabled",self.isSubmitButtonDisabled)
 			return
 		}
+		//
 		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
 		{
 			if (typeof wallet === 'undefined' || !wallet) {
@@ -457,26 +444,33 @@ class RequestFundsView extends View
 				return
 			}
 		}
-		const amount = self.amountInputLayer.value
+		const raw_amount_String = self.amountInputLayer.value
+		var amount_Number = null;
 		{
-			if (typeof amount === 'undefined' || !amount) {
-				self.validationMessageLayer.SetValidationError("Please enter a Monero amount to request.")
+			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
+				self.validationMessageLayer.SetValidationError("Please enter a Monero amount to send.")
 				return
 			}
-			// TODO: validate amount here
-			const amount_isValid = true // TODO: just for now
-			if (amount_isValid !== true) {
+			amount_Number = +raw_amount_String // turns into Number, apparently
+			if (isNaN(amount_Number)) {
 				self.validationMessageLayer.SetValidationError("Please enter a valid amount.")
+				return
+			}
+			if (amount_Number === 0) {
+				self.validationMessageLayer.SetValidationError("Please enter an amount greater than zero.")
 				return
 			}
 		}
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
-		if (
-			self.contactPickerLayer.ContactPicker_inputLayer.value !== "" // they have entered something but not picked a contact
-			&& hasPickedAContact == false // not strictly necessary to check hasPickedAContact, but for clarity
-		) {
-			self.validationMessageLayer.SetValidationError("Please select a contact or clear the contact field below to generate this request.")
-			return
+		{
+			if (self.contactPickerLayer.ContactPicker_inputLayer.value !== "" 
+				// ^-- they have entered something but not picked a contact
+				&& hasPickedAContact == false 
+				// ^-- not strictly necessary to check hasPickedAContact, but for clarity and safety
+			) {
+				self.validationMessageLayer.SetValidationError("Please select a contact or clear the contact field below to generate this request.")
+				return
+			}
 		}
 		const memo = self.memoInputLayer.value // aka a request `description`
 		const message = undefined // no support yet 
@@ -495,7 +489,7 @@ class RequestFundsView extends View
 		self.__generateRequestWith(
 			wallet.public_address,
 			payment_id,
-			amount,
+			"" + amount_Number,
 			memo, // description, AKA memo or label; no support yet?
 			message
 		)
@@ -503,7 +497,7 @@ class RequestFundsView extends View
 	__generateRequestWith(
 		receiveTo_address,
 		payment_id,
-		amount,
+		amount_String,
 		memo,
 		message
 	)
@@ -512,7 +506,7 @@ class RequestFundsView extends View
 		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
 			receiveTo_address,
 			payment_id,
-			amount,
+			amount_String,
 			memo, // description, AKA memo or label; no support yet?
 			message,
 			function(err, fundsRequest)

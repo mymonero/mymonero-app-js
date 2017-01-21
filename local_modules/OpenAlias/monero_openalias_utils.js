@@ -75,7 +75,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 				fn(returnableErr)
 				return
 			}
-            console.log(openAlias_domain + ": ", records);
+            // console.log(openAlias_domain + ": ", records);
 			var oaRecords;
 			try {
 				oaRecords = openalias_utils.ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
@@ -92,7 +92,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 		        return
 			}
 			const sampled_oaRecord = oaRecords[0] // going to assume we only have one, or that the first one is sufficient
-			console.log("OpenAlias record: ", sampled_oaRecord)
+			// console.log("OpenAlias record: ", sampled_oaRecord)
 			var oaRecord_address = sampled_oaRecord.address
 			try { // verify address is decodable for currency
 			    monero_utils.decode_address(oaRecord_address)

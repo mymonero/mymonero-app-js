@@ -37,8 +37,6 @@ function _new_fieldContainerLayer()
 }
 exports.New_fieldContainerLayer = _new_fieldContainerLayer
 //
-const titleLabelWidth = 90
-//
 function New_fieldTitle_labelLayer(labelText)
 {
 	const layer = document.createElement("span")
@@ -46,7 +44,6 @@ function New_fieldTitle_labelLayer(labelText)
 		layer.innerHTML = labelText
 		layer.style.display = "block" // own line
 		layer.style.margin = "0 0 4px 0"
-		layer.style.width = `${titleLabelWidth}px`
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "11px"
 		layer.style.fontWeight = "light"
@@ -72,7 +69,7 @@ function New_fieldValue_textInputLayer(params)
 			layer.placeholder = placeholderText
 		}
 		layer.style.height = "30px"
-		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
+		layer.style.width = `calc(100% - 4px - ${2 * 10}px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
@@ -108,7 +105,7 @@ function New_fieldValue_selectLayer(params)
 		}
 		layer.style.display = "inline-block"
 		layer.style.height = "30px"
-		layer.style.width = `calc(100% - ${titleLabelWidth}px - 4px - ${2 * 10}px)`
+		layer.style.width = `calc(100% - 4px - ${2 * 10}px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"

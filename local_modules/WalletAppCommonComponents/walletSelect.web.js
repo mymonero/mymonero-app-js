@@ -40,12 +40,11 @@ function New_fieldValue_walletSelectLayer(params)
 	}
 	const layer = document.createElement("select")
 	{
-		layer.style.display = "inline-block"
+		layer.style.display = "block"
 		layer.style.height = "30px"
 		layer.style.width = `calc(100% - 4px)`
 		layer.style.border = "1px inset #666"
 		layer.style.borderRadius = "4px"
- 		layer.style.float = "left"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "14px"
 		layer.style.color = "#fff"
