@@ -785,9 +785,7 @@ class SendFundsView extends View
 						    lockedReason: "Transaction is unlocked",
 						    // height: 1228823,
 							//
-							// TODO: totals
-						    total_sent: "" + sentAmount / Math.pow(10, monero_config.coinUnitPlaces), 
-							// ^-- TODO: is this really correct? and do we need to mock this?
+						    total_sent: "" + (sentAmount * Math.pow(10, monero_config.coinUnitPlaces)), // TODO: is this correct? and do we need to mock this?
 						    total_received: "0",
 							//
 						    approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing

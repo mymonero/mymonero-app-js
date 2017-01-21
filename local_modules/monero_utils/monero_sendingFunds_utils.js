@@ -452,7 +452,7 @@ function SendFunds(
 			//
             // generated with correct per-kb fee
 			const final_networkFee = attemptAt_network_minimumFee // just to make things clear
-			console.log("💬  Successful tx generation, submitting tx. Going with final_networkFee of ", final_networkFee)
+			console.log("💬  Successful tx generation, submitting tx. Going with final_networkFee of ", monero_utils.formatMoney(final_networkFee))
 			// status: submitting…
 			hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
 				wallet__public_address,
