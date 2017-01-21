@@ -49,11 +49,20 @@ class ContactsListView extends View
 		const self = this
 		{
 			self.current_contactDetailsView = null // zeroing for comparison
-		}
-		self.layer.style.width = "100%"
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		}		
+		self.layer.style.webkitUserSelect = "none"
 		//
+		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
+		//
+		self.layer.style.backgroundColor = "#282527"
+		//
+		self.layer.style.color = "#c0c0c0" // temporary
+		//
+		self.layer.style.overflowY = "scroll"
+		self.layer.style.padding = "40px 10px"
+		//
+		self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		//
 		self._setup_views()
 		self._setup_startObserving()
@@ -164,7 +173,7 @@ class ContactsListView extends View
 			const view = new View({}, self.context)
 			{
 				view.layer.style.borderRadius = "5px"
-				view.layer.style.backgroundColor = "#999"
+				view.layer.style.backgroundColor = "#666"
 				view.layer.style.border = "1px outset #ccc"
 			}
 			self.cellsContainerView = view

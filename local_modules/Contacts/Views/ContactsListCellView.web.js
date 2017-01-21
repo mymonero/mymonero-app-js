@@ -55,6 +55,7 @@ class ContactsListCellView extends View
 	setup_layers()
 	{
 		const self = this
+		self.layer.style.cursor = "pointer"
 		{ // observation
 			self.layer.addEventListener(
 				"click",

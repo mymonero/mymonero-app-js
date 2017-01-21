@@ -52,6 +52,7 @@ class WalletsListCellView extends View
 	{
 		const self = this
 		{
+			self.layer.style.cursor = "pointer"
 			self.layer.style.border = "1px solid #eee"
 			self.layer.style.borderRadius = "5px"
 			self.layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset

@@ -57,6 +57,7 @@ class FundsRequestsListCellView extends View
 		const self = this
 		//
 		self.layer.style.border = "1px solid #eee"
+		self.layer.style.cursor = "pointer"
 		//
 		self.setup_layers_fundsRequestInfo()
 	}
