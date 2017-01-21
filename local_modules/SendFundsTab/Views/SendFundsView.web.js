@@ -491,7 +491,7 @@ class SendFundsView extends View
 		)
 		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
-		var displayString = `+ ~${estimatedTotalFee_str} fee`
+		var displayString = `+ ${estimatedTotalFee_str} fee`
 		//
 		return displayString
 	}
