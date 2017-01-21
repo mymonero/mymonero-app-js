@@ -160,8 +160,8 @@ class WalletDetailsView extends View
 		self._stopObserving()
 		{
 			if (self.current_transactionDetailsView !== null) {
-				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-				self.current_transactionDetailsView = null // must zero again and should free
+				self.current_transactionDetailsView.TearDown()
+				self.current_transactionDetailsView = null
 			}
 		}
 	}
@@ -372,6 +372,7 @@ class WalletDetailsView extends View
 			stateCachedTransactions.forEach(
 				function(tx, i)
 				{
+					// console.log("tx", JSON.stringify(tx, null, '    '))
 					const li = document.createElement("li")
 					{
 						const table = document.createElement("table")

@@ -38,10 +38,12 @@ const commonComponents_activityIndicators = require('../../WalletAppCommonCompon
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
+const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView.web')
 //
 const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_utils')
+const monero_config = require('../../monero_utils/monero_config')
 const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 //
 class SendFundsView extends View
@@ -66,6 +68,9 @@ class SendFundsView extends View
 	setup_views()
 	{
 		const self = this
+		{ // zeroing / initialization
+			self.current_transactionDetailsView = null
+		}
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
@@ -407,6 +412,12 @@ class SendFundsView extends View
 			self.walletSelectLayer.Component_TearDown()
 			self.contactOrAddressPickerLayer.Component_TearDown()
 		}
+		{
+			if (self.current_transactionDetailsView !== null) {
+				self.current_transactionDetailsView.TearDown()
+				self.current_transactionDetailsView = null
+			}
+		}
 		super.TearDown()
 	}
 	cancelAny_requestHandle_for_oaResolution()
@@ -572,8 +583,7 @@ class SendFundsView extends View
 	_dismissValidationMessageLayer()
 	{
 		const self = this
-		self.validationMessageLayer.SetValidationError("") 
-		self.validationMessageLayer.style.display = "none"
+		self.validationMessageLayer.ClearAndHideMessage() 
 	}
 	//
 	//
@@ -586,6 +596,7 @@ class SendFundsView extends View
 			console.warn("⚠️  Submit button currently disabled. Bailing.")
 			return
 		}
+		self.disable_submitButton()
 		//
 		self._dismissValidationMessageLayer()
 		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
@@ -712,6 +723,7 @@ class SendFundsView extends View
 				return
 			}
 		}
+		self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
 		__proceedTo_generateSendTransactionWith(
 			wallet, // FROM wallet
 			target_address, // TO address
@@ -727,7 +739,6 @@ class SendFundsView extends View
 			mixin_int
 		)
 		{
-			const self = this
 			const sendFrom_address = sendFrom_wallet.public_address
 			//
 			sendFrom_wallet.SendFunds(
@@ -744,60 +755,97 @@ class SendFundsView extends View
 					tx_fee
 				)
 				{
+					// no matter what
+					self.enable_submitButton() 
+					//
 					if (err) {
 						self.validationMessageLayer.SetValidationError(typeof err === 'string' ? err : err.message)
 						return
 					}
-					self.amountInputLayer.value = ""
-					self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
-					if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
-						self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
-							false // do not focus input
-						)
-						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = ""
-					}
-					self.manualPaymentIDInputLayer.value = ""
-					self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
-					self._hideResolvedAddress()
-					self._hideResolvedPaymentID()
-					//
-					self.addPaymentIDButton_aLayer.style.display = "block"
-					//
-					setTimeout(
-						function()
+					// console.log(
+					// 	"SENT",
+					// 	currencyReady_targetDescription_address,
+					// 	sentAmount,
+					// 	final__payment_id,
+					// 	tx_hash,
+					// 	tx_fee
+					// )
+					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
+						const mockedTransaction =
 						{
-							sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+						    hash: tx_hash,
+						    mixin: "" + mixin_int,
+						    coinbase: false,
+							//
+						    isConfirmed: false, // important
+						    timestamp: "" + (new Date()), // faking
+							//
+						    isUnlocked: true, // TODO: not sure if this is correct
+						    unlock_time: 0,
+						    lockedReason: "Transaction is unlocked",
+						    // height: 1228823,
+							//
+							// TODO: totals
+						    total_sent: "" + sentAmount / Math.pow(10, monero_config.coinUnitPlaces), 
+							// ^-- TODO: is this really correct? and do we need to mock this?
+						    total_received: "0",
+							//
+						    approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
+						    // amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
+							tx_fee: tx_fee,
+							//
+							payment_id: payment_id,
+							//
+							target_address: target_address, // only we here are saying it's the target
+							//
+							contact: hasPickedAContact ? self.pickedContact : null,
+							//
+							// values just in case they're needed; some are
+							enteredAddressValue: enteredAddressValue_exists ? enteredAddressValue : null,
+							resolvedAddress: resolvedAddress_exists ? resolvedAddress : null,
+							resolvedPaymentID: resolvedPaymentID_exists ? resolvedPaymentID : null,
+							manuallyEnteredPaymentID: manuallyEnteredPaymentID_exists ? manuallyEnteredPaymentID : null
 						}
-					)
-					// TODO: push tx details page
-					console.log("TODO: push details page (does this mean we have to construct the tx and insert it into the wallet before we get it back? might actually work.)")
-					if (notPickedContactBut_enteredAddressValue == true) {
-						// TODO: pop the New Contact view
-						console.log("TODO: Pop the new contact view")
+						self.pushDetailsViewFor_transaction(sendFrom_wallet, mockedTransaction)
 					}
-					console.log(
-						"SENT",
-						currencyReady_targetDescription_address,
-						sentAmount,
-						final__payment_id,
-						tx_hash,
-						tx_fee
-					)
-					
-					// 		const GeneratedRequestView = require('./GeneratedRequestView.web')
-					// 		const options =
-					// 		{
-					// 			fundsRequest: fundsRequest
-					// 		}
-					// 		const view = new GeneratedRequestView(options, self.context)
-					// 		const modalParentView = self.navigationController.modalParentView
-					// 		const underlying_navigationController = modalParentView
-					// 		underlying_navigationController.PushView(view, false) // not animated
-					// 		setTimeout(function()
-					// 		{ // just to make sure the PushView finished
-					// 			modalParentView.DismissTopModalView(true)
-					// 		})
-					
+					{
+						if (notPickedContactBut_enteredAddressValue == true) {
+							// TODO: pop the New Contact view
+							console.log("TODO: Present the new contact view")
+						}
+					}
+					{ // finally, clean up form
+						setTimeout(
+							function()
+							{								
+								self._dismissValidationMessageLayer()
+								self.amountInputLayer.value = ""
+								self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
+								if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
+									self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+										true // true, do not focus input
+									)
+									self.pickedContact = null // jic
+									self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = ""
+								}
+								self.manualPaymentIDInputLayer.value = ""
+								self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+								self._hideResolvedAddress()
+								self._hideResolvedPaymentID()
+								//
+								self.addPaymentIDButton_aLayer.style.display = "block"
+							},
+							500 // after the navigation transition just above has taken place
+						)
+					}
+					{ // and fire off a request to have the wallet get the latest (real) tx records
+						setTimeout(
+							function()
+							{
+								sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+							}
+						)
+					}
 				}
 			)
 		}
@@ -815,6 +863,54 @@ class SendFundsView extends View
 		{
 			self.fromContact = fromContact
 			self.contactOrAddressPickerLayer.ContactPicker_pickContact(fromContact) // simulate user picking the contact
+		}
+	}
+	//
+	//
+	// Runtime - Imperatives - Navigation
+	//
+	pushDetailsViewFor_transaction(
+		sentFrom_wallet, 
+		transaction
+	)
+	{
+		const self = this
+		const _cmd = "pushDetailsViewFor_transaction"
+		if (self.current_transactionDetailsView !== null) {
+			// commenting this throw so we can use this as the official way to block double-clicks, etc
+			// throw "Asked to " + _cmd + " while self.current_transactionDetailsView !== null"
+			return
+		}
+		{ // validate wallet and tx
+			if (typeof sentFrom_wallet === 'undefined' || sentFrom_wallet === null) {
+				throw self.constructor.name + " requires self.wallet to " + _cmd
+				return
+			}
+			if (typeof transaction === 'undefined' || transaction === null) {
+				throw self.constructor.name + " requires transaction to " + _cmd
+				return
+			}
+		}
+		const navigationController = self.navigationController
+		if (typeof navigationController === 'undefined' || navigationController === null) {
+			throw self.constructor.name + " requires navigationController to " + _cmd
+			return
+		}
+		{
+			const options = 
+			{
+				wallet: sentFrom_wallet,
+				transaction: transaction
+			}
+			const view = new JustSentTransactionDetailsView(options, self.context) // note JustSentTransactionDetailsView
+			navigationController.PushView(
+				view, 
+				true // animated
+			)
+			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
+			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
+			// by tearing it down on self.viewDidAppear() below and on TearDown()
+			self.current_transactionDetailsView = view
 		}
 	}
 	//
@@ -837,6 +933,17 @@ class SendFundsView extends View
 		const self = this
 		super.viewDidAppear()
 		// teardown any child/referenced stack navigation views if necessary…
+	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		{
+			if (self.current_transactionDetailsView !== null) {
+				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
+				self.current_transactionDetailsView = null // must zero again and should free
+			}
+		}
 	}
 	//
 	//
@@ -979,6 +1086,7 @@ class SendFundsView extends View
 			)
 			{
 				self.resolving_activityIndicatorLayer.style.display = "none"
+				self.enable_submitButton()
 				//
 				if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
 					console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
@@ -992,14 +1100,8 @@ class SendFundsView extends View
 				}
 				if (err) { // no need to display since it's likely to be 
 					console.log("err.toString()" , err.toString())
-					self.disable_submitButton()
 					return
 				}
-				// only re-enable the button if no error 
-				self.enable_submitButton()
-				console.log("addressWhichWasPassedIn", addressWhichWasPassedIn)
-				console.log("moneroReady_address", moneroReady_address)
-
 				{
 					if (typeof moneroReady_address !== 'undefined' && moneroReady_address) {
 						self._displayResolvedAddress(moneroReady_address)

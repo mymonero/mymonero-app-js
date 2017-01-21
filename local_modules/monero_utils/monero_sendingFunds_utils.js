@@ -437,7 +437,7 @@ function SendFunds(
             const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
             // if we need a higher fee
             if (feeActuallyNeededByNetwork.compare(prevFee) > 0) {
-                console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + cnUtil.formatMoneyFull(prevFee) + " New fee: " + cnUtil.formatMoneyFull(feeActuallyNeededByNetwork))
+                console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(prevFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
 				__reenterable_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin_findingLowestNetworkFee(
 					moneroReady_targetDescription_address,
 					totalAmountWithoutFee_JSBigInt,
