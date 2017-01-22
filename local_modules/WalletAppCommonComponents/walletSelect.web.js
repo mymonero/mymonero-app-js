@@ -75,7 +75,16 @@ function New_fieldValue_walletSelectLayer(params)
 	layer.__givenBooted_lookup_currentlySelectedWallet = function()
 	{ // Not to be called until isBooted = true
 		const selectedIndex = layer.selectedIndex
+		const layer_options = layer.options
+		const numberOf_layer_options = layer_options.length
+		if (numberOf_layer_options == 0) {
+			// no wallets from which to choose
+			return null // so nothing selected
+		}
 		const selectedOption = layer.options[selectedIndex]
+		if (typeof selectedOption === 'undefined' || selectedOption == null) {
+			throw "nil selectedOption in __givenBooted_lookup_currentlySelectedWallet while layer.options.length != 0"
+		}
 		const selectedValue = selectedOption.value
 		const selectedWallet_id = selectedValue;
 		var selectedWallet = null;
