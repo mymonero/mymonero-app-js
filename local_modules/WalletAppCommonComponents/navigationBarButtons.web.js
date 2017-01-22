@@ -137,3 +137,29 @@ function New_RightSide_EditButtonView(context)
 	return view	
 }
 exports.New_RightSide_EditButtonView = New_RightSide_EditButtonView
+//
+function New_RightSide_ValueDisplayLabelButtonView(context)
+{
+	const view = new View({ tag: "a" }, context)
+	const layer = view.layer
+	{ // setup/style
+		layer.href = "" // to make it non-clickable
+		layer.style.display = "block"
+		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+		layer.style.marginTop = "10px"
+		layer.style.width = "auto"
+		layer.style.height = "auto"
+		layer.style.textDecoration = "none"
+		layer.style.fontSize = "11px"
+		layer.style.fontWeight = "light"
+		layer.style.fontFamily = "monospace"
+		layer.style.color = "#ccc"
+		layer.style.lineHeight = "200%" // % extra to get + aligned properly
+		layer.style.color = "#ccc"
+		layer.style.fontWeight = "light"
+		layer.style.textAlign = "center"
+		layer.style.cursor = "default"
+	}
+	return view	
+}
+exports.New_RightSide_ValueDisplayLabelButtonView = New_RightSide_ValueDisplayLabelButtonView

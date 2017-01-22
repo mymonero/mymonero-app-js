@@ -30,6 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class TransactionDetailsView extends View
 {
@@ -147,6 +148,40 @@ class TransactionDetailsView extends View
 		//
 		return transaction.approx_float_amount || ""
 	}
+
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_ValueDisplayLabelButtonView(self.context)
+		const layer = view.layer
+		{
+			var valueString;
+			const transaction = self.transaction
+			if (transaction && typeof transaction !== 'undefined') {
+				if (transaction.isConfirmed !== true) {
+					valueString = "PENDING"
+				} else {
+					valueString = "CONFIRMED"
+				}
+			} else {
+				valueString = ""
+			}
+			layer.innerHTML = valueString
+		}
+		{ // observe
+			view.layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					// disabled
+					return false
+				}
+			)
+		}
+		return view
+	}
+	
 	Navigation_TitleColor()
 	{
 		const self = this
@@ -186,16 +221,23 @@ class TransactionDetailsView extends View
 			self.tableSection_containerLayer = null // was just removed; free
 		}
 		{ // messages/alerts
-			if (transaction.isConfirmed !== true) {
-				const messageString = "This transaction is still pending confirmation."
-				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString)
-				self.layer.appendChild(layer)
-			}
 			if (transaction.isUnlocked !== true) {
 				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
 				var messageString = "This transaction is currently locked. " + lockedReason
 				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString)
 				self.layer.appendChild(layer)
+			}
+		}
+		{
+			if (transaction.isJustSentTransaction === true) {
+				const messageString = "Your Monero is on its way."
+				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString)
+				self.layer.appendChild(layer)
+			}
+			if (self.navigationController) {
+				self.navigationController.SetNavigationBarTitleNeedsUpdate() // for the CONFIRMED/PENDING
+			} else {
+				// then it'll effectively be called for us after init
 			}
 		}
 		const containerLayer = document.createElement("div")
