@@ -212,14 +212,14 @@ function New_spacerLayer()
 }
 exports.New_spacerLayer = New_spacerLayer
 //
-function New_inlineMessageDialogLayer(messageString)
-{
+function New_inlineMessageDialogLayer(messageString, immediatelyVisible)
+{ // NOTE: These are configured to not be visible at first
 	const layer = document.createElement("div")
 	layer.innerHTML = messageString
 	layer.style.border = "1px solid #ccc"
 	layer.style.backgroundColor = "#333"
 	layer.style.margin = "0 0 10px 0"
-	layer.style.display = "none" // initial visibility
+	layer.style.display = immediatelyVisible === true ? "block" : "none" // initial visibility
 	{
 		layer.SetValidationError = function(to_messageString)
 		{

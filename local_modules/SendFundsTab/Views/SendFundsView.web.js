@@ -816,6 +816,7 @@ class SendFundsView extends View
 						    coinbase: false,
 							//
 						    isConfirmed: false, // important
+							isJustSentTransaction: true, // this is only used here
 						    timestamp: "" + (new Date()), // faking
 							//
 						    isUnlocked: true, // TODO: not sure if this is correct

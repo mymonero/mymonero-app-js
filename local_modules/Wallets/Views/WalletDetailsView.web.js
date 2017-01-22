@@ -374,6 +374,7 @@ class WalletDetailsView extends View
 				{
 					// console.log("tx", JSON.stringify(tx, null, '    '))
 					const li = document.createElement("li")
+					li.style.cursor = "pointer" // to make it look clickable
 					{
 						const table = document.createElement("table")
 						{ // tables forever
