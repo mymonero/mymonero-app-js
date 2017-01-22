@@ -63,6 +63,7 @@ class SendFundsView extends View
 		const self = this
 		self.isSubmitButtonDisabled = false
 		self.setup_views()
+		self.startObserving()
 		
 	}
 	setup_views()
@@ -398,6 +399,28 @@ class SendFundsView extends View
 		self.form_containerLayer.appendChild(div)
 	}
 	//
+	startObserving()
+	{
+		const self = this
+		{ // walletAppCoordinator
+			const emitter = self.context.walletAppCoordinator
+			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact = function(contact)
+			{
+				if (self.isSubmitButtonDisabled == true) {
+					console.warn("Triggered send funds from contact while submit btn disabled. Beep.")
+					// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+					// TODO: mayyybe alert tx in progress
+					return
+				}
+				self.contactOrAddressPickerLayer.ContactPicker_pickContact(contact)
+			}
+			emitter.on(
+				emitter.EventName_didTrigger_sendFundsToContact(), // observe 'did' so we're guaranteed to already be on right tab
+				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
+			)
+		}
+	}
+	//
 	//
 	// Lifecycle - Teardown - Overrides
 	//
@@ -418,6 +441,9 @@ class SendFundsView extends View
 				self.current_transactionDetailsView = null
 			}
 		}
+		{
+			self.stopObserving()
+		}
 		super.TearDown()
 	}
 	cancelAny_requestHandle_for_oaResolution()
@@ -430,6 +456,18 @@ class SendFundsView extends View
 			req.abort()
 		}
 		self.requestHandle_for_oaResolution = null
+	}
+	stopObserving()
+	{
+		const self = this
+		{
+			const emitter = self.context.walletAppCoordinator
+			emitter.removeListener(
+				emitter.EventName_didTrigger_sendFundsToContact(),
+				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
+			)
+			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact = null
+		}
 	}
 	//
 	//
