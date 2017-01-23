@@ -43,9 +43,6 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 			}
 		}
 		super.setup()
-		{
-			console.log("self.mockedTransaction", self.mockedTransaction)
-		}
 	}
 	_overridable_initial_inlineMessageString()
 	{
@@ -72,6 +69,12 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 		}
 		//
 		return options
+	}
+	_overridable_shouldNotDisplayPaymentIDFieldLayer()
+	{
+		const self = this
+		const existingValue = self.mockedTransaction.payment_id
+		return !existingValue || typeof existingValue === 'undefined' // show (false) if we have one
 	}
 	_overridable_shouldNotDisplayPaymentIDNoteLayer()
 	{

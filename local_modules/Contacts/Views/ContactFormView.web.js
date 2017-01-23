@@ -110,6 +110,10 @@ class ContactFormView extends View
 			placeholderText: "Optional"
 		}
 	}
+	_overridable_shouldNotDisplayPaymentIDFieldLayer()
+	{
+		return false // show by default 
+	}
 	_overridable_shouldNotDisplayPaymentIDNoteLayer()
 	{
 		return false // do show payment id note layer by default
@@ -228,27 +232,31 @@ class ContactFormView extends View
 		div.style.width = `calc(100%)`
 		div.style.display = "inline-block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID")
-			div.appendChild(labelLayer)
+			if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
+				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID")
+				div.appendChild(labelLayer)
+			}
 		}
 		{
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self._overridable_initialValue_paymentIDLayerOptions())
 			self.paymentIDInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) { // return key
-							self._tryToCreateContact()
-							return
+			if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
+				{
+					valueLayer.addEventListener(
+						"keyup",
+						function(event)
+						{
+							if (event.keyCode === 13) { // return key
+								self._tryToCreateContact()
+								return
+							}
 						}
-					}
-				)
+					)
+				}
+				div.appendChild(valueLayer)
 			}
-			div.appendChild(valueLayer)
 		}
-		{ // to get the height
+		if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 		}
 		if (self._overridable_shouldNotDisplayPaymentIDNoteLayer() !== true) {
