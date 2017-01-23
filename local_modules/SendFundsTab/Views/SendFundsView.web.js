@@ -718,6 +718,7 @@ class SendFundsView extends View
 			}
 			// address
 			const is_enteredAddressValue_OAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(enteredAddressValue)
+			var isIntegratedAddress;
 			if (is_enteredAddressValue_OAAddress !== true) {
 				// then it's an XMR addr
 				var address__decode_result; 
@@ -731,7 +732,13 @@ class SendFundsView extends View
 				}
 				// we don't care whether it's an integrated address or not here since we're not going to use its payment id
 				target_address = enteredAddressValue // then this look like a valid XMR addr
+				if (address__decode_result.intPaymentId) {
+					isIntegratedAddress = true
+				} else {
+					isIntegratedAddress = false
+				}
 			} else { // then it /is/ an OA addr
+				isIntegratedAddress = false // important to set
 				if (!resolvedAddress_fieldIsVisible || !resolvedAddress_exists) {
 					self.validationMessageLayer.SetValidationError("Couldn't resolve this OpenAlias address.")
 					return
@@ -739,22 +746,26 @@ class SendFundsView extends View
 				target_address = resolvedAddress
 			}
 			// payment ID:
-			if (canUseManualPaymentID) {
-				if (resolvedPaymentID_fieldIsVisible) {
-					throw "canUseManualPaymentID but resolvedPaymentID_fieldIsVisible"
-					return
+			if (isIntegratedAddress === true) {
+				payment_id = null
+			} else {
+				if (canUseManualPaymentID) {
+					if (resolvedPaymentID_fieldIsVisible) {
+						throw "canUseManualPaymentID but resolvedPaymentID_fieldIsVisible"
+						return
+					}
+					payment_id = manuallyEnteredPaymentID
+			        if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
+						// TODO: set validation err on payment ID field (clear that err when we clear the payment ID field)
+						self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
+						return
+					}
+				} else if (resolvedPaymentID_fieldIsVisible) {
+					if (resolvedPaymentID_exists === false) {
+						throw "resolvedPaymentID_fieldIsVisible but !resolvedPaymentID_exists"
+					}
+					payment_id = resolvedPaymentID
 				}
-				payment_id = manuallyEnteredPaymentID
-		        if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
-					// TODO: set validation err on payment ID field (clear that err when we clear the payment ID field)
-					self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
-					return
-				}
-			} else if (resolvedPaymentID_fieldIsVisible) {
-				if (resolvedPaymentID_exists === false) {
-					throw "resolvedPaymentID_fieldIsVisible but !resolvedPaymentID_exists"
-				}
-				payment_id = resolvedPaymentID
 			}
 		}
 		{ // final validation

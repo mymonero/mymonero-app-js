@@ -355,7 +355,5 @@ class StackAndModalNavigationView extends StackNavigationView
 			isAnimated
 		)
 	}
-	
-	
 }
 module.exports = StackAndModalNavigationView

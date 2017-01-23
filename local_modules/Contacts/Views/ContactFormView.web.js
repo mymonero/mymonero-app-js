@@ -273,6 +273,7 @@ class ContactFormView extends View
 			}
 			div.appendChild(layer)
 		}
+		self.paymentIDField_containerLayer = div
 		self.form_containerLayer.appendChild(div)
 	}
 	//

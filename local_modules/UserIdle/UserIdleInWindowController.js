@@ -30,7 +30,7 @@
 //
 const EventEmitter = require('events')
 //
-var kUserIdleTimeout_s = 20 // seconds
+var kUserIdleTimeout_s = 40 // seconds
 //
 class UserIdleInWindowController extends EventEmitter
 {

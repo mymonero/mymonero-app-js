@@ -31,6 +31,9 @@
 const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 //
+const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
+const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
+//
 class AddContactFromSendTabView extends AddContactFromOtherTabView
 {
 	setup()
@@ -42,6 +45,28 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 				throw self.constructor.name + " requires a self.mockedTransaction" 
 			}
 		}
+		{
+			self.enteredAddressValue = self.mockedTransaction.enteredAddressValue
+			self.is_enteredAddressValue_OAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(self.enteredAddressValue)
+			if (self.is_enteredAddressValue_OAAddress === false) {
+				try {
+					self.address__decode_result = monero_utils.decode_address(self.enteredAddressValue)
+				} catch (e) {
+					console.warn("Couldn't decode as a Monero address.", e)
+					return // just return silently
+				}
+				// we don't care whether it's an integrated address or not here since we're not going to use its payment id
+				self.integratedAddressPaymentId = self.address__decode_result.intPaymentId || null
+				if (self.integratedAddressPaymentId) {
+					self.isIntegratedAddress = true
+				} else {
+					self.isIntegratedAddress = false
+				}
+			} else {
+				self.isIntegratedAddress = false
+			}
+			self.paymentID_valueToUse = self.isIntegratedAddress ? self.integratedAddressPaymentId : self.mockedTransaction.payment_id
+		}
 		super.setup()
 	}
 	_overridable_initial_inlineMessageString()
@@ -52,7 +77,8 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		const self = this
 		const options = super._overridable_initialValue_addressLayerOptions()
-		options.existingValue = self.mockedTransaction.target_address // TODO: we actually need to check if they used an OA addr here. if so, existingValue should not be the target address
+		const enteredAddressValue = self.enteredAddressValue // i /think/ this should always be the address we save as the Contact address
+		options.existingValue = enteredAddressValue
 		options.isNonEditable = true // lock
 		//
 		return options
@@ -61,7 +87,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		const self = this
 		const options = super._overridable_initialValue_paymentIDLayerOptions()
-		const existingValue = self.mockedTransaction.payment_id
+		const existingValue = self.paymentID_valueToUse
 		options.existingValue = existingValue
 		options.isNonEditable = true // lock
 		if (!existingValue || typeof existingValue === 'undefined') {
@@ -73,7 +99,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	_overridable_shouldNotDisplayPaymentIDFieldLayer()
 	{
 		const self = this
-		const existingValue = self.mockedTransaction.payment_id
+		const existingValue = self.paymentID_valueToUse
 		return !existingValue || typeof existingValue === 'undefined' // show (false) if we have one
 	}
 	_overridable_shouldNotDisplayPaymentIDNoteLayer()
@@ -100,6 +126,18 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 			const toBe_siblingLayer = self.form_containerLayer
 			toBe_siblingLayer.parentNode.insertBefore(labelLayer, toBe_siblingLayer)
 		}
+		{ // "Detected" label?
+			const needsDetectedLabel = 
+				self.isIntegratedAddress == true // is either an integrated addr
+				|| (self.is_enteredAddressValue_OAAddress == true // or is OA addr and are going to show the field
+					&& self._overridable_shouldNotDisplayPaymentIDNoteLayer() === false)
+			if (needsDetectedLabel) {
+				const detectedMessage = document.createElement("div")
+				detectedMessage.innerHTML = '<img src="detectedCheckmark.png" />&nbsp;<span>Detected</span>'
+				// ^- TODO: factor into component
+				self.paymentIDField_containerLayer.appendChild(detectedMessage)
+			}
+		}
 	}
 	//
 	//
@@ -111,15 +149,33 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	}
 	//
 	//
+	// Runtime - Accessors - Overridable
+	//
+	_overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues()
+	{
+		return true // very special case - cause we just / already resolved this info
+	}
+	//
+	//
 	// Runtime - Delegation - Overrides
 	//
+	_willSaveContactWithDescription(contactDescription)
+	{
+		const self = this
+		const enteredAddressValue = self.mockedTransaction.enteredAddressValue
+		const is_enteredAddressValue_OAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(enteredAddressValue)
+		if (is_enteredAddressValue_OAAddress === true) {
+			const resolvedAddress = self.mockedTransaction.resolvedAddress
+			if (!resolvedAddress) {
+				throw "resolvedAddress was nil despite is_enteredAddressValue_OAAddress"
+			}
+			contactDescription.cached_OAResolved_XMR_address = resolvedAddress
+		}
+	}
 	_didSaveNewContact(contact)
 	{
 		const self = this
-		{ // all done
-			const modalParentView = self.navigationController.modalParentView
-			modalParentView.DismissTopModalView(true)			
-		}
+		// don't need to dismiss here cause super will do it for us
 		super._didSaveNewContact(contact) // this will cause self to be dismissed!! so, last-ish
 	}
 }

@@ -69,6 +69,14 @@ class AddContactView extends ContactFormView
 	}
 	//
 	//
+	// Runtime - Accessors - Overridable
+	//
+	_overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues()
+	{
+		return false
+	}
+	//
+	//
 	// Runtime - Imperatives - Contact operation
 	//
 	_tryToCreateContact()
@@ -90,6 +98,16 @@ class AddContactView extends ContactFormView
 		}
 		if (typeof address === 'undefined' || !address) {
 			self.validationMessageLayer.SetValidationError("Please enter an address for this contact.")
+			return
+		}
+		//		
+		const canSkipEntireOAResolveAndDirectlyUseInputValues = self._overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues()
+		if (canSkipEntireOAResolveAndDirectlyUseInputValues === true) { // not the typical case
+			console.log("💬  Skipping OA resolve on AddContact.")
+			_proceedTo_addContact_paymentID(
+				paymentID, // can apparently use the exact field value
+				undefined // NOTE: This, cached_OAResolved_XMR_address, can be supplied by subclass._willSaveContactWithDescription
+			) 
 			return
 		}
 		//
@@ -175,14 +193,17 @@ class AddContactView extends ContactFormView
 				self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
 				return
 			}
+			const contactDescription = 
+			{
+				fullname: fullname,
+				emoji: emoji,
+				address: address,
+				payment_id: paymentID__toSave,
+				cached_OAResolved_XMR_address: cached_OAResolved_XMR_address__orUndefined
+			}
+			self._willSaveContactWithDescription(contactDescription)
 			self.context.contactsListController.WhenBooted_AddContact(
-				{
-					fullname: fullname,
-					emoji: emoji,
-					address: address,
-					payment_id: paymentID__toSave,
-					cached_OAResolved_XMR_address: cached_OAResolved_XMR_address__orUndefined
-				},
+				contactDescription,
 				function(err, contact)
 				{
 					if (err) {
@@ -213,6 +234,11 @@ class AddContactView extends ContactFormView
 	//
 	// Runtime - Delegation - Yield
 	//
+	_willSaveContactWithDescription(contactDescription)
+	{
+		const self = this
+		// so you can modify it		
+	}
 	_didSaveNewContact(contact)
 	{
 		const self = this
