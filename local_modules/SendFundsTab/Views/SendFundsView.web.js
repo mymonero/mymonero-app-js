@@ -240,7 +240,9 @@ class SendFundsView extends View
 		const td = document.createElement("td")
 		td.style.verticalAlign = "top"
 		td.appendChild(div)
-		tr.appendChild(td)
+		// we are explicitly NOT going to add it to the DOM because
+		// we don't want to show this to the user at this point in time. UX decision.
+		// tr.appendChild(td)
 	}
 	_setup_form_contactOrAddressPickerLayer()
 	{ // Request funds from sender
