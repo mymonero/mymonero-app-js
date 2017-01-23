@@ -96,6 +96,24 @@ class ContactFormView extends View
 	{
 		return ""
 	}
+	_overridable_initialValue_addressLayerOptions()
+	{
+		const self = this
+		return {
+			placeholderText: "Enter integrated address or OpenAlias"
+		}
+	}
+	_overridable_initialValue_paymentIDLayerOptions()
+	{
+		const self = this
+		return {
+			placeholderText: "Optional"
+		}
+	}
+	_overridable_shouldNotDisplayPaymentIDNoteLayer()
+	{
+		return false // do show payment id note layer by default
+	}
 	_setup_field_fullname()
 	{
 		const self = this
@@ -108,7 +126,7 @@ class ContactFormView extends View
 		}
 		{
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-				placeholderText: "Something memorable"
+				placeholderText: "Enter name"
 			})
 			self.fullnameInputLayer = valueLayer
 			{
@@ -182,9 +200,7 @@ class ContactFormView extends View
 			div.appendChild(labelLayer)
 		}
 		{
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-				placeholderText: "Enter integrated address or OpenAlias"
-			})
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self._overridable_initialValue_addressLayerOptions())
 			self.addressInputLayer = valueLayer
 			{
 				valueLayer.addEventListener(
@@ -216,9 +232,7 @@ class ContactFormView extends View
 			div.appendChild(labelLayer)
 		}
 		{
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
-				placeholderText: "Optional"
-			})
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self._overridable_initialValue_paymentIDLayerOptions())
 			self.paymentIDInputLayer = valueLayer
 			{
 				valueLayer.addEventListener(
@@ -237,7 +251,7 @@ class ContactFormView extends View
 		{ // to get the height
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 		}
-		{
+		if (self._overridable_shouldNotDisplayPaymentIDNoteLayer() !== true) {
 			const layer = document.createElement("span")
 			{
 				layer.innerHTML = "Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated."

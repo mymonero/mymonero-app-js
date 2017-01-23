@@ -70,15 +70,35 @@ function New_fieldValue_textInputLayer(params)
 		}
 		layer.style.height = "30px"
 		layer.style.width = `calc(100% - 4px - ${2 * 10}px)`
-		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
-		layer.style.color = "#ccc"
-		layer.style.backgroundColor = "#444"
 		layer.style.padding = "0 10px"
 		layer.style.fontFamily = "monospace"
-	}				
+	}
+	{
+		layer.Component_MakeNonEditable = function()
+		{
+			layer.style.backgroundColor = "#777"
+			layer.style.border = "0"
+			layer.style.color = "#ccc"
+			layer.disabled = true
+		}
+		layer.Component_MakeEditable = function()
+		{
+			layer.style.backgroundColor = "#444"
+			layer.style.border = "1px inset #222"
+			layer.style.color = "#ccc"
+			layer.disabled = false
+		}
+	}
+	{
+		if (params.isNonEditable === true) {
+			layer.Component_MakeNonEditable()
+		} else {
+			layer.Component_MakeEditable()
+		}
+	}
 	return layer
 }
 exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer

@@ -51,6 +51,33 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		return "Your Monero is on its way."
 	}
+	_overridable_initialValue_addressLayerOptions()
+	{
+		const self = this
+		const options = super._overridable_initialValue_addressLayerOptions()
+		options.existingValue = self.mockedTransaction.target_address // TODO: we actually need to check if they used an OA addr here. if so, existingValue should not be the target address
+		options.isNonEditable = true // lock
+		//
+		return options
+	}
+	_overridable_initialValue_paymentIDLayerOptions()
+	{
+		const self = this
+		const options = super._overridable_initialValue_paymentIDLayerOptions()
+		const existingValue = self.mockedTransaction.payment_id
+		options.existingValue = existingValue
+		options.isNonEditable = true // lock
+		if (!existingValue || typeof existingValue === 'undefined') {
+			options.hidden = true // TODO
+		}
+		//
+		return options
+	}
+	_overridable_shouldNotDisplayPaymentIDNoteLayer()
+	{
+		// TODO: (?) check if we really /are/ going to generate a payment id for them and show ?
+		return true // do not show this layer 
+	}
 	setup_views()
 	{
 		super.setup_views()
