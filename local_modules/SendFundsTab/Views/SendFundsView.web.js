@@ -37,7 +37,7 @@ const commonComponents_contactPicker = require('../../WalletAppCommonComponents/
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
+const AddContactFromSendTabView = require('./AddContactFromSendTabView.web')
 const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView.web')
 //
 const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
@@ -763,7 +763,11 @@ class SendFundsView extends View
 				return
 			}
 		}
-		self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
+		{ 
+			self.amountInputLayer.disabled = true
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
+			self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
+		}
 		__proceedTo_generateSendTransactionWith(
 			wallet, // FROM wallet
 			target_address, // TO address
@@ -810,8 +814,9 @@ class SendFundsView extends View
 					// 	tx_hash,
 					// 	tx_fee
 					// )
+					var mockedTransaction; // defined out here cause we use it below
 					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-						const mockedTransaction =
+						mockedTransaction =
 						{
 						    hash: tx_hash,
 						    mixin: "" + mixin_int,
@@ -853,26 +858,55 @@ class SendFundsView extends View
 							console.log("TODO: Present the new contact view")
 						}
 					}
+					{ // and after a delay, present AddContactFromSendTabView
+						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
+						if (this_pickedContact === null) { // so they're going with a custom addr
+							setTimeout(
+								function()
+								{
+									const view = new AddContactFromSendTabView({
+										mockedTransaction: mockedTransaction
+									}, self.context)
+									const navigationView = new StackAndModalNavigationView({}, self.context)
+									navigationView.SetStackViews([ view ])
+									self.navigationController.PresentView(navigationView, true)
+								},
+								750 // after the navigation transition just above has taken place
+							)
+						}
+					}
 					{ // finally, clean up form
 						setTimeout(
 							function()
-							{								
+							{ // TODO: factor this ?
 								self._dismissValidationMessageLayer()
-								self.amountInputLayer.value = ""
-								self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
-								if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
-									self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
-										true // true, do not focus input
-									)
-									self.pickedContact = null // jic
+								{
+									self.amountInputLayer.value = ""
+									self.amountInputLayer.disabled = false
+								}
+								{ // not that we need do to this cause mixin is hidden…
+									self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
+								}
+								{
+									self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable this
+									if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
+										self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+											true // true, do not focus input
+										)
+										self.pickedContact = null // jic
+									}
 									self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = ""
 								}
-								self.manualPaymentIDInputLayer.value = ""
-								self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
-								self._hideResolvedAddress()
-								self._hideResolvedPaymentID()
-								//
-								self.addPaymentIDButton_aLayer.style.display = "block"
+								{
+									self._hideResolvedAddress()
+									self._hideResolvedPaymentID()
+								}
+								{
+									self.manualPaymentIDInputLayer.value = ""
+									self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+									//
+									self.addPaymentIDButton_aLayer.style.display = "block"
+								}
 							},
 							500 // after the navigation transition just above has taken place
 						)

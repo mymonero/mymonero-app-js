@@ -253,7 +253,7 @@ class TransactionDetailsView extends View
 			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			self._addTableFieldLayer_mixin()
 			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			self._addTableFieldLayer_transactionID()
+			self._addTableFieldLayer_transactionHash()
 			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			self._addTableFieldLayer_paymentID()
 		}
@@ -313,10 +313,10 @@ class TransactionDetailsView extends View
 		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 		self.tableSection_containerLayer.appendChild(div)
 	}
-	_addTableFieldLayer_transactionID()
+	_addTableFieldLayer_transactionHash()
 	{
 		const self = this
-		const fieldLabelTitle = "Transaction ID"
+		const fieldLabelTitle = "Transaction Hash"
 		const value = self.transaction.hash
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(

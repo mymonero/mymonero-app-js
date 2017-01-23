@@ -71,8 +71,12 @@ class ContactFormView extends View
 			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
 		{ // validation message
-			const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
-			layer.ClearAndHideMessage()
+			const initial_message = self._overridable_initial_inlineMessageString()
+			const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
+			const layer = commonComponents_tables.New_inlineMessageDialogLayer(initial_message, initial_message__exists)
+			if (initial_message__exists == false) {
+				layer.ClearAndHideMessage()
+			}
 			self.validationMessageLayer = layer
 			self.layer.appendChild(layer)				
 		}
@@ -87,6 +91,10 @@ class ContactFormView extends View
 			}
 			self.layer.appendChild(containerLayer)
 		}
+	}
+	_overridable_initial_inlineMessageString()
+	{
+		return ""
 	}
 	_setup_field_fullname()
 	{
