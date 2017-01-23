@@ -49,6 +49,7 @@ class UserIdleInWindowController extends EventEmitter
 		{ // initial state
 			self.isUserIdle = false
 			self._numberOfSecondsSinceLastUserInteraction = 0
+			self._numberOfRequestsToLockUserIdleAsDisabled = 0
 		}
 		{ // begin observing things which break/reset idle
 			function __userDidInteract()
@@ -66,18 +67,7 @@ class UserIdleInWindowController extends EventEmitter
 			document.onkeypress = __userDidInteract
 		}
 		{ // begin watching and checking if user considered idle
-			window.setInterval(
-				function()
-				{
-				    self._numberOfSecondsSinceLastUserInteraction += 1 // count the second
-				    if (self._numberOfSecondsSinceLastUserInteraction >= kUserIdleTimeout_s) {
-						if (self.isUserIdle !== true) { // not already idle (else redundant)
-							self._userDidBecomeIdle()
-						}
-				    }
-				}, 
-				1000
-			)
+			self._initiate_userIdle_intervalTimer()
 		}
 	}
 	//
@@ -94,9 +84,74 @@ class UserIdleInWindowController extends EventEmitter
 	}
 	//
 	//
-	// Runtime - Imperatives
+	// Runtime - Imperatives - User idle timer
 	//
-	
+	TemporarilyDisable_userIdle()
+	{
+		const self = this
+		self._numberOfRequestsToLockUserIdleAsDisabled += 1
+		if (self._numberOfRequestsToLockUserIdleAsDisabled == 1) { // if we're requesting to disable without it already having been disabled, i.e. was 0, now 1
+			console.log("⏳  Temporarily disabling the user idle timer.")
+			self.__disable_userIdle()
+		} else {
+			console.log("⏳  Requested to temporarily disable user idle but already disabled. Incremented lock.")
+		}
+	}
+	ReEnable_userIdle()
+	{
+		const self = this
+		if (self._numberOfRequestsToLockUserIdleAsDisabled == 0) {
+			console.log("⏳  ReEnable_userIdle, self._numberOfRequestsToLockUserIdleAsDisabled 0")
+			return // don't go below 0
+		}
+		self._numberOfRequestsToLockUserIdleAsDisabled -= 1
+		if (self._numberOfRequestsToLockUserIdleAsDisabled == 0) {
+			console.log("⏳  Re-enabling the user idle timer.")
+			self.__reEnable_userIdle()
+		} else {
+			console.log("⏳  Requested to re-enable user idle but other locks still exist.")
+		}
+	}
+	//
+	__disable_userIdle()
+	{
+		const self = this
+		if (!self.userIdle_intervalTimer || typeof self.userIdle_intervalTimer === 'undefined') {
+			throw "__disable_userIdle called but already have nil self.userIdle_intervalTimer"
+		}
+		clearInterval(self.userIdle_intervalTimer)
+		self.userIdle_intervalTimer = null
+	}
+	__reEnable_userIdle()
+	{
+		const self = this
+		if (self.userIdle_intervalTimer && typeof self.userIdle_intervalTimer !== 'undefined') {
+			throw "__reEnable_userIdle called but non-nil self.userIdle_intervalTimer"
+		}
+		self._initiate_userIdle_intervalTimer()
+	}
+	//
+	_initiate_userIdle_intervalTimer()
+	{
+		const self = this
+		const intervalTimer_interval_ms = 1000
+		if (!self._userIdle_intervalTimer_fn || typeof self._userIdle_intervalTimer_fn === 'undefined') {
+			self._userIdle_intervalTimer_fn = function()
+			{
+			    self._numberOfSecondsSinceLastUserInteraction += 1 // count the second
+			    if (self._numberOfSecondsSinceLastUserInteraction >= kUserIdleTimeout_s) {
+					if (self.isUserIdle !== true) { // not already idle (else redundant)
+						self._userDidBecomeIdle()
+					}
+			    }
+			}
+			
+		}
+		self.userIdle_intervalTimer = setInterval(
+			self._userIdle_intervalTimer_fn, 
+			intervalTimer_interval_ms
+		)
+	}
 	//
 	//
 	// Runtime - Delegation

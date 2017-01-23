@@ -823,6 +823,9 @@ class Wallet extends EventEmitter
 		}
 		self.isSendingFunds = true
 		//
+		// now that we've done that, we can ask the user idle controller to disable user idle until we're done with this - cause it's not something we want to have interrupted by the user idle controller tearing everything down!!
+		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+		//
 		// some callback trampoline function declarations…
 		// these are important for resetting self's state,
 		// which is done in ___aTrampolineForFnWasCalled below
@@ -862,7 +865,10 @@ class Wallet extends EventEmitter
 		}
 		function ___aTrampolineForFnWasCalled()
 		{ // private - no need to call this yourself unless you're writing a trampoline function
+			// Note: This function is to be called before you call fn() anywhere - so we can do critical things like unlocking this method and re-enabling user idle
 			self.isSendingFunds = false
+			//
+			self.context.userIdleInWindowController.ReEnable_userIdle()
 		}
 		//
 		monero_sendingFunds_utils.SendFunds(
