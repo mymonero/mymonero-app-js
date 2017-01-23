@@ -80,6 +80,15 @@ function New_contactPickerLayer(
 			"keyup",
 			function(event)
 			{
+				const wasEscapeKey = event.keyCode == 27
+				if (wasEscapeKey) { // toggle search results visibility
+					if (autocompleteResultsLayer.style.display != "none") {
+						_removeAllAndHideAutocompleteResults()
+					} else {
+						_searchForAndDisplaySearchResults()
+					}
+					return // think it's ok to just return here and not mess with the typingDebounceTimeout
+				}
 				if (typingDebounceTimeout !== null) {
 					clearTimeout(typingDebounceTimeout)
 				}
