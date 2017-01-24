@@ -171,10 +171,12 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	DismissModalViewsToView(
 		to_modalView_orNullForTopStackView,
-		isAnimated_orTrue
+		isAnimated_orTrue,
+		fn
 	)
 	{
 		const self = this
+		fn = fn || function() {}
 		const isAnimated =
 			isAnimated_orTrue === true
 			 || typeof isAnimated_orTrue === 'undefined'
@@ -189,6 +191,7 @@ class StackAndModalNavigationView extends StackNavigationView
 		if (typeof old_topModalView === 'undefined' || old_topModalView == null) {
 			// throw self.constructor.name + " DismissModalViewsToView requires there to be a modal view"
 			console.warn("⚠️  DismissModalViewsToView called but already at root.")
+			fn()
 			return // just bailing
 		}
 		function _afterHavingFullyPresentedNewTopView_removeOldTopModalView()
@@ -215,6 +218,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			//
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+				fn()
 			} else {
 				setTimeout(
 					function()
@@ -230,6 +234,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								complete: function()
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+									fn()
 								}
 							}
 						)
@@ -291,6 +296,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+				fn()
 			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
 				setTimeout(
 					function()
@@ -306,6 +312,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								complete: function()
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+									fn()
 								}
 							}
 						)
@@ -347,13 +354,14 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
 	{
-		super.TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
-		//
 		const self = this
+		console.log(self.constructor.name, "TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState ")
 		self.DismissModalViewsToView( // pop all modals
 			null,
 			isAnimated
 		)
+		// ^- call Dismiss before calling method on super
+		super.TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
 	}
 }
 module.exports = StackAndModalNavigationView
