@@ -373,9 +373,10 @@ class SendFundsView extends View
 			{
 				e.preventDefault()
 				{
-					console.log("Show the payment id input field here…… ")
-					self.manualPaymentIDInputLayer_containerLayer.style.display = "block"
-					layer.style.display = "none"
+					if (self.isFormDisabled !== true) {
+						self.manualPaymentIDInputLayer_containerLayer.style.display = "block"
+						layer.style.display = "none"
+					}
 				}
 				return false
 			}
@@ -685,11 +686,13 @@ class SendFundsView extends View
 		}
 		{ // disable form elements
 			self.disable_submitButton()
+			self.isFormDisabled = true
 			//
 			self.useCamera_buttonView.Disable()
 			self.chooseFile_buttonView.Disable()
 			// 
 			self.amountInputLayer.disabled = true
+			self.manualPaymentIDInputLayer.disabled = true
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
 			self.walletSelectLayer.disabled = 'disabled'
 		}
@@ -698,8 +701,11 @@ class SendFundsView extends View
 		}
 		function _reEnableFormElements()
 		{
+			self.isFormDisabled = false
+			//
 			self.enable_submitButton() 
 			self.amountInputLayer.disabled = false
+			self.manualPaymentIDInputLayer.disabled = false
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
 			self.walletSelectLayer.disabled = undefined
 			//
@@ -707,7 +713,7 @@ class SendFundsView extends View
 			self.chooseFile_buttonView.Enable()
 		}
 		function _trampolineToReturnWithValidationErrorString(errStr)
-		{
+		{ // call this anytime you want to exit this method before complete success (or otherwise also call _reEnableFormElements)
 			self.validationMessageLayer.SetValidationError(errStr)
 			_reEnableFormElements()
 		}

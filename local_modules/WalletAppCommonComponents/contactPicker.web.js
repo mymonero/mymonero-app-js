@@ -270,7 +270,7 @@ function _new_inputLayer(placeholderText)
 	{
 		layer.type = "text"
 		layer.placeholder = placeholderText
-		// TODO: factor when building UI to-design
+		// TODO: factor for base style when building UI to-design
 		layer.style.display = "block"
 		layer.style.height = "30px"
 		layer.style.width = `calc(100% - ${2 * 10}px)`
@@ -298,6 +298,7 @@ function _new_autocompleteResultsLayer()
 		layer.style.borderRadius = "3px"
 		layer.style.boxShadow = "0px 3px 9px -1px rgba(0,0,0,0.75)"
 		layer.style.overflowY = "scroll"
+		layer.style.zIndex = "100"
 		//
 		layer.style.display = "none" // for now - no results at init!
 	}
