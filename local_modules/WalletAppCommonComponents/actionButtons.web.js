@@ -60,9 +60,25 @@ function New_ActionButtonView(
 )
 {
 	const view = new View({ tag: "a" }, context)
+	{
+		view.Disable = function()
+		{ // is this going to create a retain cycle?
+			view.isDisabled = true
+			const layer = view.layer
+			layer.href = "" // to make it non-clickable
+			layer.style.opacity = "0.5"
+		}
+		view.Enable = function()
+		{ // is this going to create a retain cycle?
+			view.isDisabled = false
+			const layer = view.layer
+			layer.href = "#" // to make it clickable
+			layer.style.opacity = "1.0"
+		}
+	}
 	{ // setup/style
 		const layer = view.layer
-		layer.href = "#" // to make it clickable
+		view.Enable()
 		layer.innerHTML = title
 		//
 		layer.style.backgroundImage = "url(" + iconimage_filename + ")"
@@ -86,6 +102,9 @@ function New_ActionButtonView(
 		layer.addEventListener("click", function(e) 
 		{
 			e.preventDefault()
+			if (view.isDisabled === true) {
+				return false
+			}
 			const clickedLayer = this
 			clicked_fn(clickedLayer, e)
 			return false

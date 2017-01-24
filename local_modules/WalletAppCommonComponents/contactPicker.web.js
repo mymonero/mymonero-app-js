@@ -229,6 +229,10 @@ function New_contactPickerLayer(
 			contact,
 			function(this_pickedContactLayer)
 			{
+				if (inputLayer.disabled === true) { // TODO: modify this once we have an public interface for disabling the contact picker
+					console.log("💬  Disallowing user unpick of contact while inputLayer is disabled.")
+					return
+				}
 				_unpickExistingContact_andRedisplayPickInput() // allow to autofocus layer
 			}
 		)

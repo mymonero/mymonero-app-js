@@ -35,6 +35,7 @@ const commonComponents_navigationBarButtons = require('../../WalletAppCommonComp
 const commonComponents_walletSelect = require('../../WalletAppCommonComponents/walletSelect.web')
 const commonComponents_contactPicker = require('../../WalletAppCommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
+const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const AddContactFromSendTabView = require('./AddContactFromSendTabView.web')
@@ -72,10 +73,23 @@ class SendFundsView extends View
 		{ // zeroing / initialization
 			self.current_transactionDetailsView = null
 		}
+		{ // metrics / caches
+			self.margin_h = 10
+		}
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
-		//
+		{ // action buttons toolbar
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + self.margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = self.margin_h
+			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
+			self.actionButtonsContainerView = view
+			{
+				self._setup_actionButton_useCamera()
+				self._setup_actionButton_chooseFile()
+			}
+			self.addSubview(view)
+		}
 		// self.DEBUG_BorderChildLayers()
 	}
 	_setup_self_layer()
@@ -85,9 +99,9 @@ class SendFundsView extends View
 		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
 		self.layer.style.position = "relative"
-		self.layer.style.width = "calc(100% - 20px)"
+		self.layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		self.layer.style.padding = `0 ${self.margin_h}px 40px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		self.layer.style.overflowY = "scroll"
 		//
 		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -401,6 +415,39 @@ class SendFundsView extends View
 		self.form_containerLayer.appendChild(div)
 	}
 	//
+	_setup_actionButton_useCamera()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Use Camera", 
+			"useCamera_actionButton_iconImage", 
+			false,
+			function(layer, e)
+			{
+				console.log("TODO: use camera to get QR code")
+			},
+			self.context
+		)
+		self.useCamera_buttonView = buttonView
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	_setup_actionButton_chooseFile()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Choose File", 
+			"chooseFile_actionButton_iconImage", 
+			true,
+			function(layer, e)
+			{
+				console.log("TODO: show file picker for qr code, parse, populate fields")
+			},
+			self.context
+		)
+		self.chooseFile_buttonView = buttonView
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	//
 	startObserving()
 	{
 		const self = this
@@ -636,13 +683,39 @@ class SendFundsView extends View
 			console.warn("⚠️  Submit button currently disabled. Bailing.")
 			return
 		}
-		self.disable_submitButton()
+		{ // disable form elements
+			self.disable_submitButton()
+			//
+			self.useCamera_buttonView.Disable()
+			self.chooseFile_buttonView.Disable()
+			// 
+			self.amountInputLayer.disabled = true
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
+			self.walletSelectLayer.disabled = 'disabled'
+		}
+		{
+			self._dismissValidationMessageLayer()
+		}
+		function _reEnableFormElements()
+		{
+			self.enable_submitButton() 
+			self.amountInputLayer.disabled = false
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
+			self.walletSelectLayer.disabled = undefined
+			//
+			self.useCamera_buttonView.Enable()
+			self.chooseFile_buttonView.Enable()
+		}
+		function _trampolineToReturnWithValidationErrorString(errStr)
+		{
+			self.validationMessageLayer.SetValidationError(errStr)
+			_reEnableFormElements()
+		}
 		//
-		self._dismissValidationMessageLayer()
 		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
 		{
 			if (typeof wallet === 'undefined' || !wallet) {
-				self.validationMessageLayer.SetValidationError("Please create a wallet to send Monero.")
+				_trampolineToReturnWithValidationErrorString("Please create a wallet to send Monero.")
 				return
 			}
 		}
@@ -650,16 +723,16 @@ class SendFundsView extends View
 		var amount_Number = null;
 		{
 			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
-				self.validationMessageLayer.SetValidationError("Please enter a Monero amount to send.")
+				_trampolineToReturnWithValidationErrorString("Please enter a Monero amount to send.")
 				return
 			}
 			amount_Number = +raw_amount_String // turns into Number, apparently
 			if (isNaN(amount_Number)) {
-				self.validationMessageLayer.SetValidationError("Please enter a valid amount.")
+				_trampolineToReturnWithValidationErrorString("Please enter a valid amount.")
 				return
 			}
 			if (amount_Number === 0) {
-				self.validationMessageLayer.SetValidationError("Please enter an amount greater than zero.")
+				_trampolineToReturnWithValidationErrorString("Please enter an amount greater than zero.")
 				return
 			}
 		}
@@ -708,12 +781,12 @@ class SendFundsView extends View
 				payment_id = self.pickedContact.payment_id || null
 			}
 			if (!target_address || typeof target_address === 'undefined') {
-				self.validationMessageLayer.SetValidationError("Contact unexpectedly lacked XMR address. This may be a bug.")
+				_trampolineToReturnWithValidationErrorString("Contact unexpectedly lacked XMR address. This may be a bug.")
 				return
 			}
 		} else {
 			if (enteredAddressValue_exists === false) {
-				self.validationMessageLayer.SetValidationError("Please specify the recipient of this transfer.")
+				_trampolineToReturnWithValidationErrorString("Please specify the recipient of this transfer.")
 				return
 			}
 			// address
@@ -726,7 +799,7 @@ class SendFundsView extends View
 					address__decode_result = monero_utils.decode_address(enteredAddressValue)
 				} catch (e) {
 					console.warn("Couldn't decode as a Monero address.", e)
-					self.validationMessageLayer.SetValidationError("Please enter a valid Monero address.")
+					_trampolineToReturnWithValidationErrorString("Please enter a valid Monero address.")
 					self.enable_submitButton()
 					return // just return silently
 				}
@@ -740,7 +813,7 @@ class SendFundsView extends View
 			} else { // then it /is/ an OA addr
 				isIntegratedAddress = false // important to set
 				if (!resolvedAddress_fieldIsVisible || !resolvedAddress_exists) {
-					self.validationMessageLayer.SetValidationError("Couldn't resolve this OpenAlias address.")
+					_trampolineToReturnWithValidationErrorString("Couldn't resolve this OpenAlias address.")
 					return
 				}
 				target_address = resolvedAddress
@@ -757,7 +830,7 @@ class SendFundsView extends View
 					payment_id = manuallyEnteredPaymentID
 			        if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
 						// TODO: set validation err on payment ID field (clear that err when we clear the payment ID field)
-						self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
+						_trampolineToReturnWithValidationErrorString("Please enter a valid payment ID.")
 						return
 					}
 				} else if (resolvedPaymentID_fieldIsVisible) {
@@ -770,14 +843,11 @@ class SendFundsView extends View
 		}
 		{ // final validation
 			if (!target_address) {
-				self.validationMessageLayer.SetValidationError("Unable to derive a target address for this transfer. This may be a bug.")
+				_trampolineToReturnWithValidationErrorString("Unable to derive a target address for this transfer. This may be a bug.")
 				return
 			}
 		}
-		{ 
-			self.amountInputLayer.disabled = true
-			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
-			self.walletSelectLayer.disabled = 'disabled'
+		{
 			self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
 		}
 		__proceedTo_generateSendTransactionWith(
@@ -811,15 +881,8 @@ class SendFundsView extends View
 					tx_fee
 				)
 				{
-					{// no matter what
-						self.enable_submitButton() 
-						self.amountInputLayer.disabled = false
-						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
-						self.walletSelectLayer.disabled = undefined
-					}
-					//
 					if (err) {
-						self.validationMessageLayer.SetValidationError(typeof err === 'string' ? err : err.message)
+						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 						return
 					}
 					// console.log(
@@ -867,12 +930,6 @@ class SendFundsView extends View
 							manuallyEnteredPaymentID: manuallyEnteredPaymentID_exists ? manuallyEnteredPaymentID : null
 						}
 						self.pushDetailsViewFor_transaction(sendFrom_wallet, mockedTransaction)
-					}
-					{
-						if (notPickedContactBut_enteredAddressValue == true) {
-							// TODO: pop the New Contact view
-							console.log("TODO: Present the new contact view")
-						}
 					}
 					{ // and after a delay, present AddContactFromSendTabView
 						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
@@ -922,6 +979,8 @@ this
 									//
 									self.addPaymentIDButton_aLayer.style.display = "block"
 								}
+								// and lastly, importantly, re-enable everything
+								_reEnableFormElements()
 							},
 							500 // after the navigation transition just above has taken place
 						)
