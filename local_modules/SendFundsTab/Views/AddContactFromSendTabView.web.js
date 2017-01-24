@@ -156,6 +156,10 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		return true // very special case - cause we just / already resolved this info
 	}
+	_overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
+	{
+		return "Don't Save" // contextual - instead of 'Cancel'
+	}
 	//
 	//
 	// Runtime - Delegation - Overrides

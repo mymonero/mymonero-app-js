@@ -48,22 +48,29 @@ function New_RightSide_AddButtonView(context)
 		layer.style.backgroundColor = "#18bbec"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "22px"
-		layer.style.lineHeight = "112%" // % extra to get + aligned properly
+		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.lineHeight = "22px"
 		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "bold"
+		layer.style.fontWeight = "normal"
 		layer.style.textAlign = "center"
 	}
 	return view
 }
 exports.New_RightSide_AddButtonView = New_RightSide_AddButtonView
 //
-function New_LeftSide_CancelButtonView(context)
+function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCancel)
 {
 	const view = new View({ tag: "a" }, context)
 	const layer = view.layer
 	{ // setup/style
 		layer.href = "#" // to make it clickable
-		layer.innerHTML = "Cancel"
+		//
+		const title = 
+			typeof title_orUndefinedForDefaultCancel === "undefined" 
+				|| title_orUndefinedForDefaultCancel === null 
+				|| title_orUndefinedForDefaultCancel === "" 
+			? "Cancel" : title_orUndefinedForDefaultCancel
+		layer.innerHTML = title
 	}
 	{
 		layer.style.display = "block"
@@ -72,12 +79,13 @@ function New_LeftSide_CancelButtonView(context)
 		layer.style.width = "90px"
 		layer.style.height = "24px"
 		layer.style.borderRadius = "2px"
-		layer.style.backgroundColor = "#ccc"
+		layer.style.backgroundColor = "#383638"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "22px"
-		layer.style.lineHeight = "112%" // % extra to get + aligned properly
+		layer.style.fontSize = "15px"
+		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "bold"
+		layer.style.fontWeight = "normal"
 		layer.style.textAlign = "center"
 	}
 	return view
@@ -101,10 +109,11 @@ function New_RightSide_SaveButtonView(context)
 		layer.style.borderRadius = "2px"
 		layer.style.backgroundColor = "#18bbec"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "22px"
-		layer.style.lineHeight = "112%" // % extra to get + aligned properly
+		layer.style.fontSize = "15px"
+		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "bold"
+		layer.style.fontWeight = "normal"
 		layer.style.textAlign = "center"
 	}
 	return view
@@ -128,10 +137,11 @@ function New_RightSide_EditButtonView(context)
 		layer.style.borderRadius = "2px"
 		layer.style.backgroundColor = "#383638"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "22px"
-		layer.style.lineHeight = "112%" // % extra to get + aligned properly
+		layer.style.fontSize = "15px"
+		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "bold"
+		layer.style.fontWeight = "normal"
 		layer.style.textAlign = "center"
 	}
 	return view	

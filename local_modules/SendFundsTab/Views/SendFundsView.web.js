@@ -528,44 +528,25 @@ class SendFundsView extends View
 		return "Send Monero"
 	}
 	Navigation_New_RightBarButtonView()
-	{ // TODO: factor/encapsulate in navigationBarButtons.web
+	{
 		const self = this
-		const view = new View({ tag: "a" }, self.context)
+		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
 		self.rightBarButtonView = view
 		const layer = view.layer
-		{ // setup/style
-			layer.href = "#" // to make it clickable
-			layer.innerHTML = "Send"
-			//
-			layer.style.display = "block"
-			layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
-			layer.style.marginTop = "10px"
-			layer.style.width = "90px"
-			layer.style.height = "24px"
-			layer.style.borderRadius = "2px"
-			layer.style.backgroundColor = "#18bbec"
-			layer.style.textDecoration = "none"
-			layer.style.fontSize = "22px"
-			layer.style.lineHeight = "112%" // % extra to get + aligned properly
-			layer.style.color = "#ffffff"
-			layer.style.fontWeight = "bold"
-			layer.style.textAlign = "center"
-		}
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
+		layer.innerHTML = "Send"
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
 				{
-					e.preventDefault()
-					{
-						if (self.isSubmitButtonDisabled !== true) { // button is enabled
-							self._tryToGenerateSend()
-						}
+					if (self.isSubmitButtonDisabled !== true) { // button is enabled
+						self._tryToGenerateSend()
 					}
-					return false
 				}
-			)
-		}
+				return false
+			}
+		)
 		return view
 	}
 	//

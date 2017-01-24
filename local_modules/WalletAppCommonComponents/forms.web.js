@@ -88,7 +88,7 @@ function New_fieldValue_textInputLayer(params)
 		{
 			layer.style.backgroundColor = "#444"
 			layer.style.border = "1px inset #222"
-			layer.style.color = "#ccc"
+			layer.style.color = "#eee"
 			layer.disabled = false
 		}
 	}

@@ -118,6 +118,10 @@ class ContactFormView extends View
 	{
 		return false // do show payment id note layer by default
 	}
+	_overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
+	{
+		return undefined
+	}
 	_setup_field_fullname()
 	{
 		const self = this
@@ -309,7 +313,8 @@ class ContactFormView extends View
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
-		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const title = self._overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context, title)
 		self.leftBarButtonView = view
 		const layer = view.layer
 		{ // observe

@@ -278,7 +278,7 @@ function _new_inputLayer(placeholderText)
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
-		layer.style.color = "#ccc"
+		layer.style.color = "#eee"
 		layer.style.backgroundColor = "#444"
 		layer.style.padding = "0 10px"
 		layer.style.fontFamily = "monospace"
