@@ -777,6 +777,7 @@ class SendFundsView extends View
 		{ 
 			self.amountInputLayer.disabled = true
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
+			self.walletSelectLayer.disabled = 'disabled'
 			self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
 		}
 		__proceedTo_generateSendTransactionWith(
@@ -810,8 +811,12 @@ class SendFundsView extends View
 					tx_fee
 				)
 				{
-					// no matter what
-					self.enable_submitButton() 
+					{// no matter what
+						self.enable_submitButton() 
+						self.amountInputLayer.disabled = false
+						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
+						self.walletSelectLayer.disabled = undefined
+					}
 					//
 					if (err) {
 						self.validationMessageLayer.SetValidationError(typeof err === 'string' ? err : err.message)
@@ -893,13 +898,12 @@ class SendFundsView extends View
 								self._dismissValidationMessageLayer()
 								{
 									self.amountInputLayer.value = ""
-									self.amountInputLayer.disabled = false
 								}
 								{ // not that we need do to this cause mixin is hidden…
 									self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
 								}
 								{
-									self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable this
+this
 									if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
 										self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
 											true // true, do not focus input
