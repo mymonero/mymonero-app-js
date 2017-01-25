@@ -35,6 +35,7 @@ const ActionButton_rightMargin = 8
 //
 const ActionButtonsContainerView_h = ActionButton_h
 const ActionButtonsContainerView_bottomMargin = 8
+exports.ActionButtonsContainerView_bottomMargin = ActionButtonsContainerView_bottomMargin
 exports.ActionButtonsContainerView_h = ActionButtonsContainerView_h
 //
 function New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, context)

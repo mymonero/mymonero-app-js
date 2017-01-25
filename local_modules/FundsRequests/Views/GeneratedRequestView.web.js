@@ -134,14 +134,25 @@ class GeneratedRequestView extends View
 						{ // this should capture value
 
 							const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
-							self.context.filesystemUI.OpenDialogToSaveBase64ImageStringAsImageFile(
+							self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+							// ^ so we don't get torn down while dialog open
+							function __trampolineFor_didFinish()
+							{ // ^ essential we call this from now on if we are going to finish with this codepath / exec control
+								self.context.userIdleInWindowController.ReEnable_userIdle()					
+							}							
+							self.context.filesystemUI.PresentDialogToSaveBase64ImageStringAsImageFile(
 								qrCode_imgData_base64String,
+								"Save Monero Request",
+								"Monero request",
 								function(err)
 								{
 									if (err) {
 										throw err
+										__trampolineFor_didFinish()
+										return
 									}
 									// console.log("Downloaded QR code")
+									__trampolineFor_didFinish() // re-enable idle timer
 								}
 							)
 						}

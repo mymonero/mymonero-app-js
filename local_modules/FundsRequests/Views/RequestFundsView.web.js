@@ -345,7 +345,7 @@ class RequestFundsView extends View
 			{
 				e.preventDefault()
 				{
-						self._tryToGenerateRequest() // ok to call directly w/o checking enabled as method will chk
+					self._tryToGenerateRequest() // ok to call directly w/o checking enabled as method will chk
 				}
 				return false
 			}

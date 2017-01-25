@@ -47,6 +47,9 @@ const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_util
 const monero_config = require('../../monero_utils/monero_config')
 const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 //
+const jsQR = require('jsqr')
+const monero_requestURI_utils = require('../../monero_utils/monero_requestURI_utils')
+//
 class SendFundsView extends View
 {
 	constructor(options, context)
@@ -101,7 +104,7 @@ class SendFundsView extends View
 		self.layer.style.position = "relative"
 		self.layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		self.layer.style.padding = `0 ${self.margin_h}px 40px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		self.layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		self.layer.style.overflowY = "scroll"
 		//
 		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -122,6 +125,8 @@ class SendFundsView extends View
 	{
 		const self = this
 		const containerLayer = document.createElement("div")
+		const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h + commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin + 10
+		containerLayer.style.paddingBottom = `${paddingBottom}px`
 		self.form_containerLayer = containerLayer
 		{
 			self._setup_form_walletSelectLayer()
@@ -441,7 +446,7 @@ class SendFundsView extends View
 			true,
 			function(layer, e)
 			{
-				console.log("TODO: show file picker for qr code, parse, populate fields")
+				self.__didSelect_actionButton_chooseFile()
 			},
 			self.context
 		)
@@ -947,7 +952,6 @@ class SendFundsView extends View
 									self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
 								}
 								{
-this
 									if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
 										self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
 											true // true, do not focus input
@@ -1259,6 +1263,174 @@ this
 				}
 			}
 		)
+	}
+	//
+	//
+	// Runtime - Delegation - Request URI string picking - Parsing / consuming / yielding
+	//	
+	_shared_didPickRequestURIStringForAutofill(requestURIString)
+	{
+		const self = this
+		var requestPayload;
+		try {
+			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromRequestURIString(requestURIString)
+		} catch (errStr) {
+			if (errStr) {
+				self.validationMessageLayer.SetValidationError("Unable to use the result of decoding that QR code: " + errStr)
+				return
+			}
+		}
+		{
+			const amount = requestPayload.amount
+			if (amount !== null && typeof amount !== 'undefined' && amount !== "") {
+				self.amountInputLayer.value = amount
+			}
+		}
+		{
+			const target_address = requestPayload.address
+			const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null
+			if (target_address !== null && typeof target_address !== 'undefined' && target_address !== "") {
+				var foundContact = null
+				const contacts = self.context.contactsListController.contacts
+				const numberOf_contacts = contacts.length
+				for (var i = 0 ; i < numberOf_contacts ; i++) {
+					const contact = contacts[i]
+					if (contact.address == target_address || contact.cached_OAResolved_XMR_address == target_address) {
+						// so this request's address corresponds with this contact…
+						// how does the payment id match up?
+						/*
+						 * Commented until we figure out this payment ID situation. 
+						 * The problem is that the person who uses this request to send
+						 * funds (i.e. the user here) may have the target of the request
+						 * in their Address Book (the req creator) but the request recipient
+						 * would have in their address book a /different/ payment_id for the target
+						 * than the payment_id in the contact used by the creator to generate
+						 * this request.
+						
+						 * One proposed solution is to give contacts a "ReceiveFrom-With" and "SendTo-With"
+						 * payment_id. Then when a receiver loads a request (which would have a payment_id of
+						 * the creator's receiver contact's version of "ReceiveFrom-With"), we find the contact 
+						 * (by address/cachedaddr) and if it doesn't yet have a "SendTo-With" payment_id,
+						 * we show it as 'detected', and set its value to that of ReceiveFrom-With from the request
+						 * if they hit send. This way users won't have to send each other their pids.
+						
+						if (payment_id_orNull) { // request has pid
+							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
+								if (contact.payment_id !== payment_id_orNull) {
+									console.log("contact has same address as request but different payment id!")
+									continue // TODO (?) keep this continue? or allow and somehow use the pid from the request?
+								} else {
+									// contact has same pid as request pid
+									console.log("contact has same pid as request pid")
+								}
+							} else { // contact has no pid
+								console.log("request pid exists but contact has no request pid")
+							}
+						} else { // request has no pid
+							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
+								 console.log("contact has pid but request has no pid")
+							} else { // contact has no pid
+								console.log("neither request nor contact have pid")
+								// this is fine - we can use this contact
+							}
+						}
+						*/
+						foundContact = contact
+						break
+					}
+				}
+				if (foundContact) {
+					self.contactOrAddressPickerLayer.ContactPicker_pickContact(foundContact)
+				} else { // we have an addr but no contact
+					{
+						if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
+							self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+								true // true, do not focus input
+							)
+							self.pickedContact = null // jic
+						}
+						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
+					}
+					if (payment_id_orNull !== null) {
+						self.addPaymentIDButton_aLayer.style.display = "none" // hide if showing
+						self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
+						self.manualPaymentIDInputLayer.value = payment_id_orNull 
+					}
+				}
+			} else if (payment_id_orNull !== null) {
+				self.addPaymentIDButton_aLayer.style.display = "none" // hide if showing
+				self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
+				self.manualPaymentIDInputLayer.value = payment_id_orNull 
+			}
+		}
+	}
+	//
+	//
+	// Runtime - Delegation - Request URI string picking - Entrypoints
+	//	
+	__didSelect_actionButton_chooseFile()
+	{
+		const self = this
+		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+		// ^ so we don't get torn down while dialog open
+		function __trampolineFor_didFinish()
+		{ // ^ essential we call this from now on if we are going to finish with this codepath / exec control
+			self.context.userIdleInWindowController.ReEnable_userIdle()					
+		}
+		self.context.filesystemUI.PresentDialogToOpenOneImageFile(
+			"Open Monero Request",
+			function(err, absoluteFilePath)
+			{
+				if (err) {
+					__trampolineFor_didFinish()
+					self.validationMessageLayer.SetValidationError("Error while picking QR code from file.")
+					return
+				}
+				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
+					__trampolineFor_didFinish()
+					return // nothing picked / canceled
+				}
+				__proceedTo_openAndIngestQRCodeAtPath(absoluteFilePath)
+			}
+		)
+		function __proceedTo_openAndIngestQRCodeAtPath(absoluteFilePath)
+		{
+			const width = 256
+			const height = 256 // TODO: can we / do we need to read these from the image itself?
+			//
+		    const canvas = document.createElement("canvas")
+		    const context = canvas.getContext("2d")
+		    canvas.width = width
+		    canvas.height = height 
+			//
+			const img = document.createElement("img")
+			img.addEventListener(
+				"load",
+				function()
+				{
+			        context.drawImage(img, 0, 0, width, height)
+					//
+			        const imageData = context.getImageData(0, 0, width, height)
+			        const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
+			        if (!decodeResults || typeof decodeResults === 'undefined') {
+						console.log("No decodeResults from QR. Couldn't decode?")
+						self.validationMessageLayer.SetValidationError("Unable to decode that QR code.")
+						__trampolineFor_didFinish()
+						return
+					}
+					if (typeof decodeResults !== 'string') {
+						self.validationMessageLayer.SetValidationError("Was able to decode that QR code but unrecognized result.")
+						__trampolineFor_didFinish()
+						return
+					}
+					const requestURIString = decodeResults
+					self._shared_didPickRequestURIStringForAutofill(requestURIString)
+					// v-- this must get called
+					__trampolineFor_didFinish()
+				}
+			)
+			img.src = absoluteFilePath
+		}
 	}
 }
 module.exports = SendFundsView

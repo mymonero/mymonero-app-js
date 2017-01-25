@@ -63,3 +63,35 @@ function New_RequestFunds_URI(
 	return uri
 }
 exports.New_RequestFunds_URI = New_RequestFunds_URI
+//
+function New_ParsedPayload_FromRequestURIString(uriString)
+{ // throws; -> {}
+	// TODO
+	const url = new URL(uriString)
+	const protocol = url.protocol
+	if (protocol !== monero_config.coinUriPrefix) {
+		throw "Request URI has non-Monero protocol"
+	}
+	const target_address = url.pathname
+	const searchParams = url.searchParams // needs to be parsed it seems
+	//
+	const payload =
+	{
+		address: target_address
+	}	
+	const keyPrefixToTrim = "tx_"
+	const lengthOf_keyPrefixToTrim = keyPrefixToTrim.length
+	searchParams.forEach(
+		function(value, key)
+		{
+			var storeAt_key = key
+			if (key.indexOf(keyPrefixToTrim) === 0) {
+				storeAt_key = key.slice(lengthOf_keyPrefixToTrim, key.length)
+			}
+			payload["" + storeAt_key] = value
+		}
+	)
+	//
+	return payload
+}
+exports.New_ParsedPayload_FromRequestURIString = New_ParsedPayload_FromRequestURIString

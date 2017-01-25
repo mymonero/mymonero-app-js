@@ -33,7 +33,7 @@ const EventEmitter = require('events')
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const fundsRequest_persistence_utils = require('./fundsRequest_persistence_utils')
 //
-const monero_requestingFunds_utils = require('../../monero_utils/monero_requestingFunds_utils')
+const monero_requestURI_utils = require('../../monero_utils/monero_requestURI_utils')
 //
 class FundsRequest extends EventEmitter
 {
@@ -229,7 +229,7 @@ class FundsRequest extends EventEmitter
 			return
 		}
 		if (typeof self.uri === 'undefined' || !self.uri) {
-			self.uri = monero_requestingFunds_utils.New_RequestFunds_URI({
+			self.uri = monero_requestURI_utils.New_RequestFunds_URI({
 				address: self.to_address,
 				payment_id: self.payment_id,
 				amount: self.amount,

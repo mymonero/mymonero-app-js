@@ -38,10 +38,17 @@ class FilesytemUI extends FilesystemUI_Abstract
 	}
 	//
 	//
+	// Runtime - Accessors - Lookups - IPC - Main window
+	//
+	
+	//
+	//
 	// Runtime - Imperatives - Dialogs - Save
 	// 
-	OpenDialogToSaveBase64ImageStringAsImageFile(
+	PresentDialogToSaveBase64ImageStringAsImageFile(
 		imgData_base64String,
+		title,
+		defaultFilename_sansExt,
 		fn // (err?) -> Void
 	)
 	{
@@ -59,15 +66,15 @@ class FilesytemUI extends FilesystemUI_Abstract
 		const dialog = require('electron').remote.dialog
 		const options = 
 		{
-			title: "Save Monero Request",
-			defaultPath: "Monero request." + ext,
+			title: title || "Save File",
+			defaultPath: `${defaultFilename_sansExt || "image"}.${ext}`,
 			filters: [
 				{ name: 'Images', extensions: [ ext ] },
 			]
 		}
 		dialog.showSaveDialog(
 			options,
-			function (path)
+			function(path)
 			{
 				if (path === undefined){
 					console.log("No path. Canceled?")
@@ -83,6 +90,47 @@ class FilesytemUI extends FilesystemUI_Abstract
 						fn(err)
 					}
 				)
+			}
+		)
+	}
+	//
+	//
+	// Runtime - Imperatives - Dialogs - Open
+	//
+	PresentDialogToOpenOneImageFile(
+		title,
+		fn // (err?, absoluteFilePath?) -> Void
+	)
+	{
+		const self = this
+		//
+		const remote__electron = require('electron').remote
+		const dialog = remote__electron.dialog
+		const options = 
+		{
+			title: title || "Open File",
+			filters: [
+				{ name: 'Images', extensions: [ "png", "jpg", "jpeg" ] },
+			]
+		}
+		dialog.showOpenDialog(
+			options,
+			function(path)
+			{
+				if (path === undefined){
+					console.log("No path. Canceled?")
+					fn(null)
+					return
+				}
+				if (typeof path !== 'string') {
+					if (Array.isArray(path)) {
+						path = path[0] // select first
+					} else {
+						throw "Unknown `path` return type " + typeof path + " from showOpenDialog"
+					}
+				}
+				console.log("Open file at path", path)
+				fn(null, path)
 			}
 		)
 	}

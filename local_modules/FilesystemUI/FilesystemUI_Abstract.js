@@ -42,13 +42,26 @@ class FilesystemUI_Abstract
 	//
 	// Runtime - Imperatives - Dialogs - Save
 	// 
-	OpenDialogToSaveBase64ImageStringAsImageFile(
+	PresentDialogToSaveBase64ImageStringAsImageFile(
 		imgData_base64String,
 		fn // (err?) -> Void
 	)
 	{
 		const self = this
-		const errStr = "Override OpenDialogToSaveBase64ImageStringAsImageFile in " + self.constructor.name
+		const errStr = "Override PresentDialogToSaveBase64ImageStringAsImageFile in " + self.constructor.name
+		fn(new Error(errStr))
+		throw errStr // to break development builds
+	}
+	//
+	//
+	// Runtime - Imperatives - Dialogs - Open
+	//
+	PresentDialogToOpenOneImageFile(
+		fn // (err?, absoluteFilePath?) -> Void
+	)
+	{
+		const self = this
+		const errStr = "Override PresentDialogToOpenOneImageFile in " + self.constructor.name
 		fn(new Error(errStr))
 		throw errStr // to break development builds
 	}
