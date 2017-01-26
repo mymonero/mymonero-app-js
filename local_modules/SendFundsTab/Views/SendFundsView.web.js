@@ -513,34 +513,6 @@ class SendFundsView extends View
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
 			)
 		}
-		{ // drag & drop - for qr codes
-			self.layer.ondragenter = function(e)
-			{
-				console.log("drag enter! show drop zone")
-				self.qrCodeInputs_containerView.Show()
-	            return false
-			}
-	        self.layer.ondragleave = function()
-			{
-				console.log("drag leave! hide drop zone")
-				self.qrCodeInputs_containerView.Hide()
-	            return true
-	        }
-			self.layer.ondragend = function(e)
-			{
-				console.log("drag end! hide drop zone")
-				self.qrCodeInputs_containerView.Hide()
-				return true
-			}
-			self.layer.ondrop = function(e)
-			{
-	            e.preventDefault()
-				self.qrCodeInputs_containerView.Hide()
-				const path = e.dataTransfer.files[0].path
-				console.log("Dropped path: ", path)
-				return false
-			}
-		}
 	}
 	//
 	//
@@ -1338,6 +1310,45 @@ class SendFundsView extends View
 	//
 	// Runtime - Delegation - Request URI string picking - Parsing / consuming / yielding
 	//	
+	_shared_didPickQRCodeAtPath(absoluteFilePath, fn)
+	{
+		const self = this
+		fn = fn || function() {}
+		const width = 256
+		const height = 256 // TODO: can we / do we need to read these from the image itself?
+		//
+	    const canvas = document.createElement("canvas")
+	    const context = canvas.getContext("2d")
+	    canvas.width = width
+	    canvas.height = height 
+		//
+		const img = document.createElement("img")
+		img.addEventListener(
+			"load",
+			function()
+			{
+		        context.drawImage(img, 0, 0, width, height)
+				//
+		        const imageData = context.getImageData(0, 0, width, height)
+		        const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
+		        if (!decodeResults || typeof decodeResults === 'undefined') {
+					console.log("No decodeResults from QR. Couldn't decode?")
+					self.validationMessageLayer.SetValidationError("Unable to decode that QR code.")
+					fn()
+					return
+				}
+				if (typeof decodeResults !== 'string') {
+					self.validationMessageLayer.SetValidationError("Was able to decode that QR code but unrecognized result.")
+					fn()
+					return
+				}
+				const requestURIString = decodeResults
+				self._shared_didPickRequestURIStringForAutofill(requestURIString)
+				fn()
+			}
+		)
+		img.src = absoluteFilePath
+	}
 	_shared_didPickRequestURIStringForAutofill(requestURIString)
 	{
 		const self = this
@@ -1443,64 +1454,74 @@ class SendFundsView extends View
 		const self = this
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
 		// ^ so we don't get torn down while dialog open
-		function __trampolineFor_didFinish()
-		{ // ^ essential we call this from now on if we are going to finish with this codepath / exec control
-			self.context.userIdleInWindowController.ReEnable_userIdle()					
-		}
 		self.context.filesystemUI.PresentDialogToOpenOneImageFile(
 			"Open Monero Request",
 			function(err, absoluteFilePath)
 			{
+				self.context.userIdleInWindowController.ReEnable_userIdle()					
 				if (err) {
-					__trampolineFor_didFinish()
 					self.validationMessageLayer.SetValidationError("Error while picking QR code from file.")
 					return
 				}
 				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
-					__trampolineFor_didFinish()
 					return // nothing picked / canceled
 				}
-				__proceedTo_openAndIngestQRCodeAtPath(absoluteFilePath)
+				self._shared_didPickQRCodeAtPath(absoluteFilePath)
 			}
 		)
-		function __proceedTo_openAndIngestQRCodeAtPath(absoluteFilePath)
-		{
-			const width = 256
-			const height = 256 // TODO: can we / do we need to read these from the image itself?
-			//
-		    const canvas = document.createElement("canvas")
-		    const context = canvas.getContext("2d")
-		    canvas.width = width
-		    canvas.height = height 
-			//
-			const img = document.createElement("img")
-			img.addEventListener(
-				"load",
-				function()
-				{
-			        context.drawImage(img, 0, 0, width, height)
-					//
-			        const imageData = context.getImageData(0, 0, width, height)
-			        const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
-			        if (!decodeResults || typeof decodeResults === 'undefined') {
-						console.log("No decodeResults from QR. Couldn't decode?")
-						self.validationMessageLayer.SetValidationError("Unable to decode that QR code.")
-						__trampolineFor_didFinish()
-						return
-					}
-					if (typeof decodeResults !== 'string') {
-						self.validationMessageLayer.SetValidationError("Was able to decode that QR code but unrecognized result.")
-						__trampolineFor_didFinish()
-						return
-					}
-					const requestURIString = decodeResults
-					self._shared_didPickRequestURIStringForAutofill(requestURIString)
-					// v-- this must get called
-					__trampolineFor_didFinish()
+
+	}
+	//
+	//
+	// Runtime - Delegation - Request URI string picking - Entrypoints - Proxied drag & drop
+	//
+	_proxied_ondragenter(e)
+	{
+		const self = this
+		console.log("drag enter! show drop zone")
+		self.qrCodeInputs_containerView.Show()
+	}
+    _proxied_ondragleave()
+	{
+		const self = this
+		console.log("drag leave! hide drop zone")
+		setTimeout(
+			function()
+			{
+				self.qrCodeInputs_containerView.Hide()
+			},
+			10
+		)
+    }
+	_proxied_ondragend(e)
+	{
+		const self = this
+		console.log("drag end! hide drop zone")
+		setTimeout(
+			function()
+			{
+				self.qrCodeInputs_containerView.Hide()
+			},
+			10
+		)
+	}
+	_proxied_ondrop(e)
+	{
+		const self = this
+		setTimeout(
+			function()
+			{
+				self.qrCodeInputs_containerView.Hide()
+				//
+				const absoluteFilePath = e.dataTransfer.files[0].path
+				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
+					self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
+					return // nothing picked / canceled
 				}
-			)
-			img.src = absoluteFilePath
-		}
+				self._shared_didPickQRCodeAtPath(absoluteFilePath)
+			},
+			1
+		)
 	}
 }
 module.exports = SendFundsView

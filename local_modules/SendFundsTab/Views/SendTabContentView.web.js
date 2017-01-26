@@ -54,11 +54,29 @@ class SendTabContentView extends StackAndModalNavigationView
 			)
 		}
 	}
+	//
+	//
+	// Runtime - Delegation - Request URI string picking - Entrypoints - Proxied drag & drop
+	//
+	_proxied_ondragenter(e)
+	{
+		const self = this
+		self.sendFundsView._proxied_ondragenter(e)
+	}
+    _proxied_ondragleave(e)
+	{
+		const self = this
+		self.sendFundsView._proxied_ondragleave(e)
+    }
+	_proxied_ondragend(e)
+	{
+		const self = this
+		self.sendFundsView._proxied_ondragend(e)
+	}
+	_proxied_ondrop(e)
+	{
+		const self = this
+		self.sendFundsView._proxied_ondrop(e)
+	}
 }
 module.exports = SendTabContentView
-
-
-
-
-
-

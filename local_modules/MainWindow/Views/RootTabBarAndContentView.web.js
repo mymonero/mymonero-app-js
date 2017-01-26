@@ -131,17 +131,62 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 			)
 		}
 		{ // drag and drop - stuff like tab auto-selection
-			self.layer.ondragenter = function(e)
+			function _isAllowedToPerformDropOps()
 			{
 				const password = self.context.passwordController.password
 				if (typeof password !== 'undefined' && password !== null) {
-					self.selectTab_sendFunds()
-					//
-					self.sendTabContentView.PopToRootView(true) // in case they're not on root (debated making this not animated)
-					self.sendTabContentView.DismissModalViewsToView(null, true) // null -> to top stack view
-				} else { // 
+					return true
+				} else {
+					return false
 				}
-	            return true // let it bubble
+			}
+			self.layer.ondragover = function(e)
+			{
+				e.preventDefault()
+				e.stopPropagation()
+				return false
+			}
+			var numberOfDragsActive = 0 // we need to keep a counter because dragleave is called for children
+			self.layer.ondragenter = function(e)
+			{
+		        numberOfDragsActive++
+				//
+				if (numberOfDragsActive == 1) { // first time since started drag that entered self.layer - becomes 0 on real dragleave
+					if (_isAllowedToPerformDropOps()) {
+						setTimeout(
+							function()
+							{ // we must not manipulate the DOM in dragenter/start because that causes dragleave to fire immediately in Chrome.
+								self.selectTab_sendFunds()
+								//
+								self.sendTabContentView.PopToRootView(true) // in case they're not on root (debated making this not animated)
+								self.sendTabContentView.DismissModalViewsToView(null, true) // null -> to top stack view
+								//
+								self.sendTabContentView._proxied_ondragenter(e)
+							}
+						)
+					} else { // 
+					}
+				}
+			}
+	        self.layer.ondragleave = self.layer.ondragend = function(e)
+			{
+				numberOfDragsActive--
+				//
+				if (numberOfDragsActive == 0) { // back to 0 - actually left self.layer
+					if (_isAllowedToPerformDropOps()) {
+						self.sendTabContentView._proxied_ondragleave(e)
+					}
+				}
+				return false
+	        }
+			self.layer.ondrop = function(e)
+			{
+	            e.preventDefault()
+				e.stopPropagation()
+				if (_isAllowedToPerformDropOps()) {
+					self.sendTabContentView._proxied_ondrop(e)
+				}
+				return false
 			}
 		}
 	}
