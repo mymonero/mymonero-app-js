@@ -130,6 +130,20 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				}
 			)
 		}
+		{ // drag and drop - stuff like tab auto-selection
+			self.layer.ondragenter = function(e)
+			{
+				const password = self.context.passwordController.password
+				if (typeof password !== 'undefined' && password !== null) {
+					self.selectTab_sendFunds()
+					//
+					self.sendTabContentView.PopToRootView(true) // in case they're not on root (debated making this not animated)
+					self.sendTabContentView.DismissModalViewsToView(null, true) // null -> to top stack view
+				} else { // 
+				}
+	            return true // let it bubble
+			}
+		}
 	}
 	//
 	//

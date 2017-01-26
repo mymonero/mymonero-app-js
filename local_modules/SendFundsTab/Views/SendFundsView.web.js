@@ -68,7 +68,6 @@ class SendFundsView extends View
 		self.isSubmitButtonDisabled = false
 		self.setup_views()
 		self.startObserving()
-		
 	}
 	setup_views()
 	{
@@ -93,6 +92,7 @@ class SendFundsView extends View
 			}
 			self.addSubview(view)
 		}
+		self._setup_qrCodeInputs_containerView()
 		// self.DEBUG_BorderChildLayers()
 	}
 	_setup_self_layer()
@@ -454,6 +454,45 @@ class SendFundsView extends View
 		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	//
+	_setup_qrCodeInputs_containerView()
+	{
+		const self = this
+		const view = new View({}, self.context)
+		self.qrCodeInputs_containerView = view
+		{
+			const layer = view.layer
+			view.Hide = function()
+			{
+				layer.style.display = "none"
+			}
+			view.Show = function()
+			{
+				layer.style.display = "block"
+			}
+			layer.style.position = "absolute"
+			layer.style.zIndex = "999999"
+			layer.style.left = "0"
+			layer.style.right = "0"
+			layer.style.top = "0"
+			layer.style.bottom = "0"
+			layer.style.backgroundColor = "#272527"
+			view.Hide()
+		}
+		{
+			const contentView = new View({}, self.context)
+			self.qrCodeInputs_contentView = contentView
+			const layer = contentView.layer
+			layer.style.position = "absolute"
+			layer.style.backgroundColor = "#1D1B1D"
+			layer.style.margin = "15px"
+			layer.style.width = `calc(100% - ${15 * 2 + 2}px)` // + 2 is for border
+			layer.style.border = "1px dashed #494749"
+			layer.style.borderRadius = "6px"
+			view.addSubview(contentView)
+		}
+		self.addSubview(view)
+	}
+	//
 	startObserving()
 	{
 		const self = this
@@ -473,6 +512,34 @@ class SendFundsView extends View
 				emitter.EventName_didTrigger_sendFundsToContact(), // observe 'did' so we're guaranteed to already be on right tab
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
 			)
+		}
+		{ // drag & drop - for qr codes
+			self.layer.ondragenter = function(e)
+			{
+				console.log("drag enter! show drop zone")
+				self.qrCodeInputs_containerView.Show()
+	            return false
+			}
+	        self.layer.ondragleave = function()
+			{
+				console.log("drag leave! hide drop zone")
+				self.qrCodeInputs_containerView.Hide()
+	            return true
+	        }
+			self.layer.ondragend = function(e)
+			{
+				console.log("drag end! hide drop zone")
+				self.qrCodeInputs_containerView.Hide()
+				return true
+			}
+			self.layer.ondrop = function(e)
+			{
+	            e.preventDefault()
+				self.qrCodeInputs_containerView.Hide()
+				const path = e.dataTransfer.files[0].path
+				console.log("Dropped path: ", path)
+				return false
+			}
 		}
 	}
 	//
@@ -1063,6 +1130,9 @@ class SendFundsView extends View
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
+				//
+				self.qrCodeInputs_contentView.layer.style.height = `calc(100% - ${15 * 2 + self.navigationController.NavigationBarHeight() + 2}px)` // +2 for border
+				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + self.navigationController.NavigationBarHeight()}px`
 			}
 		}
 	}
