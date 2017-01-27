@@ -181,7 +181,7 @@ class WalletsListController extends EventEmitter
 											console.error("Error fetching persisted wallet", err)
 											// but we're not going to call cb with err because that prevents boot - the instance will be marked as 'errored' and we'll display it/able to treat it as such
 										} else {
-											console.log("💬  Initialized wallet", wallet.Description())
+											// console.log("💬  Initialized wallet", wallet.Description())
 										}
 										self.wallets.push(wallet) // we manually manage the list here and
 										// thus take responsibility to emit EventName_listUpdated below

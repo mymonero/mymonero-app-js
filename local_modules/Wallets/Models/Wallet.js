@@ -992,7 +992,7 @@ class Wallet extends EventEmitter
 				self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
 			}
 		}
-		console.info("✅  Successfully instantiated", self.Description())
+		// console.info("✅  Successfully instantiated", self.Description())
 		{
 			self.isBooted = true
 		}

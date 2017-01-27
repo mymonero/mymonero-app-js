@@ -105,7 +105,7 @@ class PasswordController extends EventEmitter
 					// this is indicative of a code fault
 				}
 				const doc = docs[0]
-				console.log("💬  Found existing saved password model with _id", doc._id)
+				// console.log("💬  Found existing saved password model with _id", doc._id)
 				_proceedTo_loadStateFromModel(
 					true,
 					doc
@@ -244,6 +244,13 @@ class PasswordController extends EventEmitter
 		} else {
 			return true
 		}
+	}
+	IsUserChangingPassword()
+	{
+		const self = this
+		const is = self.HasUserEnteredValidPasswordYet() && self.isAlreadyGettingExistingOrNewPWFromUser === true
+		//
+		return is
 	}
 	//
 	DetectedPasswordTypeFromPassword(password)
@@ -453,7 +460,7 @@ class PasswordController extends EventEmitter
 			function(userDidCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
 			{ // we're passing a function that the single observer should call
 				if (userDidCancel_orNil) {
-					console.info("userDidCancel while having user enter their existing password")
+					// console.info("userDidCancel while having user enter their existing password")
 				}
 				fn(userDidCancel_orNil, obtainedPasswordString)
 			}

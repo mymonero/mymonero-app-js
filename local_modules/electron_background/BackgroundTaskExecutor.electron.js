@@ -88,7 +88,7 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 						timeout_waitingForBoot = null
 					}
 					{
-						console.log("👶  " + self.constructor.name + " background process up")
+						// console.log("👶  " + self.constructor.name + " background process up")
 						self.hasBooted = true
 					}
 				} else {

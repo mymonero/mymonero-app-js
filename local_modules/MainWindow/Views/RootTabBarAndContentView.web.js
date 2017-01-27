@@ -133,12 +133,15 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		{ // drag and drop - stuff like tab auto-selection
 			function _isAllowedToPerformDropOps()
 			{
-				const password = self.context.passwordController.password
-				if (typeof password !== 'undefined' && password !== null) {
-					return true
-				} else {
+				if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
+					console.log("User hasn't entered valid pw yet")
 					return false
 				}
+				if (self.context.passwordController.IsUserChangingPassword() === true) {
+					console.log("User is changing pw.")
+					return false
+				}				
+				return true
 			}
 			self.layer.ondragover = function(e)
 			{
@@ -149,6 +152,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 			var numberOfDragsActive = 0 // we need to keep a counter because dragleave is called for children
 			self.layer.ondragenter = function(e)
 			{
+				e.preventDefault()
 		        numberOfDragsActive++
 				//
 				if (numberOfDragsActive == 1) { // first time since started drag that entered self.layer - becomes 0 on real dragleave
@@ -160,12 +164,11 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 								//
 								self.sendTabContentView.PopToRootView(true) // in case they're not on root (debated making this not animated)
 								self.sendTabContentView.DismissModalViewsToView(null, true) // null -> to top stack view
-								//
-								self.sendTabContentView._proxied_ondragenter(e)
 							}
 						)
 					} else { // 
 					}
+					self.sendTabContentView._proxied_ondragenter(e)
 				}
 			}
 	        self.layer.ondragleave = self.layer.ondragend = function(e)
@@ -173,9 +176,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				numberOfDragsActive--
 				//
 				if (numberOfDragsActive == 0) { // back to 0 - actually left self.layer
-					if (_isAllowedToPerformDropOps()) {
-						self.sendTabContentView._proxied_ondragleave(e)
-					}
+					self.sendTabContentView._proxied_ondragleave(e)
 				}
 				return false
 	        }
@@ -183,9 +184,8 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 			{
 	            e.preventDefault()
 				e.stopPropagation()
-				if (_isAllowedToPerformDropOps()) {
-					self.sendTabContentView._proxied_ondrop(e)
-				}
+				numberOfDragsActive = 0 // reset just in case ondragleave wasn't properly fired due to some DOM manipulation or on drop. can happen.
+				self.sendTabContentView._proxied_ondrop(e)
 				return false
 			}
 		}

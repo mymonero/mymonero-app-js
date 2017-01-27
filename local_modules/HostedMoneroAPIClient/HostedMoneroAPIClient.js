@@ -477,7 +477,7 @@ class HostedMoneroAPIClient
 		const self = this
 		parameters = parameters || {}
 		const completeURL = self.baseURL + endpointPath
-		console.log("📡  " + completeURL)
+		// console.log("📡  " + completeURL)
 		const requestHandle = request({
 			method: "POST", // maybe break this out
 			url: completeURL,
@@ -501,7 +501,7 @@ class HostedMoneroAPIClient
 				} else {
 					json = body
 				}
-				console.log("✅  " + completeURL + " " + statusCode)
+				// console.log("✅  " + completeURL + " " + statusCode)
 				fn(null, json)
 			} else {
 				if (err) {

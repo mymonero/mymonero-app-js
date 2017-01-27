@@ -1475,16 +1475,36 @@ class SendFundsView extends View
 	//
 	// Runtime - Delegation - Request URI string picking - Entrypoints - Proxied drag & drop
 	//
+	__shared_isAllowedToPerformDropOps()
+	{
+		const self = this
+		if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
+			console.log("User hasn't entered valid pw yet")
+			return false
+		}
+		if (self.context.passwordController.IsUserChangingPassword() === true) {
+			console.log("User is changing pw.")
+			return false
+		}
+		
+		return true
+	}
 	_proxied_ondragenter(e)
 	{
 		const self = this
-		console.log("drag enter! show drop zone")
-		self.qrCodeInputs_containerView.Show()
+		if (self.__shared_isAllowedToPerformDropOps()) {
+			setTimeout(
+				function()
+				{
+					self.qrCodeInputs_containerView.Show()
+				},
+				10
+			)
+		}
 	}
     _proxied_ondragleave()
 	{
 		const self = this
-		console.log("drag leave! hide drop zone")
 		setTimeout(
 			function()
 			{
@@ -1496,7 +1516,6 @@ class SendFundsView extends View
 	_proxied_ondragend(e)
 	{
 		const self = this
-		console.log("drag end! hide drop zone")
 		setTimeout(
 			function()
 			{
@@ -1508,20 +1527,22 @@ class SendFundsView extends View
 	_proxied_ondrop(e)
 	{
 		const self = this
-		setTimeout(
-			function()
-			{
-				self.qrCodeInputs_containerView.Hide()
-				//
-				const absoluteFilePath = e.dataTransfer.files[0].path
-				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
-					self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
-					return // nothing picked / canceled
-				}
-				self._shared_didPickQRCodeAtPath(absoluteFilePath)
-			},
-			1
-		)
+		if (self.__shared_isAllowedToPerformDropOps()) {
+			const absoluteFilePath = e.dataTransfer.files[0].path // outside of timeout
+			setTimeout(
+				function()
+				{
+					self.qrCodeInputs_containerView.Hide()
+					//
+					if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
+						self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
+						return // nothing picked / canceled
+					}
+					self._shared_didPickQRCodeAtPath(absoluteFilePath)
+				},
+				10
+			)
+		}
 	}
 }
 module.exports = SendFundsView
