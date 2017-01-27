@@ -1310,10 +1310,13 @@ class SendFundsView extends View
 	//
 	// Runtime - Delegation - Request URI string picking - Parsing / consuming / yielding
 	//	
-	_shared_didPickQRCodeAtPath(absoluteFilePath, fn)
+	_shared_didPickQRCodeAtPath(absoluteFilePath)
 	{
 		const self = this
-		fn = fn || function() {}
+		if (self.isFormDisabled === true) {
+			console.warn("Disallowing QR code pick form disabled.")
+			return
+		}		
 		const width = 256
 		const height = 256 // TODO: can we / do we need to read these from the image itself?
 		//
@@ -1334,17 +1337,14 @@ class SendFundsView extends View
 		        if (!decodeResults || typeof decodeResults === 'undefined') {
 					console.log("No decodeResults from QR. Couldn't decode?")
 					self.validationMessageLayer.SetValidationError("Unable to decode that QR code.")
-					fn()
 					return
 				}
 				if (typeof decodeResults !== 'string') {
 					self.validationMessageLayer.SetValidationError("Was able to decode that QR code but unrecognized result.")
-					fn()
 					return
 				}
 				const requestURIString = decodeResults
 				self._shared_didPickRequestURIStringForAutofill(requestURIString)
-				fn()
 			}
 		)
 		img.src = absoluteFilePath
@@ -1479,14 +1479,14 @@ class SendFundsView extends View
 	{
 		const self = this
 		if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
-			console.log("User hasn't entered valid pw yet")
 			return false
 		}
 		if (self.context.passwordController.IsUserChangingPassword() === true) {
-			console.log("User is changing pw.")
 			return false
 		}
-		
+		if (self.isFormDisabled === true) {
+			return false
+		}		
 		return true
 	}
 	_proxied_ondragenter(e)
