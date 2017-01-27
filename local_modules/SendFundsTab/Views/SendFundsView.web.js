@@ -1513,17 +1513,6 @@ class SendFundsView extends View
 			10
 		)
     }
-	_proxied_ondragend(e)
-	{
-		const self = this
-		setTimeout(
-			function()
-			{
-				self.qrCodeInputs_containerView.Hide()
-			},
-			10
-		)
-	}
 	_proxied_ondrop(e)
 	{
 		const self = this
