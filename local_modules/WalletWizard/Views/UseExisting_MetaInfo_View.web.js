@@ -33,7 +33,7 @@ const commonComponents_navigationBarButtons = require('../../WalletAppCommonComp
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //
-class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
+class UseExisting_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 {
 	_setup_views()
 	{
@@ -66,5 +66,18 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	//
 	// Runtime - Imperatives - 
 	//
+	
+	//
+	//
+	// Runtime - Delegation - Navigation View special methods
+	//
+	navigationView_viewIsBeingPoppedFrom()
+	{
+		const self = this
+		self.wizardController.PatchToDifferentWizardTaskMode_withoutPushingScreen( // to maintain the correct state
+			self.wizardController.WizardTask_Mode_PickCreateOrUseExisting(), 
+			0 // back to 0 from 1
+		)
+	}
 }
-module.exports = CreateWallet_ConfirmMnemonic_View
+module.exports = UseExisting_InformOfMnemonic_View

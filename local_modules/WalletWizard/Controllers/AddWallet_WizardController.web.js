@@ -30,33 +30,53 @@
 //
 const WizardTask_Modes =
 {
-	CreateWallet: "CreateWallet",
-	UseExisting: "UseExisting",
-	PickCreateOrUseExisting: "PickCreateOrUseExisting"
+	FirstTime_CreateWallet: "FirstTime_CreateWallet",
+	FirstTime_UseExisting: "FirstTime_UseExisting",
+	//
+	PickCreateOrUseExisting: "PickCreateOrUseExisting", // this will patch into one of the following two:
+	AfterPick_CreateWallet: "AfterPick_CreateWallet",
+	AfterPick_UseExisting: "AfterPick_UseExisting"
+}
+const WizardTaskStepScreenViewFilePrefix_By_WizardTaskModeName =
+{
+	FirstTime_CreateWallet: "CreateWallet",
+	FirstTime_UseExisting: "UseExisting",
+	//
+	PickCreateOrUseExisting: "PickCreateOrUseExisting", // this will patch into one of the following two:
+	AfterPick_CreateWallet: "CreateWallet",
+	AfterPick_UseExisting: "UseExisting"
 }
 const WizardTask_StepName_CreatePasswordOrDone = "CreatePassword_orDone"
-const WizardTask_ModeStepNamesByIdxStr_CreateWallet =
-{
-	"0": "MetaInfo",
-	"1": "Instructions",
-	"2": "InformOfMnemonic",
-	"3": "ConfirmMnemonic",
-	"4": WizardTask_StepName_CreatePasswordOrDone
-}
-const WizardTask_ModeStepNamesByIdxStr_UseExisting =
-{
-	"0": "MetaInfo",
-	"1": WizardTask_StepName_CreatePasswordOrDone
-}
-const WizardTask_ModeStepNamesByIdxStr_PickCreateOrUseExisting =
-{
-	"0": "Landing" // there's only one screen
-}
 const WizardTask_ModeStepNamesByIdxStr_ByTaskModeName =
 {
-	CreateWallet: WizardTask_ModeStepNamesByIdxStr_CreateWallet,
-	UseExisting: WizardTask_ModeStepNamesByIdxStr_UseExisting,
-	PickCreateOrUseExisting: WizardTask_ModeStepNamesByIdxStr_PickCreateOrUseExisting
+	FirstTime_CreateWallet: {
+		"0": "MetaInfo",
+		"1": "Instructions",
+		"2": "InformOfMnemonic",
+		"3": "ConfirmMnemonic",
+		"4": WizardTask_StepName_CreatePasswordOrDone
+	},
+	FirstTime_UseExisting: {
+		"0": "MetaInfo",
+		"1": WizardTask_StepName_CreatePasswordOrDone
+	},
+	//
+	PickCreateOrUseExisting: {
+		"0": "Landing", // only one screen before we patch to…
+	},
+	AfterPick_CreateWallet: {
+		"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+		"1": "MetaInfo",
+		"2": "Instructions",
+		"3": "InformOfMnemonic",
+		"4": "ConfirmMnemonic",
+		"5": WizardTask_StepName_CreatePasswordOrDone
+	},
+	AfterPick_UseExisting: {
+		"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+		"1": "MetaInfo",
+		"2": WizardTask_StepName_CreatePasswordOrDone
+	}
 }
 //
 class AddWallet_WizardController
@@ -76,6 +96,7 @@ class AddWallet_WizardController
 		{
 			self.isPerformingTask = false
 			self.current_wizardTaskModeName = null
+			self.initial_wizardTaskModeName = null
 		}
 	}
 	//
@@ -90,17 +111,26 @@ class AddWallet_WizardController
 	//
 	// Runtime - Accessors - Lookups
 	//
-	WizardTask_Mode_CreateWallet()
+	WizardTask_Mode_FirstTime_CreateWallet()
 	{
-		return WizardTask_Modes.CreateWallet
+		return WizardTask_Modes.FirstTime_CreateWallet
 	}
-	WizardTask_Mode_UseExisting()
+	WizardTask_Mode_FirstTime_UseExisting()
 	{
-		return WizardTask_Modes.UseExisting
+		return WizardTask_Modes.FirstTime_UseExisting
 	}
+	//
 	WizardTask_Mode_PickCreateOrUseExisting()
 	{
 		return WizardTask_Modes.PickCreateOrUseExisting
+	}
+	WizardTask_Mode_AfterPick_CreateWallet()
+	{
+		return WizardTask_Modes.AfterPick_CreateWallet
+	}
+	WizardTask_Mode_AfterPick_UseExisting()
+	{
+		return WizardTask_Modes.AfterPick_UseExisting
 	}
 	//
 	IsCurrentlyPerformingTask()
@@ -143,21 +173,26 @@ class AddWallet_WizardController
 	{
 		const self = this
 		const viewsDirectory_absoluteFilepath = __dirname + "/../Views"
-		const viewModule_absoluteFilepath = `${viewsDirectory_absoluteFilepath}/${self.current_wizardTaskModeName}_${self.current_wizardTaskMode_stepName}_View.web`
+		const viewFilePrefix = WizardTaskStepScreenViewFilePrefix_By_WizardTaskModeName[self.current_wizardTaskModeName]
+		const viewModule_absoluteFilepath = `${viewsDirectory_absoluteFilepath}/${viewFilePrefix}_${self.current_wizardTaskMode_stepName}_View.web`
 		const viewConstructor = require(viewModule_absoluteFilepath)
 		if (!viewConstructor || typeof viewConstructor === 'undefined') {
 			throw "Unable to find the file at " + viewModule_absoluteFilepath
 			return
 		}
 		const initialView = new viewConstructor({
-			wizardController: self
+			wizardController: self,
+			wizardController_initial_wizardTaskModeName		: self.initial_wizardTaskModeName, 
+			wizardController_current_wizardTaskModeName		: self.current_wizardTaskModeName,
+			wizardController_current_wizardTaskMode_stepName: self.current_wizardTaskMode_stepName,
+			wizardController_current_wizardTaskMode_stepIdx	: self.current_wizardTaskMode_stepIdx
 		}, self.context)
 		//
 		return initialView
 	}	
 	//
 	//
-	// Runtime - Imperatives - Entrypoints
+	// Runtime - Imperatives - Entrypoints / Control
 	//
 	EnterWizardTaskMode_returningNavigationView(taskModeName)
 	{ // -> StackAndModalNavigationView
@@ -167,11 +202,11 @@ class AddWallet_WizardController
 			return
 		}
 		{
-			self.current_wizardTaskModeName = taskModeName
-			self.current_wizardTaskMode_stepIdx = 0
-			//
-			self.current_wizardTaskMode_stepNamesByIdxStr = self._current_wizardTaskMode_stepNamesByIdxStr()
-			self.current_wizardTaskMode_stepName = self._current_wizardTaskMode_stepName_orNilForEnd()
+			if (self.initial_wizardTaskModeName == null) {
+				self.initial_wizardTaskModeName = taskModeName // record the very first mode with
+				// which we were initialized - for PickCreateOrUseExisting branching/patching
+			}
+			self._configureRuntimeStateForTaskModeName(taskModeName) // default to step idx 0
 		}
 		const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 		const navigationView = new StackAndModalNavigationView({}, self.context)
@@ -183,24 +218,56 @@ class AddWallet_WizardController
 		//
 		return navigationView
 	}
+	_configureRuntimeStateForTaskModeName(taskModeName, toIdx_orUndefFor0)
+	{
+		const self = this
+		self.current_wizardTaskModeName = taskModeName
+		const stepIdx = typeof toIdx_orUndefFor0 !== 'undefined' ? toIdx_orUndefFor0 : 0
+		self.current_wizardTaskMode_stepIdx = stepIdx
+		//
+		self.current_wizardTaskMode_stepNamesByIdxStr = self._current_wizardTaskMode_stepNamesByIdxStr()
+		self.current_wizardTaskMode_stepName = self._current_wizardTaskMode_stepName_orNilForEnd()
+	}
+	//
+	PatchToDifferentWizardTaskMode_byPushingScreen(patchTo_wizardTaskMode, atIndex)
+	{
+		const self = this
+		if (self.initial_wizardTaskModeName === null) {
+			throw "Asked to PatchToDifferentWizardTaskMode_byPushingScreen but wizard not yet in a task mode."
+			return
+		}
+		self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
+		// now configure UI / push
+		const initialView = self._new_current_wizardTaskMode_stepView()
+		self.current_wizardTaskMode_navigationView.PushView(initialView)
+	}
+	PatchToDifferentWizardTaskMode_withoutPushingScreen(patchTo_wizardTaskMode, atIndex)
+	{
+		const self = this
+		if (self.initial_wizardTaskModeName === null) {
+			throw "Asked to PatchToDifferentWizardTaskMode_withoutPushingScreen but wizard not yet in a task mode."
+			return
+		}
+		self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
+	}
 	//
 	//
 	// Runtime - Imperatives - Steps
 	//
-	_proceedTo_nextStep()
+	ProceedTo_nextStep()
 	{
 		const self = this
 		{
 			self.current_wizardTaskMode_stepIdx += 1
 		}
 		if (self.current_wizardTaskMode_stepName === null) { // is at end
-			self.__dismissWizardModal()
+			self.DismissWizardModal()
 			return
 		}
 		const nextView = self._new_current_wizardTaskMode_stepView()
 		self.current_wizardTaskMode_navigationView.PushView(nextView, true)		
 	}
-	__dismissWizardModal(opts)
+	DismissWizardModal(opts)
 	{
 		const self = this
 		opts = opts || {}
@@ -215,7 +282,7 @@ class AddWallet_WizardController
 				} else if (opts.taskFinished === true) {
 					
 				} else {
-					throw "[" + self.constructor.name + "/__dismissWizardModal]: unrecognized opts flag configuration: " + JSON.stringify(opts)
+					throw "[" + self.constructor.name + "/DismissWizardModal]: unrecognized opts flag configuration: " + JSON.stringify(opts)
 				}
 			}
 		)
@@ -247,7 +314,7 @@ class AddWallet_WizardController
 	_fromScreen_userPickedCancel()
 	{
 		const self = this
-		self.__dismissWizardModal({
+		self.DismissWizardModal({
 			userCancelled: true
 		})
 	}

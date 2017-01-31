@@ -55,7 +55,7 @@ class PickCreateOrUseExisting_Landing_View extends AddWallet_Wizard_ScreenBaseVi
 		const self = this
 		const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
 			"🤔", 
-			"What type of wallet would</br>you like to create?",
+			"How would you like to</br>add a wallet?",
 			self.context
 		)
 		{
@@ -91,7 +91,10 @@ class PickCreateOrUseExisting_Landing_View extends AddWallet_Wizard_ScreenBaseVi
 			false,
 			function(layer, e)
 			{
-				console.log("Use existing wallet selected")
+				self.wizardController.PatchToDifferentWizardTaskMode_byPushingScreen(
+					self.wizardController.WizardTask_Mode_AfterPick_UseExisting(), 
+					1 // first screen after 0 - maintain ability to hit 'back'
+				)
 			},
 			self.context
 		)
@@ -106,7 +109,10 @@ class PickCreateOrUseExisting_Landing_View extends AddWallet_Wizard_ScreenBaseVi
 			true,
 			function(layer, e)
 			{
-				console.log("Create new wallet tapped!")
+				self.wizardController.PatchToDifferentWizardTaskMode_byPushingScreen(
+					self.wizardController.WizardTask_Mode_AfterPick_CreateWallet(), 
+					1 // first screen after 0 - maintain ability to hit 'back'
+				)
 			},
 			self.context
 		)

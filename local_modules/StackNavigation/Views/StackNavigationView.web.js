@@ -384,6 +384,10 @@ class StackNavigationView extends View
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
 			// console.log("old_topStackView" , old_topStackView.Description())
+			const willPopFrom_fn = old_topStackView.navigationView_viewIsBeingPoppedFrom
+			if (willPopFrom_fn && typeof willPopFrom_fn === 'function') {
+				willPopFrom_fn.apply(old_topStackView)
+			}
 			old_topStackView.removeFromSuperview()
 		}
 		{ // pop all views in model
