@@ -42,13 +42,16 @@ class ThemeController
 	//
 	TabBarView_thickness()
 	{
-		return 78
+		return 79
 	}
 	//
 	//
 	// Accessors - UI - Metrics - Fonts
 	//
-	
+	FontFamily_sansSerif()
+	{
+		return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+	}
 	//
 	//
 	// Accessors - UI - Metrics - Colors

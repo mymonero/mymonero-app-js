@@ -62,9 +62,9 @@ class AddWallet_LandingScreenView extends View
 		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
 		self.layer.style.position = "relative"
-		self.layer.style.width = "calc(100% - 20px)"
+		self.layer.style.width = "calc(100%)"
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		self.layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		self.layer.style.overflowY = "scroll"
 		//
 		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view

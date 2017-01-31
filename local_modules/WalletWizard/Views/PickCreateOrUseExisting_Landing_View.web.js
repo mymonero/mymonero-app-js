@@ -30,6 +30,8 @@
 //
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
+const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //
@@ -39,6 +41,81 @@ class PickCreateOrUseExisting_Landing_View extends AddWallet_Wizard_ScreenBaseVi
 	{
 		const self = this
 		super._setup_views()
+		self._setup_emptyStateMessageContainerView()
+		self._setup_actionButtonsContainerView()
+		{ // update empty state message container to accommodate 
+			const view = self.emptyStateMessageContainerView
+			const margin_side = view.__EmptyStateMessageContainerView_margin_side
+			const actionButtonsContainerView_style_height = self.actionButtonsContainerView.layer.style.height
+			view.layer.style.height = `calc(100% - ${2 * margin_side}px - ${actionButtonsContainerView_style_height/*no'px'*/})`
+		}
+	}
+	_setup_emptyStateMessageContainerView()
+	{
+		const self = this
+		const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
+			"🤔", 
+			"What type of wallet would</br>you like to create?",
+			self.context
+		)
+		{
+			const layer = view.layer
+			layer.style.margin = "14px 14px 0 14px" // not going to use margin on the btm because action bar is there
+		}
+		self.emptyStateMessageContainerView = view
+		self.addSubview(view)
+	}
+	_setup_actionButtonsContainerView()
+	{
+		const self = this
+		const margin_h_side = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_side
+		const view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+			margin_h_side, 
+			margin_h_side, 
+			margin_h_side,
+			self.context
+		)
+		self.actionButtonsContainerView = view
+		{
+			self._setup_actionButton_useExistingWallet()
+			self._setup_actionButton_createNewWallet()
+		}
+		self.addSubview(view)
+	}
+	_setup_actionButton_useExistingWallet()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Use existing wallet", 
+			null, // no image
+			false,
+			function(layer, e)
+			{
+				console.log("Use existing wallet selected")
+			},
+			self.context
+		)
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	_setup_actionButton_createNewWallet()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Create new wallet", 
+			null, // no image
+			true,
+			function(layer, e)
+			{
+				console.log("Create new wallet tapped!")
+			},
+			self.context
+		)
+		{
+			const layer = buttonView.layer
+			layer.style.color = "#150000"
+			layer.style.backgroundColor = "#00c6ff"
+		}
+		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	_setup_startObserving()
 	{

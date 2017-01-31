@@ -48,7 +48,7 @@ function New_RightSide_AddButtonView(context)
 		layer.style.backgroundColor = "#18bbec"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "22px"
-		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "22px"
 		layer.style.color = "#ffffff"
 		layer.style.fontWeight = "normal"
@@ -82,7 +82,7 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 		layer.style.backgroundColor = "#383638"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "15px"
-		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
 		layer.style.fontWeight = "normal"
@@ -110,7 +110,7 @@ function New_RightSide_SaveButtonView(context)
 		layer.style.backgroundColor = "#18bbec"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "15px"
-		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
 		layer.style.fontWeight = "normal"
@@ -137,8 +137,8 @@ function New_RightSide_EditButtonView(context)
 		layer.style.borderRadius = "2px"
 		layer.style.backgroundColor = "#383638"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "15px"
-		layer.style.fontFamily = "'Helvetica Neue', Helvetica, sans-serif"
+		layer.style.fontSize = "13px"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
 		layer.style.fontWeight = "normal"

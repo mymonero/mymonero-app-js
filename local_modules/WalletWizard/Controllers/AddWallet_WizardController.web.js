@@ -154,8 +154,7 @@ class AddWallet_WizardController
 		}, self.context)
 		//
 		return initialView
-	}
-	
+	}	
 	//
 	//
 	// Runtime - Imperatives - Entrypoints
