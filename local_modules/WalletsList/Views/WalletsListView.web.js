@@ -33,6 +33,8 @@ const WalletsListCellView = require('./WalletsListCellView.web')
 const WalletDetailsView = require('../../Wallets/Views/WalletDetailsView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
+const AddWallet_WizardController = require('../../WalletWizard/Controllers/AddWallet_WizardController.web')
+//
 class WalletsListView extends View
 {
 	constructor(options, context)
@@ -47,6 +49,7 @@ class WalletsListView extends View
 		const self = this
 		{ // initialization / zeroing / declarations 
 			self.current_walletDetailsView = null
+			self.current_wizardController = null
 		}
 		self._setup_views()
 		self._setup_startObserving()
@@ -99,6 +102,10 @@ class WalletsListView extends View
 			self.current_walletDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
 			self.current_walletDetailsView = null // must zero again and should free
 		}
+		if (self.current_wizardController !== null) {
+			self.current_wizardController.TearDown()
+			self.current_wizardController = null
+		}
 	}
 	//
 	//
@@ -119,19 +126,7 @@ class WalletsListView extends View
 				function(e)
 				{
 					e.preventDefault()
-					{
-						const informingAndVerifyingMnemonic_cb = function(mnemonicString, confirmation_cb)
-						{ // simulating user correctly entering mnemonic string they needed to have written down
-							confirmation_cb(mnemonicString)
-						}
-						const fn = function(err, walletInstance) {}
-						
-						// TODO: wrap this in some kind of navigation flow?
-						self.context.walletsListController.WhenBooted_CreateAndAddNewlyGeneratedWallet(
-							informingAndVerifyingMnemonic_cb,
-							fn
-						)					
-					}
+					self._presentAddWalletWizard()
 					return false
 				}
 			)
@@ -240,6 +235,20 @@ class WalletsListView extends View
 	}
 	//
 	//
+	// Runtime - Imperatives - 
+	//
+	_presentAddWalletWizard()
+	{
+		const self = this
+		const controller = new AddWallet_WizardController({}, self.context)
+		self.current_wizardController = controller
+		const navigationView = controller.EnterWizardTaskMode_returningNavigationView(
+			controller.WizardTask_Mode_PickCreateOrUseExisting()
+		)
+		self.navigationController.PresentView(navigationView)
+	}	
+	//
+	//
 	// Runtime - Delegation - Data source
 	//
 	_WalletsListController_EventName_listUpdated()
@@ -270,6 +279,10 @@ class WalletsListView extends View
 		if (self.current_walletDetailsView !== null) {
 			self.current_walletDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
 			self.current_walletDetailsView = null // must zero again and should free
+		}
+		if (self.current_wizardController !== null) {
+			self.current_wizardController.TearDown()
+			self.current_wizardController = null
 		}
 	}
 }
