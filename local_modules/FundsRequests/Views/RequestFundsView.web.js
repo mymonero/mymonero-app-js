@@ -357,7 +357,7 @@ class RequestFundsView extends View
 	// Runtime - Imperatives - Submit button enabled state
 	//
 	disable_submitButton()
-	{
+	{ // TODO: encapsulate this all on the button component 
 		const self = this
 		console.log("disable_submitButton disabled?", self.isSubmitButtonDisabled)
 		if (self.isSubmitButtonDisabled !== true) {

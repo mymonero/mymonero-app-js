@@ -458,12 +458,18 @@ class NavigationBarView extends View
 							if (isAnimated === true) {
 								const layer = buttonView.layer
 								Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+								const opacity = layer.style.opacity
+								const toOpacity = opacity !== "" && opacity !== null && typeof opacity !== undefined ? opacity : "1" // read instead of hardcode
+								const toOpacity_float = parseFloat(toOpacity)
+								if (isNaN(toOpacity_float)) {
+									throw "toOpacity is NaN"
+								}
 								layer.style.opacity = "0" // first make invisible 
 								self.leftBarButtonHolderView.addSubview(buttonView) // then add to the view
 								// then fade in
 								Animate(
 									layer, 
-									{ opacity: 1 }, 
+									{ opacity: toOpacity_float }, 
 									{
 										duration: self._animationDuration_ms_navigationPush(),
 										complete: function() {}
@@ -494,12 +500,18 @@ class NavigationBarView extends View
 							if (isAnimated === true) {
 								const layer = buttonView.layer
 								Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+								const opacity = layer.style.opacity
+								const toOpacity = opacity !== "" && opacity !== null && typeof opacity !== undefined ? opacity : "1" // read instead of hardcode
+								const toOpacity_float = parseFloat(toOpacity)
+								if (isNaN(toOpacity_float)) {
+									throw "toOpacity is NaN"
+								}
 								layer.style.opacity = "0" // first make invisible 
 								self.rightBarButtonHolderView.addSubview(buttonView) // then add to the view
 								// then fade in
 								Animate(
 									layer, 
-									{ opacity: 1 }, 
+									{ opacity: toOpacity_float }, 
 									{
 										duration: self._animationDuration_ms_navigationPush(),
 										complete: function() {}

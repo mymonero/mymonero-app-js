@@ -31,14 +31,16 @@
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
-const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
+const Wallet_MetaInfo_BaseView = require('./Wallet_MetaInfo_BaseView.web')
 //
-class UseExisting_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
+class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 {
 	_setup_views()
 	{
 		const self = this
 		super._setup_views()
+		self._setup_form_walletNameField()
+		self._setup_form_walletSwatchField()
 	}
 	_setup_startObserving()
 	{
@@ -60,7 +62,7 @@ class UseExisting_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	//
 	Navigation_Title()
 	{
-		return "Create Wallet"
+		return "Log Into Your Wallet"
 	}
 	//
 	//
@@ -78,6 +80,15 @@ class UseExisting_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			self.wizardController.WizardTask_Mode_PickCreateOrUseExisting(), 
 			0 // back to 0 from 1
 		)
+	}
+	//
+	//
+	// Runtime - Delegation - Interactions
+	//
+	_userSelectedNextButton()
+	{
+		const self = this
+		console.log("user selected next btn")
 	}
 }
 module.exports = UseExisting_InformOfMnemonic_View
