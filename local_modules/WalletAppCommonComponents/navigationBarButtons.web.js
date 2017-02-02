@@ -104,16 +104,17 @@ function New_RightSide_SaveButtonView(context)
 		layer.style.display = "block"
 		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 		layer.style.marginTop = "10px"
-		layer.style.width = "90px"
+		layer.style.width = "68px"
 		layer.style.height = "24px"
-		layer.style.borderRadius = "2px"
-		layer.style.backgroundColor = "#18bbec"
+		layer.style.borderRadius = "3px"
+		layer.style.backgroundColor = "#00c6ff"
+		layer.style.boxShadow = "inset 0 0 0 0 rgba(255,255,255,0.20)"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "15px"
+		layer.style.fontSize = "13px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
-		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "normal"
+		layer.style.color = "#161416"
+		layer.style.fontWeight = "500"
 		layer.style.textAlign = "center"
 	}
 	return view
