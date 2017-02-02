@@ -31,6 +31,7 @@
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_walletColorPicker = require('../../WalletAppCommonComponents/walletColorPicker.web')
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //
@@ -102,9 +103,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 					"keyup",
 					function(event)
 					{
-						if (event.keyCode === 13) { // return key
-							// TODO?
-						}
+						self._walletNameInputLayer_did_keyup(event)
 					}
 				)
 			}
@@ -119,6 +118,9 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR") // note use of _forms.
 			div.appendChild(labelLayer)
+			//
+			const view = commonComponents_walletColorPicker.New_1OfN_WalletColorPickerInputView(self.context)
+			div.appendChild(view.layer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}
@@ -187,6 +189,13 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 	_userSelectedNextButton()
 	{
 		const self = this
+	}
+	_walletNameInputLayer_did_keyup(event)
+	{
+		const self = this
+		if (event.keyCode === 13) { // return key
+			// TODO?
+		}
 	}
 }
 module.exports = Wallet_MetaInfo_BaseView
