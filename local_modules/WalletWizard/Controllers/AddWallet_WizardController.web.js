@@ -254,12 +254,13 @@ class AddWallet_WizardController
 	//
 	// Runtime - Imperatives - Steps
 	//
-	ProceedTo_nextStep()
+	ProceedToNextStep()
 	{
 		const self = this
-		{
-			self.current_wizardTaskMode_stepIdx += 1
-		}
+		self._configureRuntimeStateForTaskModeName(
+			self.current_wizardTaskModeName,
+			self.current_wizardTaskMode_stepIdx + 1
+		)
 		if (self.current_wizardTaskMode_stepName === null) { // is at end
 			self.DismissWizardModal()
 			return

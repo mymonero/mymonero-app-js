@@ -161,7 +161,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 				return false
 			}
 		)
-		self.disable_submitButton()
+		self.set_submitButtonNeedsUpdate() // will be disabled on first push - but not necessarily on hitting Back
 		return view
 	}
 	//

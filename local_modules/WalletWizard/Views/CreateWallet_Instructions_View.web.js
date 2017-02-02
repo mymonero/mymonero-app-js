@@ -33,7 +33,7 @@ const commonComponents_navigationBarButtons = require('../../WalletAppCommonComp
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //
-class CreateWallet_InstructionsAndTerms_View extends AddWallet_Wizard_ScreenBaseView
+class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 {
 	_setup_views()
 	{
@@ -67,4 +67,4 @@ class CreateWallet_InstructionsAndTerms_View extends AddWallet_Wizard_ScreenBase
 	// Runtime - Imperatives - 
 	//
 }
-module.exports = CreateWallet_InstructionsAndTerms_View
+module.exports = CreateWallet_Instructions_View
