@@ -158,6 +158,19 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 			ul.appendChild(li)
 		}
 	)
+	view.Component_Value = function()
+	{
+		var inputs = document.getElementsByName(fieldName) // fieldName is unique
+		const numberOf_inputs = inputs.length // should be same as numberOf_hexColorStrings
+		for (var i = 0; i < numberOf_inputs ; i++) {
+			const input = inputs[i]
+		    if (input.checked) {
+				return input.value
+		    }
+		}
+		throw "Didn't find a selected wallet swatch color."
+		return undefined
+	}
 	return view
 }
 exports.New_1OfN_WalletColorPickerInputView = New_1OfN_WalletColorPickerInputView

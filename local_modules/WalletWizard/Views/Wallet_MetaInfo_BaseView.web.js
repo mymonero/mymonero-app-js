@@ -123,6 +123,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 				self.context,
 				undefined // means select whatever color is not yet in use else the first one
 			)
+			self.walletColorPickerInputView = view
 			div.appendChild(view.layer)
 		}
 		self.form_containerLayer.appendChild(div)
@@ -165,6 +166,21 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 	}
 	//
 	//
+	// Runtime - Accessors - Overridable
+	//
+	_overridable_canEnableSubmitButton()
+	{
+		const self = this
+		const walletName = self.walletNameInputLayer.value
+		if (walletName.length == 0 || !walletName) {
+			return false
+		}
+		
+		return true
+	}
+	
+	//
+	//
 	// Runtime - Imperatives - Submit button enabled state
 	//
 	disable_submitButton()
@@ -185,20 +201,35 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 			buttonLayer.style.opacity = "1.0"
 		}
 	}
+	set_submitButtonNeedsUpdate()
+	{
+		const self = this
+		const canEnable = self._overridable_canEnableSubmitButton()
+		if (canEnable == true) {
+			self.enable_submitButton() // can just call directly cause it locks by state
+		} else {
+			self.disable_submitButton()
+		}
+	}
 	//
 	//
 	// Runtime - Delegation - Interactions
 	//
 	_userSelectedNextButton()
 	{
-		const self = this
+		const self = this 
+		// NOTE: Override this in your subclass
 	}
 	_walletNameInputLayer_did_keyup(event)
 	{
 		const self = this
 		if (event.keyCode === 13) { // return key
-			// TODO?
+			if (self.isSubmitButtonDisabled === true) {
+				self._userSelectedNextButton()
+			}
+			return
 		}
+		self.set_submitButtonNeedsUpdate()
 	}
 }
 module.exports = Wallet_MetaInfo_BaseView

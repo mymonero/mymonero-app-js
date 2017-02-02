@@ -66,6 +66,22 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 	}
 	//
 	//
+	// Runtime - Accessors - Overridable
+	//
+	_overridable_canEnableSubmitButton()
+	{
+		const self = this
+		const supers_value = super._overridable_canEnableSubmitButton()
+		if (supers_value == false) {
+			return supers_value
+		}
+		// TODO: check current mode, and then check appropriate inputs' values 
+		
+		return true
+	}
+	
+	//
+	//
 	// Runtime - Imperatives - 
 	//
 	
@@ -88,7 +104,8 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 	_userSelectedNextButton()
 	{
 		const self = this
-		console.log("user selected next btn")
+		const selected_walletSwatch_hexColorString = self.walletColorPickerInputView.Component_Value()
+		console.log("selected_walletSwatch_hexColorString", selected_walletSwatch_hexColorString)
 	}
 }
 module.exports = UseExisting_InformOfMnemonic_View

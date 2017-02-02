@@ -88,7 +88,11 @@ class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
 	_userSelectedNextButton()
 	{
 		const self = this
-		console.log("user selected next btn")
+		const selected_walletSwatch_hexColorString = self.walletColorPickerInputView.Component_Value()
+		const walletName = self.walletNameInputLayer.value
+		console.log("selected_walletSwatch_hexColorString", selected_walletSwatch_hexColorString)
+		console.log("walletName" , walletName)
+
 	}
 }
 module.exports = CreateWallet_MetaInfo_View
