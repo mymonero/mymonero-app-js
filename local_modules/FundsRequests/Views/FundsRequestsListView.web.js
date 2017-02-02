@@ -64,7 +64,7 @@ class FundsRequestsListView extends View
 		{ // collections
 			self.fundsRequestCellViews = [] // initialize container
 		}
-		{ // styles
+		{
 			self.layer.style.webkitUserSelect = "none"
 			//
 			self.padding_top = 20

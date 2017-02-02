@@ -28,6 +28,9 @@
 //
 "use strict"
 //
+const commonComponents_walletIcons = require('./walletIcons.web')
+const commonComponents_cssRules = require('./cssRules.web')
+//
 const hexColorStrings = 
 [
 	"#00C6FF",
@@ -40,92 +43,101 @@ const hexColorStrings =
 	"#000099"
 ]
 //
-document.__haveStylesBeenInjected_walletColorPicker = false
+// CSS rules
+const NamespaceName = "walletColorPicker"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+document[haveCSSRulesBeenInjected_documentKey] = false
 const cssRules =
 [
+	`.oneOfN-walletColorPicker{
+		margin-left: -9px;
+	}`,
 	// set bg clr on .walletIcon and .walletIcon > span
-	`.walletIcon {
-	  width: 48px;
-	  height: 48px;
-	  border-radius: 6px;
-	  position: relative;
+	`.oneOfN-walletColorPicker li {
+		position: relative;
+		left: 0;
+		top: 0;
+		background:#383638;
+		box-shadow:0 0 1px 0 #161416, inset 0 0 0 0 #494749;
+		border-radius:5px;
+		width:88px;
+		height:88px;
+		display: inline-block;
+		margin: 0 0 5px 9px;
 	}`,
-	`.walletIcon:before {
-	  content: " ";
-	  width: 48px;
-	  height: 10px;
-	  display: block;
-	  background: rgba(0, 0, 0, 0.2);
-	  border-radius: 6px 6px 0 0;
-	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
+	`.oneOfN-walletColorPicker li .walletIcon {
+		position: absolute;
+		top: 20px;
+		left: 20px;
+		z-index: 0;
 	}`,
-	`.walletIcon:after {
-	  content: " ";
-	  width: 38px;
-	  height: 33px;
-	  margin: auto;
-	  display: block;
-	  border-radius: 0 0 3px 3px;
-	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.4), 0 0 4px 0 rgba(255, 255, 255, 0.4);
+	`.oneOfN-walletColorPicker li label {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 88px;
+		height: 88px;
+		z-index: 1;
 	}`,
-	`.walletIcon span {
-	  width: 38px;
-	  height: 6px;
-	  margin: auto;
-	  border-radius: 3px 3px 0 0;
-	  display: block;
-	  margin-top: -6px;
+	`.oneOfN-walletColorPicker li input {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 88px;
+		height: 88px;
+		z-index: 3;
+		visibility: hidden;
 	}`,
-	`.walletIcon span:before {
-	  content: " ";
-	  width: 100%;
-	  height: 100%;
-	  display: block;
-	  border-radius: 3px 3px 0 0;
-	  background: rgba(255, 255, 255, 0.2);
-	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-	}`
+	`.oneOfN-walletColorPicker li .selectionIndicator {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 80px;
+		height: 80px;
+		z-index: 2;
+		border-radius: 5px;
+	}`,
+	`.oneOfN-walletColorPicker li input:checked ~ .selectionIndicator {
+		border: 4px solid #00c6ff;
+	}`,
 ]
-function __injectStyles_ifNecessary()
+function __injectCSSRules_ifNecessary()
 {
-	if (document.__haveStylesBeenInjected_walletColorPicker === false) {
-		const reversed_cssRules = cssRules.reverse()
-		reversed_cssRules.forEach(
-			function(cssRuleString, i)
-			{
-				document.styleSheets[0].insertRule(cssRuleString, 0)
-			}
-		)
-	}
+	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
 function New_1OfN_WalletColorPickerInputView(context)
 {
-	__injectStyles_ifNecessary()
+	__injectCSSRules_ifNecessary()
 	//
 	const View = require('../Views/View.web')
 	const view = new View({ tag: "ul" }, context)
+	const fieldName = view.View_UUID()
 	const ul = view.layer
+	ul.className = "oneOfN-walletColorPicker"
 	hexColorStrings.forEach(
 		function(hexColorString, i)
 		{
 			const li = document.createElement("li")
 			{
-				const div = document.createElement("div")
-				div.style.background = hexColorString
-				div.className = "walletIcon"
+				const div = commonComponents_walletIcons.New_WalletIconLayer(
+					hexColorString
+				)
 				li.appendChild(div)
-				//
-				const span = document.createElement("span")
-				span.style.background = hexColorString
-				div.appendChild(span)
 			}
+			const label = document.createElement("label")
+			li.appendChild(label)
 			{
 				const input = document.createElement("input")
 				input.type = "radio"
-				input.name = view.View_UUID()
+				input.name = fieldName
 				input.id = input.name + " " + hexColorString
-				li.appendChild(input)
+				label.appendChild(input) // append to label to get clickable
+			}
+			{ // selection indicator layer - must be /after/ input for sibling CSS to work
+				const div = document.createElement("div")
+				div.className = "selectionIndicator"
+				label.appendChild(div) // append to label to make sibling of radio input f orCSS
 			}
 			ul.appendChild(li)
 		}
