@@ -31,18 +31,6 @@
 const commonComponents_walletIcons = require('./walletIcons.web')
 const commonComponents_cssRules = require('./cssRules.web')
 //
-const hexColorStrings = 
-[
-	"#00C6FF",
-	"#330000",
-	"#339900",
-	"#993300",
-	"#009933",
-	"#003399",
-	"#000033",
-	"#000099"
-]
-//
 // CSS rules
 const NamespaceName = "walletColorPicker"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
@@ -106,8 +94,33 @@ function __injectCSSRules_ifNecessary()
 	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
-function New_1OfN_WalletColorPickerInputView(context)
+function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUndefForDefault)
 {
+	const walletsListController = context.walletsListController
+	const hexColorStrings = walletsListController.All_SwatchHexColorStrings()
+	const numberOf_hexColorStrings = hexColorStrings.length
+	var selectHexColorString = null
+	{
+		if (typeof selectHexColorString_orUndefForDefault !== 'undefined') {
+			selectHexColorString = selectHexColorString_orUndefForDefault
+		} else {
+			const alreadyInUseHexStrings = walletsListController.GivenBooted_SwatchesInUse()
+			var aFree_hexColorString = null;
+			for (let i = 0 ; i < numberOf_hexColorStrings ; i++) {
+				const this_hexColorString = hexColorStrings[i]
+				if (alreadyInUseHexStrings.indexOf(this_hexColorString) === -1) {
+					aFree_hexColorString = this_hexColorString
+					break
+				}				
+			}
+			if (aFree_hexColorString !== null) {
+				selectHexColorString = aFree_hexColorString
+			} else {
+				selectHexColorString = hexColorStrings[0] // just use the first one - all are already in use
+			}
+		}
+	}
+	//
 	__injectCSSRules_ifNecessary()
 	//
 	const View = require('../Views/View.web')
@@ -132,6 +145,9 @@ function New_1OfN_WalletColorPickerInputView(context)
 				input.type = "radio"
 				input.name = fieldName
 				input.id = input.name + " " + hexColorString
+				if (hexColorString === selectHexColorString) {
+					input.checked = "checked"
+				}
 				label.appendChild(input) // append to label to get clickable
 			}
 			{ // selection indicator layer - must be /after/ input for sibling CSS to work

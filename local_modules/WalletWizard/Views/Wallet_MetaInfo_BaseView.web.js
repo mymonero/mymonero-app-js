@@ -119,7 +119,10 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR") // note use of _forms.
 			div.appendChild(labelLayer)
 			//
-			const view = commonComponents_walletColorPicker.New_1OfN_WalletColorPickerInputView(self.context)
+			const view = commonComponents_walletColorPicker.New_1OfN_WalletColorPickerInputView(
+				self.context,
+				undefined // means select whatever color is not yet in use else the first one
+			)
 			div.appendChild(view.layer)
 		}
 		self.form_containerLayer.appendChild(div)

@@ -35,6 +35,18 @@ const Wallet = require('../../Wallets/Models/Wallet')
 const wallet_persistence_utils = require('../../Wallets/Models/wallet_persistence_utils')
 const wallet_swatches = require('../../Wallets/Models/wallet_swatches')
 //
+const hexColorStrings = 
+[
+	"#00C6FF",
+	"#330000",
+	"#339900",
+	"#993300",
+	"#009933",
+	"#003399",
+	"#000033",
+	"#000099"
+]
+//
 class WalletsListController extends EventEmitter
 {
 
@@ -386,6 +398,10 @@ class WalletsListController extends EventEmitter
 	GivenBooted_SwatchesInUse()
 	{
 		const self = this
+		if (self.hasBooted !== true) {
+			console.warn("GivenBooted_SwatchesInUse called when " + self.constructor.name + " not yet booted.")
+			return [] // this may be for the first wallet creation - let's say nothing in use yet
+		}
 		const inUseSwatches = []
 		{
 			self.wallets.forEach(
@@ -400,6 +416,12 @@ class WalletsListController extends EventEmitter
 		}
 		return inUseSwatches
 	}
+	//
+	All_SwatchHexColorStrings()
+	{
+		return hexColorStrings
+	}
+
 
 
 	////////////////////////////////////////////////////////////////////////////////
