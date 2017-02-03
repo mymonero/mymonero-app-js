@@ -47,7 +47,7 @@ function New_fieldTitle_labelLayer(labelText)
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "11px"
 		layer.style.fontWeight = "light"
-		layer.style.color = "#ccc"
+		layer.style.color = "#f8f7f8"
 		layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
 	}
 	return layer

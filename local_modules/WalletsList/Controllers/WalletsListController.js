@@ -37,14 +37,14 @@ const wallet_swatches = require('../../Wallets/Models/wallet_swatches')
 //
 const hexColorStrings = 
 [
-	"#00C6FF",
-	"#330000",
-	"#339900",
-	"#993300",
-	"#009933",
-	"#003399",
-	"#000033",
-	"#000099"
+	"#6B696B", // dark grey
+	"#CFCECF", // light grey
+	"#00F4CD", // teal
+	"#D975E1", // purple
+	"#F97777", // salmon/red
+	"#EB8316", // orange
+	"#EACF12", // yellow
+	"#00C6FF" // blue
 ]
 //
 class WalletsListController extends EventEmitter

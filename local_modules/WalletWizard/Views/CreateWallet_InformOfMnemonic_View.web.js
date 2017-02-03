@@ -75,7 +75,6 @@ class CreateWallet_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		{
 			const layer = document.createElement("div")
 			layer.style.background = "rgba(245,230,125,0.05)"
-			layer.style.boxShadow = "0 0 0 0 rgba(56,54,56,0.50), inset 0 0 0 0 #161416"
 			layer.style.width = `calc(100% - ${2*(16+1)}px - ${2*10}px)` // +1 because of border
 			layer.style.borderRadius = "5px"
 			layer.style.border = "1px solid rgba(245,230,125,0.30)"

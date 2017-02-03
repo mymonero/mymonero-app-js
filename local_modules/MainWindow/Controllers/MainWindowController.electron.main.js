@@ -93,7 +93,7 @@ class MainWindowController
 	{
 		const self = this
 		const window = new electron.BrowserWindow({
-			width: 560,
+			width: 500,
 			height: 500,
 			minWidth: 400,
 			minHeight: 420,
