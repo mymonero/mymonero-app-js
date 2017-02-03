@@ -66,5 +66,18 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	//
 	// Runtime - Imperatives - 
 	//
+	//
+	//
+	// Runtime - Delegation - Navigation View special methods
+	//
+	navigationView_viewIsBeingPoppedFrom()
+	{
+		const self = this
+		// I don't always get popped but when I do I maintain correct state
+		self.wizardController.PatchToDifferentWizardTaskMode_withoutPushingScreen(
+			self.options.wizardController_current_wizardTaskModeName, 
+			self.options.wizardController_current_wizardTaskMode_stepIdx - 1
+		)
+	}
 }
 module.exports = CreateWallet_ConfirmMnemonic_View

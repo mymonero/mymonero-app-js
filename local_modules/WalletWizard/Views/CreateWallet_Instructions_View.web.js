@@ -99,7 +99,7 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "20px"
-		layer.style.fontWeight = "600"
+		layer.style.fontWeight = "500"
 		layer.style.color = "#F8F7F8"
 		layer.style.marginTop = "24px"
 		return layer
@@ -120,16 +120,16 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 	{
 		const list = []
 		list.push([
-			"Creating a wallet…", 
-			"Each Monero wallet gets a unique secret string of words called a mnemonic."
+			"Creating a wallet",
+			"Each Monero wallet gets a secret word-sequence called a mnemonic."
 		])
 		list.push([
 			"Write down your mnemonic", 
-			"It's only way to regain access to your wallet, and our server never gets it."
+			"It's the only way to recover access to your wallet, and is never uploaded."
 		])
 		list.push([
 			"Keep it secure &amp; private", 
-			"Anyone with the mnemonic can view and spend the funds inside."
+			"Anyone with the mnemonic can view and spend the funds in your wallet."
 		])
 		list.push([
 			"Use pen and paper or back it up", 
