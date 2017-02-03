@@ -143,7 +143,7 @@ class PickCreateOrUseExisting_Landing_View extends AddWallet_Wizard_ScreenBaseVi
 	//
 	Navigation_Title()
 	{
-		return "New Wallet"
+		return "Add Wallet"
 	}
 	Navigation_New_LeftBarButtonView()
 	{

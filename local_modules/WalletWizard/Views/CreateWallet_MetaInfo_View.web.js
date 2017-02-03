@@ -62,7 +62,7 @@ class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
 	//
 	Navigation_Title()
 	{
-		return "Create Wallet"
+		return "New Wallet"
 	}
 	//
 	//

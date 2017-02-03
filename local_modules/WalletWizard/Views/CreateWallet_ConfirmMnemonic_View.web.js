@@ -60,7 +60,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	//
 	Navigation_Title()
 	{
-		return "Create Wallet"
+		return "New Wallet"
 	}
 	//
 	//

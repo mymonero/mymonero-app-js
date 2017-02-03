@@ -79,7 +79,6 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 		
 		return true
 	}
-	
 	//
 	//
 	// Runtime - Imperatives - 

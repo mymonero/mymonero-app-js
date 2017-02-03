@@ -54,17 +54,8 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		//
 		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		self.layer.style.position = "relative"
 		self.layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
-		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		self.layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		self.layer.style.overflowY = "scroll"
-		//
-		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
-		self.layer.style.color = "#c0c0c0" // temporary
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_validationMessageLayer()
 	{ // validation message
@@ -178,7 +169,6 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		
 		return true
 	}
-	
 	//
 	//
 	// Runtime - Imperatives - Submit button enabled state

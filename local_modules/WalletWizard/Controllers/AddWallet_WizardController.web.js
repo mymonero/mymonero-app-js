@@ -180,13 +180,15 @@ class AddWallet_WizardController
 			throw "Unable to find the file at " + viewModule_absoluteFilepath
 			return
 		}
-		const initialView = new viewConstructor({
+		const options =
+		{
 			wizardController: self,
 			wizardController_initial_wizardTaskModeName		: self.initial_wizardTaskModeName, 
 			wizardController_current_wizardTaskModeName		: self.current_wizardTaskModeName,
 			wizardController_current_wizardTaskMode_stepName: self.current_wizardTaskMode_stepName,
 			wizardController_current_wizardTaskMode_stepIdx	: self.current_wizardTaskMode_stepIdx
-		}, self.context)
+		}
+		const initialView = new viewConstructor(options, self.context)
 		//
 		return initialView
 	}	
