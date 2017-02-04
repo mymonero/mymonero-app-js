@@ -67,20 +67,18 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
-	var wallet;
 	const options =
 	{
 		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function()
+		successfullyInitialized_cb: function(walletInstance)
 		{
 			console.log("Wallet is ", wallet)
 			//
-			const swatches = require('../../Models/wallet_swatches')
-			const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
-			wallet.Boot_byLoggingIntoHostedService_withMnemonic(
+			const swatch = "#ffff00"
+			walletInstance.Boot_byLoggingIn_existingWallet_withMnemonic(
 				wallets__tests_config.persistencePassword,
 				"Checking",
 				swatch,
@@ -118,7 +116,7 @@ function _proceedTo_test_importingWalletByMnemonic(fn)
 			}
 		}
 	}
-	wallet = new Wallet(options, context)
+	const wallet = new Wallet(options, context)
 }
 
 function _proceedTo_test_importingWalletByAddressAndKeys(fn)
@@ -130,20 +128,18 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
-	var wallet;
-	const swatches = require('../../Models/wallet_swatches')
-	const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
+	const swatch = "f0ff0f"
 	const options =
 	{
 		failedToInitialize_cb: function(err)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function()
+		successfullyInitialized_cb: function(walletInstance)
 		{
-			console.log("Wallet is ", wallet)
+			console.log("Wallet is ", walletInstance)
 
-			wallet.Boot_byLoggingIntoHostedService_withAddressAndKeys(
+			walletInstance.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
 				wallets__tests_config.persistencePassword,
 				"Checking",
 				swatch,
@@ -183,5 +179,5 @@ function _proceedTo_test_importingWalletByAddressAndKeys(fn)
 			}
 		}
 	}
-	wallet = new Wallet(options, context)
+	const wallet = new Wallet(options, context)
 }

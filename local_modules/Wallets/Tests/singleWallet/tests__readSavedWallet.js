@@ -72,9 +72,7 @@ function _proceedTo_test_openingSavedWallet(fn)
 		console.log("New_StateCachedTransactions", wallet.New_StateCachedTransactions())
 		fn()
 	}
-	const swatches = require('../../Models/wallet_swatches')
-	const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
-	var wallet;
+	const swatch = "#f000f0"
 	const options =
 	{
 		_id: wallets__tests_config.openWalletWith_id,
@@ -82,13 +80,13 @@ function _proceedTo_test_openingSavedWallet(fn)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function()
+		successfullyInitialized_cb: function(walletInstance)
 		{
-			console.log("Wallet is ", wallet)
+			console.log("Wallet is ", walletInstance)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
 			// and because we still need to boot the wallet (decrypt the wallet)
 			const password = wallets__tests_config.persistencePassword
-			wallet.Boot_decryptingExistingInitDoc(
+			walletInstance.Boot_decryptingExistingInitDoc(
 				password,
 				function(err)
 				{
@@ -122,5 +120,5 @@ function _proceedTo_test_openingSavedWallet(fn)
 			}
 		}
 	}
-	wallet = new Wallet(options, context)
+	const wallet = new Wallet(options, context)
 }

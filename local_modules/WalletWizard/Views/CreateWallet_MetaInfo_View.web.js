@@ -71,11 +71,6 @@ class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
 	}
 	//
 	//
-	// Runtime - Imperatives - 
-	//
-	
-	//
-	//
 	// Runtime - Delegation - Navigation View special methods
 	//
 	navigationView_viewIsBeingPoppedFrom()
@@ -95,11 +90,9 @@ class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
 		const self = this
 		const walletColorHexString = self.walletColorPickerInputView.Component_Value()
 		const walletName = self.walletNameInputLayer.value
-		self.wizardController.walletMeta =
-		{
-			name: walletName, 
-			colorHexString: walletColorHexString
-		}
+		self.wizardController.walletMeta_name = walletName
+		self.wizardController.walletMeta_colorHexString = walletColorHexString
+		//
 		self.wizardController.ProceedToNextStep()
 	}
 }

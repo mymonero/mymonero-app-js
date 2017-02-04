@@ -67,9 +67,7 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 	{
 		return finishedAccountInfoSync && finishedAccountTxsSync
 	}
-	const swatches = require('../../Models/wallet_swatches')
-	const swatch = swatches.SwatchWhichIsNotAlreadyInUse([]) 
-	var wallet;
+	const swatch = "#ff00ff"
 	const options =
 	{
 		generateNewWallet: true,
@@ -78,18 +76,13 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function()
+		successfullyInitialized_cb: function(walletInstance)
 		{
-			console.log("Wallet is ", wallet)
-			wallet.Boot_byLoggingIntoHostedService_byCreatingNewWallet(
+			console.log("Wallet is ", walletInstance)
+			walletInstance.Boot_byLoggingIn_givenNewlyCreatedWallet(
 				wallets__tests_config.persistencePassword,
 				"Checking",
 				swatch,
-				function(mnemonicString, confirmation_cb)
-				{
-					console.log("🔁  Simulating correct user input of mnemonicString", mnemonicString)
-					confirmation_cb(mnemonicString) // simulating correct user input
-				},
 				function(err)
 				{
 					if (err) {
@@ -123,5 +116,5 @@ function _proceedTo_test_creatingNewWalletAndAccount(fn)
 			}
 		}
 	}
-	wallet = new Wallet(options, context)
+	const wallet = new Wallet(options, context)
 }

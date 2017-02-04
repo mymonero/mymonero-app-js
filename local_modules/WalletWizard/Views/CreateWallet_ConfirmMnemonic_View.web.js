@@ -62,10 +62,92 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	{
 		return "New Wallet"
 	}
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
+		self.rightBarButtonView = view
+		const layer = view.layer
+		layer.innerHTML = "Next"
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				{
+					if (self.isSubmitButtonDisabled !== true) { // button is enabled
+						self._userSelectedNextButton()
+					}
+				}
+				return false
+			}
+		)
+		self._configureInteractivityOfNextButton() // will be disabled on first push - but not necessarily on hitting Back
+		return view
+	}
 	//
 	//
-	// Runtime - Imperatives - 
+	// Runtime - Imperatives - Submit button enabled state
 	//
+	_configureInteractivityOfNextButton()
+	{
+		const self = this
+		if (self.acceptCheckboxButtonView.isChecked) {
+			self.enable_submitButton()
+		} else {
+			self.disable_submitButton()
+		}
+	}
+	disable_submitButton()
+	{
+		const self = this
+		if (self.isSubmitButtonDisabled !== true) {
+			self.isSubmitButtonDisabled = true
+			const buttonLayer = self.rightBarButtonView.layer
+			buttonLayer.style.opacity = "0.5"
+		}
+	}
+	enable_submitButton()
+	{
+		const self = this
+		if (self.isSubmitButtonDisabled !== false) {
+			self.isSubmitButtonDisabled = false
+			const buttonLayer = self.rightBarButtonView.layer
+			buttonLayer.style.opacity = "1.0"
+		}
+	}
+	//
+	//
+	// Runtime - Delegation - Interactions
+	//
+	_userSelectedNextButton()
+	{
+		const self = this 
+		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
+		self.disable_submitButton()
+		//
+		const walletInstance = self.wizardController.walletInstance
+		if (!walletInstance) {
+			throw "Missing expected walletInstance"
+		}
+		const walletLabel = self.wizardController.walletMeta_name
+		const swatch = self.wizardController.walletMeta_colorHexString
+		self.wizardController.WhenBooted_BootAndAdd_NewlyGeneratedWallet(
+			walletInstance,
+			walletLabel,
+			swatch,
+			function(err, walletInstance)
+			{
+				if (err) {
+					self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+					self.enable_submitButton()
+					throw err
+					return
+				}
+				self.wizardController.ProceedToNextStep() // this should lead to a dismiss of the wizard
+			}
+		)
+	}
 	//
 	//
 	// Runtime - Delegation - Navigation View special methods

@@ -194,6 +194,7 @@ class NavigationBarView extends View
 	{
 		const self = this
 		const view = new View({ tag: "a" }, self.context)
+		view.isEnabled = true
 		const layer = view.layer
 		{ // setup/style
 			layer.href = "#" // to make it clickable
@@ -213,13 +214,22 @@ class NavigationBarView extends View
 			layer.style.fontWeight = "bold"
 			layer.style.textAlign = "center"
 		}
+		view.SetEnabled = function(isEnabled)
+		{
+			view.isEnabled = isEnabled
+			if (view.isEnabled) {
+				view.layer.opacity = "1"
+			} else {
+				view.layer.opacity = "0.5"
+			}
+		}
 		{ // observe
 			layer.addEventListener(
 				"click",
 				function(e)
 				{
 					e.preventDefault()
-					{
+					if (view.isEnabled !== false) {
 						self.emit(self.EventName_backButtonTapped()) // animated
 					}
 					return false

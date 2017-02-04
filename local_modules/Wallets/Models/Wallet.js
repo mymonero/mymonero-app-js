@@ -97,14 +97,16 @@ class Wallet extends EventEmitter
 			}
 			setTimeout(function()
 			{
-				(self.options.failedToInitialize_cb || function(err) {})()
+				const fn = self.options.failedToInitialize_cb || function(err, walletInstance) {}
+				fn(err, self)
 			})
 		}
 		self.successfullyInitialized_cb = function()
 		{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when success cb called
 			setTimeout(function()
 			{
-				(self.options.successfullyInitialized_cb || function() {})()
+				const fn = self.options.successfullyInitialized_cb || function(walletInstance) {}
+				fn(self)
 			})
 		}
 		//
@@ -239,11 +241,10 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Booting - Creating/adding wallets
 
-	Boot_byLoggingIntoHostedService_byCreatingNewWallet(
+	Boot_byLoggingIn_givenNewlyCreatedWallet(
 		persistencePassword,
 		walletLabel,
 		swatch,
-		informingAndVerifyingMnemonic_cb,
 		fn
 	)
 	{ // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
@@ -259,11 +260,10 @@ class Wallet extends EventEmitter
 		const self = this
 		//		
 		self.persistencePassword = persistencePassword || null
-		if (persistencePassword === null) {
+		if (self.persistencePassword === null) {
 			throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
 			return
 		}
-		//
 		self.walletLabel = walletLabel || ""
 		self.swatch = swatch || ""
 		//
@@ -272,54 +272,22 @@ class Wallet extends EventEmitter
 		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
 		const keys = generatedOnInit_walletDescription.keys
 		//
-		// Now we must have the user confirm they wrote down their seed correctly
-		if (typeof informingAndVerifyingMnemonic_cb === 'undefined') {
-			const errStr = "❌  informingAndVerifyingMnemonic_cb was undefined."
-			const err = new Error(errStr)
-			console.error(errStr)
-			self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
-			return
-		}
-		informingAndVerifyingMnemonic_cb(
-			mnemonicString,
-			function(userConfirmed_mnemonicString)
-			{
-				var trimmed_userConfirmed_mnemonicString = userConfirmed_mnemonicString.trim()
-				if (trimmed_userConfirmed_mnemonicString === '') {
-					const errStr = "❌  Please enter a private login key"
-					const err = new Error(errStr)
-					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
-					return
-				}
-				if (trimmed_userConfirmed_mnemonicString.toLocaleLowerCase() !== mnemonicString.trim().toLocaleLowerCase()) {
-					const errStr = "❌  Private login key does not match"
-					const err = new Error(errStr)
-					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
-					return
-				}
-				// Now we can proceed
-				_proceedTo_logIn()
-			}
+		// pretty sure this is redundant, so commenting:
+		const address = keys.public_addr
+		const view_key__private = keys.view.sec
+		const spend_key__private = keys.spend.sec
+		const wasAGeneratedWallet = true // true, in this case
+		//
+		self._boot_byLoggingIn(
+			address,
+			view_key__private,
+			spend_key__private,
+			seed,
+			wasAGeneratedWallet,
+			fn
 		)
-		function _proceedTo_logIn()
-		{
-			// pretty sure this is redundant, so commenting:
-			const address = keys.public_addr
-			const view_key__private = keys.view.sec
-			const spend_key__private = keys.spend.sec
-			const wasAGeneratedWallet = true // true, in this case
-			//
-			self._boot_byLoggingIn(
-				address,
-				view_key__private,
-				spend_key__private,
-				seed,
-				wasAGeneratedWallet,
-				fn
-			)
-		}
 	}
-	Boot_byLoggingIntoHostedService_withMnemonic(
+	Boot_byLoggingIn_existingWallet_withMnemonic(
 		persistencePassword,
 		walletLabel,
 		swatch,
@@ -337,7 +305,7 @@ class Wallet extends EventEmitter
 		//
 		self.walletLabel = walletLabel || ""
 		self.swatch = swatch || ""
-		 
+		//
 		// TODO: remove wordset name from this function signature and autodetect the wordset based on checking the presence of all the words in a given wordset.
 		// error if wordset comparison issue		
 		try {
@@ -375,7 +343,7 @@ class Wallet extends EventEmitter
 			}
 		)
 	}
-	Boot_byLoggingIntoHostedService_withAddressAndKeys(
+	Boot_byLoggingIn_existingWallet_withAddressAndKeys(
 		persistencePassword,
 		walletLabel,
 		swatch,

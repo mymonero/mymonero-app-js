@@ -102,11 +102,11 @@ function _proceedTo_test_sendFunds_1(fn)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function()
+		successfullyInitialized_cb: function(walletInstance)
 		{
-			console.log("Wallet is ", wallet)
+			console.log("Wallet is ", walletInstance)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-			wallet.Boot_decryptingExistingInitDoc(
+			walletInstance.Boot_decryptingExistingInitDoc(
 				wallets__tests_config.persistencePassword,
 				function(err)
 				{

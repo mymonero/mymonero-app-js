@@ -276,7 +276,16 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 	_userSelectedNextButton()
 	{
 		const self = this 
-		self.wizardController.ProceedToNextStep()
+		self.context.walletsListController.CreateNewWallet_NoBootNoListAdd(
+			function(err, walletInstance)
+			{
+				if (err) {
+					throw err
+				}
+				self.wizardController.walletInstance = walletInstance
+				self.wizardController.ProceedToNextStep()
+			}
+		)
 	}
 	//
 	//

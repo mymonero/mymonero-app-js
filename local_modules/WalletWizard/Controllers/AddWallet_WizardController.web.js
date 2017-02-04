@@ -292,26 +292,6 @@ class AddWallet_WizardController
 	}
 	//
 	//
-	// Runtime - Imperatives - Wallet Operations - Creation
-	//
-	_createWalletWithNameAndSwatch(walletName, swatchColor)
-	{
-		const self = this
-		
-		// TODO:
-		// const informingAndVerifyingMnemonic_cb = function(mnemonicString, confirmation_cb)
-		// { // simulating user correctly entering mnemonic string they needed to have written down
-		// 	confirmation_cb(mnemonicString)
-		// }
-		// const fn = function(err, walletInstance) {}
-		//
-		// self.context.walletsListController.WhenBooted_CreateAndAddNewlyGeneratedWallet(
-		// 	informingAndVerifyingMnemonic_cb,
-		// 	fn
-		// )		
-	}
-	//
-	//
 	//
 	//
 	_fromScreen_userPickedCancel()

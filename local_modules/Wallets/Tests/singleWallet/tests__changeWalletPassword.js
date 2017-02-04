@@ -84,7 +84,6 @@ function _proceedTo_test_changingWalletPassword(fn)
 			}
 		)
 	}
-	var wallet;
 	const options =
 	{
 		_id: wallets__tests_config.openWalletWith_id,
@@ -93,11 +92,11 @@ function _proceedTo_test_changingWalletPassword(fn)
 		{
 			fn(err)
 		},
-		successfullyInitialized_cb: function()
+		successfullyInitialized_cb: function(walletInstance)
 		{
-			console.log("Wallet is ", wallet)
+			console.log("Wallet is ", walletInstance)
 			// we're not going to call fn here because we want to wait for both acct info fetch and txs fetch
-			wallet.Boot_decryptingExistingInitDoc(
+			walletInstance.Boot_decryptingExistingInitDoc(
 				wallets__tests_config.persistencePassword,
 				function(err)
 				{
@@ -131,5 +130,5 @@ function _proceedTo_test_changingWalletPassword(fn)
 			}
 		}
 	}
-	wallet = new Wallet(options, context)
+	const wallet = new Wallet(options, context)
 }

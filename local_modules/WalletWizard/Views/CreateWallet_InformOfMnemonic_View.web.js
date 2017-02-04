@@ -68,8 +68,10 @@ class CreateWallet_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			layer.style.fontSize = "13px"
 			layer.style.webkitUserSelect = "all" // allow selection here
 			layer.style.fontFamily = "monospace" // TODO
-			// TODO: get from wizard controller wallet
-			layer.innerHTML = "intergalactic planetary boys beasty style profile worth your while brass monkey funky monkey"
+			const walletInstance = self.wizardController.walletInstance
+			const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
+			const mnemonicString = generatedOnInit_walletDescription.mnemonicString
+			layer.innerHTML = mnemonicString
 			self.layer.appendChild(layer)
 		}
 		{
@@ -163,6 +165,15 @@ class CreateWallet_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			}
 		)
 		return view
+	}
+	//
+	//
+	// Runtime - Delegation - Interactions
+	//
+	_userSelectedNextButton()
+	{
+		const self = this 
+		self.wizardController.ProceedToNextStep()
 	}
 	//
 	//
