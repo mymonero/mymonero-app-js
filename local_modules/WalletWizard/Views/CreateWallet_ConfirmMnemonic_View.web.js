@@ -39,6 +39,41 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	{
 		const self = this
 		super._setup_views()
+		{
+			const text = "Verify your mnemonic"
+			const layer = self._new_messages_subheaderLayer(text)
+			layer.style.marginTop = "36px"
+			layer.style.textAlign = "center"
+			layer.style.wordBreak = "break-word"
+			self.layer.appendChild(layer)
+		}
+		{
+			const text = "Choose each word in the correct&nbsp;order."
+			const layer = self._new_messages_paragraphLayer(text)
+			layer.style.marginBottom = "40px"
+			layer.style.textAlign = "center"
+			layer.style.wordBreak = "break-word"
+			self.layer.appendChild(layer)
+		}
+		{
+			const layer = document.createElement("div")
+			layer.style.background = "#1d1b1d"
+			layer.style.boxShadow = "inset 0 1px 0 0 #161416, 0 .5px 0 0 rgba(56,54,56, .5)"
+			layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+			layer.style.borderRadius = "5px"
+			layer.style.padding = "36px 24px"
+			layer.style.margin = "0 auto 23px auto"
+			layer.style.wordBreak = "break-word"
+			layer.style.lineHeight = "22px"
+			layer.style.fontSize = "13px"
+			layer.style.webkitUserSelect = "all" // allow selection here
+			layer.style.fontFamily = "monospace" // TODO
+			self.mnemonicContainerLayer = layer
+			self.layer.appendChild(layer)
+		}
+		{
+			
+		}
 	}
 	_setup_startObserving()
 	{
@@ -53,6 +88,36 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	{
 		const self = this
 		super.TearDown()
+	}
+	//
+	//
+	// Runtime - Accessors - Factories
+	//
+	_new_messages_subheaderLayer(contentString)
+	{
+		const self = this
+		const layer = document.createElement("h3")
+		layer.innerHTML = contentString
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontSize = "13px"
+		layer.style.lineHeight = "20px"
+		layer.style.fontWeight = "500"
+		layer.style.color = "#F8F7F8"
+		layer.style.marginTop = "24px"
+		layer.style.textAlign = "center"
+		return layer
+	}
+	_new_messages_paragraphLayer(contentString)
+	{
+		const self = this
+		const layer = document.createElement("p")
+		layer.innerHTML = contentString
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontWeight = "normal"
+		layer.style.fontSize = "13px"
+		layer.style.color = "#8D8B8D"
+		layer.style.lineHeight = "20px"
+		return layer
 	}
 	//
 	//
