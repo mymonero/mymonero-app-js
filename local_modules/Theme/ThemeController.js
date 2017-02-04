@@ -52,6 +52,10 @@ class ThemeController
 	{
 		return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 	}
+	FontFamily_monospace()
+	{
+		return 'native, input, menlo, monspace'
+	}
 	//
 	//
 	// Accessors - UI - Metrics - Colors

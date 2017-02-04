@@ -30,6 +30,7 @@
 //
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_walletMnemonicBox = require('../../WalletAppCommonComponents/walletMnemonicBox.web')
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //
@@ -56,23 +57,11 @@ class CreateWallet_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			self.layer.appendChild(layer)
 		}
 		{
-			const layer = document.createElement("div")
-			layer.style.background = "#1d1b1d"
-			layer.style.boxShadow = "inset 0 1px 0 0 #161416, 0 .5px 0 0 rgba(56,54,56, .5)"
-			layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
-			layer.style.borderRadius = "5px"
-			layer.style.padding = "36px 24px"
-			layer.style.margin = "0 auto 23px auto"
-			layer.style.wordBreak = "break-word"
-			layer.style.lineHeight = "22px"
-			layer.style.fontSize = "13px"
-			layer.style.webkitUserSelect = "all" // allow selection here
-			layer.style.fontFamily = "monospace" // TODO
 			const walletInstance = self.wizardController.walletInstance
 			const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
 			const mnemonicString = generatedOnInit_walletDescription.mnemonicString
-			layer.innerHTML = mnemonicString
-			self.layer.appendChild(layer)
+			const view = commonComponents_walletMnemonicBox.New_MnemonicTextDisplayView(mnemonicString, self.context)
+			self.layer.appendChild(view.layer)
 		}
 		{
 			const layer = document.createElement("div")
@@ -90,6 +79,9 @@ class CreateWallet_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			const text = "NOTE: This is the only way to access your wallet if you switch computers, use another Monero wallet app, or lose your&nbsp;data."
 			layer.innerHTML = text
 			self.layer.appendChild(layer)
+		}
+		{
+			
 		}
 	}
 	_setup_startObserving()
