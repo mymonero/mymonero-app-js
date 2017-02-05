@@ -69,13 +69,11 @@ const WizardTask_ModeStepNamesByIdxStr_ByTaskModeName =
 		"1": "MetaInfo",
 		"2": "Instructions",
 		"3": "InformOfMnemonic",
-		"4": "ConfirmMnemonic",
-		"5": WizardTask_StepName_CreatePasswordOrDone
+		"4": "ConfirmMnemonic"
 	},
 	AfterPick_UseExisting: {
 		"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
-		"1": "MetaInfo",
-		"2": WizardTask_StepName_CreatePasswordOrDone
+		"1": "MetaInfo"
 	}
 }
 //
@@ -239,6 +237,12 @@ class AddWallet_WizardController
 			return
 		}
 		self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
+		if (self.current_wizardTaskMode_stepName === null) { // is at end
+			self.DismissWizardModal({
+				taskFinished: true
+			})
+			return
+		}
 		// now configure UI / push
 		const initialView = self._new_current_wizardTaskMode_stepView()
 		self.current_wizardTaskMode_navigationView.PushView(initialView)
@@ -264,7 +268,9 @@ class AddWallet_WizardController
 			self.current_wizardTaskMode_stepIdx + 1
 		)
 		if (self.current_wizardTaskMode_stepName === null) { // is at end
-			self.DismissWizardModal()
+			self.DismissWizardModal({
+				taskFinished: true
+			})
 			return
 		}
 		const nextView = self._new_current_wizardTaskMode_stepView()

@@ -46,35 +46,34 @@ const cssRules =
 		cursor: default;
 	}`,
 	`.mnemonic-pill,
-	 .mnemonic-pill--is-pressed {
+	 .mnemonic-pill--selectedPlaceholder {
 		color: white;
 		text-decoration: none;
 		text-transform: uppercase;
 		font-size: 11px;
 		font-family: native, input, menlo, monspace;
-		letter-spacing: 0.05rem;
+		letter-spacing: 0.8px;
 		font-weight: 400;
 		background: #383638;
-		padding: 0.25rem 0.5rem;
-		margin: 0.25rem;
+		padding: 4px 8px;
+		margin: 4px;
 		border-radius: 3px;
 		box-shadow: inset 0 0.5px 0 0 #494749, 0 0.5px 1px 0 #161416;
 		transition: all 0.1s ease-out;
+		display: inline-block;
 	}`,
 	`.mnemonic-pill:hover,
-	 .mnemonic-pill--is-pressed:hover {
+	 .mnemonic-pill--selectedPlaceholder:hover {
 		background: #494749;
 		box-shadow: inset 0 0.5px 0 0 #5A585A, 0 0.5px 1px 0 #161416;
 		transition: all 0.1s ease-out;
 	}`,
-	`.mnemonic-pill--is-pressed,
-	 .mnemonic-pill--is-pressed--is-pressed {
+	`.mnemonic-pill--selectedPlaceholder {
 		color: #1D1B1D;
 		background: #1D1B1D;
 		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
 	}`,
-	`.mnemonic-pill--is-pressed:hover,
-	 .mnemonic-pill--is-pressed--is-pressed:hover {
+	`.mnemonic-pill--selectedPlaceholder:hover {
 		color: #1D1B1D;
 		background: #1D1B1D;
 		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
@@ -92,9 +91,9 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 	const view = new View({}, context)
 	const layer = view.layer
 	layer.className = "mnemonic-container"
-	const padding_h = 36
-	layer.style.minHeight = `${128 - 2*padding_h}px`
-	layer.style.padding = `${padding_h}px 24px`
+	const padding_v = 36
+	layer.style.minHeight = `${128 - 2*padding_v}px`
+	layer.style.padding = `${padding_v}px 24px`
 	layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
 	layer.style.wordBreak = "break-word"
 	layer.style.lineHeight = "22px"
@@ -107,18 +106,183 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 }
 exports.New_MnemonicTextDisplayView = New_MnemonicTextDisplayView
 //
-function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context)
+function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, didSelectWord_fn, didDeselectWord_fn)
 {
 	__injectCSSRules_ifNecessary()
 	//
+	didSelectWord_fn = didSelectWord_fn || function(word) {}
+	didDeselectWord_fn = didDeselectWord_fn || function(word) {}
+	//
 	const view = new View({}, context)
-	const layer = view.layer
-	layer.className = "mnemonic-container"
-	const padding_h = 24
-	layer.style.minHeight = `${128 - 2*padding_h}px`
-	layer.style.padding = `${padding_h}px 24px`
-	layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+	{
+		const layer = view.layer
+		layer.className = "mnemonic-container"
+		const padding_v = 20 // instead of 24, because word elements have v margin of 4
+		layer.style.minHeight = `${138 - 2*padding_v}px`
+		layer.style.padding = `${padding_v}px 24px`
+		layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+		layer.style.textAlign = "center"
+	}
+	const mnemonicWords = mnemonicString.split(" ")
+	const ordered_selectedWords = []
+	view.Component_SelectedWords = ordered_selectedWords
+	const selectedWord_viewsByWord = {}
+	// Component - Methods - Setup - Imperatives
+	view.Component_ConfigureWith_selectableWordsView = function(mnemonicConfirmation_selectableWordsView)
+	{
+		view.mnemonicConfirmation_selectableWordsView = mnemonicConfirmation_selectableWordsView
+	}
+	// Component - Methods - Teardown - Imperatives
+	view.TearDown = function()
+	{
+		view.mnemonicConfirmation_selectableWordsView = null
+	}
+	// Component - Methods - Runtime - Imperatives
+	view.Component_SelectMnemonicWord = function(word, mnemonicConfirmation_selectableWordsView)
+	{
+		ordered_selectedWords.push(word)
+		//
+		const wordView = _new_MnemonicConfirmation_WordView(word, context)
+		const wordView_layer = wordView.layer
+		wordView_layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				const this_wordView_layer = this
+				this_wordView_layer.href = "" // no longer clickable
+				const word = this_wordView_layer.__component_mnemonicWord
+				if (!word || typeof word === 'undefined') {
+					throw "No word associated with clicked layer"
+				}
+				view.Component_DeselectMnemonicWord(word)
+				return false
+			}
+		)
+		selectedWord_viewsByWord[word] = wordView
+		view.layer.appendChild(wordView_layer)
+		//
+		didSelectWord_fn(word)
+	}
+	view.Component_DeselectMnemonicWord = function(word)
+	{
+		{
+			const indexOf_word = ordered_selectedWords.indexOf(word)
+			if (indexOf_word === -1) {
+				throw "Word not found in list of selected words."
+			}
+			ordered_selectedWords.splice(indexOf_word, 1) // remove
+		}
+		{
+			const wordView = selectedWord_viewsByWord[word]
+			const wordView_layer = wordView.layer
+			delete selectedWord_viewsByWord[word]
+			view.layer.removeChild(wordView_layer)
+			//
+			view.mnemonicConfirmation_selectableWordsView.Component_WordWasDeselected(word)
+			//
+			didDeselectWord_fn(word)
+		}
+	}
 	//
 	return view
 }
 exports.New_MnemonicConfirmation_SelectedWordsView = New_MnemonicConfirmation_SelectedWordsView
+//
+function _new_MnemonicConfirmation_WordView(word, context, showAsAlreadySelectedPlaceholder)
+{
+	showAsAlreadySelectedPlaceholder = showAsAlreadySelectedPlaceholder === true ? true : false
+	//
+	const view = new View({ tag: "a" }, context)
+	const layer = view.layer
+	layer.className = "mnemonic-pill"
+	if (showAsAlreadySelectedPlaceholder) {
+		layer.href = "" // non-clickable
+	} else {
+		layer.href = "#"
+	}
+	layer.innerHTML = word.toUpperCase()
+	layer.__component_mnemonicWord = word
+	//
+	return view
+}
+//
+function New_MnemonicConfirmation_SelectableWordsView(
+	mnemonicString, 
+	mnemonicConfirmation_selectedWordsView, 
+	context
+)
+{
+	__injectCSSRules_ifNecessary()
+	//
+	const view = new View({}, context)
+	{
+		const layer = view.layer
+		const padding_v = 24
+		layer.style.padding = `${padding_v}px 24px`
+		layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+		layer.style.textAlign = "center"
+	}
+	const shuffled_mnemonicWords = new_shuffledArray(mnemonicString.split(" "))
+	const wordViews_byWord = {}
+	shuffled_mnemonicWords.forEach(
+		function(word, i)
+		{
+			const wordView = _new_MnemonicConfirmation_WordView(word, context)
+			wordViews_byWord[word] = wordView
+			//
+			const wordView_layer = wordView.layer
+			view.layer.appendChild(wordView_layer)
+			//
+			wordView_layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					const this_wordView_layer = this
+					const selectedClass = "mnemonic-pill--selectedPlaceholder"
+					if (this_wordView_layer.className !== selectedClass) { // so, if it's not already picked
+						this_wordView_layer.className = selectedClass // flip to selected type
+						this_wordView_layer.href = "" // no longer clickable
+						const word = this_wordView_layer.__component_mnemonicWord
+						if (!word || typeof word === 'undefined') {
+							throw "No word associated with clicked layer"
+						}
+						mnemonicConfirmation_selectedWordsView.Component_SelectMnemonicWord(word)
+					}
+					return false
+				}
+			)
+		}
+	)
+	// Component - Methods - Teardown - Imperatives
+	view.TearDown = function()
+	{ // nothing to do (yet)
+	}
+	// Component - Methods - Runtime - Delegation
+	view.Component_WordWasDeselected = function(word)
+	{ 
+		const wordView = wordViews_byWord[word]
+		const this_wordView_layer = wordView.layer
+		this_wordView_layer.className = "mnemonic-pill" // flip back to selectable type
+		this_wordView_layer.href = "#" // clickable again
+	}
+	return view
+}
+exports.New_MnemonicConfirmation_SelectableWordsView = New_MnemonicConfirmation_SelectableWordsView
+//
+function new_shuffledArray(array)
+{
+	var currentIndex = array.length
+	var temporaryValue
+	var randomIndex
+	while (0 !== currentIndex) {
+		randomIndex = Math.floor(Math.random() * currentIndex)
+		currentIndex -= 1
+		//
+		temporaryValue = array[currentIndex]
+		array[currentIndex] = array[randomIndex]
+		array[randomIndex] = temporaryValue
+	}
+	return array
+}

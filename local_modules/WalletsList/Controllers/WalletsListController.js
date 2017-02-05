@@ -503,9 +503,9 @@ class WalletsListController extends EventEmitter
 								fn(err)
 								return
 							}
-							self._atRuntime__wallet_wasSuccessfullyInitialized(wallet)
+							self._atRuntime__wallet_wasSuccessfullyInitialized(walletInstance)
 							//
-							fn(null, wallet)
+							fn(null, walletInstance)
 						}
 					)
 				}

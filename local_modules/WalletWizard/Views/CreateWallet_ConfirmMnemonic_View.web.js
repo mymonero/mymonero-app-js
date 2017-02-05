@@ -40,6 +40,11 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	{
 		const self = this
 		super._setup_views()
+		const walletInstance = self.wizardController.walletInstance
+		const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
+		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
+		const correctlyOrdered_mnemonicString_words = mnemonicString.split(" ")
+		self.numberOf_mnemonicString_words = correctlyOrdered_mnemonicString_words.length // cached
 		{
 			const text = "Verify your mnemonic"
 			const layer = self._new_messages_subheaderLayer(text)
@@ -57,15 +62,33 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			self.layer.appendChild(layer)
 		}
 		{
-			const walletInstance = self.wizardController.walletInstance
-			const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
-			const mnemonicString = generatedOnInit_walletDescription.mnemonicString
-			const view = commonComponents_walletMnemonicBox.New_MnemonicConfirmation_SelectedWordsView(mnemonicString, self.context)
+			const view = commonComponents_walletMnemonicBox.New_MnemonicConfirmation_SelectedWordsView(
+				mnemonicString, 
+				self.context,
+				function(word)
+				{ // did select word
+					self._configureInteractivityOfNextButton()
+				},
+				function(word)
+				{ // did deselect word
+					self._configureInteractivityOfNextButton()
+				}
+			)
+			self.mnemonicConfirmation_selectedWordsView = view
 			self.layer.appendChild(view.layer)
 		}
 		{
-			
+			const view = commonComponents_walletMnemonicBox.New_MnemonicConfirmation_SelectableWordsView(
+				mnemonicString, 
+				self.mnemonicConfirmation_selectedWordsView, 
+				self.context
+			)
+			self.mnemonicConfirmation_selectableWordsView = view
+			self.addSubview(view)
 		}
+		self.mnemonicConfirmation_selectedWordsView.Component_ConfigureWith_selectableWordsView(
+			self.mnemonicConfirmation_selectableWordsView
+		)
 	}
 	_setup_startObserving()
 	{
@@ -80,6 +103,9 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	{
 		const self = this
 		super.TearDown()
+		//
+		self.mnemonicConfirmation_selectableWordsView.TearDown()
+		self.mnemonicConfirmation_selectedWordsView.TearDown()
 	}
 	//
 	//
@@ -125,7 +151,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
 		self.rightBarButtonView = view
 		const layer = view.layer
-		layer.innerHTML = "Next"
+		layer.innerHTML = "Confirm"
 		layer.addEventListener(
 			"click",
 			function(e)
@@ -149,7 +175,14 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	_configureInteractivityOfNextButton()
 	{
 		const self = this
-		if (self.acceptCheckboxButtonView.isChecked) {
+		const view = self.mnemonicConfirmation_selectedWordsView
+		if (typeof view === 'undefined' || !view) {
+			console.warn("_configureInteractivityOfNextButton called while self.mnemonicConfirmation_selectedWordsView nil")
+			self.disable_submitButton()
+			return
+		}
+		const selectedWords = view.Component_SelectedWords
+		if (selectedWords.length === self.numberOf_mnemonicString_words) {
 			self.enable_submitButton()
 		} else {
 			self.disable_submitButton()
@@ -189,7 +222,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		}
 		const walletLabel = self.wizardController.walletMeta_name
 		const swatch = self.wizardController.walletMeta_colorHexString
-		self.wizardController.WhenBooted_BootAndAdd_NewlyGeneratedWallet(
+		self.context.walletsListController.WhenBooted_BootAndAdd_NewlyGeneratedWallet(
 			walletInstance,
 			walletLabel,
 			swatch,

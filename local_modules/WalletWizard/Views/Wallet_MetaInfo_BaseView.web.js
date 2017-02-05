@@ -214,7 +214,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 	{
 		const self = this
 		if (event.keyCode === 13) { // return key
-			if (self.isSubmitButtonDisabled === true) {
+			if (self.isSubmitButtonDisabled !== true) {
 				self._userSelectedNextButton()
 			}
 			return
