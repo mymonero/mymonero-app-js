@@ -28,8 +28,6 @@
 //
 "use strict"
 //
-const uuidV1 = require('uuid/v1')
-//
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
 class ContactsTabContentView extends StackAndModalNavigationView

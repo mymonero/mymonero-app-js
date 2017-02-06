@@ -34,23 +34,16 @@ function mnemonicWordsetNameAccordingToLocaleWithApp(app)
 {
 	const self = this
 	const currentLocale = app.getLocale()
-	console.log("currentLocale:" , currentLocale)
 	const mnemonicWordsetNamesByAppLocaleNames = monero_wallet_utils.MnemonicWordsetNamesByAppLocaleNames
 	if (currentLocale.indexOf('en') === 0) {
-		console.log("en")
 		return mnemonicWordsetNamesByAppLocaleNames.English
 	} else if (currentLocale.indexOf('es') === 0) {
-		console.log("es")
 		return mnemonicWordsetNamesByAppLocaleNames.Spanish
 	} else if (currentLocale.indexOf('pt') === 0) {
-		console.log("pt")
 		return mnemonicWordsetNamesByAppLocaleNames.Portuguese
 	} else if (currentLocale.indexOf('ja') === 0) {
-		console.log("ja")
 		return mnemonicWordsetNamesByAppLocaleNames.Japanese
 	}
-	//
-	console.log("default")
 	return monero_wallet_utils.DefaultWalletMnemonicWordsetName // which would be .English
 	
 }

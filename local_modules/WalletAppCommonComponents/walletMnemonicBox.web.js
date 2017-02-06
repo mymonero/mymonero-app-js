@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const uuidV1 = require('uuid/v1')
+//
 const View = require('../Views/View.web')
 const commonComponents_cssRules = require('./cssRules.web')
 //
@@ -116,8 +118,8 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 {
 	__injectCSSRules_ifNecessary()
 	//
-	didSelectWord_fn = didSelectWord_fn || function(word) {}
-	didDeselectWord_fn = didDeselectWord_fn || function(word) {}
+	didSelectWord_fn = didSelectWord_fn || function(wordUUID) {}
+	didDeselectWord_fn = didDeselectWord_fn || function(wordUUID) {}
 	//
 	const view = new View({}, context)
 	{
@@ -130,9 +132,12 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 		layer.style.textAlign = "center"
 	}
 	const mnemonicWords = mnemonicString.split(" ")
-	const ordered_selectedWords = []
-	view.Component_SelectedWords = ordered_selectedWords
-	const selectedWord_viewsByWord = {}
+	const ordered_selectedWordUUIDs = []
+	view.Component_SelectedWords = function()
+	{ // this is a little circuitous but seems the price for soloing the uuid-word mapping in the selectableWordsView
+		return view.mnemonicConfirmation_selectableWordsView.Component_WordsFromUUIDs(ordered_selectedWordUUIDs)
+	}
+	const selectedWord_viewsByWordUUID = {}
 	// Component - Methods - Setup - Imperatives
 	view.Component_ConfigureWith_selectableWordsView = function(mnemonicConfirmation_selectableWordsView)
 	{
@@ -144,15 +149,15 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 		view.mnemonicConfirmation_selectableWordsView = null
 	}
 	// Component - Methods - Runtime - Imperatives
-	view.Component_SelectMnemonicWord = function(word, mnemonicConfirmation_selectableWordsView)
+	view.Component_SelectWordWithUUID = function(word, wordUUID)
 	{
 		if (view.isEnabled == false) {
 			console.warn("Selected but not enabled")
 			return
 		}
-		ordered_selectedWords.push(word)
+		ordered_selectedWordUUIDs.push(wordUUID)
 		//
-		const wordView = _new_MnemonicConfirmation_WordView(word, context)
+		const wordView = _new_MnemonicConfirmation_WordView(word, wordUUID, context)
 		const wordView_layer = wordView.layer
 		wordView_layer.addEventListener(
 			"click",
@@ -165,46 +170,46 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 				}
 				const this_wordView_layer = this
 				this_wordView_layer.href = "" // no longer clickable
-				const word = this_wordView_layer.__component_mnemonicWord
-				if (!word || typeof word === 'undefined') {
-					throw "No word associated with clicked layer"
+				const wordUUID = this_wordView_layer.__component_mnemonicWordUUID
+				if (!wordUUID || typeof wordUUID === 'undefined') {
+					throw "No word id associated with clicked layer"
 				}
-				view.Component_DeselectMnemonicWord(word)
+				view.Component_DeselectWordWithUUID(wordUUID)
 				return false
 			}
 		)
-		selectedWord_viewsByWord[word] = wordView
+		selectedWord_viewsByWordUUID[wordUUID] = wordView
 		view.layer.appendChild(wordView_layer)
 		//
-		didSelectWord_fn(word)
+		didSelectWord_fn(wordUUID)
 	}
-	view.Component_DeselectMnemonicWord = function(word)
+	view.Component_DeselectWordWithUUID = function(wordUUID)
 	{
 		{
-			const indexOf_word = ordered_selectedWords.indexOf(word)
-			if (indexOf_word === -1) {
-				throw "Word not found in list of selected words."
+			const indexOf_wordUUID = ordered_selectedWordUUIDs.indexOf(wordUUID)
+			if (indexOf_wordUUID === -1) {
+				throw "WordUUID not found in list of selected words."
 			}
-			ordered_selectedWords.splice(indexOf_word, 1) // remove
+			ordered_selectedWordUUIDs.splice(indexOf_wordUUID, 1) // remove
 		}
 		{
-			const wordView = selectedWord_viewsByWord[word]
+			const wordView = selectedWord_viewsByWordUUID[wordUUID]
 			const wordView_layer = wordView.layer
-			delete selectedWord_viewsByWord[word]
+			delete selectedWord_viewsByWordUUID[wordUUID]
 			view.layer.removeChild(wordView_layer)
 			//
-			view.mnemonicConfirmation_selectableWordsView.Component_WordWasDeselected(word)
+			view.mnemonicConfirmation_selectableWordsView.Component_WordWithUUIDWasDeselected(wordUUID)
 			//
-			didDeselectWord_fn(word)
+			didDeselectWord_fn(wordUUID)
 		}
 	}
 	view.Component_DeselectAllWords = function()
 	{
-		const copyOf_ordered_selectedWords = ordered_selectedWords.slice()
-		copyOf_ordered_selectedWords.forEach(
-			function(word, i)
+		const copyOf_ordered_selectedWordUUIDs = ordered_selectedWordUUIDs.slice()
+		copyOf_ordered_selectedWordUUIDs.forEach(
+			function(wordUUID, i)
 			{
-				view.Component_DeselectMnemonicWord(word)
+				view.Component_DeselectWordWithUUID(wordUUID)
 			}
 		)
 	}
@@ -215,11 +220,11 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 			return
 		}
 		view.isEnabled = isEnabled
-		const wordKeys = Object.keys(selectedWord_viewsByWord)
-		wordKeys.forEach(
-			function(wordKey, i)
+		const wordUUIDs = Object.keys(selectedWord_viewsByWordUUID)
+		wordUUIDs.forEach(
+			function(wordUUID, i)
 			{
-				const wordView = selectedWord_viewsByWord[wordKey]
+				const wordView = selectedWord_viewsByWordUUID[wordUUID]
 				if (isEnabled == false) {
 					wordView.layer.classList.add("disabled")
 				} else {
@@ -233,22 +238,18 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 }
 exports.New_MnemonicConfirmation_SelectedWordsView = New_MnemonicConfirmation_SelectedWordsView
 //
-function _new_MnemonicConfirmation_WordView(word, context, showAsAlreadySelectedPlaceholder)
+function _new_MnemonicConfirmation_WordView(word, wordUUID, context)
 {
-	showAsAlreadySelectedPlaceholder = showAsAlreadySelectedPlaceholder === true ? true : false
-	//
 	const view = new View({ tag: "a" }, context)
 	const layer = view.layer
 	layer.className = "mnemonic-pill"
-	if (showAsAlreadySelectedPlaceholder) {
-		layer.href = "" // non-clickable
-	} else {
-		layer.href = "#"
-	}
+	layer.href = "#" // clickable by default
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	layer.innerHTML = word.toUpperCase()
-	layer.__component_mnemonicWord = word
-	//
+	{ // for retrieval later
+		layer.__component_mnemonicWord = word
+		layer.__component_mnemonicWordUUID = wordUUID
+	}
 	return view
 }
 //
@@ -270,12 +271,16 @@ function New_MnemonicConfirmation_SelectableWordsView(
 		layer.style.marginTop = "10px"
 	}
 	const shuffled_mnemonicWords = new_shuffledArray(mnemonicString.split(" "))
-	const wordViews_byWord = {}
+	const wordsByWordUUID = {} // because words are not unique in a mnemonic
+	const wordViews_byWordUUID = {}
 	shuffled_mnemonicWords.forEach(
 		function(word, i)
 		{
-			const wordView = _new_MnemonicConfirmation_WordView(word, context)
-			wordViews_byWord[word] = wordView
+			const wordUUID = _new_UUID()
+			wordsByWordUUID[wordUUID] = word
+			//
+			const wordView = _new_MnemonicConfirmation_WordView(word, wordUUID, context)
+			wordViews_byWordUUID[wordUUID] = wordView
 			//
 			const wordView_layer = wordView.layer
 			view.layer.appendChild(wordView_layer)
@@ -290,16 +295,22 @@ function New_MnemonicConfirmation_SelectableWordsView(
 						return false
 					}
 					const this_wordView_layer = this
-					const selectedClass = "mnemonic-pill--selectedPlaceholder"
-					if (this_wordView_layer.className !== selectedClass) { // so, if it's not already picked
-						this_wordView_layer.className = selectedClass // flip to selected type
-						this_wordView_layer.href = "" // no longer clickable
-						const word = this_wordView_layer.__component_mnemonicWord
-						if (!word || typeof word === 'undefined') {
-							throw "No word associated with clicked layer"
-						}
-						mnemonicConfirmation_selectedWordsView.Component_SelectMnemonicWord(word)
+					const isSelectedClass = "mnemonic-pill--selectedPlaceholder"
+					if (this_wordView_layer.className === isSelectedClass) { // if it's already picked
+						return
 					}
+					this_wordView_layer.className = isSelectedClass // flip to selected type
+					this_wordView_layer.href = "" // no longer clickable
+					const word = this_wordView_layer.__component_mnemonicWord
+					if (!word || typeof word === 'undefined') {
+						throw "No word associated with clicked layer"
+					}
+					const wordUUID = this_wordView_layer.__component_mnemonicWordUUID
+					if (!wordUUID || typeof wordUUID === 'undefined') {
+						throw "No word ID associated with clicked layer"
+					}
+					mnemonicConfirmation_selectedWordsView.Component_SelectWordWithUUID(word, wordUUID)
+					//
 					return false
 				}
 			)
@@ -309,10 +320,27 @@ function New_MnemonicConfirmation_SelectableWordsView(
 	view.TearDown = function()
 	{ // nothing to do (yet)
 	}
+	// Component - Methods - Runtime - Accessors
+	view.Component_WordsFromUUIDs = function(ordered_selectedWordUUIDs)
+	{
+		const words = []
+		ordered_selectedWordUUIDs.forEach(
+			function(wordUUID, i)
+			{
+				const word = wordsByWordUUID[wordUUID]
+				if (typeof word === 'undefined' || !word) {
+					throw "Word not found for UUID"
+					return
+				}
+				words.push(word)
+			}
+		)
+		return words
+	}
 	// Component - Methods - Runtime - Delegation
-	view.Component_WordWasDeselected = function(word)
+	view.Component_WordWithUUIDWasDeselected = function(wordUUID)
 	{ 
-		const wordView = wordViews_byWord[word]
+		const wordView = wordViews_byWordUUID[wordUUID]
 		const this_wordView_layer = wordView.layer
 		this_wordView_layer.className = "mnemonic-pill" // flip back to selectable type
 		this_wordView_layer.href = "#" // clickable again
@@ -320,6 +348,11 @@ function New_MnemonicConfirmation_SelectableWordsView(
 	return view
 }
 exports.New_MnemonicConfirmation_SelectableWordsView = New_MnemonicConfirmation_SelectableWordsView
+//
+function _new_UUID()
+{
+	return uuidV1()
+}
 //
 function new_shuffledArray(array)
 {

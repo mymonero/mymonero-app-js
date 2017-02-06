@@ -28,7 +28,6 @@
 //
 "use strict"
 //
-const uuidV1 = require('uuid/v1')
 const Animate = require('velocity-animate')
 //
 const View = require('../../Views/View.web')

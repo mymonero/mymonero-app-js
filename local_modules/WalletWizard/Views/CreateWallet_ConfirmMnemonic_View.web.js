@@ -248,7 +248,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	_hasUserEnteredCorrectlyOrderedMnemonic()
 	{
 		const self = this
-		const selected_mnemonicWords = self.mnemonicConfirmation_selectedWordsView.Component_SelectedWords
+		const selected_mnemonicWords = self.mnemonicConfirmation_selectedWordsView.Component_SelectedWords()
 		const selected_mnemonicString = selected_mnemonicWords.join(" ").toLowerCase()
 		if (selected_mnemonicString === self.mnemonicString) {
 			return true
@@ -268,7 +268,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			self.disable_submitButton()
 			return
 		}
-		const selectedWords = view.Component_SelectedWords
+		const selectedWords = view.Component_SelectedWords()
 		if (selectedWords.length === self.numberOf_mnemonicString_words) {
 			self.enable_submitButton()
 		} else {
