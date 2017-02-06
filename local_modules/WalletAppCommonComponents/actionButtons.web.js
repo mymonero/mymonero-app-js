@@ -81,10 +81,12 @@ function New_ActionButtonView(
 	iconimage_filename, 
 	isRightmostButtonInContainer,
 	clicked_fn, // (clickedLayer, e) -> Void
-	context
+	context,
+	optl_icon_bgPos_top
 )
 {
 	const hasImage = iconimage_filename !== null && typeof iconimage_filename !== 'undefined'
+	const icon_bgPos_top = typeof optl_icon_bgPos_top === 'undefined' ? 8 : optl_icon_bgPos_top
 	//
 	const view = new View({ tag: "a" }, context)
 	{
@@ -109,13 +111,15 @@ function New_ActionButtonView(
 		layer.innerHTML = title
 		if (hasImage) {
 			layer.style.backgroundImage = "url(" + iconimage_filename + ")"
-			layer.style.backgroundPosition = "7px 15px"
+			layer.style.backgroundPosition = `17px ${icon_bgPos_top}px`
+			layer.style.backgroundRepeat = "no-repeat"
 		}
 		layer.style.display = "inline-block"
 		layer.style.width = `calc(50% - ${ActionButton_rightMargin/2}px` // we're assuming there are only two buttons
 		layer.style.height = ActionButton_h + "px"
 		layer.style.borderRadius = "3px"
 		layer.style.backgroundColor = "#383638"
+		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"			
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"
 		layer.style.fontWeight = "500"

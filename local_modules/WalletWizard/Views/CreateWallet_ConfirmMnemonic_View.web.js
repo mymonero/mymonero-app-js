@@ -31,6 +31,7 @@
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../WalletAppCommonComponents/walletMnemonicBox.web')
+const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //
@@ -102,9 +103,65 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			layer.style.display = "none"
 			layer.style.wordBreak = "break-word"
 			layer.innerHTML = "That’s not right. You can try again or start over with a new mnemonic."
+			{ // v-- this padding is added to accommodate the action bar in case the screen is too short and scrolling happens
+				const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h + commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin + 10
+				layer.style.paddingBottom = `${paddingBottom}px`
+			}
 			self.mnemonicConfirmation_validationErrorLabelLayer = layer
 			self.layer.appendChild(layer)
 		}
+		{ // action buttons toolbar
+			self.actionBar_margin_h = 16
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + self.actionBar_margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = self.actionBar_margin_h
+			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(
+				margin_fromWindowLeft, 
+				margin_fromWindowRight, 
+				self.context
+			)
+			view.layer.style.paddingLeft = self.actionBar_margin_h + "px"
+			view.layer.style.display = "none" // for now
+			self.actionButtonsContainerView = view
+			{
+				self._setup_actionButton_tryAgain()
+				self._setup_actionButton_startOver()
+			}
+			self.addSubview(view)
+		}
+	}
+	_setup_actionButton_tryAgain()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Try again", 
+			"../../WalletWizard/Resources/actionButton_iconImage__tryAgain.png", // relative to index.html
+			false,
+			function(layer, e)
+			{
+				self.__didSelect_actionButton__tryAgain()
+			},
+			self.context,
+			8
+		)
+		self.buttonView__tryAgain = buttonView
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	_setup_actionButton_startOver()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Start Over", 
+			"../../WalletWizard/Resources/actionButton_iconImage__startOver.png", // relative to index.html
+			true,
+			function(layer, e)
+			{
+				self.__didSelect_actionButton__startOver()
+			},
+			self.context,
+			9
+		)
+		self.buttonView__startOver = buttonView
+		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	_setup_startObserving()
 	{
@@ -245,11 +302,11 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		const self = this 
 		if (self._hasUserEnteredCorrectlyOrderedMnemonic() == false) {
 			self.mnemonicConfirmation_selectedWordsView.layer.classList.add("errored")
+			self.mnemonicConfirmation_validationErrorLabelLayer.style.display = "block"
 			self.disable_submitButton()
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false)
 			self.mnemonicConfirmation_selectableWordsView.layer.style.display = "none"
-			self.mnemonicConfirmation_validationErrorLabelLayer.style.display = "block"
-			// self.actionBarView.layer.display = "block"
+			self.actionButtonsContainerView.layer.style.display = "block"
 			//
 			return
 		}
@@ -276,6 +333,34 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 					return
 				}
 				self.wizardController.ProceedToNextStep() // this should lead to a dismiss of the wizard
+			}
+		)
+	}
+	__didSelect_actionButton__tryAgain()
+	{
+		const self = this
+		self.mnemonicConfirmation_selectedWordsView.layer.classList.remove("errored")
+		self.mnemonicConfirmation_validationErrorLabelLayer.style.display = "none"
+		self.enable_submitButton()
+		self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true)
+		self.mnemonicConfirmation_selectedWordsView.Component_DeselectAllWords()
+		self.mnemonicConfirmation_selectableWordsView.layer.style.display = "block"
+		self.actionButtonsContainerView.layer.style.display = "none"
+	}
+	__didSelect_actionButton__startOver()
+	{
+		const self = this
+		// generatae new wallet
+		self.context.walletsListController.CreateNewWallet_NoBootNoListAdd(
+			function(err, walletInstance)
+			{
+				if (err) {
+					throw err
+				}
+				// then update wizard
+				self.wizardController.walletInstance = walletInstance
+				// then go back
+				self.navigationController.PopView(true) // state will be managed for us by navigationView_viewIsBeingPoppedFrom
 			}
 		)
 	}

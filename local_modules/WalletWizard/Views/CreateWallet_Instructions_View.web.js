@@ -153,13 +153,13 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 			layer.style.display = "block"
 			layer.style.padding = "10px 12px"
 			layer.style.textIndent = `${37 - 12}px`
-			layer.style.width = "68px"
+			layer.style.width = "72px"
 			layer.style.height = `${32 - 10 * 2 }px`
-			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
 			layer.style.fontSize = "11px"
 			layer.style.color = "#f8f7f8"
 			layer.style.background = "#383638"
-			layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0 0 0 #494749"
+			layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 			layer.style.borderRadius = "3px"
 		}
 		var checkboxIconLayer;

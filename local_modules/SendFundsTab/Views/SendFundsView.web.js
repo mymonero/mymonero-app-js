@@ -426,13 +426,14 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
-			"useCamera_actionButton_iconImage", 
+			"../../SendFundsTab/Resources/actionButton_iconImage__useCamera.png", 
 			false,
 			function(layer, e)
 			{
 				console.log("TODO: use camera to get QR code")
 			},
-			self.context
+			self.context,
+			9 // px from top of btn - due to shorter icon
 		)
 		self.useCamera_buttonView = buttonView
 		self.actionButtonsContainerView.addSubview(buttonView)
@@ -442,7 +443,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
-			"chooseFile_actionButton_iconImage", 
+			"../../SendFundsTab/Resources/actionButton_iconImage__chooseFile.png", 
 			true,
 			function(layer, e)
 			{

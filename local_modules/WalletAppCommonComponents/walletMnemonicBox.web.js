@@ -198,6 +198,16 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 			didDeselectWord_fn(word)
 		}
 	}
+	view.Component_DeselectAllWords = function()
+	{
+		const copyOf_ordered_selectedWords = ordered_selectedWords.slice()
+		copyOf_ordered_selectedWords.forEach(
+			function(word, i)
+			{
+				view.Component_DeselectMnemonicWord(word)
+			}
+		)
+	}
 	view.Component_SetEnabled = function(isEnabled)
 	{
 		if (view.isEnabled == isEnabled) {
