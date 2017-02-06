@@ -51,7 +51,7 @@ class CreateWallet_InformOfMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		{
 			const text = "You'll confirm this sequence on the next&nbsp;screen."
 			const layer = self._new_messages_paragraphLayer(text)
-			layer.style.marginBottom = "40px"
+			layer.style.marginBottom = "39px" // not 40 to leave 1px for clear border
 			layer.style.textAlign = "center"
 			layer.style.wordBreak = "break-word"
 			self.layer.appendChild(layer)

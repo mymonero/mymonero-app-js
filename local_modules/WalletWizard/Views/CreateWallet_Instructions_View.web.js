@@ -147,6 +147,7 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 		{ // style
 			const layer = view.layer
 			layer.innerHTML = "GOT IT!"
+			layer.style.cursor = "default"
 			layer.style.position = "relative"
 			layer.style.textAlign = "left"
 			layer.style.display = "block"
@@ -165,6 +166,7 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 		{
 			const layer = document.createElement("div")
 			checkboxIconLayer = layer
+			layer.style.cursor = "default"
 			layer.style.position = "absolute"
 			layer.style.left = "9px"
 			layer.style.top = "9px"

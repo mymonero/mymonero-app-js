@@ -43,7 +43,8 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		const walletInstance = self.wizardController.walletInstance
 		const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
 		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
-		const correctlyOrdered_mnemonicString_words = mnemonicString.split(" ")
+		self.mnemonicString = mnemonicString
+		const correctlyOrdered_mnemonicString_words = self.mnemonicString.split(" ")
 		self.numberOf_mnemonicString_words = correctlyOrdered_mnemonicString_words.length // cached
 		{
 			const text = "Verify your mnemonic"
@@ -56,14 +57,14 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		{
 			const text = "Choose each word in the correct&nbsp;order."
 			const layer = self._new_messages_paragraphLayer(text)
-			layer.style.marginBottom = "40px"
+			layer.style.marginBottom = "39px" // not 40 to leave 1px for clear border
 			layer.style.textAlign = "center"
 			layer.style.wordBreak = "break-word"
 			self.layer.appendChild(layer)
 		}
 		{
 			const view = commonComponents_walletMnemonicBox.New_MnemonicConfirmation_SelectedWordsView(
-				mnemonicString, 
+				self.mnemonicString, 
 				self.context,
 				function(word)
 				{ // did select word
@@ -79,7 +80,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		}
 		{
 			const view = commonComponents_walletMnemonicBox.New_MnemonicConfirmation_SelectableWordsView(
-				mnemonicString, 
+				self.mnemonicString, 
 				self.mnemonicConfirmation_selectedWordsView, 
 				self.context
 			)
@@ -89,6 +90,21 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		self.mnemonicConfirmation_selectedWordsView.Component_ConfigureWith_selectableWordsView(
 			self.mnemonicConfirmation_selectableWordsView
 		)
+		{
+			const layer = document.createElement("div")
+			layer.style.fontSize = "11px"
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontSize = "11px"
+			layer.style.lineHeight = "14px"
+			layer.style.color = "#f97777"
+			layer.style.width = "267px"
+			layer.style.margin = "4px auto 0 auto"
+			layer.style.display = "none"
+			layer.style.wordBreak = "break-word"
+			layer.innerHTML = "That’s not right. You can try again or start over with a new mnemonic."
+			self.mnemonicConfirmation_validationErrorLabelLayer = layer
+			self.layer.appendChild(layer)
+		}
 	}
 	_setup_startObserving()
 	{
@@ -170,6 +186,20 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	}
 	//
 	//
+	// Runtime - Accessors - Mnemonic validation
+	//
+	_hasUserEnteredCorrectlyOrderedMnemonic()
+	{
+		const self = this
+		const selected_mnemonicWords = self.mnemonicConfirmation_selectedWordsView.Component_SelectedWords
+		const selected_mnemonicString = selected_mnemonicWords.join(" ").toLowerCase()
+		if (selected_mnemonicString === self.mnemonicString) {
+			return true
+		}
+		return false
+	}	
+	//
+	//
 	// Runtime - Imperatives - Submit button enabled state
 	//
 	_configureInteractivityOfNextButton()
@@ -213,6 +243,17 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 	_userSelectedNextButton()
 	{
 		const self = this 
+		if (self._hasUserEnteredCorrectlyOrderedMnemonic() == false) {
+			self.mnemonicConfirmation_selectedWordsView.layer.classList.add("errored")
+			self.disable_submitButton()
+			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false)
+			self.mnemonicConfirmation_selectableWordsView.layer.style.display = "none"
+			self.mnemonicConfirmation_validationErrorLabelLayer.style.display = "block"
+			// self.actionBarView.layer.display = "block"
+			//
+			return
+		}
+		
 		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 		self.disable_submitButton()
 		//

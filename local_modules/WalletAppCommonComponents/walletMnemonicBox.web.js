@@ -38,22 +38,26 @@ const cssRules =
 [
 	`.mnemonic-container {
 		background: #1D1B1D;
+		border: 1px solid #282527; /* invisible border for validation highlight layout */
 		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
 		border-radius: 5px;
-		margin: 0 auto 23px auto;
+		margin: 0 auto 7px auto;
 	}`,
+	`.mnemonic-container.errored {
+		border: 1px solid #f97777;
+	`,
 	`.mnemonic-container a {
 		cursor: default;
 	}`,
 	`.mnemonic-pill,
 	 .mnemonic-pill--selectedPlaceholder {
 		color: white;
+		cursor: default;
 		text-decoration: none;
 		text-transform: uppercase;
 		font-size: 11px;
-		font-family: native, input, menlo, monspace;
 		letter-spacing: 0.8px;
-		font-weight: 400;
+		font-weight: 300;
 		background: #383638;
 		padding: 4px 8px;
 		margin: 4px;
@@ -62,8 +66,8 @@ const cssRules =
 		transition: all 0.1s ease-out;
 		display: inline-block;
 	}`,
-	`.mnemonic-pill:hover,
-	 .mnemonic-pill--selectedPlaceholder:hover {
+	`.mnemonic-pill:not(.disabled):hover,
+	 .mnemonic-pill--selectedPlaceholder:not(.disabled):hover {
 		background: #494749;
 		box-shadow: inset 0 0.5px 0 0 #5A585A, 0 0.5px 1px 0 #161416;
 		transition: all 0.1s ease-out;
@@ -73,7 +77,7 @@ const cssRules =
 		background: #1D1B1D;
 		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
 	}`,
-	`.mnemonic-pill--selectedPlaceholder:hover {
+	`.mnemonic-pill--selectedPlaceholder:not(.disabled):hover {
 		color: #1D1B1D;
 		background: #1D1B1D;
 		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
@@ -91,13 +95,15 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 	const view = new View({}, context)
 	const layer = view.layer
 	layer.className = "mnemonic-container"
-	const padding_v = 36
+	const padding_v = 35
 	layer.style.minHeight = `${128 - 2*padding_v}px`
 	layer.style.padding = `${padding_v}px 24px`
 	layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
 	layer.style.wordBreak = "break-word"
-	layer.style.lineHeight = "22px"
+	layer.style.lineHeight = "20px"
 	layer.style.fontSize = "13px"
+	layer.style.marginBottom = "23px"
+	layer.style.color = "#9e9c9e"
 	layer.style.webkitUserSelect = "all" // allow selection here
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	layer.innerHTML = mnemonicString
@@ -118,7 +124,7 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 		const layer = view.layer
 		layer.className = "mnemonic-container"
 		const padding_v = 20 // instead of 24, because word elements have v margin of 4
-		layer.style.minHeight = `${138 - 2*padding_v}px`
+		layer.style.minHeight = `${129 - 2*padding_v}px`
 		layer.style.padding = `${padding_v}px 24px`
 		layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
 		layer.style.textAlign = "center"
@@ -140,6 +146,10 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 	// Component - Methods - Runtime - Imperatives
 	view.Component_SelectMnemonicWord = function(word, mnemonicConfirmation_selectableWordsView)
 	{
+		if (view.isEnabled == false) {
+			console.warn("Selected but not enabled")
+			return
+		}
 		ordered_selectedWords.push(word)
 		//
 		const wordView = _new_MnemonicConfirmation_WordView(word, context)
@@ -149,6 +159,10 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 			function(e)
 			{
 				e.preventDefault()
+				if (view.isEnabled == false) {
+					console.warn("Word deselected but control not enabled")
+					return
+				}
 				const this_wordView_layer = this
 				this_wordView_layer.href = "" // no longer clickable
 				const word = this_wordView_layer.__component_mnemonicWord
@@ -184,6 +198,26 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 			didDeselectWord_fn(word)
 		}
 	}
+	view.Component_SetEnabled = function(isEnabled)
+	{
+		if (view.isEnabled == isEnabled) {
+			console.warn("Already isEnabled", isEnabled)
+			return
+		}
+		view.isEnabled = isEnabled
+		const wordKeys = Object.keys(selectedWord_viewsByWord)
+		wordKeys.forEach(
+			function(wordKey, i)
+			{
+				const wordView = selectedWord_viewsByWord[wordKey]
+				if (isEnabled == false) {
+					wordView.layer.classList.add("disabled")
+				} else {
+					wordView.layer.classList.remove("disabled")
+				}
+			}
+		)
+	}
 	//
 	return view
 }
@@ -201,6 +235,7 @@ function _new_MnemonicConfirmation_WordView(word, context, showAsAlreadySelected
 	} else {
 		layer.href = "#"
 	}
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	layer.innerHTML = word.toUpperCase()
 	layer.__component_mnemonicWord = word
 	//
@@ -222,6 +257,7 @@ function New_MnemonicConfirmation_SelectableWordsView(
 		layer.style.padding = `${padding_v}px 24px`
 		layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
 		layer.style.textAlign = "center"
+		layer.style.marginTop = "10px"
 	}
 	const shuffled_mnemonicWords = new_shuffledArray(mnemonicString.split(" "))
 	const wordViews_byWord = {}
@@ -239,6 +275,10 @@ function New_MnemonicConfirmation_SelectableWordsView(
 				function(e)
 				{
 					e.preventDefault()
+					if (mnemonicConfirmation_selectedWordsView.isEnabled == false) {
+						console.warn("Word selected but disabled.")
+						return false
+					}
 					const this_wordView_layer = this
 					const selectedClass = "mnemonic-pill--selectedPlaceholder"
 					if (this_wordView_layer.className !== selectedClass) { // so, if it's not already picked
