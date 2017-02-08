@@ -154,7 +154,7 @@ class SendFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM")
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_walletSelect.New_fieldValue_walletSelectLayer({
@@ -173,7 +173,7 @@ class SendFundsView extends View
 		div.style.display = "block"
 		div.style.width = "210px"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			// ^ block
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -233,7 +233,7 @@ class SendFundsView extends View
 		div.style.width = "95px"
 		div.style.display = "block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MIXIN") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MIXIN", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_selectLayer({
@@ -268,7 +268,7 @@ class SendFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const layer = commonComponents_contactPicker.New_contactPickerLayer(
@@ -331,7 +331,7 @@ class SendFundsView extends View
 		const div = document.createElement("div")
 		div.style.display = "none" // initial state
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MONERO ADDRESS") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MONERO ADDRESS", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = document.createElement("div")
@@ -350,7 +350,7 @@ class SendFundsView extends View
 		const div = document.createElement("div")
 		div.style.display = "none" // initial state
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = document.createElement("div")
@@ -395,7 +395,7 @@ class SendFundsView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		div.style.display = "none" // initial
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({

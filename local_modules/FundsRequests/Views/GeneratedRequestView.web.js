@@ -179,7 +179,7 @@ class GeneratedRequestView extends View
 			{
 				const uri = self.fundsRequest.Lazy_URI()
 				{ // left
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link")
+					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link", self.context)
 					div.appendChild(labelLayer)
 				}
 				{ // right
@@ -225,7 +225,7 @@ class GeneratedRequestView extends View
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()
 			{ // left
-				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Message for Requestee")
+				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Message for Requestee", self.context)
 				div.appendChild(labelLayer)
 			}
 			{ // right

@@ -115,7 +115,7 @@ class RequestFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO")
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_walletSelect.New_fieldValue_walletSelectLayer({
@@ -132,7 +132,7 @@ class RequestFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -160,7 +160,7 @@ class RequestFundsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -233,7 +233,7 @@ class RequestFundsView extends View
 		const containerLayer = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		containerLayer.style.display = "none" // initial state
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context) // note use of _forms.
 			containerLayer.appendChild(labelLayer)
 			//
 			const valueLayer = document.createElement("div")

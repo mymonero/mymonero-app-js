@@ -74,7 +74,8 @@ class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
 	// Runtime - Delegation - Navigation View special methods
 	//
 	navigationView_viewIsBeingPoppedFrom()
-	{
+	{ // this will only get popped from when it's not the first in the nav stack, i.e. not adding first wallet,
+	  // so we'll need to get back into Mode_PickCreateOrUseExisting
 		const self = this
 		self.wizardController.PatchToDifferentWizardTaskMode_withoutPushingScreen( // to maintain the correct state
 			self.wizardController.WizardTask_Mode_PickCreateOrUseExisting(), 

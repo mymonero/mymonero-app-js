@@ -129,7 +129,7 @@ class ContactFormView extends View
 		div.style.width = `calc(100% - 75px - ${div.style.paddingLeft} - ${div.style.paddingRight})`
 		div.style.display = "inline-block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Name")
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Name", self.context)
 			div.appendChild(labelLayer)
 		}
 		{
@@ -167,7 +167,7 @@ class ContactFormView extends View
 		div.style.width = "75px"
 		div.style.display = "inline-block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Emoji")
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Emoji", self.context)
 		
 			div.appendChild(labelLayer)
 		}
@@ -204,7 +204,7 @@ class ContactFormView extends View
 		div.style.width = `calc(100%)`
 		div.style.display = "inline-block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Address")
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Address", self.context)
 			div.appendChild(labelLayer)
 		}
 		{
@@ -237,7 +237,7 @@ class ContactFormView extends View
 		div.style.display = "inline-block"
 		{
 			if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
-				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID")
+				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID", self.context)
 				div.appendChild(labelLayer)
 			}
 		}

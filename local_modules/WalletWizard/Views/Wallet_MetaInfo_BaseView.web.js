@@ -82,7 +82,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("WALLET NAME") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("WALLET NAME", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -94,7 +94,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 					"keyup",
 					function(event)
 					{
-						self._walletNameInputLayer_did_keyup(event)
+						self.AWalletFieldInput_did_keyup(event)
 					}
 				)
 			}
@@ -107,7 +107,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR") // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR", self.context) // note use of _forms.
 			div.appendChild(labelLayer)
 			//
 			const view = commonComponents_walletColorPicker.New_1OfN_WalletColorPickerInputView(
@@ -210,7 +210,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		const self = this 
 		// NOTE: Override this in your subclass
 	}
-	_walletNameInputLayer_did_keyup(event)
+	AWalletFieldInput_did_keyup(event)
 	{
 		const self = this
 		if (event.keyCode === 13) { // return key

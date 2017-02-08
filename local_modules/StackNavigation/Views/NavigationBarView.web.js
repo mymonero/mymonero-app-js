@@ -86,11 +86,12 @@ class NavigationBarView extends View
 		{
 			const layer = document.createElement("span")
 			{
-				self.defaultNavigationBarTitleColor = "#F8F7F8" // so we can use it at runtime
+				self.defaultNavigationBarTitleColor = "#fcfbfc" // so we can use it at runtime
 				layer.style.color = self.defaultNavigationBarTitleColor
-				layer.style.fontSize = "16px"
+				layer.style.fontSize = "13px"
 				layer.style.position = "absolute"
-				layer.style.fontFamily = `"Helvetica Neue", Helvetica, Arial, sans-serif`
+				layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+				layer.style.fontWeight = "400"
 				layer.style.top = "0%"
 				self.titleLayer_marginX_pxComponent = 16
 				self.titleLayer_marginX_pctComponent = .15
@@ -205,7 +206,10 @@ class NavigationBarView extends View
 			layer.style.width = "26px"
 			layer.style.height = "24px"
 			layer.style.borderRadius = "2px"
-			layer.style.backgroundColor = "#18bbec"
+			layer.style.backgroundColor = "#383638"
+			layer.style.borderRadius = "2px"
+			layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			layer.style.border = "none"			
 			layer.style.textDecoration = "none"
 			layer.style.fontSize = "22px"
 			layer.style.lineHeight = "115%" // % extra to get + aligned properly

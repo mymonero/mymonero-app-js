@@ -76,12 +76,14 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 		layer.style.display = "block"
 		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 		layer.style.marginTop = "10px"
-		layer.style.width = "90px"
+		layer.style.width = "60px"
 		layer.style.height = "24px"
 		layer.style.borderRadius = "2px"
+		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+		layer.style.border = "none"
 		layer.style.backgroundColor = "#383638"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "15px"
+		layer.style.fontSize = "13px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"

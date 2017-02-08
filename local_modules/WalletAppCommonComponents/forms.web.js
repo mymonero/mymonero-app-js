@@ -28,27 +28,30 @@
 //
 "use strict"
 //
+const View = require('../Views/View.web')
+const commonComponents_cssRules = require('./cssRules.web')
+//
 function _new_fieldContainerLayer()
 {
 	const layer = document.createElement("div")
-	layer.style.padding = "18px 10px"
+	layer.style.padding = "0 10px"
 	//
 	return layer
 }
 exports.New_fieldContainerLayer = _new_fieldContainerLayer
 //
-function New_fieldTitle_labelLayer(labelText)
+function New_fieldTitle_labelLayer(labelText, context)
 {
 	const layer = document.createElement("span")
 	{
 		layer.innerHTML = labelText
 		layer.style.display = "block" // own line
-		layer.style.margin = "0 0 4px 0"
+		layer.style.margin = "18px 0 9px 11px"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "11px"
-		layer.style.fontWeight = "light"
 		layer.style.color = "#f8f7f8"
-		layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
+		layer.style.fontFamily = context.themeController.FontFamily_monospace()
+		layer.style.fontWeight = "100"
 	}
 	return layer
 }
@@ -75,20 +78,22 @@ function New_fieldValue_textInputLayer(params)
 		layer.style.fontSize = "13px"
 		layer.style.padding = "0 10px"
 		layer.style.fontFamily = "monospace"
+		layer.style.border = "none"
+		layer.style.outline = "none" // no focus ring
 	}
 	{
 		layer.Component_MakeNonEditable = function()
 		{
-			layer.style.backgroundColor = "#777"
-			layer.style.border = "0"
-			layer.style.color = "#ccc"
+			layer.style.boxShadow = "none"
+			layer.style.color = "#dfdedf"
+			layer.style.backgroundColor = "#1d1b1d"
 			layer.disabled = true
 		}
 		layer.Component_MakeEditable = function()
 		{
-			layer.style.backgroundColor = "#444"
-			layer.style.border = "1px inset #222"
-			layer.style.color = "#eee"
+			layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+			layer.style.color = "#dfdedf"
+			layer.style.backgroundColor = "#1d1b1d"
 			layer.disabled = false
 		}
 	}
@@ -102,6 +107,57 @@ function New_fieldValue_textInputLayer(params)
 	return layer
 }
 exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
+//
+function New_fieldValue_textAreaView(params, context)
+{
+	const view = new View({ tag: "textarea" }, context)
+	const layer = view.layer
+	{
+		layer.style.display = "block" // own line
+		const existingValue = params.existingValue
+		if (typeof existingValue !== 'undefined' && existingValue !== null) {
+			layer.value = existingValue
+		}
+		const placeholderText = params.placeholderText
+		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
+			layer.placeholder = placeholderText
+		}
+		layer.style.className = "form-input"
+		const padding_h = 9
+		layer.style.padding = `9px ${padding_h}px`
+		layer.style.height = `${62 - 2 * padding_h}px`
+		layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
+		layer.style.borderRadius = "3px"
+		layer.style.border = "none"
+		layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+		layer.style.textAlign = "left"
+		layer.style.fontSize = "13px"
+		layer.style.lineHeight = "15px"
+		layer.style.resize = "none" // not user-resizable
+		layer.style.outline = "none" // no focus ring
+		layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	}
+	{
+		view.SetEnabled = function(isEnabled)
+		{
+			if (isEnabled) {
+				layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+				//
+				layer.style.color = "#dfdedf"
+				layer.style.backgroundColor = "#1d1b1d"
+			} else {
+				layer.style.boxShadow = "none"
+				//
+				layer.style.color = "#dfdedf"
+				layer.style.backgroundColor = "#1d1b1d"
+			}
+			view.isEnabled = isEnabled // this going to cause a retain cycle ? 
+		}
+	}
+	view.SetEnabled(true)
+	return view
+}
+exports.New_fieldValue_textAreaView = New_fieldValue_textAreaView
 //
 function New_fieldValue_selectLayer(params)
 {

@@ -265,7 +265,7 @@ class TransactionDetailsView extends View
 		const self = this
 		const div = commonComponents_tables.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date")
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(self.transaction.timestamp.toString()) // TODO: format
@@ -279,7 +279,7 @@ class TransactionDetailsView extends View
 		const self = this
 		const div = commonComponents_tables.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Amount")
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Amount", self.context)
 			div.appendChild(labelLayer)
 			//
 			const value = self.transaction.approx_float_amount
@@ -303,7 +303,7 @@ class TransactionDetailsView extends View
 		const self = this
 		const div = commonComponents_tables.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Mixin")
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Mixin", self.context)
 			div.appendChild(labelLayer)
 			//
 			const value = self.transaction.mixin
