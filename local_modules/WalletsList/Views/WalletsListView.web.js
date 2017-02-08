@@ -32,6 +32,8 @@ const View = require('../../Views/View.web')
 const WalletsListCellView = require('./WalletsListCellView.web')
 const WalletDetailsView = require('../../Wallets/Views/WalletDetailsView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
+const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
 //
 const AddWallet_WizardController = require('../../WalletWizard/Controllers/AddWallet_WizardController.web')
 //
@@ -40,7 +42,6 @@ class WalletsListView extends View
 	constructor(options, context)
 	{
 		super(options, context)
-		//
 		const self = this
 		self.setup()
 	}
@@ -48,6 +49,7 @@ class WalletsListView extends View
 	{
 		const self = this
 		{ // initialization / zeroing / declarations 
+			self.wallets = []
 			self.current_walletDetailsView = null
 			self.current_wizardController = null
 		}
@@ -60,22 +62,131 @@ class WalletsListView extends View
 	_setup_views()
 	{
 		const self = this
-		// 
-		self.layer.style.webkitUserSelect = "none"
+		{
+			self.walletCellViews = [] // initialize container
+		}
+		self._setup_self_layer()
+		self._setup_emptyStateContainerView()
+	}
+	_setup_self_layer()
+	{
+		const self = this
+		const layer = self.layer
+		layer.style.webkitUserSelect = "none"
 		//
-		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
-		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
+		layer.style.position = "relative"
+		layer.style.width = "100%"
+		// we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
-		self.layer.style.backgroundColor = "#282527"
+		layer.style.backgroundColor = "#282527"
 		//
-		self.layer.style.color = "#c0c0c0" // temporary
+		layer.style.color = "#c0c0c0" // temporary
 		//
-		self.layer.style.overflowY = "scroll"
-		self.layer.style.padding = "40px 10px"
+		layer.style.overflowY = "scroll"
 		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		//
-		self.walletCellViews = [] // initialize container
+		layer.style.wordBreak = "break-all" // to get the text to wrap
+	}
+	_setup_emptyStateContainerView()
+	{
+		const self = this
+		const view = new View({}, self.context)
+		self.emptyStateContainerView = view
+		const layer = view.layer
+		const margin_side = 15
+		const marginTop = 60 - 44
+		layer.style.marginTop = `${marginTop}px`
+		layer.style.marginLeft = margin_side + "px"
+		layer.style.width = `calc(100% - ${2 * margin_side}px)`
+		layer.style.height = `calc(100% - ${marginTop}px)`
+		{
+			const emptyStateMessageContainerView = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
+				"😃", 
+				"Welcome to MyMonero!<br/>Let's get started.",
+				self.context,
+				0
+			)
+			self.emptyStateMessageContainerView = emptyStateMessageContainerView
+			view.addSubview(emptyStateMessageContainerView)
+		}
+		{ // action buttons toolbar
+			const margin_h = margin_side
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = margin_h
+			const actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
+				margin_fromWindowLeft, 
+				margin_fromWindowRight, 
+				self.context)
+			self.actionButtonsContainerView = actionButtonsContainerView
+			{ // as these access self.actionButtonsContainerView
+				self._setup_actionButton_useExistingWallet()
+				self._setup_actionButton_createNewWallet()
+			}
+			view.addSubview(actionButtonsContainerView)
+		}
+		{ // essential: update empty state message container to accommodate
+			const actionBar_style_height = commonComponents_actionButtons.ActionButtonsContainerView_h
+			const actionBar_style_marginBottom = commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin
+			const actionBarFullHeightDisplacement = margin_side + actionBar_style_height + actionBar_style_marginBottom
+			const style_height = `calc(100% - ${actionBarFullHeightDisplacement}px)`
+			self.emptyStateMessageContainerView.layer.style.height = style_height
+		}
+		view.SetVisible = function(isVisible)
+		{
+			view.isVisible = isVisible
+			if (isVisible) {
+				if (layer.style.display !== "block") {
+					layer.style.display = "block"
+				}
+			} else {
+				if (layer.style.display !== "none") {
+					layer.style.display = "none"
+				}
+			}
+		}
+		view.SetVisible(false)
+		self.addSubview(view)
+	}
+	_setup_actionButton_useExistingWallet()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Use existing wallet", 
+			null, // no image
+			false,
+			function(layer, e)
+			{
+				self._presentAddWalletWizardIn(function(wizardController)
+				{
+					return wizardController.WizardTask_Mode_FirstTime_UseExisting()
+				})
+			},
+			self.context
+		)
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	_setup_actionButton_createNewWallet()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Create new wallet", 
+			null, // no image
+			true,
+			function(layer, e)
+			{
+				self._presentAddWalletWizardIn(function(wizardController)
+				{
+					return wizardController.WizardTask_Mode_FirstTime_CreateWallet()
+				})
+			},
+			self.context
+		)
+		{
+			const layer = buttonView.layer
+			layer.style.color = "#150000"
+			layer.style.backgroundColor = "#00c6ff"
+			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+		}
+		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	_setup_startObserving()
 	{
@@ -118,6 +229,9 @@ class WalletsListView extends View
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
+		if (self.wallets.length === 0) {
+			return null
+		}
 		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
 		const layer = view.layer
 		{ // observe
@@ -126,7 +240,10 @@ class WalletsListView extends View
 				function(e)
 				{
 					e.preventDefault()
-					self._presentAddWalletWizard()
+					self._presentAddWalletWizardIn(function(wizardController)
+					{
+						return wizardController.WizardTask_Mode_PickCreateOrUseExisting()
+					})
 					return false
 				}
 			)
@@ -148,29 +265,36 @@ class WalletsListView extends View
 			function(wallets)
 			{
 				self.isAlreadyWaitingForWallets = false // unlock
-				self._configureWith_wallets(wallets)
+				self.wallets = wallets
+				self._configureWith_wallets()
 			}
 		)
 	}
-	_configureWith_wallets(wallets)
+	_configureWith_wallets()
 	{
 		const self = this
 		const context = self.context
-		// TODO: diff these wallets with existing wallets?
-		if (self.walletCellViews.length != 0) {
-			// for now, just flash list:
-			self.walletCellViews.forEach(
-				function(view, i)
-				{
-					view.TearDown() // important so the event listeners get deregistered
-					//
-					view.removeFromSuperview()
-				}
-			)
-			self.walletCellViews = []
+		{ // teardown/revert
+			// TODO: diff these wallets with existing wallets?
+			if (self.walletCellViews.length != 0) {
+				// for now, just flash list:
+				self.walletCellViews.forEach(
+					function(view, i)
+					{
+						view.TearDown() // important so the event listeners get deregistered
+						//
+						view.removeFromSuperview()
+					}
+				)
+				self.walletCellViews = []
+			}
+		}
+		{ // so we update to return no right bar btn when there are no wallets as we show empty state action bar
+			self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
+			self.emptyStateContainerView.SetVisible(self.wallets.length === 0 ? true : false)
 		}
 		{ // add subviews
-			wallets.forEach(
+			self.wallets.forEach(
 				function(wallet, i)
 				{
 					const options = 
@@ -237,16 +361,15 @@ class WalletsListView extends View
 	//
 	// Runtime - Imperatives - 
 	//
-	_presentAddWalletWizard()
+	_presentAddWalletWizardIn(returnTaskModeWithController_fn)
 	{
 		const self = this
 		const controller = new AddWallet_WizardController({}, self.context)
 		self.current_wizardController = controller
-		const navigationView = controller.EnterWizardTaskMode_returningNavigationView(
-			controller.WizardTask_Mode_PickCreateOrUseExisting()
-		)
+		const taskMode = returnTaskModeWithController_fn(controller)
+		const navigationView = controller.EnterWizardTaskMode_returningNavigationView(taskMode)
 		self.navigationController.PresentView(navigationView)
-	}	
+	}
 	//
 	//
 	// Runtime - Delegation - Data source

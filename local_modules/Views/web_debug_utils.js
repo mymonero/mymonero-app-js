@@ -32,6 +32,7 @@ function _borderLayer(layer)
 {
 	layer.style.border = `1px solid ${RandomColorHexString()}`
 }
+exports.DEBUG_BorderLayer = _borderLayer
 //
 function DEBUG_BorderSubviews(ofView)
 {

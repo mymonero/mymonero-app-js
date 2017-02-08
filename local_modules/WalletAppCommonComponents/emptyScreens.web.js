@@ -30,21 +30,22 @@
 //
 const View = require('../Views/View.web')
 //
-const margin_side = 14
+const default__margin_side = 14
 //
-function New_EmptyStateMessageContainerView(emoji, messageText, context)
+function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_explicitMarginSide)
 {
+	const margin_side__toUse = typeof optl_explicitMarginSide !== 'undefined' ? optl_explicitMarginSide : default__margin_side
 	const view = new View({}, context)
 	{
-		view.__EmptyStateMessageContainerView_margin_side = margin_side
+		view.__EmptyStateMessageContainerView_margin_side = margin_side__toUse
 	}
 	{
 		const layer = view.layer
 		layer.style.position = "relative"
 		layer.style.display = "table" // for vertical align
-		layer.style.height = `calc(100% - ${2 * margin_side}px - 2px)` // -2px for border
-		layer.style.width = `calc(100% - ${2 * margin_side}px - 2px)` // -2px for border
-		layer.style.margin = "14px"
+		layer.style.height = `calc(100% - ${2 * margin_side__toUse}px - 2px)` // -2px for border
+		layer.style.width = `calc(100% - ${2 * margin_side__toUse}px - 2px)` // -2px for border
+		layer.style.margin = margin_side__toUse + "px"
 		layer.style.border = "1px solid #373537"
 		layer.style.borderRadius = "5px"
 	}

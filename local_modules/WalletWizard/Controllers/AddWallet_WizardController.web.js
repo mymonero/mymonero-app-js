@@ -46,19 +46,16 @@ const WizardTaskStepScreenViewFilePrefix_By_WizardTaskModeName =
 	AfterPick_CreateWallet: "CreateWallet",
 	AfterPick_UseExisting: "UseExisting"
 }
-const WizardTask_StepName_CreatePasswordOrDone = "CreatePassword_orDone"
 const WizardTask_ModeStepNamesByIdxStr_ByTaskModeName =
 {
 	FirstTime_CreateWallet: {
 		"0": "MetaInfo",
 		"1": "Instructions",
 		"2": "InformOfMnemonic",
-		"3": "ConfirmMnemonic",
-		"4": WizardTask_StepName_CreatePasswordOrDone
+		"3": "ConfirmMnemonic"
 	},
 	FirstTime_UseExisting: {
-		"0": "MetaInfo",
-		"1": WizardTask_StepName_CreatePasswordOrDone
+		"0": "MetaInfo"
 	},
 	//
 	PickCreateOrUseExisting: {

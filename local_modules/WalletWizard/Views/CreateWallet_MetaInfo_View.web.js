@@ -69,6 +69,28 @@ class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
 	{
 		return "New Wallet"
 	}
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		if (self.options.wizardController_current_wizardTaskModeName != self.wizardController.WizardTask_Mode_FirstTime_CreateWallet()) {
+			return null // cause we either want null or maybe a back button
+		}
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		self.leftBarButtonView = view
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					self.wizardController._fromScreen_userPickedCancel()
+					return false
+				}
+			)
+		}
+		return view
+	}
 	//
 	//
 	// Runtime - Delegation - Navigation View special methods

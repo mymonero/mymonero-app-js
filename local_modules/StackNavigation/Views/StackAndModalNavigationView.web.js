@@ -355,7 +355,6 @@ class StackAndModalNavigationView extends StackNavigationView
 	TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
 	{
 		const self = this
-		console.log(self.constructor.name, "TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState ")
 		self.DismissModalViewsToView( // pop all modals
 			null,
 			isAnimated

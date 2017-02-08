@@ -44,7 +44,7 @@ function New_RightSide_AddButtonView(context)
 		layer.style.marginTop = "10px"
 		layer.style.width = "26px"
 		layer.style.height = "24px"
-		layer.style.borderRadius = "2px"
+		layer.style.borderRadius = "3px"
 		layer.style.backgroundColor = "#18bbec"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "22px"
@@ -78,7 +78,7 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 		layer.style.marginTop = "10px"
 		layer.style.width = "60px"
 		layer.style.height = "24px"
-		layer.style.borderRadius = "2px"
+		layer.style.borderRadius = "3px"
 		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 		layer.style.border = "none"
 		layer.style.backgroundColor = "#383638"
@@ -87,7 +87,7 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
 		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "normal"
+		layer.style.fontWeight = "500"
 		layer.style.textAlign = "center"
 	}
 	return view
@@ -137,7 +137,7 @@ function New_RightSide_EditButtonView(context)
 		layer.style.marginTop = "10px"
 		layer.style.width = "90px"
 		layer.style.height = "24px"
-		layer.style.borderRadius = "2px"
+		layer.style.borderRadius = "3px"
 		layer.style.backgroundColor = "#383638"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"

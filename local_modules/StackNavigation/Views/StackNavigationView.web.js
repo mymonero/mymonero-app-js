@@ -423,6 +423,15 @@ class StackNavigationView extends View
 			self.topStackView
 		)
 	}
+	SetNavigationBarButtonsNeedsUpdate(optl_isAnimated)
+	{
+		const self = this
+		self.navigationBarView.SetButtonsNeedsUpdate(
+			self.topStackView, 
+			self.stackViews, // needs to be passed
+			optl_isAnimated
+		)
+	}
 	//
 	//
 	// Runtime - Delegation - Implementation/support for TabBarAndContentView events

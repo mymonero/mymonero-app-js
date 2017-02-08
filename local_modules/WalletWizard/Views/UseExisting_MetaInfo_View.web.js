@@ -251,6 +251,35 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 	{
 		return "Log Into Your Wallet"
 	}
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		if (self.options.wizardController_current_wizardTaskModeName != self.wizardController.WizardTask_Mode_FirstTime_UseExisting()) {
+			return null // cause we either want null or maybe a back button
+		}
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		self.leftBarButtonView = view
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					self.wizardController._fromScreen_userPickedCancel()
+					return false
+				}
+			)
+		}
+		return view
+	}
+	// Navigation_New_RightBarButtonView()
+	// {
+	// 	const self = this
+	// 	const view = super.Navigation_New_RightBarButtonView()
+	// 	view.layer.innerHTML = "Add"
+	// 	return view
+	// }
 	//
 	//
 	// Runtime - Accessors - Overridable

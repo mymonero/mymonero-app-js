@@ -310,16 +310,17 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			//
 			return
 		}
-		
-		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
-		self.disable_submitButton()
-		//
 		const walletInstance = self.wizardController.walletInstance
 		if (!walletInstance) {
 			throw "Missing expected walletInstance"
 		}
 		const walletLabel = self.wizardController.walletMeta_name
 		const swatch = self.wizardController.walletMeta_colorHexString
+		{ // disable form
+			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
+			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
+			self.disable_submitButton()
+		}
 		self.context.walletsListController.WhenBooted_BootAndAdd_NewlyGeneratedWallet(
 			walletInstance,
 			walletLabel,
@@ -328,6 +329,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 			{
 				if (err) {
 					self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+					self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
 					self.enable_submitButton()
 					throw err
 					return

@@ -380,7 +380,46 @@ class NavigationBarView extends View
 				}
 			}
 		)
-	}	
+	}
+	SetButtonsNeedsUpdate(stackView, stackViews, optl_isAnimated)
+	{
+		const isAnimated = optl_isAnimated === true ? true : false
+		//
+		const self = this
+		var idxOfThisStackView = -1;
+		if (typeof stackViews === 'undefined' || !stackViews) {
+			console.warn("SetButtonsNeedsUpdate called while nil self.stackViews")
+			return // for now… assume this will be called again later
+		}
+		const numberOf_stackViews = stackViews.length
+		for (let i = 0 ; i < numberOf_stackViews ; i++) {
+			const this_stackView = stackViews[i]
+			if (this_stackView.IsEqualTo(stackView)) {
+				idxOfThisStackView = i
+				break
+			}
+		}
+		if (idxOfThisStackView === -1) {
+			throw "stackView is not currently in navigation stack."
+			return false
+		}
+		var mocked__old_topStackView = null
+		if (idxOfThisStackView === 0) {
+			mocked__old_topStackView = null
+		} else { 
+			if (numberOf_stackViews <= 1) {
+				throw "expected more than one stack view here. code fault?"
+				return false
+			}
+			mocked__old_topStackView = stackViews[idxOfThisStackView - 1]
+		}
+		self.SetBarButtonsFromTopStackView(
+			stackView,
+			mocked__old_topStackView,
+			isAnimated,
+			false // not popping to root
+		)
+	}
 	SetBarButtonsFromTopStackView(
 		stackView, 
 		old_topStackView,
