@@ -283,7 +283,6 @@ class AddWallet_WizardController
 			true,
 			function()
 			{
-				console.log("TODO: dismissed modal. call back that task done(?)")
 				if (opts.userCancelled === true) {
 				} else if (opts.taskFinished === true) {
 					

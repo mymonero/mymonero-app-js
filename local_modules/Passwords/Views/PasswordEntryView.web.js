@@ -170,7 +170,6 @@ class PasswordEntryView extends StackAndModalNavigationView
 			//
 			self._configureWithMode(shouldAnimateToNewState)			
 		}
-		console.log("shouldAnimateToNewState", shouldAnimateToNewState)
 		self.presentIn__root_tabBarViewAndContentView(
 			root_tabBarViewAndContentView,
 			shouldAnimateToNewState
@@ -270,7 +269,6 @@ class PasswordEntryView extends StackAndModalNavigationView
 		const tabBarContentView_navigationView = root_tabBarViewAndContentView.CurrentlySelectedTabBarContentView()
 		// ^- we know it's a stack & modal nav view
 		const animate = optl__isAnimated === true ? true : false // isAnimated dflt false
-		console.log("animate", animate)
 		tabBarContentView_navigationView.PresentView( // modally
 			self,
 			animate

@@ -258,7 +258,15 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 			return null // cause we either want null or maybe a back button
 		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
-		self.leftBarButtonView = view
+		view.SetEnabled = function(isEnabled)
+		{
+			view.isEnabled = isEnabled
+			if (view.isEnabled) {
+				view.layer.opacity = "1"
+			} else {
+				view.layer.opacity = "0.5"
+			}
+		}
 		const layer = view.layer
 		{ // observe
 			layer.addEventListener(
@@ -266,7 +274,9 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 				function(e)
 				{
 					e.preventDefault()
-					self.wizardController._fromScreen_userPickedCancel()
+					if (view.isEnabled) {
+						self.wizardController._fromScreen_userPickedCancel()
+					}
 					return false
 				}
 			)
@@ -408,6 +418,8 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
 			self.disable_submitButton()
+			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
+			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(false)
 			self.walletNameInputLayer.disabled = true
 			self.addrTextAreaView.layer.disabled = true
@@ -418,6 +430,8 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 		function ___reEnableForm()
 		{
 			self.enable_submitButton()
+			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
 			self.walletNameInputLayer.disabled = undefined
 			self.addrTextAreaView.layer.disabled = undefined

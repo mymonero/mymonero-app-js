@@ -59,6 +59,7 @@ class StackNavigationView extends View
 			layer.style.top = "0"
 			layer.style.width = "100%"
 			layer.style.height = "100%"
+			layer.style.overflow = "hidden" // because we don't want modals presented in self to create a scroll bar - bad thangs happen
 		}
 		{ // navigationBarView
 			const NavigationBarView = require('./NavigationBarView.web')
