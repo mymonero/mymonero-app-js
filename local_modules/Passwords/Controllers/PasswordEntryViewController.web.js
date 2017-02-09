@@ -35,21 +35,25 @@ const PasswordEntryView = require('../Views/PasswordEntryView.web')
 class PasswordEntryViewController extends EventEmitter
 {
 	constructor(
-		inSuperview,  // View (e.g. the RootView)
+		root_tabBarViewAndContentView,
 		passwordController // PasswordController
 	)
 	{
 		super() // must call before can use `this`
 		//
 		const self = this
-		{
-			if (typeof inSuperview === 'undefined' || inSuperview === null) {
-				const errStr = "inSuperview must not be nil in new PasswordEntryViewController()"
-				throw errStr
-				return
-			}
+		if (typeof root_tabBarViewAndContentView === 'undefined' || root_tabBarViewAndContentView === null) {
+			const errStr = "root_tabBarViewAndContentView must not be nil in new PasswordEntryViewController()"
+			throw errStr
+			return
 		}
-		self.inSuperview = inSuperview
+		self.root_tabBarViewAndContentView = root_tabBarViewAndContentView
+		self.context = self.root_tabBarViewAndContentView.context
+		if (typeof self.context === 'undefined' || self.context === null) {
+			const errStr = "self.context of root_tabBarViewAndContentView must not be nil in new PasswordEntryViewController()"
+			throw errStr
+			return
+		}
 		self.passwordController = passwordController
 		//
 		self.setup()
@@ -57,33 +61,7 @@ class PasswordEntryViewController extends EventEmitter
 	setup()
 	{
 		const self = this
-		self.setup_views()
 		self.setup_startObserving()
-	}
-	setup_views()
-	{ // if you override, make sure you call on super first
-		const self = this
-		{
-			const options = {}
-			const view = new PasswordEntryView(options, self.inSuperview.context)
-			self.view = view
-			{
-				view.on(
-					view.EventName_willDismissView(),
-					function()
-					{
-						self.emit(self.EventName_willDismissView())
-					}
-				)
-				view.on(
-					view.EventName_willPresentInView(),
-					function()
-					{
-						self.emit(self.EventName_willPresentInView())
-					}
-				)
-			}
-		}
 	}
 	setup_startObserving()
 	{
@@ -98,10 +76,6 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ObtainedNewPassword(),
 			function() 
 			{
-				if (self.view.IsPresented() !== true) {
-					throw "EventName_ObtainedNewPassword but self.view.superview nil"
-					return
-				}
 				self.view.Dismiss()
 			}
 		)
@@ -109,10 +83,6 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ObtainedCorrectExistingPassword(),
 			function() 
 			{
-				if (self.view.IsPresented() !== true) {
-					throw "EventName_ObtainedCorrectExistingPassword but self.view.superview nil"
-					return
-				}
 				self.view.Dismiss()
 			}
 		)
@@ -120,10 +90,6 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ErroredWhileSettingNewPassword(),
 			function(err)
 			{
-				if (self.view.IsPresented() !== true) {
-					throw "EventName_ErroredWhileSettingNewPassword but self.view.superview nil"
-					return
-				}
 				self.view.ShowValidationErrorMessageToUser(
 					err ? err.message : "Unknown error. Please try again."
 				)
@@ -133,10 +99,6 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ErroredWhileGettingExistingPassword(),
 			function(err)
 			{
-				if (self.view.IsPresented() !== true) {
-					throw "EventName_ErroredWhileGettingExistingPassword but self.view.superview nil"
-					return
-				}
 				self.view.ShowValidationErrorMessageToUser(
 					err ? err.message : "Unknown error. Please try again."
 				)
@@ -146,10 +108,6 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_errorWhileChangingPassword(),
 			function(err)
 			{				
-				if (self.view.IsPresented() !== true) {
-					throw "EventName_errorWhileChangingPassword but self.view.superview nil"
-					return
-				}
 				self.view.ShowValidationErrorMessageToUser(
 					err ? err.message : "Unknown error. Please try again."
 				)
@@ -166,8 +124,11 @@ class PasswordEntryViewController extends EventEmitter
 					throw "existingPasswordType was missing when passwordController asked us to have the user enter their existing password (and asserting it exists)"
 					existingPasswordType = self.passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW // graceful fallback..? since freeform str is superset of numer. pin
 				}
+				if (self.view === null || typeof self.view === 'undefined') {
+					self.view = self._new_passwordEntryView()
+				}
 				self.view.GetUserToEnterExistingPasswordWithCB(
-					self.inSuperview,
+					self.root_tabBarViewAndContentView,
 					isForChangePassword,
 					existingPasswordType,
 					enterPassword_cb
@@ -178,8 +139,11 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
 			function(isForChangePassword, enterPasswordAndType_cb)
 			{
+				if (self.view === null || typeof self.view === 'undefined') {
+					self.view = self._new_passwordEntryView()
+				}
 				self.view.GetUserToEnterNewPasswordAndTypeWithCB(
-					self.inSuperview,
+					self.root_tabBarViewAndContentView,
 					isForChangePassword,
 					enterPasswordAndType_cb
 				)
@@ -197,6 +161,40 @@ class PasswordEntryViewController extends EventEmitter
 	EventName_willPresentInView()
 	{
 		return "EventName_willPresentInView"
+	}
+	//
+	//
+	// Runtime - Accessors - Factories
+	//
+	_new_passwordEntryView()
+	{
+		const self = this
+		const view = new PasswordEntryView({}, self.context)
+		{
+			view.on(
+				view.EventName_willDismissView(),
+				function()
+				{
+					self.emit(self.EventName_willDismissView())
+				}
+			)
+			view.on(
+				view.EventName_willPresentInView(),
+				function()
+				{
+					self.emit(self.EventName_willPresentInView())
+				}
+			)
+			view.on(
+				view.EventName_didDismissView(),
+				function()
+				{
+					self.view.TearDown()
+					self.view = null // essential we clear this 
+				}
+			)
+		}
+		return view
 	}
 }
 module.exports = PasswordEntryViewController

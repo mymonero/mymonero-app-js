@@ -359,7 +359,6 @@ class RequestFundsView extends View
 	disable_submitButton()
 	{ // TODO: encapsulate this all on the button component 
 		const self = this
-		console.log("disable_submitButton disabled?", self.isSubmitButtonDisabled)
 		if (self.isSubmitButtonDisabled !== true) {
 			self.isSubmitButtonDisabled = true
 			const buttonLayer = self.rightBarButtonView.layer
@@ -369,7 +368,6 @@ class RequestFundsView extends View
 	enable_submitButton()
 	{
 		const self = this
-		console.log("enable_submitButton disabled?", self.isSubmitButtonDisabled)
 		if (self.isSubmitButtonDisabled !== false) {
 			self.isSubmitButtonDisabled = false
 			const buttonLayer = self.rightBarButtonView.layer

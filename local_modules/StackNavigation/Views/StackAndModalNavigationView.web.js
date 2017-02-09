@@ -48,10 +48,13 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	//
 	//
-	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
 	_animationDuration_ms_modalPresent()
+	{
+		return 220
+	}
+	_animationDuration_ms_modalDismiss()
 	{
 		return 170
 	}
@@ -112,7 +115,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			} else {
 				setTimeout(
 					function()
-					{ // wait til not blocked or animation is choppy
+					{ // wait til not blocked or animation will be choppy
 						Animate(
 							modalView_layer,
 							{
@@ -146,7 +149,8 @@ class StackAndModalNavigationView extends StackNavigationView
 		}
 	}
 	DismissTopModalView(
-		isAnimated_orTrue
+		isAnimated_orTrue,
+		fn
 	)
 	{
 		const self = this
@@ -158,7 +162,8 @@ class StackAndModalNavigationView extends StackNavigationView
 		if (numberOf_modalViews == 1) { // then pop all modals
 			self.DismissModalViewsToView(
 				null,
-				isAnimated_orTrue
+				isAnimated_orTrue,
+				fn
 			)
 			return
 		}
@@ -166,7 +171,8 @@ class StackAndModalNavigationView extends StackNavigationView
 		const justPrevious_modalView = self.modalViews[indexOf_justPrevious_modalView]
 		self.DismissModalViewsToView(
 			justPrevious_modalView,
-			isAnimated_orTrue
+			isAnimated_orTrue,
+			fn
 		)
 	}
 	DismissModalViewsToView(
@@ -229,7 +235,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								top: `${self.layer.offsetHeight}px`
 							},
 							{
-								duration: self._animationDuration_ms_modalPresent(),
+								duration: self._animationDuration_ms_modalDismiss(),
 								easing: "ease-in-out",
 								complete: function()
 								{
@@ -307,7 +313,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								top: `${self.layer.offsetHeight}px`
 							},
 							{
-								duration: self._animationDuration_ms_modalPresent(),
+								duration: self._animationDuration_ms_modalDismiss(),
 								easing: "ease-in-out",
 								complete: function()
 								{

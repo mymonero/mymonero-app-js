@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
 const passwordEntryTaskModes =
 {
@@ -41,18 +42,13 @@ const passwordEntryTaskModes =
 	ForChangingPassword_NewPasswordAndType		  : 'ForChangingPassword_NewPasswordAndType'
 }
 //
-class PasswordEntryView extends View
+class PasswordEntryView extends StackAndModalNavigationView
 {
-	constructor(options, context)
-	{
-		super(options, context)
-		//
-		const self = this
-		self.setup()
-	}
 	setup()
 	{
 		const self = this
+		//
+		super.setup()
 		//
 		self.passwordEntryTaskMode = passwordEntryTaskModes.None
 		//
@@ -64,75 +60,14 @@ class PasswordEntryView extends View
 	_setup_views()
 	{
 		const self = this
-		//
 		self._setup_self_layer()
-		self._setup_enterNewPasswordView()
-		self._setup_enterExistingPasswordView()
 	}
 	_setup_self_layer()
 	{
 		const self = this
 		const layer = self.layer
-		{ // appearance
-			layer.style.position = "fixed"
-			layer.style.top = "0"
-			const margin_left = self.context.themeController.TabBarView_thickness()
-			layer.style.left = `${ margin_left }px`
-			layer.style.width = `calc(100% - ${ margin_left }px)`
-			layer.style.height = "100%"
-			layer.style.zIndex = "9999"
-			layer.style.border = "0px solid orange" // for debug
-			layer.style.background = "#f0f0f0"
-			layer.style.webkitAppRegion = "drag"
-		}
-	}
-	_setup_enterNewPasswordView()
-	{
-		const self = this
-		const options = {}
-		const EnterNewPasswordView = require('./EnterNewPasswordView.web')
-		const view = new EnterNewPasswordView(options, self.context)
-		self.enterNewPasswordView = view
-		{ // observation
-			view.on(
-				view.EventName_UserSubmittedNonZeroPasswordAndPasswordType(),
-				function()
-				{
-					self.submitForm()
-				}
-			)
-			view.on(
-				view.EventName_CancelButtonPressed(),
-				function()
-				{
-					self.cancel()
-				}
-			)
-		}
-	}
-	_setup_enterExistingPasswordView()
-	{
-		const self = this
-		const options = {}
-		const EnterExistingPasswordView = require('./EnterExistingPasswordView.web')
-		const view = new EnterExistingPasswordView(options, self.context)
-		self.enterExistingPasswordView = view
-		{ // observation
-			view.on(
-				view.EventName_UserSubmittedNonZeroPassword(),
-				function(password)
-				{
-					self.submitForm() // we don't use the pw here as we just read it directly from the view
-				}
-			)
-			view.on(
-				view.EventName_CancelButtonPressed(),
-				function()
-				{
-					self.cancel()
-				}
-			)
-		}
+		layer.style.width = "100%"
+		layer.style.height = "100%"
 	}
 	// Observation
 	_setup_startObserving()
@@ -141,8 +76,21 @@ class PasswordEntryView extends View
 	}
 	//
 	//
+	//
+	//
+	TearDown()
+	{
+		const self = this
+		super.TearDown()
+	}
+	//
+	//
 	// Runtime - Accessors - Events
 	//
+	EventName_didDismissView()
+	{
+		return "EventName_didDismissView"
+	}
 	EventName_willDismissView()
 	{
 		return "EventName_willDismissView"
@@ -155,27 +103,7 @@ class PasswordEntryView extends View
 	//
 	// Runtime - Accessors - Products
 	//
-	PasswordEnteredInView()
-	{
-		const self = this
-		switch (self.passwordEntryTaskMode) {
-			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
-			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
-				return self.enterExistingPasswordView.Password()
-			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
-			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-				return self.enterNewPasswordView.Password()
-			case passwordEntryTaskModes.None:
-				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
-				break
-			default:
-				throw "This switch ought to have been exhaustive"
-				break
-		}
-		//
-		return undefined
-	}
-	PasswordTypeChosenWithPasswordIfNewPassword_orUndefined(withPassword)
+	passwordTypeChosenWithPasswordIfNewPassword_orUndefined(withPassword)
 	{
 		const self = this
 		switch (self.passwordEntryTaskMode) {
@@ -188,7 +116,7 @@ class PasswordEntryView extends View
 				return self.context.passwordController.DetectedPasswordTypeFromPassword(withPassword) // since we're not letting the user enter their pw type with this UI, let's auto-detect 
 
 			case passwordEntryTaskModes.None:
-				throw "PasswordEnteredInView called when self.passwordEntryTaskMode .None"
+				throw "passwordTypeChosenWithPasswordIfNewPassword_orUndefined called when self.passwordEntryTaskMode .None"
 				break
 			default:
 				throw "This switch ought to have been exhaustive"
@@ -213,7 +141,7 @@ class PasswordEntryView extends View
 	// Runtime - Imperatives - Interface - Showing the view
 	//
 	GetUserToEnterExistingPasswordWithCB(
-		inSuperview,
+		root_tabBarViewAndContentView,
 		isForChangePassword,
 		existingPasswordType,
 		enterPassword_cb
@@ -221,18 +149,11 @@ class PasswordEntryView extends View
 	)
 	{
 		const self = this
-		const isAlreadyPresented = self.IsPresented()
-		const shouldAnimateToNewState = isAlreadyPresented === true
+		const shouldAnimateToNewState = isForChangePassword
 		{ // check legality
 			if (self.passwordEntryTaskMode !== passwordEntryTaskModes.None) {
 				throw "GetUserToEnterExistingPasswordWithCB called but self.passwordEntryTaskMode not .None"
 				return
-			}
-			if (isForChangePassword !== true) {
-				if (isAlreadyPresented === true) {
-					throw "GetUserToEnterExistingPasswordWithCB with ForUnlockingApp taskMode but already presented"
-					return
-				}
 			}
 		}
 		{ // we need to hang onto the callback for when the form is submitted
@@ -249,38 +170,25 @@ class PasswordEntryView extends View
 			//
 			self._configureWithMode(shouldAnimateToNewState)			
 		}
-		{ // presentation
-			if (isAlreadyPresented !== true) { // this doesn't conflict with the order of the call to _configureWithMode() because
-				// shouldAnimateToNewState will be false when the view does not need to be presented
-				self.presentInView(inSuperview)			
-			}
-		}
+		console.log("shouldAnimateToNewState", shouldAnimateToNewState)
+		self.presentIn__root_tabBarViewAndContentView(
+			root_tabBarViewAndContentView,
+			shouldAnimateToNewState
+		)
 	}
 	GetUserToEnterNewPasswordAndTypeWithCB(
-		inSuperview,
+		root_tabBarViewAndContentView,
 		isForChangePassword,
 		enterPasswordAndType_cb
 		// TODO: add flag for whether this is for a change pw
 	)
 	{
 		const self = this
-		const isAlreadyPresented = self.IsPresented()
-		const shouldAnimateToNewState = isAlreadyPresented === true
+		const shouldAnimateToNewState = isForChangePassword
 		{ // check legality
 			if (self.passwordEntryTaskMode !== passwordEntryTaskModes.None) {
 				if (self.passwordEntryTaskMode !== passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType) {
 					throw "GetUserToEnterNewPasswordAndTypeWithCB called but self.passwordEntryTaskMode not .None and not .ForChangingPassword_ExistingPasswordGivenType"
-					return
-				}
-			}
-			if (isForChangePassword === true) {
-				if (isAlreadyPresented === false) {
-					throw "GetUserToEnterNewPasswordAndTypeWithCB with ForChangingPassword taskMode but not currently presented"
-					return
-				}
-			} else {
-				if (isAlreadyPresented === true) {
-					throw "GetUserToEnterNewPasswordAndTypeWithCB with ForFirstEntry taskMode but already presented"
 					return
 				}
 			}
@@ -299,12 +207,11 @@ class PasswordEntryView extends View
 			//
 			self._configureWithMode(shouldAnimateToNewState)			
 		}
-		{ // presentation
-			if (isAlreadyPresented !== true) { // this doesn't conflict with the order of the call to _configureWithMode() because
-				// shouldAnimateToNewState will be false when the view does not need to be presented
-				self.presentInView(inSuperview)			
-			}
-		}
+		self.presentIn__root_tabBarViewAndContentView(
+			root_tabBarViewAndContentView,
+			true // this is for NEW password, so we want this to show with an animation
+			// because it's going to be requested after the user has already initiated activity
+		)
 	}
 	//
 	//
@@ -322,29 +229,52 @@ class PasswordEntryView extends View
 	Dismiss()
 	{
 		const self = this
-		if (typeof self.superview === 'undefined' || self.superview === null) {
-			console.error("Can't  dismiss password entry view as not in a superview")
+		if (self.IsPresented() !== true) {
+			console.error("Can't  dismiss password entry view as not presented")
 			return
 		}
 		// TODO: animation
 		self.emit(self.EventName_willDismissView())
-		self.removeFromSuperview()
-		//
+		{ // clear state for next time
+			self.passwordEntryTaskMode = passwordEntryTaskModes.None
+		}
 		{ // clear both callbacks as well since we're no longer going to call back with either of the current values
 			self.enterPassword_cb = null
 			self.enterPasswordAndType_cb = null
 		}
+		self.modalParentView.DismissTopModalView(
+			true, // animated
+			function()
+			{
+				self.emit(self.EventName_didDismissView())
+			}
+		)
 	}
 	//
 	//
 	// Runtime - Imperatives - Internal - Showing the view - Utilities
 	//
-	presentInView(superview)
+	presentIn__root_tabBarViewAndContentView(
+		root_tabBarViewAndContentView,
+		optl__isAnimated
+	)
 	{
 		const self = this
-		self.emit(self.EventName_willPresentInView())
-		// TODO: animation?
-		superview.addSubview(self)
+		if (typeof self.modalParentView !== 'undefined' && self.modalParentView !== null) {
+			console.warn("Asked to presentIn__root_tabBarViewAndContentView while already presented. Bailing.")
+			return
+		}
+		{
+			self.emit(self.EventName_willPresentInView())
+		}
+		const tabBarContentView_navigationView = root_tabBarViewAndContentView.CurrentlySelectedTabBarContentView()
+		// ^- we know it's a stack & modal nav view
+		const animate = optl__isAnimated === true ? true : false // isAnimated dflt false
+		console.log("animate", animate)
+		tabBarContentView_navigationView.PresentView( // modally
+			self,
+			animate
+		)
 	}
 	//
 	//
@@ -365,22 +295,57 @@ class PasswordEntryView extends View
 			switch (self.passwordEntryTaskMode) {
 				case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 				case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
-					if (typeof self.enterNewPasswordView.superview !== 'undefined' && self.enterNewPasswordView.superview !== null) {
-						throw "enterNewPasswordView should never be visible when transitioning to ExistingPasswordGivenType task mode"
-						return
-		 			}
-					self.enterExistingPasswordView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
-					self.addSubview(self.enterExistingPasswordView) // TODO: any cases where we'd need to animate this on?
+					const EnterExistingPasswordView = require('./EnterExistingPasswordView.web')
+					const enterExistingPasswordView = new EnterExistingPasswordView({
+						isForChangingPassword: isForChangingPassword
+					}, self.context)
+					{ // observation
+						enterExistingPasswordView.on(
+							enterExistingPasswordView.EventName_UserSubmittedNonZeroPassword(),
+							function(password)
+							{
+								self.submitForm(password)
+							}
+						)
+						enterExistingPasswordView.on(
+							enterExistingPasswordView.EventName_CancelButtonPressed(),
+							function()
+							{
+								self.cancel()
+							}
+						)
+					}
+					self.SetStackViews([enterExistingPasswordView]) // i don't know of any cases where this should be true - and there are reasons we don't want it to be - there's no 'old_topStackView'
 					break
 				//	
 				case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 				case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-					if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView !== null) {
-						self.enterExistingPasswordView.removeFromSuperview() // TODO: when we support animation, transition out before rmeoving
-		 			}
-					self.enterNewPasswordView.ConfigureToBeShown(isForChangingPassword) // so we can get the right type of password entry UI set up
-					self.addSubview(self.enterNewPasswordView) // TODO: animate this on if self.enterExistingPasswordView.superview already presented
-					
+					const EnterNewPasswordView = require('./EnterNewPasswordView.web')
+					const enterNewPasswordView = new EnterNewPasswordView({
+						isForChangingPassword: isForChangingPassword
+					}, self.context)
+					{ // observation
+						enterNewPasswordView.on(
+							enterNewPasswordView.EventName_UserSubmittedNonZeroPassword(),
+							function(password)
+							{
+								self.submitForm(password)
+							}
+						)
+						enterNewPasswordView.on(
+							enterNewPasswordView.EventName_CancelButtonPressed(),
+							function()
+							{
+								self.cancel()
+							}
+						)
+					}
+					self.enterNewPasswordView = enterNewPasswordView
+					if (self.stackViews.length == 0) {
+						self.SetStackViews([enterNewPasswordView])
+					} else {
+						self.PushView(enterNewPasswordView, shouldAnimate)
+					}
 					break
 				//
 				case passwordEntryTaskModes.None:
@@ -397,25 +362,7 @@ class PasswordEntryView extends View
 	_setValidationMessage(validationMessageString)
 	{
 		const self = this
-		switch (self.passwordEntryTaskMode) {
-			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
-			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
-				self.enterExistingPasswordView.SetValidationMessage(validationMessageString)
-				break
-			//	
-			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
-			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-				self.enterNewPasswordView.SetValidationMessage(validationMessageString)
-				break
-			//
-			case passwordEntryTaskModes.None:
-				throw "_setValidationMessage called when self.passwordEntryTaskMode .None"
-				break
-			//	
-			default:
-				throw "This switch ought to have been exhaustive"
-				break
-		}
+		self.topStackView.SetValidationMessage(validationMessageString)
 	}
 	_clearValidationMessage()
 	{
@@ -426,15 +373,14 @@ class PasswordEntryView extends View
 	//
 	// Runtime - Imperatives - Internal - Form management
 	//
-	submitForm()
+	submitForm(password)
 	{
 		const self = this
 		{
 			self._clearValidationMessage()
 		}
 		// handles validation:
-		const password = self.PasswordEnteredInView()
-		const passwordType = self.PasswordTypeChosenWithPasswordIfNewPassword_orUndefined(password)
+		const passwordType = self.passwordTypeChosenWithPasswordIfNewPassword_orUndefined(password)
 		self._passwordController_callBack_trampoline(
 			false, // didCancel
 			password,
@@ -462,9 +408,6 @@ class PasswordEntryView extends View
 	{
 		const self = this
 		//
-		let enterPassword_cb = self.enterPassword_cb
-		let enterPasswordAndType_cb = self.enterPasswordAndType_cb
-		//
 		// NOTE: we unfortunately can't just clear the callbacks here even though this is where we use them because
 		// if there's a validation error, and the user wants to try again, there would be no callback through which
 		// to submit the subsequent try
@@ -473,31 +416,32 @@ class PasswordEntryView extends View
 			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
 				{ // validate cb state
-					if (typeof enterPassword_cb === 'undefined' || enterPassword_cb === null) {
+					if (typeof self.enterPassword_cb === 'undefined' || self.enterPassword_cb === null) {
 						throw "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPassword_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
 						return
 					}					
 				}
-				enterPassword_cb(
+				self.enterPassword_cb(
 					didCancel,
 					password_orNil
 				)
+				// we don't want to free/zero the cb here - user may get pw wrong and try again
 				break
 			//
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
-				console.log("2cb for mode", self.passwordEntryTaskMode)
 				{ // validate cb state
-					if (typeof enterPasswordAndType_cb === 'undefined' || enterPasswordAndType_cb === null) {
+					if (typeof self.enterPasswordAndType_cb === 'undefined' || self.enterPasswordAndType_cb === null) {
 						throw "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPasswordAndType_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
 						return
 					}					
 				}
-				enterPasswordAndType_cb(
+				self.enterPasswordAndType_cb(
 					didCancel,
 					password_orNil,
 					passwordType_orNil
 				)
+				// we don't want to free/zero the cb here - might trigger validation err & need to be called again
 				break
 			//
 			case passwordEntryTaskModes.None:
@@ -509,38 +453,6 @@ class PasswordEntryView extends View
 				throw "This switch ought to have been exhaustive"
 				return
 				break
-		}
-	}
-	//
-	//
-	// Runtime - Delegation - Visibility cycle - Overrides
-	//
-	viewWillAppear()
-	{
-		const self = this
-		super.viewWillAppear()
-	}
-	viewWillDisappear()
-	{
-		const self = this
-		super.viewWillDisappear()
-	}
-	viewDidDisappear()
-	{
-		const self = this
-		super.viewDidDisappear()
-		{
-			{
-				self.passwordEntryTaskMode = passwordEntryTaskModes.None // reset/clear
-			}
-			{
-				if (typeof self.enterNewPasswordView.superview !== 'undefined' && self.enterNewPasswordView.superview !== null) {
-					self.enterNewPasswordView.removeFromSuperview()
-				}
-				if (typeof self.enterExistingPasswordView.superview !== 'undefined' && self.enterExistingPasswordView.superview !== null) {
-					self.enterExistingPasswordView.removeFromSuperview()
-				}
-			}
 		}
 	}
 }

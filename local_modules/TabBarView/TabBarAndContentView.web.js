@@ -122,6 +122,14 @@ class TabBarAndContentView extends View
 		}
 		return index
 	}
+	CurrentlySelectedTabBarContentView()
+	{
+		const self = this
+		if (typeof self._currentlySelectedTabBarItemIndex === 'undefined' || self._currentlySelectedTabBarItemIndex === -1) {
+			return null
+		}
+		return self._tabBarContentViews[self._currentlySelectedTabBarItemIndex]
+	}
 	//
 	//
 	// Runtime - Imperatives - View setup

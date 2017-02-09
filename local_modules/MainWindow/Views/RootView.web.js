@@ -92,7 +92,7 @@ class RootView extends View
 		const self = this
 		const passwordController = self.context.passwordController
 		const PasswordEntryViewController = require('../../Passwords/Controllers/PasswordEntryViewController.web')
-		const passwordEntryViewController = new PasswordEntryViewController(self, passwordController)
+		const passwordEntryViewController = new PasswordEntryViewController(self.tabBarViewAndContentView, passwordController)
 		self.passwordEntryViewController = passwordEntryViewController
 		{
 			passwordEntryViewController.on(

@@ -194,6 +194,7 @@ class StackNavigationView extends View
 			? true /* default true */ 
 			: false
 		const old_topStackView = self.topStackView
+		console.log("PUSH… old_topStackView", self.topStackView)
 		{ // make stackView the new top view
 			stackView.navigationController = self
 			self.stackViews.push(stackView)
@@ -238,13 +239,15 @@ class StackNavigationView extends View
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
 			{ // before we remove the old_topStackView, let's record its styling which would be lost on removal like scroll offset 
-				self.stackViews_scrollOffsetsOnPushedFrom_byViewUUID[old_topStackView.View_UUID()] =
-				{
-					Left: old_topStackView.layer.scrollLeft,
-					Top: old_topStackView.layer.scrollTop
+				if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) { // as in stack views were set before this push was done
+					self.stackViews_scrollOffsetsOnPushedFrom_byViewUUID[old_topStackView.View_UUID()] =
+					{
+						Left: old_topStackView.layer.scrollLeft,
+						Top: old_topStackView.layer.scrollTop
+					}
+					old_topStackView.removeFromSuperview()
 				}
 			}
-			old_topStackView.removeFromSuperview()
 		}
 		{ // nav bar
 			const ifAnimated_isFromRightNotLeft = true // because we're pushing

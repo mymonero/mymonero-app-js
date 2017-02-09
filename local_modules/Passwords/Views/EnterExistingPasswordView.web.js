@@ -29,38 +29,115 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class EnterExistingPasswordView extends View
 {
 	constructor(options, context)
 	{
 		super(options, context)
-		//
 		const self = this
+		self.isForChangingPassword = options.isForChangingPassword
+		{
+			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
+			if (userSelectedTypeOfPassword === null || userSelectedTypeOfPassword == "" || typeof userSelectedTypeOfPassword === 'undefined') {
+				throw "ConfigureToBeShown called but userSelectedTypeOfPassword undefined"
+			}
+			self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
+		}
 		self.setup()
 	}
 	setup()
 	{
 		const self = this
-		self.layer.style.width = "100%"
-		self.layer.style.height = "50%"
-		self.layer.style.paddingTop = "25%"
-		self.layer.style.paddingBottom = "25%"
-		{
-			self.layer.addEventListener(
-				"click",
-				function(e)
+		self._setup_views()
+	}
+	_setup_views()
+	{
+		const self = this
+		self._setup_self_layer()
+		self._setup_form()
+	}
+	_setup_self_layer()
+	{
+		const self = this
+		const layer = self.layer
+		layer.style.backgroundColor = "#272527"
+		layer.style.width = "100%"
+		layer.style.height = "100%"
+		self.layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				const inputFieldLayer = self.selected_inputFieldLayer() // now we can select it from the DOM
+				if (typeof inputFieldLayer !== 'undefined' && inputFieldLayer !== null) {
+					inputFieldLayer.focus()
+				}
+				return false
+			}
+		)
+	}
+	_setup_form()
+	{
+		const self = this
+		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
+		{ // constructing the innerHTML
+			var htmlString = 
+				self.new_htmlStringFor_validationMessageLabelLayer()
+				+ `<h3>Please enter your ${ self.isForChangingPassword ? "current " : "" }${passwordType_humanReadableString}:</h3>`
+				+ self.new_htmlStringFor_inputFieldLayer()
+			self.layer.innerHTML = htmlString
+		}
+		{ // DOM select -> setup, observe, etc:
+			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
+				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
+				layer.style.color = "red"
+				layer.style.fontWeight = "bold"
+				layer.style.fontSize = "16px"
+				layer.style.height = "24px" // fix the height so layout doesn't move when validation error comes in
+				layer.style.textAlign = "center"
+				layer.style.display = "block"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+			}
+			{
+				const layer = self.layer.querySelector("h3")
+				layer.style.textAlign = "center"
+				layer.style.width = "calc(100% - 60px)"
+				layer.style.paddingLeft = "30px"
+				layer.style.paddingRight = "30px"
+			}
+			{ // inputFieldLayer
+				const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
 				{
-					e.preventDefault()
+					layer.style.webkitAppRegion = "no-drag"
+					layer.style.textAlign = "center"
+					layer.style.width = "150px"
+					layer.style.height = "40px"
+					layer.style.fontSize = "16px"
+					layer.style.display = "block"
+					layer.style.margin = "20px auto"
+				}
+				layer.addEventListener(
+					"keyup",
+					function(event)
 					{
-						const inputFieldLayer = self.selected_inputFieldLayer() // now we can select it from the DOM
-						if (typeof inputFieldLayer !== 'undefined' && inputFieldLayer !== null) {
-							inputFieldLayer.focus()
+						if (event.keyCode === 13) {
+							const password = layer.value
+							if (typeof password === 'undefined' || password === null || password === "") {
+								return // give feedback if necessary (beep?)
+							}
+							self._yield_nonZeroPassword(password)
 						}
 					}
-					return false
-				}
-			)
+				)
+				setTimeout(function()
+				{
+					layer.focus()
+				}, 400)
+			}
 		}
 	}
 	//
@@ -89,6 +166,35 @@ class EnterExistingPasswordView extends View
 		}
 		//
 		return layer.value
+	}
+	//
+	//
+	// Runtime - Accessors - Navigation
+	//
+	Navigation_Title()
+	{
+		const self = this
+		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
+		return "Enter " + passwordType_humanReadableString
+	}
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		if (self.isForChangingPassword !== true) {
+			return null
+		}
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const layer = view.layer
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				self.emit(self.EventName_CancelButtonPressed())
+				return false
+			}
+		)
+		return view
 	}
 	//
 	//
@@ -148,47 +254,8 @@ class EnterExistingPasswordView extends View
 	}
 	//
 	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Cancel button
-	//
-	idForChild_cancelButtonLayer()
-	{
-		const self = this
-		//
-		return self.idPrefix() + "_idForChild_cancelButtonLayer"
-	}
-	new_htmlStringFor_cancelButtonLayer()
-	{
-		const self = this
-		const htmlString = `<a id="${ self.idForChild_cancelButtonLayer() }" href="#">Cancel</a>`
-		//
-		return htmlString
-	}
-	selected_cancelButtonLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`a#${ self.idForChild_cancelButtonLayer() }`)
-		//
-		return layer
-	}
-	//
-	//
 	// Runtime - Imperatives - Interface - Configuration 
 	//
-	ConfigureToBeShown(isForChangingPassword)
-	{
-		const self = this
-		{
-			self.isForChangingPassword = isForChangingPassword
-		}
-		{
-			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
-			if (userSelectedTypeOfPassword === null || userSelectedTypeOfPassword == "" || typeof userSelectedTypeOfPassword === 'undefined') {
-				throw "ConfigureToBeShown called but userSelectedTypeOfPassword undefined"
-			}
-			self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
-		}
-		self._configureUI()
-	}
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
@@ -199,106 +266,12 @@ class EnterExistingPasswordView extends View
 	//
 	// Runtime - Imperatives - Internal
 	//
-	_configureUI()
-	{
-		const self = this
-		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
-		{ // constructing the innerHTML
-			var htmlString = 
-				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3>Please enter your ${ self.isForChangingPassword ? "current " : "" }${passwordType_humanReadableString}:</h3>`
-				+ self.new_htmlStringFor_inputFieldLayer()
-			if (self.isForChangingPassword === true) {
-				htmlString += self.new_htmlStringFor_cancelButtonLayer()
-			}
-			self.layer.innerHTML = htmlString
-		}
-		{ // DOM select -> setup, observe, etc:
-			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
-				layer.style.color = "red"
-				layer.style.fontWeight = "bold"
-				layer.style.fontSize = "16px"
-				layer.style.height = "24px" // fix the height so layout doesn't move when validation error comes in
-				layer.style.textAlign = "center"
-				layer.style.display = "block"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-			}
-			{
-				const layer = self.layer.querySelector("h3")
-				layer.style.textAlign = "center"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-			}
-			{ // inputFieldLayer
-				const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
-				{
-					layer.style.webkitAppRegion = "no-drag"
-					layer.style.textAlign = "center"
-					layer.style.width = "150px"
-					layer.style.height = "40px"
-					layer.style.fontSize = "16px"
-					layer.style.display = "block"
-					layer.style.margin = "20px auto"
-				}
-				layer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) {
-							const password = layer.value
-							if (typeof password === 'undefined' || password === null || password === "") {
-								return // give feedback if necessary (beep?)
-							}
-							self._yield_nonZeroPassword(password)
-						}
-					}
-				)
-				setTimeout(function()
-				{
-					layer.focus()
-				}, 100)
-			}
-			{ // cancel button, if applicable
-				if (self.isForChangingPassword === true) {
-					const layer = self.selected_cancelButtonLayer() // now we can select it from the DOM
-					{
-						layer.style.display = "block"
-						layer.style.textAlign = "center"
-						layer.style.width = "100px"
-						layer.style.marginLeft = "auto"
-						layer.style.marginRight = "auto"
-					}
-					layer.addEventListener(
-						"click",
-						function(event)
-						{
-							event.preventDefault()
-							self._yield_cancelButtonPressed()
-							//
-							return false
-						}
-					)
-				}
-			}
-		}
-	}
 	_yield_nonZeroPassword(password)
 	{
 		const self = this
 		self.emit(
 			self.EventName_UserSubmittedNonZeroPassword(),
 			password
-		)
-	}
-	_yield_cancelButtonPressed(cancelButton)
-	{
-		const self = this
-		self.emit(
-			self.EventName_CancelButtonPressed()
 		)
 	}
 }

@@ -172,7 +172,6 @@ class AddContactView extends ContactFormView
 						self.validationMessageLayer.SetValidationError(err.toString())
 						return
 					}
-					console.log("resolved/obtained payment_id", returned__payment_id)
 					self.paymentIDInputLayer.value = returned__payment_id || ""
 					//
 					const payment_id__toSave = returned__payment_id || ""

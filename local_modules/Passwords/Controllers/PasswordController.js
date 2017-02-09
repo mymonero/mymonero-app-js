@@ -477,9 +477,8 @@ class PasswordController extends EventEmitter
 			isForChangePassword,
 			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{ // we're passing a function that the single observer should call
-				if (userDidCancel_orNil) {
-					console.info("userDidCancel_orNil while having user enter new password")
-				}
+				// if (userDidCancel_orNil) {
+				// }
 				fn(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			}
 		)
