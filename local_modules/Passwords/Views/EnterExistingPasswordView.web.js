@@ -122,8 +122,18 @@ class EnterExistingPasswordView extends View
 				"keyup",
 				function(event)
 				{
-					if (event.keyCode === 13) {
-						self._tryToSubmitForm()
+					const value = layer.value
+					var submitEnabled;
+					if (typeof value === 'undefined' || value === null || value === "") {
+						submitEnabled = false
+					} else {
+						submitEnabled = true
+					}
+					self.navigationController.navigationBarView.rightBarButtonView.SetEnabled(submitEnabled)
+					if (submitEnabled) {
+						if (event.keyCode === 13) {
+							self._tryToSubmitForm()
+						}
 					}
 				}
 			)
@@ -215,6 +225,7 @@ class EnterExistingPasswordView extends View
 				}
 			)
 		}
+		view.SetEnabled(false) // need to enter PW first
 		return view
 	}
 	//
@@ -224,36 +235,14 @@ class EnterExistingPasswordView extends View
 	_new_forgotLinkView()
 	{
 		const self = this
-		const view = new View({ tag: "a" }, self.context)
-		const a = view.layer
-		a.innerHTML = "Forgot?"
-		a.style.color = "#11bbec"
-		a.style.cursor = "pointer"
-		a.style.fontFamily = self.context.themeController.FontFamily_monospace()
-		a.style.fontSize = "11px"
-		a.style.fontWeight = "100"
-		a.style.display = "inline-block" // to get top margin
-		a.style.margin = "8px 0 0 9px"
-		a.addEventListener("mouseenter", function()
-		{
-			if (view.isEnabled !== false) {
-				a.style.textDecoration = "underline"
-			} else {
-				a.style.textDecoration = "none"
-			}
-		})
-		a.addEventListener("mouseleave", function()
-		{
-			a.style.textDecoration = "none"
-		})
-		a.addEventListener("click", function(e)
-		{
-			e.preventDefault()
-			if (view.isEnabled !== false) {
+		const view = commonComponents_tables.New_clickableLinkButtonView(
+			"Forgot?", 
+			self.context, 
+			function()
+			{
 				self._pushForgotPasswordView()
 			}
-			return false
-		})
+		)
 		return view
 	}
 	//
@@ -263,6 +252,10 @@ class EnterExistingPasswordView extends View
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
+		if (validationMessageString === "" || !validationMessageString) {
+			self.ClearValidationMessage()
+			return
+		}
 		self.passwordInputLayer.style.border = "1px solid #f97777"
 		self.validationMessageLayer.SetValidationError(validationMessageString || "")
 	}
@@ -279,16 +272,8 @@ class EnterExistingPasswordView extends View
 	_tryToSubmitForm()
 	{
 		const self = this
-		const password = self.Password()
-		if (typeof password === 'undefined' || password === null || password === "") {
-			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
-			self.SetValidationMessage("Please enter your " + passwordType_humanReadableString)
-			return
-		}
-		//
-		self.ClearValidationMessage()
-		//
-		self.__yield_nonZeroPassword(password)
+		// we can assume pw is not "" here
+		self.__yield_nonZeroPassword(self.Password())
 	}
 	__yield_nonZeroPassword(password)
 	{

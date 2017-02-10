@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const View = require('../Views/View.web')
+//
 function New_fieldContainerLayer()
 {
 	const layer = document.createElement("div")
@@ -36,6 +38,45 @@ function New_fieldContainerLayer()
 	return layer
 }
 exports.New_fieldContainerLayer = New_fieldContainerLayer
+//
+function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
+{
+	clicked_fn = clicked_fn || function() {}
+	//
+	const view = new View({ tag: "a" }, context)
+	const a = view.layer
+	a.innerHTML = buttonTitle
+	a.style.color = "#11bbec"
+	a.style.cursor = "pointer"
+	a.style.fontFamily = context.themeController.FontFamily_monospace()
+	a.style.fontSize = "11px"
+	a.style.fontWeight = "100"
+	a.style.display = "inline-block" // to get margin capability
+	a.style.margin = "8px 0 0 9px"
+	a.addEventListener("mouseenter", function()
+	{
+		if (view.isEnabled !== false) {
+			a.style.textDecoration = "underline"
+		} else {
+			a.style.textDecoration = "none"
+		}
+	})
+	a.addEventListener("mouseleave", function()
+	{
+		a.style.textDecoration = "none"
+	})
+	a.addEventListener("click", function(e)
+	{
+		e.preventDefault()
+		if (view.isEnabled !== false) {
+			clicked_fn()
+		}
+		return false
+	})
+	//
+	return view
+}
+exports.New_clickableLinkButtonView = New_clickableLinkButtonView
 //
 function New_fieldTitle_labelLayer(labelText)
 {
