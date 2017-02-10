@@ -29,19 +29,11 @@
 "use strict"
 //
 const View = require('../Views/View.web')
+const BarButtonBaseView = require('../StackNavigation/Views/BarButtonBaseView.web')
 	
 function _New_ButtonBase_View(context)
 {
-	const view = new View({ tag: "a" }, context)
-	view.SetEnabled = function(isEnabled)
-	{
-		view.isEnabled = isEnabled
-		if (view.isEnabled) {
-			view.layer.style.opacity = "1.0"
-		} else {
-			view.layer.style.opacity = "0.5"
-		}
-	}
+	const view = new BarButtonBaseView({}, context)
 	return view
 }
 exports.New_ButtonBase_View = _New_ButtonBase_View

@@ -31,6 +31,7 @@
 const Animate = require('velocity-animate')
 //
 const View = require('../../Views/View.web')
+const BarButtonBaseView = require('./BarButtonBaseView.web')
 //
 class NavigationBarView extends View
 {
@@ -193,52 +194,36 @@ class NavigationBarView extends View
 	new_back_leftBarButtonView()
 	{
 		const self = this
-		const view = new View({ tag: "a" }, self.context)
-		view.isEnabled = true
+		const view = new BarButtonBaseView({}, self.context)
+		view.SetEnabled(true)
 		const layer = view.layer
-		{ // setup/style
-			layer.href = "#" // to make it clickable
-			layer.innerHTML = "&lt;" // TODO
-		}
-		{
-			layer.style.display = "block"
-			layer.style.marginTop = "10px"
-			layer.style.width = "26px"
-			layer.style.height = "24px"
-			layer.style.borderRadius = "2px"
-			layer.style.backgroundColor = "#383638"
-			layer.style.borderRadius = "2px"
-			layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-			layer.style.border = "none"			
-			layer.style.textDecoration = "none"
-			layer.style.fontSize = "22px"
-			layer.style.lineHeight = "115%" // % extra to get + aligned properly
-			layer.style.color = "#ffffff"
-			layer.style.fontWeight = "bold"
-			layer.style.textAlign = "center"
-		}
-		view.SetEnabled = function(isEnabled)
-		{
-			view.isEnabled = isEnabled
-			if (view.isEnabled) {
-				view.layer.opacity = "1"
-			} else {
-				view.layer.opacity = "0.5"
-			}
-		}
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					if (view.isEnabled !== false) {
-						self.emit(self.EventName_backButtonTapped()) // animated
-					}
-					return false
+		layer.innerHTML = "&lt;" // TODO
+		layer.style.display = "block"
+		layer.style.marginTop = "10px"
+		layer.style.width = "26px"
+		layer.style.height = "24px"
+		layer.style.borderRadius = "3px"
+		layer.style.backgroundColor = "#383638"
+		layer.style.borderRadius = "2px"
+		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+		layer.style.border = "none"			
+		layer.style.textDecoration = "none"
+		layer.style.fontSize = "22px"
+		layer.style.lineHeight = "115%" // % extra to get + aligned properly
+		layer.style.color = "#ffffff"
+		layer.style.fontWeight = "bold"
+		layer.style.textAlign = "center"
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled !== false) {
+					self.emit(self.EventName_backButtonTapped()) // animated
 				}
-			)
-		}
+				return false
+			}
+		)
 		return view
 	}
 	//

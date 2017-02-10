@@ -238,15 +238,6 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 			return null // cause we either want null or maybe a back button
 		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
-		view.SetEnabled = function(isEnabled)
-		{
-			view.isEnabled = isEnabled
-			if (view.isEnabled) {
-				view.layer.opacity = "1"
-			} else {
-				view.layer.opacity = "0.5"
-			}
-		}
 		const layer = view.layer
 		{ // observe
 			layer.addEventListener(
@@ -254,7 +245,8 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 				function(e)
 				{
 					e.preventDefault()
-					if (view.isEnabled) {
+					if (view.isEnabled !== false) {
+						console.log("enabled")
 						self.wizardController._fromScreen_userPickedCancel()
 					}
 					return false
