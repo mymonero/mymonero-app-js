@@ -261,7 +261,6 @@ class EnterNewPasswordView extends View
 	_yield_nonZeroPasswordAndPasswordType()
 	{
 		const self = this
-		console.log("_yield_nonZeroPasswordAndPasswordType…",self.Password())
 		self.emit(
 			self.EventName_UserSubmittedNonZeroPassword(),
 			self.Password()
