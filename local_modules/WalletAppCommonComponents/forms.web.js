@@ -72,11 +72,17 @@ function New_fieldValue_textInputLayer(params)
 			layer.placeholder = placeholderText
 		}
 		layer.style.height = "30px"
-		layer.style.width = `calc(100% - 4px - ${2 * 10}px)`
+		const padding_h = 10
+		if (typeof params.target_width !== 'undefined') {
+			const width = params.target_width - 4 - 2 * padding_h
+			layer.style.width = width + "px"
+		} else {
+			layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
+		}
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
-		layer.style.padding = "0 10px"
+		layer.style.padding = `0 ${padding_h}px`
 		layer.style.fontFamily = "monospace"
 		layer.style.border = "none"
 		layer.style.outline = "none" // no focus ring

@@ -30,6 +30,8 @@
 //
 const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 //
 class EnterExistingPasswordView extends View
 {
@@ -51,95 +53,97 @@ class EnterExistingPasswordView extends View
 	{
 		const self = this
 		self._setup_views()
+		// self.DEBUG_BorderAllLayers()
 	}
 	_setup_views()
 	{
 		const self = this
 		self._setup_self_layer()
-		self._setup_form()
+		self._setup_validationMessageLayer()
+		self._setup_inputFieldGroup()
 	}
 	_setup_self_layer()
 	{
 		const self = this
 		const layer = self.layer
 		layer.style.backgroundColor = "#272527"
+		const paddingTop = 44 // the
+		layer.style.paddingTop = paddingTop + "px"
 		layer.style.width = "100%"
-		layer.style.height = "100%"
+		layer.style.height = `calc(100% - ${paddingTop}px)`
 		self.layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
-				const inputFieldLayer = self.selected_inputFieldLayer() // now we can select it from the DOM
-				if (typeof inputFieldLayer !== 'undefined' && inputFieldLayer !== null) {
-					inputFieldLayer.focus()
-				}
+				self.passwordInputLayer.focus()
 				return false
 			}
 		)
 	}
-	_setup_form()
+	_setup_validationMessageLayer()
+	{ // validation message
+		const self = this
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
+		layer.ClearAndHideMessage()
+		layer.style.position = "absolute" // so as not to mess w/ layout
+		layer.style.width = "100%"
+		self.validationMessageLayer = layer
+		self.layer.appendChild(layer)				
+	}
+	_setup_inputFieldGroup()
 	{
 		const self = this
-		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
-		{ // constructing the innerHTML
-			var htmlString = 
-				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3>Please enter your ${ self.isForChangingPassword ? "current " : "" }${passwordType_humanReadableString}:</h3>`
-				+ self.new_htmlStringFor_inputFieldLayer()
-			self.layer.innerHTML = htmlString
-		}
-		{ // DOM select -> setup, observe, etc:
-			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-				const layer = self.selected_validationMessageLabelLayer() // now we can select it from the DOM
-				layer.style.color = "red"
-				layer.style.fontWeight = "bold"
-				layer.style.fontSize = "16px"
-				layer.style.height = "24px" // fix the height so layout doesn't move when validation error comes in
-				layer.style.textAlign = "center"
-				layer.style.display = "block"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-			}
-			{
-				const layer = self.layer.querySelector("h3")
-				layer.style.textAlign = "center"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-			}
-			{ // inputFieldLayer
-				const layer = self.selected_inputFieldLayer() // now we can select it from the DOM
+		const table = document.createElement("table") // cause table are amazing
+		table.style.height = "100%"
+		table.style.width = "100%"
+		table.style.marginTop = "-26px" // to get visual offset
+		const tr = document.createElement("tr")
+		tr.style.width = "100%"
+		tr.style.height = "100%"
+		const td = document.createElement("td")
+		td.align = "center"
+		td.valign = "middle"
+		td.style.width = "100%"
+		td.style.height = "100%"
+		const containerLayer = document.createElement("div")
+		containerLayer.style.width = "272px"
+		containerLayer.style.textAlign = "left"
+		{
+			var layer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "To continue",
+				target_width: 272
+			})
+			self.passwordInputLayer = layer
+			layer.type = "password"
+			layer.style.webkitAppRegion = "no-drag"
+			layer.style.height = "32px"
+			layer.addEventListener(
+				"keyup",
+				function(event)
 				{
-					layer.style.webkitAppRegion = "no-drag"
-					layer.style.textAlign = "center"
-					layer.style.width = "150px"
-					layer.style.height = "40px"
-					layer.style.fontSize = "16px"
-					layer.style.display = "block"
-					layer.style.margin = "20px auto"
-				}
-				layer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) {
-							const password = layer.value
-							if (typeof password === 'undefined' || password === null || password === "") {
-								return // give feedback if necessary (beep?)
-							}
-							self._yield_nonZeroPassword(password)
-						}
+					if (event.keyCode === 13) {
+						self._tryToSubmitForm()
 					}
-				)
-				setTimeout(function()
-				{
-					layer.focus()
-				}, 400)
-			}
+				}
+			)
+			containerLayer.appendChild(layer)
 		}
-	}
+		{ // 'Forgot?' btn
+			const view = self._new_forgotLinkView()
+			const a = view.layer
+			containerLayer.appendChild(a)
+		}
+		td.appendChild(containerLayer)
+		tr.appendChild(td)
+		table.appendChild(tr)
+		self.layer.appendChild(table)
+		//
+		setTimeout(function()
+		{ // let's wait til we're all presented or we might cause scroll weirdness
+			self.passwordInputLayer.focus()
+		}, 400)
+	}	
 	//
 	//
 	// Runtime - Accessors - Public - Events
@@ -159,13 +163,7 @@ class EnterExistingPasswordView extends View
 	Password()
 	{
 		const self = this
-		const layer = self.selected_inputFieldLayer()
-		if (typeof layer === 'undefined' || layer === null) {
-			throw "layer undefined or null in Password()"
-			return ""
-		}
-		//
-		return layer.value
+		return self.passwordInputLayer.value
 	}
 	//
 	//
@@ -196,61 +194,67 @@ class EnterExistingPasswordView extends View
 		)
 		return view
 	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Shared
-	//
-	idPrefix()
+	Navigation_New_RightBarButtonView()
 	{
-		return "EnterExistingPasswordView"
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
+		view.layer.innerHTML = "Next"
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						if (view.isEnabled === true) {
+							self._tryToSubmitForm()
+						}
+					}
+					return false
+				}
+			)
+		}
+		return view
 	}
 	//
 	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Text input field
+	// Runtime - Accessors 
 	//
-	idForChild_inputField()
+	_new_forgotLinkView()
 	{
 		const self = this
-		//
-		return self.idPrefix() + "_idForChild_inputField"
-	}
-	new_htmlStringFor_inputFieldLayer()
-	{
-		const self = this
-		const htmlString = `<input type="password" id="${ self.idForChild_inputField() }" />`
-		//
-		return htmlString
-	}
-	selected_inputFieldLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`input#${ self.idForChild_inputField() }`)
-		//
-		return layer
-	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Validation message label
-	//
-	idForChild_validationMessageLabelLayer()
-	{
-		const self = this
-		//
-		return self.idPrefix() + "_idForChild_validationMessageLabel"
-	}
-	new_htmlStringFor_validationMessageLabelLayer()
-	{
-		const self = this
-		const htmlString = `<span id="${ self.idForChild_validationMessageLabelLayer() }"></span>`
-		//
-		return htmlString
-	}
-	selected_validationMessageLabelLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`span#${ self.idForChild_validationMessageLabelLayer() }`)
-		//
-		return layer
+		const view = new View({ tag: "a" }, self.context)
+		const a = view.layer
+		a.innerHTML = "Forgot?"
+		a.style.color = "#11bbec"
+		a.style.cursor = "pointer"
+		a.style.fontFamily = self.context.themeController.FontFamily_monospace()
+		a.style.fontSize = "11px"
+		a.style.fontWeight = "100"
+		a.style.display = "inline-block" // to get top margin
+		a.style.margin = "8px 0 0 9px"
+		a.addEventListener("mouseenter", function()
+		{
+			if (view.isEnabled !== false) {
+				a.style.textDecoration = "underline"
+			} else {
+				a.style.textDecoration = "none"
+			}
+		})
+		a.addEventListener("mouseleave", function()
+		{
+			a.style.textDecoration = "none"
+		})
+		a.addEventListener("click", function(e)
+		{
+			e.preventDefault()
+			if (view.isEnabled !== false) {
+				self._pushForgotPasswordView()
+			}
+			return false
+		})
+		return view
 	}
 	//
 	//
@@ -259,20 +263,46 @@ class EnterExistingPasswordView extends View
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
-		const validationMessageLabelLayer = self.selected_validationMessageLabelLayer()
-		validationMessageLabelLayer.innerHTML = validationMessageString || ""
+		self.passwordInputLayer.style.border = "1px solid #f97777"
+		self.validationMessageLayer.SetValidationError(validationMessageString || "")
+	}
+	ClearValidationMessage()
+	{
+		const self = this
+		self.passwordInputLayer.style.border = "none"//todo: factor this into method on component
+		self.validationMessageLayer.SetValidationError("")
 	}
 	//
 	//
 	// Runtime - Imperatives - Internal
 	//
-	_yield_nonZeroPassword(password)
+	_tryToSubmitForm()
+	{
+		const self = this
+		const password = self.Password()
+		if (typeof password === 'undefined' || password === null || password === "") {
+			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
+			self.SetValidationMessage("Please enter your " + passwordType_humanReadableString)
+			return
+		}
+		//
+		self.ClearValidationMessage()
+		//
+		self.__yield_nonZeroPassword(password)
+	}
+	__yield_nonZeroPassword(password)
 	{
 		const self = this
 		self.emit(
 			self.EventName_UserSubmittedNonZeroPassword(),
 			password
 		)
+	}
+	//
+	_pushForgotPasswordView()
+	{
+		const self = this
+		console.log("TODO: _pushForgotPasswordView")
 	}
 }
 module.exports = EnterExistingPasswordView

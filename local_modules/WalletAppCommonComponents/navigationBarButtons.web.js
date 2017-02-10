@@ -29,10 +29,26 @@
 "use strict"
 //
 const View = require('../Views/View.web')
+	
+function _New_ButtonBase_View(context)
+{
+	const view = new View({ tag: "a" }, context)
+	view.SetEnabled = function(isEnabled)
+	{
+		view.isEnabled = isEnabled
+		if (view.isEnabled) {
+			view.layer.style.opacity = "1.0"
+		} else {
+			view.layer.style.opacity = "0.5"
+		}
+	}
+	return view
+}
+exports.New_ButtonBase_View = _New_ButtonBase_View
 //
 function New_RightSide_AddButtonView(context)
 {
-	const view = new View({ tag: "a" }, context)
+	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	{ // setup/style
 		layer.href = "#" // to make it clickable
@@ -60,7 +76,7 @@ exports.New_RightSide_AddButtonView = New_RightSide_AddButtonView
 //
 function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCancel)
 {
-	const view = new View({ tag: "a" }, context)
+	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	{ // setup/style
 		layer.href = "#" // to make it clickable
@@ -96,7 +112,7 @@ exports.New_LeftSide_CancelButtonView = New_LeftSide_CancelButtonView
 //
 function New_RightSide_SaveButtonView(context)
 {
-	const view = new View({ tag: "a" }, context)
+	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	{ // setup/style
 		layer.href = "#" // to make it clickable
@@ -125,7 +141,7 @@ exports.New_RightSide_SaveButtonView = New_RightSide_SaveButtonView
 //
 function New_RightSide_EditButtonView(context)
 {
-	const view = new View({ tag: "a" }, context)
+	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	{ // setup/style
 		layer.href = "#" // to make it clickable
@@ -153,7 +169,7 @@ exports.New_RightSide_EditButtonView = New_RightSide_EditButtonView
 //
 function New_RightSide_ValueDisplayLabelButtonView(context)
 {
-	const view = new View({ tag: "a" }, context)
+	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	{ // setup/style
 		layer.href = "" // to make it non-clickable
