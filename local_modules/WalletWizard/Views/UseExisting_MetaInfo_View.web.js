@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 //
 const Wallet_MetaInfo_BaseView = require('./Wallet_MetaInfo_BaseView.web')
 //
@@ -40,7 +41,7 @@ const Modes_LoginWith =
 	AddrAndPrivKeys: "AddrAndPrivKeys"
 }
 //
-class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
+class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 {
 	_setup_views()
 	{
@@ -178,53 +179,32 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 			layer.appendChild(span)
 		}
 		{
-			const view = new View({ tag: "a" }, self.context)
-			self.toggleLoginModeButtonATagLayerView = view
-			const a = view.layer
-			a.addEventListener("mouseenter", function()
-			{
-				if (view.isEnabled !== false) {
-					a.style.textDecoration = "underline"
-				} else {
-					a.style.textDecoration = "none"
-				}
-			})
-			a.addEventListener("mouseleave", function()
-			{
-				a.style.textDecoration = "none"
-			})
-			a.addEventListener("click", function(e)
-			{
-				e.preventDefault()
-				if (view.isEnabled !== false) {
-					self.toggle_loginWithMode()
-				}
-				return false
-			})
-			view.SetEnabled = function(isEnabled)
-			{
-				view.isEnabled = isEnabled
-				if (isEnabled) {
-					a.style.color = "#11bbec"
-					a.style.cursor = "pointer"
-				} else {
-					a.style.color = "#bbbbbb"
-					a.style.cursor = "default"
-				}
-			}
-			view.ConfigureWithLoginMode = function()
+			function _new_titleFor_loginModeButton()
 			{
 				if (self.mode_loginWith == Modes_LoginWith.MnemonicSeed) {
-					a.innerHTML = "Address and Private Keys"
+					return "Address and Private Keys"
 				} else if (self.mode_loginWith == Modes_LoginWith.AddrAndPrivKeys) {
-					a.innerHTML = "Secret Mnemonic"
+					return "Secret Mnemonic"
 				} else {
 					throw "unrecognized self.mode_loginWith"
-					return false
+					return undefined
 				}
 			}
-			view.ConfigureWithLoginMode() // execute to do init config
-			view.SetEnabled(true) // to begin with
+			const view = commonComponents_tables.New_clickableLinkButtonView(
+				_new_titleFor_loginModeButton(),
+				self.context, 
+				function()
+				{
+					self.toggle_loginWithMode()
+				}
+			)
+			self.toggleLoginModeButtonATagLayerView = view
+			const a = view.layer
+			a.style.margin = "0" // since this is not a standalone button
+			view.ConfigureWithLoginMode = function()
+			{
+				a.innerHTML = _new_titleFor_loginModeButton()
+			}
 			layer.appendChild(a)
 		}
 		self.form_containerLayer.appendChild(layer)
@@ -502,4 +482,4 @@ class UseExisting_InformOfMnemonic_View extends Wallet_MetaInfo_BaseView
 		}
 	}
 }
-module.exports = UseExisting_InformOfMnemonic_View
+module.exports = UseExisting_MetaInfo_View

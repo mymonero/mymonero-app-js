@@ -61,6 +61,17 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 			a.style.textDecoration = "none"
 		}
 	})
+	view.SetEnabled = function(isEnabled)
+	{
+		view.isEnabled = isEnabled
+		if (isEnabled) {
+			a.style.color = "#11bbec"
+			a.style.cursor = "pointer"
+		} else {
+			a.style.color = "#bbbbbb"
+			a.style.cursor = "default"
+		}
+	}
 	a.addEventListener("mouseleave", function()
 	{
 		a.style.textDecoration = "none"
@@ -73,6 +84,7 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 		}
 		return false
 	})
+	view.SetEnabled(true)
 	//
 	return view
 }
