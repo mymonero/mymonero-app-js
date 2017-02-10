@@ -66,6 +66,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 	{
 		const self = this
 		const layer = self.layer
+		layer.style.backgroundColor = "#272527"
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 	}

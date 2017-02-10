@@ -128,6 +128,7 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 	const fieldName = view.View_UUID()
 	const ul = view.layer
 	ul.className = "oneOfN-walletColorPicker"
+	ul.style.listStyleType = "none"
 	hexColorStrings.forEach(
 		function(hexColorString, i)
 		{
@@ -144,7 +145,7 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 				const input = document.createElement("input")
 				input.type = "radio"
 				input.name = fieldName
-				input.id = input.name + " " + hexColorString
+				input.id = input.name + "__" + hexColorString
 				if (hexColorString === selectHexColorString) {
 					input.checked = "checked"
 				}

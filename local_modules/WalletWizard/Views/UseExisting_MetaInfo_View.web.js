@@ -246,7 +246,6 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 				{
 					e.preventDefault()
 					if (view.isEnabled !== false) {
-						console.log("enabled")
 						self.wizardController._fromScreen_userPickedCancel()
 					}
 					return false
