@@ -264,7 +264,6 @@ class WalletsListView extends View
 		self.context.walletsListController.WhenBooted_Wallets(
 			function(wallets)
 			{
-				console.log("reloading with ", wallets.length, " wallet")
 				self.isAlreadyWaitingForWallets = false // unlock
 				self.wallets = wallets
 				self._configureWith_wallets()
@@ -284,7 +283,6 @@ class WalletsListView extends View
 					{
 						view.TearDown() // important so the event listeners get deregistered
 						//
-						console.log("removing view from superview", view)
 						view.removeFromSuperview()
 					}
 				)
@@ -309,7 +307,6 @@ class WalletsListView extends View
 					const view = new WalletsListCellView(options, context)
 					self.walletCellViews.push(view)
 					view.ConfigureWith_wallet(wallet)
-					console.log("added a wallet cell view", view)
 					self.addSubview(view)
 				}
 			)

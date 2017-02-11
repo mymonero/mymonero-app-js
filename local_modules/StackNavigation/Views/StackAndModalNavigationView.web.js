@@ -189,9 +189,9 @@ class StackAndModalNavigationView extends StackNavigationView
 			 || isAnimated_orTrue == null
 			? true /* default true */
 			: false
-		const old_topStackView = self.topStackView
-		if (typeof old_topStackView === 'undefined' || old_topStackView == null) {
-			throw self.constructor.name + " DismissModalViewsToView currently expects there to be an old_topStackView"
+		const topStackView = self.topStackView
+		if (typeof topStackView === 'undefined' || topStackView == null) {
+			throw self.constructor.name + " DismissModalViewsToView currently expects there to be an topStackView"
 		}
 		const old_topModalView = self.topModalView
 		if (typeof old_topModalView === 'undefined' || old_topModalView == null) {
@@ -206,7 +206,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			old_topModalView.removeFromSuperview()
 			old_topModalView.modalParentView = null
 			{ // manually simulate a view visibility events
-				old_topStackView.viewDidAppear()
+				topStackView.viewDidAppear()
 			}
 		}
 		if (to_modalView_orNullForTopStackView === null) { // pop all modalViews to top stackView
@@ -283,7 +283,7 @@ class StackAndModalNavigationView extends StackNavigationView
 				to_modalView.layer.style.zIndex = "9" // because we want to make sure it goes under the current top modal view
 			}
 			{ // manually simulate a view visibility events
-				old_topStackView.viewWillAppear()
+				topStackView.viewWillAppear()
 			}
 			self.stackViewStageView.insertSubview(
 				to_modalView,
@@ -308,7 +308,7 @@ class StackAndModalNavigationView extends StackNavigationView
 					function()
 					{ // wait til not blocked or we get choppiness
 						Animate(
-							old_topStackView.layer,
+							old_topModalView.layer,
 							{
 								top: `${self.layer.offsetHeight}px`
 							},
