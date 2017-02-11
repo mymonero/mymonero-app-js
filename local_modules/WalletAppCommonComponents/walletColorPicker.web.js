@@ -129,36 +129,45 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 	const ul = view.layer
 	ul.className = "oneOfN-walletColorPicker"
 	ul.style.listStyleType = "none"
-	hexColorStrings.forEach(
-		function(hexColorString, i)
+	for (let i = 0 ; i < numberOf_hexColorStrings ; i++) {
+		const hexColorString = hexColorStrings[i]
+		const li = document.createElement("li")
 		{
-			const li = document.createElement("li")
-			{
-				const div = commonComponents_walletIcons.New_WalletIconLayer(
-					hexColorString
-				)
-				li.appendChild(div)
-			}
-			const label = document.createElement("label")
-			li.appendChild(label)
-			{
-				const input = document.createElement("input")
-				input.type = "radio"
-				input.name = fieldName
-				input.id = input.name + "__" + hexColorString
-				if (hexColorString === selectHexColorString) {
-					input.checked = "checked"
-				}
-				label.appendChild(input) // append to label to get clickable
-			}
-			{ // selection indicator layer - must be /after/ input for sibling CSS to work
-				const div = document.createElement("div")
-				div.className = "selectionIndicator"
-				label.appendChild(div) // append to label to make sibling of radio input f orCSS
-			}
-			ul.appendChild(li)
+			const div = commonComponents_walletIcons.New_WalletIconLayer(hexColorString)
+			li.appendChild(div)
 		}
-	)
+		const input_id = fieldName + "__" + i
+		let radioInput = null // and not 'var' cause this is a for loop.
+		const label = document.createElement("label")
+		label.htmlFor = input_id
+		label.addEventListener(
+			"click", 
+			function()
+			{
+				radioInput.focus()
+				radioInput.checked = "checked"
+			}
+		)
+		li.appendChild(label)
+		{
+			const input = document.createElement("input")
+			radioInput = input // for reference above
+			input.type = "radio"
+			input.name = fieldName
+			input.id = input_id
+			input.value = hexColorString
+			if (hexColorString === selectHexColorString) {
+				input.checked = "checked"
+			}
+			label.appendChild(input) // append to label to get clickable
+		}
+		{ // selection indicator layer - must be /after/ input for sibling CSS to work
+			const div = document.createElement("div")
+			div.className = "selectionIndicator"
+			label.appendChild(div) // append to label to make sibling of radio input f orCSS
+		}
+		ul.appendChild(li)
+	}
 	view.Component_Value = function()
 	{
 		var inputs = document.getElementsByName(fieldName) // fieldName is unique
