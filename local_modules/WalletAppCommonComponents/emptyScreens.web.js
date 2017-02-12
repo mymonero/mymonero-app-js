@@ -64,8 +64,8 @@ function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_ex
 		layer.innerHTML = emoji
 		layer.style.margin = "0 0 18px 0"
 		layer.style.width = "100%"
-		layer.style.height = "26px"
-		layer.style.fontSize = "16px"
+		layer.style.height = "21px"
+		layer.style.fontSize = "13px"
 		layer.style.textAlign = "center"
 		contentContainerLayer.appendChild(layer)
 	}
@@ -76,9 +76,9 @@ function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_ex
 		layer.style.width = "100%"
 		layer.style.height = "auto"
 		layer.style.fontSize = "13px"
-		layer.style.lineHeight = "16px"
+		layer.style.lineHeight = "19px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-		layer.style.color = "#9D9B9D"
+		layer.style.color = "#9e9c9e"
 		layer.style.textAlign = "center"
 		contentContainerLayer.appendChild(layer)
 	}

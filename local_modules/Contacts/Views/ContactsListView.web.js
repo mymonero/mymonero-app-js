@@ -55,7 +55,7 @@ class ContactsListView extends View
 		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
 		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
-		self.layer.style.backgroundColor = "#282527"
+		self.layer.style.backgroundColor = "#272527"
 		//
 		self.layer.style.color = "#c0c0c0" // temporary
 		//

@@ -97,7 +97,7 @@ class MainWindowController
 			height: 500,
 			minWidth: 400,
 			minHeight: 420,
-			backgroundColor: "#282527",
+			backgroundColor: "#272527",
 			titleBarStyle: "hidden-inset",
 			webPreferences: { // these are all currently the default values but stating them here to be explicit…
 				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true

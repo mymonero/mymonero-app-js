@@ -33,6 +33,8 @@ const commonComponents_navigationBarButtons = require('../../WalletAppCommonComp
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 //
+const ForgotPasswordView = require('./ForgotPasswordView.web')
+//
 class EnterExistingPasswordView extends View
 {
 	constructor(options, context)
@@ -287,7 +289,8 @@ class EnterExistingPasswordView extends View
 	_pushForgotPasswordView()
 	{
 		const self = this
-		console.log("TODO: _pushForgotPasswordView")
+		const view = new ForgotPasswordView({}, self.context)
+		self.navigationController.PushView(view, true)
 	}
 }
 module.exports = EnterExistingPasswordView

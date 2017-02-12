@@ -50,7 +50,7 @@ class RootView extends View
 		//
 		{
 			const layer = self.layer
-			layer.style.background = "#282527"
+			layer.style.background = "#272527"
 			layer.style.position = "absolute"
 			layer.style.width = "100%"
 			layer.style.height = "100%"

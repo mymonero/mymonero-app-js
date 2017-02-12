@@ -118,7 +118,7 @@ function New_RightSide_SaveButtonView(context)
 		layer.style.height = "24px"
 		layer.style.borderRadius = "3px"
 		layer.style.backgroundColor = "#00c6ff"
-		layer.style.boxShadow = "inset 0 0 0 0 rgba(255,255,255,0.20)"
+		layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()

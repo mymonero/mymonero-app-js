@@ -79,7 +79,7 @@ class NavigationBarView extends View
 					layer.style.width = "100%"
 					layer.style.height = `${self.NavigationBarHeight()}px`
 				}
-				layer.style.backgroundColor = "#282527"
+				layer.style.backgroundColor = "#272527"
 			}
 			self.backgroundView = view
 			self.addSubview(view)
@@ -478,7 +478,14 @@ class NavigationBarView extends View
 							// TODO: we could ask the stackView being presented if it wants to explicitly
 							// 		 disallow back buttons here when/if that becomes necessary
 							if (trueIfPoppingToRoot !== true) { // because we don't want a back button in this case
-								buttonView = self.new_back_leftBarButtonView()
+								var hidesBackButton = false
+								const hidesBackButton_fn = stackView.Navigation_HidesBackButton
+								if (typeof hidesBackButton_fn === 'function') {
+									hidesBackButton = hidesBackButton_fn.apply(stackView) // use .apply to maintain stackView as this
+								}
+								if (hidesBackButton !== true) {
+									buttonView = self.new_back_leftBarButtonView()
+								}
 							}
 						}
 					}

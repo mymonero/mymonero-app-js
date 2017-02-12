@@ -40,7 +40,7 @@ const cssRules =
 [
 	`.mnemonic-container {
 		background: #1D1B1D;
-		border: 1px solid #282527; /* invisible border for validation highlight layout */
+		border: 1px solid #272527; /* invisible border for validation highlight layout */
 		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
 		border-radius: 5px;
 		margin: 0 auto 7px auto;

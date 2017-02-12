@@ -78,7 +78,7 @@ class WalletsListView extends View
 		layer.style.width = "100%"
 		// we're actually going to wait til viewWillAppear is called by the nav controller to set height
 		//
-		layer.style.backgroundColor = "#282527"
+		layer.style.backgroundColor = "#272527"
 		//
 		layer.style.color = "#c0c0c0" // temporary
 		//

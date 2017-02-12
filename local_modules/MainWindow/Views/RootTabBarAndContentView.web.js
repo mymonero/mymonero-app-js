@@ -60,7 +60,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		}
 		{
 			const layer = self.contentAreaView.layer
-			layer.style.background = "#282527"
+			layer.style.background = "#272527"
 		}
 		{ // add tab bar content views
 			{ // walletsListView

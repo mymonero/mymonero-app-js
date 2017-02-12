@@ -61,7 +61,7 @@ class ContactFormView extends View
 			self.layer.style.width = "calc(100% - 20px)"
 			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 			//
-			self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
+			self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 			//
 			self.layer.style.color = "#c0c0c0" // temporary
 			//

@@ -67,7 +67,7 @@ class AddWallet_LandingScreenView extends View
 		self.layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		self.layer.style.overflowY = "scroll"
 		//
-		self.layer.style.backgroundColor = "#282527" // so we don't get a strange effect when pushing self on a stack nav view
+		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
 		self.layer.style.color = "#c0c0c0" // temporary
 		//

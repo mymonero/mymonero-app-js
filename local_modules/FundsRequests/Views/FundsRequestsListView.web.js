@@ -73,7 +73,7 @@ class FundsRequestsListView extends View
 			self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
 			self.layer.style.height = `calc(100% - ${self.padding_top}px - ${self.padding_bottom}px)` // in viewWillAppear we query the nav controller bar height to re-set self height
 			//
-			self.layer.style.backgroundColor = "#282527"
+			self.layer.style.backgroundColor = "#272527"
 			//
 			self.layer.style.color = "#c0c0c0" // temporary
 			//

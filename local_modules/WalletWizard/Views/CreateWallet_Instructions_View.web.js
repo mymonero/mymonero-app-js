@@ -171,7 +171,7 @@ class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
 			layer.style.left = "9px"
 			layer.style.top = "9px"
 			layer.style.background = "#1d1b1d"
-			layer.style.boxShadow = "0 0 0 0 rgba(56,54,56,0.50), inset 0 0 0 0 #161416"
+			layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
 			layer.style.borderRadius = "3px"
 			layer.style.width = "16px"
 			layer.style.height = "16px"
