@@ -200,3 +200,23 @@ function New_fieldValue_selectLayer(params)
 	return layer
 }
 exports.New_fieldValue_selectLayer = New_fieldValue_selectLayer
+//
+function New_fieldAccessory_messageLayer(context)
+{
+	const layer = document.createElement("p")
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontSize = "11px"
+	layer.style.lineHeight = "15px"
+	layer.style.fontWeight = "100"
+	layer.style.margin = "8px 9px 0 9px"
+	layer.style.color = "#8d8b8d"
+	return layer
+}
+exports.New_fieldAccessory_messageLayer = New_fieldAccessory_messageLayer
+function New_fieldAccessory_validationMessageLayer(context)
+{
+	const layer = New_fieldAccessory_messageLayer(context)
+	layer.style.color = "#f97777"
+	return layer
+}
+exports.New_fieldAccessory_validationMessageLayer = New_fieldAccessory_validationMessageLayer

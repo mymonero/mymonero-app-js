@@ -261,7 +261,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 	{
 		const self = this
 		if (typeof self.modalParentView !== 'undefined' && self.modalParentView !== null) {
-			console.warn("Asked to presentIn__root_tabBarViewAndContentView while already presented. Bailing.")
+			// console.warn("Asked to presentIn__root_tabBarViewAndContentView while already presented. Bailing.")
 			return
 		}
 		{

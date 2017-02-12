@@ -30,6 +30,8 @@
 //
 const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 //
 class EnterNewPasswordView extends View
 {
@@ -64,72 +66,98 @@ class EnterNewPasswordView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.backgroundColor = "#272527"
-		layer.style.width = "100%"
-		layer.style.height = "100%"
+		const paddingTop = 44 // the
+		const padding_h = 14
+		layer.style.paddingTop = paddingTop + "px"
+		layer.style.width = `calc(100% - ${2 * 14}px)`
+		layer.style.paddingLeft = padding_h + "px"
+		layer.style.height = `calc(100% - ${paddingTop}px)`
+		self.layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				self.passwordInputLayer.focus()
+				return false
+			}
+		)
 	}
 	_setup_form()
 	{
 		const self = this
-		{ // constructing the innerHTML
-			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
-			var htmlString = 
-				self.new_htmlStringFor_validationMessageLabelLayer()
-				+ `<h3 id="EnterNewPasswordView_prompt-header">Please enter a new password:</h3>`
-				+ self.new_htmlStringFor_inputFieldLayer()
-			self.layer.innerHTML = htmlString
-		}
-		{ // JS-land setup, observation, etc:
-			{ // validationMessageLabelLayer styling since we can't do that inline due to CSP
-				const layer = self.DOMSelected_validationMessageLabelLayer() // now we can select it from the DOM
-				layer.style.height = "24px" // fix the height so layout doesn't move when validation error comes in
-				layer.style.textAlign = "center"
-				layer.style.display = "block"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-				//
-				layer.style.color = "red"
-				layer.style.fontWeight = "bold"
-				layer.style.fontSize = "16px"
-			}
-			{
-				const layer = self.layer.querySelector("h3#EnterNewPasswordView_prompt-header")
-				layer.style.textAlign = "center"
-				layer.style.width = "calc(100% - 60px)"
-				layer.style.paddingLeft = "30px"
-				layer.style.paddingRight = "30px"
-			}
-			{ // inputFieldLayer
-				const layer = self.DOMSelected_inputFieldLayer() // now we can select it from the DOM
+		self._setup_form_containerLayer()
+	}
+	_setup_form_containerLayer()
+	{
+		const self = this
+		const containerLayer = document.createElement("div")
+		self.form_containerLayer = containerLayer
+		self._setup_form_passwordInputField()
+		self._setup_form_confirmPasswordInputField()
+		self.layer.appendChild(containerLayer)
+	}
+	_setup_form_passwordInputField()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		div.style.paddingBottom = "10px" // extra spacer
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PIN OR PASSWORD", self.context)
+			div.appendChild(labelLayer)
+			//
+			const layer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: ""
+			})
+			layer.type = "password"
+			self.passwordInputLayer = layer
+			layer.addEventListener(
+				"keyup",
+				function(event)
 				{
-					layer.style.webkitAppRegion = "no-drag" // make clickable
-					//
-					layer.style.textAlign = "center"
-					layer.style.width = "150px"
-					layer.style.height = "40px"
-					layer.style.fontSize = "16px"
-					layer.style.display = "block"
-					layer.style.margin = "20px auto"
+					self.APasswordFieldInput_did_keyup(event)
 				}
-				layer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) {
-							const password = layer.value
-							if (typeof password === 'undefined' || password === null || password === "") {
-								return // give feedback if necessary (beep?)
-							}
-							self._yield_nonZeroPasswordAndPasswordType()
-						}
-					}
-				)
-				setTimeout(function()
-				{
-					layer.focus()
-				}, 400)
-			}
+			)
+			div.appendChild(layer)
+			//
+			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
+			messageLayer.innerHTML = "This will be used to encrypt your data on your computer. Don't forget it!"
+			div.appendChild(messageLayer)
 		}
+		self.form_containerLayer.appendChild(div)
+		//
+		setTimeout(function()
+		{ // let's wait til we're all presented or we might cause scroll weirdness
+			self.passwordInputLayer.focus()
+		}, 400)
+	}
+	_setup_form_confirmPasswordInputField()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("CONFIRM", self.context)
+			div.appendChild(labelLayer)
+			//
+			const layer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: ""
+			})
+			layer.type = "password"
+			self.confirmPasswordInputLayer = layer
+			layer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					self.APasswordFieldInput_did_keyup(event)
+				}
+			)
+			div.appendChild(layer)
+			//
+			const validationMessageLayer = commonComponents_forms.New_fieldAccessory_validationMessageLayer(self.context)
+			validationMessageLayer.style.display = "none"
+			self.validationMessageLayer = validationMessageLayer
+			div.appendChild(validationMessageLayer)
+		}
+		self.form_containerLayer.appendChild(div)
 	}
 	//
 	//
@@ -150,7 +178,18 @@ class EnterNewPasswordView extends View
 	Password()
 	{
 		const self = this
-		const layer = self.DOMSelected_inputFieldLayer()
+		const layer = self.passwordInputLayer
+		if (typeof layer === 'undefined' || layer === null) {
+			throw "layer undefined or null in Password()"
+			return ""
+		}
+		//
+		return layer.value
+	}
+	ConfirmationPassword()
+	{
+		const self = this
+		const layer = self.confirmPasswordInputLayer
 		if (typeof layer === 'undefined' || layer === null) {
 			throw "layer undefined or null in Password()"
 			return ""
@@ -188,61 +227,29 @@ class EnterNewPasswordView extends View
 		)
 		return view
 	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Shared
-	//
-	idPrefix()
-	{
-		return "EnterNewPasswordView"
-	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Validation message label
-	//
-	idForChild_validationMessageLabelLayer()
+	Navigation_New_RightBarButtonView()
 	{
 		const self = this
-		//
-		return self.idPrefix() + "_idForChild_validationMessageLabel"
-	}
-	new_htmlStringFor_validationMessageLabelLayer()
-	{
-		const self = this
-		const htmlString = `<span id="${ self.idForChild_validationMessageLabelLayer() }"></span>`
-		//
-		return htmlString
-	}
-	DOMSelected_validationMessageLabelLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`span#${ self.idForChild_validationMessageLabelLayer() }`)
-		//
-		return layer
-	}
-	//
-	//
-	// Runtime - Accessors - Internal - UI & UI metrics - Text input field
-	//
-	idForChild_inputField()
-	{
-		const self = this
-		//
-		return self.idPrefix() + "_idForChild_inputField"
-	}
-	new_htmlStringFor_inputFieldLayer()
-	{
-		const self = this
-		const htmlString = `<input type="password" id="${ self.idForChild_inputField() }" />`
-		//
-		return htmlString
-	}
-	DOMSelected_inputFieldLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`input#${ self.idForChild_inputField() }`)
-		//
-		return layer
+		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
+		view.layer.innerHTML = "Next"
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{
+						if (view.isEnabled === true) {
+							self._tryToSubmitForm()
+						}
+					}
+					return false
+				}
+			)
+		}
+		view.SetEnabled(false) // need to enter PW first
+		return view
 	}
 	//
 	//
@@ -251,13 +258,41 @@ class EnterNewPasswordView extends View
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
-		const validationMessageLabelLayer = self.DOMSelected_validationMessageLabelLayer()
-		validationMessageLabelLayer.innerHTML = validationMessageString || ""
+		if (validationMessageString === "" || !validationMessageString) {
+			self.ClearValidationMessage()
+			return
+		}
+		self.confirmPasswordInputLayer.style.border = "1px solid #f97777"
+		self.validationMessageLayer.style.display = "block"
+		self.validationMessageLayer.innerHTML = validationMessageString
+	}
+	ClearValidationMessage()
+	{
+		const self = this
+		self.confirmPasswordInputLayer.style.border = "none"//todo: factor this into method on component
+		self.validationMessageLayer.style.display = "none"
+		self.validationMessageLayer.innerHTML = ""
 	}
 	//
 	//
 	// Runtime - Imperatives - Internal
 	//
+	_tryToSubmitForm()
+	{
+		const self = this
+		const password = self.Password()
+		const confirmationPassword = self.ConfirmationPassword()
+		if (password !== confirmationPassword) {
+			self.SetValidationMessage("Oops, that doesn't match")
+			return
+		}
+		if (confirmationPassword.length < 6) {
+			self.SetValidationMessage("Please enter more than 6 characters")
+			return
+		}
+		self.ClearValidationMessage()
+		self._yield_nonZeroPasswordAndPasswordType()
+	}
 	_yield_nonZeroPasswordAndPasswordType()
 	{
 		const self = this
@@ -266,6 +301,30 @@ class EnterNewPasswordView extends View
 			self.Password()
 		)
 	}
-	
+	//
+	//
+	// Runtime - Delegation - Interactions
+	//
+	APasswordFieldInput_did_keyup(e)
+	{
+		const self = this
+		if (event.keyCode === 13) {
+			if (self.navigationController.navigationBarView.rightBarButtonView.isEnabled !== false) {
+				self._tryToSubmitForm()
+			}
+		}
+		//
+		const password = self.Password()
+		const confirmationPassword = self.ConfirmationPassword()
+		var submitEnabled;
+		if (typeof password === 'undefined' || password === null || password === "") {
+			submitEnabled = false
+		} else if (typeof confirmationPassword === 'undefined' || confirmationPassword === null || confirmationPassword === "") {
+			submitEnabled = false
+		} else {
+			submitEnabled = true
+		}
+		self.navigationController.navigationBarView.rightBarButtonView.SetEnabled(submitEnabled)
+	}
 }
 module.exports = EnterNewPasswordView

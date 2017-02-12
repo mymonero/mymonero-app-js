@@ -92,7 +92,7 @@ class NavigationBarView extends View
 				layer.style.fontSize = "13px"
 				layer.style.position = "absolute"
 				layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
-				layer.style.fontWeight = "400"
+				layer.style.fontWeight = "500"
 				layer.style.top = "0%"
 				self.titleLayer_marginX_pxComponent = 16
 				self.titleLayer_marginX_pctComponent = .15

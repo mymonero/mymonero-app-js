@@ -276,6 +276,10 @@ function New_inlineMessageDialogLayer(messageString, immediatelyVisible)
 	{
 		layer.SetValidationError = function(to_messageString)
 		{
+			if (to_messageString === "") {
+				layer.ClearAndHideMessage()
+				return
+			}
 			layer.innerHTML = to_messageString
 			layer.style.display = "block"
 		}

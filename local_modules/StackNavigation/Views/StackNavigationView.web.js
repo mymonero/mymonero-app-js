@@ -195,7 +195,6 @@ class StackNavigationView extends View
 			? true /* default true */ 
 			: false
 		const old_topStackView = self.topStackView
-		console.log("PUSH… old_topStackView", self.topStackView)
 		{ // make stackView the new top view
 			stackView.navigationController = self
 			self.stackViews.push(stackView)
