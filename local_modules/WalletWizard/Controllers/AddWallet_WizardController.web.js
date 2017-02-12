@@ -278,7 +278,6 @@ class AddWallet_WizardController
 		const self = this
 		opts = opts || {}
 		const modalParentView = self.current_wizardTaskMode_navigationView.modalParentView
-		console.log("now dismissing wizard")
 		modalParentView.DismissModalViewsToView(
 			null, // null for top stack view
 			true,

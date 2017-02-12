@@ -274,7 +274,7 @@ class PasswordController extends EventEmitter
 	WhenBootedAndPasswordObtained_PasswordAndType(
 		fn // (password, passwordType) -> Void
 	)
-	{ // this function is for convenience to wrap waiting for password readiness
+	{ // this function is for convenience to wrap consumers' waiting for password readiness
 		const self = this
 		self._executeWhenBooted(
 			function()
@@ -322,7 +322,6 @@ class PasswordController extends EventEmitter
 			}
 		)
 	}
-
 	OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
 	{ // This function must be called in order to initiate a password entry screen being shown to the user
 	  // and to initiate any "password obtained" emits
@@ -335,7 +334,7 @@ class PasswordController extends EventEmitter
 				}
 				{ // guard
 					if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
-						// console.log("isAlreadyGettingExistingOrNewPWFromUser. Exiting instead of re-initiating.")
+						console.warn("⚠️  isAlreadyGettingExistingOrNewPWFromUser=true. Exiting instead of re-initiating.")
 						return // only need to wait for it to be obtained
 					}
 					self.isAlreadyGettingExistingOrNewPWFromUser = true
@@ -740,12 +739,15 @@ class PasswordController extends EventEmitter
 		{ // indicate to consumers they should tear down and await the "did" event to re-request
 			self.emit(self.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword())
 		}
-		{ // trigger deconstruction of booted state and require password
-			self.password = undefined
-		}
-		{ // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
-			self.emit(self.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword())
-		}
+		setTimeout(function()
+		{ // on next tick…
+			{ // trigger deconstruction of booted state and require password
+				self.password = undefined
+			}
+			{ // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
+				self.emit(self.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword())
+			}
+		}, 2)
 	}	
 	//
 	//

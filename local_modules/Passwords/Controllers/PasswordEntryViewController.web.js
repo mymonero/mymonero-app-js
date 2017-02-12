@@ -129,7 +129,9 @@ class PasswordEntryViewController extends EventEmitter
 				}
 				self.view.GetUserToEnterExistingPasswordWithCB(
 					self.root_tabBarViewAndContentView,
-					isForChangePassword,
+					isForChangePassword, // this will mean false for (1) enter pw on app launch; and (2) enter pw when user idle timer kicks in… we actually want false for #2
+					// because in case the user is currently trying to change their pw, we still want to be able to lock-out the app if they step away, else security issue… and
+					// we dismiss the 
 					existingPasswordType,
 					enterPassword_cb
 				)
@@ -149,7 +151,26 @@ class PasswordEntryViewController extends EventEmitter
 				)
 			}
 		)
+		//
+		// we don't want changing the pw to affect locking & deconstructing the UI if idle timer engages
+		controller.on(
+			controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
+			function()
+			{
+				if (self.view !== null && typeof self.view !== 'undefined') {
+					self.view.Cancel(false) // we must use Cancel to maintain pw controller state (or user idle while changing pw breaks ask-for-pw), and must have no animation - teardown whole view and wait for imminent non-animated re-present of new self.view
+				}
+			}
+		)
+		controller.on(
+			controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+			function()
+			{
+			}
+		)
 	}
+	//
+	// TODO: Teardown and stopObserving - so far, wasn't necessary as self lives as long as app
 	//
 	//
 	// Runtime - Accessors - Events

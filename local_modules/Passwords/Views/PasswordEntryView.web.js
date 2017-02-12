@@ -226,14 +226,13 @@ class PasswordEntryView extends StackAndModalNavigationView
 	//
 	// Runtime - Imperatives - Interface - Dismissing the view
 	//
-	Dismiss()
+	Dismiss(optl_isAnimated)
 	{
 		const self = this
 		if (self.IsPresented() !== true) {
-			console.error("Can't  dismiss password entry view as not presented")
+			console.warn("Asked to PasswordEntryView/Dismiss but can't as not presented. Bailing.")
 			return
 		}
-		// TODO: animation
 		self.emit(self.EventName_willDismissView())
 		{ // clear state for next time
 			self.passwordEntryTaskMode = passwordEntryTaskModes.None
@@ -242,8 +241,9 @@ class PasswordEntryView extends StackAndModalNavigationView
 			self.enterPassword_cb = null
 			self.enterPasswordAndType_cb = null
 		}
+		const animate = optl_isAnimated === false ? false : true // default true
 		self.modalParentView.DismissTopModalView(
-			true, // animated
+			animate,
 			function()
 			{
 				self.emit(self.EventName_didDismissView())
@@ -261,7 +261,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 	{
 		const self = this
 		if (typeof self.modalParentView !== 'undefined' && self.modalParentView !== null) {
-			// console.warn("Asked to presentIn__root_tabBarViewAndContentView while already presented. Bailing.")
+			console.warn("Asked to presentIn__root_tabBarViewAndContentView while already presented. Bailing.")
 			return
 		}
 		{
@@ -335,7 +335,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 							enterNewPasswordView.EventName_CancelButtonPressed(),
 							function()
 							{
-								self.cancel()
+								self.Cancel()
 							}
 						)
 					}
@@ -386,22 +386,26 @@ class PasswordEntryView extends StackAndModalNavigationView
 			passwordType
 		)
 	}
-	cancel()
+	Cancel(optl_isAnimated)
 	{
-		const self = this
+		const isAnimated = optl_isAnimated === false ? false : true
 		//
+		const self = this
 		self._passwordController_callBack_trampoline(
 			true, // didCancel
 			undefined,
 			undefined
 		)
 		//
-		setTimeout(
-			function()
-			{
-				self.Dismiss()
-			}
-		)
+		function _really_Dismiss()
+		{
+			self.Dismiss(optl_isAnimated)
+		}
+		if (isAnimated !== true) {
+			_really_Dismiss() // we don't want any delay - because that could mess with consumers'/callers' serialization 
+		} else {
+			setTimeout(_really_Dismiss) // do on next tick so as to avoid animation jank
+		}
 	}	
 	_passwordController_callBack_trampoline(didCancel, password_orNil, passwordType_orNil)
 	{
