@@ -83,6 +83,17 @@ class StackAndModalNavigationView extends StackNavigationView
 		if (typeof old_topStackView === 'undefined' || old_topStackView == null) {
 			throw self.constructor.name + " PresentView currently expects there to be an old_topStackView"
 		}
+		if (self.isCurrentlyTransitioningAManagedView === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView.")
+			return
+		}
+		{
+			self.isCurrentlyTransitioningAManagedView = true
+		}
+		function __trampolineFor_transitionEnded()
+		{
+			self.isCurrentlyTransitioningAManagedView = false
+		}
 		const old_topModalView = self.topModalView
 		const old_topModalOrStackView = old_topModalView ? old_topModalView : old_topStackView
 		const old_topModalOrStackView_wasModal = old_topModalView ? true : false
@@ -112,6 +123,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewModalView_removeOldTopModalView()
+				__trampolineFor_transitionEnded()
 			} else {
 				setTimeout(
 					function()
@@ -128,6 +140,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								{
 									modalView_layer.style.zIndex = "10"
 									_afterHavingFullyPresentedNewModalView_removeOldTopModalView()
+									__trampolineFor_transitionEnded()
 								}
 							}
 						)
@@ -200,6 +213,17 @@ class StackAndModalNavigationView extends StackNavigationView
 			fn()
 			return // just bailing
 		}
+		if (self.isCurrentlyTransitioningAManagedView === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView.")
+			return
+		}
+		{
+			self.isCurrentlyTransitioningAManagedView = true
+		}
+		function __trampolineFor_transitionEnded()
+		{
+			self.isCurrentlyTransitioningAManagedView = false
+		}
 		function _afterHavingFullyPresentedNewTopView_removeOldTopModalView()
 		{
 			// console.log("old_topModalView" , old_topModalView.Description())
@@ -224,6 +248,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			//
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+				__trampolineFor_transitionEnded()
 				fn()
 			} else {
 				setTimeout(
@@ -240,6 +265,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								complete: function()
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+									__trampolineFor_transitionEnded()
 									fn()
 								}
 							}
@@ -261,6 +287,7 @@ class StackAndModalNavigationView extends StackNavigationView
 		}
 		if (indexOf_to_modalView === -1) {
 			throw "to_modalView not found in self.modalViews"
+			__trampolineFor_transitionEnded()
 			return
 		}
 		{ // make to_modalView the new top view
@@ -272,6 +299,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			const indexOf_old_topModalView_inSubviews = subviewUUIDs.indexOf(old_topModalView.View_UUID())
 			if (indexOf_old_topModalView_inSubviews === -1) {
 				throw `Asked to DismissModalViewsToView ${to_modalView.View_UUID()} but old_topModalView UUID not found in UUIDs of ${self.Description()} subviews.`
+				__trampolineFor_transitionEnded()
 				return
 			}
 			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
@@ -303,6 +331,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
 				fn()
+				__trampolineFor_transitionEnded()
 			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
 				setTimeout(
 					function()
@@ -319,6 +348,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
 									fn()
+									__trampolineFor_transitionEnded()
 								}
 							}
 						)
@@ -336,6 +366,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			self.modalViews = modalViews_afterPop
 			if (to_modalView.IsEqualTo(self.modalViews[self.modalViews.length - 1]) === false) {
 				throw `Popped to to_modalView ${to_modalView.Description()} at idx ${indexOf_to_modalView} but it was not the last of self.modalViews after pop all views until that idx.`
+				// we don't need to call __trampolineFor_transitionEnded here since we would have already triggered it in above two isAnimated == false check branches
 				return
 			}
 		}

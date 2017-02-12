@@ -194,6 +194,17 @@ class StackNavigationView extends View
 			 || isAnimated_orTrue == null 
 			? true /* default true */ 
 			: false
+		if (self.isCurrentlyTransitioningAManagedView === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PushView but already self.isCurrentlyTransitioningAManagedView.")
+			return
+		}
+		{
+			self.isCurrentlyTransitioningAManagedView = true
+		}
+		function __trampolineFor_transitionEnded()
+		{
+			self.isCurrentlyTransitioningAManagedView = false
+		}
 		const old_topStackView = self.topStackView
 		{ // make stackView the new top view
 			stackView.navigationController = self
@@ -213,6 +224,7 @@ class StackNavigationView extends View
 			self.stackViewStageView.addSubview(stackView)
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+				__trampolineFor_transitionEnded() // must unlock fn
 			} else {
 				setTimeout(
 					function()
@@ -229,6 +241,7 @@ class StackNavigationView extends View
 								{
 									stackView_layer.style.zIndex = "0" 
 									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+									__trampolineFor_transitionEnded() // must unlock fn
 								}
 							}
 						)
@@ -324,6 +337,17 @@ class StackNavigationView extends View
 			throw "StackNavigationView asked to PopToView nil to_stackView"
 			return
 		}
+		if (self.isCurrentlyTransitioningAManagedView === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PopToView but already self.isCurrentlyTransitioningAManagedView.")
+			return
+		}
+		{
+			self.isCurrentlyTransitioningAManagedView = true
+		}
+		function __trampolineFor_transitionEnded()
+		{
+			self.isCurrentlyTransitioningAManagedView = false
+		}
 		const old_topStackView = self.topStackView
 		{ // make to_stackView the new top view
 			to_stackView.navigationController = self
@@ -335,6 +359,7 @@ class StackNavigationView extends View
 			const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
 			if (indexOf_old_topStackView_inSubviews === -1) {
 				throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
+				__trampolineFor_transitionEnded() // must unlock fn
 				return
 			}
 			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
@@ -362,6 +387,7 @@ class StackNavigationView extends View
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+				__trampolineFor_transitionEnded() // must unlock fn
 			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
 				setTimeout(
 					function()
@@ -377,6 +403,7 @@ class StackNavigationView extends View
 								complete: function()
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
+									__trampolineFor_transitionEnded() // must unlock fn
 								}
 							}
 						)
@@ -400,6 +427,7 @@ class StackNavigationView extends View
 			self.stackViews = stackViews_afterPop
 			if (to_stackView.IsEqualTo(self.stackViews[self.stackViews.length - 1]) === false) {
 				throw `Popped to to_stackView ${to_stackView.Description()} at idx ${indexOf_to_stackView} but it was not the last of self.stackViews after pop all views until that idx.`
+				// we don't need to call __trampolineFor_transitionEnded here since we would have already triggered it in above isAnimated == false check branch
 				return 
 			}
 		}
