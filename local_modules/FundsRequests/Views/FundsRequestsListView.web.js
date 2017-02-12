@@ -156,10 +156,17 @@ class FundsRequestsListView extends View
 	//
 	// Runtime - Imperatives - View Configuration
 	//
-	reloadData()
+	reloadData(optl_isFrom_EventName_listUpdated)
 	{
 		const self = this
+		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
+			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted fundsRequestsList, i.e., on 
+			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
+			self._configureWith_fundsRequests(self.context.fundsRequestsListController.fundsRequests) // since it will be immediately available
+			return
+		}
 		if (self.isAlreadyWaitingForFundsRequests === true) { // because accessing fundsRequests is async
+			console.warn("⚠️  Asked to " + self.constructor.name + "/reloadData while already waiting on WhenBooted.")
 			return // prevent redundant calls
 		}
 		self.isAlreadyWaitingForFundsRequests = true
@@ -295,7 +302,9 @@ class FundsRequestsListView extends View
 	_FundsRequestsListController_EventName_listUpdated()
 	{
 		const self = this
-		self.reloadData()
+		self.reloadData(
+			true // isFrom_EventName_listUpdated
+		)
 	}
 	//
 	//

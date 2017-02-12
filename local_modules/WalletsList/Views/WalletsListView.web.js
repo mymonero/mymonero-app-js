@@ -254,25 +254,34 @@ class WalletsListView extends View
 	//
 	// Runtime - Imperatives - View Configuration
 	//
-	reloadData()
+	reloadData(optl_isFrom_EventName_listUpdated)
 	{
 		const self = this
+		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
+			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted walletsList, i.e., on 
+			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
+			self._configureWith_wallets(self.context.walletsListController.wallets) // since it will be immediately available
+			return
+		}
 		if (self.isAlreadyWaitingForWallets === true) { // because accessing wallets is async
+			console.warn("⚠️  Asked to WalletsListCellView/reloadData while already waiting for wallets.")
 			return // prevent redundant calls
 		}
-		self.isAlreadyWaitingForWallets = true
+		self.isAlreadyWaitingForWallets = true // lock
 		self.context.walletsListController.WhenBooted_Wallets(
 			function(wallets)
 			{
 				self.isAlreadyWaitingForWallets = false // unlock
-				self.wallets = wallets
-				self._configureWith_wallets()
+				self._configureWith_wallets(wallets)
 			}
 		)
 	}
-	_configureWith_wallets()
+	_configureWith_wallets(wallets)
 	{
 		const self = this
+		{ // update model data
+			self.wallets = wallets
+		}
 		const context = self.context
 		{ // teardown/revert
 			// TODO: diff these wallets with existing wallets?
@@ -377,7 +386,9 @@ class WalletsListView extends View
 	_WalletsListController_EventName_listUpdated()
 	{
 		const self = this
-		self.reloadData()
+		self.reloadData(
+			true // isFrom_EventName_listUpdated
+		)
 	}
 	//
 	//

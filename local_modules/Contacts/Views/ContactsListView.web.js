@@ -135,10 +135,17 @@ class ContactsListView extends View
 	//
 	// Runtime - Imperatives - View Configuration
 	//
-	reloadData()
+	reloadData(optl_isFrom_EventName_listUpdated)
 	{
 		const self = this
+		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
+			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted contactsList, i.e., on 
+			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
+			self._configureWith_contacts(self.context.contactsListController.contacts) // since it will be immediately available
+			return
+		}
 		if (self.isAlreadyWaitingForContacts === true) { // because accessing contacts is async
+			console.warn("⚠️  Asked to " + self.constructor.name + "/reloadData while already waiting on WhenBooted.")
 			return // prevent redundant calls
 		}
 		self.isAlreadyWaitingForContacts = true
@@ -169,6 +176,10 @@ class ContactsListView extends View
 				self.contactCellViews = []
 			}
 		}
+		// { // show empty state
+		// 	// TODO:
+		// 	self.emptyStateContainerView.SetVisible(contacts.length === 0 ? true : false)
+		// }
 		{
 			const view = new View({}, self.context)
 			{
@@ -247,7 +258,9 @@ class ContactsListView extends View
 	_ContactsListController_EventName_listUpdated()
 	{
 		const self = this
-		self.reloadData()
+		self.reloadData(
+			true // isFrom_EventName_listUpdated
+		)
 	}
 	//
 	//
