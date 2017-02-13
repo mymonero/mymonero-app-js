@@ -63,7 +63,7 @@ class SettingsTabContentView extends StackAndModalNavigationView
 		return {
 			position: "absolute", // we can get away with doing this because the tab bar won't move
 			left: "0",
-			bottom: "20px", // for desktop, anyway
+			bottom: "5px", // for desktop, anyway
 		}
 	}
 	TabBarItem_icon_customStyle()

@@ -65,12 +65,13 @@ class TabBarItemButtonView extends View
 			layer.style.display = "inline-block"
 			layer.style.position = "relative"
 			layer.style.webkitAppRegion = "no-drag" // make clickable
+			const stackedThickness = 56
 			if (self.isHorizontalBar) {
-				layer.style.width = `58px`
+				layer.style.width = `${stackedThickness}px`
 				layer.style.height = `${self.tabBarView_thickness}px`
 			} else {
 				layer.style.width = `${self.tabBarView_thickness}px`
-				layer.style.height = `58px`
+				layer.style.height = `${stackedThickness}px`
 			}
 			self.__applyStylesToLayer(self.layer_baseStyleTemplate, self.layer)
 		}
