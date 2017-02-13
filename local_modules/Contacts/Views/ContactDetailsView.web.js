@@ -205,7 +205,10 @@ class ContactDetailsView extends View
 			const current_topStackView = self.navigationController.topStackView
 			const isOnTop = current_topStackView.IsEqualTo(self) == true
 			if (isOnTop) {
-				self.navigationController.PopView(true) // animated
+				setTimeout(function()
+				{
+					self.navigationController.PopView(true) // animated
+				}, 500) // because we want to wait until whatever UI deleted it settles down or we will get a refusal to pop while dismissing a modal
 			} else { // or, we're not on top, so let's just remove self from the list of views
 				throw "A contact details view expected to be on top of navigatino stack when its contact was deleted."
 				// which means the following line should be uncommented and the method ImmediatelyExtractStackView needs to be implemented (which will w/o animation snatch self out of the stack)
@@ -244,8 +247,7 @@ class ContactDetailsView extends View
 			self.contact.EventName_willBeDeleted(),
 			self._contact_EventName_willBeDeleted_fn
 		)
-	}
-	
+	}	
 	//
 	//
 	// Runtime - Accessors - Navigation
@@ -292,8 +294,7 @@ class ContactDetailsView extends View
 			)
 		}
 		return view
-	}
-	
+	}	
 	//
 	//
 	// Runtime - Imperatives - Configuration

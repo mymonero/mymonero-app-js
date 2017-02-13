@@ -115,7 +115,7 @@ class EditContactFromContactsTabView extends ContactFormView
 	//
 	// Runtime - Imperatives - UI
 	//
-	popView()
+	dismissView()
 	{
 		const self = this
 		const modalParentView = self.navigationController.modalParentView
@@ -270,7 +270,7 @@ class EditContactFromContactsTabView extends ContactFormView
 	_thisRecordWasDeleted()
 	{
 		const self = this
-		self.popView()
+		self.dismissView()
 	}
 	//
 	//
@@ -279,7 +279,7 @@ class EditContactFromContactsTabView extends ContactFormView
 	_didSaveContact()
 	{
 		const self = this
-		self.popView()
+		self.dismissView()
 	}
 }
 module.exports = EditContactFromContactsTabView

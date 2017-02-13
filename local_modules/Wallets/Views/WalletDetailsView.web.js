@@ -30,6 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class WalletDetailsView extends View
 {
@@ -128,6 +129,15 @@ class WalletDetailsView extends View
 			self.wallet.EventName_walletLabelChanged(),
 			self.wallet_EventName_walletLabelChanged_listenerFunction
 		)
+		// swatch
+		self.wallet_EventName_walletSwatchChanged_listenerFunction = function()
+		{
+			self.wallet_EventName_walletSwatchChanged()
+		}
+		self.wallet.on(
+			self.wallet.EventName_walletSwatchChanged(),
+			self.wallet_EventName_walletSwatchChanged_listenerFunction
+		)
 		// balance
 		self.wallet_EventName_balanceChanged_listenerFunction = function()
 		{
@@ -147,6 +157,27 @@ class WalletDetailsView extends View
 			self.wallet.EventName_transactionsChanged(),
 			self.wallet_EventName_transactionsChanged_listenerFunction
 		)
+		//
+		// deletion
+		self._wallet_EventName_willBeDeleted_fn = function()
+		{ // ^-- we observe /will/ instead of /did/ because if we didn't, self.navigationController races to get freed
+			const current_topStackView = self.navigationController.topStackView
+			const isOnTop = current_topStackView.IsEqualTo(self) == true
+			if (isOnTop) {
+				setTimeout(function()
+				{
+					self.navigationController.PopView(true) // animated
+				}, 500) // because we want to wait until whatever UI deleted it settles down or we will get a refusal to pop while dismissing a modal
+			} else { // or, we're not on top, so let's just remove self from the list of views
+				throw "A Wallet details view expected to be on top of navigation stack when its wallet was deleted."
+				// which means the following line should be uncommented and the method ImmediatelyExtractStackView needs to be implemented (which will w/o animation snatch self out of the stack)
+				// self.navigationController.ImmediatelyExtractStackView(self)
+			}
+		}
+		self.wallet.on(
+			self.wallet.EventName_willBeDeleted(),
+			self._wallet_EventName_willBeDeleted_fn
+		)
 	}
 	//
 	//
@@ -164,35 +195,36 @@ class WalletDetailsView extends View
 				self.current_transactionDetailsView = null
 			}
 		}
+		{
+			if (typeof self.current_EditWalletView !== 'undefined' && self.current_EditWalletView) {
+				self.current_EditWalletView.TearDown()
+				self.current_EditWalletView = null
+			}
+		}
 	}
 	_stopObserving()
 	{
 		const self = this
-		function doesListenerFunctionExist(fn)
-		{
-			if (typeof fn !== 'undefined' && fn !== null) {
-				return true
-			}
-			return false
-		}
-		if (doesListenerFunctionExist(self.wallet_EventName_walletLabelChanged_listenerFunction) === true) {
-			self.wallet.removeListener(
-				self.wallet.EventName_walletLabelChanged(),
-				self.wallet_EventName_walletLabelChanged_listenerFunction
-			)
-		}
-		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
-			self.wallet.removeListener(
-				self.wallet.EventName_balanceChanged(),
-				self.wallet_EventName_balanceChanged_listenerFunction
-			)
-		}
-		if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
-			self.wallet.removeListener(
-				self.wallet.EventName_transactionsChanged(),
-				self.wallet_EventName_transactionsChanged_listenerFunction
-			)
-		}
+		self.wallet.removeListener(
+			self.wallet.EventName_walletLabelChanged(),
+			self.wallet_EventName_walletLabelChanged_listenerFunction
+		)
+		self.wallet.removeListener(
+			self.wallet.EventName_walletSwatchChanged(),
+			self.wallet_EventName_walletSwatchChanged_listenerFunction
+		)
+		self.wallet.removeListener(
+			self.wallet.EventName_balanceChanged(),
+			self.wallet_EventName_balanceChanged_listenerFunction
+		)
+		self.wallet.removeListener(
+			self.wallet.EventName_transactionsChanged(),
+			self.wallet_EventName_transactionsChanged_listenerFunction
+		)
+		self.wallet.removeListener(
+			self.wallet.EventName_willBeDeleted(),
+			self._wallet_EventName_willBeDeleted_fn
+		)
 	}
 	
 	//
@@ -205,6 +237,35 @@ class WalletDetailsView extends View
 		const wallet = self.wallet
 		//
 		return wallet.walletLabel || "Wallet"
+	}
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
+		const layer = view.layer
+		{ // observe
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					e.preventDefault()
+					{ // v--- self.navigationController because self is presented packaged in a StackNavigationView				
+						const EditWalletView = require('./EditWalletView.web')
+						const view = new EditWalletView({
+							wallet: self.wallet
+						}, self.context)
+						self.current_EditWalletView = view
+						//
+						const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+						const navigationView = new StackAndModalNavigationView({}, self.context)
+						navigationView.SetStackViews([ view ])
+						self.navigationController.PresentView(navigationView, true)
+					}
+					return false
+				}
+			)
+		}
+		return view
 	}
 	//
 	//
@@ -249,32 +310,6 @@ class WalletDetailsView extends View
 	}
 	//
 	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Delete btn
-	//
-	//
-	idForChild_deleteWalletWithIDLayer()
-	{
-		const self = this
-		//
-		return self._idPrefix() + "_" + "idForChild_deleteWalletWithIDLayer"
-	}
-	new_htmlStringForChild_deleteWalletWithIDLayer()
-	{
-		const self = this
-		const htmlString = `<a id="${self.idForChild_deleteWalletWithIDLayer()}" href="#">Delete Wallet</a>`
-		//
-		return htmlString
-	}
-	DOMSelected_deleteWalletWithIDLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`a#${ self.idForChild_deleteWalletWithIDLayer() }`)
-		//
-		return layer
-	}
-	//
-	//
 	// Runtime - Imperatives - UI Configuration
 	//
 	_configureUIWithWallet__accountInfo()
@@ -295,9 +330,6 @@ class WalletDetailsView extends View
 						htmlString += `<p>Locked balance: ${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}</p>`
 					}
 				}
-				{ // buttons
-					htmlString += self.new_htmlStringForChild_deleteWalletWithIDLayer()
-				}
 				{ // info
 					htmlString += `<h4>Wallet Info</h4>`
 					htmlString += `<p>Address: ${wallet.public_address}</p>`
@@ -310,10 +342,7 @@ class WalletDetailsView extends View
 				{ // header
 					htmlString += 
 						`<h4>Error: Couldn't unlock this wallet.</h4>`
-						+ `<p>Please report this issue to us via Support. To repair this wallet and continue, please delete the wallet and re-import it:</p>`
-				}
-				{ // buttons
-					htmlString += self.new_htmlStringForChild_deleteWalletWithIDLayer()
+						+ `<p>Please report this issue to us via Support. To repair this wallet and continue, please delete it via Edit and re-import it.</p>`
 				}
 			}
 		}
@@ -321,25 +350,6 @@ class WalletDetailsView extends View
 		// TODO: Rebuild this without using html (w/element objs) and eliminate the DOMSelected_ stuff
 		//
 		self.layer_accountInfo.innerHTML = htmlString
-		{ // setup and observations
-			{ // buttons
-				{ // delete button
-					const layer = self.DOMSelected_deleteWalletWithIDLayer()
-					if (layer && typeof layer !== 'undefined') {
-						layer.addEventListener(
-							"click",
-							function(e)
-							{
-								e.preventDefault()
-								self.deleteWallet()
-								//
-								return false
-							}
-						)
-					}
-				}				
-			}
-		}
 	}
 	_configureUIWithWallet__transactions()
 	{
@@ -477,6 +487,15 @@ class WalletDetailsView extends View
 	}
 	//
 	//
+	// Runtime - Imperatives - Changing specific elements of the UI 
+	//
+	_reconfigureUIWithChangeTo_wallet__color()
+	{
+		const self = this
+		console.log("TODO: refresh anything related to the color… it just changed!", self.wallet.swatch)
+	}
+	//
+	//
 	// Runtime - Imperatives - Navigation
 	//
 	pushDetailsViewFor_transaction(transaction)
@@ -540,9 +559,14 @@ class WalletDetailsView extends View
 		const self = this
 		super.viewDidAppear()
 		{
+			// teardown any child/referenced stack navigation views if necessary…
 			if (self.current_transactionDetailsView !== null) {
 				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
 				self.current_transactionDetailsView = null // must zero again and should free
+			}
+			if (typeof self.current_EditWalletView !== 'undefined' && self.current_EditWalletView) {
+				self.current_EditWalletView.TearDown()
+				self.current_EditWalletView = null
 			}
 		}
 	}
@@ -555,6 +579,11 @@ class WalletDetailsView extends View
 		const self = this
 		self.navigationController.SetNavigationBarTitleNeedsUpdate() 
 		self._configureUIWithWallet__accountInfo() // TODO: just update the label
+	}
+	wallet_EventName_walletSwatchChanged()
+	{
+		const self = this
+		self._reconfigureUIWithChangeTo_wallet__color()
 	}
 	wallet_EventName_balanceChanged()
 	{

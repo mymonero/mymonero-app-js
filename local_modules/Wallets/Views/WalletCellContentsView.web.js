@@ -124,6 +124,12 @@ class WalletCellContentsView extends View
 				self.wallet_EventName_walletLabelChanged_listenerFunction
 			)
 		}
+		if (doesListenerFunctionExist(self.wallet_EventName_walletSwatchChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_walletSwatchChanged(),
+				self.wallet_EventName_walletSwatchChanged_listenerFunction
+			)
+		}
 		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_balanceChanged(),
@@ -191,6 +197,7 @@ class WalletCellContentsView extends View
 	{
 		const self = this
 		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__color()
 	}
 	_configureUIWithWallet__accountInfo()
 	{
@@ -240,6 +247,11 @@ class WalletCellContentsView extends View
 			}				
 		}
 	}
+	_configureUIWithWallet__color()
+	{
+		const self = this
+		console.log("TODO: configure wallet icon with color…", self.wallet.swatch)
+	}
 	//
 	//
 	// Internal - Runtime - Imperatives - Wallet operations
@@ -281,6 +293,15 @@ class WalletCellContentsView extends View
 		self.wallet.on(
 			self.wallet.EventName_walletLabelChanged(),
 			self.wallet_EventName_walletLabelChanged_listenerFunction
+		)
+		// wallet swatch
+		self.wallet_EventName_walletSwatchChanged_listenerFunction = function()
+		{
+			self._configureUIWithWallet__color()
+		}
+		self.wallet.on(
+			self.wallet.EventName_walletSwatchChanged(),
+			self.wallet_EventName_walletSwatchChanged_listenerFunction
 		)
 		// balance
 		self.wallet_EventName_balanceChanged_listenerFunction = function()

@@ -38,6 +38,15 @@ function _New_ButtonBase_View(context)
 }
 exports.New_ButtonBase_View = _New_ButtonBase_View
 //
+// TODO:
+// function New_GreyButtonView(context)
+// {
+//
+// }
+// function New_BlueButtonView(context)
+// {
+//
+// }
 function New_RightSide_AddButtonView(context)
 {
 	const view = _New_ButtonBase_View(context)
@@ -88,13 +97,13 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 		layer.style.height = "24px"
 		layer.style.borderRadius = "3px"
 		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-		layer.style.border = "none"
 		layer.style.backgroundColor = "#383638"
+		layer.style.border = "none"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
-		layer.style.color = "#ffffff"
+		layer.style.color = "#fcfbfc"
 		layer.style.fontWeight = "500"
 		layer.style.textAlign = "center"
 	}
@@ -143,16 +152,17 @@ function New_RightSide_EditButtonView(context)
 		layer.style.display = "block"
 		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 		layer.style.marginTop = "10px"
-		layer.style.width = "90px"
+		layer.style.width = "41px"
 		layer.style.height = "24px"
 		layer.style.borderRadius = "3px"
 		layer.style.backgroundColor = "#383638"
+		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
-		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "normal"
+		layer.style.color = "#fcfbfc"
+		layer.style.fontWeight = "500"
 		layer.style.textAlign = "center"
 	}
 	return view	

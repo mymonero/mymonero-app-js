@@ -122,20 +122,33 @@ function New_fieldValue_walletSelectLayer(params)
 			if (typeof wallet === 'undefined' || wallet === null) {
 				throw "nil wallet"
 			}
-			if (typeof optionLayer._wallet_EventName_walletLabelChanged === 'undefined' || optionLayer._wallet_EventName_walletLabelChanged === null) {
-				throw "nil optionLayer._wallet_EventName_walletLabelChanged"
+			{
+				if (typeof optionLayer._wallet_EventName_walletLabelChanged === 'undefined' || optionLayer._wallet_EventName_walletLabelChanged === null) {
+					throw "nil optionLayer._wallet_EventName_walletLabelChanged"
+				}
+				wallet.removeListener(
+					wallet.EventName_walletLabelChanged(),
+					optionLayer._wallet_EventName_walletLabelChanged
+				)
 			}
-			wallet.removeListener(
-				wallet.EventName_walletLabelChanged(),
-				optionLayer._wallet_EventName_walletLabelChanged
-			)
-			if (typeof optionLayer._wallet_EventName_balanceChanged === 'undefined' || optionLayer._wallet_EventName_balanceChanged === null) {
-				throw "nil optionLayer._wallet_EventName_balanceChanged"
+			{
+				if (typeof optionLayer._wallet_EventName_walletSwatchChanged === 'undefined' || optionLayer._wallet_EventName_walletSwatchChanged === null) {
+					throw "nil optionLayer._wallet_EventName_walletSwatchChanged"
+				}
+				wallet.removeListener(
+					wallet.EventName_walletSwatchChanged(),
+					optionLayer._wallet_EventName_walletSwatchChanged
+				)
+			}			
+			{
+				if (typeof optionLayer._wallet_EventName_balanceChanged === 'undefined' || optionLayer._wallet_EventName_balanceChanged === null) {
+					throw "nil optionLayer._wallet_EventName_balanceChanged"
+				}
+				wallet.removeListener(
+					wallet.EventName_balanceChanged(),
+					optionLayer._wallet_EventName_balanceChanged
+				)
 			}
-			wallet.removeListener(
-				wallet.EventName_balanceChanged(),
-				optionLayer._wallet_EventName_balanceChanged
-			)
 		}
 	}
 	layer.__givenBooted_configureWithWallets = function(fn)
@@ -158,7 +171,10 @@ function New_fieldValue_walletSelectLayer(params)
 						text += ` (${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()} 🔒)`
 					}
 					optionLayer.text = text
-					
+				}
+				function _configureOptionLayerColor(toColor)
+				{
+					console.log("TODO: reconfigure wallet icon as color has changed to…", toColor)
 				}
 				{
 					_configureOptionLayerText()
@@ -173,6 +189,15 @@ function New_fieldValue_walletSelectLayer(params)
 					wallet.on(
 						wallet.EventName_walletLabelChanged(),
 						optionLayer._wallet_EventName_walletLabelChanged
+					)
+					//
+					optionLayer._wallet_EventName_walletSwatchChanged = function()
+					{
+						_configureOptionLayerColor()
+					}
+					wallet.on(
+						wallet.EventName_walletLabelChanged(),
+						optionLayer._wallet_EventName_walletSwatchChanged
 					)
 					//
 					optionLayer._wallet_EventName_balanceChanged = function()

@@ -131,6 +131,7 @@ class EnterExistingPasswordView extends View
 					} else {
 						submitEnabled = true
 					}
+					// v--- we're assuming we've been added to the nav C by any keyup
 					self.navigationController.navigationBarView.rightBarButtonView.SetEnabled(submitEnabled)
 					if (submitEnabled) {
 						if (event.keyCode === 13) {

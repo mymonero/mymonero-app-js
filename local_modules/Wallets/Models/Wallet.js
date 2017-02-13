@@ -600,6 +600,10 @@ class Wallet extends EventEmitter
 	{
 		return "EventName_walletLabelChanged"
 	}
+	EventName_walletSwatchChanged()
+	{
+		return "EventName_walletSwatchChanged"
+	}
 	EventName_balanceChanged()
 	{
 		return "EventName_balanceChanged"
@@ -620,7 +624,15 @@ class Wallet extends EventEmitter
 	{
 		return "EventName_transactionsAdded"
 	}
-
+	//
+	EventName_willBeDeleted()
+	{
+		return "EventName_willBeDeleted"
+	}
+	EventName_deleted()
+	{
+		return "EventName_deleted"
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Wallet properties
@@ -875,9 +887,17 @@ class Wallet extends EventEmitter
 	)
 	{
 		const self = this
+		self.emit(self.EventName_willBeDeleted(), self._id)
 		wallet_persistence_utils.DeleteFromDisk(
 			self,
-			fn
+			function(err) {
+				if (err) {
+					fn(err)
+					return
+				}
+				self.emit(self.EventName_deleted(), self._id)
+				fn()
+			}
 		)
 	}
 
@@ -912,32 +932,54 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
 
-	Set_WalletLabel(
-		toLabel,
-		fn
+
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Changing meta data
+
+	Set_valuesByKey(
+		valuesByKey, // keys like "walletLabel", "swatch"
+		fn // (err?) -> Void
 	)
 	{
 		const self = this
-		if (typeof toLabel === 'undefined' || toLabel === null || toLabel.length < 1) {
-			return fn(new Error("Please enter a wallet name"))
+		const valueKeys = Object.keys(valuesByKey)
+		var didUpdate_walletLabel = false
+		var didUpdate_swatch = false
+		for (let valueKey of valueKeys) {
+			const value = valuesByKey[valueKey]
+			{ // validate / mark as updated for yield later
+				if (valueKey === "walletLabel") {
+					if (typeof value === 'undefined' || value === null || value.length < 1) {
+						return fn(new Error("Please enter a wallet name"))
+					}
+					didUpdate_walletLabel = true
+				} else if (valueKey === "swatch") {
+					if (typeof value === 'undefined' || value === null || value.length < 1) {
+						return fn(new Error("Please select a wallet color."))
+					}
+					didUpdate_swatch = true
+				}
+			}
+			{ // set
+				self[valueKey] = value
+			}
 		}
-		if (self.walletLabel === toLabel) {
-			fn() // nothing to do
-			return
-		}
-		self.walletLabel = toLabel
 		self.saveToDisk(
 			function(err)
 			{
 				if (err) {
-					console.error("Failed to save new wallet name", err)
+					console.error("Failed to save new valuesByKey", err)
 				} else {
-					console.log("📝  Successfully saved new wallet name.")
+					console.log("📝  Successfully saved " + self.constructor.name + " update ", JSON.stringify(valuesByKey))
+					if (didUpdate_walletLabel) {
+						self.emit(self.EventName_walletLabelChanged(), self.walletLabel)
+					}
+					if (didUpdate_swatch) {
+						self.emit(self.EventName_walletSwatchChanged(), self.swatch)
+					}
 				}
-				setTimeout(function()
-				{
-					self.emit(self.EventName_walletLabelChanged(), toLabel)
-				})
 				fn(err)
 			}
 		)
