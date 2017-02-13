@@ -44,6 +44,7 @@ class TabBarItemButtonView extends View
 			//
 			self.layer_baseStyleTemplate = options.layer_baseStyleTemplate || {}
 			self.icon_baseStyleTemplate = options.icon_baseStyleTemplate || {}
+			self.icon_selected_baseStyleTemplate = options.icon_selected_baseStyleTemplate || self.icon_baseStyleTemplate // fall back to non-selected
 		}
 		self.setup()
 	}
@@ -52,22 +53,12 @@ class TabBarItemButtonView extends View
 		const self = this
 		{ // state defaults
 			self.isEnabled = true
-			self.isSelected = false
 		}
 		self.setup_views()
+		self.Deselect() // also sets selected state
 	}
 	setup_views()
 	{
-		function __applyStylesToLayer(styles, layer)
-		{
-			const styles_keys = Object.keys(styles)
-			const numberOf_styles_keys = styles_keys.length
-			for (let i = 0 ; i < numberOf_styles_keys ; i++) {
-				const key = styles_keys[i]
-				const value = styles[key]
-				layer.style[key] = value
-			}
-		}
 		const self = this
 		{
 			const layer = self.layer
@@ -81,18 +72,17 @@ class TabBarItemButtonView extends View
 				layer.style.width = `${self.tabBarView_thickness}px`
 				layer.style.height = `58px`
 			}
-			__applyStylesToLayer(self.layer_baseStyleTemplate, self.layer)
+			self.__applyStylesToLayer(self.layer_baseStyleTemplate, self.layer)
 		}
 		{ // icon
-			const layer = document.createElement("img")
-			{
-				layer.style.webkitAppRegion = "no-drag" // make clickable
-				layer.style.width = `100%`
-				layer.style.height = `100%`
-			}
+			const layer = document.createElement("div")
+			layer.style.webkitAppRegion = "no-drag" // make clickable
+			layer.style.width = `100%`
+			layer.style.height = `100%`
+			layer.style.border = "none"
 			self.iconImageLayer = layer
 			self.layer.appendChild(self.iconImageLayer)
-			__applyStylesToLayer(self.icon_baseStyleTemplate, self.iconImageLayer)
+			self.__applyStylesToLayer(self.icon_baseStyleTemplate, self.iconImageLayer)
 		}
 		{ // observation
 			self.layer.addEventListener(
@@ -100,10 +90,8 @@ class TabBarItemButtonView extends View
 				function(e)
 				{
 					e.preventDefault()
-					{
-						if (self.isEnabled !== false) {
-							self.emit(self.EventName_clicked(), self)
-						}
+					if (self.isEnabled !== false) {
+						self.emit(self.EventName_clicked(), self)
 					}
 					return false
 				}
@@ -134,21 +122,33 @@ class TabBarItemButtonView extends View
 	}
 	//
 	//
+	// Runtime - Imperatives - UI config - Shared
+	//
+	__applyStylesToLayer(styles, layer)
+	{
+		const styles_keys = Object.keys(styles)
+		const numberOf_styles_keys = styles_keys.length
+		for (let i = 0 ; i < numberOf_styles_keys ; i++) {
+			const key = styles_keys[i]
+			const value = styles[key]
+			layer.style[key] = value
+		}
+	}
+	//
+	//
 	// Runtime - Imperatives - Selection
 	//
 	Select()
 	{
 		const self = this
 		self.isSelected = true
-		//
-		self.iconImageLayer.style.backgroundColor = "blue"
+		self.__applyStylesToLayer(self.icon_selected_baseStyleTemplate, self.iconImageLayer)
 	}
 	Deselect()
 	{
 		const self = this
 		self.isSelected = false
-		//
-		self.iconImageLayer.style.backgroundColor = "transparent"
+		self.__applyStylesToLayer(self.icon_baseStyleTemplate, self.iconImageLayer)
 	}	
 	//
 	//
@@ -158,14 +158,12 @@ class TabBarItemButtonView extends View
 	{
 		const self = this
 		self.isEnabled = true
-		//
 		self.iconImageLayer.style.opacity = "1.0"
 	}
 	Disable()
 	{
 		const self = this
 		self.isEnabled = false
-		//
 		self.iconImageLayer.style.opacity = "0.3"
 	}
 }

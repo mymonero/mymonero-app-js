@@ -190,6 +190,16 @@ class TabBarAndContentView extends View
 							}
 						}
 					}
+					var icon_selected_baseStyleTemplate = {}
+					{
+						const lookup_fn = to_tabBarContentView.TabBarItem_icon_selected_customStyle
+						if (typeof lookup_fn === 'function') {
+							const style = lookup_fn.apply(to_tabBarContentView)
+							if (style && typeof style !== 'undefined') {
+								icon_selected_baseStyleTemplate = style
+							}
+						}
+					}
 					{ // buttonView
 						const options = 
 						{
@@ -197,7 +207,8 @@ class TabBarAndContentView extends View
 							tabBarView_thickness: tabBarView_thickness,
 							//
 							layer_baseStyleTemplate: layer_baseStyleTemplate,
-							icon_baseStyleTemplate: icon_baseStyleTemplate
+							icon_baseStyleTemplate: icon_baseStyleTemplate,
+							icon_selected_baseStyleTemplate: icon_selected_baseStyleTemplate
 						}
 						const buttonView = new TabBarItemButtonView(options, context)
 						buttonView.on(

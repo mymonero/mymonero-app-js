@@ -55,8 +55,8 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 			const layer = self.tabBarView.layer
 			layer.style.background = "#171416"
 			layer.style.borderRight = "1px solid black"
-			layer.style.paddingTop = "44px" // since we're setting a padding top, we have to offset it in the height or cause a root view scroll
-			layer.style.height = "calc(100% - 44px)"
+			layer.style.paddingTop = "55px" // since we're setting a padding top, we have to offset it in the height or cause a root view scroll
+			layer.style.height = "calc(100% - 55px)"
 		}
 		{
 			const layer = self.contentAreaView.layer

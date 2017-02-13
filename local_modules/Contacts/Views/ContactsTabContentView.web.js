@@ -54,5 +54,32 @@ class ContactsTabContentView extends StackAndModalNavigationView
 			)
 		}
 	}
+	//
+	//
+	// Runtime - Accessors - Implementation of TabBarItem protocol - custom tab bar item styling
+	//
+	TabBarItem_layer_customStyle()
+	{
+		const self = this
+		return {}
+	}
+	TabBarItem_icon_customStyle()
+	{
+		const self = this
+		return {
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings.png)",
+			backgroundPosition: "center",
+			backgroundRepeat: "no-repeat"
+		}
+	}
+	TabBarItem_icon_selected_customStyle()
+	{
+		const self = this
+		return {
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings__active.png)",
+			backgroundPosition: "center",
+			backgroundRepeat: "no-repeat"
+		}
+	}
 }
 module.exports = ContactsTabContentView

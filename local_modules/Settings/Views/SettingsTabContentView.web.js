@@ -70,15 +70,19 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			// position: "absolute", // we can get away with doing this because the tab bar won't move
-			// bottom: "20px" // for desktop, anyway
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings.png)",
+			backgroundPosition: "center",
+			backgroundRepeat: "no-repeat"
+		}
+	}
+	TabBarItem_icon_selected_customStyle()
+	{
+		const self = this
+		return {
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings__active.png)",
+			backgroundPosition: "center",
+			backgroundRepeat: "no-repeat"
 		}
 	}
 }
 module.exports = SettingsTabContentView
-
-
-
-
-
-
