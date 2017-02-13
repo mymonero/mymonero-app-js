@@ -130,9 +130,17 @@ class PasswordController extends EventEmitter
 					return
 				}
 			}
-			//
+			self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = passwordModel_doc // this will be nil'd after it's been parsed once the user has entered their pw
 			self.hasBooted = true // all done!
 		}
+	}
+	_overridable_init_loadStateFromModel(
+		passwordModel_doc, 
+		fn // (err?) -> Void
+	)
+	{ // see PasswordAndUserMetaController
+		const self = this
+		fn(null) // no err
 	}
 	//
 	//
@@ -383,11 +391,20 @@ class PasswordController extends EventEmitter
 										return
 									}
 									//
-									self._didObtainPassword(existingPassword) // hang onto pw and set state
-									//
-									// yes, that looks good
-									self.unguard_getNewOrExistingPassword()
-									self.emit(self.EventName_ObtainedCorrectExistingPassword())
+									self._didObtainPassword(
+										existingPassword,
+										function(err)
+										{
+											if (err) {
+												self.unguard_getNewOrExistingPassword()
+												self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
+												return
+											}
+											// yes, that looks good
+											self.unguard_getNewOrExistingPassword()
+											self.emit(self.EventName_ObtainedCorrectExistingPassword())
+										}
+									) // hang onto pw and set state
 								}
 							)
 						}
@@ -549,11 +566,8 @@ class PasswordController extends EventEmitter
 				//
 				// II. hang onto new pw, pw type, and state(s)
 				console.log("💬  Obtained " + userSelectedTypeOfPassword + " '" + obtainedPasswordString + "'")
-				self._didObtainPassword(obtainedPasswordString) // save to self and flip state
-				self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
-				//
-				// III. finally, save doc so we know a pw has been entered once before
-				self.saveToDisk(
+				self._didObtainPassword(
+					obtainedPasswordString,
 					function(err)
 					{
 						if (err) {
@@ -562,19 +576,33 @@ class PasswordController extends EventEmitter
 							self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 							return
 						}
-						self.unguard_getNewOrExistingPassword()
-						{ // detecting & emiting first set or change
-							if (wasFirstSetOfPasswordAtRuntime === true) {
-								self.emit(self.EventName_SetFirstPasswordDuringThisRuntime(), self.password, self.userSelectedTypeOfPassword)
-							} else {
-								self.emit(self.EventName_ChangedPassword(), self.password, self.userSelectedTypeOfPassword)
+						self.userSelectedTypeOfPassword = userSelectedTypeOfPassword
+						//
+						// III. finally, save doc so we know a pw has been entered once before
+						self.saveToDisk(
+							function(err)
+							{
+								if (err) {
+									self.unguard_getNewOrExistingPassword()
+									self.password = undefined // they'll have to try again
+									self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+									return
+								}
+								self.unguard_getNewOrExistingPassword()
+								{ // detecting & emiting first set or change
+									if (wasFirstSetOfPasswordAtRuntime === true) {
+										self.emit(self.EventName_SetFirstPasswordDuringThisRuntime(), self.password, self.userSelectedTypeOfPassword)
+									} else {
+										self.emit(self.EventName_ChangedPassword(), self.password, self.userSelectedTypeOfPassword)
+									}
+								}
+								{ // general purpose emit
+									self.emit(self.EventName_ObtainedNewPassword(), self.password, self.userSelectedTypeOfPassword)
+								}
 							}
-						}
-						{ // general purpose emit
-							self.emit(self.EventName_ObtainedNewPassword(), self.password, self.userSelectedTypeOfPassword)
-						}
+						)
 					}
-				)
+				) // save to self and flip state
 			}
 		)
 	}
@@ -629,16 +657,26 @@ class PasswordController extends EventEmitter
 					userSelectedTypeOfPassword: self.userSelectedTypeOfPassword,
 					encryptedMessageForUnlockChallenge: self.encryptedMessageForUnlockChallenge
 				}
-				// console.log("modelObject" , modelObject)
-				// insert & update fn declarations for imminent usage…
-				if (self._id === null || typeof self._id === 'undefined') {
-					_proceedTo_insertNewDocument(persistableDocument)
-				} else {
-					_proceedTo_updateExistingDocument(persistableDocument)
-				}
+				self._overridable_finalized_persistableDocument(
+					persistableDocument, 
+					function(err, finalized_persistableDocument)
+					{
+						if (err) {
+							throw err
+							fn(err)
+							return
+						}
+						// console.log("modelObject" , modelObject)
+						// insert & update fn declarations for imminent usage…
+						if (self._id === null || typeof self._id === 'undefined') {
+							_proceedTo_insertNewDocument(finalized_persistableDocument)
+						} else {
+							_proceedTo_updateExistingDocument(finalized_persistableDocument)
+						}
+					}
+				)
 			}
 		)
-
 		function _proceedTo_insertNewDocument(persistableDocument)
 		{
 			self.context.persister.InsertDocument(
@@ -718,15 +756,44 @@ class PasswordController extends EventEmitter
 			)
 		}
 	}
+	_overridable_finalized_persistableDocument(
+		persistableDocument_in,
+		fn // (err?, finalized_persistableDocument?) -> Void
+	)
+	{
+		const finalized_persistableDocument = persistableDocument_in
+		fn(null, finalized_persistableDocument) // no err
+	}
 	//
 	//
 	// Runtime - Delegation - Obtained password
 	//
-	_didObtainPassword(password)
+	_didObtainPassword(
+		password, 
+		fn // (err?) -> Void
+	)
 	{
+		fn = fn || function(err){} 
+		//
 		const self = this
+		const existing_hasUserEverEnteredPassword = self.hasUserEverEnteredPassword
 		self.password = password
 		self.hasUserEverEnteredPassword = true // we can now flip this to true
+		//
+		const waiting_passwordModel_doc = self._initial_waitingForFirstPWEntryDecode_passwordModel_doc
+		if (typeof waiting_passwordModel_doc !== 'undefined' && waiting_passwordModel_doc !== null) {
+			self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = null // zero so we don't do this more than once
+			//
+			self._overridable_init_loadStateFromModel(
+				waiting_passwordModel_doc,
+				function(err)
+				{
+					fn(err)
+				}
+			)
+		} else {
+			fn() // no err, return immediately
+		}
 	}
 	//
 	//
