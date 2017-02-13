@@ -64,6 +64,12 @@ function NewHydratedContext(context_object_instantiation_descriptions, initialCo
 			continue
 		}
 		context[description.instance_key] = instance
+		//
+		const aliases = description.aliases || []
+		for (var idx in aliases) {
+			const alias = aliases[idx]
+			context[alias] = instance
+		}
 	}
 	var context_keys = Object.keys(context)
 	for (var i in context_keys) {
