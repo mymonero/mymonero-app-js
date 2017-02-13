@@ -125,7 +125,7 @@ class EnterExistingPasswordView extends View
 				function(event)
 				{
 					const value = layer.value
-					var submitEnabled;
+					var submitEnabled; // TODO: factor this ala set_needsUpdate with canEnable etc
 					if (typeof value === 'undefined' || value === null || value === "") {
 						submitEnabled = false
 					} else {
@@ -228,7 +228,12 @@ class EnterExistingPasswordView extends View
 				}
 			)
 		}
-		view.SetEnabled(false) // need to enter PW first
+		const passwordInputVapue = self.passwordInputLayer.value
+		var canEnable = true
+		if (typeof passwordInputVapue === 'undefined' || passwordInputVapue === null || passwordInputVapue === "") {
+			canEnable = false // need to enter PW first
+		}
+		view.SetEnabled(canEnable) 
 		return view
 	}
 	//
