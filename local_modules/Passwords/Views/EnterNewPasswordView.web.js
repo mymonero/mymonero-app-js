@@ -269,7 +269,7 @@ class EnterNewPasswordView extends View
 	ClearValidationMessage()
 	{
 		const self = this
-		self.confirmPasswordInputLayer.style.border = "none"//todo: factor this into method on component
+		self.confirmPasswordInputLayer.style.border = "1px solid rgba(0,0,0,0)"//todo: factor this into method on component
 		self.validationMessageLayer.style.display = "none"
 		self.validationMessageLayer.innerHTML = ""
 	}

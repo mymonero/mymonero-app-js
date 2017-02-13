@@ -61,7 +61,6 @@ class EnterExistingPasswordView extends View
 	{
 		const self = this
 		self._setup_self_layer()
-		self._setup_validationMessageLayer()
 		self._setup_inputFieldGroup()
 	}
 	_setup_self_layer()
@@ -83,23 +82,13 @@ class EnterExistingPasswordView extends View
 			}
 		)
 	}
-	_setup_validationMessageLayer()
-	{ // validation message
-		const self = this
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
-		layer.ClearAndHideMessage()
-		layer.style.position = "absolute" // so as not to mess w/ layout
-		layer.style.width = "100%"
-		self.validationMessageLayer = layer
-		self.layer.appendChild(layer)				
-	}
 	_setup_inputFieldGroup()
 	{
 		const self = this
 		const table = document.createElement("table") // cause table are amazing
 		table.style.height = "100%"
 		table.style.width = "100%"
-		table.style.marginTop = "-26px" // to get visual offset
+		table.style.marginTop = "-26px" // to get exact visual offset
 		const tr = document.createElement("tr")
 		tr.style.width = "100%"
 		tr.style.height = "100%"
@@ -111,6 +100,32 @@ class EnterExistingPasswordView extends View
 		const containerLayer = document.createElement("div")
 		containerLayer.style.width = "272px"
 		containerLayer.style.textAlign = "left"
+		{
+			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
+			const layer = commonComponents_forms.New_fieldTitle_labelLayer(passwordType_humanReadableString.toUpperCase(), self.context) // note use of _forms.
+			layer.style.width = "auto"
+			layer.style.display = "inline-block"
+			layer.style.float = "left"
+			layer.style.marginTop = "0"
+			self.passwordInputLabelLayer = layer
+			containerLayer.appendChild(layer)
+		}
+		{ // 'Forgot?' btn
+			const view = commonComponents_tables.New_clickableLinkButtonView(
+				"Forgot?", 
+				self.context, 
+				function()
+				{
+					self._pushForgotPasswordView()
+				}
+			)
+			const layer = view.layer
+			layer.style.margin = "0 9px 0 0" 
+			
+			layer.style.display = "inline-block"
+			layer.style.float = "right"
+			containerLayer.appendChild(layer)
+		}
 		{
 			var layer = commonComponents_forms.New_fieldValue_textInputLayer({
 				placeholderText: "To continue",
@@ -142,10 +157,11 @@ class EnterExistingPasswordView extends View
 			)
 			containerLayer.appendChild(layer)
 		}
-		{ // 'Forgot?' btn
-			const view = self._new_forgotLinkView()
-			const a = view.layer
-			containerLayer.appendChild(a)
+		{
+			const layer = commonComponents_forms.New_fieldAccessory_validationMessageLayer(self.context)
+			layer.style.height = "24px"
+			self.validationMessageLayer = layer
+			containerLayer.appendChild(layer)
 		}
 		td.appendChild(containerLayer)
 		tr.appendChild(td)
@@ -238,23 +254,6 @@ class EnterExistingPasswordView extends View
 	}
 	//
 	//
-	// Runtime - Accessors 
-	//
-	_new_forgotLinkView()
-	{
-		const self = this
-		const view = commonComponents_tables.New_clickableLinkButtonView(
-			"Forgot?", 
-			self.context, 
-			function()
-			{
-				self._pushForgotPasswordView()
-			}
-		)
-		return view
-	}
-	//
-	//
 	// Runtime - Imperatives - Interface - Configuration 
 	//
 	SetValidationMessage(validationMessageString)
@@ -265,13 +264,13 @@ class EnterExistingPasswordView extends View
 			return
 		}
 		self.passwordInputLayer.style.border = "1px solid #f97777"
-		self.validationMessageLayer.SetValidationError(validationMessageString || "")
+		self.validationMessageLayer.innerHTML = validationMessageString
 	}
 	ClearValidationMessage()
 	{
 		const self = this
-		self.passwordInputLayer.style.border = "none"//todo: factor this into method on component
-		self.validationMessageLayer.SetValidationError("")
+		self.passwordInputLayer.style.border = "1px solid rgba(0,0,0,0)"//todo: factor this into method on component
+		self.validationMessageLayer.innerHTML = ""
 	}
 	//
 	//

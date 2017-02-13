@@ -46,7 +46,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 	{
 		layer.innerHTML = labelText
 		layer.style.display = "block" // own line
-		layer.style.margin = "18px 0 9px 11px"
+		layer.style.margin = "18px 0 8px 11px"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "11px"
 		layer.style.color = "#f8f7f8"
@@ -80,11 +80,11 @@ function New_fieldValue_textInputLayer(params)
 			layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
 		}
 		layer.style.borderRadius = "4px"
+		layer.style.border = "1px solid rgba(0,0,0,0)" // transparent border to preserve layout while showing validation clr border
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
 		layer.style.padding = `0 ${padding_h}px`
 		layer.style.fontFamily = "monospace"
-		layer.style.border = "none"
 		layer.style.outline = "none" // no focus ring
 	}
 	{
@@ -208,7 +208,7 @@ function New_fieldAccessory_messageLayer(context)
 	layer.style.fontSize = "11px"
 	layer.style.lineHeight = "15px"
 	layer.style.fontWeight = "100"
-	layer.style.margin = "8px 9px 0 9px"
+	layer.style.margin = "7px 9px 0 9px"
 	layer.style.color = "#8d8b8d"
 	return layer
 }
