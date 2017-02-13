@@ -63,6 +63,7 @@ class TabBarAndContentView extends View
 					const layer = view.layer
 					layer.style.webkitAppRegion = "drag" // make draggable
 					layer.style.webkitUserSelect = "none"
+					layer.style.position = "relative"
 				}
 				self.tabBarView = view
 				self.addSubview(view)
@@ -103,11 +104,15 @@ class TabBarAndContentView extends View
 	}	
 	//
 	//
-	// Runtime - Accessors - UI - Metrics - Overridable
+	// Runtime - Accessors - UI - Properties - Overridable
 	//
 	overridable_tabBarView_thickness()
 	{
 		return 75
+	}
+	overridable_isHorizontalBar()
+	{
+		return true
 	}
 	//
 	//
@@ -161,34 +166,54 @@ class TabBarAndContentView extends View
 			}
 		}
 		{ // add tab bar item button views, and new tabBarContentViews
-			const buttonSide_px = self.overridable_tabBarView_thickness()
+			const tabBarView_thickness = self.overridable_tabBarView_thickness()
 			to_tabBarContentViews.forEach(
 				function(to_tabBarContentView, idx)
 				{
+					var layer_baseStyleTemplate = {}
+					{
+						const lookup_fn = to_tabBarContentView.TabBarItem_layer_customStyle
+						if (typeof lookup_fn === 'function') {
+							const style = lookup_fn.apply(to_tabBarContentView)
+							if (style && typeof style !== 'undefined') {
+								layer_baseStyleTemplate = style
+							}
+						}
+					}
+					var icon_baseStyleTemplate = {}
+					{
+						const lookup_fn = to_tabBarContentView.TabBarItem_icon_customStyle
+						if (typeof lookup_fn === 'function') {
+							const style = lookup_fn.apply(to_tabBarContentView)
+							if (style && typeof style !== 'undefined') {
+								icon_baseStyleTemplate = style
+							}
+						}
+					}
 					{ // buttonView
 						const options = 
 						{
-							side_px: buttonSide_px
+							isHorizontalBar: self.overridable_isHorizontalBar(),
+							tabBarView_thickness: tabBarView_thickness,
+							//
+							layer_baseStyleTemplate: layer_baseStyleTemplate,
+							icon_baseStyleTemplate: icon_baseStyleTemplate
 						}
 						const buttonView = new TabBarItemButtonView(options, context)
-						{
-							buttonView.on(
-								buttonView.EventName_clicked(),
-								function(tabBarItemButtonView)
-								{								
-									const index = self._tabBarItemButtonViews.indexOf(tabBarItemButtonView)
-									if (index === -1) {
-										throw "heard tab bar item outside of list clicked"
-										return
-									}
-									self.SelectTabBarItemAtIndex(index)
+						buttonView.on(
+							buttonView.EventName_clicked(),
+							function(tabBarItemButtonView)
+							{								
+								const index = self._tabBarItemButtonViews.indexOf(tabBarItemButtonView)
+								if (index === -1) {
+									throw "heard tab bar item outside of list clicked"
+									return
 								}
-							)
-						}
-						{
-							self._tabBarItemButtonViews.push(buttonView)
-							self.tabBarView.addSubview(buttonView)
-						}
+								self.SelectTabBarItemAtIndex(index)
+							}
+						)
+						self._tabBarItemButtonViews.push(buttonView)
+						self.tabBarView.addSubview(buttonView)
 					}
 					{ // and hang onto the content view itself
 						self._tabBarContentViews.push(to_tabBarContentView)

@@ -28,51 +28,57 @@
 //
 "use strict"
 //
-const TabBarAndContentView = require('./TabBarAndContentView.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
-class LeftSideTabBarAndContentView extends TabBarAndContentView
+class SettingsTabContentView extends StackAndModalNavigationView
 {
 	constructor(options, context)
 	{
 		super(options, context)
 	}
 	setup()
-	{ // ^ called automatically by super, so
+	{
+		super.setup() // we must call on super
 		const self = this
-		super.setup() // must call this
 		{
-			const layer = self.layer
-			layer.style.position = "relative"
-			layer.style.left = "0px"
-			layer.style.right = "0px"
-			layer.style.width = "100%"
-			layer.style.height = "100%"
-		}
-		const tabBarView_thickness = self.overridable_tabBarView_thickness()
-		{
-			const layer = self.tabBarView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = "0px"
-			layer.style.width = `${tabBarView_thickness}px`
-			layer.style.height = "100%"
+			const SettingsView = require('./SettingsView.web')
+			const view = new SettingsView({}, self.context)
+			self.settingsView = view
 		}
 		{
-			const layer = self.contentAreaView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = `${tabBarView_thickness}px`
-			layer.style.width = `calc(100% - ${tabBarView_thickness}px)`
-			layer.style.height = "100%"
+			self.SetStackViews(
+				[
+					self.settingsView
+				]
+			)
 		}
 	}
 	//
 	//
-	// Overrides
+	// Runtime - Accessors - Implementation of TabBarItem protocol - custom tab bar item styling
 	//
-	overridable_isHorizontalBar()
+	TabBarItem_layer_customStyle()
 	{
-		return false // a vertical bar
+		const self = this
+		return {
+			position: "absolute", // we can get away with doing this because the tab bar won't move
+			left: "0",
+			bottom: "20px", // for desktop, anyway
+		}
+	}
+	TabBarItem_icon_customStyle()
+	{
+		const self = this
+		return {
+			// position: "absolute", // we can get away with doing this because the tab bar won't move
+			// bottom: "20px" // for desktop, anyway
+		}
 	}
 }
-module.exports = LeftSideTabBarAndContentView
+module.exports = SettingsTabContentView
+
+
+
+
+
+

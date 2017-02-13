@@ -1,0 +1,274 @@
+// Copyright (c) 2014-2017, MyMonero.com
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification, are
+// permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of
+//	conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list
+//	of conditions and the following disclaimer in the documentation and/or other
+//	materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be
+//	used to endorse or promote products derived from this software without specific
+//	prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+"use strict"
+//
+const EventEmitter = require('events')
+//
+const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
+const settings_persistence_utils = require('./settings_persistence_utils')
+//
+class SettingsRecord extends EventEmitter
+{
+	//
+	//
+	// Setup
+	//
+	constructor(options, context)
+	{
+		super() // must call super before we can access `this`
+		//
+		var self = this
+		self.options = options
+		self.context = context
+		//
+		self.hasBooted = false
+		//
+		self.setup()
+	}
+	setup()
+	{
+		var self = this
+		//
+		self._id = self.options._id || null // initialize to null if creating new document
+		self.persistencePassword = self.options.persistencePassword
+		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null) {
+			setTimeout(function()
+			{ // wait til next tick so that instantiator cannot have missed this
+				self.emit(self.EventName_errorWhileBooting(), new Error("You must supply an options.persistencePassword to your " + self.constructor.name + " instance"))
+			})
+			return
+		}
+		if (self._id === null || typeof self._id === 'undefined') { // must create new
+			self._setup_newDocument()
+		} else { // document supposedly already exists. Let's look it up…
+			self._setup_fetchExistingDocumentWithId()
+		}
+	}
+	__setup_didBoot()
+	{
+		const self = this
+		{
+			self.hasBooted = true
+		}
+		setTimeout(function()
+		{ // wait til next tick so that instantiator cannot have missed this
+			self.emit(self.EventName_booted())
+		})
+	}
+	__setup_didFailToBoot(err)
+	{
+		const self = this
+		{
+			self.didFailToInitialize_flag = true
+			self.didFailToInitialize_errOrNil = err
+			//
+			self.didFailToBoot_flag = true
+			self.didFailToBoot_errOrNil = err
+		}
+		setTimeout(function()
+		{ // wait til next tick so that instantiator cannot have missed this
+			self.emit(self.EventName_errorWhileBooting(), err)
+		})
+	}		
+	_setup_newDocument()
+	{
+		const self = this
+		{
+			self.serverURL = self.options.serverURL || "",
+			self.appTimeoutAfterS = self.options.appTimeoutAfterS || 20,
+			self.notifyMeWhen = self.options.notifyMeWhen || {},
+			self.syncWithServer = self.options.syncWithServer || {}
+		}
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save", self.constructor.name, err)
+					self.__setup_didFailToBoot(err)
+					return
+				}
+				console.log("📝  Successfully saved new " + self.constructor.name + ".")
+				self.__setup_didBoot()
+			}
+		)
+	}
+	_setup_fetchExistingDocumentWithId()
+	{
+		const self = this
+		self.context.persister.DocumentsWithQuery(
+			settings_persistence_utils.CollectionName,
+			{ _id: self._id }, // cause we're saying we have an _id passed in…
+			{},
+			function(err, docs)
+			{
+				if (err) {
+					console.error(err.toString())
+					self.__setup_didFailToBoot(err)
+					return
+				}
+				if (docs.length === 0) {
+					const errStr = "❌  " + self.constructor.name + " with that _id not found."
+					const err = new Error(errStr)
+					console.error(errStr)
+					self.__setup_didFailToBoot(err)
+					return
+				}
+				const encryptedDocument = docs[0]
+				__proceedTo_decryptEncryptedDocument(encryptedDocument)
+			}
+		)
+		function __proceedTo_decryptEncryptedDocument(encryptedDocument)
+		{
+			self.context.document_cryptor__background.New_DecryptedDocument__Async(
+				encryptedDocument,
+				settings_persistence_utils.DocumentCryptScheme,
+				self.persistencePassword,
+				function(err, plaintextDocument)
+				{
+					if (err) {
+						console.error("❌  Decryption err: " + err.toString())
+						self.__setup_didFailToBoot(err)
+						return
+					}
+					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+				}
+			)
+		}
+		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
+		{ // reconstituting state…
+			settings_persistence_utils.HydrateInstance(
+				self,
+				plaintextDocument
+			)
+			__proceedTo_validateHydration()
+		}
+		function __proceedTo_validateHydration()
+		{
+			function _failWithValidationErr(errStr)
+			{
+				const err = new Error(errStr)
+				console.error(errStr)
+				self.__setup_didFailToBoot(err)
+			}
+			// we *could* check if fullname and possibly XMR addr are empty/undef here but not much need/reason
+			// and might lead to awkward UX
+			//
+			// all done
+			self.__setup_didBoot()
+		}
+	}
+	//
+	//
+	// Lifecycle - Teardown
+	//
+	TearDown()
+	{
+		const self = this
+		// no .on calls in self (yet) so nothing to do here
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - Public
+
+	Description()
+	{
+		const self = this
+		//
+		return `${self.constructor.name}<${self._id}> URI: ${self.uri}.`
+	}
+	//
+	EventName_booted()
+	{
+		return "EventName_booted"
+	}
+	EventName_errorWhileBooting()
+	{
+		return "EventName_errorWhileBooting"
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Private - Persistence
+
+	saveToDisk(fn)
+	{
+		const self = this
+		settings_persistence_utils.SaveToDisk(
+			self,
+			fn
+		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Deletion
+
+	Delete(
+		fn // (err?) -> Void
+	)
+	{
+		const self = this
+		settings_persistence_utils.DeleteFromDisk(
+			self,
+			fn
+		)
+	}
+	
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Imperatives - Public - Changing password
+
+	ChangePasswordTo(
+		changeTo_persistencePassword,
+		fn
+	)
+	{
+		const self = this
+		const old_persistencePassword = self.persistencePassword
+		self.persistencePassword = changeTo_persistencePassword
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to change password with error", err)
+					self.persistencePassword = old_persistencePassword // revert
+				} else {
+					console.log("Successfully changed password.")
+				}
+				fn(err)
+			}
+		)
+	}
+}
+module.exports = SettingsRecord

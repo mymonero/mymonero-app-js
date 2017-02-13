@@ -31,10 +31,10 @@
 const async = require('async')
 const EventEmitter = require('events')
 //
-const FundsRequest = require('../Models/FundsRequest')
-const fundsRequest_persistence_utils = require('../Models/fundsRequest_persistence_utils')
+const SettingsRecord = require('../Models/SettingsRecord')
+const settings_persistence_utils = require('../Models/settings_persistence_utils')
 //
-class FundsRequestsListController extends EventEmitter
+class SettingsController extends EventEmitter
 {
 
 
@@ -117,24 +117,24 @@ class FundsRequestsListController extends EventEmitter
 	{
 		const self = this
 		{ // load
-			self._new_idsOfPersisted_fundsRequests(
+			self._new_idsOfPersisted_records(
 				function(err, ids)
 				{
 					if (err) {
-						console.error("Error fetching list of saved fundsRequests: " + err.toString())
+						console.error("Error fetching list of saved records: " + err.toString())
 						setTimeout(function()
 						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 							self.emit(self.EventName_errorWhileBooting(), err)
 						})
 						return
 					}
-					__proceedTo_load_fundsRequestsWithIds(ids)
+					__proceedTo_load_recordsWithIds(ids)
 				}
 			)
 		}
-		function __proceedTo_load_fundsRequestsWithIds(ids)
+		function __proceedTo_load_recordsWithIds(ids)
 		{
-			self.fundsRequests = []
+			self.records = []
 			//
 			if (ids.length === 0) { // then don't cause the pw to be requested yet
 				self._setup_didBoot()
@@ -149,7 +149,7 @@ class FundsRequestsListController extends EventEmitter
 		}
 		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(ids, persistencePassword)
 		{
-			// TODO: optimize by parallelizing and sorting after
+	
 			async.eachSeries(
 				ids,
 				function(_id, cb)
@@ -159,26 +159,26 @@ class FundsRequestsListController extends EventEmitter
 						_id: _id,
 						persistencePassword: persistencePassword
 					}
-					const instance = new FundsRequest(options, self.context)
+					const instance = new SettingsRecord(options, self.context)
 					instance.on(instance.EventName_booted(), function()
 					{
-						// we are going to take responsibility to manually add fundsRequest and emit event below when all done
-						self.fundsRequests.push(instance)
+						// we are going to take responsibility to manually add record and emit event below when all done
+						self.records.push(instance)
 						cb()
 					})
 					instance.on(instance.EventName_errorWhileBooting(), function(err)
 					{
-						console.error("Failed to read fundsRequest ", err)
+						console.error("Failed to read record ", err)
 						//
 						// we're not going to pass this err through though because it will prevent booting... we'll mark the instance as 'errored'
-						self.fundsRequests.push(instance)
+						self.records.push(instance)
 						cb() 
 					})
 				},
 				function(err)
 				{
 					if (err) {
-						console.error("Error while loading saved fundsRequests: " + err.toString())
+						console.error("Error while loading saved records: " + err.toString())
 						setTimeout(function()
 						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 							self.emit(self.EventName_errorWhileBooting(), err)
@@ -190,7 +190,7 @@ class FundsRequestsListController extends EventEmitter
 					//
 					setTimeout(function()
 					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-						self.__listUpdated_fundsRequests() // emit after booting so this becomes an at-runtime emission
+						self.__listUpdated() // emit after booting so this becomes an at-runtime emission
 					})
 				}
 			)
@@ -275,120 +275,33 @@ class FundsRequestsListController extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Public - Runtime - State - FundsRequests list
+	// Public - Runtime - State - Accessing settings record
 
-	WhenBooted_FundsRequests(fn)
+	WhenBooted_SettingsRecord(fn)
 	{
 		const self = this
 		self.ExecuteWhenBooted(
 			function()
 			{
-				fn(self.fundsRequests)
-			}
-		)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Booted - Imperatives - Public - List management
-
-	WhenBooted_AddFundsRequest(
-		to_address,
-		payment_id,
-		amount,
-		message,
-		description,
-		fn // fn: (err: Error?, instance: FundsRequest?) -> Void
-	)
-	{
-		const self = this
-		self.ExecuteWhenBooted(
-			function()
-			{
-				self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
-					function(obtainedPasswordString, userSelectedTypeOfPassword)
-					{
-						const options =
-						{
-							persistencePassword: obtainedPasswordString,
-							//
-							to_address: to_address,
-							payment_id: payment_id,
-							amount: amount,
-							message: message,
-							description: description
-						}
-						const instance = new FundsRequest(options, self.context)
-						instance.on(instance.EventName_booted(), function()
-						{
-							self._atRuntime_fundsRequest_wasSuccessfullySetUp(instance)
-							fn(null, instance)
-						})
-						instance.on(instance.EventName_errorWhileBooting(), function(err)
-						{
-							fn(err)
-						})
-					}
-				)
-			}
-		)
-	}
-	WhenBooted_DeleteFundsRequestWithId(
-		_id,
-		fn // fn: (err: Error?) -> Void
-	)
-	{
-		const self = this
-		const fundsRequests_length = self.fundsRequests.length
-		self.ExecuteWhenBooted(
-			function()
-			{
-				var indexOfFundsRequest = null;
-				var fundsRequestToDelete = null;
-				for (let i = 0 ; i < fundsRequests_length ; i++) {
-					const fundsRequest = self.fundsRequests[i]
-					if (fundsRequest._id === _id) {
-						indexOfFundsRequest = i
-						fundsRequestToDelete = fundsRequest
-						break
-					}
+				if (self.records.length > 0) {
+					fn(self.records[0])
+				} else {
+					fn({})
 				}
-				if (indexOfFundsRequest === null || fundsRequestToDelete === null) {
-					fn(new Error("FundsRequest not found"))
-					return
-				}
-				//
-				self.fundsRequests.splice(indexOfFundsRequest, 1) // pre-emptively remove the fundsRequest from the list
-				self.__listUpdated_fundsRequests() // ensure delegate notified
-				//
-				fundsRequestToDelete.Delete(
-					function(err)
-					{
-						if (err) {
-							self.fundsRequests.splice(indexOfFundsRequest, 0, fundsRequestToDelete) // revert deletion
-							self.__listUpdated_fundsRequests() // ensure delegate notified
-							fn(err)
-							return
-						}
-						fundsRequestToDelete = null // free
-						fn()
-					}
-				)
 			}
 		)
 	}
-
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 
-	_new_idsOfPersisted_fundsRequests(
+	_new_idsOfPersisted_records(
 		fn // (err?, ids?) -> Void
 	)
 	{
 		const self = this
 		self.context.persister.DocumentsWithQuery(
-			fundsRequest_persistence_utils.CollectionName,
+			settings_persistence_utils.CollectionName,
 			{}, // blank query - find all
 			{},
 			function(err, docs)
@@ -416,14 +329,13 @@ class FundsRequestsListController extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private
 
-	_atRuntime_fundsRequest_wasSuccessfullySetUp(instance)
+	_atRuntime_record_wasSuccessfullySetUp(instance)
 	{
 		const self = this
-		self.fundsRequests.push(instance)
-		self.__listUpdated_fundsRequests() // ensure delegate notified
+		self.records.push(instance)
+		self.__listUpdated() // ensure delegate notified
 	}
-
-	__listUpdated_fundsRequests()
+	__listUpdated()
 	{
 		const self = this
 		self.emit(self.EventName_listUpdated())
@@ -436,13 +348,13 @@ class FundsRequestsListController extends EventEmitter
 	_passwordController_EventName_ChangedPassword()
 	{
 		const self = this
-		// change all fundsRequest passwords:
+		// change all records passwords:
 		const toPassword = self.context.passwordController.password // we're just going to directly access it here because getting this event means the passwordController is also saying it's ready
-		self.fundsRequests.forEach(
-			function(fundsRequest, i)
+		self.records.forEach(
+			function(record, i)
 			{
-				if (fundsRequest.didFailToInitialize_flag !== true && fundsRequest.didFailToBoot_flag !== true) {
-					fundsRequest.ChangePasswordTo(
+				if (record.didFailToInitialize_flag !== true && record.didFailToBoot_flag !== true) {
+					record.ChangePasswordTo(
 						toPassword,
 						function(err)
 						{
@@ -451,7 +363,7 @@ class FundsRequestsListController extends EventEmitter
 						}
 					)
 				} else {
-					console.warn("This fundsRequest failed to boot. Not messing with its saved data")
+					console.warn("This record failed to boot. Not messing with its saved data")
 				}
 			}
 		)
@@ -459,13 +371,13 @@ class FundsRequestsListController extends EventEmitter
 	_passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
 	{
 		const self = this
-		self.fundsRequests.forEach(
+		self.records.forEach(
 			function(instance, i)
 			{
 				instance.TearDown()
 			}
 		)
-		self.fundsRequests = []
+		self.records = []
 		self.hasBooted = false
 	}
 	_passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
@@ -478,8 +390,8 @@ class FundsRequestsListController extends EventEmitter
 			self._setup_fetchAndReconstituteExistingRecords()
 		}
 		{ // and then at the end we're going to emit so that the UI updates to empty list after the pw entry screen is shown
-			self.__listUpdated_fundsRequests()
+			self.__listUpdated()
 		}
 	}
 }
-module.exports = FundsRequestsListController
+module.exports = SettingsController

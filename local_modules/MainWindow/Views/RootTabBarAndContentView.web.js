@@ -87,12 +87,18 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				const view = new ContactsTabContentView(options, context)
 				self.contactsTabContentView = view
 			}
+			{ // SettingsView
+				const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
+				const view = new SettingsTabContentView({}, context)
+				self.settingsTabContentView = view
+			}
 			self.SetTabBarContentViews(
 				[
 					self.walletsTabContentView,
 					self.sendTabContentView,
 					self.requestTabContentView,
-					self.contactsTabContentView
+					self.contactsTabContentView,
+					self.settingsTabContentView
 				]
 			)
 		}
@@ -225,19 +231,26 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 	//
 	// Runtime - Imperatives - Tab selection
 	//
+	_selectTab_withContentView(tabBarContentView)
+	{
+		const index = self.IndexOfTabBarContentView(tabBarContentView)
+		self.SelectTabBarItemAtIndex(index)
+	}
 	selectTab_sendFunds()
 	{
 		const self = this
-		const tabBarContentView = self.sendTabContentView
-		const index = self.IndexOfTabBarContentView(tabBarContentView)
-		self.SelectTabBarItemAtIndex(index)
+		self._selectTab_withContentView(self.sendTabContentView)
 	}
 	selectTab_requestFunds()
 	{
 		const self = this
-		const tabBarContentView = self.requestTabContentView
-		const index = self.IndexOfTabBarContentView(tabBarContentView)
-		self.SelectTabBarItemAtIndex(index)
+		self._selectTab_withContentView(self.requestTabContentView)
+	}
+	//
+	selectTab_settings()
+	{
+		const self = this
+		self._selectTab_withContentView(self.settingsTabContentView)
 	}
 }
 module.exports = RootTabBarAndContentView

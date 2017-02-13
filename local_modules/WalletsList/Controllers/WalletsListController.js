@@ -163,10 +163,10 @@ class WalletsListController extends EventEmitter
 			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
 				function(obtainedPasswordString, userSelectedTypeOfPassword)
 				{
-					__proceedTo_loadAndBootAllExtantWalletsWithPassword(obtainedPasswordString)
+					__proceedTo_loadAndBootAllExtantRecordsWithPassword(obtainedPasswordString)
 				}
 			)
-			function __proceedTo_loadAndBootAllExtantWalletsWithPassword(persistencePassword)
+			function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
 			{
 				async.each(
 					ids,

@@ -76,6 +76,11 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
+		module_path: __dirname + "/../../Settings/Controllers/SettingsController",
+		instance_key: "settingsController",
+		options: {}
+	},
+	{
 		module_path: __dirname + "/../../UserIdle/UserIdleInWindowController",
 		instance_key: "userIdleInWindowController",
 		options: {}

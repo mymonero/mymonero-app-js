@@ -39,7 +39,11 @@ class TabBarItemButtonView extends View
 		super(options, context)
 		const self = this
 		{
-			self.side_px = options.side_px || 44
+			self.isHorizontalBar = typeof options.isHorizontalBar !== 'undefined' ? options.isHorizontalBar : true
+			self.tabBarView_thickness = options.tabBarView_thickness
+			//
+			self.layer_baseStyleTemplate = options.layer_baseStyleTemplate || {}
+			self.icon_baseStyleTemplate = options.icon_baseStyleTemplate || {}
 		}
 		self.setup()
 	}
@@ -54,14 +58,30 @@ class TabBarItemButtonView extends View
 	}
 	setup_views()
 	{
+		function __applyStylesToLayer(styles, layer)
+		{
+			const styles_keys = Object.keys(styles)
+			const numberOf_styles_keys = styles_keys.length
+			for (let i = 0 ; i < numberOf_styles_keys ; i++) {
+				const key = styles_keys[i]
+				const value = styles[key]
+				layer.style[key] = value
+			}
+		}
 		const self = this
 		{
 			const layer = self.layer
 			layer.style.display = "inline-block"
 			layer.style.position = "relative"
 			layer.style.webkitAppRegion = "no-drag" // make clickable
-			layer.style.width = `${self.side_px}px`
-			layer.style.height = `${self.side_px}px`
+			if (self.isHorizontalBar) {
+				layer.style.width = `58px`
+				layer.style.height = `${self.tabBarView_thickness}px`
+			} else {
+				layer.style.width = `${self.tabBarView_thickness}px`
+				layer.style.height = `58px`
+			}
+			__applyStylesToLayer(self.layer_baseStyleTemplate, self.layer)
 		}
 		{ // icon
 			const layer = document.createElement("img")
@@ -72,6 +92,7 @@ class TabBarItemButtonView extends View
 			}
 			self.iconImageLayer = layer
 			self.layer.appendChild(self.iconImageLayer)
+			__applyStylesToLayer(self.icon_baseStyleTemplate, self.iconImageLayer)
 		}
 		{ // observation
 			self.layer.addEventListener(

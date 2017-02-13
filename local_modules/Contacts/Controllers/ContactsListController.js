@@ -139,11 +139,11 @@ class ContactsListController extends EventEmitter
 			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
 				function(obtainedPasswordString, userSelectedTypeOfPassword)
 				{
-					__proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, obtainedPasswordString)
+					__proceedTo_loadAndBootAllExtantRecordsWithPassword(ids, obtainedPasswordString)
 				}
 			)
 		}
-		function __proceedTo_loadAndBootAllExtantWalletsWithPassword(ids, persistencePassword)
+		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(ids, persistencePassword)
 		{
 			// TODO: optimize by parallelizing and sorting after
 			async.eachSeries(
