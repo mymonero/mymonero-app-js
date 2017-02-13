@@ -228,9 +228,9 @@ class EnterExistingPasswordView extends View
 				}
 			)
 		}
-		const passwordInputVapue = self.passwordInputLayer.value
+		const passwordInputValue = self.passwordInputLayer.value
 		var canEnable = true
-		if (typeof passwordInputVapue === 'undefined' || passwordInputVapue === null || passwordInputVapue === "") {
+		if (typeof passwordInputValue === 'undefined' || passwordInputValue === null || passwordInputValue === "") {
 			canEnable = false // need to enter PW first
 		}
 		view.SetEnabled(canEnable) 
