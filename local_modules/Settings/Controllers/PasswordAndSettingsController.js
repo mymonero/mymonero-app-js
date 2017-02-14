@@ -47,6 +47,82 @@ class PasswordAndSettingsController extends PasswordController
 	}
 	//
 	//
+	// Runtime - Accessors
+	//
+	EventName_settingsChanged_serverURL()
+	{
+		return "EventName_settingsChanged_serverURL"
+	}
+	EventName_settingsChanged_appTimeoutAfterS()
+	{
+		return "EventName_settingsChanged_appTimeoutAfterS"
+	}
+	EventName_settingsChanged_notifyMeWhen()
+	{
+		return "EventName_settingsChanged_notifyMeWhen"
+	}
+	EventName_settingsChanged_syncWithServer()
+	{
+		return "EventName_settingsChanged_syncWithServer"
+	}
+	//
+	//
+	// Runtime - Imperatives
+	//
+	Set_settings_valuesByKey(
+		valuesByKey,
+		fn // (err?) -> Void
+	)
+	{
+		const self = this
+		const valueKeys = Object.keys(valuesByKey)
+		var didUpdate_serverURL = false
+		var didUpdate_appTimeoutAfterS = false
+		var didUpdate_notifyMeWhen = false
+		var didUpdate_syncWithServer = false
+		for (let valueKey of valueKeys) {
+			const value = valuesByKey[valueKey]
+			{ // validate / mark as updated for yield later
+				if (valueKey === "serverURL") {
+					didUpdate_serverURL = true
+				} else if (valueKey === "appTimeoutAfterS") {
+					didUpdate_appTimeoutAfterS = true
+				} else if (valueKey === "notifyMeWhen") {
+					didUpdate_notifyMeWhen = true
+				} else if (valueKey === "syncWithServer") {
+					didUpdate_syncWithServer = true
+				}
+			}
+			{ // set
+				self[valueKey] = value
+			}
+		}
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save new valuesByKey", err)
+				} else {
+					console.log("📝  Successfully saved " + self.constructor.name + " update ", JSON.stringify(valuesByKey))
+					if (didUpdate_serverURL) {
+						self.emit(self.EventName_settingsChanged_serverURL(), self.serverURL)
+					}
+					if (didUpdate_appTimeoutAfterS) {
+						self.emit(self.EventName_settingsChanged_appTimeoutAfterS(), self.appTimeoutAfterS)
+					}
+					if (didUpdate_notifyMeWhen) {
+						self.emit(self.EventName_settingsChanged_notifyMeWhen(), self.notifyMeWhen)
+					}
+					if (didUpdate_syncWithServer) {
+						self.emit(self.EventName_settingsChanged_syncWithServer(), self.syncWithServer)
+					}
+				}
+				fn(err)
+			}
+		)
+	}
+	//
+	//
 	// Overrides
 	//
 	_overridable_init_loadStateFromModel(

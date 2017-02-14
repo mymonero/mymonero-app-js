@@ -71,11 +71,11 @@ var context_object_instantiation_descriptions =
 	//
 	// app controllers
 	{// NOTE: Our passwordController is actually in the Settings module, as it is a subclass of PasswordController
-		// which handles/synchronizes metadata for rest of app
+		// which handles/synchronizes settings metadata for rest of app
 		module_path: __dirname + "/../../Settings/Controllers/PasswordAndSettingsController",
 		instance_key: "passwordController",
 		aliases: [
-			"userMetaController"
+			"settingsController"
 		],
 		options: {}
 	},
