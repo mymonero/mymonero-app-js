@@ -34,15 +34,31 @@ const BarButtonBaseView = require('../StackNavigation/Views/BarButtonBaseView.we
 function _New_ButtonBase_View(context)
 {
 	const view = new BarButtonBaseView({}, context)
+	view.SetEnabled(true)
 	return view
 }
 exports.New_ButtonBase_View = _New_ButtonBase_View
 //
-// TODO:
-// function New_GreyButtonView(context)
-// {
-//
-// }
+function New_GreyButtonView(context)
+{
+	const view = _New_ButtonBase_View(context)
+	const layer = view.layer
+	layer.style.height = "24px"
+	layer.style.borderRadius = "3px"
+	layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+	layer.style.backgroundColor = "#383638"
+	layer.style.border = "none"
+	layer.style.textDecoration = "none"
+	layer.style.fontSize = "13px"
+	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+	layer.style.lineHeight = "24px"
+	layer.style.color = "#fcfbfc"
+	layer.style.fontWeight = "500"
+	layer.style.textAlign = "center"
+	return view
+}
+exports.New_GreyButtonView = New_GreyButtonView
+// TODO
 // function New_BlueButtonView(context)
 // {
 //
@@ -77,35 +93,20 @@ exports.New_RightSide_AddButtonView = New_RightSide_AddButtonView
 //
 function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCancel)
 {
-	const view = _New_ButtonBase_View(context)
+	const view = New_GreyButtonView(context)
 	const layer = view.layer
 	{ // setup/style
-		layer.href = "#" // to make it clickable
-		//
 		const title = 
 			typeof title_orUndefinedForDefaultCancel === "undefined" 
 				|| title_orUndefinedForDefaultCancel === null 
 				|| title_orUndefinedForDefaultCancel === "" 
 			? "Cancel" : title_orUndefinedForDefaultCancel
 		layer.innerHTML = title
-	}
-	{
+		//
 		layer.style.display = "block"
 		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 		layer.style.marginTop = "10px"
 		layer.style.width = "60px"
-		layer.style.height = "24px"
-		layer.style.borderRadius = "3px"
-		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-		layer.style.backgroundColor = "#383638"
-		layer.style.border = "none"
-		layer.style.textDecoration = "none"
-		layer.style.fontSize = "13px"
-		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-		layer.style.lineHeight = "24px"
-		layer.style.color = "#fcfbfc"
-		layer.style.fontWeight = "500"
-		layer.style.textAlign = "center"
 	}
 	return view
 }
@@ -142,29 +143,13 @@ exports.New_RightSide_SaveButtonView = New_RightSide_SaveButtonView
 //
 function New_RightSide_EditButtonView(context)
 {
-	const view = _New_ButtonBase_View(context)
+	const view = New_GreyButtonView(context)
 	const layer = view.layer
-	{ // setup/style
-		layer.href = "#" // to make it clickable
-		layer.innerHTML = "Edit"
-	}
-	{
-		layer.style.display = "block"
-		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
-		layer.style.marginTop = "10px"
-		layer.style.width = "41px"
-		layer.style.height = "24px"
-		layer.style.borderRadius = "3px"
-		layer.style.backgroundColor = "#383638"
-		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-		layer.style.textDecoration = "none"
-		layer.style.fontSize = "13px"
-		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-		layer.style.lineHeight = "24px"
-		layer.style.color = "#fcfbfc"
-		layer.style.fontWeight = "500"
-		layer.style.textAlign = "center"
-	}
+	layer.innerHTML = "Edit"
+	layer.style.display = "block"
+	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+	layer.style.marginTop = "10px"
+	layer.style.width = "41px"
 	return view	
 }
 exports.New_RightSide_EditButtonView = New_RightSide_EditButtonView

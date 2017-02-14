@@ -151,9 +151,6 @@ class ContactFormView extends View
 			}
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_field_emoji()
@@ -192,17 +189,12 @@ class ContactFormView extends View
 			self.emojiInputLayer = valueLayer
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_field_address()
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.width = `calc(100%)`
-		div.style.display = "inline-block"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Address", self.context)
 			div.appendChild(labelLayer)
@@ -224,17 +216,12 @@ class ContactFormView extends View
 			}
 			div.appendChild(valueLayer)
 		}
-		{ // to get the height
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		}
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_field_paymentID()
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.width = `calc(100%)`
-		div.style.display = "inline-block"
 		{
 			if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID", self.context)

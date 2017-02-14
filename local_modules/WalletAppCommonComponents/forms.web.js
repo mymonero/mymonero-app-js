@@ -51,7 +51,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 		layer.style.fontSize = "11px"
 		layer.style.color = "#f8f7f8"
 		layer.style.fontFamily = context.themeController.FontFamily_monospace()
-		layer.style.fontWeight = "100"
+		layer.style.fontWeight = "light"
 	}
 	return layer
 }

@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class SettingsView extends View
 {
@@ -51,8 +52,6 @@ class SettingsView extends View
 	setup_views()
 	{
 		const self = this
-		{ // zeroing / initialization
-		}
 		{ // metrics / caches
 			self.margin_h = 10
 		}
@@ -93,8 +92,53 @@ class SettingsView extends View
 		const containerLayer = document.createElement("div")
 		self.form_containerLayer = containerLayer
 		{
+			self._setup_form_field_changePasswordButton()
+			self._setup_form_field_serverURL()
 		}
 		self.layer.appendChild(containerLayer)
+	}
+	_setup_form_field_changePasswordButton()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		{
+			const view = commonComponents_navigationBarButtons.New_GreyButtonView(self.context)
+			view.layer.style.display = "inline-block"
+			view.layer.style.padding = "0 10px"
+			self.changePasswordButtonView = view
+			view.layer.addEventListener("click", function(e)
+			{
+				e.preventDefault()
+				// todo: change pw
+				return false
+			})
+			// this will set its title on VWA
+			div.appendChild(view.layer)
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_field_serverURL()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SERVER URL", self.context)
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+				placeholderText: "Leave blank to use mymonero.com"
+			})
+			self.serverURLInputLayer = valueLayer
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					console.log("Save server URL")
+				}
+			)
+			div.appendChild(valueLayer)
+		}
+		self.form_containerLayer.appendChild(div)
 	}
 	//
 	startObserving()
@@ -137,17 +181,20 @@ class SettingsView extends View
 				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
+		{ // config change pw btn text
+			const layer = self.changePasswordButtonView.layer
+			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
+			console.log("userSelectedTypeOfPassword" , userSelectedTypeOfPassword)
+			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
+			layer.innerHTML = "Change " + passwordType_humanReadableString
+		}
+		console.log(self.constructor.name + " viewWillAppear… subviews:", self.subviews)
 	}
 	viewDidAppear()
 	{
 		const self = this
 		super.viewDidAppear()
 		// teardown any child/referenced stack navigation views if necessary…
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
 	}
 }
 module.exports = SettingsView

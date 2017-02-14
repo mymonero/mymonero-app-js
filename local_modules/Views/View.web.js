@@ -296,15 +296,39 @@ class View extends EventEmitter
 	//
 	viewWillAppear()
 	{
+		const self = this
+		// console.log(self.constructor.name + " viewWillAppear")
+		for (var i in self.subviews) {
+			const subview = self.subviews[i]
+			subview.viewWillAppear()
+		}
 	}
 	viewDidAppear()
 	{
+		const self = this
+		// console.log(self.constructor.name + " viewDidAppear")
+		for (var i in self.subviews) {
+			const subview = self.subviews[i]
+			subview.viewDidAppear()
+		}
 	}
 	viewWillDisappear()
 	{		
+		const self = this
+		// console.log(self.constructor.name + " viewWillDisappear")
+		for (var i in self.subviews) {
+			const subview = self.subviews[i]
+			subview.viewWillDisappear()
+		}
 	}
 	viewDidDisappear()
 	{		
+		const self = this
+		// console.log(self.constructor.name + " viewDidDisappear")
+		for (var i in self.subviews) {
+			const subview = self.subviews[i]
+			subview.viewDidDisappear()
+		}
 	}	
 }
 module.exports = View
