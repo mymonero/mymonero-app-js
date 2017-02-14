@@ -138,7 +138,7 @@ class PasswordController extends EventEmitter
 		passwordModel_doc, 
 		fn // (err?) -> Void
 	)
-	{ // see PasswordAndUserMetaController
+	{ // see PasswordAndSettingsController
 		const self = this
 		fn(null) // no err
 	}

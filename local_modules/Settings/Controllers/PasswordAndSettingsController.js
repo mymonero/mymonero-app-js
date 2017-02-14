@@ -39,7 +39,7 @@ const documentCryptScheme =
 }
 //
 const PasswordController = require('../../Passwords/Controllers/PasswordController')
-class PasswordAndUserMetaController extends PasswordController
+class PasswordAndSettingsController extends PasswordController
 {
 	constructor(options, context)
 	{
@@ -117,4 +117,4 @@ class PasswordAndUserMetaController extends PasswordController
 		)
 	}
 }
-module.exports = PasswordAndUserMetaController
+module.exports = PasswordAndSettingsController
