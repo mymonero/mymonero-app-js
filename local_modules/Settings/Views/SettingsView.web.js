@@ -152,9 +152,10 @@ class SettingsView extends View
 			//
 			const view = commonComponents_labeledRangeInputs.New_fieldValue_timeBasedLabeledRangeInputView({
 				min: 5,
-				max: 60 * 20,
+				max: 60 * 25,
+				step: 5, // 5s at a time?
 				//
-				displayAsMinutesAfterXMin: 2,
+				displayAsMinutesAtXMin: 2,
 				//
 				isMaxInfinity: true,
 				labelForInfinity: "Never",
@@ -213,7 +214,6 @@ class SettingsView extends View
 		{ // config change pw btn text
 			const layer = self.changePasswordButtonView.layer
 			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
-			console.log("userSelectedTypeOfPassword" , userSelectedTypeOfPassword)
 			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
 			layer.innerHTML = "Change " + passwordType_humanReadableString
 		}

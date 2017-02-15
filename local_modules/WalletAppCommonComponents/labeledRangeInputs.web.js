@@ -36,6 +36,8 @@ const k_knobWidth = 12
 function New_fieldValue_labeledRangeInputView(params, context)
 {
 	const changed_fn = params.changed_fn || function(value) {}
+	const finalized_labelText_fn = params.finalized_labelText_fn || function(float_inputValue) { return "" + float_inputValue }
+	//
 	const min = params.min
 	const max = params.max
 	const range = max - min
@@ -90,10 +92,32 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	{
 		view._layoutLabel()
 	}
+	view.__finalized_labelText_fn = function(inputValue)
+	{
+		const float_inputValue = parseFloat(inputValue)
+		const float_max = parseFloat(max)
+		// ^- going to assuming float is a good medium for numerical comparison - supposing JS doesn't screw it up
+		if (isNaN(float_inputValue)) {
+			throw "Range input value cannot be parsed as float for comparison"
+			return
+		}
+		if (isNaN(float_max)) {
+			throw "Range input max cannot be parsed as float for comparison"
+			return
+		}
+		if (float_inputValue === float_max) {
+			if (isMaxInfinity) {
+				return labelForInfinity
+			}
+		}
+		// else let consumer finalize
+		return finalized_labelText_fn(float_inputValue)
+	}
 	//
 	view._layoutLabel = function()
 	{
-		labelLayer.innerHTML = layer.value
+		labelLayer.innerHTML = view.__finalized_labelText_fn(layer.value)
+		//
 		const offsetWidth = layer.offsetWidth
 		const next_x_pct = (layer.value - min) / range
 		if (next_x_pct < 0) {
@@ -113,7 +137,19 @@ exports.New_fieldValue_labeledRangeInputView = New_fieldValue_labeledRangeInputV
 //
 function New_fieldValue_timeBasedLabeledRangeInputView(params, context)
 {
-	const optl_displayAsMinutesAfterXMin = params.displayAsMinutesAfterXMin
+	const optl_displayAsMinutesAtXMin = params.displayAsMinutesAtXMin
+	var isToDisplayAsMinsAfterXMin = typeof optl_displayAsMinutesAtXMin !== 'undefined' ? true : false
+	params.finalized_labelText_fn = function(float_inputValue)
+	{
+		if (isToDisplayAsMinsAfterXMin) {
+			const secondsAtWhichToDisplayAsMins = optl_displayAsMinutesAtXMin * 60.0
+			if (float_inputValue >= secondsAtWhichToDisplayAsMins) {
+				return (float_inputValue/60.0).toFixed(0) + "m" // decimal pl makes it look a little sloppy
+			}
+		}
+
+		return float_inputValue + "s"
+	}
 	//
 	const view = New_fieldValue_labeledRangeInputView(params, context)
 	return view
