@@ -107,6 +107,7 @@ class SettingsView extends View
 			const view = commonComponents_navigationBarButtons.New_GreyButtonView(self.context)
 			view.layer.style.display = "inline-block"
 			view.layer.style.padding = "0 10px"
+			view.layer.style.margin = "0 3px"
 			self.changePasswordButtonView = view
 			view.layer.addEventListener("click", function(e)
 			{
@@ -146,6 +147,7 @@ class SettingsView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.marginTop = "43px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP TIMEOUT", self.context)
 			div.appendChild(labelLayer)
@@ -170,8 +172,15 @@ class SettingsView extends View
 					console.log("changed to val", value)
 				}
 			}, self.context)
+			const margin_h = 11
+			view.layer.style.margin = `0 ${margin_h}px`
+			view.layer.style.width = `calc(100% - ${2 * margin_h}px)`
 			self.appTimeoutRangeInputView = view // NOTE: This must be torn down manually; see TearDown()
 			div.appendChild(view.layer)
+			//
+			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
+			self.appTimeoutSlider_messageLayer = messageLayer
+			div.appendChild(messageLayer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}
@@ -223,6 +232,7 @@ class SettingsView extends View
 			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
 			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
 			layer.innerHTML = "Change " + passwordType_humanReadableString
+			self.appTimeoutSlider_messageLayer.innerHTML = "Amount of time before your " + passwordType_humanReadableString + " is required again"
 		}
 	}
 	viewDidAppear()

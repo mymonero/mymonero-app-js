@@ -81,13 +81,12 @@ const cssRules =
 	`.labeledRangeInput-container .slider-runnable-track {		
 		position: absolute;
 		z-index: 1;
-		left: ${k_knobWidth/2 + 10}px;
-		right: ${k_knobWidth/2 + 10}px;
-		bottom: ${k_runnableTrackHeight/2 - k_visibleTrackHeight/2 + 4}px;
+		left: ${k_knobWidth/2}px;
+		right: ${k_knobWidth/2}px;
+		bottom: ${k_runnableTrackHeight/2 - k_visibleTrackHeight/2 + 3}px;
 		background:#1d1b1d;
 		box-shadow:0 0 0 0 rgba(56,54,56,0.50), inset 0 0 0 0 #161416;
 		border-radius:${k_visibleTrackHeight/2}px;
-		width: calc(100% - ${k_knobWidth/2 + 10});
 		height:${k_visibleTrackHeight}px;
 	}`
 ]
@@ -125,7 +124,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	table.className = "labeledRangeInput-container"
 	table.style.height = "40px"
 	table.style.width = "100%"
-	table.style.paddingTop = "10px"
+	table.style.paddingTop = "14px"
 	//
 	const tr = document.createElement("tr")
 	table.appendChild(tr)
@@ -152,8 +151,8 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	td_2.style.position = "relative"
 	td_2.style.left = "0"
 	td_2.style.top = "0"
-	td_2.style.width = "calc(100% - 20px)"
-	td_2.style.padding = "0 10px"
+	td_2.style.width = "calc(100% - 10px)"
+	td_2.style.padding = "0 5px"
 	tr.appendChild(td_2)
 	//
 	const labelLayer = document.createElement("div")
@@ -164,7 +163,8 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	labelLayer.style.textAlign = "center"
 	labelLayer.style.height = "15px"
 	labelLayer.style.fontFamily = context.themeController.FontFamily_monospace()
-	labelLayer.style.color = "#ffffff"
+	labelLayer.style.fontWeight = "100"
+	labelLayer.style.color = "#f8f8f8"
 	labelLayer.style.fontSize = "11px"
 	td_2.appendChild(labelLayer) // must be in container rather than on slider
 	//
