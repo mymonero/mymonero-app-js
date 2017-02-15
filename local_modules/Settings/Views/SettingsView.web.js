@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
+const commonComponents_labeledRangeInputs = require('../../WalletAppCommonComponents/labeledRangeInputs.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class SettingsView extends View
@@ -93,7 +94,8 @@ class SettingsView extends View
 		self.form_containerLayer = containerLayer
 		{
 			self._setup_form_field_changePasswordButton()
-			self._setup_form_field_serverURL()
+			// self._setup_form_field_serverURL() // TODO: to implement
+			self._setup_form_field_appTimeoutSlider()
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -118,7 +120,7 @@ class SettingsView extends View
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_field_serverURL()
-	{
+	{ // TODO: This hasn't really been implemented. It should have a 'Saving…' activity indicator to-design and should let the user know it will cause the removal of their wallets and they'll have to add them back after changing servers
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
@@ -137,6 +139,33 @@ class SettingsView extends View
 				}
 			)
 			div.appendChild(valueLayer)
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_field_appTimeoutSlider()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP TIMEOUT", self.context)
+			div.appendChild(labelLayer)
+			//
+			const view = commonComponents_labeledRangeInputs.New_fieldValue_timeBasedLabeledRangeInputView({
+				min: 5,
+				max: 60 * 20,
+				//
+				displayAsMinutesAfterXMin: 2,
+				//
+				isMaxInfinity: true,
+				labelForInfinity: "Never",
+				//
+				changed_fn: function()
+				{
+					
+				}
+			}, self.context)
+			self.appTimeoutRangeInputView = view
+			div.appendChild(view.layer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}
