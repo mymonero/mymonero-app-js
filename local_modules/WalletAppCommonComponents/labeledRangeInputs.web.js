@@ -32,9 +32,74 @@ const View = require('../Views/View.web')
 const commonComponents_cssRules = require('./cssRules.web')
 //
 const k_knobWidth = 12
+const k_visibleTrackHeight = 2
+const k_runnableTrackHeight = k_knobWidth + 2
+//
+// CSS rules
+const NamespaceName = "labeledRangeInputs"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+document[haveCSSRulesBeenInjected_documentKey] = false
+const cssRules =
+[
+	`.labeledRangeInput-container {
+		background: none;
+	}`,
+	`.labeledRangeInput-container input[type=range] {
+    	-webkit-appearance: none;
+		background: none;
+		position: relative;
+		z-index: 100; /* above custom track */
+	}`,
+	`.labeledRangeInput-container input[type=range]:focus {
+    	-webkit-appearance: none;
+	    outline: none;
+	}`,
+	`.labeledRangeInput-container input[type=range]::-webkit-slider-thumb {
+	    -webkit-appearance: none;
+	    appearance: none;
+		
+		height: ${k_knobWidth}px;
+		width: ${k_knobWidth}px;
+		border-radius:100%;
+		margin-top: 1px; /* minor visual */
+
+		background:#494749;
+		box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
+		cursor: pointer;
+	}`,
+	`.labeledRangeInput-container input[type=range]:active::-webkit-slider-thumb {
+		background:#404040;
+		box-shadow:0 1px 2px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0 0 0 #6b696b;
+	}`,
+	`.labeledRangeInput-container input[type=range]::-webkit-slider-runnable-track {
+	    -webkit-appearance: none;
+		cursor: pointer;
+		
+		width:100%;
+		height: ${k_runnableTrackHeight}px;
+	}`,
+	`.labeledRangeInput-container .slider-runnable-track {		
+		position: absolute;
+		z-index: 1;
+		left: ${k_knobWidth/2 + 10}px;
+		right: ${k_knobWidth/2 + 10}px;
+		bottom: ${k_runnableTrackHeight/2 - k_visibleTrackHeight/2 + 4}px;
+		background:#1d1b1d;
+		box-shadow:0 0 0 0 rgba(56,54,56,0.50), inset 0 0 0 0 #161416;
+		border-radius:${k_visibleTrackHeight/2}px;
+		width: calc(100% - ${k_knobWidth/2 + 10});
+		height:${k_visibleTrackHeight}px;
+	}`
+]
+function __injectCSSRules_ifNecessary()
+{
+	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+}
 //
 function New_fieldValue_labeledRangeInputView(params, context)
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const changed_fn = params.changed_fn || function(value) {}
 	const finalized_labelText_fn = params.finalized_labelText_fn || function(float_inputValue) { return "" + float_inputValue }
 	//
@@ -57,12 +122,12 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	//
 	const view = new View({ tag: "table" }, context)
 	const table = view.layer
+	table.className = "labeledRangeInput-container"
 	table.style.height = "40px"
 	table.style.width = "100%"
 	table.style.paddingTop = "10px"
 	//
 	const tr = document.createElement("tr")
-	tr.style.border = "1px solid blue"
 	table.appendChild(tr)
 	//
 	function __new_sliderSide_labelLayer(text)
@@ -103,6 +168,10 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	labelLayer.style.fontSize = "11px"
 	td_2.appendChild(labelLayer) // must be in container rather than on slider
 	//
+	const sliderRunnableTrackGraphicLayer = document.createElement("div")
+	sliderRunnableTrackGraphicLayer.className = "slider-runnable-track"
+	td_2.appendChild(sliderRunnableTrackGraphicLayer)
+	//
 	const layer = document.createElement("input")
 	{
 		layer.type = "range"
@@ -111,6 +180,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		layer.step = step
 		layer.value = value
 		//
+		layer.className = "labeledRangeInput"
 		layer.style.width = "100%"
 		layer.style.display = "inline-block"
 	}
@@ -171,7 +241,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 			knob_next_x_pct = 1
 		}
 		const knob_x_px = offsetWidth * knob_next_x_pct
-		const next_x_px = knob_x_px - (labelLayer_width/2) - k_knobWidth*(knob_next_x_pct-0.5) // this -knobWidth*pct-.5 is to offset the label in relation to the knob's displacement from the center
+		const next_x_px = knob_x_px - (labelLayer_width/2) - k_knobWidth*(knob_next_x_pct-0.5) // this -knobWidth*pct-.5 is to offset the label in relation to the knob's displacement from the center as knob ends never move past track ends
 		labelLayer.style.left = next_x_px + "px"
 	}
 	view._layoutLabel() // initial
