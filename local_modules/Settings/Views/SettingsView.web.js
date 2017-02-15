@@ -152,9 +152,11 @@ class SettingsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP TIMEOUT", self.context)
 			div.appendChild(labelLayer)
 			//
+			const min = 5
+			const max = 60 * 25
 			const view = commonComponents_labeledRangeInputs.New_fieldValue_timeBasedLabeledRangeInputView({
-				min: 5,
-				max: 60 * 25,
+				min: min,
+				max: max,
 				step: 5, // 5s at a time?
 				//
 				slideSideLabelFor_min: "5s",
@@ -169,7 +171,21 @@ class SettingsView extends View
 				//
 				changed_fn: function(value)
 				{
-					console.log("changed to val", value)
+					var valueToSave = value
+					if (value == max) {
+						valueToSave = self.context.settingsController.AppTimeoutNeverValue()
+					}
+					self.context.settingsController.Set_settings_valuesByKey(
+						{
+							appTimeoutAfterS: valueToSave
+						},
+						function(err)
+						{
+							if (err) {
+								throw err
+							}
+						}
+					)
 				}
 			}, self.context)
 			const margin_h = 11
@@ -179,6 +195,7 @@ class SettingsView extends View
 			div.appendChild(view.layer)
 			//
 			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
+			messageLayer.style.wordBreak = "break-word"
 			self.appTimeoutSlider_messageLayer = messageLayer
 			div.appendChild(messageLayer)
 		}
@@ -239,6 +256,14 @@ class SettingsView extends View
 	{
 		const self = this
 		super.viewDidAppear()
+		{ // reconstitute slider value… NOTE: we're doing this on VDA and not ideally on VWA because offsetWidth is nil before element is in DOM
+			const appTimeoutAfterS = self.context.settingsController.appTimeoutAfterS
+			if (appTimeoutAfterS == self.context.settingsController.AppTimeoutNeverValue()) {
+				self.appTimeoutRangeInputView.SetValueMax()
+			} else {
+				self.appTimeoutRangeInputView.SetValue(self.context.settingsController.appTimeoutAfterS)
+			}
+		}
 		// teardown any child/referenced stack navigation views if necessary…
 	}
 }

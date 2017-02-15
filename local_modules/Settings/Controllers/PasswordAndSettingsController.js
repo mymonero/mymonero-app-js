@@ -66,6 +66,11 @@ class PasswordAndSettingsController extends PasswordController
 		return "EventName_settingsChanged_syncWithServer"
 	}
 	//
+	AppTimeoutNeverValue()
+	{
+		return -1
+	}
+	//
 	//
 	// Runtime - Imperatives
 	//

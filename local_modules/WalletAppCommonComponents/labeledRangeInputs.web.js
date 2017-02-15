@@ -200,11 +200,11 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	}
 	layer.oninput = function()
 	{
-		view._layoutLabel()
+		view._updatedAndLayoutLabel()
 	}
 	view._window_resize_fn = function()
 	{
-		view._layoutLabel()
+		view._updatedAndLayoutLabel()
 	}
 	window.addEventListener('resize', view._window_resize_fn)
 	view.__finalized_labelText_fn = function(inputValue)
@@ -229,7 +229,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		return finalized_labelText_fn(float_inputValue)
 	}
 	//
-	view._layoutLabel = function()
+	view._updatedAndLayoutLabel = function()
 	{
 		labelLayer.innerHTML = view.__finalized_labelText_fn(layer.value)
 		//
@@ -244,12 +244,23 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		const next_x_px = knob_x_px - (labelLayer_width/2) - k_knobWidth*(knob_next_x_pct-0.5) // this -knobWidth*pct-.5 is to offset the label in relation to the knob's displacement from the center as knob ends never move past track ends
 		labelLayer.style.left = next_x_px + "px"
 	}
-	view._layoutLabel() // initial
+	view._updatedAndLayoutLabel() // initial
 	//
 	view.TearDown = function()
 	{ // NOTE: you must call this!
 		console.log("♻️  Tearing down labeled range input.")
 		window.removeEventListener('resize', view._window_resize_fn)
+	}
+	//
+	view.SetValueMax = function()
+	{
+		layer.value = max
+		view._updatedAndLayoutLabel()
+	}
+	view.SetValue = function(value)
+	{
+		layer.value = value
+		view._updatedAndLayoutLabel()
 	}
 	//
 	return view
