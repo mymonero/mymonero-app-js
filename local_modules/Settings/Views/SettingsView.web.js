@@ -155,17 +155,22 @@ class SettingsView extends View
 				max: 60 * 25,
 				step: 5, // 5s at a time?
 				//
+				slideSideLabelFor_min: "5s",
+				slideSideLabelStyleWidthFor_min: "20px",
+				slideSideLabelFor_max: "Never",
+				slideSideLabelStyleWidthFor_max: "34px",
+				//
 				displayAsMinutesAtXMin: 2,
 				//
 				isMaxInfinity: true,
 				labelForInfinity: "Never",
 				//
-				changed_fn: function()
+				changed_fn: function(value)
 				{
-					
+					console.log("changed to val", value)
 				}
 			}, self.context)
-			self.appTimeoutRangeInputView = view
+			self.appTimeoutRangeInputView = view // NOTE: This must be torn down manually; see TearDown()
 			div.appendChild(view.layer)
 		}
 		self.form_containerLayer.appendChild(div)
@@ -184,6 +189,8 @@ class SettingsView extends View
 		const self = this
 		self.stopObserving()
 		super.TearDown()
+		//
+		self.appTimeoutRangeInputView.TearDown() // must call this manually
 	}
 	stopObserving()
 	{
@@ -217,7 +224,6 @@ class SettingsView extends View
 			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
 			layer.innerHTML = "Change " + passwordType_humanReadableString
 		}
-		console.log(self.constructor.name + " viewWillAppear… subviews:", self.subviews)
 	}
 	viewDidAppear()
 	{

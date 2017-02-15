@@ -50,13 +50,46 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	const isMaxInfinity = params.isMaxInfinity === true ? true : false
 	const labelForInfinity = params.labelForInfinity || "Infinity" // like "Never"
 	//
-	const view = new View({ tag: "div" }, context)
-	const containerLayer = view.layer
-	containerLayer.style.position = "relative"
-	containerLayer.style.left = "0"
-	containerLayer.style.top = "0"
-	containerLayer.style.height = "40px"
-	containerLayer.style.paddingTop = "10px"
+	const labelFor_min = params.slideSideLabelFor_min || "" + min
+	const labelStyleWidthFor_min = params.slideSideLabelStyleWidthFor_min || "50px"
+	const labelFor_max = params.slideSideLabelFor_max || "" + max
+	const labelStyleWidthFor_max = params.slideSideLabelStyleWidthFor_max || "50px"
+	//
+	const view = new View({ tag: "table" }, context)
+	const table = view.layer
+	table.style.height = "40px"
+	table.style.width = "100%"
+	table.style.paddingTop = "10px"
+	//
+	const tr = document.createElement("tr")
+	tr.style.border = "1px solid blue"
+	table.appendChild(tr)
+	//
+	function __new_sliderSide_labelLayer(text)
+	{
+		const sliderSide_labelLayer = document.createElement("div")
+		sliderSide_labelLayer.innerHTML = text
+		sliderSide_labelLayer.style.fontFamily = context.themeController.FontFamily_monospace()
+		sliderSide_labelLayer.style.color = "#8d8b8d"
+		sliderSide_labelLayer.style.fontSize = "11px"
+		return sliderSide_labelLayer
+	}
+	const td_1 = document.createElement("td")
+	td_1.align = "left"
+	td_1.valign = "bottom"
+	td_1.style.width = labelStyleWidthFor_min
+	const min_labelLayer = __new_sliderSide_labelLayer(labelFor_min)
+	min_labelLayer.style.marginBottom = "-10px"
+	td_1.appendChild(min_labelLayer)
+	tr.appendChild(td_1)
+	//
+	const td_2 = document.createElement("td")
+	td_2.style.position = "relative"
+	td_2.style.left = "0"
+	td_2.style.top = "0"
+	td_2.style.width = "calc(100% - 20px)"
+	td_2.style.padding = "0 10px"
+	tr.appendChild(td_2)
 	//
 	const labelLayer = document.createElement("div")
 	labelLayer.style.position = "relative"
@@ -68,7 +101,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	labelLayer.style.fontFamily = context.themeController.FontFamily_monospace()
 	labelLayer.style.color = "#ffffff"
 	labelLayer.style.fontSize = "11px"
-	containerLayer.appendChild(labelLayer) // must be in container rather than on slider
+	td_2.appendChild(labelLayer) // must be in container rather than on slider
 	//
 	const layer = document.createElement("input")
 	{
@@ -77,12 +110,19 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		layer.max = max
 		layer.step = step
 		layer.value = value
-	}
-	{
-		layer.style.backgroundColor = "blue"
+		//
 		layer.style.width = "100%"
+		layer.style.display = "inline-block"
 	}
-	containerLayer.appendChild(layer)
+	td_2.appendChild(layer)
+	//
+	const td_3 = document.createElement("td")
+	td_3.align = "right"
+	td_3.style.width = labelStyleWidthFor_max
+	const max_labelLayer = __new_sliderSide_labelLayer(labelFor_max)
+	max_labelLayer.style.marginBottom = "-10px"
+	td_3.appendChild(max_labelLayer)
+	tr.appendChild(td_3)
 	//
 	layer.onchange = function()
 	{
@@ -92,6 +132,11 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	{
 		view._layoutLabel()
 	}
+	view._window_resize_fn = function()
+	{
+		view._layoutLabel()
+	}
+	window.addEventListener('resize', view._window_resize_fn)
 	view.__finalized_labelText_fn = function(inputValue)
 	{
 		const float_inputValue = parseFloat(inputValue)
@@ -119,17 +164,23 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		labelLayer.innerHTML = view.__finalized_labelText_fn(layer.value)
 		//
 		const offsetWidth = layer.offsetWidth
-		const next_x_pct = (layer.value - min) / range
-		if (next_x_pct < 0) {
-			next_x_pct = 0
-		} else if (next_x_pct > 1) {
-			next_x_pct = 1
+		const knob_next_x_pct = (layer.value - min) / range
+		if (knob_next_x_pct < 0) {
+			knob_next_x_pct = 0
+		} else if (knob_next_x_pct > 1) {
+			knob_next_x_pct = 1
 		}
-		const knob_x_px = offsetWidth * next_x_pct
-		const next_x_px = knob_x_px - (labelLayer_width/2) - k_knobWidth*(next_x_pct-0.5) // this -knobWidth*pct-.5 is to offset the label in relation to the knob's displacement from the center
+		const knob_x_px = offsetWidth * knob_next_x_pct
+		const next_x_px = knob_x_px - (labelLayer_width/2) - k_knobWidth*(knob_next_x_pct-0.5) // this -knobWidth*pct-.5 is to offset the label in relation to the knob's displacement from the center
 		labelLayer.style.left = next_x_px + "px"
 	}
 	view._layoutLabel() // initial
+	//
+	view.TearDown = function()
+	{ // NOTE: you must call this!
+		console.log("♻️  Tearing down labeled range input.")
+		window.removeEventListener('resize', view._window_resize_fn)
+	}
 	//
 	return view
 }
