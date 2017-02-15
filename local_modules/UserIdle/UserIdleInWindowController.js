@@ -30,8 +30,6 @@
 //
 const EventEmitter = require('events')
 //
-var kUserIdleTimeout_s = 30 // seconds
-//
 class UserIdleInWindowController extends EventEmitter
 {
 	//
@@ -139,7 +137,11 @@ class UserIdleInWindowController extends EventEmitter
 			self._userIdle_intervalTimer_fn = function()
 			{
 			    self._numberOfSecondsSinceLastUserInteraction += 1 // count the second
-			    if (self._numberOfSecondsSinceLastUserInteraction >= kUserIdleTimeout_s) {
+				var appTimeoutAfterS = self.context.settingsController.appTimeoutAfterS
+				if (typeof appTimeoutAfterS === 'undefined') {
+					appTimeoutAfterS = 20 // on no pw entered / no settings info yet
+				}
+			    if (self._numberOfSecondsSinceLastUserInteraction >= appTimeoutAfterS) {
 					if (self.isUserIdle !== true) { // not already idle (else redundant)
 						self._userDidBecomeIdle()
 					}
