@@ -256,6 +256,11 @@ class TabBarAndContentView extends View
 				throw "index too great"
 			}
 		}
+		const buttonView_forIndex = self._tabBarItemButtonViews[index]
+		if (buttonView_forIndex.isEnabled == false) {
+			console.warn("Asked to SelectTabBarItemAtIndex(index) but it was disabled.")
+			return
+		}		
 		{
 			if (index === self._currentlySelectedTabBarItemIndex) { // we already know index isn't going to be undefined or null here
 				const detailView_forCurrentlySelectedItemIndex = self._tabBarContentViews[self._currentlySelectedTabBarItemIndex]
@@ -350,18 +355,24 @@ class TabBarAndContentView extends View
 			}
 		)
 	}
-	DisableTabBarItemButtons()
+	DisableTabBarItemButtons(optl_overrideAnyShallDisable)
 	{
 		const self = this
-		if (self.isEnabled === false) {
-			return // redundant
-		}
-		{
-			self.isEnabled = false
-		}
+		// we're not locking this function because we might want to re-enable some btns
+		self.isEnabled = false
 		self._tabBarItemButtonViews.forEach(
 			function(view, idx)
 			{
+				if (optl_overrideAnyShallDisable !== true) {
+					const contentView = self._tabBarContentViews[idx]
+					if (typeof contentView.TabBarItem_shallDisable == 'function') {
+						const shallDisable = contentView.TabBarItem_shallDisable()
+						if (shallDisable == false) {
+							view.Enable()
+							return 
+						}
+					}
+				}
 				view.Disable()
 			}
 		)

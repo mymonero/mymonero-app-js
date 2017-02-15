@@ -142,6 +142,9 @@ class TabBarItemButtonView extends View
 	Select()
 	{
 		const self = this
+		if (self.isEnabled == false) {
+			return
+		}
 		self.isSelected = true
 		self.__applyStylesToLayer(self.icon_selected_baseStyleTemplate, self.iconImageLayer)
 	}

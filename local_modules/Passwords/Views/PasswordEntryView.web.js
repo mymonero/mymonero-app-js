@@ -310,7 +310,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 							enterExistingPasswordView.EventName_CancelButtonPressed(),
 							function()
 							{
-								self.cancel()
+								self.Cancel(true)
 							}
 						)
 					}

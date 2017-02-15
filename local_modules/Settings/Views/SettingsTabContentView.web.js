@@ -55,8 +55,8 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	}
 	//
 	//
-	// Runtime - Accessors - Implementation of TabBarItem protocol - custom tab bar item styling
-	//
+	// Runtime - Accessors - Implementation of TabBarItem protocol
+	// custom tab bar item styling
 	TabBarItem_layer_customStyle()
 	{
 		const self = this
@@ -83,6 +83,22 @@ class SettingsTabContentView extends StackAndModalNavigationView
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat"
 		}
+	}
+	// interactivity
+	TabBarItem_shallDisable()
+	{
+		const self = this
+		const passwordController = self.context.passwordController
+		if (passwordController.hasUserEverEnteredPassword !== true) {
+			return false // no existing data - do not disable
+		}
+		if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app
+			return true // because the app needs to be unlocked before they can use it
+		}
+		if (self.context.passwordController.IsUserChangingPassword() === true) {
+			return true // changing pw - prevent jumping around
+		}
+		return false
 	}
 }
 module.exports = SettingsTabContentView

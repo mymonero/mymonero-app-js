@@ -78,7 +78,10 @@ class MenuController extends EventEmitter
 	{
 		return "Change Password"
 	}
-	
+	MenuItemName_Preferences()
+	{
+		return "Preferences"
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Event Names
@@ -86,6 +89,10 @@ class MenuController extends EventEmitter
 	EventName_menuItemSelected_ChangePassword()
 	{
 		return "EventName_menuItemSelected_ChangePassword"
+	}
+	EventName_menuItemSelected_Preferences()
+	{
+		return "EventName_menuItemSelected_Preferences"
 	}
 	
 
@@ -109,11 +116,11 @@ class MenuController extends EventEmitter
 						type: 'separator'
 					},
 					{
-						label: 'Preferences',
+						label: self.MenuItemName_Preferences(),
 						accelerator: 'CmdOrCtrl+,',
 						click: function(menuItem, browserWindow, event)
 						{
-							console.log("prefs")
+							self.emit(self.EventName_menuItemSelected_Preferences())
 						}
 					},
 					{

@@ -103,13 +103,36 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				]
 			)
 		}
-		{ // add Settings button
-			
+		function __passwordController_didBoot()
+		{
+			if (passwordController.HasUserEnteredValidPasswordYet() === false) {
+				self.DisableTabBarItemButtons()
+			} else {
+				self.EnableTabBarItemButtons() // as we disabled them
+			}
+		}
+		const passwordController = self.context.passwordController
+		if (passwordController.hasBooted == true) {
+			console.log("had booted")
+			__passwordController_didBoot()
+		} else {
+			self.DisableTabBarItemButtons(true) // while booting
+			passwordController._executeWhenBooted(__passwordController_didBoot)
 		}
 	}
 	_setup_startObserving()
 	{
 		const self = this
+		{ // menuController
+			const emitter = self.context.menuController
+			emitter.on( // on the main process -- so this will be synchronous IPC
+				emitter.EventName_menuItemSelected_Preferences(),
+				function()
+				{
+					self.selectTab_settings()
+				}
+			)
+		}
 		{ // passwordController
 			const emitter = self.context.passwordController
 			emitter.on(
@@ -234,6 +257,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 	//
 	_selectTab_withContentView(tabBarContentView)
 	{
+		const self = this
 		const index = self.IndexOfTabBarContentView(tabBarContentView)
 		self.SelectTabBarItemAtIndex(index)
 	}

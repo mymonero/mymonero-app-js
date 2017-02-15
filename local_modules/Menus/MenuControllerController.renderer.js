@@ -102,5 +102,13 @@ class MenuControllerController
 			true
 		)
 	}
+	disableMenuItem_ChangePassword()
+	{
+		const self = this
+		self.menuController.SetItemNamedDisabled(
+			self.menuController.MenuItemName_ChangePassword(),
+			true
+		)
+	}
 }
 module.exports = MenuControllerController

@@ -44,6 +44,9 @@ const cssRules =
 	`.labeledRangeInput-container {
 		background: none;
 	}`,
+	`.labeledRangeInput-container.disabled {
+		opacity: 0.5;
+	}`,
 	`.labeledRangeInput-container input[type=range] {
     	-webkit-appearance: none;
 		background: none;
@@ -64,10 +67,11 @@ const cssRules =
 		margin-top: 1px; /* minor visual */
 
 		background:#494749;
-		box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
 		cursor: pointer;
+		box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
 	}`,
-	`.labeledRangeInput-container input[type=range]:active::-webkit-slider-thumb {
+	// :active
+	`.labeledRangeInput-container:not(.disabled) input[type=range]:active::-webkit-slider-thumb {
 		background:#404040;
 		box-shadow:0 1px 2px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0 0 0 #6b696b;
 	}`,
@@ -88,7 +92,11 @@ const cssRules =
 		box-shadow:0 0 0 0 rgba(56,54,56,0.50), inset 0 0 0 0 #161416;
 		border-radius:${k_visibleTrackHeight/2}px;
 		height:${k_visibleTrackHeight}px;
-	}`
+	}`,
+	`.labeledRangeInput-container.disabled input[type=range]::-webkit-slider-thumb,
+	 .labeledRangeInput-container.disabled input[type=range]::-webkit-slider-runnable-track {
+		cursor: default !important;
+	}`,
 ]
 function __injectCSSRules_ifNecessary()
 {
@@ -261,6 +269,16 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	{
 		layer.value = value
 		view._updatedAndLayoutLabel()
+	}
+	view.SetEnabled = function(isEnabled)
+	{
+		view.isEnabled = isEnabled
+		if (isEnabled == false) {
+			view.layer.classList.add("disabled")
+		} else {
+			view.layer.classList.remove("disabled")
+		}
+		layer.disabled = !isEnabled
 	}
 	//
 	return view

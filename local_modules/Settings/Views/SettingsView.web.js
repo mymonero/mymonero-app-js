@@ -112,7 +112,9 @@ class SettingsView extends View
 			view.layer.addEventListener("click", function(e)
 			{
 				e.preventDefault()
-				// todo: change pw
+				if (view.isEnabled !== false) {
+					self.context.passwordController.InitiateChangePassword() // this will throw if no pw has been entered yet
+				}
 				return false
 			})
 			// this will set its title on VWA
@@ -244,13 +246,33 @@ class SettingsView extends View
 				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
+		const passwordController = self.context.passwordController
 		{ // config change pw btn text
 			const layer = self.changePasswordButtonView.layer
-			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
-			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
-			layer.innerHTML = "Change " + passwordType_humanReadableString
-			self.appTimeoutSlider_messageLayer.innerHTML = "Amount of time before your " + passwordType_humanReadableString + " is required again"
+			const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
+			const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
+			if (typeof passwordType_humanReadableString !== 'undefined') {
+				const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
+				layer.innerHTML = "Change " + capitalized_passwordType
+				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of time before your " + passwordType_humanReadableString + " is required again"
+			}
 		}
+		{
+           if (passwordController.hasUserEverEnteredPassword !== true) {
+               self.changePasswordButtonView.SetEnabled(false) // can't change til entered
+               // self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
+               self.appTimeoutRangeInputView.SetEnabled(true)
+           } else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
+			   // however, user should never be able to see the settings view in this state
+               self.changePasswordButtonView.SetEnabled(false)
+               // self.serverURLInputLayer.disabled = true
+               self.appTimeoutRangeInputView.SetEnabled(false)
+           } else { // has entered PW - unlock
+               self.changePasswordButtonView.SetEnabled(true)
+               // self.serverURLInputLayer.disabled = false
+               self.appTimeoutRangeInputView.SetEnabled(true)
+           }
+	   }		
 	}
 	viewDidAppear()
 	{
