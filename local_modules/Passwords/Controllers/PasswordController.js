@@ -627,7 +627,7 @@ class PasswordController extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Imperatives - Private - Persistence
+	// Runtime - Imperatives - Private - Persistence
 
 	saveToDisk(fn)
 	{

@@ -113,7 +113,6 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		}
 		const passwordController = self.context.passwordController
 		if (passwordController.hasBooted == true) {
-			console.log("had booted")
 			__passwordController_didBoot()
 		} else {
 			self.DisableTabBarItemButtons(true) // while booting
