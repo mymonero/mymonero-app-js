@@ -56,6 +56,7 @@ class ContactsListController extends EventEmitter
 	setup()
 	{
 		const self = this
+		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		self._setup_fetchAndReconstituteExistingRecords()
 	}
 	_setup_didBoot()
@@ -78,30 +79,30 @@ class ContactsListController extends EventEmitter
 						self._passwordController_EventName_ChangedPassword_listenerFn
 					)
 				}
-				{ // EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword
-					if (self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-						throw "self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				{ // EventName_willDeconstructBootedStateAndClearPassword
+					if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
 					}
-					self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn = function()
+					self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
 					{
-						self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+						self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
 					}
 					controller.on(
-						controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
-						self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn
+						controller.EventName_willDeconstructBootedStateAndClearPassword(),
+						self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
 					)
 				}
-				{ // EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword
-					if (self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-						throw "self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				{ // EventName_didDeconstructBootedStateAndClearPassword
+					if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+						throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
 					}
-					self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn = function()
+					self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
 					{
-						self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+						self._passwordController_EventName_didDeconstructBootedStateAndClearPassword()
 					}
 					controller.on(
-						controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
-						self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn
+						controller.EventName_didDeconstructBootedStateAndClearPassword(),
+						self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
 					)
 				}
 			}
@@ -209,25 +210,25 @@ class ContactsListController extends EventEmitter
 			)
 			self._passwordController_EventName_ChangedPassword_listenerFn = null
 		}
-		{ // EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword
-			if (typeof self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
-				throw "self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn undefined"
+		{ // EventName_willDeconstructBootedStateAndClearPassword
+			if (typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn undefined"
 			}
 			controller.removeListener(
-				controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
-				self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn
+				controller.EventName_willDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
 			)
-			self._passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword_listenerFn = null
+			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = null
 		}
-		{ // EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword
-			if (typeof self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn === null) {
-				throw "self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn undefined"
+		{ // EventName_didDeconstructBootedStateAndClearPassword
+			if (typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn === null) {
+				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn undefined"
 			}
 			controller.removeListener(
-				controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
-				self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn
+				controller.EventName_didDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
 			)
-			self._passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword_listenerFn = null
+			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = null
 		}
 	}
 
@@ -480,7 +481,7 @@ class ContactsListController extends EventEmitter
 			}
 		)
 	}
-	_passwordController_EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+	_passwordController_EventName_willDeconstructBootedStateAndClearPassword()
 	{
 		const self = this
 		self.contacts.forEach(
@@ -493,7 +494,26 @@ class ContactsListController extends EventEmitter
 		self.hasBooted = false
 		// now we'll wait for the "did" event ---v
 	}
-	_passwordController_EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+	passwordController_DeleteEverything(fn)
+	{
+		const self = this
+		const collectionName = contact_persistence_utils.CollectionName
+		self.context.persister.RemoveDocuments(
+			collectionName, 
+			{}, 
+			{ multi: true }, 
+			function(err, numRemoved)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				console.log(`🗑  Deleted all ${collectionName}.`)
+				fn()
+			}
+		)
+	}
+	_passwordController_EventName_didDeconstructBootedStateAndClearPassword()
 	{
 		const self = this
 		{ // now that we're gotten the final notification in the password reset process we can stop observing w/o missing the "did" event

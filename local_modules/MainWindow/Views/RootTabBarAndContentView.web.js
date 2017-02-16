@@ -135,10 +135,19 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		{ // passwordController
 			const emitter = self.context.passwordController
 			emitter.on(
-				emitter.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+				emitter.EventName_didDeconstructBootedStateAndClearPassword(),
 				function()
 				{ // stuff like popping stack nav views to root views
 					self.ResetAllTabContentViewsToRootState(false) // not animated
+				}
+			)
+			emitter.on(
+				emitter.EventName_havingDeletedEverything_didDeconstructBootedStateAndClearPassword(),
+				function()
+				{
+					self.selectTab_wallets() // in case it was triggered by settings - if we didn't
+					// select this tab it would look like nothing happened cause the 'enter pw' modal would not be popped as there would be nothing for the list controllers to decrypt
+					self.DisableTabBarItemButtons(true) // until we have booted again
 				}
 			)
 		}
@@ -259,6 +268,11 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		const self = this
 		const index = self.IndexOfTabBarContentView(tabBarContentView)
 		self.SelectTabBarItemAtIndex(index)
+	}
+	selectTab_wallets()
+	{
+		const self = this
+		self._selectTab_withContentView(self.walletsTabContentView)
 	}
 	selectTab_sendFunds()
 	{

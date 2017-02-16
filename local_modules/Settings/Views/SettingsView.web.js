@@ -227,9 +227,21 @@ class SettingsView extends View
 							throw err
 							return
 						}
-						const didChooseYes = choice === 0
+						const didChooseYes = selectedButtonIdx === 0
 						if (didChooseYes) {
-							self.context.passwordController.InitiateDeleteEverything()
+							self.context.passwordController.InitiateDeleteEverything(
+								function(err)
+								{
+									/*
+									self.viewWillAppear()
+									self.viewDidAppear()
+									*/
+									// ^- this is to cause the UI to update itself with new values/states
+									// but is commented out here because we do not need to call it -
+									// we have the tab bar select the walletsTab for us, and if the user
+									// does come back to Settings, both of these will be called
+								}
+							)
 						}
 					}
 				)

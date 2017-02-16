@@ -203,6 +203,8 @@ class Wallet extends EventEmitter
 	TearDown()
 	{
 		const self = this
+		self.hasBeenTornDown = true
+		console.log("♻️  Tearing down Wallet", self._id)
 		self._tearDown_polling()
 	}
 	_tearDown_polling()
@@ -217,6 +219,7 @@ class Wallet extends EventEmitter
 	Revert_TearDown()
 	{
 		const self = this
+		self.hasBeenTornDown = false
 		self._revert_tearDown_polling()
 	}
 	_revert_tearDown_polling()
@@ -872,6 +875,11 @@ class Wallet extends EventEmitter
 	saveToDisk(fn)
 	{
 		const self = this
+		if (self.hasBeenTornDown) {
+			console.warn("Wallet asked to saveToDisk after having been torn down.")
+			console.log((new Error()).stack)
+			return
+		}
 		wallet_persistence_utils.SaveToDisk(
 			self,
 			fn

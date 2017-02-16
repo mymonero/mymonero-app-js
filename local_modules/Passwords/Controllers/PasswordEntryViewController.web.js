@@ -154,7 +154,7 @@ class PasswordEntryViewController extends EventEmitter
 		//
 		// we don't want changing the pw to affect locking & deconstructing the UI if idle timer engages
 		controller.on(
-			controller.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword(),
+			controller.EventName_willDeconstructBootedStateAndClearPassword(),
 			function()
 			{
 				if (self.view !== null && typeof self.view !== 'undefined') {
@@ -163,7 +163,7 @@ class PasswordEntryViewController extends EventEmitter
 			}
 		)
 		controller.on(
-			controller.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword(),
+			controller.EventName_didDeconstructBootedStateAndClearPassword(),
 			function()
 			{
 			}

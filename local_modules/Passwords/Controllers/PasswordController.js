@@ -65,6 +65,8 @@ class PasswordController extends EventEmitter
 		self.options = options
 		self.context = context
 		//
+		self.deleteEverythingRegistrants = []
+		//
 		self.hasBooted = false
 		self.password = undefined // it's not been obtained from the user yet - we only store it in memory
 		//
@@ -216,14 +218,20 @@ class PasswordController extends EventEmitter
 		return "EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB"
 	}
 	//
-	EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword()
+	EventName_willDeconstructBootedStateAndClearPassword()
 	{
-		return "EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword"
+		return "EventName_willDeconstructBootedStateAndClearPassword"
 	}
-	EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword()
+	EventName_didDeconstructBootedStateAndClearPassword()
 	{
-		return "EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword"
+		return "EventName_didDeconstructBootedStateAndClearPassword"
 	}
+	EventName_havingDeletedEverything_didDeconstructBootedStateAndClearPassword()
+	{
+		return "EventName_havingDeletedEverything_didDeconstructBootedStateAndClearPassword"
+	}
+	//
+	
 	//
 	AvailableUserSelectableTypesOfPassword()
 	{
@@ -277,7 +285,7 @@ class PasswordController extends EventEmitter
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public
+	// Runtime - Imperatives - Public - Password management
 
 	WhenBootedAndPasswordObtained_PasswordAndType(
 		fn // (password, passwordType) -> Void
@@ -797,24 +805,119 @@ class PasswordController extends EventEmitter
 	}
 	//
 	//
+	// Runtime - Imperatives - Delete everything
+	//
+	InitiateDeleteEverything(fn)
+	{ // this is used as a central initiation/sync point for delete everything like user idle
+	  // maybe it should be moved, maybe not.
+		const self = this
+		self._deconstructBootedStateAndClearPassword(
+			function(cb)
+			{
+				console.log("now reset state…")
+				// reset state cause we're going all the way back to pre-boot 
+				self.hasBooted = false // require this pw controller to boot
+				self.password = undefined // this is redundant but is here for clarity
+				self.hasUserEverEnteredPassword = false
+				self._id = undefined
+				self.encryptedMessageForUnlockChallenge = undefined
+				self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = undefined
+				//
+				// delete pw record
+				self.context.persister.RemoveDocuments(
+					CollectionName, 
+					{}, 
+					{ multi: true }, 
+					function(err, numRemoved)
+					{ // now have others delete everything else
+						if (err) {
+							cb(err)
+							return
+						}
+						console.log("🗑  Deleted password record.")
+						async.each( // parallel; waits till all finished
+							self.deleteEverythingRegistrants,
+							function(registrant, registrant_cb)
+							{
+								registrant.passwordController_DeleteEverything(function(err)
+								{
+									registrant_cb(err)
+								})
+							},
+							function(err)
+							{
+								if (err) {
+									cb(err)
+									return // will travel back to the 'throw' below
+								}
+								self.setupAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
+								//
+								cb(err)
+							}
+						)
+					}
+				)
+			},
+			function(err)
+			{
+				if (err) {
+					fn(err)
+					throw err
+					return
+				}
+				self.emit(self.EventName_havingDeletedEverything_didDeconstructBootedStateAndClearPassword())
+				fn(err)
+				return
+			}
+		)
+	}
+	AddRegistrantForDeleteEverything(registrant)
+	{
+		const self = this
+		// console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
+		self.deleteEverythingRegistrants.push(registrant)
+	}
+	_deconstructBootedStateAndClearPassword(
+		hasFiredWill_fn, // (cb) -> Void; cb: (err?) -> Void
+		fn
+	)
+	{
+		hasFiredWill_fn = hasFiredWill_fn || function(cb) { cb() }
+		fn = fn || function(err) {}
+		//
+		const self = this
+		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
+		{ // indicate to consumers they should tear down and await the "did" event to re-request
+			self.emit(self.EventName_willDeconstructBootedStateAndClearPassword())
+		}
+		setTimeout(function()
+		{ // on next tick…
+			hasFiredWill_fn(
+				function(err)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					{ // trigger deconstruction of booted state and require password
+						self.password = undefined
+					}
+					{ // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
+						self.emit(self.EventName_didDeconstructBootedStateAndClearPassword())
+					}
+					fn()
+				}
+			)
+		}, 2)
+	}
+	//
+	//
 	// Runtime - Delegation - User having become idle -> teardown booted state and require pw
 	//
 	_didBecomeIdleAfterHavingPreviouslyEnteredPassword()
 	{
 		const self = this
-		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
-		{ // indicate to consumers they should tear down and await the "did" event to re-request
-			self.emit(self.EventName_userBecameIdle_willDeconstructBootedStateAndClearPassword())
-		}
-		setTimeout(function()
-		{ // on next tick…
-			{ // trigger deconstruction of booted state and require password
-				self.password = undefined
-			}
-			{ // we're not going to call WhenBootedAndPasswordObtained_PasswordAndType because consumers will call it for us after they tear down their booted state with the "will" event and try to boot/decrypt again when they get this "did" event
-				self.emit(self.EventName_userBecameIdle_didDeconstructBootedStateAndClearPassword())
-			}
-		}, 2)
+		self._deconstructBootedStateAndClearPassword()
 	}	
 	//
 	//
@@ -826,6 +929,5 @@ class PasswordController extends EventEmitter
 		// We have to wait until post-whole-context-init to guarantee all controllers exist
 		self._startObserving_userIdleInWindowController()
 	}
-
 }
 module.exports = PasswordController

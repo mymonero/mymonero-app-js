@@ -91,6 +91,7 @@ class WalletHostPollingController
 	TearDown()
 	{ // this is public and must be called manually by wallet
 		const self = this
+		console.log("♻️  Tearing down Wallet", self._id)
 		self._tearDown_stopTimers()
 		self._tearDown_abortAndFreeRequests()
 	}
