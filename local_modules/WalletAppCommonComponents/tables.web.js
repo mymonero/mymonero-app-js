@@ -204,6 +204,7 @@ function New_redTextButtonView(text, context)
 	layer.display = "block" // own line
 	//
 	layer.style.fontSize = "11px"
+	layer.style.marginLeft = "23px"
 	layer.style.fontWeight = "light"
 	layer.style.color = "#f97777"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()

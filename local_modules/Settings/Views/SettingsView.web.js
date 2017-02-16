@@ -96,6 +96,7 @@ class SettingsView extends View
 			self._setup_form_field_changePasswordButton()
 			// self._setup_form_field_serverURL() // TODO: to implement
 			self._setup_form_field_appTimeoutSlider()
+			self._setup_deleteEverythingButton()
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -201,6 +202,41 @@ class SettingsView extends View
 			self.appTimeoutSlider_messageLayer = messageLayer
 			div.appendChild(messageLayer)
 		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_deleteEverythingButton()
+	{
+		const self = this
+		const div = document.createElement("div")
+		div.style.paddingTop = "32px"
+		
+		const view = commonComponents_tables.New_redTextButtonView("DELETE EVERYTHING", self.context)
+		const layer = view.layer
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				self.context.windowDialogs.PresentQuestionAlertDialogWith(
+					'Delete everything?', 
+					'Are you sure you want to delete all of your local data?\n\n(Your wallets will still exist permanently on the Monero blockchain.)',
+					[ 'Delete', 'Cancel' ],
+					function(err, selectedButtonIdx)
+					{
+						if (err) {
+							throw err
+							return
+						}
+						const didChooseYes = choice === 0
+						if (didChooseYes) {
+							self.context.passwordController.InitiateDeleteEverything()
+						}
+					}
+				)
+				return false
+			}
+		)
+		div.appendChild(layer)
 		self.form_containerLayer.appendChild(div)
 	}
 	//

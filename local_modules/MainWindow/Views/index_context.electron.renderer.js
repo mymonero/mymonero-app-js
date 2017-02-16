@@ -36,9 +36,14 @@ var context_object_instantiation_descriptions =
 		instance_key: "pasteboard",
 		options: {}
 	},
-	{ // might as well put it in the renderer proc so we don't have to do IPC to pasteboard
+	{
 		module_path: __dirname + "/../../FilesystemUI/FilesystemUI.electron",
 		instance_key: "filesystemUI",
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../../WindowDialogs/WindowDialogs.electron",
+		instance_key: "windowDialogs",
 		options: {}
 	},
 	//
