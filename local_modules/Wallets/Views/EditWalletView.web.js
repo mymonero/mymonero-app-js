@@ -137,31 +137,30 @@ class EditWalletView extends View
 	_setup_deleteRecordButtonLayer()
 	{
 		const self = this
-		const layer = commonComponents_tables.New_deleteRecordNamedButton_aLayer("wallet")
-		{
-			layer.addEventListener(
-				"click",
-				function(e)
+		const view = commonComponents_tables.New_deleteRecordNamedButtonView("wallet", self.context)
+		const layer = view.layer
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
 				{
-					e.preventDefault()
-					{
-						const record_id = self.wallet._id
-						self.context.walletsListController.WhenBooted_DeleteWalletWithId(
-							record_id,
-							function(err)
-							{
-								if (err) {
-									throw err
-									return
-								}
-								self._thisRecordWasDeleted()
+					const record_id = self.wallet._id
+					self.context.walletsListController.WhenBooted_DeleteWalletWithId(
+						record_id,
+						function(err)
+						{
+							if (err) {
+								throw err
+								return
 							}
-						)
-					}
-					return false
+							self._thisRecordWasDeleted()
+						}
+					)
 				}
-			)
-		}
+				return false
+			}
+		)
 		self.form_containerLayer.appendChild(layer)
 	}
 	//

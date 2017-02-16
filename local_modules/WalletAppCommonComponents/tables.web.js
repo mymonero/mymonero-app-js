@@ -61,6 +61,10 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 			a.style.textDecoration = "none"
 		}
 	})
+	a.addEventListener("mouseleave", function()
+	{
+		a.style.textDecoration = "none"
+	})
 	view.SetEnabled = function(isEnabled)
 	{
 		view.isEnabled = isEnabled
@@ -72,10 +76,6 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 			a.style.cursor = "default"
 		}
 	}
-	a.addEventListener("mouseleave", function()
-	{
-		a.style.textDecoration = "none"
-	})
 	a.addEventListener("click", function(e)
 	{
 		e.preventDefault()
@@ -195,22 +195,49 @@ function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_val
 }
 exports.New_copyButton_aLayer = New_copyButton_aLayer
 //
-function New_deleteRecordNamedButton_aLayer(lowercased_humanReadable_recordName)
+function New_redTextButtonView(text, context)
 {
-	const layer = document.createElement("a")
-	{
-		layer.innerHTML = "Delete this " + lowercased_humanReadable_recordName
-		layer.href = "#" // to make it look clickable
-		//
-		layer.display = "block" // own line
-		//
-		layer.style.fontSize = "15px"
-		layer.style.fontWeight = "bold"
-		layer.style.color = "red" // TODO
-	}
-	return layer
+	const view = new View({ tag: "a" }, context)
+	const layer = view.layer
+	layer.innerHTML = text
+	//
+	layer.display = "block" // own line
+	//
+	layer.style.fontSize = "11px"
+	layer.style.fontWeight = "light"
+	layer.style.color = "#f97777"
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	//
+	layer.href = "#" // to make it look clickable
+	layer.style.textDecoration = "none"
+	//
+	layer.addEventListener(
+		"mouseenter",
+		function()
+		{
+			layer.style.textDecoration = "underline"
+		}
+	)
+	layer.addEventListener(
+		"mouseleave",
+		function()
+		{
+			layer.style.textDecoration = "none"
+		}
+	)
+	//
+	return view
 }
-exports.New_deleteRecordNamedButton_aLayer = New_deleteRecordNamedButton_aLayer
+exports.New_redTextButtonView = New_redTextButtonView
+//
+function New_deleteRecordNamedButtonView(lowercased_humanReadable_recordName, context)
+{
+	const text = "Delete this " + lowercased_humanReadable_recordName
+	const view = New_redTextButtonView(text, context)
+
+	return view
+}
+exports.New_deleteRecordNamedButtonView = New_deleteRecordNamedButtonView
 //
 function New_createNewRecordNamedButton_aLayer(
 	lowercased_humanReadable_recordName

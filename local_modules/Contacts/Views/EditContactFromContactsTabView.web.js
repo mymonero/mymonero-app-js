@@ -61,31 +61,30 @@ class EditContactFromContactsTabView extends ContactFormView
 	_setup_deleteRecordButtonLayer()
 	{
 		const self = this
-		const layer = commonComponents_tables.New_deleteRecordNamedButton_aLayer("contact")
-		{
-			layer.addEventListener(
-				"click",
-				function(e)
+		const view = commonComponents_tables.New_deleteRecordNamedButtonView("contact", self.context)
+		const layer = view.layer
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
 				{
-					e.preventDefault()
-					{
-						const record_id = self.contact._id
-						self.context.contactsListController.WhenBooted_DeleteContactWithId(
-							record_id,
-							function(err)
-							{
-								if (err) {
-									throw err
-									return
-								}
-								self._thisRecordWasDeleted()
+					const record_id = self.contact._id
+					self.context.contactsListController.WhenBooted_DeleteContactWithId(
+						record_id,
+						function(err)
+						{
+							if (err) {
+								throw err
+								return
 							}
-						)
-					}
-					return false
+							self._thisRecordWasDeleted()
+						}
+					)
 				}
-			)
-		}
+				return false
+			}
+		)
 		self.layer.appendChild(layer)
 	}
 	_setup_field_address()
