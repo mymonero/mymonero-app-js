@@ -141,6 +141,9 @@ class UserIdleInWindowController extends EventEmitter
 				if (typeof appTimeoutAfterS === 'undefined') {
 					appTimeoutAfterS = 20 // on no pw entered / no settings info yet
 				}
+				if (appTimeoutAfterS == -1) { // then idle timer is disabled
+					return // do nothing
+				}
 			    if (self._numberOfSecondsSinceLastUserInteraction >= appTimeoutAfterS) {
 					if (self.isUserIdle !== true) { // not already idle (else redundant)
 						self._userDidBecomeIdle()
