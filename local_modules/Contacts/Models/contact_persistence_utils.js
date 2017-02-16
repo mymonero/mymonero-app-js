@@ -170,6 +170,10 @@ function SaveToDisk(
 				} else {
 					affectedDocument = affectedDocuments
 				}
+				if (typeof affectedDocument === 'undefined') {
+					throw "undefined affectedDocument on an update"
+					return
+				}
 				if (affectedDocument._id === null) { // not that this would happen…
 					fn(new Error("❌  Updated contact but _id after saving was null"))
 					return // bail

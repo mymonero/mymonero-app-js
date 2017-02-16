@@ -383,6 +383,7 @@ class ContactsListController extends EventEmitter
 							return
 						}
 						self.emit(self.EventName_deletedContactWithId(), contactToDelete._id)
+						contactToDelete.TearDown() // must call TearDown
 						contactToDelete = null // free
 						fn()
 					}

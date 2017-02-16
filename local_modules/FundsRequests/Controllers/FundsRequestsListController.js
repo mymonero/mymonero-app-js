@@ -370,6 +370,7 @@ class FundsRequestsListController extends EventEmitter
 							fn(err)
 							return
 						}
+						fundsRequestToDelete.TearDown() // must call
 						fundsRequestToDelete = null // free
 						fn()
 					}
