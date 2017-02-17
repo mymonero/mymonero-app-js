@@ -573,7 +573,7 @@ class PasswordController extends EventEmitter
 				}
 				//
 				// II. hang onto new pw, pw type, and state(s)
-				console.log("💬  Obtained " + userSelectedTypeOfPassword + " '" + obtainedPasswordString + "'")
+				console.log("💬  Obtained " + userSelectedTypeOfPassword + " " + obtainedPasswordString.length + " chars long")
 				self._didObtainPassword(
 					obtainedPasswordString,
 					function(err)
@@ -640,7 +640,7 @@ class PasswordController extends EventEmitter
 	saveToDisk(fn)
 	{
 		const self = this
-		console.log("📝  Saving password model to disk.")
+		// console.log("📝  Saving password model to disk.")
 		//
 		if (self.password === null || typeof self.password === 'undefined') {
 			const errStr = "Code fault: saveToDisk musn't be called until a password has been set"
@@ -758,7 +758,7 @@ class PasswordController extends EventEmitter
 						fn(new Error("Number of documents affected by _id'd update was 0"))
 						return // bail
 					}
-					console.log("✅  Saved update to password model with _id " + self._id + ".")
+					// console.log("✅  Saved update to password model with _id " + self._id + ".")
 					fn()
 				}
 			)

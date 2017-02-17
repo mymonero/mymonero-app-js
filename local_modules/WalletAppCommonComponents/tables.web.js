@@ -201,7 +201,7 @@ function New_redTextButtonView(text, context)
 	const layer = view.layer
 	layer.innerHTML = text
 	//
-	layer.display = "block" // own line
+	layer.style.display = "block" // own line
 	//
 	layer.style.fontSize = "11px"
 	layer.style.marginLeft = "23px"
@@ -209,14 +209,15 @@ function New_redTextButtonView(text, context)
 	layer.style.color = "#f97777"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	//
-	layer.href = "#" // to make it look clickable
 	layer.style.textDecoration = "none"
 	//
 	layer.addEventListener(
 		"mouseenter",
 		function()
 		{
-			layer.style.textDecoration = "underline"
+			if (view.isEnabled !== false) {
+				layer.style.textDecoration = "underline"
+			}
 		}
 	)
 	layer.addEventListener(
@@ -226,6 +227,20 @@ function New_redTextButtonView(text, context)
 			layer.style.textDecoration = "none"
 		}
 	)
+	view.SetEnabled = function(isEnabled)
+	{
+		view.isEnabled = isEnabled
+		if (isEnabled) {
+			layer.href = "#"
+			layer.style.opacity = "1"
+			layer.style.cursor = "pointer"
+		} else {
+			layer.href = ""
+			layer.style.opacity = "0.7"
+			layer.style.cursor = "default"
+		}
+	}
+	view.SetEnabled(true)
 	//
 	return view
 }
@@ -249,7 +264,7 @@ function New_createNewRecordNamedButton_aLayer(
 		layer.innerHTML = "+ CREATE NEW " + lowercased_humanReadable_recordName
 		layer.href = "#" // to make it look clickable
 		//
-		layer.display = "block" // own line
+		layer.style.display = "block" // own line
 		//
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "12px"

@@ -85,7 +85,7 @@ class SettingsController extends EventEmitter
 					// this is indicative of a code fault
 				}
 				const doc = docs[0]
-				console.log("💬  Found existing saved " + CollectionName + " with _id", doc._id)
+				// console.log("💬  Found existing saved " + CollectionName + " with _id", doc._id)
 				_proceedTo_loadStateFromRecord(doc)
 			}
 		)
@@ -206,7 +206,7 @@ class SettingsController extends EventEmitter
 	saveToDisk(fn)
 	{
 		const self = this
-		console.log("📝  Saving " + CollectionName + " to disk.")
+		// console.log("📝  Saving " + CollectionName + " to disk.")
 		const persistableDocument =
 		{
 			serverURL: self.serverURL,
@@ -292,7 +292,7 @@ class SettingsController extends EventEmitter
 						fn(new Error("Number of documents affected by _id'd update was 0"))
 						return // bail
 					}
-					console.log("✅  Saved update to " + CollectionName + " with _id " + self._id + ".")
+					// console.log("✅  Saved update to " + CollectionName + " with _id " + self._id + ".")
 					fn()
 				}
 			)

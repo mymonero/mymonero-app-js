@@ -211,12 +211,16 @@ class SettingsView extends View
 		div.style.paddingTop = "32px"
 		
 		const view = commonComponents_tables.New_redTextButtonView("DELETE EVERYTHING", self.context)
+		self.deleteEverythign_buttonView = view
 		const layer = view.layer
 		layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
+				if (self.deleteEverythign_buttonView.isEnabled !== true) {
+					return false
+				}
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
 					'Delete everything?', 
 					'Are you sure you want to delete all of your local data?\n\n(Your wallets will still exist permanently on the Monero blockchain.)',
@@ -310,15 +314,18 @@ class SettingsView extends View
                self.changePasswordButtonView.SetEnabled(false) // can't change til entered
                // self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
                self.appTimeoutRangeInputView.SetEnabled(true)
+			   self.deleteEverythign_buttonView.SetEnabled(false)
            } else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 			   // however, user should never be able to see the settings view in this state
                self.changePasswordButtonView.SetEnabled(false)
                // self.serverURLInputLayer.disabled = true
                self.appTimeoutRangeInputView.SetEnabled(false)
+			   self.deleteEverythign_buttonView.SetEnabled(false)
            } else { // has entered PW - unlock
                self.changePasswordButtonView.SetEnabled(true)
                // self.serverURLInputLayer.disabled = false
                self.appTimeoutRangeInputView.SetEnabled(true)
+			   self.deleteEverythign_buttonView.SetEnabled(true)
            }
 	   }		
 	}
