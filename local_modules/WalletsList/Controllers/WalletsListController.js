@@ -90,13 +90,49 @@ class WalletsListController extends EventEmitter
 	{
 		const self = this
 		self.context.passwordController.AddRegistrantForDeleteEverything(self)
-		self._setup_fetchAndReconstituteExistingRecords()
 		self.startObserving_passwordController()
+		//
+		self._tryToBoot() // TODO: boot lazily? (on whenbooted request)
 	}
-	_setup_fetchAndReconstituteExistingRecords()
+	_tryToBoot()
 	{
 		const self = this
-		{ // load
+		self._setup_fetchAndReconstituteExistingRecords()
+	}
+	_setup_fetchAndReconstituteExistingRecords(optl_isForSetup)
+	{
+		const isForSetup = optl_isForSetup === true ? true : false
+		const self = this
+		self.wallets = [] // going to zero this from the start
+		self._new_idsOfPersistedWallets( // now first want to check if we really want to trigger showing the PW entry screen yet (not part of onboarding til user initiates!)
+			function(err, ids)
+			{
+				if (err) {
+					const errStr = "Error fetching persisted wallet ids: " + err.message
+					const err = new Error(errStr)
+					self._setup_didFailToBootWithError(err)
+					return
+				}
+				if (ids.length === 0) { // do not cause the pw to be requested yet
+					self._setup_didBoot()
+					// and we don't want/need to emit that the list updated here
+					return
+				}
+				__proceedTo_requestPassword()
+			}
+		)
+		function __proceedTo_requestPassword() // but do not pass in ids cause they'll get stale if we wait for pw after a Delete Everything
+		{
+			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+				function(obtainedPasswordString, userSelectedTypeOfPassword)
+				{
+					__proceedTo_loadAndBootAllExtantRecordsWithPassword(obtainedPasswordString)
+				}
+			)
+		}
+		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
+		{ // we want to load the ids again after we have the password - or we'll have stale ids on having deleted all data in the app and subsequently subsequently adding a record!
+			console.log(self.constructor.name + " load and boot all extant records")
 			self._new_idsOfPersistedWallets(
 				function(err, ids)
 				{
@@ -106,88 +142,78 @@ class WalletsListController extends EventEmitter
 						self._setup_didFailToBootWithError(err)
 						return
 					}
-					__proceedTo_loadWalletsWithIds(ids)
+					if (ids.length === 0) { // do not cause the pw to be requested yet
+						self._setup_didBoot()
+						// and we don't want/need to emit that the list updated here
+						return
+					}
+					__proceedTo_loadRecordsWithIds(ids, persistencePassword)
 				}
 			)
 		}
-		function __proceedTo_loadWalletsWithIds(ids)
+		function __proceedTo_loadRecordsWithIds(ids, persistencePassword)
 		{
-			self.wallets = []
-			if (ids.length === 0) { // do not cause the pw to be requested yet
-				self._setup_didBoot()
-				// and we don't want/need to emit that the list updated here
-				return
-			}
-			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
-				function(obtainedPasswordString, userSelectedTypeOfPassword)
+			async.each(
+				ids,
+				function(_id, cb)
 				{
-					__proceedTo_loadAndBootAllExtantRecordsWithPassword(obtainedPasswordString)
-				}
-			)
-			function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
-			{
-				async.each(
-					ids,
-					function(_id, cb)
+					const options =
 					{
-						const options =
+						_id: _id,
+						//
+						failedToInitialize_cb: function(err, walletInstance)
 						{
-							_id: _id,
-							//
-							failedToInitialize_cb: function(err, walletInstance)
-							{
-								console.error("Failed to initialize wallet ", err)
-								cb(err)
-							},
-							successfullyInitialized_cb: function(walletInstance)
-							{
-								walletInstance.Boot_decryptingExistingInitDoc(
-									persistencePassword,
-									function(err)
-									{
-										if (err) {
-											console.error("Error fetching persisted wallet", err)
-											// but we're not going to call cb with err because that prevents boot - the instance will be marked as 'errored' and we'll display it/able to treat it as such
-										} else {
-											// console.log("💬  Initialized wallet", wallet.Description())
-										}
-										self.wallets.push(walletInstance) // we manually manage the list here and
-										// thus take responsibility to emit EventName_listUpdated below
-										self._startObserving_wallet(walletInstance) // taking responsibility to start observing
-										//
-										cb()
+							console.error("Failed to initialize wallet ", err, walletInstance)
+							cb(err)
+						},
+						successfullyInitialized_cb: function(walletInstance)
+						{
+							walletInstance.Boot_decryptingExistingInitDoc(
+								persistencePassword,
+								function(err)
+								{
+									if (err) {
+										console.error("Error fetching persisted wallet", err)
+										// but we're not going to call cb with err because that prevents boot - the instance will be marked as 'errored' and we'll display it/able to treat it as such
+									} else {
+										// console.log("💬  Initialized wallet", wallet.Description())
 									}
-								)
-							},
-							didReceiveUpdateToAccountInfo: function()
-							{ // TODO: bubble?
-							},
-							didReceiveUpdateToAccountTransactions: function()
-							{ // TODO: bubble?
-							}
+									self.wallets.push(walletInstance) // we manually manage the list here and
+									// thus take responsibility to emit EventName_listUpdated below
+									self._startObserving_wallet(walletInstance) // taking responsibility to start observing
+									//
+									cb()
+								}
+							)
+						},
+						didReceiveUpdateToAccountInfo: function()
+						{ // TODO: bubble?
+						},
+						didReceiveUpdateToAccountTransactions: function()
+						{ // TODO: bubble?
 						}
-						const wallet = new Wallet(options, self.context)
-					},
-					function(err)
-					{
-						if (err) {
-							console.error("Fatal error fetching persisted wallets", err)
-							self._setup_didFailToBootWithError(err)
-							return
-						}
-						{ // before proceeding, just sorting the wallets by date added
-							self.wallets = self.wallets.sort(function(a, b)
-							{
-								return b.dateWalletFirstSavedLocally - a.dateWalletFirstSavedLocally
-							})
-						}
-						self._setup_didBoot(function()
-						{ // in cb to ensure serialization of calls
-							self.__listUpdated_wallets() // emit after booting so this becomes an at-runtime emission
+					}
+					const wallet = new Wallet(options, self.context)
+				},
+				function(err)
+				{
+					if (err) {
+						console.error("Fatal error fetching persisted wallets", err)
+						self._setup_didFailToBootWithError(err)
+						return
+					}
+					{ // before proceeding, just sorting the wallets by date added
+						self.wallets = self.wallets.sort(function(a, b)
+						{
+							return b.dateWalletFirstSavedLocally - a.dateWalletFirstSavedLocally
 						})
 					}
-				)
-			}
+					self._setup_didBoot(function()
+					{ // in cb to ensure serialization of calls
+						self.__listUpdated_wallets() // emit after booting so this becomes an at-runtime emission
+					})
+				}
+			)
 		}
 	}
 	startObserving_passwordController()
@@ -196,7 +222,7 @@ class WalletsListController extends EventEmitter
 		const controller = self.context.passwordController
 		{ // EventName_ChangedPassword
 			if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in " + self.constructor.name
 			}
 			self._passwordController_EventName_ChangedPassword_listenerFn = function()
 			{
@@ -209,11 +235,10 @@ class WalletsListController extends EventEmitter
 		}
 		{ // EventName_willDeconstructBootedStateAndClearPassword
 			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
 			}
 			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
 			{
-				console.log("~~~~~> observed will deconstruct booted state…")
 				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
 			}
 			controller.on(
@@ -223,7 +248,7 @@ class WalletsListController extends EventEmitter
 		}
 		{ // EventName_didDeconstructBootedStateAndClearPassword
 			if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
 			}
 			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
 			{
@@ -841,11 +866,11 @@ class WalletsListController extends EventEmitter
 	_passwordController_EventName_didDeconstructBootedStateAndClearPassword()
 	{
 		const self = this
-		{ // this will re-request the pw and lead to loading records & booting self 
-			self._setup_fetchAndReconstituteExistingRecords()
-		}
-		{ // and then at the end we're going to manually emit so that the UI updates to empty list after the pw entry screen is shown
+		{ // manually emit so that the UI updates to empty list after the pw entry screen is shown
 			self.__listUpdated_wallets()
+		}
+		{ // this will re-request the pw and lead to loading records & booting self 
+			self._tryToBoot()
 		}
 	}
 }

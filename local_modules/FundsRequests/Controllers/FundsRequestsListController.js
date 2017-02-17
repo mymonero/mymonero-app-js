@@ -57,8 +57,14 @@ class FundsRequestsListController extends EventEmitter
 	{
 		const self = this
 		self.context.passwordController.AddRegistrantForDeleteEverything(self)
-		self._setup_fetchAndReconstituteExistingRecords()
 		self.startObserving_passwordController()
+		//
+		self._tryToBoot()
+	}
+	_tryToBoot()
+	{
+		const self = this
+		self._setup_fetchAndReconstituteExistingRecords()
 	}
 	_setup_didBoot()
 	{ // pre-emptive declaration
@@ -74,8 +80,37 @@ class FundsRequestsListController extends EventEmitter
 	_setup_fetchAndReconstituteExistingRecords()
 	{
 		const self = this
-		{ // load
-			self._new_idsOfPersisted_fundsRequests(
+		self.fundsRequests = [] // zero from the get-go
+		self._new_idsOfPersisted_fundsRequests( // now check if we really need to trigger showing pw entry screen
+			function(err, ids)
+			{
+				if (err) {
+					console.error("Error fetching list of saved fundsRequests: " + err.toString())
+					setTimeout(function()
+					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
+						self.emit(self.EventName_errorWhileBooting(), err)
+					})
+					return
+				}
+				if (ids.length === 0) { // then don't cause the pw to be requested yet
+					self._setup_didBoot()
+					return
+				}
+				__proceedTo_requestPasswordAndLoadRecords()
+			}
+		)
+		function __proceedTo_requestPasswordAndLoadRecords()
+		{
+			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+				function(obtainedPasswordString, userSelectedTypeOfPassword)
+				{
+					__proceedTo_loadAndBootAllExtantRecordsWithPassword(obtainedPasswordString)
+				}
+			)
+		}
+		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
+		{
+			self._new_idsOfPersisted_fundsRequests( // now check if we really need to trigger showing pw entry screen
 				function(err, ids)
 				{
 					if (err) {
@@ -86,26 +121,15 @@ class FundsRequestsListController extends EventEmitter
 						})
 						return
 					}
-					__proceedTo_load_fundsRequestsWithIds(ids)
+					if (ids.length === 0) { // then don't cause the pw to be requested yet
+						self._setup_didBoot()
+						return
+					}
+					__proceedTo_loadRecordsWithIds(ids, persistencePassword)
 				}
-			)
+			)			
 		}
-		function __proceedTo_load_fundsRequestsWithIds(ids)
-		{
-			self.fundsRequests = []
-			//
-			if (ids.length === 0) { // then don't cause the pw to be requested yet
-				self._setup_didBoot()
-				return
-			}
-			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
-				function(obtainedPasswordString, userSelectedTypeOfPassword)
-				{
-					__proceedTo_loadAndBootAllExtantRecordsWithPassword(ids, obtainedPasswordString)
-				}
-			)
-		}
-		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(ids, persistencePassword)
+		function __proceedTo_loadRecordsWithIds(ids, persistencePassword)
 		{
 			// TODO: optimize by parallelizing and sorting after
 			async.eachSeries(
@@ -160,7 +184,7 @@ class FundsRequestsListController extends EventEmitter
 		const controller = self.context.passwordController
 		{ // EventName_ChangedPassword
 			if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in " + self.constructor.name
 			}
 			self._passwordController_EventName_ChangedPassword_listenerFn = function()
 			{
@@ -173,7 +197,7 @@ class FundsRequestsListController extends EventEmitter
 		}
 		{ // EventName_willDeconstructBootedStateAndClearPassword
 			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
 			}
 			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
 			{
@@ -186,7 +210,7 @@ class FundsRequestsListController extends EventEmitter
 		}
 		{ // EventName_didDeconstructBootedStateAndClearPassword
 			if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
 			}
 			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
 			{
@@ -498,7 +522,7 @@ class FundsRequestsListController extends EventEmitter
 	{
 		const self = this
 		{ // this will re-request the pw and lead to loading records & booting self 
-			self._setup_fetchAndReconstituteExistingRecords()
+			self._tryToBoot()
 		}
 		{ // and then at the end we're going to emit so that the UI updates to empty list after the pw entry screen is shown
 			self.__listUpdated_fundsRequests()
