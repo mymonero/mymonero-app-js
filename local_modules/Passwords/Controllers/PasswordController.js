@@ -812,9 +812,9 @@ class PasswordController extends EventEmitter
 	  // maybe it should be moved, maybe not.
 		const self = this
 		self._deconstructBootedStateAndClearPassword(
+			true, // yes, is for a 'delete everything'
 			function(cb)
 			{
-				console.log("now reset state…")
 				// reset state cause we're going all the way back to pre-boot 
 				self.hasBooted = false // require this pw controller to boot
 				self.password = undefined // this is redundant but is here for clarity
@@ -866,7 +866,7 @@ class PasswordController extends EventEmitter
 					return
 				}
 				self.emit(self.EventName_havingDeletedEverything_didDeconstructBootedStateAndClearPassword())
-				fn(err)
+				fn()
 				return
 			}
 		)
@@ -878,17 +878,23 @@ class PasswordController extends EventEmitter
 		self.deleteEverythingRegistrants.push(registrant)
 	}
 	_deconstructBootedStateAndClearPassword(
+		optl_isForADeleteEverything,
 		hasFiredWill_fn, // (cb) -> Void; cb: (err?) -> Void
 		fn
 	)
 	{
+		const isForADeleteEverything = optl_isForADeleteEverything === true ? true : false
 		hasFiredWill_fn = hasFiredWill_fn || function(cb) { cb() }
 		fn = fn || function(err) {}
 		//
 		const self = this
 		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
 		{ // indicate to consumers they should tear down and await the "did" event to re-request
-			self.emit(self.EventName_willDeconstructBootedStateAndClearPassword())
+			const params =
+			{
+				isForADeleteEverything: isForADeleteEverything
+			}
+			self.emit(self.EventName_willDeconstructBootedStateAndClearPassword(), params)
 		}
 		setTimeout(function()
 		{ // on next tick…
@@ -917,7 +923,9 @@ class PasswordController extends EventEmitter
 	_didBecomeIdleAfterHavingPreviouslyEnteredPassword()
 	{
 		const self = this
-		self._deconstructBootedStateAndClearPassword()
+		self._deconstructBootedStateAndClearPassword(
+			false // not for a 'delete everything'
+		)
 	}	
 	//
 	//

@@ -56,7 +56,7 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	_animationDuration_ms_modalDismiss()
 	{
-		return 150
+		return 170
 	}
 	//
 	//

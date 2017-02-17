@@ -58,55 +58,12 @@ class ContactsListController extends EventEmitter
 		const self = this
 		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		self._setup_fetchAndReconstituteExistingRecords()
+		self.startObserving_passwordController()
 	}
 	_setup_didBoot()
 	{ // pre-emptive declaration
 		const self = this
 		self.hasBooted = true // nothing to do to boot
-		{ // start observing (but not redundantly because we call _stopObserving_passwordController if we need to call _setup_didBoot again)
-			{ // passwordController
-				const controller = self.context.passwordController
-				{ // EventName_ChangedPassword
-					if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
-						throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
-					}
-					self._passwordController_EventName_ChangedPassword_listenerFn = function()
-					{
-						self._passwordController_EventName_ChangedPassword()
-					}
-					controller.on(
-						controller.EventName_ChangedPassword(),
-						self._passwordController_EventName_ChangedPassword_listenerFn
-					)
-				}
-				{ // EventName_willDeconstructBootedStateAndClearPassword
-					if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-						throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
-					}
-					self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
-					{
-						self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
-					}
-					controller.on(
-						controller.EventName_willDeconstructBootedStateAndClearPassword(),
-						self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
-					)
-				}
-				{ // EventName_didDeconstructBootedStateAndClearPassword
-					if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-						throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
-					}
-					self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
-					{
-						self._passwordController_EventName_didDeconstructBootedStateAndClearPassword()
-					}
-					controller.on(
-						controller.EventName_didDeconstructBootedStateAndClearPassword(),
-						self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
-					)
-				}
-			}
-		}
 		setTimeout(function()
 		{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
 			self.emit(self.EventName_booted())
@@ -189,6 +146,50 @@ class ContactsListController extends EventEmitter
 						self.__listUpdated_contacts() // emit after booting so this becomes an at-runtime emission
 					})
 				}
+			)
+		}
+	}
+	startObserving_passwordController()
+	{
+		const self = this
+		const controller = self.context.passwordController
+		{ // EventName_ChangedPassword
+			if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
+				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+			}
+			self._passwordController_EventName_ChangedPassword_listenerFn = function()
+			{
+				self._passwordController_EventName_ChangedPassword()
+			}
+			controller.on(
+				controller.EventName_ChangedPassword(),
+				self._passwordController_EventName_ChangedPassword_listenerFn
+			)
+		}
+		{ // EventName_willDeconstructBootedStateAndClearPassword
+			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+			}
+			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
+			{
+				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
+			}
+			controller.on(
+				controller.EventName_willDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
+			)
+		}
+		{ // EventName_didDeconstructBootedStateAndClearPassword
+			if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in _setup_didBoot of " + self.constructor.name
+			}
+			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
+			{
+				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword()
+			}
+			controller.on(
+				controller.EventName_didDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
 			)
 		}
 	}
@@ -461,6 +462,10 @@ class ContactsListController extends EventEmitter
 	_passwordController_EventName_ChangedPassword()
 	{
 		const self = this
+		if (self.hasBooted !== true) {
+			console.warn("⚠️  " + self.constructor.name + " asked to ChangePassword but not yet booted.")
+			return // critical: not ready to get this 
+		}
 		// change all contact passwords:
 		const toPassword = self.context.passwordController.password // we're just going to directly access it here because getting this event means the passwordController is also saying it's ready
 		self.contacts.forEach(
@@ -516,9 +521,6 @@ class ContactsListController extends EventEmitter
 	_passwordController_EventName_didDeconstructBootedStateAndClearPassword()
 	{
 		const self = this
-		{ // now that we're gotten the final notification in the password reset process we can stop observing w/o missing the "did" event
-			self._stopObserving_passwordController() // this prevents duplicative observation when we boot up again - as well as illegal stuff like trying to change the pw when not booted
-		}
 		{ // this will re-request the pw and lead to loading records & booting self 
 			self._setup_fetchAndReconstituteExistingRecords()
 		}

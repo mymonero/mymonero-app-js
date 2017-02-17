@@ -142,7 +142,22 @@ class ForgotPasswordView extends View
 			true,
 			function(layer, e)
 			{
-				console.log("TODO: clear all data")
+				self.context.windowDialogs.PresentQuestionAlertDialogWith(
+					'Delete everything?', 
+					'Are you sure you want to delete all of your local data?\n\n(Your wallets will still exist permanently on the Monero blockchain.)',
+					[ 'Delete', 'Cancel' ],
+					function(err, selectedButtonIdx)
+					{
+						if (err) {
+							throw err
+							return
+						}
+						const didChooseYes = selectedButtonIdx === 0
+						if (didChooseYes) {
+							self.context.passwordController.InitiateDeleteEverything(function(err) {})
+						}
+					}
+				)
 			},
 			self.context
 		)

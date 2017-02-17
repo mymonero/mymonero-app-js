@@ -155,10 +155,12 @@ class PasswordEntryViewController extends EventEmitter
 		// we don't want changing the pw to affect locking & deconstructing the UI if idle timer engages
 		controller.on(
 			controller.EventName_willDeconstructBootedStateAndClearPassword(),
-			function()
+			function(params)
 			{
+				const isForADeleteEverything = params.isForADeleteEverything === true ? true : false
 				if (self.view !== null && typeof self.view !== 'undefined') {
-					self.view.Cancel(false) // we must use Cancel to maintain pw controller state (or user idle while changing pw breaks ask-for-pw), and must have no animation - teardown whole view and wait for imminent non-animated re-present of new self.view
+					const isAnimated = isForADeleteEverything === true
+					self.view.Cancel(isAnimated) // we must use Cancel to maintain pw controller state (or user idle while changing pw breaks ask-for-pw), and must have no animation unless it's for a 'delete everything' - teardown whole view and wait for imminent non-animated re-present of new self.view (which does not happen in the case of a 'delete everything')
 				}
 			}
 		)
