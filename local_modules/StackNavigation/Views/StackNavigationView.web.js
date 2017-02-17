@@ -286,7 +286,7 @@ class StackNavigationView extends View
 		const root_stackView = self.stackViews[0]
 		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
 			// TODO: assert self.stackViews.length === 1?
-			console.warn("⚠️  PopView called but already at root.")
+			console.warn("⚠️  PopView called but already at root. (Probably fine.)")
 			return // bail
 		}
 		// TODO: assert self.stackView.length >= 2?
@@ -311,7 +311,7 @@ class StackNavigationView extends View
 		const root_stackView = self.stackViews[0]
 		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
 			// TODO: assert self.stackViews.length === 1?
-			console.warn("⚠️  PopToRootView called but already at root.")
+			console.warn("⚠️  PopToRootView called but already at root. (Probably fine.)")
 			return // bail
 		}
 		self.PopToView(

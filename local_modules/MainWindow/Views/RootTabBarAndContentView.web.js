@@ -115,7 +115,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		if (passwordController.hasBooted == true) {
 			__passwordController_didBoot()
 		} else {
-			self.DisableTabBarItemButtons(true) // while booting
+			self.DisableTabBarItemButtons(true) // true: force-disable all while booting
 			passwordController._executeWhenBooted(__passwordController_didBoot)
 		}
 	}
@@ -147,7 +147,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				{
 					self.selectTab_wallets() // in case it was triggered by settings - if we didn't
 					// select this tab it would look like nothing happened cause the 'enter pw' modal would not be popped as there would be nothing for the list controllers to decrypt
-					self.DisableTabBarItemButtons(true) // until we have booted again
+					self.DisableTabBarItemButtons(false) // until we have booted again
 				}
 			)
 		}

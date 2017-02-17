@@ -877,7 +877,7 @@ class Wallet extends EventEmitter
 		const self = this
 		if (self.hasBeenTornDown) {
 			console.warn("Wallet asked to saveToDisk after having been torn down.")
-			console.log((new Error()).stack)
+			console.warn((new Error()).stack)
 			return
 		}
 		wallet_persistence_utils.SaveToDisk(
@@ -935,13 +935,7 @@ class Wallet extends EventEmitter
 			}
 		)
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Changing meta data
-
-
-
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Changing meta data
