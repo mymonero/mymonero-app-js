@@ -82,7 +82,7 @@ function _proceedTo_test_deleteWallet(cb)
 		return
 	}
 	const _id = wallets__tests_config.deleteWalletWith_id
-	walletsListController.WhenBooted_DeleteWalletWithId(
+	walletsListController.WhenBooted_DeleteRecordWithId(
 		_id,
 		function(err)
 		{

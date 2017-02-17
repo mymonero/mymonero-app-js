@@ -62,9 +62,9 @@ function _proceedTo_test_bootController(cb)
 		const controller = new WalletsListController(options, context)
 		controller.on(controller.EventName_booted(), function()
 		{
-			controller.WhenBooted_Wallets(function(wallets)
+			controller.WhenBooted_Records(function(records)
 			{ // ^-- this will defer till booted
-				console.log("Wallets", wallets)
+				console.log("Wallets", records)
 				cb()
 			})
 		})

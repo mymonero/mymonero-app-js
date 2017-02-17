@@ -146,7 +146,7 @@ class EditWalletView extends View
 				e.preventDefault()
 				{
 					const record_id = self.wallet._id
-					self.context.walletsListController.WhenBooted_DeleteWalletWithId(
+					self.context.walletsListController.WhenBooted_DeleteRecordWithId(
 						record_id,
 						function(err)
 						{

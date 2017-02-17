@@ -88,7 +88,7 @@ function New_fieldValue_walletSelectLayer(params)
 		const selectedValue = selectedOption.value
 		const selectedWallet_id = selectedValue;
 		var selectedWallet = null;
-		const wallets = walletsListController.wallets
+		const wallets = walletsListController.records
 		const numberOf_wallets = wallets.length
 		for (let i = 0 ; i < numberOf_wallets ; i++) {
 			const wallet = wallets[i]
@@ -157,7 +157,7 @@ function New_fieldValue_walletSelectLayer(params)
 		//
 		layer.__removeAllOptionLayers() // (and stop observing)
 		//
-		const wallets = walletsListController.wallets
+		const wallets = walletsListController.records
 		const numberOf_wallets = wallets.length
 		{
 			for (let i = 0 ; i < numberOf_wallets ; i++) {

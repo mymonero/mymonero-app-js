@@ -258,7 +258,7 @@ class WalletCellContentsView extends View
 	deleteWallet()
 	{
 		const self = this
-		self.context.walletsListController.WhenBooted_DeleteWalletWithId(
+		self.context.walletsListController.WhenBooted_DeleteRecordWithId(
 			self.wallet._id,
 			function(err)
 			{

@@ -260,7 +260,7 @@ class WalletsListView extends View
 		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
 			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted walletsList, i.e., on 
 			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
-			self._configureWith_wallets(self.context.walletsListController.wallets) // since it will be immediately available
+			self._configureWith_wallets(self.context.walletsListController.records) // since it will be immediately available
 			return
 		}
 		if (self.isAlreadyWaitingForWallets === true) { // because accessing wallets is async
@@ -268,11 +268,11 @@ class WalletsListView extends View
 			return // prevent redundant calls
 		}
 		self.isAlreadyWaitingForWallets = true // lock
-		self.context.walletsListController.WhenBooted_Wallets(
-			function(wallets)
+		self.context.walletsListController.WhenBooted_Records(
+			function(records)
 			{
 				self.isAlreadyWaitingForWallets = false // unlock
-				self._configureWith_wallets(wallets)
+				self._configureWith_wallets(records)
 			}
 		)
 	}
