@@ -510,11 +510,11 @@ class FundsRequestsListController extends EventEmitter
 			function(err, numRemoved)
 			{
 				if (err) {
-					fn(err)
+					fn(err) // must call back!
 					return
 				}
 				console.log(`🗑  Deleted all ${collectionName}.`)
-				fn()
+				fn() // must call back!
 			}
 		)
 	}

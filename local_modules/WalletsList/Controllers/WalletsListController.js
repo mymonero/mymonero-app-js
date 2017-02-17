@@ -132,7 +132,6 @@ class WalletsListController extends EventEmitter
 		}
 		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
 		{ // we want to load the ids again after we have the password - or we'll have stale ids on having deleted all data in the app and subsequently subsequently adding a record!
-			console.log(self.constructor.name + " load and boot all extant records")
 			self._new_idsOfPersistedWallets(
 				function(err, ids)
 				{
@@ -855,11 +854,11 @@ class WalletsListController extends EventEmitter
 			function(err, numRemoved)
 			{
 				if (err) {
-					fn(err)
+					fn(err) // must call back!
 					return
 				}
 				console.log(`🗑  Deleted all ${collectionName}.`)
-				fn()
+				fn() // must call back!
 			}
 		)
 	}
