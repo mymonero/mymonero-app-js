@@ -105,11 +105,7 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		}
 		function __passwordController_didBoot()
 		{
-			if (passwordController.HasUserEnteredValidPasswordYet() === false) {
-				self.DisableTabBarItemButtons()
-			} else {
-				self.EnableTabBarItemButtons() // as we disabled them
-			}
+			self.SetTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 		}
 		const passwordController = self.context.passwordController
 		if (passwordController.hasBooted == true) {
@@ -147,7 +143,17 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				{
 					self.selectTab_wallets() // in case it was triggered by settings - if we didn't
 					// select this tab it would look like nothing happened cause the 'enter pw' modal would not be popped as there would be nothing for the list controllers to decrypt
-					self.DisableTabBarItemButtons(false) // until we have booted again
+					self.SetTabBarItemButtonsInteractivityNeedsUpdateFromProviders() // disable some until we have booted again
+				}
+			)
+		}
+		{ // walletsListController
+			const emitter = self.context.walletsListController
+			emitter.on(
+				emitter.EventName_listUpdated(),
+				function()
+				{ // if there are 0 wallets we don't want certain buttons to be enabled
+					self.SetTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 				}
 			)
 		}

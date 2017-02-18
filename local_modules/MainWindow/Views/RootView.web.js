@@ -93,7 +93,7 @@ class RootView extends View
 				passwordEntryViewController.EventName_willDismissView(),
 				function()
 				{
-					self.tabBarViewAndContentView.EnableTabBarItemButtons()
+					self.tabBarViewAndContentView.SetTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
 				}
 			)
 			passwordEntryViewController.on(

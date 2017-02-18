@@ -95,7 +95,7 @@ class SettingsTabContentView extends StackAndModalNavigationView
 		if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app
 			return true // because the app needs to be unlocked before they can use it
 		}
-		if (self.context.passwordController.IsUserChangingPassword() === true) {
+		if (passwordController.IsUserChangingPassword() === true) {
 			return true // changing pw - prevent jumping around
 		}
 		return false

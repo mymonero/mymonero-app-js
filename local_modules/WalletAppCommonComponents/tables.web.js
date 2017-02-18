@@ -246,9 +246,9 @@ function New_redTextButtonView(text, context)
 }
 exports.New_redTextButtonView = New_redTextButtonView
 //
-function New_deleteRecordNamedButtonView(lowercased_humanReadable_recordName, context)
+function New_deleteRecordNamedButtonView(humanReadable_recordName, context)
 {
-	const text = "Delete this " + lowercased_humanReadable_recordName
+	const text = "DELETE " + humanReadable_recordName.toUpperCase() + "…"
 	const view = New_redTextButtonView(text, context)
 
 	return view

@@ -210,7 +210,7 @@ class SettingsView extends View
 		const div = document.createElement("div")
 		div.style.paddingTop = "32px"
 		
-		const view = commonComponents_tables.New_redTextButtonView("DELETE EVERYTHING", self.context)
+		const view = commonComponents_tables.New_redTextButtonView("DELETE EVERYTHING…", self.context)
 		self.deleteEverythign_buttonView = view
 		const layer = view.layer
 		layer.addEventListener(

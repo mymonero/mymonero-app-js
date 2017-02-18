@@ -47,8 +47,6 @@ class TabBarAndContentView extends View
 		{
 			self._tabBarContentViews = []
 			self._tabBarItemButtonViews = []
-			//
-			self.isEnabled = true
 		}
 		{
 			const layer = self.layer
@@ -77,21 +75,6 @@ class TabBarAndContentView extends View
 				self.contentAreaView = view
 				self.addSubview(view)
 			}
-		}
-		{
-			self.eventListener_didClick_fn = function(e)
-			{ // just an extra layer of protection on clicks
-				if (self.isEnabled === false) {
-					e.preventDefault()
-					return false
-				} else {
-					return true
-				}
-			}
-			self.layer.addEventListener(
-				"click",
-				self.eventListener_didClick_fn
-			)
 		}
 	}
 	//
@@ -342,12 +325,6 @@ class TabBarAndContentView extends View
 	EnableTabBarItemButtons()
 	{
 		const self = this
-		if (self.isEnabled !== false) {
-			return // redundant
-		}
-		{
-			self.isEnabled = true
-		}
 		self._tabBarItemButtonViews.forEach(
 			function(view, idx)
 			{
@@ -355,30 +332,36 @@ class TabBarAndContentView extends View
 			}
 		)
 	}
-	DisableTabBarItemButtons(optl_overrideAnyShallDisable)
+	DisableTabBarItemButtons()
 	{
 		const self = this
-		// we're not locking this function because we might want to re-enable some btns
-		self.isEnabled = false
 		self._tabBarItemButtonViews.forEach(
 			function(view, idx)
 			{
-				if (optl_overrideAnyShallDisable !== true) {
-					const contentView = self._tabBarContentViews[idx]
-					if (typeof contentView.TabBarItem_shallDisable == 'function') {
-						const shallDisable = contentView.TabBarItem_shallDisable()
-						if (shallDisable == false) {
-							view.Enable()
-							return 
-						}
-					}
-				}
 				view.Disable()
 			}
 		)
 	}
-	//
-	//
-	// Runtime - Delegation - 
+	SetTabBarItemButtonsInteractivityNeedsUpdateFromProviders()
+	{
+		const self = this
+		self._tabBarItemButtonViews.forEach(
+			function(view, idx)
+			{
+				const contentView = self._tabBarContentViews[idx]
+				if (typeof contentView.TabBarItem_shallDisable == 'function') {
+					const shallDisable = contentView.TabBarItem_shallDisable()
+					if (shallDisable == false) {
+						view.Enable()
+						return 
+					} else {
+						view.Disable()
+					}
+				} else {
+					view.Enable() // default
+				}
+			}
+		)
+	}
 }
 module.exports = TabBarAndContentView
