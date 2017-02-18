@@ -62,17 +62,15 @@ class ContactsListController extends ListBaseController
 		optionsBase.persistencePassword = persistencePassword
 		//
 		// now supply actual callbacks
-		optionsBase.failedToInitialize_cb = function(err, contactInstance)
+		optionsBase.failedToInitialize_cb = function(err, returnedInstance)
 		{
-			console.error("Failed to initialize contact ", err, contactInstance)
-			const recordInstance = contactInstance // to be explicit
+			console.error("Failed to initialize contact ", err, returnedInstance)
 			// we're not going to pass this err through though because it will prevent booting... we mark the instance as 'errored'
-			forOverrider_instance_didBoot_fn(err, recordInstance)
+			forOverrider_instance_didBoot_fn(err, returnedInstance)
 		}
-		optionsBase.successfullyInitialized_cb = function(contactInstance)
+		optionsBase.successfullyInitialized_cb = function(returnedInstance)
 		{
-			const recordInstance = contactInstance // to be explicit
-			forOverrider_instance_didBoot_fn(null, recordInstance) // no err
+			forOverrider_instance_didBoot_fn(null, returnedInstance) // no err
 		}
 	}
 	overridable_sortRecords(fn) // () -> Void; we must call this!

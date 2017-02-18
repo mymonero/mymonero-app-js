@@ -162,7 +162,7 @@ class FundsRequestsListView extends View
 		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
 			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted fundsRequestsList, i.e., on 
 			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
-			self._configureWith_fundsRequests(self.context.fundsRequestsListController.fundsRequests) // since it will be immediately available
+			self._configureWith_fundsRequests(self.context.fundsRequestsListController.records) // since it will be immediately available
 			return
 		}
 		if (self.isAlreadyWaitingForFundsRequests === true) { // because accessing fundsRequests is async
@@ -170,17 +170,12 @@ class FundsRequestsListView extends View
 			return // prevent redundant calls
 		}
 		self.isAlreadyWaitingForFundsRequests = true
-		self.context.fundsRequestsListController.WhenBooted_FundsRequests(
-			function(fundsRequests)
+		self.context.fundsRequestsListController.WhenBooted_Records(
+			function(records)
 			{
 				self.isAlreadyWaitingForFundsRequests = false // unlock
-				{ // before proceeding, just sorting the records by date created
-					fundsRequests = fundsRequests.sort(function(a, b)
-					{
-						return b.dateCreated - a.dateCreated
-					})
-				}
-				self._configureWith_fundsRequests(fundsRequests)
+				// before proceeding, just sorting the records by date created
+				self._configureWith_fundsRequests(records)
 			}
 		)
 	}

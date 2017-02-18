@@ -72,21 +72,18 @@ class WalletsListController extends ListBaseController
 	{
 		const self = this
 		// now supply actual Wallet callbacks
-		optionsBase.failedToInitialize_cb = function(err, walletInstance)
+		optionsBase.failedToInitialize_cb = function(err, returnedInstance)
 		{
-			console.error("Failed to initialize wallet ", err, walletInstance)
-			const recordInstance = walletInstance // to be explicit
-			forOverrider_instance_didFailBoot_fn(err, recordInstance)
+			console.error("Failed to initialize wallet ", err, returnedInstance)
+			forOverrider_instance_didFailBoot_fn(err, returnedInstance)
 		}
-		optionsBase.successfullyInitialized_cb = function(walletInstance)
+		optionsBase.successfullyInitialized_cb = function(returnedInstance)
 		{
-			walletInstance.Boot_decryptingExistingInitDoc(
+			returnedInstance.Boot_decryptingExistingInitDoc(
 				persistencePassword,
 				function(err)
 				{
-					const recordInstance = walletInstance // to be explicit
-					// we're not going to consider a failure to decrypt as a fatal error, however.
-					forOverrider_instance_didBoot_fn(err, recordInstance)
+					forOverrider_instance_didBoot_fn(err, returnedInstance)
 				}
 			)
 		}

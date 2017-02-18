@@ -268,7 +268,7 @@ class GeneratedRequestView extends View
 				e.preventDefault()
 				{
 					const record_id = self.fundsRequest._id
-					self.context.fundsRequestsListController.WhenBooted_DeleteFundsRequestWithId(
+					self.context.fundsRequestsListController.WhenBooted_DeleteRecordWithId(
 						record_id,
 						function(err)
 						{

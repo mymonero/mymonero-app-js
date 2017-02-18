@@ -144,7 +144,7 @@ class FundsRequestsListCellView extends View
 	deleteFundsRequest()
 	{
 		const self = this
-		self.context.fundsRequestsListController.WhenBooted_DeleteFundsRequestWithId(
+		self.context.fundsRequestsListController.WhenBooted_DeleteRecordWithId(
 			self.fundsRequest._id,
 			function(err)
 			{

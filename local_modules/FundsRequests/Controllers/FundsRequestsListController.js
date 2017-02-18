@@ -28,296 +28,67 @@
 //
 "use strict"
 //
-const async = require('async')
-const EventEmitter = require('events')
+const ListBaseController = require('../../Lists/Controllers/ListBaseController')
 //
 const FundsRequest = require('../Models/FundsRequest')
 const fundsRequest_persistence_utils = require('../Models/fundsRequest_persistence_utils')
 //
-class FundsRequestsListController extends EventEmitter
+class FundsRequestsListController extends ListBaseController
 {
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Lifecycle - Initialization
-
 	constructor(options, context)
 	{
-		super() // must call super before we can access `this`
-		//
-		const self = this
-		self.options = options
-		self.context = context
-		//
-		self.hasBooted = false
-		//
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-		self.context.passwordController.AddRegistrantForDeleteEverything(self)
-		self.startObserving_passwordController()
-		//
-		self._tryToBoot()
-	}
-	_tryToBoot()
-	{
-		const self = this
-		self._setup_fetchAndReconstituteExistingRecords()
-	}
-	_setup_didBoot()
-	{ // pre-emptive declaration
-		const self = this
-		{
-			self.hasBooted = true
-		}
-		setTimeout(function()
-		{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-			self.emit(self.EventName_booted())
-		})
-	}
-	_setup_fetchAndReconstituteExistingRecords()
-	{
-		const self = this
-		self.fundsRequests = [] // zero from the get-go
-		self._new_idsOfPersisted_fundsRequests( // now check if we really need to trigger showing pw entry screen
-			function(err, ids)
-			{
-				if (err) {
-					console.error("Error fetching list of saved fundsRequests: " + err.toString())
-					setTimeout(function()
-					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-						self.emit(self.EventName_errorWhileBooting(), err)
-					})
-					return
-				}
-				if (ids.length === 0) { // then don't cause the pw to be requested yet
-					self._setup_didBoot()
-					return
-				}
-				__proceedTo_requestPasswordAndLoadRecords()
-			}
-		)
-		function __proceedTo_requestPasswordAndLoadRecords()
-		{
-			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
-				function(obtainedPasswordString, userSelectedTypeOfPassword)
-				{
-					__proceedTo_loadAndBootAllExtantRecordsWithPassword(obtainedPasswordString)
-				}
-			)
-		}
-		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
-		{
-			self._new_idsOfPersisted_fundsRequests( // now check if we really need to trigger showing pw entry screen
-				function(err, ids)
-				{
-					if (err) {
-						console.error("Error fetching list of saved fundsRequests: " + err.toString())
-						setTimeout(function()
-						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-							self.emit(self.EventName_errorWhileBooting(), err)
-						})
-						return
-					}
-					if (ids.length === 0) { // then don't cause the pw to be requested yet
-						self._setup_didBoot()
-						return
-					}
-					__proceedTo_loadRecordsWithIds(ids, persistencePassword)
-				}
-			)			
-		}
-		function __proceedTo_loadRecordsWithIds(ids, persistencePassword)
-		{
-			// TODO: optimize by parallelizing and sorting after
-			async.eachSeries(
-				ids,
-				function(_id, cb)
-				{
-					const options =
-					{
-						_id: _id,
-						persistencePassword: persistencePassword
-					}
-					const instance = new FundsRequest(options, self.context)
-					instance.on(instance.EventName_booted(), function()
-					{
-						// we are going to take responsibility to manually add fundsRequest and emit event below when all done
-						self.fundsRequests.push(instance)
-						cb()
-					})
-					instance.on(instance.EventName_errorWhileBooting(), function(err)
-					{
-						console.error("Failed to read fundsRequest ", err)
-						//
-						// we're not going to pass this err through though because it will prevent booting... we'll mark the instance as 'errored'
-						self.fundsRequests.push(instance)
-						cb() 
-					})
-				},
-				function(err)
-				{
-					if (err) {
-						console.error("Error while loading saved fundsRequests: " + err.toString())
-						setTimeout(function()
-						{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-							self.emit(self.EventName_errorWhileBooting(), err)
-						})
-						return
-					}
-					//
-					self._setup_didBoot()
-					//
-					setTimeout(function()
-					{ // v--- Trampoline by executing on next tick to avoid instantiators having undefined instance ref when this was called
-						self.__listUpdated_fundsRequests() // emit after booting so this becomes an at-runtime emission
-					})
-				}
-			)
-		}
-	}
-	startObserving_passwordController()
-	{
-		const self = this
-		const controller = self.context.passwordController
-		{ // EventName_ChangedPassword
-			if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in " + self.constructor.name
-			}
-			self._passwordController_EventName_ChangedPassword_listenerFn = function()
-			{
-				self._passwordController_EventName_ChangedPassword()
-			}
-			controller.on(
-				controller.EventName_ChangedPassword(),
-				self._passwordController_EventName_ChangedPassword_listenerFn
-			)
-		}
-		{ // EventName_willDeconstructBootedStateAndClearPassword
-			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
-			}
-			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
-			{
-				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
-			}
-			controller.on(
-				controller.EventName_willDeconstructBootedStateAndClearPassword(),
-				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
-			)
-		}
-		{ // EventName_didDeconstructBootedStateAndClearPassword
-			if (self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
-			}
-			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = function()
-			{
-				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword()
-			}
-			controller.on(
-				controller.EventName_didDeconstructBootedStateAndClearPassword(),
-				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
-			)
-		}
+		super(options, context)
 	}
 	//
 	//
-	// Lifecycle/Runtime - Teardown
+	// Overrides
 	//
-	_stopObserving_passwordController()
+	override_CollectionName()
+	{
+		return fundsRequest_persistence_utils.CollectionName
+	}
+	override_lookup_RecordClass()
+	{
+		return FundsRequest
+	}
+	override_booting_reconstituteRecordInstanceOptionsWithBase(
+		optionsBase, // _id is already supplied in this
+		persistencePassword,
+		forOverrider_instance_didBoot_fn,
+		forOverrider_instance_didFailBoot_fn
+	)
 	{
 		const self = this
-		const controller = self.context.passwordController
-		{ // EventName_ChangedPassword
-			if (typeof self._passwordController_EventName_ChangedPassword_listenerFn === 'undefined' || self._passwordController_EventName_ChangedPassword_listenerFn === null) {
-				throw "self._passwordController_EventName_ChangedPassword_listenerFn undefined"
-			}
-			controller.removeListener(
-				controller.EventName_ChangedPassword(),
-				self._passwordController_EventName_ChangedPassword_listenerFn
-			)
-			self._passwordController_EventName_ChangedPassword_listenerFn = null
+		optionsBase.persistencePassword = persistencePassword
+		//
+		// now supply actual callbacks
+		optionsBase.failedToInitialize_cb = function(err, returnedInstance)
+		{
+			console.error("Failed to initialize funds request ", err, returnedInstance)
+			// we're not going to pass this err through though because it will prevent booting... we mark the instance as 'errored'
+			forOverrider_instance_didBoot_fn(err, returnedInstance)
 		}
-		{ // EventName_willDeconstructBootedStateAndClearPassword
-			if (typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
-				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn undefined"
-			}
-			controller.removeListener(
-				controller.EventName_willDeconstructBootedStateAndClearPassword(),
-				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
-			)
-			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = null
-		}
-		{ // EventName_didDeconstructBootedStateAndClearPassword
-			if (typeof self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn === null) {
-				throw "self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn undefined"
-			}
-			controller.removeListener(
-				controller.EventName_didDeconstructBootedStateAndClearPassword(),
-				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
-			)
-			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = null
+		optionsBase.successfullyInitialized_cb = function(returnedInstance)
+		{
+			forOverrider_instance_didBoot_fn(null, returnedInstance) // no err
 		}
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Deferring control til boot
-
-	ExecuteWhenBooted(fn)
+	overridable_sortRecords(fn) // () -> Void; we must call this!
 	{
 		const self = this
-		if (self.hasBooted === true) {
-			fn()
-			return
-		}
-		setTimeout(
-			function()
+		// do not call on `super` of fn could be called redundantly
+		self.records = self.records.sort(
+			function(a, b)
 			{
-				self.ExecuteWhenBooted(fn)
-			},
-			50 // ms
-		)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Public - Runtime - Accessors - Event names
-
-	EventName_booted()
-	{
-		return "EventName_booted"
-	}
-	EventName_errorWhileBooting()
-	{
-		return "EventName_errorWhileBooting"
-	}
-	EventName_listUpdated()
-	{
-		return "EventName_listUpdated"
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Public - Runtime - State - FundsRequests list
-
-	WhenBooted_FundsRequests(fn)
-	{
-		const self = this
-		self.ExecuteWhenBooted(
-			function()
-			{
-				fn(self.fundsRequests)
+				return b.dateCreated - a.dateCreated
 			}
 		)
+		fn() // ListBaseController overriders must call this!
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
+	//
 	// Booted - Imperatives - Public - List management
-
+	//
 	WhenBooted_AddFundsRequest(
 		to_address,
 		payment_id,
@@ -344,189 +115,22 @@ class FundsRequestsListController extends EventEmitter
 							message: message,
 							description: description
 						}
+						options.failedToInitialize_cb = function(err, returnedInstance)
+						{
+							console.error("Failed to initialize funds request ", err, returnedInstance)
+							// we're not going to pass this err through though because it will prevent booting... we mark the instance as 'errored'
+							fn(err)
+						}
+						options.successfullyInitialized_cb = function(returnedInstance)
+						{
+							self._atRuntime__record_wasSuccessfullySetUp(returnedInstance)
+							fn(null, returnedInstance)
+						}
 						const instance = new FundsRequest(options, self.context)
-						instance.on(instance.EventName_booted(), function()
-						{
-							self._atRuntime_fundsRequest_wasSuccessfullySetUp(instance)
-							fn(null, instance)
-						})
-						instance.on(instance.EventName_errorWhileBooting(), function(err)
-						{
-							fn(err)
-						})
 					}
 				)
 			}
 		)
-	}
-	WhenBooted_DeleteFundsRequestWithId(
-		_id,
-		fn // fn: (err: Error?) -> Void
-	)
-	{
-		const self = this
-		const fundsRequests_length = self.fundsRequests.length
-		self.ExecuteWhenBooted(
-			function()
-			{
-				var indexOfFundsRequest = null;
-				var fundsRequestToDelete = null;
-				for (let i = 0 ; i < fundsRequests_length ; i++) {
-					const fundsRequest = self.fundsRequests[i]
-					if (fundsRequest._id === _id) {
-						indexOfFundsRequest = i
-						fundsRequestToDelete = fundsRequest
-						break
-					}
-				}
-				if (indexOfFundsRequest === null || fundsRequestToDelete === null) {
-					fn(new Error("FundsRequest not found"))
-					return
-				}
-				//
-				self.fundsRequests.splice(indexOfFundsRequest, 1) // pre-emptively remove the fundsRequest from the list
-				self.__listUpdated_fundsRequests() // ensure delegate notified
-				//
-				fundsRequestToDelete.Delete(
-					function(err)
-					{
-						if (err) {
-							self.fundsRequests.splice(indexOfFundsRequest, 0, fundsRequestToDelete) // revert deletion
-							self.__listUpdated_fundsRequests() // ensure delegate notified
-							fn(err)
-							return
-						}
-						fundsRequestToDelete.TearDown() // must call
-						fundsRequestToDelete = null // free
-						fn()
-					}
-				)
-			}
-		)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Private
-
-	_new_idsOfPersisted_fundsRequests(
-		fn // (err?, ids?) -> Void
-	)
-	{
-		const self = this
-		self.context.persister.DocumentsWithQuery(
-			fundsRequest_persistence_utils.CollectionName,
-			{}, // blank query - find all
-			{},
-			function(err, docs)
-			{
-				if (err) {
-					console.error(err.toString())
-					fn(err)
-					return
-				}
-				const ids = []
-				docs.forEach(function(el, idx)
-				{
-					ids.push(el._id)
-				})
-				fn(null, ids)
-			}
-		)
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private
-
-	_atRuntime_fundsRequest_wasSuccessfullySetUp(instance)
-	{
-		const self = this
-		self.fundsRequests.push(instance)
-		self.__listUpdated_fundsRequests() // ensure delegate notified
-	}
-
-	__listUpdated_fundsRequests()
-	{
-		const self = this
-		self.emit(self.EventName_listUpdated())
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime/Boot - Delegation - Private
-	
-	_passwordController_EventName_ChangedPassword()
-	{
-		const self = this
-		if (self.hasBooted !== true) {
-			console.warn("⚠️  " + self.constructor.name + " asked to ChangePassword but not yet booted.")
-			return // critical: not ready to get this 
-		}
-		// change all fundsRequest passwords:
-		const toPassword = self.context.passwordController.password // we're just going to directly access it here because getting this event means the passwordController is also saying it's ready
-		self.fundsRequests.forEach(
-			function(fundsRequest, i)
-			{
-				if (fundsRequest.didFailToInitialize_flag !== true && fundsRequest.didFailToBoot_flag !== true) {
-					fundsRequest.ChangePasswordTo(
-						toPassword,
-						function(err)
-						{
-							// err is logged in ChangePasswordTo
-							// TODO: is there any sensible strategy to handle failures here?
-						}
-					)
-				} else {
-					console.warn("This fundsRequest failed to boot. Not messing with its saved data")
-				}
-			}
-		)
-	}
-	_passwordController_EventName_willDeconstructBootedStateAndClearPassword()
-	{
-		const self = this
-		self.fundsRequests.forEach(
-			function(instance, i)
-			{
-				instance.TearDown()
-			}
-		)
-		self.fundsRequests = []
-		self.hasBooted = false
-	}
-	passwordController_DeleteEverything(fn)
-	{
-		const self = this
-		const collectionName = fundsRequest_persistence_utils.CollectionName
-		self.context.persister.RemoveDocuments(
-			collectionName, 
-			{}, 
-			{ multi: true }, 
-			function(err, numRemoved)
-			{
-				if (err) {
-					fn(err) // must call back!
-					return
-				}
-				console.log(`🗑  Deleted all ${collectionName}.`)
-				fn() // must call back!
-			}
-		)
-	}
-	_passwordController_EventName_didDeconstructBootedStateAndClearPassword()
-	{
-		const self = this
-		{ // this will re-request the pw and lead to loading records & booting self 
-			self._tryToBoot()
-		}
-		{ // and then at the end we're going to emit so that the UI updates to empty list after the pw entry screen is shown
-			self.__listUpdated_fundsRequests()
-		}
 	}
 }
 module.exports = FundsRequestsListController
