@@ -148,9 +148,8 @@ class ListBaseController extends EventEmitter
 							console.error("Failed to initialize record ", err, recordInstance)
 							// but we're not going to call cb with err because that prevents boot - the instance will be marked as 'errored' and we'll display it/able to treat it as such
 						} else {
-							console.log("💬  Initialized record", recordInstance.Description())
+							// console.log("💬  Initialized record", recordInstance.Description())
 						}
-						console.log("did boot", recordInstance)
 						self.records.push(recordInstance) // we manually manage the list here and
 						// thus take responsibility to emit EventName_listUpdated below
 						self.overridable_startObserving_record(recordInstance) // taking responsibility to start observing
@@ -162,7 +161,7 @@ class ListBaseController extends EventEmitter
 						if (err) {
 							console.error("Failed to initialize record ", err, recordInstance)
 						} else {
-							console.log("💬  Initialized record", recordInstance.Description())
+							// console.log("💬  Initialized record", recordInstance.Description())
 						}
 						cb(err) // we're going to consider this a fatal err by passing the `err` to cb
 						// which will halt boot - so only call forOverrider_instance_didFailBoot_fn 
@@ -191,7 +190,7 @@ class ListBaseController extends EventEmitter
 						self._setup_didFailToBootWithError(err)
 						return
 					}
-					self.overridable_booting_sortRecords(
+					self.overridable_sortRecords(
 						function()
 						{
 							self._setup_didBoot(function()
@@ -224,7 +223,7 @@ class ListBaseController extends EventEmitter
 		const self = this
 		throw `[${self.constructor.name}/override_booting_reconstituteRecordInstanceOptionsWithBase]: You must implement this method and call at least one of the appropriate callbacks.`
 	}
-	overridable_booting_sortRecords(fn) // () -> Void
+	overridable_sortRecords(fn) // () -> Void
 	{ // do not call super or fn could be called twice - unless you want to call super to return (which might not be advisable as the behavior of this `super` fn is not defined/guaranted to call fn for you)
 		const self = this
 		fn() // overriders must call this
@@ -346,6 +345,10 @@ class ListBaseController extends EventEmitter
 	{
 		return "EventName_listUpdated"
 	}
+	EventName_deletedRecordWithId()
+	{
+		return "EventName_deletedRecordWithId"
+	}
 	//
 	//
 	// Runtime - Accessors - Private - Lookups - Documents & instances
@@ -455,20 +458,17 @@ class ListBaseController extends EventEmitter
 				//
 				self.overridable_stopObserving_record(recordInstance) // important
 				self.records.splice(indexOfRecord, 1) // pre-emptively remove the record from the list
+				self.emit(self.EventName_deletedRecordWithId(), recordInstance._id)
 				self.__listUpdated_records() // ensure delegate notified
 				//
 				recordInstance.Delete(
 					function(err)
 					{
 						if (err) {
-							recordInstance.Revert_TearDown() // cause we called .TearDown()
-							//
-							self.records.splice(indexOfRecord, 0, recordInstance) // revert deletion
-							self._atRuntime__record_wasSuccessfullyInitialized() // start observing, ensure delegate notified
 							fn(err)
 							return
 						}
-						recordInstance = null // 'free'
+						recordInstance = null
 						fn()
 					}
 				)
@@ -497,12 +497,24 @@ class ListBaseController extends EventEmitter
 	//
 	// Runtime/Boot - Delegation - Private - List updating/instance management
 	//
-	_atRuntime__record_wasSuccessfullyInitialized(recordInstance)
+	_atRuntime__record_wasSuccessfullySetUp(recordInstance)
 	{
 		const self = this
 		self.records.unshift(recordInstance) // so we add it to the top
 		self.overridable_startObserving_record(recordInstance)
-		self.__listUpdated_records()
+		//
+		if (self.overridable_shouldSortOnEveryRecordAdditionAtRuntime()) {
+			self.overridable_sortRecords(function()
+			{
+				self.__listUpdated_records()
+			})
+		} else {
+			self.__listUpdated_records()
+		}
+	}
+	overridable_shouldSortOnEveryRecordAdditionAtRuntime()
+	{
+		return false
 	}
 	__listUpdated_records()
 	{

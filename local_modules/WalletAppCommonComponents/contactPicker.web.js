@@ -120,7 +120,7 @@ function New_contactPickerLayer(
 	{
 		var results;
 		{
-			const contacts = contactsListController.contacts
+			const contacts = contactsListController.records
 			// filter?
 			const searchString = inputLayer.value
 			if (typeof searchString === 'undefined' || !searchString || searchString === "") {
@@ -240,24 +240,24 @@ function New_contactPickerLayer(
 	}
 	//
 	// observing contacts list controller for deletions 
-	var _contactsListController_EventName_deletedContactWithId_fn = function(_id)
+	var _contactsListController_EventName_deletedRecordWithId_fn = function(_id)
 	{ // the currently picked contact was deleted, so unpick it
 		if (__pickedContact && __pickedContact._id === _id) {
 			_unpickExistingContact_andRedisplayPickInput(true)
 		}
 	}
 	contactsListController.on(
-		contactsListController.EventName_deletedContactWithId(),
-		_contactsListController_EventName_deletedContactWithId_fn
+		contactsListController.EventName_deletedRecordWithId(),
+		_contactsListController_EventName_deletedRecordWithId_fn
 	)
 	containerLayer.Component_TearDown = function()
 	{ // IMPORTANT: You must call this when you're done with this component
 		console.log("♻️  Tearing down contacts picker.")
 		contactsListController.removeListener(
-			contactsListController.EventName_deletedContactWithId(),
-			_contactsListController_EventName_deletedContactWithId_fn
+			contactsListController.EventName_deletedRecordWithId(),
+			_contactsListController_EventName_deletedRecordWithId_fn
 		)
-		_contactsListController_EventName_deletedContactWithId_fn = null
+		_contactsListController_EventName_deletedRecordWithId_fn = null
 	}
 	//
 	return containerLayer

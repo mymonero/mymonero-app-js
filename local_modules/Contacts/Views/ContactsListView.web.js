@@ -141,7 +141,7 @@ class ContactsListView extends View
 		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
 			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted contactsList, i.e., on 
 			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
-			self._configureWith_contacts(self.context.contactsListController.contacts) // since it will be immediately available
+			self._configureWith_contacts(self.context.contactsListController.records) // since it will be immediately available
 			return
 		}
 		if (self.isAlreadyWaitingForContacts === true) { // because accessing contacts is async
@@ -149,11 +149,11 @@ class ContactsListView extends View
 			return // prevent redundant calls
 		}
 		self.isAlreadyWaitingForContacts = true
-		self.context.contactsListController.WhenBooted_Contacts(
-			function(contacts)
+		self.context.contactsListController.WhenBooted_Records(
+			function(records)
 			{
 				self.isAlreadyWaitingForContacts = false // unlock
-				self._configureWith_contacts(contacts)
+				self._configureWith_contacts(records)
 			}
 		)
 	}

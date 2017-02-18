@@ -29,7 +29,6 @@
 "use strict"
 //
 const ListBaseController = require('../../Lists/Controllers/ListBaseController')
-const async = require('async')
 //
 const Wallet = require('../../Wallets/Models/Wallet')
 const wallet_persistence_utils = require('../../Wallets/Models/wallet_persistence_utils')
@@ -94,7 +93,7 @@ class WalletsListController extends ListBaseController
 		optionsBase.didReceiveUpdateToAccountInfo = function() {} // TODO: bubble?
 		optionsBase.didReceiveUpdateToAccountTransactions = function() {} // TODO: bubble?
 	}
-	overridable_booting_sortRecords(fn) // () -> Void; must call this!
+	overridable_sortRecords(fn) // () -> Void; must call this!
 	{
 		const self = this
 		// do not call on `super` of fn could be called redundantly
@@ -221,7 +220,7 @@ class WalletsListController extends ListBaseController
 								fn(err)
 								return
 							}
-							self._atRuntime__record_wasSuccessfullyInitialized(walletInstance)
+							self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
 							//
 							fn(null, walletInstance)
 						}
@@ -280,7 +279,7 @@ class WalletsListController extends ListBaseController
 										fn(err)
 										return
 									}
-									self._atRuntime__record_wasSuccessfullyInitialized(walletInstance)
+									self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
 									//
 									fn(null, walletInstance, false) // wasWalletAlreadyInserted: false
 								}
@@ -354,7 +353,7 @@ class WalletsListController extends ListBaseController
 										fn(err)
 										return
 									}
-									self._atRuntime__record_wasSuccessfullyInitialized(walletInstance)
+									self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
 									//
 									fn(null)
 								}

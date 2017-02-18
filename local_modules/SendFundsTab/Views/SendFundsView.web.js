@@ -1373,7 +1373,7 @@ class SendFundsView extends View
 			const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null
 			if (target_address !== null && typeof target_address !== 'undefined' && target_address !== "") {
 				var foundContact = null
-				const contacts = self.context.contactsListController.contacts
+				const contacts = self.context.contactsListController.records
 				const numberOf_contacts = contacts.length
 				for (var i = 0 ; i < numberOf_contacts ; i++) {
 					const contact = contacts[i]

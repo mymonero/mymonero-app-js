@@ -84,7 +84,7 @@ function _proceedTo_test_deleteContact(fn)
 		fn(new Error("contactsListController undefined or null"))
 		return
 	}
-	contactsListController.WhenBooted_DeleteContactWithId(
+	contactsListController.WhenBooted_DeleteRecordWithId(
 		tests_config.deleteContactWith_id,
 		function(err)
 		{

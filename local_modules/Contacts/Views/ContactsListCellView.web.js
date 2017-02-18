@@ -176,7 +176,7 @@ class ContactsListCellView extends View
 	deleteContact()
 	{
 		const self = this
-		self.context.contactsListController.WhenBooted_DeleteContactWithId(
+		self.context.contactsListController.WhenBooted_DeleteRecordWithId(
 			self.contact._id,
 			function(err)
 			{

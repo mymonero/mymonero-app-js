@@ -215,20 +215,6 @@ class Wallet extends EventEmitter
 			self.hostPollingController = null
 		}
 	}
-	//
-	Revert_TearDown()
-	{
-		const self = this
-		self.hasBeenTornDown = false
-		self._revert_tearDown_polling()
-	}
-	_revert_tearDown_polling()
-	{
-		const self = this
-		if (self.isBooted === true) {
-			self._atRuntime_setup_hostPollingController()
-		}
-	}
 
 
 	////////////////////////////////////////////////////////////////////////////////

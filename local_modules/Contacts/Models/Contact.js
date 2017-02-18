@@ -51,6 +51,9 @@ class Contact extends EventEmitter
 		self.options = options
 		self.context = context
 		//
+		self.failedToInitialize_cb = self.options.failedToInitialize_cb || function(err, instance) {}
+		self.successfullyInitialized_cb = self.options.successfullyInitialized_cb || function(instance) {}
+		//
 		self.hasBooted = false
 		//
 		self.setup()
@@ -64,7 +67,11 @@ class Contact extends EventEmitter
 		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null) {
 			setTimeout(function()
 			{ // wait til next tick so that instantiator cannot have missed this
-				self.emit(self.EventName_errorWhileBooting(), new Error("You must supply an options.persistencePassword to your Contact instance"))
+				self.emit(
+					self.EventName_errorWhileBooting(), 
+					new Error("You must supply an options.persistencePassword to your Contact instance"), 
+					self
+				)
 			})
 			return
 		}
@@ -84,7 +91,8 @@ class Contact extends EventEmitter
 		}
 		setTimeout(function()
 		{ // wait til next tick so that instantiator cannot have missed this
-			self.emit(self.EventName_booted())
+			self.successfullyInitialized_cb(self)
+			self.emit(self.EventName_booted(), self)
 		})
 	}
 	__setup_didFailToBoot(err)
@@ -99,6 +107,7 @@ class Contact extends EventEmitter
 		}
 		setTimeout(function()
 		{ // wait til next tick so that instantiator cannot have missed this
+			self.failedToInitialize_cb(err, self)
 			self.emit(self.EventName_errorWhileBooting(), err)
 		})
 	}		

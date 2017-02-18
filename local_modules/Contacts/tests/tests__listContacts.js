@@ -74,7 +74,7 @@ function _proceedTo_test_bootController(fn)
 		contactsListController = null
 		fn(err)
 	})
-	contactsListController.WhenBooted_Contacts(
+	contactsListController.WhenBooted_Records(
 		function(contacts)
 		{
 			console.log("Contacts: ")

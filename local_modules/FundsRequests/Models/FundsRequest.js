@@ -49,6 +49,9 @@ class FundsRequest extends EventEmitter
 		self.options = options
 		self.context = context
 		//
+		self.failedToInitialize_cb = self.options.failedToInitialize_cb || function(err, instance) {}
+		self.successfullyInitialized_cb = self.options.successfullyInitialized_cb || function(instance) {}
+		//
 		self.hasBooted = false
 		//
 		self.setup()
@@ -60,10 +63,8 @@ class FundsRequest extends EventEmitter
 		self._id = self.options._id || null // initialize to null if creating new document
 		self.persistencePassword = self.options.persistencePassword
 		if (typeof self.persistencePassword === 'undefined' || self.persistencePassword === null) {
-			setTimeout(function()
-			{ // wait til next tick so that instantiator cannot have missed this
-				self.emit(self.EventName_errorWhileBooting(), new Error("You must supply an options.persistencePassword to your FundsRequest instance"))
-			})
+			const err = new Error("You must supply an options.persistencePassword to your FundsRequest instance")
+			self.__setup_didFailToBoot(err)
 			return
 		}
 		if (self._id === null || typeof self._id === 'undefined') { // must create new
@@ -80,7 +81,8 @@ class FundsRequest extends EventEmitter
 		}
 		setTimeout(function()
 		{ // wait til next tick so that instantiator cannot have missed this
-			self.emit(self.EventName_booted())
+			self.successfullyInitialized_cb(self)
+			self.emit(self.EventName_booted(), self)
 		})
 	}
 	__setup_didFailToBoot(err)
@@ -95,7 +97,8 @@ class FundsRequest extends EventEmitter
 		}
 		setTimeout(function()
 		{ // wait til next tick so that instantiator cannot have missed this
-			self.emit(self.EventName_errorWhileBooting(), err)
+			self.failedToInitialize_cb(err, self)
+			self.emit(self.EventName_errorWhileBooting(), err, self)
 		})
 	}		
 	_setup_newDocument()

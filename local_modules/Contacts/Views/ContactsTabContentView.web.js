@@ -46,13 +46,11 @@ class ContactsTabContentView extends StackAndModalNavigationView
 			const view = new ContactsListView(options, self.context)
 			self.contactsListView = view
 		}
-		{
-			self.SetStackViews(
-				[
-					self.contactsListView
-				]
-			)
-		}
+		self.SetStackViews(
+			[
+				self.contactsListView
+			]
+		)
 	}
 	//
 	//

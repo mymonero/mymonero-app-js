@@ -70,7 +70,7 @@ class EditContactFromContactsTabView extends ContactFormView
 				e.preventDefault()
 				{
 					const record_id = self.contact._id
-					self.context.contactsListController.WhenBooted_DeleteContactWithId(
+					self.context.contactsListController.WhenBooted_DeleteRecordWithId(
 						record_id,
 						function(err)
 						{
