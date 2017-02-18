@@ -32,8 +32,10 @@ const View = require('../Views/View.web')
 //
 const default__margin_side = 14
 //
-function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_explicitMarginSide)
+function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, context, optl_explicitMarginSide)
 {
+	const emoji = typeof optl_emoji === 'string' ? optl_emoji : ""
+	const messageText = typeof optl_messageText === 'string' ? optl_messageText : ""
 	const margin_side__toUse = typeof optl_explicitMarginSide !== 'undefined' ? optl_explicitMarginSide : default__margin_side
 	const view = new View({}, context)
 	{
@@ -59,8 +61,10 @@ function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_ex
 		contentContainerLayer = layer
 		view.layer.appendChild(layer)
 	}
-	{ // emoji
+	var emoji_layer;
+	{
 		const layer = document.createElement("div")
+		emoji_layer = layer
 		layer.innerHTML = emoji
 		layer.style.margin = "0 0 18px 0"
 		layer.style.width = "100%"
@@ -69,8 +73,10 @@ function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_ex
 		layer.style.textAlign = "center"
 		contentContainerLayer.appendChild(layer)
 	}
-	{ // message
+	var message_layer;
+	{
 		const layer = document.createElement("div")
+		message_layer = layer
 		layer.innerHTML = messageText
 		layer.style.margin = "0 0 0 0"
 		layer.style.width = "100%"
@@ -81,6 +87,11 @@ function New_EmptyStateMessageContainerView(emoji, messageText, context, optl_ex
 		layer.style.color = "#9e9c9e"
 		layer.style.textAlign = "center"
 		contentContainerLayer.appendChild(layer)
+	}
+	view.SetContent = function(to_emoji, to_message)
+	{
+		emoji_layer.innerHTML = to_emoji
+		message_layer.innerHTML = to_message
 	}
 	return view
 }

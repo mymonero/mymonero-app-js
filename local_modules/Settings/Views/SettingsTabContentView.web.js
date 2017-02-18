@@ -89,7 +89,7 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		const passwordController = self.context.passwordController
-		if (passwordController.hasUserEverEnteredPassword !== true) {
+		if (passwordController.hasUserEverEnteredPasswordDuringThisBoot !== true) {
 			return false // no existing data - do not disable
 		}
 		if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app

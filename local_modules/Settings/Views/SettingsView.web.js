@@ -310,7 +310,7 @@ class SettingsView extends View
 			}
 		}
 		{
-           if (passwordController.hasUserEverEnteredPassword !== true) {
+           if (passwordController.hasUserEverEnteredPasswordDuringThisBoot !== true) {
                self.changePasswordButtonView.SetEnabled(false) // can't change til entered
                // self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
                self.appTimeoutRangeInputView.SetEnabled(true)
@@ -327,7 +327,7 @@ class SettingsView extends View
                self.appTimeoutRangeInputView.SetEnabled(true)
 			   self.deleteEverythign_buttonView.SetEnabled(true)
            }
-	   }		
+	   }
 	}
 	viewDidAppear()
 	{

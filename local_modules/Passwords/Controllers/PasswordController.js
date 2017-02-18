@@ -115,11 +115,11 @@ class PasswordController extends EventEmitter
 			}
 		)
 		function _proceedTo_loadStateFromModel(
-			hasUserEverEnteredPassword,
+			hasUserEverEnteredPasswordDuringThisBoot,
 			passwordModel_doc
 		)
 		{
-			self.hasUserEverEnteredPassword = hasUserEverEnteredPassword
+			self.hasUserEverEnteredPasswordDuringThisBoot = hasUserEverEnteredPasswordDuringThisBoot
 			//
 			self._id = passwordModel_doc._id || undefined
 			self.userSelectedTypeOfPassword = passwordModel_doc.userSelectedTypeOfPassword
@@ -159,7 +159,7 @@ class PasswordController extends EventEmitter
 			controller.EventName_userDidBecomeIdle(),
 			function()
 			{
-				if (self.hasUserEverEnteredPassword !== true) {
+				if (self.hasUserEverEnteredPasswordDuringThisBoot !== true) {
 					// nothing to do here because the app is not unlocked and/or has no data which would be locked
 					console.log("💬  User became idle but no password has ever been entered/no saved data should exist.")
 					return
@@ -784,9 +784,9 @@ class PasswordController extends EventEmitter
 		fn = fn || function(err){} 
 		//
 		const self = this
-		const existing_hasUserEverEnteredPassword = self.hasUserEverEnteredPassword
+		const existing_hasUserEverEnteredPasswordDuringThisBoot = self.hasUserEverEnteredPasswordDuringThisBoot
 		self.password = password
-		self.hasUserEverEnteredPassword = true // we can now flip this to true
+		self.hasUserEverEnteredPasswordDuringThisBoot = true // we can now flip this to true
 		//
 		const waiting_passwordModel_doc = self._initial_waitingForFirstPWEntryDecode_passwordModel_doc
 		if (typeof waiting_passwordModel_doc !== 'undefined' && waiting_passwordModel_doc !== null) {
@@ -818,7 +818,7 @@ class PasswordController extends EventEmitter
 				// reset state cause we're going all the way back to pre-boot 
 				self.hasBooted = false // require this pw controller to boot
 				self.password = undefined // this is redundant but is here for clarity
-				self.hasUserEverEnteredPassword = false
+				self.hasUserEverEnteredPasswordDuringThisBoot = false
 				self._id = undefined
 				self.encryptedMessageForUnlockChallenge = undefined
 				self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = undefined
