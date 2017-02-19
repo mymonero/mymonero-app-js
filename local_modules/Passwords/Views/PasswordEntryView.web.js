@@ -217,9 +217,20 @@ class PasswordEntryView extends StackAndModalNavigationView
 	//
 	// Runtime - Imperatives - Interface - Intra-task configuration
 	//	
-	ShowValidationErrorMessageToUser(validationMessageString)
+	ShowValidationErrorMessageToUser(err, orFallbackString)
 	{
 		const self = this
+		var validationMessageString;
+		if (err) {
+			if (err.message) {
+				validationMessageString = err.message
+			} else {
+				console.warn("⚠️  Warning: err.message property of err was nil. typeof err:",typeof err, ", err:", err)
+				validationMessageString = err.toString()
+			}
+		} else {
+			validationMessageString = orFallbackString || "Error"
+		}
 		self._setValidationMessage(validationMessageString)
 	}
 	//

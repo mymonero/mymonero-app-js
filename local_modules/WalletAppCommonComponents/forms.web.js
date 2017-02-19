@@ -208,8 +208,9 @@ function New_fieldAccessory_messageLayer(context)
 	layer.style.fontSize = "11px"
 	layer.style.lineHeight = "15px"
 	layer.style.fontWeight = "100"
-	layer.style.margin = "7px 9px 0 13px"
+	layer.style.margin = "7px 13px 0 13px"
 	layer.style.color = "#8d8b8d"
+	layer.style.wordBreak = "break-word"
 	return layer
 }
 exports.New_fieldAccessory_messageLayer = New_fieldAccessory_messageLayer

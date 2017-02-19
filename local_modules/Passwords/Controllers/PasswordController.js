@@ -373,9 +373,14 @@ class PasswordController extends EventEmitter
 					}	
 					self._getUserToEnterTheirExistingPassword(
 						isForChangePassword,
-						function(userDidCancel_orNil, existingPassword)
+						function(didCancel_orNil, validationErr_orNil, existingPassword)
 						{
-							if (userDidCancel_orNil === true) {
+							if (validationErr_orNil != null) { // takes precedence over cancel
+								self.unguard_getNewOrExistingPassword()
+								self.emit(self.EventName_ErroredWhileGettingExistingPassword(), validationErr_orNil)
+								return
+							}
+							if (didCancel_orNil === true) {
 								self.unguard_getNewOrExistingPassword()
 								return // just silently exit after unguarding
 							}
@@ -443,13 +448,19 @@ class PasswordController extends EventEmitter
 			const isForChangePassword = true // we'll use this in a couple places
 			self._getUserToEnterTheirExistingPassword(
 				isForChangePassword,
-				function(userDidCancel_orNil, existingPassword)
+				function(didCancel_orNil, validationErr_orNil, entered_existingPassword)
 				{
-					if (userDidCancel_orNil === true) {
+					if (validationErr_orNil != null) { // takes precedence over cancel
+						self.unguard_getNewOrExistingPassword()
+						self.emit(self.EventName_errorWhileChangingPassword(), validationErr_orNil)
+						return
+					}
+					if (didCancel_orNil === true) {
 						self.unguard_getNewOrExistingPassword()
 						return // just silently exit after unguarding
 					}
-					if (self.password !== existingPassword) {
+					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
+					if (self.password !== entered_existingPassword) {
 						self.unguard_getNewOrExistingPassword()
 						const errStr = "Incorrect password"
 						const err = new Error(errStr)
@@ -474,36 +485,44 @@ class PasswordController extends EventEmitter
 	}
 	_getUserToEnterTheirExistingPassword(
 		isForChangePassword, 
-		fn // (userDidCancel_orNil?, existingPassword?) -> Void
+		fn // (didCancel_orNil?, validationErr_orNil?, existingPassword?) -> Void
 	)
 	{
 		const self = this
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(), 
 			isForChangePassword,
-			function(userDidCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
+			function(didCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
 			{ // we're passing a function that the single observer should call
-				if (userDidCancel_orNil) {
+				var validationErr_orNil = null // so far…
+				if (didCancel_orNil === true) {
 					// console.info("userDidCancel while having user enter their existing password")
+				} else {
+					// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
+					
+					// TODO: check if we're currently locked out. if we are locked out, exit. wait for lockout to resolve. if not locked out, check if we've done too many requests in the last X mins. if so, lock out and set up lockout resolve timer
+					
+					// validationErr_orNil = new Error("As a security precaution, please wait a few minutes before trying again.")
 				}
-				fn(userDidCancel_orNil, obtainedPasswordString)
+				// regardless of whether canceled, we 
+				fn(didCancel_orNil, validationErr_orNil, obtainedPasswordString)
 			}
 		)
 	}
 	_getUserToEnterNewPassword(
 		isForChangePassword,
-		fn // (userDidCancel_orNil?, existingPassword?) -> Void
+		fn // (didCancel_orNil?, existingPassword?) -> Void
 	)
 	{
 		const self = this
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(), 
 			isForChangePassword,
-			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
+			function(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{ // we're passing a function that the single observer should call
-				// if (userDidCancel_orNil) {
+				// if (didCancel_orNil) {
 				// }
-				fn(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
+				fn(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			}
 		)
 	}
@@ -519,9 +538,9 @@ class PasswordController extends EventEmitter
 		//
 		self._getUserToEnterNewPassword(
 			isForChangePassword,
-			function(userDidCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
+			function(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{
-				if (userDidCancel_orNil === true) {
+				if (didCancel_orNil === true) {
 					self.unguard_getNewOrExistingPassword()
 					return // just silently exit after unguarding
 				}
@@ -690,10 +709,7 @@ class PasswordController extends EventEmitter
 			self.context.persister.InsertDocument(
 				CollectionName,
 				persistableDocument,
-				function(
-					err,
-					newDocument
-				)
+				function(err, newDocument)
 				{
 					if (err) {
 						console.error("Error while saving password model:", err)

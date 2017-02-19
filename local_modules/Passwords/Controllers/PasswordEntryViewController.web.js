@@ -90,27 +90,21 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ErroredWhileSettingNewPassword(),
 			function(err)
 			{
-				self.view.ShowValidationErrorMessageToUser(
-					err ? err.message : "Unknown error. Please try again."
-				)
+				self.view.ShowValidationErrorMessageToUser(err, "Unknown error. Please try again.")
 			}
 		)
 		controller.on(
 			controller.EventName_ErroredWhileGettingExistingPassword(),
 			function(err)
 			{
-				self.view.ShowValidationErrorMessageToUser(
-					err ? err.message : "Unknown error. Please try again."
-				)
+				self.view.ShowValidationErrorMessageToUser(err, "Unknown error. Please try again.")
 			}
 		)
 		controller.on(
 			controller.EventName_errorWhileChangingPassword(),
 			function(err)
 			{				
-				self.view.ShowValidationErrorMessageToUser(
-					err ? err.message : "Unknown error. Please try again."
-				)
+				self.view.ShowValidationErrorMessageToUser(err, "Unknown error. Please try again.")
 			}
 		)
 		//

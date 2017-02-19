@@ -138,11 +138,11 @@ function _proceedTo_test_gettingPassword(cb)
 		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
 		function(enterPassword_cb)
 		{
-			const userDidCancel_orNil = null
+			const didCancel_orNil = null
 			const obtainedPassword = theOriginalPassword
 			console.log("Replying with existing password of ", obtainedPassword)
 			enterPassword_cb(
-				userDidCancel_orNil, 
+				didCancel_orNil, 
 				obtainedPassword
 			)
 		}
@@ -151,7 +151,7 @@ function _proceedTo_test_gettingPassword(cb)
 		controller.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(),
 		function(isForChangePassword, enterPasswordAndType_cb)
 		{
-			const userDidCancel_orNil = null // set this to true to test
+			const didCancel_orNil = null // set this to true to test
 			var obtained_passwordString;
 			var obtained_typeOfPassword;
 			if (controller.HasUserEnteredValidPasswordYet()) {
@@ -164,7 +164,7 @@ function _proceedTo_test_gettingPassword(cb)
 				obtained_typeOfPassword = controller.AvailableUserSelectableTypesOfPassword().FreeformStringPW
 			}
 			enterPasswordAndType_cb(
-				userDidCancel_orNil,
+				didCancel_orNil,
 				obtained_passwordString,
 				obtained_typeOfPassword
 			)
