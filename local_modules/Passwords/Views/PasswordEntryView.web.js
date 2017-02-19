@@ -229,9 +229,14 @@ class PasswordEntryView extends StackAndModalNavigationView
 				validationMessageString = err.toString()
 			}
 		} else {
-			validationMessageString = orFallbackString || "Error"
+			validationMessageString = orFallbackString || "" // fallback 
 		}
 		self._setValidationMessage(validationMessageString)
+	}
+	ClearValidationErrorMessage()
+	{
+		const self = this
+		self._setValidationMessage("")
 	}
 	//
 	//

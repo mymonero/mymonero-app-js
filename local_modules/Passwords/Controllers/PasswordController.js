@@ -281,7 +281,16 @@ class PasswordController extends EventEmitter
 		}
 		return self.AvailableUserSelectableTypesOfPassword().FreeformStringPW
 	}
-	
+	//
+	//
+	// Runtime - Accessors - Internal
+	//
+	_new_incorrectPasswordValidationErrorMessageString()
+	{
+		const self = this
+		const passwordType_humanReadableString = self.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
+		return `Incorrect ${passwordType_humanReadableString}`
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -390,14 +399,14 @@ class PasswordController extends EventEmitter
 								function(err, decryptedMessageForUnlockChallenge)
 								{
 									if (err) {
-										const errStr = "Incorrect password"
+										const errStr = self._new_incorrectPasswordValidationErrorMessageString()
 										const err_toReturn = new Error(errStr)
 										self.unguard_getNewOrExistingPassword()
 										self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err_toReturn)
 										return
 									}
 									if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
-										const errStr = "Incorrect password"
+										const errStr = self._new_incorrectPasswordValidationErrorMessageString()
 										const err = new Error(errStr)
 										self.unguard_getNewOrExistingPassword()
 										self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
@@ -462,7 +471,7 @@ class PasswordController extends EventEmitter
 					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
 					if (self.password !== entered_existingPassword) {
 						self.unguard_getNewOrExistingPassword()
-						const errStr = "Incorrect password"
+						const errStr = self._new_incorrectPasswordValidationErrorMessageString()
 						const err = new Error(errStr)
 						self.emit(self.EventName_errorWhileChangingPassword(), err)
 						return
@@ -489,6 +498,27 @@ class PasswordController extends EventEmitter
 	)
 	{
 		const self = this
+		var isCurrentlyLockedOut = false
+		var unlock_timeout = null
+		var numberOfTriesDuringThisTimePeriod = 0
+		var dateOf_firstPWTryDuringThisTimePeriod = new Date()
+		function __cancelAnyAndRebuild_unlock_timeout()
+		{
+			const wasAlreadyLockedOut = unlock_timeout !== null
+			if (unlock_timeout !== null) {
+				// console.log("💬  clearing existing unlock timer")
+				clearTimeout(unlock_timeout)
+				unlock_timeout = null // not strictly necessary
+			}
+			const unlockInT_s = 10 // allows them to try again every 20 s, but resets timer if they submit w/o waiting
+			console.log(`🚫 Too many password entry attempts within ${unlockInT_s}s. ${!wasAlreadyLockedOut ? "Locking out" : "Extending lockout." }.`)
+			unlock_timeout = setTimeout(function()
+			{
+				console.log("⭕️  Unlocking password entry.")
+				isCurrentlyLockedOut = false
+				fn(null, "", null) // this is _sort_ of a hack and should be made more explicit in API but I'm sending an empty string, and not even an Error, to clear the validation error so the user knows to try again
+			}, unlockInT_s * 1000)
+		}
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(), 
 			isForChangePassword,
@@ -500,9 +530,41 @@ class PasswordController extends EventEmitter
 				} else {
 					// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
 					
+					if (isCurrentlyLockedOut == false) {
+						if (numberOfTriesDuringThisTimePeriod == 0) {
+							dateOf_firstPWTryDuringThisTimePeriod = new Date()
+						}
+						numberOfTriesDuringThisTimePeriod += 1
+						const maxLegal_numberOfTriesDuringThisTimePeriod = 5
+						if (numberOfTriesDuringThisTimePeriod > maxLegal_numberOfTriesDuringThisTimePeriod) { // rhs must be > 0
+							numberOfTriesDuringThisTimePeriod = 0 
+							// ^- no matter what, we're going to need to reset the above state for the next 'time period'
+							//
+							const now = new Date()
+							const ms_dateRange = now.getTime() - dateOf_firstPWTryDuringThisTimePeriod.getTime()
+							const ms_since_firstPWTryDuringThisTimePeriod = Math.abs(ms_dateRange)
+							const s_since_firstPWTryDuringThisTimePeriod = ms_since_firstPWTryDuringThisTimePeriod / 1000
+							const noMoreThanNTriesWithin_s = 30
+							if (s_since_firstPWTryDuringThisTimePeriod > noMoreThanNTriesWithin_s) { // enough time has passed since this group began - only reset the "time period" with tries->0 and let this pass through as valid check
+								dateOf_firstPWTryDuringThisTimePeriod = null // not strictly necessary to do here as we reset the number of tries during this time period to zero just above
+								console.log(`There were more than ${maxLegal_numberOfTriesDuringThisTimePeriod} password entry attempts during this time period but the last attempt was more than ${noMoreThanNTriesWithin_s}s ago, so letting this go.`)
+							} else { // simply too many tries!…
+								// lock it out for the next time (supposing this try does not pass)
+								isCurrentlyLockedOut = true 
+							}
+						}
+					}
+					if (isCurrentlyLockedOut == true) { // do not try to check pw - return as validation err
+						console.log("🚫  Received password entry attempt but currently locked out.")
+						validationErr_orNil = new Error("As a security precaution, please wait a few moments before trying again.")
+						// setup or extend unlock timer - NOTE: this is pretty strict - we don't strictly need to extend the timer each time to prevent spam unlocks
+						__cancelAnyAndRebuild_unlock_timeout()
+					}
+					
+					
+					
 					// TODO: check if we're currently locked out. if we are locked out, exit. wait for lockout to resolve. if not locked out, check if we've done too many requests in the last X mins. if so, lock out and set up lockout resolve timer
 					
-					// validationErr_orNil = new Error("As a security precaution, please wait a few minutes before trying again.")
 				}
 				// regardless of whether canceled, we 
 				fn(didCancel_orNil, validationErr_orNil, obtainedPasswordString)
