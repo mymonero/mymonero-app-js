@@ -55,13 +55,6 @@ class WalletsListView extends ListView
 		}
 		super.setup()
 	}
-	_setup_views()
-	{
-		super._setup_views()
-		//
-		const self = this
-		self._setup_emptyStateContainerView()
-	}	
 	overridable_listCellViewClass()
 	{ // override and return youir 
 		return WalletsListCellView
@@ -73,6 +66,13 @@ class WalletsListView extends ListView
 	overridable_recordDetailsViewClass()
 	{
 		return WalletDetailsView
+	}
+	_setup_views()
+	{
+		super._setup_views()
+		//
+		const self = this
+		self._setup_emptyStateContainerView()
 	}
 	_setup_emptyStateContainerView()
 	{

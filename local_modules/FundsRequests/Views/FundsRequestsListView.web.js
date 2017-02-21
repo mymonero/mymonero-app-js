@@ -28,7 +28,9 @@
 //
 "use strict"
 //
+const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
+const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
@@ -47,11 +49,48 @@ class FundsRequestsListView extends ListView
 	}
 	_setup_views()
 	{
-		super._setup_views()
 		const self = this
-		{ // zeroing for comparison
-			self.currentlyPresented_RequestFundsView = null
+		self.currentlyPresented_RequestFundsView = null // zeroing for comparison
+		super._setup_views()
+		self._setup_emptyStateContainerView()
+	}
+	_setup_emptyStateContainerView()
+	{
+		const self = this
+		const view = new View({}, self.context)
+		self.emptyStateContainerView = view
+		const layer = view.layer
+		const margin_side = 15
+		const marginTop = 60 - 44
+		layer.style.marginTop = `${marginTop}px`
+		layer.style.marginLeft = margin_side + "px"
+		layer.style.width = `calc(100% - ${2 * margin_side}px)`
+		layer.style.height = `calc(100% - ${marginTop + 10}px)`
+		{
+			const emptyStateMessageContainerView = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
+				"🤑", 
+				"You haven't made any<br/>requests yet.",
+				self.context,
+				0
+			)
+			self.emptyStateMessageContainerView = emptyStateMessageContainerView
+			view.addSubview(emptyStateMessageContainerView)
 		}
+		view.SetVisible = function(isVisible)
+		{
+			view.isVisible = isVisible
+			if (isVisible) {
+				if (layer.style.display !== "block") {
+					layer.style.display = "block"
+				}
+			} else {
+				if (layer.style.display !== "none") {
+					layer.style.display = "none"
+				}
+			}
+		}
+		view.SetVisible(false)
+		self.addSubview(view)
 	}
 	_setup_startObserving()
 	{
@@ -106,21 +145,17 @@ class FundsRequestsListView extends ListView
 	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
-		{ // observe
-			view.layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					self.presentRequestFundsView_withoutValues()
-					return false
-				}
-			)
-		}
+		view.layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				self.presentRequestFundsView_withoutValues()
+				return false
+			}
+		)
 		return view
 	}
-
-
 	//
 	//
 	// Runtime - Imperatives - Modal view presentation
@@ -156,6 +191,19 @@ class FundsRequestsListView extends ListView
 		if (fromContact && typeof fromContact !== 'undefined') {
 			self.currentlyPresented_RequestFundsView.AtRuntime_reconfigureWith_fromContact(fromContact)
 		}
+	}
+	//
+	//
+	// Runtime - Delegation - UI building
+	//
+	overridable_willBuildUIWithRecords(records)
+	{
+		super.overridable_willBuildUIWithRecords(records)
+		//
+		const self = this
+		// v--- we don't need this here as at present according to design the buttons don't change… just stays the 'Add' btn
+		// self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
+		self.emptyStateContainerView.SetVisible(records.length === 0 ? true : false)
 	}
 	//
 	//

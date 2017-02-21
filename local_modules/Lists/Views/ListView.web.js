@@ -193,11 +193,6 @@ class ListView extends View
 		self.overridable_willBuildUIWithRecords(records)
 		{
 			const view = new View({}, self.context)
-			{
-				view.layer.style.borderRadius = "5px"
-				view.layer.style.backgroundColor = "#666"
-				view.layer.style.border = "1px outset #ccc"
-			}
 			self.cellsContainerView = view
 			self.addSubview(self.cellsContainerView)
 		}
