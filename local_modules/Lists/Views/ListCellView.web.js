@@ -97,13 +97,14 @@ class ListCellView extends View
 	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
-	ConfigureWithRecord(record)
+	ConfigureWithRecord(record, isAtEnd)
 	{
 		const self = this
 		if (typeof self.record !== 'undefined') {
 			self.prepareForReuse()
 		}
 		self.record = record
+		self.isAtEnd = isAtEnd
 		self.configureUI()
 		self.overridable_startObserving_record()
 	}

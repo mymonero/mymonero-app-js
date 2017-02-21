@@ -190,17 +190,19 @@ class ListView extends View
 				self.recordCellViews = []
 			}
 		}
-		self.overridable_willBuildUIWithRecords(records)
 		{
 			const view = new View({}, self.context)
 			self.cellsContainerView = view
 			self.addSubview(self.cellsContainerView)
 		}
+		self.overridable_willBuildUIWithRecords(records)
 		{ // now add cells - TODO: recycle cell views and simply call `ConfigureWithRecord`
 			const context = self.context
+			const numberOf_records = records.length
 			records.forEach(
 				function(record, i)
 				{
+					const isAtEnd = i == numberOf_records - 1
 					const options = 
 					{
 						cell_tapped_fn: function(cellView)
@@ -212,7 +214,7 @@ class ListView extends View
 					const ListCellViewClass = self.overridable_listCellViewClass()
 					const view = new ListCellViewClass(options, context)
 					self.recordCellViews.push(view)
-					view.ConfigureWithRecord(record)
+					view.ConfigureWithRecord(record, isAtEnd)
 					self.cellsContainerView.addSubview(view)
 				}
 			)
