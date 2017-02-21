@@ -28,70 +28,44 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
+const ListCellView = require('../../Lists/Views/ListCellView.web')
 //
-class ContactsListCellView extends View
+class ContactsListCellView extends ListCellView
 {
 	constructor(options, context)
 	{
 		super(options, context)
+	}
+	overridable_startObserving_record()
+	{
+		const self = this
+		super.overridable_startObserving_record()
 		//
-		const self = this
-		{
-			self.cell_tapped_fn = options.cell_tapped_fn || function(cellView) {}
-		}
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-		self.setup_views()
-		self.setup_layers()
-	}
-	setup_views()
-	{
-		const self = this
-	}
-	setup_layers()
-	{
-		const self = this
-		self.layer.style.cursor = "pointer"
-		{ // observation
-			self.layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault() // not that there would be any
-					self.cell_tapped_fn(self)
-					//
-					return false
-				}
-			)
-		}
-	}
-	//
-	//
-	// Internal - Teardown/Recycling
-	//
-	TearDown()
-	{
-		super.TearDown()
-		//
-		const self = this
-		self.prepareForReuse()
-	}
-	prepareForReuse()
-	{
-		const self = this
-		self.stopObserving_contact()
-		self.contact = null
-	}
-	stopObserving_contact()
-	{
-		const self = this
-		if (typeof self.contact === 'undefined' || !self.contact) {
+		if (typeof self.record === 'undefined' || self.contact === null) {
+			throw "self.record undefined in start observing"
 			return
 		}
+		// here, we're going to store a bunch of functions as instance properties
+		// because if we need to stopObserving we need to have access to the listener fns
+		const emitter = self.record
+		self.contact_EventName_contactInfoUpdated_listenerFunction = function()
+		{
+			self.overridable_configureUIWithRecord()
+		}
+		emitter.on(
+			emitter.EventName_contactInfoUpdated(),
+			self.contact_EventName_contactInfoUpdated_listenerFunction
+		)
+	}
+	overridable_stopObserving_record()
+	{
+		const self = this
+		super.overridable_stopObserving_record()
+		//
+		if (typeof self.record === 'undefined' || !self.record) {
+			return
+		}
+		const emitter = self.record
 		function doesListenerFunctionExist(fn)
 		{
 			if (typeof fn !== 'undefined' && fn !== null) {
@@ -100,128 +74,54 @@ class ContactsListCellView extends View
 			return false
 		}
 		if (doesListenerFunctionExist(self.contact_EventName_contactInfoUpdated_listenerFunction) === true) {
-			self.contact.removeListener(
-				self.contact.EventName_contactInfoUpdated(),
+			emitter.removeListener(
+				emitter.EventName_contactInfoUpdated(),
 				self.contact_EventName_contactInfoUpdated_listenerFunction
 			)
 		}
 	}
-	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Metrics
-	//
-	//
-	_idPrefix()
+	overridable_configureUIWithRecord()
 	{
-		const self = this
+		super.overridable_configureUIWithRecord()
 		//
-		return "ContactsListCellView" + "_" + self.contact._id // to make it unique as this is a list-cell
-	}
-	//
-	//
-	// Interface - Runtime - Imperatives - State/UI Configuration
-	//
-	ConfigureWith_contact(contact)
-	{
 		const self = this
-		if (typeof self.contact !== 'undefined') {
-			self.prepareForReuse()
-		}
-		self.contact = contact
-		self._configureUIWithContact()
-		self.startObserving_contact()
+		self._configureUIWithContact__contactInfo()
 	}
 	//
 	//
 	// Internal - Runtime - Imperatives - State/UI Configuration
 	//
-	_configureUIWithContact()
-	{
-		const self = this
-		self._configureUIWithContact__contactInfo()
-	}
 	_configureUIWithContact__contactInfo()
 	{
 		const self = this
-		const contact = self.contact
-		if (
-			contact.didFailToInitialize_flag === true 
-			|| contact.didFailToBoot_flag === true
-		) { // unlikely, but possible
+		if (typeof self.record === 'undefined' || !self.record) {
+			self.convenience_removeAllSublayers()
+			return
+		}
+		if (self.record.didFailToInitialize_flag === true 
+			|| self.record.didFailToBoot_flag === true) { // unlikely, but possible
 			self.layer.innerHTML += 
 				`<h4>Error: Couldn't open this contact.</h4>`
 				+ `<p>Please report this issue to us via Support.</p>`
-			return
+			return // ^-- (how) do we really want to do this ?
 		}
+		// flash views for now since we're not doing cell view recycling yet… these should be cached at setup and merely configured here
 		self.convenience_removeAllSublayers()
 		{ // emoji
 			const layer = document.createElement("span")
-			layer.innerHTML = contact.emoji
+			layer.innerHTML = self.record.emoji
 			self.layer.appendChild(layer)
 		}
 		{ // name
 			const layer = document.createElement("span")
-			layer.innerHTML = contact.fullname
+			layer.innerHTML = self.record.fullname
 			self.layer.appendChild(layer)
 		}
 		{ // address
 			const layer = document.createElement("span")
-			layer.innerHTML = contact.address
+			layer.innerHTML = self.record.address
 			self.layer.appendChild(layer)
 		}
-	}
-	//
-	//
-	// Internal - Runtime - Imperatives - Contact operations
-	deleteContact()
-	{
-		const self = this
-		self.context.contactsListController.WhenBooted_DeleteRecordWithId(
-			self.contact._id,
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to delete contact with error", err)
-					alert("Failed to delete contact.")
-					return
-				}
-				console.log("Deleted contact.")
-			}
-		)
-	}
-	//
-	//
-	//
-	// Internal - Runtime - Imperatives - Observation
-	//
-	startObserving_contact()
-	{
-		const self = this
-		if (typeof self.contact === 'undefined' || self.contact === null) {
-			throw "contact undefined in start observing"
-			return
-		}
-		// here, we're going to store a bunch of functions as instance properties
-		// because if we need to stopObserving we need to have access to the listener fns
-		//
-		// account info updated
-		self.contact_EventName_contactInfoUpdated_listenerFunction = function()
-		{
-			self.contact_EventName_contactInfoUpdated()
-		}
-		self.contact.on(
-			self.contact.EventName_contactInfoUpdated(),
-			self.contact_EventName_contactInfoUpdated_listenerFunction
-		)
-	}
-	//
-	//
-	// Internal - Runtime - Delegation - Event handlers - Contact
-	//
-	contact_EventName_contactInfoUpdated()
-	{
-		const self = this
-		self._configureUIWithContact__contactInfo()
 	}
 }
 module.exports = ContactsListCellView

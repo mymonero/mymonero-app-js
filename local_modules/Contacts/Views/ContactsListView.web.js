@@ -28,78 +28,34 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
-const ContactsListCellView = require('./ContactsListCellView.web')
-const ContactDetailsView = require('./ContactDetailsView.web')
-const AddContactFromContactsTabView = require('./AddContactFromContactsTabView.web')
-const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+const ListView = require('../../Lists/Views/ListView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
-class ContactsListView extends View
+const ContactsListCellView = require('./ContactsListCellView.web')
+const ContactDetailsView = require('./ContactDetailsView.web')
+//
+const AddContactFromContactsTabView = require('./AddContactFromContactsTabView.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+//
+class ContactsListView extends ListView
 {
 	constructor(options, context)
 	{
+		options.listController = context.contactsListController
+		// ^- injecting dep so consumer of self doesn't have to
 		super(options, context)
-		//
-		const self = this
-		self.setup()
 	}
-	setup()
-	{
-		const self = this
-		{
-			self.current_contactDetailsView = null // zeroing for comparison
-		}		
-		self.layer.style.webkitUserSelect = "none"
-		//
-		self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
-		// self.layer.style.height = "100%" // we're actually going to wait til viewWillAppear is called by the nav controller to set height
-		//
-		self.layer.style.backgroundColor = "#272527"
-		//
-		self.layer.style.color = "#c0c0c0" // temporary
-		//
-		self.layer.style.overflowY = "scroll"
-		self.layer.style.padding = "40px 10px"
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		//
-		self._setup_views()
-		self._setup_startObserving()
-		//
-		// configure UI with initial state
-		self.reloadData()
+	overridable_listCellViewClass()
+	{ // override and return youir 
+		return ContactsListCellView
 	}
-	_setup_views()
+	overridable_pushesDetailsViewOnCellTap()
 	{
-		const self = this
-		self.contactCellViews = [] // initialize container
+		return true
 	}
-	_setup_startObserving()
+	overridable_recordDetailsViewClass()
 	{
-		const self = this
-		const contactsListController = self.context.contactsListController
-		contactsListController.on(
-			contactsListController.EventName_listUpdated(),
-			function()
-			{
-				self._ContactsListController_EventName_listUpdated()
-			}
-		)
-	}
-	//
-	//
-	// Lifecycle - Teardown
-	//
-	TearDown()
-	{
-		const self = this
-		super.TearDown()
-		//
-		if (self.current_contactDetailsView !== null) {
-			self.current_contactDetailsView.TearDown()
-			self.current_contactDetailsView = null
-		}
+		return ContactDetailsView
 	}
 	//
 	//
@@ -113,179 +69,21 @@ class ContactsListView extends View
 	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
-		{
-			view.layer.addEventListener(
-				"click",
-				function(e)
+		view.layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
 				{
-					e.preventDefault()
-					{
-						const view = new AddContactFromContactsTabView({}, self.context)
-						const navigationView = new StackAndModalNavigationView({}, self.context)
-						navigationView.SetStackViews([ view ])
-						self.navigationController.PresentView(navigationView, true)
-					}
-					return false
+					const view = new AddContactFromContactsTabView({}, self.context)
+					const navigationView = new StackAndModalNavigationView({}, self.context)
+					navigationView.SetStackViews([ view ])
+					self.navigationController.PresentView(navigationView, true)
 				}
-			)
-		}
+				return false
+			}
+		)
 		return view
-	}
-	//
-	//
-	// Runtime - Imperatives - View Configuration
-	//
-	reloadData(optl_isFrom_EventName_listUpdated)
-	{
-		const self = this
-		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
-			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted contactsList, i.e., on 
-			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
-			self._configureWith_contacts(self.context.contactsListController.records) // since it will be immediately available
-			return
-		}
-		if (self.isAlreadyWaitingForContacts === true) { // because accessing contacts is async
-			console.warn("⚠️  Asked to " + self.constructor.name + "/reloadData while already waiting on WhenBooted.")
-			return // prevent redundant calls
-		}
-		self.isAlreadyWaitingForContacts = true
-		self.context.contactsListController.WhenBooted_Records(
-			function(records)
-			{
-				self.isAlreadyWaitingForContacts = false // unlock
-				self._configureWith_contacts(records)
-			}
-		)
-	}
-	_configureWith_contacts(contacts)
-	{
-		const self = this
-		{
-			if (typeof self.cellsContainerView !== 'undefined' && self.cellsContainerView) {
-				self.cellsContainerView.removeFromSuperview()
-				self.cellsContainerView = null
-			}
-			if (self.contactCellViews.length !== 0) {
-				// for now, just flash list:
-				self.contactCellViews.forEach(
-					function(view, i)
-					{
-						view.removeFromSuperview()
-					}
-				)
-				self.contactCellViews = []
-			}
-		}
-		// { // show empty state
-		// 	// TODO:
-		// 	self.emptyStateContainerView.SetVisible(contacts.length === 0 ? true : false)
-		// }
-		{
-			const view = new View({}, self.context)
-			{
-				view.layer.style.borderRadius = "5px"
-				view.layer.style.backgroundColor = "#666"
-				view.layer.style.border = "1px outset #ccc"
-			}
-			self.cellsContainerView = view
-			self.addSubview(self.cellsContainerView)
-		}
-		{ // now add cells
-			const context = self.context
-			contacts.forEach(
-				function(contact, i)
-				{
-					const options = 
-					{
-						cell_tapped_fn: function(cellView)
-						{
-							self.pushContactDetailsView(cellView.contact)
-						}
-					}
-					const view = new ContactsListCellView(options, context)
-					self.contactCellViews.push(view)
-					view.ConfigureWith_contact(contact)
-					self.cellsContainerView.addSubview(view)
-				}
-			)
-		}
-	}
-	//
-	//
-	// Runtime - Internal - Imperatives - Navigation/presentation
-	//
-	pushContactDetailsView(contact)
-	{
-		const self = this
-		if (self.current_contactDetailsView !== null) {
-			// Commenting this throw as we are going to use this as the official way to lock this function,
-			// e.g. if the user is double-clicking on a cell to push a details view
-			// throw "Asked to pushFundsRequestDetailsView while self.current_contactDetailsView !== null"
-			return
-		}
-		{ // check fundsRequest
-			if (typeof contact === 'undefined' || contact === null) {
-				throw self.constructor.name + " requires contact to pushFundsRequestDetailsView"
-				return
-			}
-		}
-		const navigationController = self.navigationController
-		if (typeof navigationController === 'undefined' || navigationController === null) {
-			throw self.constructor.name + " requires navigationController to pushFundsRequestDetailsView"
-			return
-		}
-		{
-			const options = 
-			{
-				contact: contact
-			}
-			const view = new ContactDetailsView(options, self.context)
-			navigationController.PushView(
-				view, 
-				true // animated
-			)
-			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
-			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
-			// by tearing it down on self.viewDidAppear() below and on TearDown() (although since this is a root stackView
-			// the latter ought not to happen)
-			self.current_contactDetailsView = view
-		}
-	}
-	//
-	//
-	// Runtime - Delegation - Data source
-	//
-	_ContactsListController_EventName_listUpdated()
-	{
-		const self = this
-		self.reloadData(
-			true // isFrom_EventName_listUpdated
-		)
-	}
-	//
-	//
-	// Runtime - Delegation - Navigation/View lifecycle
-	//
-	viewWillAppear()
-	{
-		const self = this
-		super.viewWillAppear()
-		//
-		if (typeof self.navigationController === 'undefined' || self.navigationController === null) {
-			throw "missing self.navigationController in viewWillAppear()"
-		}
-		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		//
-		if (self.current_contactDetailsView !== null) {
-			self.current_contactDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_contactDetailsView = null // must zero again and should free
-		}
 	}
 }
 module.exports = ContactsListView

@@ -40,9 +40,9 @@ class ContactDetailsView extends View
 		super(options, context) // call super before `this`
 		const self = this 
 		{
-			self.contact = self.options.contact
+			self.contact = self.options.record // just going to call this contact internally for now unless we factor a RecordDetailsView (does not seem likely)
 			if (typeof self.contact === 'undefined' || !self.contact) {
-				throw self.constructor.name + " requires a self.options.contact"
+				throw self.constructor.name + " requires a self.options.record"
 				return
 			}
 		}
