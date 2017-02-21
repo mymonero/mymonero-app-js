@@ -103,7 +103,7 @@ class View extends EventEmitter
 		}
 		console.log("♻️  Tearing down ", self.Description())
 		self.isTornDown = true
-		// self.layer = null // so… this is commented because it turns out to race with consumers' usage of it after TearDown is called… really wish we had ARC so TearDown would be callable on a dealloc! #jssux
+		// self.layer = null // so… this is commented because it turns out to race with consumers' usage of it after TearDown is called… really wish we had ARC or dealloc call so TearDown would be rigorously callable! #jssux
 	}
 	//
 	//
