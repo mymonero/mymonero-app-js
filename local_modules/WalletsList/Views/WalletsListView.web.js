@@ -81,7 +81,7 @@ class WalletsListView extends ListView
 		self.emptyStateContainerView = view
 		const layer = view.layer
 		const margin_side = 15
-		const marginTop = 60 - 44
+		const marginTop = 54 - 44
 		layer.style.marginTop = `${marginTop}px`
 		layer.style.marginLeft = margin_side + "px"
 		layer.style.width = `calc(100% - ${2 * margin_side}px)`
