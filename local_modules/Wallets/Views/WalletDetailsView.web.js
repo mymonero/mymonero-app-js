@@ -40,7 +40,7 @@ class WalletDetailsView extends View
 		//
 		const self = this
 		{
-			self.wallet = options.wallet
+			self.wallet = options.record // will keep it `record` in the interface
 			if (self.wallet === null || typeof self.wallet === 'undefined') {
 				throw "options.wallet nil but required for " + self.constructor.name
 				return

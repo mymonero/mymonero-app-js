@@ -30,6 +30,9 @@
 //
 const View = require('../../Views/View.web')
 const ListCellView = require('./ListCellView.web')
+// TODO: extract these dependencies:
+const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
+const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
 //
 class ListView extends View
 {
@@ -65,6 +68,7 @@ class ListView extends View
 		const self = this
 		self.recordCellViews = [] // initialize container
 		self._setup_layer()
+		self._setup_emptyStateContainerView()
 	}
 	_setup_layer()
 	{
@@ -86,11 +90,79 @@ class ListView extends View
 	}
 	overridable_padding_h()
 	{
-		return 10
+		return 0
 	}
 	overridable_padding_btm()
 	{
 		return 40
+	}
+	overridable_initial_emptyStateView_emoji()
+	{
+		return "😮"
+	}
+	overridable_initial_emptyStateView_message()
+	{
+		return "No items yet."
+	}
+	overridable_setupActionButtons() {}
+	_setup_emptyStateContainerView()
+	{
+		const self = this
+		const view = new View({}, self.context)
+		self.emptyStateContainerView = view
+		const layer = view.layer
+		const margin_side = 15
+		const marginTop = 60 - 44
+		layer.style.marginTop = `${marginTop}px`
+		layer.style.marginLeft = margin_side + "px"
+		layer.style.width = `calc(100% - ${2 * margin_side}px)`
+		layer.style.height = `calc(100% - ${marginTop}px)`
+		{
+			const emptyStateMessageContainerView = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
+				self.overridable_initial_emptyStateView_emoji(), 
+				self.overridable_initial_emptyStateView_message(),
+				self.context,
+				0
+			)
+			self.emptyStateMessageContainerView = emptyStateMessageContainerView
+			view.addSubview(emptyStateMessageContainerView)
+		}
+		{ // action buttons toolbar
+			const margin_h = margin_side
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = margin_h
+			const actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
+				margin_fromWindowLeft, 
+				margin_fromWindowRight, 
+				self.context)
+			self.actionButtonsContainerView = actionButtonsContainerView
+			{ // as these access self.actionButtonsContainerView
+				self.overridable_setupActionButtons()
+			}
+			view.addSubview(actionButtonsContainerView)
+		}
+		{ // essential: update empty state message container to accommodate
+			const actionBar_style_height = commonComponents_actionButtons.ActionButtonsContainerView_h
+			const actionBar_style_marginBottom = commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin
+			const actionBarFullHeightDisplacement = margin_side + actionBar_style_height + actionBar_style_marginBottom
+			const style_height = `calc(100% - ${actionBarFullHeightDisplacement}px)`
+			self.emptyStateMessageContainerView.layer.style.height = style_height
+		}
+		view.SetVisible = function(isVisible)
+		{
+			view.isVisible = isVisible
+			if (isVisible) {
+				if (layer.style.display !== "block") {
+					layer.style.display = "block"
+				}
+			} else {
+				if (layer.style.display !== "none") {
+					layer.style.display = "none"
+				}
+			}
+		}
+		view.SetVisible(false)
+		self.addSubview(view)
 	}
 	_setup_startObserving()
 	{
@@ -187,10 +259,10 @@ class ListView extends View
 				self.recordCellViews = []
 			}
 		}
-		// { // show empty state
-		// 	// TODO:
-		// 	self.emptyStateContainerView.SetVisible(records.length === 0 ? true : false)
-		// }
+		{ // so we update to return no right bar btn when there are no wallets as we show empty state action bar
+			self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
+			self.emptyStateContainerView.SetVisible(records.length === 0 ? true : false)
+		}
 		{
 			const view = new View({}, self.context)
 			{

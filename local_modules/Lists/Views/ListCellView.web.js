@@ -47,12 +47,12 @@ class ListCellView extends View
 		self.setup()
 	}
 	setup()
-	{
+	{ // overridable, just call on super
 		const self = this
 		self.setup_views()
 	}
 	setup_views()
-	{
+	{ // overridable, just call on super
 		const self = this
 		self.overridable_layerToObserveForTaps().addEventListener(
 			"click",
