@@ -28,8 +28,10 @@
 //
 "use strict"
 //
+const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
 const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
 //
 const WalletsListCellView = require('./WalletsListCellView.web')
@@ -53,6 +55,13 @@ class WalletsListView extends ListView
 		}
 		super.setup()
 	}
+	_setup_views()
+	{
+		super._setup_views()
+		//
+		const self = this
+		self._setup_emptyStateContainerView()
+	}	
 	overridable_listCellViewClass()
 	{ // override and return youir 
 		return WalletsListCellView
@@ -65,20 +74,66 @@ class WalletsListView extends ListView
 	{
 		return WalletDetailsView
 	}
-	overridable_initial_emptyStateView_emoji()
-	{
-		return "😃"
-	}
-	overridable_initial_emptyStateView_message()
-	{
-		return "Welcome to MyMonero!<br/>Let's get started."
-	}
-	overridable_setupActionButtons()
+	_setup_emptyStateContainerView()
 	{
 		const self = this
-		self._setup_actionButton_useExistingWallet()
-		self._setup_actionButton_createNewWallet()
-	}	
+		const view = new View({}, self.context)
+		self.emptyStateContainerView = view
+		const layer = view.layer
+		const margin_side = 15
+		const marginTop = 60 - 44
+		layer.style.marginTop = `${marginTop}px`
+		layer.style.marginLeft = margin_side + "px"
+		layer.style.width = `calc(100% - ${2 * margin_side}px)`
+		layer.style.height = `calc(100% - ${marginTop}px)`
+		{
+			const emptyStateMessageContainerView = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
+				"😃", 
+				"Welcome to MyMonero!<br/>Let's get started.",
+				self.context,
+				0
+			)
+			self.emptyStateMessageContainerView = emptyStateMessageContainerView
+			view.addSubview(emptyStateMessageContainerView)
+		}
+		{ // action buttons toolbar
+			const margin_h = margin_side
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = margin_h
+			const actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
+				margin_fromWindowLeft, 
+				margin_fromWindowRight, 
+				self.context)
+			self.actionButtonsContainerView = actionButtonsContainerView
+			{ // as these access self.actionButtonsContainerView
+				self._setup_actionButton_useExistingWallet()
+				self._setup_actionButton_createNewWallet()
+			}
+			view.addSubview(actionButtonsContainerView)
+		}
+		{ // essential: update empty state message container to accommodate
+			const actionBar_style_height = commonComponents_actionButtons.ActionButtonsContainerView_h
+			const actionBar_style_marginBottom = commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin
+			const actionBarFullHeightDisplacement = margin_side + actionBar_style_height + actionBar_style_marginBottom
+			const style_height = `calc(100% - ${actionBarFullHeightDisplacement}px)`
+			self.emptyStateMessageContainerView.layer.style.height = style_height
+		}
+		view.SetVisible = function(isVisible)
+		{
+			view.isVisible = isVisible
+			if (isVisible) {
+				if (layer.style.display !== "block") {
+					layer.style.display = "block"
+				}
+			} else {
+				if (layer.style.display !== "none") {
+					layer.style.display = "none"
+				}
+			}
+		}
+		view.SetVisible(false)
+		self.addSubview(view)
+	}
 	_setup_actionButton_useExistingWallet()
 	{
 		const self = this
@@ -169,7 +224,7 @@ class WalletsListView extends ListView
 	}
 	//
 	//
-	// Runtime - Imperatives - 
+	// Runtime - Imperatives - Wizard 
 	//
 	_presentAddWalletWizardIn(returnTaskModeWithController_fn)
 	{
@@ -179,6 +234,19 @@ class WalletsListView extends ListView
 		const taskMode = returnTaskModeWithController_fn(controller)
 		const navigationView = controller.EnterWizardTaskMode_returningNavigationView(taskMode)
 		self.navigationController.PresentView(navigationView)
+	}
+	//
+	//
+	// Runtime - Delegation - UI building
+	//
+	overridable_willBuildUIWithRecords(records)
+	{
+		super.overridable_willBuildUIWithRecords(records)
+		//
+		const self = this
+		// so we update to return no right bar btn when there are no wallets as we show empty state action bar
+		self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
+		self.emptyStateContainerView.SetVisible(records.length === 0 ? true : false)
 	}
 	//
 	//
