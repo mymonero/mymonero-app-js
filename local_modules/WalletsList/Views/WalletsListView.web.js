@@ -309,12 +309,12 @@ class WalletsListView extends View
 					{
 						cell_tapped_fn: function(cellView)
 						{
-							self.pushWalletDetailsView(cellView.wallet)
+							self.pushWalletDetailsView(cellView.record)
 						}
 					}
 					const view = new WalletsListCellView(options, context)
 					self.walletCellViews.push(view)
-					view.ConfigureWith_wallet(wallet)
+					view.ConfigureWithRecord(wallet)
 					self.addSubview(view)
 				}
 			)

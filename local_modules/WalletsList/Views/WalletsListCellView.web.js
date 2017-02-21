@@ -28,78 +28,95 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
+const ListCellView = require('../../Lists/Views/ListCellView.web')
 const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
 //
-class WalletsListCellView extends View
+class WalletsListCellView extends ListCellView
 {
-	constructor(options, context)
-	{
-		super(options, context)
-		//
-		const self = this
-		{
-			self.cell_tapped_fn = options.cell_tapped_fn || function(cellView) {}
-		}
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-		self.setup_views()
-	}
+	// Setup / Configure
 	setup_views()
 	{
 		const self = this
-		{
-			self.layer.style.cursor = "pointer"
-			self.layer.style.border = "1px solid #eee"
-			self.layer.style.borderRadius = "5px"
-			self.layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset
-		}
-		{
-			const options = 
-			{
-				cell_tapped_fn: self.cell_tapped_fn
-			}
-			const view = new WalletCellContentsView(options, self.context)
+		{ // self.cellContentsView: set this up /before/ calling _cmd on super
+			// so that it's avail in overridable_layerToObserveForTaps
+			const view = new WalletCellContentsView({}, self.context)
 			self.cellContentsView = view
+			// though this `add…` could be deferred til after…
 			self.addSubview(view)
 		}
+		// now call on super…
+		super.setup_views()
+		{
+			const layer = self.layer
+			layer.style.border = "1px solid #eee"
+			layer.style.borderRadius = "5px"
+			layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset
+		}
+	}
+	overridable_layerToObserveForTaps()
+	{
+		const self = this
+		if (!self.cellContentsView || typeof self.cellContentsView === 'undefined') {
+			throw "self.cellContentsView was nil in " + self.constructor.name + " overridable_layerToObserveForTaps"
+			return self.layer
+		}
+		return self.cellContentsView.layer
 	}
 	//
 	//
-	// Lifecycle - Teardown
+	// Lifecycle - Teardown/Recycling
 	//
 	TearDown()
 	{
 		super.TearDown()
-		//
 		const self = this
 		self.cellContentsView.TearDown()
-		self.wallet = null
 	}
-	//
-	//
-	// Internal - Teardown/Recycling
-	//
-	PrepareForReuse()
+	prepareForReuse()
 	{
+		super.prepareForReuse()
 		const self = this
 		self.cellContentsView.PrepareForReuse()
-		self.wallet = null
 	}
 	//
-	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
-	ConfigureWith_wallet(wallet)
+	// Runtime - Imperatives - Cell view - Config with record
+	//
+	overridable_configureUIWithRecord()
+	{
+		super.overridable_configureUIWithRecord()
+		//
+		const self = this
+		self.cellContentsView.ConfigureWithRecord(self.record)
+	}
+	overridable_startObserving_record()
 	{
 		const self = this
-		if (typeof self.wallet !== 'undefined') {
-			self.PrepareForReuse()
+		super.overridable_startObserving_record()
+		//
+		if (typeof self.record === 'undefined' || self.contact === null) {
+			throw "self.record undefined in start observing"
+			return
 		}
-		self.wallet = wallet
-		self.cellContentsView.ConfigureWith_wallet(self.wallet)
+		// TODO? so far, updates on the list lvl
+	}
+	overridable_stopObserving_record()
+	{
+		const self = this
+		super.overridable_stopObserving_record()
+		//
+		if (typeof self.record === 'undefined' || !self.record) {
+			return
+		}
+		const emitter = self.record
+		function doesListenerFunctionExist(fn)
+		{
+			if (typeof fn !== 'undefined' && fn !== null) {
+				return true
+			}
+			return false
+		}
+		// TODO? so far, updates on the list lvl
 	}
 }
 module.exports = WalletsListCellView

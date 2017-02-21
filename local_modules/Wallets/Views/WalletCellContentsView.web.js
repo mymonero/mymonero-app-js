@@ -37,9 +37,6 @@ class WalletCellContentsView extends View
 		super(options, context)
 		//
 		const self = this
-		{
-			self.cell_tapped_fn = options.cell_tapped_fn || function(cellView) {}
-		}
 		self.setup()
 	}
 	setup()
@@ -63,24 +60,10 @@ class WalletCellContentsView extends View
 	setup_layers_accountInfo()
 	{
 		const self = this
-		//
 		const layer = document.createElement("div")
 		layer.className = "accountInfo"
-		//
 		self.layer_accountInfo = layer
 		self.layer.appendChild(layer)
-		{ // observation
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault() // not that there would be any
-					self.cell_tapped_fn(self)
-					//
-					return false
-				}
-			)
-		}
 	}
 	//
 	//
@@ -179,7 +162,7 @@ class WalletCellContentsView extends View
 	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
-	ConfigureWith_wallet(wallet)
+	ConfigureWithRecord(wallet)
 	{
 		const self = this
 		if (typeof self.wallet !== 'undefined') {

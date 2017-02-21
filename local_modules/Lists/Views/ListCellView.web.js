@@ -54,7 +54,7 @@ class ListCellView extends View
 	setup_views()
 	{
 		const self = this
-		self.layer.addEventListener(
+		self.overridable_layerToObserveForTaps().addEventListener(
 			"click",
 			function(e)
 			{
@@ -63,6 +63,11 @@ class ListCellView extends View
 				return false
 			}
 		)
+	}
+	overridable_layerToObserveForTaps()
+	{
+		const self = this
+		return self.layer
 	}
 	//
 	//
@@ -74,6 +79,11 @@ class ListCellView extends View
 		//
 		const self = this
 		self.prepareForReuse()
+	}
+	PrepareForReuse()
+	{
+		const self = this
+		self.prepareForReuse() // just a direct pass-through
 	}
 	prepareForReuse()
 	{
