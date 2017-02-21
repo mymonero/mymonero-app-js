@@ -48,6 +48,18 @@ class StackAndModalNavigationView extends StackNavigationView
 	}
 	//
 	//
+	// Teardown
+	//
+	TearDown()
+	{
+		const self = this
+		super.TearDown()
+		//
+		self.modalViews = null
+		self.topModalView = null
+	}
+	//
+	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
 	_animationDuration_ms_modalPresent()

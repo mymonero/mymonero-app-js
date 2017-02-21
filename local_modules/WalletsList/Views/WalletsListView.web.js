@@ -290,9 +290,8 @@ class WalletsListView extends View
 				self.walletCellViews.forEach(
 					function(view, i)
 					{
+						view.removeFromSuperview() // before we call TearDown so layer is not nil too early
 						view.TearDown() // important so the event listeners get deregistered
-						//
-						view.removeFromSuperview()
 					}
 				)
 				self.walletCellViews = []

@@ -28,74 +28,35 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
-const GeneratedRequestView = require('./GeneratedRequestView.web')
-const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
+const ListView = require('../../Lists/Views/ListView.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+//
+const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
+const GeneratedRequestView = require('./GeneratedRequestView.web')
+//
 const RequestFundsView = require('./RequestFundsView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
-class FundsRequestsListView extends View
+class FundsRequestsListView extends ListView
 {
 	constructor(options, context)
 	{
+		options.listController = context.fundsRequestsListController
+		// ^- injecting dep so consumer of self doesn't have to
 		super(options, context)
-		//
-		const self = this
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-		//
-		self._setup_views()
-		self._setup_startObserving()
-		//
-		// configure UI with initial state
-		self.reloadData()
 	}
 	_setup_views()
 	{
+		super._setup_views()
 		const self = this
 		{ // zeroing for comparison
-			self.current_generatedRequestView = null 
 			self.currentlyPresented_RequestFundsView = null
-		}
-		{ // collections
-			self.fundsRequestCellViews = [] // initialize container
-		}
-		{
-			self.layer.style.webkitUserSelect = "none"
-			//
-			self.padding_top = 20
-			self.padding_bottom = 40
-			//
-			self.layer.style.width = "calc(100% - 20px)" // 20px for h padding
-			self.layer.style.height = `calc(100% - ${self.padding_top}px - ${self.padding_bottom}px)` // in viewWillAppear we query the nav controller bar height to re-set self height
-			//
-			self.layer.style.backgroundColor = "#272527"
-			//
-			self.layer.style.color = "#c0c0c0" // temporary
-			//
-			self.layer.style.overflowY = "scroll"
-			self.layer.style.padding = `${self.padding_top}px 10px ${self.padding_bottom}px 10px`
-			//
-			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
 	}
 	_setup_startObserving()
 	{
 		const self = this
-		{
-			const emitter = self.context.fundsRequestsListController
-			emitter.on(
-				emitter.EventName_listUpdated(),
-				function()
-				{
-					self._FundsRequestsListController_EventName_listUpdated()
-				}
-			)
-		}
+		super._setup_startObserving()
 		{ // walletAppCoordinator
 			const emitter = self.context.walletAppCoordinator
 			emitter.on(
@@ -107,25 +68,31 @@ class FundsRequestsListView extends View
 			)
 		}
 	}
-	//
-	//
-	// Lifecycle - Teardown
-	//
 	TearDown()
 	{
 		const self = this
 		super.TearDown()
-		//
-		if (self.current_generatedRequestView !== null) {
-			self.current_generatedRequestView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_generatedRequestView = null // must zero again and should free
+		self.teardown_currentlyPresented_RequestFundsView()
+	}
+	teardown_currentlyPresented_RequestFundsView()
+	{
+		const self = this
+		if (self.currentlyPresented_RequestFundsView !== null) {
+			self.currentlyPresented_RequestFundsView.TearDown() // might not be necessary but method guards itself
+			self.currentlyPresented_RequestFundsView = null // must zero again and should free
 		}
-		{
-			if (self.currentlyPresented_RequestFundsView !== null) {
-				self.currentlyPresented_RequestFundsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-				self.currentlyPresented_RequestFundsView = null // must zero again and should free
-			}
-		}
+	}
+	overridable_listCellViewClass()
+	{ // override and return youir 
+		return FundsRequestsListCellView
+	}
+	overridable_pushesDetailsViewOnCellTap()
+	{
+		return true
+	}
+	overridable_recordDetailsViewClass()
+	{
+		return GeneratedRequestView
 	}
 	//
 	//
@@ -152,107 +119,8 @@ class FundsRequestsListView extends View
 		}
 		return view
 	}
-	//
-	//
-	// Runtime - Imperatives - View Configuration
-	//
-	reloadData(optl_isFrom_EventName_listUpdated)
-	{
-		const self = this
-		if (optl_isFrom_EventName_listUpdated === true) { // because if we're told we can update we can do it immediately w/o re-requesting Boot
-			// and… we have to, because sometimes listUpdated is going to be called after we deconstruct the booted fundsRequestsList, i.e., on 
-			// user idle. meaning… this solves the user idle bug where the list doesn't get emptied behind the scenes (security vuln)
-			self._configureWith_fundsRequests(self.context.fundsRequestsListController.records) // since it will be immediately available
-			return
-		}
-		if (self.isAlreadyWaitingForFundsRequests === true) { // because accessing fundsRequests is async
-			console.warn("⚠️  Asked to " + self.constructor.name + "/reloadData while already waiting on WhenBooted.")
-			return // prevent redundant calls
-		}
-		self.isAlreadyWaitingForFundsRequests = true
-		self.context.fundsRequestsListController.WhenBooted_Records(
-			function(records)
-			{
-				self.isAlreadyWaitingForFundsRequests = false // unlock
-				// before proceeding, just sorting the records by date created
-				self._configureWith_fundsRequests(records)
-			}
-		)
-	}
-	_configureWith_fundsRequests(fundsRequests)
-	{
-		const self = this
-		// TODO: diff these fundsRequests with existing fundsRequests?
-		if (self.fundsRequestCellViews.length != 0) {
-			// for now, just flash list:
-			self.fundsRequestCellViews.forEach(
-				function(view, i)
-				{
-					view.removeFromSuperview()
-				}
-			)
-			self.fundsRequestCellViews = []
-		}
-		// now add subviews
-		const context = self.context
-		fundsRequests.forEach(
-			function(fundsRequest, i)
-			{
-				const options = 
-				{
-					cell_tapped_fn: function(cellView)
-					{
-						self.pushFundsRequestDetailsView(cellView.fundsRequest)
-					}
-				}
-				const view = new FundsRequestsListCellView(options, context)
-				self.fundsRequestCellViews.push(view)
-				view.ConfigureWith_fundsRequest(fundsRequest)
-				self.addSubview(view)
-			}
-		)
-	}
-	//
-	//
-	// Runtime - Internal - Imperatives - Navigation/presentation
-	//
-	pushFundsRequestDetailsView(fundsRequest)
-	{
-		const self = this
-		if (self.current_generatedRequestView !== null) {
-			// Commenting this throw as we are going to use this as the official way to lock this function,
-			// e.g. if the user is double-clicking on a cell to push a details view
-			// throw "Asked to pushFundsRequestDetailsView while self.current_generatedRequestView !== null"
-			return
-		}
-		{ // check fundsRequest
-			if (typeof fundsRequest === 'undefined' || fundsRequest === null) {
-				throw self.constructor.name + " requires contact to pushFundsRequestDetailsView"
-				return
-			}
-		}
-		const navigationController = self.navigationController
-		if (typeof navigationController === 'undefined' || navigationController === null) {
-			throw self.constructor.name + " requires navigationController to pushFundsRequestDetailsView"
-			return
-		}
-		{
-			const options = 
-			{
-				fundsRequest: fundsRequest
-			}
-			const view = new GeneratedRequestView(options, self.context)
-			navigationController.PushView(
-				view, 
-				true // animated
-			)
-			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
-			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
-			// by tearing it down on self.viewDidAppear() below and on TearDown() (although since this is a root stackView
-			// the latter ought not to happen)
-			self.current_generatedRequestView = view
-		}
-	}
+
+
 	//
 	//
 	// Runtime - Imperatives - Modal view presentation
@@ -284,7 +152,6 @@ class FundsRequestsListView extends View
 			//
 			return
 		}
-		console.log("self.currentlyPresented_RequestFundsView" , self.currentlyPresented_RequestFundsView)
 		const fromContact = options.fromContact
 		if (fromContact && typeof fromContact !== 'undefined') {
 			self.currentlyPresented_RequestFundsView.AtRuntime_reconfigureWith_fromContact(fromContact)
@@ -292,43 +159,13 @@ class FundsRequestsListView extends View
 	}
 	//
 	//
-	// Runtime - Delegation - Data source
+	// Runtime - Delegation - View lifecycle
 	//
-	_FundsRequestsListController_EventName_listUpdated()
-	{
-		const self = this
-		self.reloadData(
-			true // isFrom_EventName_listUpdated
-		)
-	}
-	//
-	//
-	// Runtime - Delegation - Navigation/View lifecycle
-	//
-	viewWillAppear()
-	{
-		const self = this
-		super.viewWillAppear()
-		//
-		if (typeof self.navigationController === 'undefined' || self.navigationController === null) {
-			throw "missing self.navigationController in viewWillAppear()"
-		}
-		self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight() + self.padding_top}px`
-		self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight() + self.padding_top + self.padding_bottom}px)`
-	}
 	viewDidAppear()
 	{
 		const self = this
 		super.viewDidAppear()
-		//
-		if (self.current_generatedRequestView !== null) {
-			self.current_generatedRequestView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.current_generatedRequestView = null // must zero again and should free
-		}
-		if (self.currentlyPresented_RequestFundsView !== null) {
-			self.currentlyPresented_RequestFundsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-			self.currentlyPresented_RequestFundsView = null // must zero again and should free
-		}
+		self.teardown_currentlyPresented_RequestFundsView() // we're assuming that on VDA if we have one of these it means we can tear it down
 	}
 }
 module.exports = FundsRequestsListView

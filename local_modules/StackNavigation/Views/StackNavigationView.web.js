@@ -96,9 +96,16 @@ class StackNavigationView extends View
 	}
 	//
 	//
-	// Runtime - Accessors - Public - Events
+	// Teardown
 	//
-
+	TearDown()
+	{
+		const self = this
+		super.TearDown()
+		//
+		self.stackViews = null // TODO: iterate on them and call TearDown?
+		self.topStackView = null
+	}
 	//
 	//
 	// Runtime - Accessors - Public - UI Metrics
@@ -211,6 +218,17 @@ class StackNavigationView extends View
 			self.stackViews.push(stackView)
 			self.topStackView = stackView
 		}
+		{ // nav bar - do this BEFORE the nav operation, or old_topStackView layer will be nil as it may be torn down by consumer on new view's viewDidAppear (before this nav bar stuff would be called, if it were placed after)
+			const ifAnimated_isFromRightNotLeft = true // because we're pushing
+			const trueIfPoppingToRoot = false // cause we're pushing
+			self.navigationBarView.SetTopStackView(
+				self.topStackView, 
+				old_topStackView,
+				isAnimated, 
+				ifAnimated_isFromRightNotLeft,
+				trueIfPoppingToRoot
+			)
+		}
 		{ // and then actually present the view:
 			const stackView_layer = stackView.layer
 			if (isAnimated === true) { // prepare for animation
@@ -261,17 +279,6 @@ class StackNavigationView extends View
 					old_topStackView.removeFromSuperview()
 				}
 			}
-		}
-		{ // nav bar
-			const ifAnimated_isFromRightNotLeft = true // because we're pushing
-			const trueIfPoppingToRoot = false // cause we're pushing
-			self.navigationBarView.SetTopStackView(
-				self.topStackView, 
-				old_topStackView,
-				isAnimated, 
-				ifAnimated_isFromRightNotLeft,
-				trueIfPoppingToRoot
-			)
 		}
 	}
 	PopView(
@@ -349,19 +356,31 @@ class StackNavigationView extends View
 			self.isCurrentlyTransitioningAManagedView = false
 		}
 		const old_topStackView = self.topStackView
+		// pre-insert the new top view, to_stackView, underneath the old_topStackView
+		const subviewUUIDs = self.stackViewStageView.subviews.map(function(v) { return v.View_UUID() })
+		// console.log("subviewUUIDs", subviewUUIDs)
+		const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
+		if (indexOf_old_topStackView_inSubviews === -1) {
+			throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
+			__trampolineFor_transitionEnded() // must unlock fn
+			return
+		}
 		{ // make to_stackView the new top view
 			to_stackView.navigationController = self
 			self.topStackView = to_stackView
 		}
-		{ // pre-insert the new top view, to_stackView, underneath the old_topStackView
-			const subviewUUIDs = self.stackViewStageView.subviews.map(function(v) { return v.View_UUID() })
-			// console.log("subviewUUIDs", subviewUUIDs)
-			const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
-			if (indexOf_old_topStackView_inSubviews === -1) {
-				throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
-				__trampolineFor_transitionEnded() // must unlock fn
-				return
-			}
+		{ // nav bar - do this BEFORE the nav operation, or old_topStackView layer will be nil as it may be torn down by consumer on new view's viewDidAppear (before this nav bar stuff would be called, if it were placed after)
+			const ifAnimated_isFromRightNotLeft = false // from left, because we're popping
+			const trueIfPoppingToRoot = indexOf_to_stackView === 0
+			self.navigationBarView.SetTopStackView(
+				self.topStackView, 
+				old_topStackView,
+				isAnimated, 
+				ifAnimated_isFromRightNotLeft,
+				trueIfPoppingToRoot
+			)
+		}
+		{ // transition
 			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
 			if (isAnimated === true) { // prepare for animation
 				old_topStackView.layer.style.position = "absolute"
@@ -430,17 +449,6 @@ class StackNavigationView extends View
 				// we don't need to call __trampolineFor_transitionEnded here since we would have already triggered it in above isAnimated == false check branch
 				return 
 			}
-		}
-		{
-			const ifAnimated_isFromRightNotLeft = false // from left, because we're popping
-			const trueIfPoppingToRoot = indexOf_to_stackView === 0
-			self.navigationBarView.SetTopStackView(
-				self.topStackView, 
-				old_topStackView,
-				isAnimated, 
-				ifAnimated_isFromRightNotLeft,
-				trueIfPoppingToRoot
-			)
 		}
 	}
 	//

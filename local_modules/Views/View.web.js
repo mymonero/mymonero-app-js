@@ -66,6 +66,7 @@ class View extends EventEmitter
 	__View_setup_views()
 	{
 		const self = this
+		self.isTornDown = false
 		self.subviews = []
 		self.setup_loadView()
 	}
@@ -96,7 +97,13 @@ class View extends EventEmitter
 	TearDown()
 	{ // IMPORTANT: Please note that you must manually call this function! There is no destructor per se in JS
 		const self = this // You can override this function, but be sure to call on super
+		if (self.isTornDown == true) {
+			console.warn("TearDown called on " + self.constructor.name + " after having already been torn down!")
+			return
+		}
 		console.log("♻️  Tearing down ", self.Description())
+		self.isTornDown = true
+		// self.layer = null // so… this is commented because it turns out to race with consumers' usage of it after TearDown is called… really wish we had ARC so TearDown would be callable on a dealloc! #jssux
 	}
 	//
 	//

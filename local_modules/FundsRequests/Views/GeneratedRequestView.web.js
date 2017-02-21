@@ -38,7 +38,7 @@ class GeneratedRequestView extends View
 		super(options, context) // call super before `this`
 		const self = this 
 		{
-			self.fundsRequest = self.options.fundsRequest
+			self.fundsRequest = self.options.record // calling this `record` for now to standardize interface
 			if (typeof self.fundsRequest === 'undefined' || !self.fundsRequest) {
 				throw self.constructor.name + " requires a self.options.fundsRequest"
 				return

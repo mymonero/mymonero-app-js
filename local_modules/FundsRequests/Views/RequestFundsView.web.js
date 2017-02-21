@@ -501,7 +501,7 @@ class RequestFundsView extends View
 				const GeneratedRequestView = require('./GeneratedRequestView.web')
 				const options = 
 				{
-					fundsRequest: fundsRequest
+					record: fundsRequest
 				}
 				const view = new GeneratedRequestView(options, self.context)
 				const modalParentView = self.navigationController.modalParentView

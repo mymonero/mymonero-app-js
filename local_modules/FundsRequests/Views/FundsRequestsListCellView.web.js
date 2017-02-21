@@ -28,153 +28,28 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
+const ListCellView = require('../../Lists/Views/ListCellView.web')
 //
-class FundsRequestsListCellView extends View
+class FundsRequestsListCellView extends ListCellView
 {
 	constructor(options, context)
 	{
 		super(options, context)
+	}
+	overridable_configureUIWithRecord()
+	{
+		super.overridable_configureUIWithRecord()
 		//
 		const self = this
-		{
-			self.cell_tapped_fn = options.cell_tapped_fn || function(cellView) {}
-		}
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-		self.setup_views()
-		self.setup_layers()
-	}
-	setup_views()
-	{
-		const self = this
-	}
-	setup_layers()
-	{
-		const self = this
-		//
-		self.layer.style.border = "1px solid #eee"
-		self.layer.style.cursor = "pointer"
-		//
-		self.setup_layers_fundsRequestInfo()
-	}
-	setup_layers_fundsRequestInfo()
-	{
-		const self = this
-		//
-		const layer = document.createElement("div")
-		//
-		self.layer_fundsRequestInfo = layer
-		self.layer.appendChild(layer)
-		{ // observation
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault() // not that there would be any
-					self.cell_tapped_fn(self)
-					//
-					return false
-				}
-			)
-		}
-	}
-	//
-	//
-	// Internal - Teardown/Recycling
-	//
-	prepareForReuse()
-	{
-		const self = this
-		self.stopObserving_fundsRequest()
-		self.fundsRequest = null
-	}
-	stopObserving_fundsRequest()
-	{
-		const self = this
-		if (typeof self.fundsRequest === 'undefined' || !self.fundsRequest) {
+		if (typeof self.record === 'undefined' || !self.record) {
+			self.convenience_removeAllSublayers()
 			return
 		}
-		function doesListenerFunctionExist(fn)
-		{
-			if (typeof fn !== 'undefined' && fn !== null) {
-				return true
-			}
-			return false
-		}
-	}
-	//
-	//
-	// Interface - Runtime - Imperatives - State/UI Configuration
-	//
-	ConfigureWith_fundsRequest(fundsRequest)
-	{
-		const self = this
-		if (typeof self.fundsRequest !== 'undefined') {
-			self.prepareForReuse()
-		}
-		self.fundsRequest = fundsRequest
-		self._configureUIWithFundsRequest()
-		self.startObserving_fundsRequest()
-	}
-	//
-	//
-	// Internal - Runtime - Imperatives - State/UI Configuration
-	//
-	_configureUIWithFundsRequest()
-	{
-		const self = this
-		self._configureUIWithFundsRequest__fundsRequestInfo()
-	}
-	_configureUIWithFundsRequest__fundsRequestInfo()
-	{
-		const self = this
-		const fundsRequest = self.fundsRequest
+		const fundsRequest = self.record
 		var htmlString = ''
 		htmlString += `<p>${fundsRequest.Lazy_URI()}</p>`
-		// TODO: rewrite this with elements per design - do we need a delete btn? 
-		self.layer_fundsRequestInfo.innerHTML = htmlString
+		// TODO: rewrite this with elements per design
+		self.layer.innerHTML = htmlString
 	}
-	//
-	//
-	// Internal - Runtime - Imperatives - FundsRequest operations
-	deleteFundsRequest()
-	{
-		const self = this
-		self.context.fundsRequestsListController.WhenBooted_DeleteRecordWithId(
-			self.fundsRequest._id,
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to delete fundsRequest with error", err)
-					alert("Failed to delete fundsRequest.")
-					return
-				}
-				console.log("Deleted fundsRequest.")
-			}
-		)
-	}
-	//
-	//
-	//
-	// Internal - Runtime - Imperatives - Observation
-	//
-	startObserving_fundsRequest()
-	{
-		const self = this
-		if (typeof self.fundsRequest === 'undefined' || self.fundsRequest === null) {
-			throw "fundsRequest undefined in start observing"
-			return
-		}
-		// ntd yet
-	}
-	//
-	//
-	// Internal - Runtime - Delegation - Event handlers - FundsRequest
-	//
-	// nothing yet
 }
 module.exports = FundsRequestsListCellView

@@ -172,6 +172,7 @@ class ListView extends View
 		{
 			if (typeof self.cellsContainerView !== 'undefined' && self.cellsContainerView) {
 				self.cellsContainerView.removeFromSuperview()
+				self.cellsContainerView.TearDown()
 				self.cellsContainerView = null
 			}
 			if (self.recordCellViews.length !== 0) {
@@ -180,6 +181,7 @@ class ListView extends View
 					function(view, i)
 					{
 						view.removeFromSuperview()
+						view.TearDown() // after we call remove, not before
 					}
 				)
 				self.recordCellViews = []
@@ -258,7 +260,6 @@ class ListView extends View
 			{
 				record: record
 			}
-			console.log("options" , options)
 			const DetailsViewClass = self.overridable_recordDetailsViewClass()
 			const view = new DetailsViewClass(options, self.context)
 			navigationController.PushView(
