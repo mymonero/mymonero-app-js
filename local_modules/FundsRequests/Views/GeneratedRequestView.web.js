@@ -136,24 +136,20 @@ class GeneratedRequestView extends View
 					div.appendChild(buttonLayer)
 				}
 				{
-					const clearingBreakLayer = document.createElement("br")
-					clearingBreakLayer.clear = "both"
-					div.appendChild(clearingBreakLayer)
+					div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				}
 				const value = uri
 				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
 				{ // special case
-					valueLayer.style.float = "left"
+					valueLayer.style.float = "none"
+					valueLayer.style.display = "block"
 					valueLayer.style.textAlign = "left"
 					//
 					valueLayer.style.margin = "10px 15px 0 15px"
-					valueLayer.style.width = "270px"
-					//
-					// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
+					valueLayer.style.maxWidth = "270px"
 				}
 				div.appendChild(valueLayer)
 			}
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height cause of floats; better way?
 			containerLayer.appendChild(div)
 		}
 		self.layer.appendChild(containerLayer)
@@ -163,10 +159,17 @@ class GeneratedRequestView extends View
 		const self = this
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		const div = commonComponents_tables.New_fieldContainerLayer()
+		div.style.padding = "15px 0 5px 0" // 5px instead of 17px cause value layer in this special case has p tags with their own padding/margin
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()
 			{ // left
-				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Message for Requestee", self.context)
+				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(
+					"Message for Requestee", 
+					self.context
+				)
+				labelLayer.style.margin = "0 0 0 15px"
+				labelLayer.style.padding = "0"
+				labelLayer.style.color = "#DFDEDF" // design specifies slightly different color
 				div.appendChild(labelLayer)
 			}
 			{ // right
@@ -175,25 +178,38 @@ class GeneratedRequestView extends View
 					htmlString,
 					true,
 					self.context.pasteboard,
-					self.context.pasteboard.CopyContentTypes().HTML
+					self.context.pasteboard.CopyContentTypes().HTML,
+					function(
+						runtime_valueToCopy, 
+						runtime_pasteboard_valueContentType_orText
+					)
+					{
+						console.log("TODO: Also copy the plaintext version of this: ", runtime_valueToCopy)
+						// pasteboard.CopyString(
+						// 	message_plaintextString,
+						// )
+					}
 				)
 				buttonLayer.style.float = "right"
+				buttonLayer.style.marginTop = "1px"
+				buttonLayer.style.marginRight = "18px"
 				div.appendChild(buttonLayer)
 			}
 			{
-				const clearingBreakLayer = document.createElement("br")
-				clearingBreakLayer.clear = "both"
-				div.appendChild(clearingBreakLayer)
-			}
-			{
-				div.appendChild(commonComponents_tables.New_separatorLayer())
+				div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			}
 			{
 				const value = htmlString
 				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value, self.context)
+				{ // special case
+					valueLayer.style.display = "block"
+					valueLayer.style.float = "none"
+					valueLayer.style.textAlign = "left"
+					//
+					valueLayer.style.margin = "30px 15px 0 15px"
+				}
 				div.appendChild(valueLayer)
 			}
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 		}
 		containerLayer.appendChild(div)
 		self.layer.appendChild(containerLayer)
@@ -203,6 +219,8 @@ class GeneratedRequestView extends View
 		const self = this
 		const view = commonComponents_tables.New_deleteRecordNamedButtonView("request", self.context)
 		const layer = view.layer
+		layer.style.marginTop = "25px"
+		layer.style.marginBottom = "24px"
 		function __proceedTo_deleteRecord()
 		{
 			const record_id = self.fundsRequest._id

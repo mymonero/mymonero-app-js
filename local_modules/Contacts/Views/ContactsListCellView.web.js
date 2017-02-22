@@ -84,7 +84,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.margin = "0 66px 4px 50px"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
-		layer.style.fontWeight = "light"
+		layer.style.fontWeight = "100"
 		layer.style.height = "20px"
 		layer.style.color = "#9e9c9e"
 		layer.style.whiteSpace = "nowrap"

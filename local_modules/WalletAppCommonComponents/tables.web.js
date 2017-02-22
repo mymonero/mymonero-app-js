@@ -29,11 +29,45 @@
 "use strict"
 //
 const View = require('../Views/View.web')
+const commonComponents_cssRules = require('./cssRules.web')
+//
+const NamespaceName = "Tables"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+document[haveCSSRulesBeenInjected_documentKey] = false
+const cssRules =
+[
+	`.table_field {
+		padding: 0;
+	}`,
+	`.table_field a.clickableLinkButton {
+		
+	}`,
+	`.table_field .field_value {
+		
+	}`,
+	`.table_field .field_value a,
+	.table_field .field_value a:active,
+	.table_field .field_value a:hover
+	{
+		color: #FFFFFF;
+		cursor: default;
+		text-decoration: none;
+	}`,
+	`.table_field .field_value p {
+		display: block;
+		padding: 0 0 18px 0;
+		word-break: break-word;
+	}`
+]
+function __injectCSSRules_ifNecessary()
+{
+	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+}	
 //
 function New_fieldContainerLayer()
 {
 	const layer = document.createElement("div")
-	layer.style.padding = "0 0"
+	layer.className = "table_field"
 	//
 	return layer
 }
@@ -45,6 +79,7 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 	//
 	const view = new View({ tag: "a" }, context)
 	const a = view.layer
+	a.className = "clickableLinkButton"
 	a.innerHTML = buttonTitle
 	a.style.color = "#11bbec"
 	a.style.cursor = "pointer"
@@ -92,6 +127,8 @@ exports.New_clickableLinkButtonView = New_clickableLinkButtonView
 //
 function New_fieldTitle_labelLayer(labelText, context)
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("span")
 	{
 		layer.innerHTML = labelText
@@ -108,13 +145,17 @@ exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
 function New_fieldValue_labelLayer(labelText, context)
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("span")
 	{
 		layer.innerHTML = labelText
+		layer.className = "field_value"
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
 		layer.style.fontSize = "13px"
 		layer.style.color = "#9E9C9E"
+		layer.style.fontWeight = "100"
 		layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	}
 	return layer
@@ -123,6 +164,8 @@ exports.New_fieldValue_labelLayer = New_fieldValue_labelLayer
 //
 function New_separatorLayer()
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("div")
 	{
 		layer.style.width = "calc(100% - 15px)"
@@ -135,8 +178,11 @@ function New_separatorLayer()
 }
 exports.New_separatorLayer = New_separatorLayer
 //
-function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText)
+function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText, optl_didCopy_fn)
 {
+	__injectCSSRules_ifNecessary()
+	var didCopy_fn = optl_didCopy_fn || function(runtime_valueToCopy, runtime_pasteboard_valueContentType_orText) {}
+	//
 	const layer = document.createElement("a")
 	{ // setup
 		layer.innerHTML = "COPY"
@@ -162,6 +208,7 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 		})
 	}
 	var runtime_valueToCopy = value
+	console.log("runtime_valueToCopy", runtime_valueToCopy)
 	var runtime_pasteboard_valueContentType_orText = pasteboard_valueContentType_orText
 	{ // component fns
 		layer.Component_SetEnabled = function(enabled)
@@ -203,6 +250,10 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 							runtime_valueToCopy, 
 							runtime_pasteboard_valueContentType_orText
 						)
+						didCopy_fn(
+							runtime_valueToCopy, 
+							runtime_pasteboard_valueContentType_orText
+						)
 					}
 				}
 				return false
@@ -215,6 +266,8 @@ exports.New_copyButton_aLayer = New_copyButton_aLayer
 //
 function New_redTextButtonView(text, context)
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const view = new View({ tag: "a" }, context)
 	const layer = view.layer
 	layer.innerHTML = text
@@ -222,9 +275,9 @@ function New_redTextButtonView(text, context)
 	layer.style.display = "block" // own line
 	//
 	layer.style.fontSize = "11px"
-	layer.style.marginLeft = "23px"
-	layer.style.fontWeight = "light"
-	layer.style.color = "#f97777"
+	layer.style.marginLeft = "22px"
+	layer.style.fontWeight = "100"
+	layer.style.color = "#F97777"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	//
 	layer.style.textDecoration = "none"
@@ -278,6 +331,8 @@ function New_createNewRecordNamedButton_aLayer(
 	lowercased_humanReadable_recordName
 )
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("a")
 	{
 		layer.innerHTML = "+ CREATE NEW " + lowercased_humanReadable_recordName
@@ -319,6 +374,8 @@ exports.New_clearingBreakLayer = New_clearingBreakLayer
 //
 function New_spacerLayer()
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("div")
 	layer.style.width = "100%"
 	layer.style.height = "40px" // just tentative - feel free to customize
@@ -329,6 +386,8 @@ exports.New_spacerLayer = New_spacerLayer
 //
 function New_inlineMessageDialogLayer(messageString, immediatelyVisible)
 { // NOTE: These are configured to not be visible at first
+	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("div")
 	layer.innerHTML = messageString
 	layer.style.border = "1px solid #ccc"
@@ -366,6 +425,8 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	valueToDisplayIfValueNil_orDefault
 )
 { 
+	__injectCSSRules_ifNecessary()
+	//
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
 	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
 	const div = New_fieldContainerLayer()
@@ -420,6 +481,8 @@ exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_co
 //
 function New_tableCell_accessoryChevronLayer()
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const image_filename = "list_rightside_chevron.png"
 	const layer = document.createElement("img")
 	layer.src = "../../WalletAppCommonComponents/Resources/" + image_filename

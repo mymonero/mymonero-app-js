@@ -167,12 +167,12 @@ function New_RightSide_ValueDisplayLabelButtonView(context)
 		layer.style.height = "auto"
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "11px"
-		layer.style.fontWeight = "light"
+		layer.style.fontWeight = "100"
 		layer.style.fontFamily = "monospace"
 		layer.style.color = "#ccc"
 		layer.style.lineHeight = "200%" // % extra to get + aligned properly
 		layer.style.color = "#ccc"
-		layer.style.fontWeight = "light"
+		layer.style.fontWeight = "100"
 		layer.style.textAlign = "center"
 		layer.style.cursor = "default"
 	}
