@@ -110,6 +110,7 @@ class ContactDetailsView extends View
 		const value = self.contact.address
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
 			fieldLabelTitle, 
 			value,
 			self.context.pasteboard, 
@@ -125,6 +126,7 @@ class ContactDetailsView extends View
 		const value = self.contact.cached_OAResolved_XMR_address
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
 			fieldLabelTitle, 
 			value,
 			self.context.pasteboard, 
@@ -143,6 +145,7 @@ class ContactDetailsView extends View
 		const value = self.contact.payment_id
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
 			fieldLabelTitle, 
 			value,
 			self.context.pasteboard, 

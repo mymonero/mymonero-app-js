@@ -268,7 +268,7 @@ class TransactionDetailsView extends View
 			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(self.transaction.timestamp.toString()) // TODO: format
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(self.transaction.timestamp.toString(), self.context) // TODO: format
 			div.appendChild(valueLayer)
 		}
 		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
@@ -283,7 +283,7 @@ class TransactionDetailsView extends View
 			div.appendChild(labelLayer)
 			//
 			const value = self.transaction.approx_float_amount
-			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
 			{
 				if (value < 0) {
 					valueLayer.style.color = "red"
@@ -307,7 +307,7 @@ class TransactionDetailsView extends View
 			div.appendChild(labelLayer)
 			//
 			const value = self.transaction.mixin
-			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
 			div.appendChild(valueLayer)
 		}
 		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
@@ -320,6 +320,7 @@ class TransactionDetailsView extends View
 		const value = self.transaction.hash
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
 			fieldLabelTitle, 
 			value,
 			self.context.pasteboard, 
@@ -334,6 +335,7 @@ class TransactionDetailsView extends View
 		const value = self.transaction.payment_id
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
 			fieldLabelTitle, 
 			value,
 			self.context.pasteboard, 

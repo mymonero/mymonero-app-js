@@ -33,7 +33,7 @@ const View = require('../Views/View.web')
 function New_fieldContainerLayer()
 {
 	const layer = document.createElement("div")
-	layer.style.padding = "18px 0"
+	layer.style.padding = "0 0"
 	//
 	return layer
 }
@@ -90,32 +90,32 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 }
 exports.New_clickableLinkButtonView = New_clickableLinkButtonView
 //
-function New_fieldTitle_labelLayer(labelText)
+function New_fieldTitle_labelLayer(labelText, context)
 {
 	const layer = document.createElement("span")
 	{
 		layer.innerHTML = labelText
 		layer.style.float = "left"
 		layer.style.textAlign = "left"
-		layer.style.fontSize = "14px"
-		layer.style.fontWeight = "bold"
-		layer.style.color = "#ccc"
-		layer.style.fontFamily = "\"Helvetica Neue\", Helvetica, sans-serif"
+		layer.style.fontSize = "13px"
+		layer.style.fontWeight = "500" // semibold desired
+		layer.style.color = "#FFFFFF"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 	}				
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
-function New_fieldValue_labelLayer(labelText)
+function New_fieldValue_labelLayer(labelText, context)
 {
 	const layer = document.createElement("span")
 	{
 		layer.innerHTML = labelText
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
-		layer.style.fontSize = "14px"
-		layer.style.color = "#aaa"
-		layer.style.fontFamily = "monospace"
+		layer.style.fontSize = "13px"
+		layer.style.color = "#9E9C9E"
+		layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	}
 	return layer
 }
@@ -135,7 +135,7 @@ function New_separatorLayer()
 }
 exports.New_separatorLayer = New_separatorLayer
 //
-function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText)
+function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText)
 {
 	const layer = document.createElement("a")
 	{ // setup
@@ -143,7 +143,23 @@ function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_val
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
 		layer.style.fontSize = "15px"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.fontWeight = "bold"
+		layer.style.fontSize = "11px"
+		layer.style.textDecoration = "none"
+		layer.style.color = "#00C6FF" // TODO: put in theme C?
+		layer.addEventListener("mouseenter", function()
+		{
+			if (layer.Component_IsEnabled !== false) {
+				layer.style.textDecoration = "underline"
+			} else {
+				layer.style.textDecoration = "none"
+			}
+		})
+		layer.addEventListener("mouseleave", function()
+		{
+			layer.style.textDecoration = "none"
+		})
 	}
 	var runtime_valueToCopy = value
 	var runtime_pasteboard_valueContentType_orText = pasteboard_valueContentType_orText
@@ -153,10 +169,12 @@ function New_copyButton_aLayer(value, enabled_orTrue, pasteboard, pasteboard_val
 			layer.Component_IsEnabled = enabled
 			if (enabled !== false) {
 				layer.href = "#" // to make it look clickable
-				layer.style.color = "#6666ff"
+				layer.style.opacity = "1"
+				layer.style.cursor = "pointer"
 			} else {
 				layer.href = ""
-				layer.style.color = "#444"
+				layer.style.opacity = "0.5"
+				layer.style.cursor = "default"
 			}
 		}
 		layer.Component_SetValue = function(to_value, to_pasteboard_valueContentType_orText)
@@ -341,6 +359,7 @@ function New_inlineMessageDialogLayer(messageString, immediatelyVisible)
 exports.New_inlineMessageDialogLayer = New_inlineMessageDialogLayer
 //
 function New_copyable_longStringValueField_component_fieldContainerLayer(
+	context,
 	fieldLabelTitle, 
 	value,
 	pasteboard, 
@@ -355,11 +374,12 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	var valueLayer;
 	{
 		{ // left
-			labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle)
+			labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
 			div.appendChild(labelLayer)
 		}
 		{ // right
 			const buttonLayer = New_copyButton_aLayer(
+				context,
 				value,
 				isValueNil === false ? true : false,
 				pasteboard
@@ -373,7 +393,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			clearingBreakLayer.clear = "both"
 			div.appendChild(clearingBreakLayer)
 		}
-		valueLayer = New_fieldValue_labelLayer("" + valueToDisplay)
+		valueLayer = New_fieldValue_labelLayer("" + valueToDisplay, context)
 		{ // special case
 			valueLayer.style.float = "left"
 			valueLayer.style.textAlign = "left"

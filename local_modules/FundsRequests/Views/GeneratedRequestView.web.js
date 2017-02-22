@@ -61,6 +61,7 @@ class GeneratedRequestView extends View
 		self._setup_URIContainerLayer()
 		self._setup_requesteeMessageLayer()
 		self._setup_deleteRecordButtonLayer()
+		// self.DEBUG_BorderAllLayers()
 	}
 	_setup_self_layer()
 	{
@@ -79,15 +80,23 @@ class GeneratedRequestView extends View
 		//
 		self.layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
+	__new_flatTable_sectionContainerLayer(isFirst)
+	{
+		const self = this
+		const layer = document.createElement("div")
+		{
+			layer.style.border = "0.5px solid #494749"
+			layer.style.borderRadius = "5px"
+			layer.style.margin = `${isFirst ? 20 : 24}px 10px 0px 10px`
+			layer.style.padding = "0"
+		}
+		return layer
+	}
 	_setup_qrCodeContainerLayer()
 	{
 		const self = this
-		const containerLayer = document.createElement("div")
-		{
-			containerLayer.style.position = "relative" // for pos:abs children
-			containerLayer.style.border = "1px solid #888"
-			containerLayer.style.borderRadius = "5px"
-		}
+		const containerLayer = self.__new_flatTable_sectionContainerLayer(true)
+		containerLayer.style.position = "relative" // for pos:abs children
 		{
 			const view = new FundsRequestCellContentsView({
 				margin_right: 16
@@ -102,26 +111,28 @@ class GeneratedRequestView extends View
 	_setup_URIContainerLayer()
 	{
 		const self = this
-		const containerLayer = document.createElement("div")
-		{
-			containerLayer.style.border = "1px solid #888"
-			containerLayer.style.borderRadius = "5px"
-		}
+		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		{
 			const div = commonComponents_tables.New_fieldContainerLayer()
+			div.style.padding = "15px 0 17px 0"
 			{
 				const uri = self.fundsRequest.Lazy_URI()
 				{ // left
 					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link", self.context)
+					labelLayer.style.margin = "0 0 0 15px"
+					labelLayer.style.padding = "0"
 					div.appendChild(labelLayer)
 				}
 				{ // right
 					const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+						self.context,
 						uri,
 						true,
 						self.context.pasteboard
 					)
 					buttonLayer.style.float = "right"
+					buttonLayer.style.marginTop = "1px"
+					buttonLayer.style.marginRight = "18px"
 					div.appendChild(buttonLayer)
 				}
 				{
@@ -130,18 +141,19 @@ class GeneratedRequestView extends View
 					div.appendChild(clearingBreakLayer)
 				}
 				const value = uri
-				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value)
+				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
 				{ // special case
 					valueLayer.style.float = "left"
 					valueLayer.style.textAlign = "left"
 					//
+					valueLayer.style.margin = "10px 15px 0 15px"
 					valueLayer.style.width = "270px"
 					//
 					// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
 				}
 				div.appendChild(valueLayer)
 			}
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height cause of floats; better way?
 			containerLayer.appendChild(div)
 		}
 		self.layer.appendChild(containerLayer)
@@ -149,11 +161,7 @@ class GeneratedRequestView extends View
 	_setup_requesteeMessageLayer()
 	{
 		const self = this
-		const containerLayer = document.createElement("div")
-		{
-			containerLayer.style.border = "1px solid #888"
-			containerLayer.style.borderRadius = "5px"
-		}
+		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		const div = commonComponents_tables.New_fieldContainerLayer()
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()
@@ -163,6 +171,7 @@ class GeneratedRequestView extends View
 			}
 			{ // right
 				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+					self.context,
 					htmlString,
 					true,
 					self.context.pasteboard,
@@ -181,7 +190,7 @@ class GeneratedRequestView extends View
 			}
 			{
 				const value = htmlString
-				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value)
+				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value, self.context)
 				div.appendChild(valueLayer)
 			}
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?

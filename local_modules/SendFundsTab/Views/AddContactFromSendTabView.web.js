@@ -122,7 +122,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 		}
 		{ // field title label
 			const titleMessageString = "SAVE THIS ADDRESS AS A CONTACT?"
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer(titleMessageString)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer(titleMessageString, self.context)
 			labelLayer.style.color = "#9A989A"
 			const toBe_siblingLayer = self.form_containerLayer
 			toBe_siblingLayer.parentNode.insertBefore(labelLayer, toBe_siblingLayer)
