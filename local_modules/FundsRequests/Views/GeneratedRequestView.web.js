@@ -30,6 +30,8 @@
 //
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
 //
 class GeneratedRequestView extends View
 {
@@ -82,87 +84,18 @@ class GeneratedRequestView extends View
 		const self = this
 		const containerLayer = document.createElement("div")
 		{
+			containerLayer.style.position = "relative" // for pos:abs children
 			containerLayer.style.border = "1px solid #888"
 			containerLayer.style.borderRadius = "5px"
 		}
-		{ // QR code field
-			const div = commonComponents_tables.New_fieldContainerLayer()
-			{ // qrcode div
-				const layer = document.createElement("div")
-				{
-					layer.style.width = "75px"
-					layer.style.height = "75px"
-					layer.style.display = "inline-block"
-					layer.style.float = "left"
-				}
-				self.qrCode_div = layer
-				{
-					const QRCode = require('../Vendor/qrcode.min')
-		            const qrCode = new QRCode(
-						layer,
-						{
-		                	correctLevel: QRCode.CorrectLevel.L
-						}
-					)
-					qrCode.makeCode(self.fundsRequest.Lazy_URI())
-				}
-				div.appendChild(layer)
-			}
-			const qrCode_imgLayer = self.qrCode_div.querySelector("img")
-			{ // cache the qrCode_imgLayer reference --^; style --v
-				const layer = qrCode_imgLayer
-				layer.style.width = "75px"
-				layer.style.height = "75px"
-			}
-			{ // Download button
-				const layer = document.createElement("a")
-				{
-					layer.innerHTML = "DOWNLOAD"
-					layer.style.float = "right"
-					layer.style.textAlign = "right"
-					layer.style.fontSize = "15px"
-					layer.style.fontWeight = "bold"
-					//
-					layer.style.color = "#6666ff" 
-					layer.href = "#" // to make it look clickable
-				}
-				layer.addEventListener(
-					"click",
-					function(e)
-					{
-						e.preventDefault()
-						{ // this should capture value
-
-							const qrCode_imgData_base64String = qrCode_imgLayer.src // defer grabbing this til here because we want to wait for the QR code to be properly generated
-							self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
-							// ^ so we don't get torn down while dialog open
-							function __trampolineFor_didFinish()
-							{ // ^ essential we call this from now on if we are going to finish with this codepath / exec control
-								self.context.userIdleInWindowController.ReEnable_userIdle()					
-							}							
-							self.context.filesystemUI.PresentDialogToSaveBase64ImageStringAsImageFile(
-								qrCode_imgData_base64String,
-								"Save Monero Request",
-								"Monero request",
-								function(err)
-								{
-									if (err) {
-										throw err
-										__trampolineFor_didFinish()
-										return
-									}
-									// console.log("Downloaded QR code")
-									__trampolineFor_didFinish() // re-enable idle timer
-								}
-							)
-						}
-						return false
-					}
-				)
-				div.appendChild(layer)
-			}
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-			containerLayer.appendChild(div)
+		{
+			const view = new FundsRequestCellContentsView({
+				margin_right: 16
+			}, self.context)
+			self.cellContentsView = view
+			view.ConfigureWithRecord(self.fundsRequest)
+			// though this `add…` could be deferred til after…
+			containerLayer.appendChild(view.layer)
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -344,6 +277,27 @@ class GeneratedRequestView extends View
 	{
 		return "Monero Request"
 	}
+	Navigation_New_RightBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
+		const layer = view.layer
+		self.rightBarButtonView = view
+		layer.innerHTML = "Download"
+		layer.style.width = "80px"
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled !== false) {
+					self._userSelectedDownloadButton()
+				}
+				return false
+			}
+		)
+		return view
+	}
 	//
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
@@ -373,6 +327,34 @@ class GeneratedRequestView extends View
 	{
 		const self = this
 		self.navigationController.PopView(true)
+	}
+	_userSelectedDownloadButton()
+	{
+		const self = this
+		const qrCode_imgData_base64String = self.cellContentsView.QRCode_imgData_base64String() // defer grabbing this til here because we want to wait for the QR code to be properly generated (for now)
+		self.rightBarButtonView.SetEnabled(false)
+		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+		// ^ so we don't get torn down while dialog open
+		function __trampolineFor_didFinish()
+		{ // ^ essential we call this from now on if we are going to finish with this codepath / exec control
+			self.rightBarButtonView.SetEnabled(true)
+			self.context.userIdleInWindowController.ReEnable_userIdle()
+		}
+		self.context.filesystemUI.PresentDialogToSaveBase64ImageStringAsImageFile(
+			qrCode_imgData_base64String,
+			"Save Monero Request",
+			"Monero request",
+			function(err)
+			{
+				if (err) {
+					throw err
+					__trampolineFor_didFinish()
+					return
+				}
+				// console.log("Downloaded QR code")
+				__trampolineFor_didFinish() // re-enable idle timer
+			}
+		)
 	}
 }
 module.exports = GeneratedRequestView

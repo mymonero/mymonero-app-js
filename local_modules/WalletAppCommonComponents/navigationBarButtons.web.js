@@ -134,7 +134,7 @@ function New_RightSide_SaveButtonView(context)
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.lineHeight = "24px"
 		layer.style.color = "#161416"
-		layer.style.fontWeight = "500"
+		layer.style.fontWeight = "600"
 		layer.style.textAlign = "center"
 	}
 	return view

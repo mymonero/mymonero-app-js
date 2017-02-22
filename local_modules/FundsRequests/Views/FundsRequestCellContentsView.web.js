@@ -39,8 +39,10 @@ class FundsRequestCellContentsView extends View
 	constructor(options, context)
 	{
 		super(options, context)
-		//
 		const self = this
+		{
+			self.margin_right = typeof self.options.margin_right == 'undefined' ? 38 : self.options.margin_right
+		}
 		self.setup()
 	}
 	setup()
@@ -94,7 +96,7 @@ class FundsRequestCellContentsView extends View
 			div.style.marginLeft = "78px"
 			div.style.marginBottom = "0px"
 			div.style.marginTop = "3px"
-			div.style.width = "calc(100% - 38px - 78px)"
+			div.style.width = `calc(100% - ${self.margin_right}px - 78px)`
 			self.amountAndSenderContainerLayer = div
 			self.__setup_amountLayer()
 			self.__setup_senderLayer()
@@ -144,7 +146,7 @@ class FundsRequestCellContentsView extends View
 		const layer = document.createElement("div")
 		layer.style.position = "relative"
 		layer.style.display = "block" // next line
-		layer.style.margin = "0 38px 8px 78px"
+		layer.style.margin = `0 ${self.margin_right}px 8px 78px`
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
 		layer.style.fontWeight = "light"
@@ -158,7 +160,7 @@ class FundsRequestCellContentsView extends View
 	}
 	//
 	//
-	// Lifecycle - Teardown
+	// Lifecycle - Teardown/Recycling
 	//
 	TearDown()
 	{
@@ -168,10 +170,6 @@ class FundsRequestCellContentsView extends View
 		self.stopObserving_record()
 		self.record = null
 	}
-	//
-	//
-	// Internal - Teardown/Recycling
-	//
 	PrepareForReuse()
 	{
 		const self = this
@@ -179,6 +177,19 @@ class FundsRequestCellContentsView extends View
 		self.stopObserving_record()
 		self.record = null
 	}
+	//
+	//
+	// Runtime - Accessors - QR Code
+	//
+	QRCode_imgData_base64String()
+	{
+		const self = this
+		if (!self.qrCode_imgLayer || typeof self.qrCode_imgLayer === 'undefined') {
+			throw "QRCode_imgData_base64String but nil qrCode_imgLayer"
+		}
+		return self.qrCode_imgLayer.src
+	}
+	//
 	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
@@ -231,21 +242,20 @@ class FundsRequestCellContentsView extends View
 			)
 			qrCode.makeCode(uri)
 			{ // now must set height of qr code img layer (unless we use css rules)
-				const qrCode_imgLayer = self.qrCode_div.querySelector("img")
-				qrCode_imgLayer.style.width = `${self.qrCode_side}px`
-				qrCode_imgLayer.style.height = `${self.qrCode_side}px`
+				const layer = self.qrCode_div.querySelector("img")
+				self.qrCode_imgLayer = layer
+				layer.style.width = `${self.qrCode_side}px`
+				layer.style.height = `${self.qrCode_side}px`
 			}
 		}
 		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
 		self.amountLayer.innerHTML = parseFloat("" + fundsRequest.amount) + " XMR"
-		console.log("fundsRequest" , fundsRequest)
 		var memoString = fundsRequest.message
 		if (!memoString || memoString.length == "") {
 			memoString = fundsRequest.description || ""
 		} else {
 			memoString += (fundsRequest.description ? " " + fundsRequest.description : "")
 		}
-		console.log("memoString: '" + memoString + "'")
 		self.memoLayer.innerHTML = memoString
 		self.senderLayer.innerHTML = fundsRequest.from_fullname || ""
 		// self.DEBUG_BorderAllLayers()

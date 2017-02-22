@@ -55,7 +55,7 @@ class BarButtonBaseView extends View
 		const self = this
 		self.isEnabled = isEnabled
 		const layer = self.layer
-		if (self.isEnabled !== false) {
+		if (self.isEnabled) {
 			layer.style.opacity = "1.0"
 			layer.style.href = "#"
 		} else {
