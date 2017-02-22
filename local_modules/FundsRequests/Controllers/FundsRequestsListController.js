@@ -90,6 +90,8 @@ class FundsRequestsListController extends ListBaseController
 	// Booted - Imperatives - Public - List management
 	//
 	WhenBooted_AddFundsRequest(
+		optl__from_fullname,
+		optl__to_walletHexColorString,
 		to_address,
 		payment_id,
 		amount,
@@ -109,6 +111,8 @@ class FundsRequestsListController extends ListBaseController
 						{
 							persistencePassword: obtainedPasswordString,
 							//
+							from_fullname: optl__from_fullname || "",
+							to_walletHexColorString: optl__to_walletHexColorString || "",
 							to_address: to_address,
 							payment_id: payment_id,
 							amount: amount,

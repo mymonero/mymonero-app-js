@@ -451,8 +451,6 @@ class RequestFundsView extends View
 				return
 			}
 		}
-		const memo = self.memoInputLayer.value // aka a request `description`
-		const message = undefined // no support yet 
 		var payment_id = null
 		if (hasPickedAContact === true) { // we have already re-resolved the payment_id
 			if (self.pickedContact.HasIntegratedAddress() === true) {
@@ -466,14 +464,18 @@ class RequestFundsView extends View
 			}
 		}
 		self.__generateRequestWith(
+			hasPickedAContact ? self.pickedContact.fullname : null,// from_fullname
+			wallet.swatch,
 			wallet.public_address,
 			payment_id,
 			"" + amount_Number,
-			memo, // description, AKA memo or label; no support yet?
-			message
+			self.memoInputLayer.value, // request description, AKA memo or label
+			undefined // "message"; no support yet 
 		)
 	}
 	__generateRequestWith(
+		optl__from_fullname,
+		optl__to_walletHexColorString,
 		receiveTo_address,
 		payment_id,
 		amount_String,
@@ -483,10 +485,12 @@ class RequestFundsView extends View
 	{
 		const self = this
 		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
+			optl__from_fullname,
+			optl__to_walletHexColorString,
 			receiveTo_address,
 			payment_id,
 			amount_String,
-			memo, // description, AKA memo or label; no support yet?
+			memo, // description, AKA memo or label
 			message,
 			function(err, fundsRequest)
 			{

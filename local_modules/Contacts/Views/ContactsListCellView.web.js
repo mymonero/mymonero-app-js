@@ -29,6 +29,7 @@
 "use strict"
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 //
 class ContactsListCellView extends ListCellView
 {
@@ -45,7 +46,7 @@ class ContactsListCellView extends ListCellView
 		self.__setup_emojiLayer()
 		self.__setup_nameLayer()
 		self.__setup_addressLayer()
-		self.__setup_accessoryArrow()
+		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer())
 		self.__setup_cellSeparatorLayer()
 	}
 	__setup_emojiLayer()
@@ -83,7 +84,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.margin = "0 66px 4px 50px"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
-		layer.style.fontWeight = "normal"
+		layer.style.fontWeight = "light"
 		layer.style.height = "20px"
 		layer.style.color = "#9e9c9e"
 		layer.style.whiteSpace = "nowrap"
@@ -91,33 +92,11 @@ class ContactsListCellView extends ListCellView
 		layer.style.textOverflow = "ellipsis"
 		self.addressLayer = layer
 		self.layer.appendChild(layer)
-	}	
-	__setup_accessoryArrow()
-	{
-		const self = this
-		const image_filename = "list_rightside_chevron.png"
-		const layer = document.createElement("img")
-		layer.src = "../../Contacts/Resources/" + image_filename
-		layer.style.position = "absolute"
-		layer.style.width = "7px"
-		const h = 12
-		layer.style.height = `${h}px`
-		layer.style.right = "16px"
-		layer.style.top = `calc(50% - ${h / 2}px)`
-		self.layer.appendChild(layer)
 	}
 	__setup_cellSeparatorLayer()
 	{
 		const self = this
-		const layer = document.createElement("div")
-		layer.style.background = "#413e40"
-		layer.style.position = "absolute"
-		layer.style.bottom = "0"
-		layer.style.height = "1px"
-		const margin_left = 50
-		layer.style.width = `calc(100% - ${margin_left}px)`
-		layer.style.left = `${margin_left}px`
-		layer.style.visibility = "visible" // to be configured
+		const layer = commonComponents_tables.New_tableCell_separatorLayer()
 		self.cellSeparatorLayer = layer
 		self.layer.appendChild(layer)
 	}

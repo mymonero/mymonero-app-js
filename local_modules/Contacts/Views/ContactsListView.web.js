@@ -149,10 +149,15 @@ class ContactsListView extends ListView
 		{ // style cellsContainerView
 			const view = self.cellsContainerView
 			const layer = view.layer
-			layer.style.margin = "16px 15px 15px 15px"
-			layer.style.background = "#383638"
-			layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-			layer.style.borderRadius = "5px"
+			if (isEmptyVisible == true) {
+				layer.style.display = "none"
+			} else {
+				layer.style.margin = "16px 15px 15px 15px"
+				layer.style.background = "#383638"
+				layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+				layer.style.borderRadius = "5px"
+				layer.style.display = "block"
+			}
 		}
 	}
 }

@@ -396,3 +396,33 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	return div
 }
 exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_copyable_longStringValueField_component_fieldContainerLayer
+//
+function New_tableCell_accessoryChevronLayer()
+{
+	const image_filename = "list_rightside_chevron.png"
+	const layer = document.createElement("img")
+	layer.src = "../../WalletAppCommonComponents/Resources/" + image_filename
+	layer.style.position = "absolute"
+	layer.style.width = "7px"
+	const h = 12
+	layer.style.height = `${h}px`
+	layer.style.right = "16px"
+	layer.style.top = `calc(50% - ${h / 2}px)`
+	return layer
+}
+exports.New_tableCell_accessoryChevronLayer = New_tableCell_accessoryChevronLayer
+//
+function New_tableCell_separatorLayer()
+{
+	const layer = document.createElement("div")
+	layer.style.background = "#413e40"
+	layer.style.position = "absolute"
+	layer.style.bottom = "0"
+	layer.style.height = "1px"
+	const margin_left = 50
+	layer.style.width = `calc(100% - ${margin_left}px)`
+	layer.style.left = `${margin_left}px`
+	layer.style.visibility = "visible" // to be configured
+	return layer
+}
+exports.New_tableCell_separatorLayer = New_tableCell_separatorLayer

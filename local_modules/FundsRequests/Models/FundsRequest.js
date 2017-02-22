@@ -105,6 +105,8 @@ class FundsRequest extends EventEmitter
 	{
 		const self = this
 		{
+			self.from_fullname = self.options.from_fullname
+			self.to_walletHexColorString = self.options.to_walletHexColorString
 			self.to_address = self.options.to_address
 			self.amount = self.options.amount
 			self.payment_id = self.options.payment_id

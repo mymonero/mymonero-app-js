@@ -76,24 +76,90 @@ const cssRules =
 	  border-radius: 3px 3px 0 0;
 	  background: rgba(255, 255, 255, 0.2);
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-	}`
+	}`,
+	// size classes…
+	// large
+	`.walletIcon.large-48 {
+	  width: 48px;
+	  height: 48px;
+	  border-radius: 6px;
+	}`,
+	`.walletIcon.large-48:before {
+	  width: 48px;
+	  height: 10px;
+	  border-radius: 6px 6px 0 0;
+	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
+	}`,
+	`.walletIcon.large-48:after {
+	  width: 38px;
+	  height: 33px;
+	  border-radius: 0 0 3px 3px;
+	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.4), 0 0 4px 0 rgba(255, 255, 255, 0.4);
+	}`,
+	`.walletIcon.large-48 span {
+	  width: 38px;
+	  height: 6px;
+	  border-radius: 3px 3px 0 0;
+	  margin-top: -6px;
+	}`,
+	`.walletIcon.large-48 span:before {
+	  border-radius: 3px 3px 0 0;
+	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+	}`,
+	//
+	`.walletIcon.large-43 {
+	  width: 43px;
+	  height: 43px;
+	  border-radius: 5px;
+	}`,
+	`.walletIcon.large-43:before {
+	  width: 43px;
+	  height: 8px;
+	  border-radius: 5px 5px 0 0;
+	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
+	}`,
+	`.walletIcon.large-43:after {
+	  width: 35px;
+	  height: 31px;
+	  border-radius: 0 0 3px 3px;
+	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.4), 0 0 3px 0 rgba(255, 255, 255, 0.4);
+	}`,
+	`.walletIcon.large-43 span {
+	  width: 35px;
+	  height: 4px;
+	  border-radius: 3px 3px 0 0;
+	  margin-top: -4px;
+	}`,
+	`.walletIcon.large-43 span:before {
+	  border-radius: 3px 3px 0 0;
+	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.2);
+	}`,
+	//
 ]
 function __injectCSSRules_ifNecessary()
 {
 	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
-function New_WalletIconLayer(hexColorString) // TODO: pass in w/h and calc ratios
+function New_WalletIconLayer(hexColorString, optl_sizeClass)
 {
+	var sizeClass = optl_sizeClass || "large-48"
+	//
 	__injectCSSRules_ifNecessary()
 	//
 	const div = document.createElement("div")
 	div.style.background = hexColorString
-	div.className = "walletIcon"
+	div.className = "walletIcon " + sizeClass
 	//
 	const span = document.createElement("span")
 	span.style.background = hexColorString
 	div.appendChild(span)
+	//
+	div.ConfigureWithHexColorString = function(to_hexColorString)
+	{
+		div.style.background = to_hexColorString
+		span.style.background = to_hexColorString
+	}
 	//
 	return div
 }

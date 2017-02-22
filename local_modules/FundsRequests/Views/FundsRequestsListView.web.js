@@ -203,7 +203,23 @@ class FundsRequestsListView extends ListView
 		const self = this
 		// v--- we don't need this here as at present according to design the buttons don't change… just stays the 'Add' btn
 		// self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
-		self.emptyStateContainerView.SetVisible(records.length === 0 ? true : false)
+		const isEmptyVisible = records.length === 0
+		{
+			self.emptyStateContainerView.SetVisible(isEmptyVisible)
+		}
+		{ // style cellsContainerView
+			const view = self.cellsContainerView
+			const layer = view.layer
+			if (isEmptyVisible == true) {
+				layer.style.display = "none"
+			} else {
+				layer.style.margin = "16px 15px 15px 15px"
+				layer.style.background = "#383638"
+				layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+				layer.style.borderRadius = "5px"
+				layer.style.display = "block"
+			}
+		}
 	}
 	//
 	//

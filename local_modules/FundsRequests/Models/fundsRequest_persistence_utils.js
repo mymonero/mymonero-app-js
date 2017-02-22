@@ -37,6 +37,8 @@ exports.CollectionName = CollectionName
 const documentCryptScheme =
 {
 	dateCreated: { type: CryptSchemeFieldValueTypes.String }, // think this doesn't strictly have to be encrypted
+	from_fullname: { type: CryptSchemeFieldValueTypes.String },
+	to_walletHexColorString: { type: CryptSchemeFieldValueTypes.String },
 	to_address: { type: CryptSchemeFieldValueTypes.String },
 	payment_id: { type: CryptSchemeFieldValueTypes.String },
 	amount: { type: CryptSchemeFieldValueTypes.String },
@@ -63,6 +65,8 @@ function HydrateInstance(
 		const dateStr = plaintextDocument.dateCreated
 		self.dateCreated = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
 	}
+	self.from_fullname = plaintextDocument.from_fullname
+	self.to_walletHexColorString = plaintextDocument.to_walletHexColorString
 	self.to_address = plaintextDocument.to_address
 	self.payment_id = plaintextDocument.payment_id
 	self.amount = plaintextDocument.amount
@@ -98,6 +102,8 @@ function SaveToDisk(
 	{
 		dateCreated: self.dateCreated,
 		//
+		from_fullname: self.from_fullname || "",
+		to_walletHexColorString: self.to_walletHexColorString || "",
 		to_address: self.to_address,
 		payment_id: self.payment_id,
 		amount: "" + self.amount, // we're storing this as a string
