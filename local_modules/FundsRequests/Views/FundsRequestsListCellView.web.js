@@ -210,7 +210,6 @@ class FundsRequestsListCellView extends ListCellView
 				qrCode_imgLayer.style.height = `${self.qrCode_side}px`
 			}
 		}
-		//
 		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
 		self.amountLayer.innerHTML = parseFloat("" + fundsRequest.amount) + " XMR"
 		var memoString = fundsRequest.message

@@ -215,7 +215,7 @@ class FundsRequestsListView extends ListView
 			} else {
 				layer.style.margin = "16px 15px 15px 15px"
 				layer.style.background = "#383638"
-				layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 				layer.style.borderRadius = "5px"
 				layer.style.display = "block"
 			}

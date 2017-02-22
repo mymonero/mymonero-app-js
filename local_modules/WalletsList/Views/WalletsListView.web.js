@@ -246,7 +246,19 @@ class WalletsListView extends ListView
 		const self = this
 		// so we update to return no right bar btn when there are no wallets as we show empty state action bar
 		self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
-		self.emptyStateContainerView.SetVisible(records.length === 0 ? true : false)
+		const isEmptyVisible = records.length === 0
+		{
+			self.emptyStateContainerView.SetVisible(isEmptyVisible)
+		}
+		{ // style cellsContainerView
+			const view = self.cellsContainerView
+			const layer = view.layer
+			if (isEmptyVisible == true) {
+				layer.style.display = "none"
+			} else {
+				layer.style.margin = "16px 0 0 0"
+			}
+		}
 	}
 	//
 	//

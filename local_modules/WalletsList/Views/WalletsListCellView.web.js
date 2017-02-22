@@ -48,9 +48,10 @@ class WalletsListCellView extends ListCellView
 		super.setup_views()
 		{
 			const layer = self.layer
-			layer.style.border = "1px solid #eee"
+			layer.style.background = "#383638"
+			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 			layer.style.borderRadius = "5px"
-			layer.style.marginBottom = "5px" // for cell spacing & scroll bottom inset
+			layer.style.margin = "0 16px 12px 16px" // for cell spacing & scroll bottom inset
 		}
 	}
 	overridable_layerToObserveForTaps()

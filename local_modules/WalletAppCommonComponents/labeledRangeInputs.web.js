@@ -68,12 +68,12 @@ const cssRules =
 
 		background:#494749;
 		cursor: pointer;
-		box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
+		box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
 	}`,
 	// :active
 	`.labeledRangeInput-container:not(.disabled) input[type=range]:active::-webkit-slider-thumb {
 		background:#404040;
-		box-shadow:0 1px 2px 0 rgba(0,0,0,0.50), 0 0 1px 0 #161416, inset 0 0 0 0 #6b696b;
+		box-shadow:0 1px 1px 0 rgba(0,0,0,0.50), 0 0.5px 0.5px 0 #161416, inset 0 0.5px 0 0 #505050;
 	}`,
 	`.labeledRangeInput-container input[type=range]::-webkit-slider-runnable-track {
 	    -webkit-appearance: none;

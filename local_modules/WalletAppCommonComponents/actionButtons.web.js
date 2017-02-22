@@ -119,7 +119,7 @@ function New_ActionButtonView(
 		layer.style.height = ActionButton_h + "px"
 		layer.style.borderRadius = "3px"
 		layer.style.backgroundColor = "#383638"
-		layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"			
+		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"			
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"
 		layer.style.fontWeight = "500"

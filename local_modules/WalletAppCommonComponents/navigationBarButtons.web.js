@@ -45,7 +45,7 @@ function New_GreyButtonView(context)
 	const layer = view.layer
 	layer.style.height = "24px"
 	layer.style.borderRadius = "3px"
-	layer.style.boxShadow = "0 0 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 	layer.style.backgroundColor = "#383638"
 	layer.style.border = "none"
 	layer.style.textDecoration = "none"

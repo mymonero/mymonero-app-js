@@ -46,7 +46,7 @@ const cssRules =
 		left: 0;
 		top: 0;
 		background:#383638;
-		box-shadow:0 0 1px 0 #161416, inset 0 .5px 0 0 #494749;
+		box-shadow:0 0.5px 1px 0 #161416, inset 0 .5px 0 0 #494749;
 		border-radius:5px;
 		width:88px;
 		height:88px;
