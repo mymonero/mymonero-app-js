@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
 //
 class WalletCellContentsView extends View
 {
@@ -43,26 +44,66 @@ class WalletCellContentsView extends View
 	{
 		const self = this
 		self.setup_views()
-		self.setup_layers()
 	}
 	setup_views()
 	{
 		const self = this
+		{ 
+			const layer = self.layer
+			layer.style.wordBreak = "break-all" // to get the text to wrap
+			layer.style.height = "100%"
+			layer.style.position = "relative"
+			layer.style.left = "0"
+			layer.style.top = "0"
+		}
+		{ // icon
+			const div = commonComponents_walletIcons.New_WalletIconLayer(
+				"", // for now - we will config in a moment
+				"large-48" // size class - for css
+			) 
+			div.style.position = "absolute"
+			div.style.left = "15px"
+			div.style.top = "16px"
+			self.walletIconLayer = div
+			self.layer.appendChild(div)
+		}
+		self.__setup_titleLayer()
+		self.__setup_descriptionLayer()
 	}
-	setup_layers()
-	{
-		const self = this
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		//
-		self.setup_layers_accountInfo()
-	}
-	setup_layers_accountInfo()
+	__setup_titleLayer()
 	{
 		const self = this
 		const layer = document.createElement("div")
-		layer.className = "accountInfo"
-		self.layer_accountInfo = layer
+		layer.style.position = "relative"
+		layer.style.boxSizing = "border-box"
+		layer.style.padding = "22px 66px 4px 80px"
+		layer.style.height = "auto"
+		layer.style.display = "block"
+		layer.style.fontSize = "13px"
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontWeight = "400"
+		layer.style.wordBreak = "break-word"
+		layer.style.color = "#fcfbfc"
+		// layer.style.border = "1px solid red"
+		self.titleLayer = layer
+		self.layer.appendChild(layer)
+	}
+	__setup_descriptionLayer()
+	{
+		const self = this
+		const layer = document.createElement("div")
+		layer.style.position = "relative"
+		layer.style.boxSizing = "border-box"
+		layer.style.padding = "0px 66px 4px 80px"
+		layer.style.fontSize = "13px"
+		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+		layer.style.fontWeight = "light"
+		layer.style.height = "20px"
+		layer.style.color = "#9e9c9e"
+		layer.style.whiteSpace = "nowrap"
+		layer.style.overflow = "hidden"
+		layer.style.textOverflow = "ellipsis"
+		self.descriptionLayer = layer
 		self.layer.appendChild(layer)
 	}
 	//
@@ -121,45 +162,6 @@ class WalletCellContentsView extends View
 		}
 	}
 	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Metrics
-	//
-	//
-	_idPrefix()
-	{
-		const self = this
-		//
-		return self.constructor.name + "_" + self.View_UUID() // to make it unique, as this is a list-cell
-	}
-	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Delete btn
-	//
-	//
-	idForChild_deleteWalletWithIDLayer()
-	{
-		const self = this
-		if (typeof self.wallet._id === 'undefined' || !self.wallet._id) {
-			throw "idForChild_deleteWalletWithIDLayer called but nil self.wallet._id"
-		}
-		//
-		return self._idPrefix() + "_" + "idForChild_deleteWalletWithIDLayer"
-	}
-	new_htmlStringForChild_deleteWalletWithIDLayer()
-	{
-		const self = this
-		const htmlString = `<a id="${self.idForChild_deleteWalletWithIDLayer()}" href="#">Delete Wallet</a>`
-		//
-		return htmlString
-	}
-	DOMSelected_deleteWalletWithIDLayer()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`a#${ self.idForChild_deleteWalletWithIDLayer() }`)
-		//
-		return layer
-	}
-	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
 	ConfigureWithRecord(wallet)
@@ -186,54 +188,26 @@ class WalletCellContentsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		var htmlString = ''
-		{
-			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) {
-				{ // header
-					htmlString += `<h3>${wallet.walletLabel}</h3>`
-					if (wallet.HasEverFetched_accountInfo() === false) {
-						htmlString += `<p>Loading…</p>`
-					} else {
-						htmlString += "<p>"
-						htmlString += `${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}`
-						if (wallet.HasLockedFunds() === true) {
-							htmlString += ` (${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()} locked)`
-						}
-						htmlString += "</p>"
-					}
+		if (wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true) { // unlikely but possible
+			self.titleLayer.innerHTML = "Error: Couldn't unlock wallet. Please contact support."
+			self.descriptionLayer.innerHTML = ""
+		} else {
+			self.titleLayer.innerHTML = wallet.walletLabel
+			if (wallet.HasEverFetched_accountInfo() === false) {
+				self.descriptionLayer.innerHTML = "Loading…"
+			} else {
+				var htmlString = `${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}`
+				if (wallet.HasLockedFunds() === true) {
+					htmlString += ` (${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()} 🔒)`
 				}
-			} else { // unlikely but possible: failed to initialize
-				htmlString += 
-					`<h4>Error: Couldn't unlock wallet.</h4>`
-					+ `<p>Please report this to us via Support. Please delete and re-import it:</p>`
-				htmlString += self.new_htmlStringForChild_deleteWalletWithIDLayer()
+				self.descriptionLayer.innerHTML = htmlString
 			}
-		}
-		{
-			self.layer_accountInfo.innerHTML = htmlString
-		}
-		{ // setup and observations
-			{ // delete button
-				const layer = self.DOMSelected_deleteWalletWithIDLayer()
-				if (layer && typeof layer !== 'undefined') {
-					layer.addEventListener(
-						"click",
-						function(e)
-						{
-							e.preventDefault()
-							self.deleteWallet()
-							//
-							return false
-						}
-					)
-				}
-			}				
-		}
+		}		
 	}
 	_configureUIWithWallet__color()
 	{
 		const self = this
-		console.log("TODO: configure wallet icon with color…", self.wallet.swatch)
+		self.walletIconLayer.ConfigureWithHexColorString(self.wallet.swatch || "")
 	}
 	//
 	//

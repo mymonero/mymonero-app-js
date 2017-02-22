@@ -30,6 +30,8 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
 //
 class WalletsListCellView extends ListCellView
 {
@@ -46,13 +48,21 @@ class WalletsListCellView extends ListCellView
 		}
 		// now call on super…
 		super.setup_views()
+		const margin_h = 16
 		{
 			const layer = self.layer
+			layer.style.position = "relative"
+			layer.style.left = `${margin_h}px`
+			layer.style.top = "0"
+			layer.style.width = `calc(100% - ${ 2 * margin_h }px)`
+			layer.style.height = "80px"
 			layer.style.background = "#383638"
 			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 			layer.style.borderRadius = "5px"
-			layer.style.margin = "0 16px 12px 16px" // for cell spacing & scroll bottom inset
+			layer.style.margin = "0 0 12px 0" // for cell spacing & scroll bottom inset
+			// layer.style.border = "1px solid yellow"
 		}
+		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer())
 	}
 	overridable_layerToObserveForTaps()
 	{
