@@ -246,9 +246,10 @@ function New_redTextButtonView(text, context)
 }
 exports.New_redTextButtonView = New_redTextButtonView
 //
-function New_deleteRecordNamedButtonView(humanReadable_recordName, context)
+function New_deleteRecordNamedButtonView(humanReadable_recordName, context, optl_replacementVerbString)
 {
-	const text = "DELETE " + humanReadable_recordName.toUpperCase() + "…"
+	const verbString = optl_replacementVerbString || "DELETE"
+	const text = verbString + " " + humanReadable_recordName.toUpperCase() + "…"
 	const view = New_redTextButtonView(text, context)
 
 	return view

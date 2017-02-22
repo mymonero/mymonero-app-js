@@ -63,22 +63,45 @@ class EditContactFromContactsTabView extends ContactFormView
 		const self = this
 		const view = commonComponents_tables.New_deleteRecordNamedButtonView("contact", self.context)
 		const layer = view.layer
+		function __proceedTo_deleteRecord()
+		{
+			const record_id = self.contact._id
+			self.context.contactsListController.WhenBooted_DeleteRecordWithId(
+				record_id,
+				function(err)
+				{
+					if (err) {
+						throw err
+						return
+					}
+					self._thisRecordWasDeleted()
+				}
+			)
+		}
 		layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
 				{
-					const record_id = self.contact._id
-					self.context.contactsListController.WhenBooted_DeleteRecordWithId(
-						record_id,
-						function(err)
+					if (view.isEnabled === false) {
+						console.warn("Delete btn not enabled")
+						return false
+					}
+					self.context.windowDialogs.PresentQuestionAlertDialogWith(
+						'Delete this contact?', 
+						'Delete this contact?\n\nThis cannot be undone.',
+						[ 'Delete', 'Cancel' ],
+						function(err, selectedButtonIdx)
 						{
 							if (err) {
 								throw err
 								return
 							}
-							self._thisRecordWasDeleted()
+							const didChooseYes = selectedButtonIdx === 0
+							if (didChooseYes) {
+								__proceedTo_deleteRecord()
+							}
 						}
 					)
 				}

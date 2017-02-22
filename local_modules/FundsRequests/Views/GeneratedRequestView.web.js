@@ -261,22 +261,45 @@ class GeneratedRequestView extends View
 		const self = this
 		const view = commonComponents_tables.New_deleteRecordNamedButtonView("request", self.context)
 		const layer = view.layer
+		function __proceedTo_deleteRecord()
+		{
+			const record_id = self.fundsRequest._id
+			self.context.fundsRequestsListController.WhenBooted_DeleteRecordWithId(
+				record_id,
+				function(err)
+				{
+					if (err) {
+						throw err
+						return
+					}
+					self._thisRecordWasDeleted()
+				}
+			)
+		}
 		layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
 				{
-					const record_id = self.fundsRequest._id
-					self.context.fundsRequestsListController.WhenBooted_DeleteRecordWithId(
-						record_id,
-						function(err)
+					if (view.isEnabled === false) {
+						console.warn("Delete btn not enabled")
+						return false
+					}
+					self.context.windowDialogs.PresentQuestionAlertDialogWith(
+						'Delete this request?', 
+						'Delete this request?\n\nThis cannot be undone.',
+						[ 'Delete', 'Cancel' ],
+						function(err, selectedButtonIdx)
 						{
 							if (err) {
 								throw err
 								return
 							}
-							self._thisRecordWasDeleted()
+							const didChooseYes = selectedButtonIdx === 0
+							if (didChooseYes) {
+								__proceedTo_deleteRecord()
+							}
 						}
 					)
 				}

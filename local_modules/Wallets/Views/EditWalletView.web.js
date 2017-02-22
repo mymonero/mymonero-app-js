@@ -137,24 +137,47 @@ class EditWalletView extends View
 	_setup_deleteRecordButtonLayer()
 	{
 		const self = this
-		const view = commonComponents_tables.New_deleteRecordNamedButtonView("wallet", self.context)
+		const view = commonComponents_tables.New_deleteRecordNamedButtonView("wallet", self.context, "REMOVE")
 		const layer = view.layer
+		function __proceedTo_deleteRecord()
+		{
+			const record_id = self.wallet._id
+			self.context.walletsListController.WhenBooted_DeleteRecordWithId(
+				record_id,
+				function(err)
+				{
+					if (err) {
+						throw err
+						return
+					}
+					self._thisRecordWasDeleted()
+				}
+			)
+		}
 		layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
 				{
-					const record_id = self.wallet._id
-					self.context.walletsListController.WhenBooted_DeleteRecordWithId(
-						record_id,
-						function(err)
+					if (view.isEnabled === false) {
+						console.warn("Delete btn not enabled")
+						return false
+					}
+					self.context.windowDialogs.PresentQuestionAlertDialogWith(
+						'Remove this wallet?', 
+						'You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?',
+						[ 'Remove', 'Cancel' ],
+						function(err, selectedButtonIdx)
 						{
 							if (err) {
 								throw err
 								return
 							}
-							self._thisRecordWasDeleted()
+							const didChooseYes = selectedButtonIdx === 0
+							if (didChooseYes) {
+								__proceedTo_deleteRecord()
+							}
 						}
 					)
 				}
