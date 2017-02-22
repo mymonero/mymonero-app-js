@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const QRCode = require('../Vendor/qrcode.min')
+//
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
@@ -54,6 +56,31 @@ class FundsRequestsListCellView extends ListCellView
 			div.style.position = "absolute"
 			self.walletIconLayer = div
 			self.layer.appendChild(div)
+		}
+		{ 
+			const div = document.createElement("div")
+			div.style.left = "36px"
+			div.style.top = "36px"
+			div.style.width = "24px"
+			div.style.height = "24px"
+			div.style.borderRadius = "3px"
+			div.style.position = "absolute"
+			div.style.backgroundColor = "#F8F7F8"
+			div.style.boxShadow = "0 1px 2px 0 rgba(0,0,0,0.20), 0 1px 3px 0 rgba(0,0,0,0.10), inset 0 0 0 0 #FFFFFF"			
+			self.qrCodeContainerLayer = div
+			self.layer.appendChild(div)
+			self.qrCode_side = 20 // for later usage… 
+			{ // qrcode div
+				const layer = document.createElement("div")
+				{
+					layer.style.width = `${self.qrCode_side}px`
+					layer.style.height = `${self.qrCode_side}px`
+					layer.style.margin = "2px 0 0 2px"
+					layer.style.backgroundColor = "black" // not strictly necessary… mostly for debug
+				}
+				self.qrCode_div = layer
+				div.appendChild(layer)
+			}
 		}
 		{ // same line
 			const div = document.createElement("div")
@@ -146,20 +173,44 @@ class FundsRequestsListCellView extends ListCellView
 		} else {
 			self.cellSeparatorLayer.style.visibility = "visible"
 		}
+		function __clearAllLayers()
+		{
+			self.qrCode_div.innerHTML = ""
+			self.amountLayer.innerHTML = ""
+			self.memoLayer.innerHTML = ""
+			self.senderLayer.innerHTML = ""
+		}
 		if (typeof self.record === 'undefined' || !self.record) {
-			self.convenience_removeAllSublayers()
+			__clearAllLayers()
 			return
 		}
 		const fundsRequest = self.record
 		if (typeof self.record === 'undefined' || !self.record) {
-			self.amountLayer.innerHTML = ""
+			__clearAllLayers()
 			return
 		}
 		if (self.record.didFailToInitialize_flag === true || self.record.didFailToBoot_flag === true) { // unlikely, but possible
+			__clearAllLayers() // then, show an err
 			self.amountLayer.innerHTML = "❌ Error: Contact support"
 			return
 		}
 		const uri = fundsRequest.Lazy_URI()
+		{ // qr code
+			self.qrCode_div.innerHTML = "" // clear first - not sure if we need to do this
+	        const qrCode = new QRCode(
+				self.qrCode_div,
+				{
+	            	correctLevel: QRCode.CorrectLevel.L
+				}
+			)
+			qrCode.makeCode(uri)
+			{ // now must set height of qr code img layer (unless we use css rules)
+				const qrCode_imgLayer = self.qrCode_div.querySelector("img")
+				qrCode_imgLayer.style.width = `${self.qrCode_side}px`
+				qrCode_imgLayer.style.height = `${self.qrCode_side}px`
+			}
+		}
+		//
 		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
 		self.amountLayer.innerHTML = parseFloat("" + fundsRequest.amount) + " XMR"
 		var memoString = fundsRequest.message
