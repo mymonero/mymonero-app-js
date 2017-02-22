@@ -142,10 +142,11 @@ class ForgotPasswordView extends View
 			true,
 			function(layer, e)
 			{
+				var msg = 'Are you sure you want to delete all of your local data?\n\nAny wallets will remain permanently on the Monero blockchain but local data such as contacts will not be recoverable.'
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
 					'Delete everything?', 
-					'Are you sure you want to delete all of your local data?\n\n(Your wallets will still exist permanently on the Monero blockchain.)',
-					[ 'Delete', 'Cancel' ],
+					msg,
+					[ 'Delete Everything', 'Cancel' ],
 					function(err, selectedButtonIdx)
 					{
 						if (err) {
