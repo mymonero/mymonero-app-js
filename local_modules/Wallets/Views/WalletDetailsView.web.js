@@ -105,6 +105,11 @@ class WalletDetailsView extends View
 			layer.style.padding = "17px 18px"
 			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 			layer.style.borderRadius = "5px"
+			//
+			layer.style.whiteSpace = "nowrap"
+			layer.style.overflow = "hidden"
+			layer.style.textOverflow = "ellipsis"
+			layer.style.wordBreak = "break-all"
 		}
 		const mainLabelSpan = document.createElement("span")
 		{
@@ -133,6 +138,7 @@ class WalletDetailsView extends View
 				mainLabelSpan.style.color = "#161416" // so use dark text
 				paddingZeroesLabelSpan.style.color = "rgba(29, 26, 29, 0.2)"
 			}
+			view.layer.style.color = paddingZeroesLabelSpan.style.color // for the '…' during truncation
 			//
 			view._swatch_hexColorString = swatch_hexColorString
 			view.layer.style.backgroundColor = swatch_hexColorString
@@ -216,7 +222,10 @@ class WalletDetailsView extends View
 		}
 		const infoDisclosingView = new InfoDisclosingView({
 			previewView: previewView,
-			disclosedView: disclosedView
+			disclosedView: disclosedView,
+			padding_left: 18,
+			padding_right: 18,
+			padding_v: 16
 		}, self.context)
 		{
 			const layer = infoDisclosingView.layer
@@ -224,7 +233,7 @@ class WalletDetailsView extends View
 			layer.style.boxSizing = "border-box"
 			layer.style.border = "0.5px solid #494749"
 			layer.style.borderRadius = "5px"
-			layer.style.padding = "16px 18px"
+			layer.style.padding = "0" // because padding, while useful, makes using pos:abslute to animate this more difficult in InfoDisclosingView
 		}
 		self.account_InfoDisclosingView = infoDisclosingView
 		self.addSubview(infoDisclosingView)
