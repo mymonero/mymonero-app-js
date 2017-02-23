@@ -100,17 +100,33 @@ class WalletDetailsView extends View
 			layer.style.padding = "17px 18px"
 			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 			layer.style.borderRadius = "5px"
-			layer.style.fontSize = "32px"
+		}
+		const mainLabelSpan = document.createElement("span")
+		{
+			const layer = mainLabelSpan
 			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
 			layer.style.fontWeight = "100"
+			layer.style.fontSize = "32px"
+			view.layer.appendChild(layer)
+		}
+		const paddingZeroesLabelSpan = document.createElement("span")
+		{
+			const layer = paddingZeroesLabelSpan			
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontWeight = "100"
+			layer.style.fontSize = "32px"
+			view.layer.appendChild(layer)
 		}
 		view.SetWalletThemeColor = function(swatch_hexColorString)
 		{
 			var isDark = self.context.walletsListController.IsSwatchHexColorStringADarkColor(swatch_hexColorString)
 			if (isDark) {
-				view.layer.style.color = "#F8F7F8" // so use light text
+				mainLabelSpan.style.color = "#F8F7F8" // so use light text
+				// ^-- TODO: for some reason, this has a much heavier visual/apparent font weight despite it being 100 :\
+				paddingZeroesLabelSpan.style.color = "rgba(248, 247, 248, 0.2)"
 			} else {
-				view.layer.style.color = "#161416" // so use dark text
+				mainLabelSpan.style.color = "#161416" // so use dark text
+				paddingZeroesLabelSpan.style.color = "rgba(29, 26, 29, 0.2)"
 			}
 			//
 			view._swatch_hexColorString = swatch_hexColorString
@@ -118,29 +134,35 @@ class WalletDetailsView extends View
 		}
 		view.SetPlainString = function(plainString)
 		{
-			view.layer.innerHTML = plainString
+			mainLabelSpan.innerHTML = plainString
+			paddingZeroesLabelSpan.innerHTML = ""
 		}
 		view.SetBalanceWithWallet = function(wallet)
 		{ 
-			var balanceString = ""
-			const raw_balanceString = wallet.Balance_FormattedString()
-			const coinUnitPlaces = monero_config.coinUnitPlaces
-			const raw_balanceString__components = raw_balanceString.split(".")
-			if (raw_balanceString__components.length == 1) {
-				balanceString = raw_balanceString__components[0] + "." + Array(coinUnitPlaces).join("0")
-			} else if (raw_balanceString__components.length == 2) {
-				balanceString = raw_balanceString
-				const decimalComponent = raw_balanceString__components[1]
-				const decimalComponent_length = decimalComponent.length
-				if (decimalComponent_length < coinUnitPlaces + 2) {
-					balanceString += Array(coinUnitPlaces - decimalComponent_length + 2).join("0")
+			var finalized_main_string = ""
+			var finalized_paddingZeros_string = ""
+			{
+				const raw_balanceString = wallet.Balance_FormattedString()
+				const coinUnitPlaces = monero_config.coinUnitPlaces
+				const raw_balanceString__components = raw_balanceString.split(".")
+				if (raw_balanceString__components.length == 1) {
+					finalized_main_string = raw_balanceString__components[0] + "."
+					finalized_paddingZeros_string = Array(coinUnitPlaces).join("0")
+				} else if (raw_balanceString__components.length == 2) {
+					finalized_main_string = raw_balanceString
+					const decimalComponent = raw_balanceString__components[1]
+					const decimalComponent_length = decimalComponent.length
+					if (decimalComponent_length < coinUnitPlaces + 2) {
+						finalized_paddingZeros_string = Array(coinUnitPlaces - decimalComponent_length + 2).join("0")
+					}
+				} else {
+					throw "Couldn't parse formatted balance string."
+					finalized_main_string = raw_balanceString
+					finalized_paddingZeros_string = ""
 				}
-			} else {
-				throw "Couldn't parse formatted balance string."
-				balanceString = raw_balanceString
 			}
-			// TODO: break padded zeros out into span or some such
-			view.layer.innerHTML = balanceString
+			mainLabelSpan.innerHTML = finalized_main_string
+			paddingZeroesLabelSpan.innerHTML = finalized_paddingZeros_string
 		}
 	}
 	setup_layers_transactions()

@@ -158,7 +158,7 @@ class WalletsListController extends ListBaseController
 	IsSwatchHexColorStringADarkColor(hexColorString)
 	{
 		switch (hexColorString) {
-			case "#6B696B": // dark grey
+			case "#6B696B": // dark grey	
 				return true
 			default:
 				return false
