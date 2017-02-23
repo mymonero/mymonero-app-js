@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const monero_config = require('../../monero_utils/monero_config')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
@@ -121,8 +122,25 @@ class WalletDetailsView extends View
 		}
 		view.SetBalanceWithWallet = function(wallet)
 		{ 
-			// TODO: pad with differently colored zeroes up to min xmr size
-			view.layer.innerHTML = wallet.Balance_FormattedString()
+			var balanceString = ""
+			const raw_balanceString = wallet.Balance_FormattedString()
+			const coinUnitPlaces = monero_config.coinUnitPlaces
+			const raw_balanceString__components = raw_balanceString.split(".")
+			if (raw_balanceString__components.length == 1) {
+				balanceString = raw_balanceString__components[0] + "." + Array(coinUnitPlaces).join("0")
+			} else if (raw_balanceString__components.length == 2) {
+				balanceString = raw_balanceString
+				const decimalComponent = raw_balanceString__components[1]
+				const decimalComponent_length = decimalComponent.length
+				if (decimalComponent_length < coinUnitPlaces + 2) {
+					balanceString += Array(coinUnitPlaces - decimalComponent_length + 2).join("0")
+				}
+			} else {
+				throw "Couldn't parse formatted balance string."
+				balanceString = raw_balanceString
+			}
+			// TODO: break padded zeros out into span or some such
+			view.layer.innerHTML = balanceString
 		}
 	}
 	setup_layers_transactions()
