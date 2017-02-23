@@ -63,36 +63,67 @@ class WalletDetailsView extends View
 	_setup_views()
 	{
 		const self = this
-		//
-		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		//
-		self.layer.style.width = "calc(100% - 20px)"
-		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		//
-		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
-		self.layer.style.color = "#c0c0c0" // temporary
-		//
-		self.layer.style.overflowY = "scroll"
-		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		//
-		self.setup_layers_accountInfo()
+		self.setup_self_layer()
+		self._setup_balanceLabelView()
 		self.setup_layers_transactions()
 	}
-	setup_layers_accountInfo()
+	setup_self_layer()
 	{
 		const self = this
+		const layer = self.layer
+		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		const layer = document.createElement("div")
-		layer.className = "accountInfo"
-		layer.style.border = "1px solid #ccc"
-		layer.style.borderRadius = "5px"
-		layer.style.marginBottom = "5px"
+		layer.style.width = "calc(100% - 20px)"
+		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		//
-		self.layer_accountInfo = layer
-		self.layer.appendChild(layer)
+		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		//
+		layer.style.color = "#c0c0c0" // temporary
+		//
+		layer.style.overflowY = "scroll"
+		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		//
+		layer.style.wordBreak = "break-all" // to get the text to wrap	
+	}
+	_setup_balanceLabelView()
+	{
+		const self = this
+		const view = new View({ tag: "div" }, self.context)
+		self.balanceLabelView = view
+		self.addSubview(view)
+		{
+			const layer = view.layer
+			layer.style.boxSizing = "border-box"
+			layer.style.width = "100%"
+			layer.style.height = "71px"
+			layer.style.padding = "17px 18px"
+			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+			layer.style.borderRadius = "5px"
+			layer.style.fontSize = "32px"
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontWeight = "100"
+		}
+		view.SetWalletThemeColor = function(swatch_hexColorString)
+		{
+			var isDark = self.context.walletsListController.IsSwatchHexColorStringADarkColor(swatch_hexColorString)
+			if (isDark) {
+				view.layer.style.color = "#F8F7F8" // so use light text
+			} else {
+				view.layer.style.color = "#161416" // so use dark text
+			}
+			//
+			view._swatch_hexColorString = swatch_hexColorString
+			view.layer.style.backgroundColor = swatch_hexColorString
+		}
+		view.SetPlainString = function(plainString)
+		{
+			view.layer.innerHTML = plainString
+		}
+		view.SetBalanceWithWallet = function(wallet)
+		{ 
+			// TODO: pad with differently colored zeroes up to min xmr size
+			view.layer.innerHTML = wallet.Balance_FormattedString()
+		}
 	}
 	setup_layers_transactions()
 	{
@@ -269,87 +300,30 @@ class WalletDetailsView extends View
 	}
 	//
 	//
-	// Internal - Runtime - Accessors - Child elements - Metrics
-	//
-	//
-	_idPrefix()
-	{
-		const self = this
-		//
-		return self.constructor.name + "_" + self.View_UUID()
-	}
-	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Transactions elements
-	//
-	idForChild_transactionsUL()
-	{
-		const self = this
-		//
-		return self._idPrefix() + "_" + "transactionsUL"
-	}
-	DOMSelected_transactionsUL()
-	{
-		const self = this
-		const layer = self.layer.querySelector(`ul#${ self.idForChild_transactionsUL() }`)
-		//
-		return layer
-	}
-	classForChild_transactionsLI()
-	{
-		const self = this
-		//
-		return self._idPrefix() + "_" + "transactionsLI"
-	}
-	DOMSelected_transactionsLIs()
-	{
-		const self = this
-		const layers = self.layer.querySelectorAll(`li.${ self.classForChild_transactionsLI() }`) // we can use a class here cause the class is namespaced to self via prefix's self.View_UUID()
-		//
-		return layers
-	}
-	//
-	//
 	// Runtime - Imperatives - UI Configuration
 	//
 	_configureUIWithWallet__accountInfo()
 	{
 		const self = this
 		const wallet = self.wallet
-		var htmlString = ''
-		{
-			if (wallet.didFailToInitialize_flag !== true && wallet.didFailToBoot_flag !== true) { // unlikely, but possible
-				{ // header
-					htmlString += `<h3>${wallet.walletLabel}</h3>`
-					htmlString += `<p>Swatch: ${wallet.swatch}</p>`
-					if (wallet.HasEverFetched_accountInfo() === false) {
-						htmlString += `<p>Balance: Loading…</p>`
-						htmlString += `<p>Locked balance: Loading…</P`
-					} else {
-						htmlString += `<p>Balance: ${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}</p>`
-						htmlString += `<p>Locked balance: ${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}</p>`
-					}
-				}
-				{ // info
-					htmlString += `<h4>Wallet Info</h4>`
-					htmlString += `<p>Address: ${wallet.public_address}</p>`
-					htmlString += `<h5>Secret keys:</h5>`
-					htmlString += `<p>Secret Seed: ${wallet.mnemonicString}</p>`
-					htmlString += `<p>View key: ${wallet.private_keys.view}</p>`
-					htmlString += `<p>Spend key: ${wallet.private_keys.spend}</p>`
-				}
-			} else { // failed to initialize
-				{ // header
-					htmlString += 
-						`<h4>Error: Couldn't unlock this wallet.</h4>`
-						+ `<p>Please report this issue to us via Support. To repair this wallet and continue, please delete it via Edit and re-import it.</p>`
-				}
-			}
+		self.balanceLabelView.SetWalletThemeColor(wallet.swatch)
+		if (wallet.didFailToInitialize_flag == true 
+			|| wallet.didFailToBoot_flag == true) { // failed to initialize
+			self.balanceLabelView.SetPlainString("ERROR LOADING")
+			return
 		}
-		//
-		// TODO: Rebuild this without using html (w/element objs) and eliminate the DOMSelected_ stuff
-		//
-		self.layer_accountInfo.innerHTML = htmlString
+		if (wallet.HasEverFetched_accountInfo() === false) {
+			self.balanceLabelView.SetPlainString("LOADING…")
+		} else {
+			self.balanceLabelView.SetBalanceWithWallet(wallet)
+		}
+
+		// wallet.public_address
+		// wallet.mnemonicString
+		// wallet.private_keys.view
+		// wallet.private_keys.spend				
+		
+		
 	}
 	_configureUIWithWallet__transactions()
 	{

@@ -155,6 +155,15 @@ class WalletsListController extends ListBaseController
 	{
 		return hexColorStrings
 	}
+	IsSwatchHexColorStringADarkColor(hexColorString)
+	{
+		switch (hexColorString) {
+			case "#6B696B": // dark grey
+				return true
+			default:
+				return false
+		}
+	}
 	//
 	//
 	// Booted - Imperatives - Public - Wallets list
