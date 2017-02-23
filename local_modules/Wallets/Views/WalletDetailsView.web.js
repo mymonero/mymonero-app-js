@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const monero_config = require('../../monero_utils/monero_config')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
 class WalletDetailsView extends View
 {
@@ -59,6 +60,7 @@ class WalletDetailsView extends View
 		self._setup_startObserving()
 		//
 		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
 	}
 	_setup_views()
@@ -66,6 +68,7 @@ class WalletDetailsView extends View
 		const self = this
 		self.setup_self_layer()
 		self._setup_balanceLabelView()
+		self._setup__account_InfoDisclosingView()
 		self.setup_layers_transactions()
 	}
 	setup_self_layer()
@@ -74,15 +77,16 @@ class WalletDetailsView extends View
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		layer.style.width = "calc(100% - 20px)"
+		const margin_h = 16
+		layer.style.width = `calc(100% - ${ 2 * margin_h }px)`
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
 		layer.style.color = "#c0c0c0" // temporary
 		//
 		layer.style.overflowY = "scroll"
-		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap	
 	}
@@ -97,6 +101,7 @@ class WalletDetailsView extends View
 			layer.style.boxSizing = "border-box"
 			layer.style.width = "100%"
 			layer.style.height = "71px"
+			layer.style.marginTop = "12px"
 			layer.style.padding = "17px 18px"
 			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 			layer.style.borderRadius = "5px"
@@ -164,6 +169,65 @@ class WalletDetailsView extends View
 			mainLabelSpan.innerHTML = finalized_main_string
 			paddingZeroesLabelSpan.innerHTML = finalized_paddingZeros_string
 		}
+	}
+	_new_fieldBaseView()
+	{
+		const self = this
+		const fieldView = new View({}, self.context)
+		const layer = fieldView.layer
+		layer.style.marginLeft = "25px"
+		fieldView.SetValue = function(value)
+		{
+			if (value === null) {
+				// disable control as well - so COPY gets disabled
+				value = ""
+			}
+			layer.innerHTML = value
+		}
+		return fieldView
+	}
+	
+	_setup__account_InfoDisclosingView()
+	{
+		const self = this
+		const previewView = new View({}, self.context)
+		{
+			const preview__address_fieldView = self._new_fieldBaseView()
+			self.preview__address_fieldView = preview__address_fieldView
+			previewView.addSubview(preview__address_fieldView)
+		}
+		const disclosedView = new View({}, self.context)
+		{
+			const disclosed__address_fieldView = self._new_fieldBaseView()
+			self.disclosed__address_fieldView = disclosed__address_fieldView
+			disclosedView.addSubview(disclosed__address_fieldView)
+			//
+			const viewKey_fieldView = self._new_fieldBaseView()
+			self.viewKey_fieldView = viewKey_fieldView
+			disclosedView.addSubview(viewKey_fieldView)
+			//
+			const spendKey_fieldView = self._new_fieldBaseView()
+			self.spendKey_fieldView = spendKey_fieldView
+			disclosedView.addSubview(spendKey_fieldView)
+			//
+			const mnemonicSeed_fieldView = self._new_fieldBaseView()
+			self.mnemonicSeed_fieldView = mnemonicSeed_fieldView
+			disclosedView.addSubview(mnemonicSeed_fieldView)
+		}
+		const infoDisclosingView = new InfoDisclosingView({
+			previewView: previewView,
+			disclosedView: disclosedView
+		}, self.context)
+		{
+			const layer = infoDisclosingView.layer
+			layer.style.margin = "16px 0 0 0"
+			layer.style.boxSizing = "border-box"
+			layer.style.border = "0.5px solid #494749"
+			layer.style.borderRadius = "5px"
+			layer.style.padding = "16px 18px"
+		}
+		self.account_InfoDisclosingView = infoDisclosingView
+		self.addSubview(infoDisclosingView)
 	}
 	setup_layers_transactions()
 	{
@@ -346,6 +410,29 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
+		const addr = wallet.public_address
+		const mnemonic = wallet.mnemonicString
+		const viewKey = wallet.private_keys.view
+		const spendKey = wallet.private_keys.spend
+		if (wallet.didFailToInitialize_flag == true 
+			|| wallet.didFailToBoot_flag == true) { // failed to initialize
+			self.preview__address_fieldView.SetValue(null)
+			self.disclosed__address_fieldView.SetValue(null)
+			self.viewKey_fieldView.SetValue(null)
+			self.spendKey_fieldView.SetValue(null)
+			self.mnemonicSeed_fieldView.SetValue(null)
+			return
+		}
+		self.preview__address_fieldView.SetValue(addr)
+		self.disclosed__address_fieldView.SetValue(addr)
+		self.viewKey_fieldView.SetValue(viewKey)
+		self.spendKey_fieldView.SetValue(spendKey)
+		self.mnemonicSeed_fieldView.SetValue(mnemonic)
+	}
+	_configureUIWithWallet__balance()
+	{
+		const self = this
+		const wallet = self.wallet
 		self.balanceLabelView.SetWalletThemeColor(wallet.swatch)
 		if (wallet.didFailToInitialize_flag == true 
 			|| wallet.didFailToBoot_flag == true) { // failed to initialize
@@ -357,13 +444,6 @@ class WalletDetailsView extends View
 		} else {
 			self.balanceLabelView.SetBalanceWithWallet(wallet)
 		}
-
-		// wallet.public_address
-		// wallet.mnemonicString
-		// wallet.private_keys.view
-		// wallet.private_keys.spend				
-		
-		
 	}
 	_configureUIWithWallet__transactions()
 	{
@@ -506,7 +586,7 @@ class WalletDetailsView extends View
 	_reconfigureUIWithChangeTo_wallet__color()
 	{
 		const self = this
-		console.log("TODO: refresh anything related to the color… it just changed!", self.wallet.swatch)
+		self.balanceLabelView.SetWalletThemeColor(self.wallet.swatch)
 	}
 	//
 	//
@@ -592,7 +672,6 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		self.navigationController.SetNavigationBarTitleNeedsUpdate() 
-		self._configureUIWithWallet__accountInfo() // TODO: just update the label
 	}
 	wallet_EventName_walletSwatchChanged()
 	{
@@ -602,7 +681,7 @@ class WalletDetailsView extends View
 	wallet_EventName_balanceChanged()
 	{
 		const self = this
-		self._configureUIWithWallet__accountInfo() // TODO: update just balance
+		self._configureUIWithWallet__balance()
 	}
 	wallet_EventName_transactionsChanged()
 	{
