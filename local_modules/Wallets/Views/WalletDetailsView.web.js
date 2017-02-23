@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const monero_config = require('../../monero_utils/monero_config')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
 class WalletDetailsView extends View
@@ -176,19 +177,26 @@ class WalletDetailsView extends View
 			paddingZeroesLabelSpan.innerHTML = finalized_paddingZeros_string
 		}
 	}
-	_new_fieldBaseView()
+	_new_fieldBaseView(entitled, isTruncatedPreviewForm)
 	{
 		const self = this
 		const fieldView = new View({}, self.context)
 		const layer = fieldView.layer
 		layer.style.marginLeft = "25px"
+		//
+		const fieldContainerLayer = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
+			entitled, 
+			"",
+			self.context.pasteboard,
+			"N/A",
+			isTruncatedPreviewForm == true ? true : false
+		)
+		layer.appendChild(fieldContainerLayer)
+		//
 		fieldView.SetValue = function(value)
 		{
-			if (value === null) {
-				// disable control as well - so COPY gets disabled
-				value = ""
-			}
-			layer.innerHTML = value
+			fieldContainerLayer.Component_SetValue(value)
 		}
 		return fieldView
 	}
@@ -198,25 +206,25 @@ class WalletDetailsView extends View
 		const self = this
 		const previewView = new View({}, self.context)
 		{
-			const preview__address_fieldView = self._new_fieldBaseView()
+			const preview__address_fieldView = self._new_fieldBaseView("Address", true)
 			self.preview__address_fieldView = preview__address_fieldView
 			previewView.addSubview(preview__address_fieldView)
 		}
 		const disclosedView = new View({}, self.context)
 		{
-			const disclosed__address_fieldView = self._new_fieldBaseView()
+			const disclosed__address_fieldView = self._new_fieldBaseView("Address")
 			self.disclosed__address_fieldView = disclosed__address_fieldView
 			disclosedView.addSubview(disclosed__address_fieldView)
 			//
-			const viewKey_fieldView = self._new_fieldBaseView()
+			const viewKey_fieldView = self._new_fieldBaseView("Secret View Key")
 			self.viewKey_fieldView = viewKey_fieldView
 			disclosedView.addSubview(viewKey_fieldView)
 			//
-			const spendKey_fieldView = self._new_fieldBaseView()
+			const spendKey_fieldView = self._new_fieldBaseView("Secret Spend Key")
 			self.spendKey_fieldView = spendKey_fieldView
 			disclosedView.addSubview(spendKey_fieldView)
 			//
-			const mnemonicSeed_fieldView = self._new_fieldBaseView()
+			const mnemonicSeed_fieldView = self._new_fieldBaseView("Secret Mnemonic")
 			self.mnemonicSeed_fieldView = mnemonicSeed_fieldView
 			disclosedView.addSubview(mnemonicSeed_fieldView)
 		}
@@ -225,7 +233,7 @@ class WalletDetailsView extends View
 			disclosedView: disclosedView,
 			padding_left: 18,
 			padding_right: 18,
-			padding_v: 16
+			padding_v: 0
 		}, self.context)
 		{
 			const layer = infoDisclosingView.layer
@@ -243,10 +251,9 @@ class WalletDetailsView extends View
 		const self = this
 		//
 		const layer = document.createElement("div")
-		layer.className = "transactions"
 		layer.style.border = "1px solid #ccc"
 		layer.style.borderRadius = "5px"
-		layer.style.marginBottom = "5px"
+		layer.style.margin = "16px 0"
 		//
 		self.layer_transactions = layer
 		self.layer.appendChild(layer)

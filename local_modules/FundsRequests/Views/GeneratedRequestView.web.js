@@ -131,7 +131,6 @@ class GeneratedRequestView extends View
 						self.context.pasteboard
 					)
 					buttonLayer.style.float = "right"
-					buttonLayer.style.marginTop = "1px"
 					buttonLayer.style.marginRight = "18px"
 					div.appendChild(buttonLayer)
 				}

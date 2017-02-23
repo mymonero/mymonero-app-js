@@ -134,9 +134,10 @@ function New_fieldTitle_labelLayer(labelText, context)
 		layer.innerHTML = labelText
 		layer.style.float = "left"
 		layer.style.textAlign = "left"
-		layer.style.fontSize = "13px"
-		layer.style.fontWeight = "500" // semibold desired
+		layer.style.fontSize = "12px" // design says 13 but it's too big..?
+		layer.style.fontWeight = "400" // semibold desired
 		layer.style.color = "#FFFFFF"
+		layer.style.letterSpacing = "0.5px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 	}				
 	return layer
@@ -186,14 +187,15 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 	const layer = document.createElement("a")
 	{ // setup
 		layer.innerHTML = "COPY"
+		layer.style.marginTop = "1px" // per design
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
 		layer.style.fontSize = "15px"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-		layer.style.fontWeight = "bold"
+		layer.style.fontWeight = "500"
 		layer.style.fontSize = "11px"
 		layer.style.textDecoration = "none"
-		layer.style.color = "#00C6FF" // TODO: put in theme C?
+		layer.style.color = "#00C6FF"
 		layer.addEventListener("mouseenter", function()
 		{
 			if (layer.Component_IsEnabled !== false) {
@@ -208,7 +210,6 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 		})
 	}
 	var runtime_valueToCopy = value
-	console.log("runtime_valueToCopy", runtime_valueToCopy)
 	var runtime_pasteboard_valueContentType_orText = pasteboard_valueContentType_orText
 	{ // component fns
 		layer.Component_SetEnabled = function(enabled)
@@ -422,59 +423,71 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	fieldLabelTitle, 
 	value,
 	pasteboard, 
-	valueToDisplayIfValueNil_orDefault
+	valueToDisplayIfValueNil_orDefault,
+	optl_isTruncatedPreviewForm // single line, … trunc, etc
 )
 { 
 	__injectCSSRules_ifNecessary()
 	//
+	const isTruncatedPreviewForm = optl_isTruncatedPreviewForm == true ? true : false
+	//
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
 	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
 	const div = New_fieldContainerLayer()
-	var labelLayer;
-	var copy_buttonLayer; // functionally namespaced for scope clarity in call to SetValue below
-	var valueLayer;
-	{
-		{ // left
-			labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
-			div.appendChild(labelLayer)
+	const padding_btm = isTruncatedPreviewForm ? 13 : 19
+	div.style.padding = `15px 0 ${padding_btm}px 0`
+	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
+	var copy_buttonLayer = New_copyButton_aLayer(
+		context,
+		value,
+		isValueNil === false ? true : false,
+		pasteboard
+	)
+	var valueLayer = New_fieldValue_labelLayer("" + valueToDisplay, context)
+	if (isTruncatedPreviewForm == false) {
+		div.appendChild(labelLayer)
+		{
+			copy_buttonLayer.style.float = "right"
+			div.appendChild(copy_buttonLayer)
 		}
-		{ // right
-			const buttonLayer = New_copyButton_aLayer(
-				context,
-				value,
-				isValueNil === false ? true : false,
-				pasteboard
-			)
-			copy_buttonLayer = buttonLayer // essential
-			buttonLayer.style.float = "right"
-			div.appendChild(buttonLayer)
-		}
-		{ // to put the tx hash on the next line in the UI to make way for the COPY button
+		{
 			const clearingBreakLayer = document.createElement("br")
 			clearingBreakLayer.clear = "both"
 			div.appendChild(clearingBreakLayer)
 		}
-		valueLayer = New_fieldValue_labelLayer("" + valueToDisplay, context)
-		{ // special case
+		{
 			valueLayer.style.float = "left"
 			valueLayer.style.textAlign = "left"
-			//
-			valueLayer.style.width = "270px"
-			//
-			// valueLayer.style.webkitUserSelect = "all" // commenting for now as we have the COPY button
+			valueLayer.style.marginTop = "9px"
+			valueLayer.style.maxWidth = "270px"
+			div.appendChild(valueLayer)
 		}
-		div.appendChild(valueLayer)
+	} else {
+		{
+			labelLayer.style.float = "left"
+			div.appendChild(labelLayer)
+		}
+		{
+			valueLayer.style.maxWidth = "156px"
+			valueLayer.style.float = "left"
+			valueLayer.style.whiteSpace = "nowrap"
+			valueLayer.style.overflow = "hidden"
+			valueLayer.style.textOverflow = "ellipsis"
+			valueLayer.style.marginLeft = "23px"
+			div.appendChild(valueLayer)
+		}
+		{
+			div.appendChild(copy_buttonLayer)
+		}
 	}
 	div.appendChild(New_clearingBreakLayer()) // preserve height; better way?
+	div.Component_SetValue = function(to_value)
 	{
-		div.Component_SetValue = function(to_value)
-		{
-			const to_valueToDisplay = isValueNil === false ? "" + to_value : valueToDisplayIfValueNil_orDefault
-			valueLayer.innerHTML = to_valueToDisplay
-			copy_buttonLayer.Component_SetValue(to_value)
-		}
+		const to_value_isNil = to_value === null || typeof to_value === 'undefined' || to_value === ""
+		const to_valueToDisplay = !to_value_isNil ? ""+to_value : valueToDisplayIfValueNil_orDefault
+		valueLayer.innerHTML = to_valueToDisplay
+		copy_buttonLayer.Component_SetValue(to_value)
 	}
-	//
 	return div
 }
 exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_copyable_longStringValueField_component_fieldContainerLayer

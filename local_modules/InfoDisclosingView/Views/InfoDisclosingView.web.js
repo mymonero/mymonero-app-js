@@ -68,6 +68,7 @@ class InfoDisclosingView extends View
 			layer.style.left = "0"
 			layer.style.top = "0"
 			layer.style.padding = "0"
+			layer.style.overflow = "hidden"
 		}
 		{
 			const to_width = `calc(100% - ${self.padding_right + self.padding_left}px)`
@@ -114,12 +115,9 @@ class InfoDisclosingView extends View
 						layer,
 						{ rotateZ: rotate_deg_str },
 						{
-							duration: self._transitionAnimationDuration_ms(),
-							easing: "ease-in",
-							complete: function()
-							{
-								console.log("DONE animating")
-							}
+							duration: self._arrowRotate_transitionAnimationDuration_ms(),
+							easing: "ease-out",
+							complete: function() {}
 						}
 					)
 				} else {
@@ -151,9 +149,17 @@ class InfoDisclosingView extends View
 	//
 	// Runtime - Accessors 
 	//
-	_transitionAnimationDuration_ms()
+	_arrowRotate_transitionAnimationDuration_ms()
 	{
-		return 150
+		return 90
+	}
+	_layout_transitionAnimationDuration_ms()
+	{
+		return 350
+	}
+	_fade_transitionAnimationDuration_ms()
+	{
+		return 320
 	}
 	//
 	//
@@ -185,29 +191,49 @@ class InfoDisclosingView extends View
 			return
 		}
 		fromView.layer.style.position = "absolute"
+		toView.layer.style.position = "absolute"
+		toView.layer.style.opacity = "0"
+		self.addSubview(toView)
+		// v--- must ask for height /after/ inserting into the DOM
+		const to_height_px = toView.layer.offsetHeight
+		//
+		self.layer.style.height = fromView.layer.offsetHeight + "px" // flip from "auto" to px system
+		Animate(
+			self.layer,
+			{
+				height: to_height_px + "px"
+			},
+			{
+				duration: self._layout_transitionAnimationDuration_ms(),
+				easing: "ease-in-out",
+				complete: function() {}
+			}
+		)
+		//
 		Animate(
 			fromView.layer, { opacity: 0 },
 			{
-				duration: self._transitionAnimationDuration_ms(),
-				easing: "ease-in",
+				delay: self._fade_transitionAnimationDuration_ms()/7, // so it starts slightly after the layout anim
+				duration: self._fade_transitionAnimationDuration_ms(),
+				easing: "ease-in-out",
 				complete: function()
 				{
-					fromView.removeFromSuperview()
+					fromView.removeFromSuperview() // which we can do as soon as it's invisible… because
+					// the layout won't be changed by doing so, because we set self.layer.style.height to the offsetHeight and do px animation instead of relying on contents
 					fromView.layer.style.position = "relative"
 				}
 			}
 		)
-		toView.layer.style.position = "absolute"
-		toView.layer.style.opacity = "0"
-		self.addSubview(toView)
 		Animate(
 			toView.layer, { opacity: 1.0 },
 			{
-				duration: self._transitionAnimationDuration_ms(),
-				easing: "ease-in",
+				delay: self._fade_transitionAnimationDuration_ms()/10, // so it starts slightly after the layout anim
+				duration: self._fade_transitionAnimationDuration_ms(),
+				easing: "ease-in-out",
 				complete: function()
 				{
 					toView.layer.style.position = "relative"
+					self.layer.style.height = "auto" // flip back
 					//
 					self.isTransitioning = false // going to consider this 'done'
 				}

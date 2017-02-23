@@ -77,6 +77,7 @@ class WalletCellContentsView extends View
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
 		layer.style.padding = "22px 66px 4px 80px"
+		layer.style.letterSpacing = "0.5px"
 		layer.style.height = "auto"
 		layer.style.display = "block"
 		layer.style.fontSize = "13px"
