@@ -67,7 +67,7 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 	_setup_form_walletMnemonicField()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SECRET MNEMONIC", self.context)
 			div.appendChild(labelLayer)
@@ -96,7 +96,7 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 		self.addrAndKeysFieldsContainerLayer = document.createElement("div")
 		self.addrAndKeysFieldsContainerLayer.style.display = "none" // for now
 		{ // wallet address
-			const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+			const div = commonComponents_forms.New_fieldContainerLayer()
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
 				div.appendChild(labelLayer)
@@ -118,7 +118,7 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
 		{ // wallet viewKey
-			const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+			const div = commonComponents_forms.New_fieldContainerLayer()
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("VIEW KEY", self.context)
 				div.appendChild(labelLayer)
@@ -140,7 +140,7 @@ class UseExisting_MetaInfo_View extends Wallet_MetaInfo_BaseView
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
 		{ // wallet spendKey
-			const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+			const div = commonComponents_forms.New_fieldContainerLayer()
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SPEND KEY", self.context)
 				div.appendChild(labelLayer)

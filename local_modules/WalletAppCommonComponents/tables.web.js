@@ -195,7 +195,6 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 		layer.style.fontWeight = "500"
 		layer.style.fontSize = "11px"
 		layer.style.textDecoration = "none"
-		layer.style.color = "#00C6FF"
 		layer.addEventListener("mouseenter", function()
 		{
 			if (layer.Component_IsEnabled !== false) {
@@ -219,10 +218,12 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 				layer.href = "#" // to make it look clickable
 				layer.style.opacity = "1"
 				layer.style.cursor = "pointer"
+				layer.style.color = "#00C6FF"
 			} else {
 				layer.href = ""
-				layer.style.opacity = "0.5"
+				layer.style.opacity = "0.2"
 				layer.style.cursor = "default"
+				layer.style.color = "#CCCCCC"
 			}
 		}
 		layer.Component_SetValue = function(to_value, to_pasteboard_valueContentType_orText)
@@ -275,7 +276,10 @@ function New_redTextButtonView(text, context)
 	//
 	layer.style.display = "block" // own line
 	//
-	layer.style.fontSize = "11px"
+	layer.style.fontSize = "10px" // design says 11 but chrome renders too large; simulating…
+	layer.style.letterSpacing = "0.5px"
+	layer.style.fontWeight = "500"
+	//
 	layer.style.marginLeft = "22px"
 	layer.style.fontWeight = "100"
 	layer.style.color = "#F97777"
@@ -434,7 +438,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
 	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
 	const div = New_fieldContainerLayer()
-	const padding_btm = isTruncatedPreviewForm ? 13 : 19
+	const padding_btm = isTruncatedPreviewForm ? 12 : 19
 	div.style.padding = `15px 0 ${padding_btm}px 0`
 	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
 	var copy_buttonLayer = New_copyButton_aLayer(
@@ -488,6 +492,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 		valueLayer.innerHTML = to_valueToDisplay
 		copy_buttonLayer.Component_SetValue(to_value)
 	}
+	div.Component_GetLabelLayer = function() { return labelLayer } // kinda gross… TODO: make this into a View component
 	return div
 }
 exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_copyable_longStringValueField_component_fieldContainerLayer

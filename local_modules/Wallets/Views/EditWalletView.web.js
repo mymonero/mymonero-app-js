@@ -94,9 +94,9 @@ class EditWalletView extends View
 	_setup_form_walletNameField()
 	{ // Wallet Name
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("WALLET NAME", self.context) // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("WALLET NAME", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -120,9 +120,9 @@ class EditWalletView extends View
 	_setup_form_walletSwatchField()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR", self.context) // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR", self.context)
 			div.appendChild(labelLayer)
 			//
 			const view = commonComponents_walletColorPicker.New_1OfN_WalletColorPickerInputView(

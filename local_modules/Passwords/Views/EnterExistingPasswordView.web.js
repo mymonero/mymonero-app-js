@@ -102,7 +102,7 @@ class EnterExistingPasswordView extends View
 		containerLayer.style.textAlign = "left"
 		{
 			const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
-			const layer = commonComponents_forms.New_fieldTitle_labelLayer(passwordType_humanReadableString.toUpperCase(), self.context) // note use of _forms.
+			const layer = commonComponents_forms.New_fieldTitle_labelLayer(passwordType_humanReadableString.toUpperCase(), self.context)
 			layer.style.width = "auto"
 			layer.style.display = "inline-block"
 			layer.style.float = "left"

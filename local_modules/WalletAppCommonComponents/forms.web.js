@@ -35,7 +35,6 @@ function _new_fieldContainerLayer()
 {
 	const layer = document.createElement("div")
 	layer.style.padding = "0 10px"
-	//
 	return layer
 }
 exports.New_fieldContainerLayer = _new_fieldContainerLayer
@@ -43,16 +42,15 @@ exports.New_fieldContainerLayer = _new_fieldContainerLayer
 function New_fieldTitle_labelLayer(labelText, context)
 {
 	const layer = document.createElement("span")
-	{
-		layer.innerHTML = labelText
-		layer.style.display = "block" // own line
-		layer.style.margin = "18px 0 8px 13px"
-		layer.style.textAlign = "left"
-		layer.style.fontSize = "11px"
-		layer.style.color = "#f8f7f8"
-		layer.style.fontFamily = context.themeController.FontFamily_monospace()
-		layer.style.fontWeight = "100"
-	}
+	layer.innerHTML = labelText
+	layer.style.display = "block" // own line
+	layer.style.margin = "18px 0 8px 13px"
+	layer.style.textAlign = "left"
+	layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
+	layer.style.letterSpacing = "0.5px"
+	layer.style.fontWeight = "300" // instead of 500, cause this color, white, is rendered strong
+	layer.style.color = "#f8f7f8"
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer

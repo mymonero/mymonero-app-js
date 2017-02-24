@@ -103,7 +103,7 @@ class WalletDetailsView extends View
 			layer.style.width = "100%"
 			layer.style.height = "71px"
 			layer.style.marginTop = "12px"
-			layer.style.padding = "17px 18px"
+			layer.style.padding = "17px 17px"
 			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 			layer.style.borderRadius = "5px"
 			//
@@ -199,8 +199,7 @@ class WalletDetailsView extends View
 			fieldContainerLayer.Component_SetValue(value)
 		}
 		return fieldView
-	}
-	
+	}	
 	_setup__account_InfoDisclosingView()
 	{
 		const self = this
@@ -251,7 +250,7 @@ class WalletDetailsView extends View
 		const self = this
 		//
 		const layer = document.createElement("div")
-		layer.style.margin = "15px 0 16px 0"
+		layer.style.margin = `16px 0 40px 0` // when we add 'Load more' btn, 40->16
 		layer.style.background = "#383638"
 		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 		layer.style.borderRadius = "5px"		
@@ -487,9 +486,13 @@ class WalletDetailsView extends View
 			//
 			return
 		}
+		const stateCachedTransactions = wallet.New_StateCachedTransactions()
+		if (stateCachedTransactions.length == 0) {
+			console.log("NO TRANSACTIONS HERE… what to show?")
+			return
+		}
 		const listContainerLayer = document.createElement("div")
 		{
-			const stateCachedTransactions = wallet.New_StateCachedTransactions()
 			stateCachedTransactions.forEach(
 				function(tx, i)
 				{

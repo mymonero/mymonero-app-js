@@ -30,6 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 //
 class TransactionDetailsView extends View
@@ -78,7 +79,7 @@ class TransactionDetailsView extends View
 		self.layer.style.color = "#c0c0c0" // temporary
 		//
 		self.layer.style.overflowY = "scroll"
-		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		self.layer.style.padding = "0 16px 40px 16px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		self.layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
@@ -148,7 +149,6 @@ class TransactionDetailsView extends View
 		//
 		return transaction.approx_float_amount || ""
 	}
-
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
@@ -168,17 +168,15 @@ class TransactionDetailsView extends View
 			}
 			layer.innerHTML = valueString
 		}
-		{ // observe
-			view.layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					// disabled
-					return false
-				}
-			)
-		}
+		view.layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				// disabled
+				return false
+			}
+		)
 		return view
 	}
 	
@@ -186,20 +184,9 @@ class TransactionDetailsView extends View
 	{
 		const self = this
 		const transaction = self.transaction
-		const colorHexString_orNil = transaction.approx_float_amount < 0 ? "red" : null
+		const colorHexString_orNil = transaction.approx_float_amount < 0 ? "#F97777" : null
 		//
 		return colorHexString_orNil // null meaning go with the default
-	}
-	//
-	//
-	// Internal - Runtime - Accessors - Child elements - Metrics
-	//
-	//
-	_idPrefix()
-	{
-		const self = this
-		//
-		return self.constructor.name + "_" + self.View_UUID()
 	}
 	//
 	//
@@ -213,14 +200,14 @@ class TransactionDetailsView extends View
 			throw self.constructor.name + " opened while wallet failed to init or boot."
 			return
 		}
-		const transaction = self.transaction
 		{ // clear layer children
 			while (self.layer.firstChild) {
 			    self.layer.removeChild(self.layer.firstChild)
 			}
 			self.tableSection_containerLayer = null // was just removed; free
 		}
-		{ // messages/alerts
+		const transaction = self.transaction
+		{ // messages/alerts - locked
 			if (transaction.isUnlocked !== true) {
 				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
 				var messageString = "This transaction is currently locked. " + lockedReason
@@ -228,7 +215,7 @@ class TransactionDetailsView extends View
 				self.layer.appendChild(layer)
 			}
 		}
-		{
+		{ // messages/alerts - pending/confirmation
 			if (transaction.isJustSentTransaction === true) {
 				const messageString = "Your Monero is on its way."
 				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString, true)
@@ -240,77 +227,98 @@ class TransactionDetailsView extends View
 				// then it'll effectively be called for us after init
 			}
 		}
+		// v- NOTE: only using commonComponents_forms for the styling here so that's somewhat fragile
+		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("DETAILS", self.context)
+		labelLayer.style.marginTop = "0"
+		labelLayer.style.marginBottom = "0"
+		labelLayer.style.paddingTop = "0"
+		labelLayer.style.paddingBottom = "0"
+		labelLayer.style.display = "block"
+		labelLayer.style.color = "#9E9C9E" // special case
+		labelLayer.style.fontWeight = "500" // to get specific visual weight w color
+		self.layer.appendChild(labelLayer)
+		//
 		const containerLayer = document.createElement("div")
-		{
-			containerLayer.style.border = "1px solid #888"
-			containerLayer.style.borderRadius = "5px"
-		}
 		self.tableSection_containerLayer = containerLayer
+		containerLayer.style.margin = "16px 0"
+		containerLayer.style.boxSizing = "border-box"
+		containerLayer.style.padding = "0 16px"
+		containerLayer.style.border = "0.5px solid #494749"
+		containerLayer.style.borderRadius = "5px"
 		{
 			self._addTableFieldLayer_date()
-			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-			self._addTableFieldLayer_amount()
-			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+			self._addTableFieldLayer_amountsFeesAndTotals()
 			self._addTableFieldLayer_mixin()
-			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			self._addTableFieldLayer_transactionHash()
-			containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 			self._addTableFieldLayer_paymentID()
 		}
 		self.layer.appendChild(containerLayer)
 		// self.DEBUG_BorderChildLayers()
 	}
+	___styleLabelLayerAsFieldHeader(labelLayer)
+	{
+		labelLayer.style.fontSize = "11px"
+		labelLayer.style.color = "#DFDEDF"
+	}
+	__new_tableFieldLayer_simpleValue(value, title, optl_color)
+	{
+		const self = this
+		const div = commonComponents_tables.New_fieldContainerLayer()
+		div.style.padding = "20px 0"
+		{
+			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(title, self.context)
+			self.___styleLabelLayerAsFieldHeader(labelLayer)
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value, self.context)
+			if (typeof optl_color !== 'undefined' && optl_color) {
+				valueLayer.style.color = optl_color
+			}
+			div.appendChild(valueLayer)
+			//
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?	
+		}
+		return div
+	}	
 	_addTableFieldLayer_date()
 	{
 		const self = this
-		const div = commonComponents_tables.New_fieldContainerLayer()
-		{
-			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Date", self.context)
-			div.appendChild(labelLayer)
-			//
-			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(self.transaction.timestamp.toString(), self.context) // TODO: format
-			div.appendChild(valueLayer)
-		}
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		const value = self.transaction.timestamp.toString() 
+		const title = "Date"
+		const div = self.__new_tableFieldLayer_simpleValue(
+			value,
+			title			
+		)
 		self.tableSection_containerLayer.appendChild(div)
 	}
-	_addTableFieldLayer_amount()
+	_addTableFieldLayer_amountsFeesAndTotals()
 	{
 		const self = this
-		const div = commonComponents_tables.New_fieldContainerLayer()
-		{
-			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Amount", self.context)
-			div.appendChild(labelLayer)
-			//
-			const value = self.transaction.approx_float_amount
-			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
-			{
-				if (value < 0) {
-					valueLayer.style.color = "red"
-				} else {
-					valueLayer.style.color = "#aaa"
-				}
-				//
-				// valueLayer.style.webkitUserSelect = "all" // commenting for now
-			}					
-			div.appendChild(valueLayer)
+		// Total
+		const value = self.transaction.approx_float_amount
+		const title = "Total"
+		var color;
+		if (value < 0) {
+			color = "#F97777"
+		} else {
+			color = "#FCFBFC"
 		}
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		const div = self.__new_tableFieldLayer_simpleValue(
+			value,
+			title,
+			color
+		)
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	_addTableFieldLayer_mixin()
 	{
 		const self = this
-		const div = commonComponents_tables.New_fieldContainerLayer()
-		{
-			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Mixin", self.context)
-			div.appendChild(labelLayer)
-			//
-			const value = self.transaction.mixin
-			const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
-			div.appendChild(valueLayer)
-		}
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+		const value = self.transaction.mixin 
+		const title = "Mixin"
+		const div = self.__new_tableFieldLayer_simpleValue(
+			value,
+			title			
+		)
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	_addTableFieldLayer_transactionHash()
@@ -326,6 +334,8 @@ class TransactionDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		const labelLayer = div.Component_GetLabelLayer()
+		self.___styleLabelLayerAsFieldHeader(labelLayer)
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	_addTableFieldLayer_paymentID()
@@ -341,6 +351,8 @@ class TransactionDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		const labelLayer = div.Component_GetLabelLayer()
+		self.___styleLabelLayerAsFieldHeader(labelLayer)
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	//

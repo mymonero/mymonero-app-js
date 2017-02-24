@@ -113,7 +113,7 @@ class RequestFundsView extends View
 	_setup_form_walletSelectLayer()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 			div.appendChild(labelLayer)
@@ -130,9 +130,9 @@ class RequestFundsView extends View
 	_setup_form_amountInputLayer()
 	{ // Request funds from sender
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context) // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -158,9 +158,9 @@ class RequestFundsView extends View
 	_setup_form_memoInputLayer()
 	{ // Memo
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO", self.context) // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
@@ -230,10 +230,10 @@ class RequestFundsView extends View
 	_setup_form_resolvedPaymentID_containerLayer()
 	{ // TODO: factor this into a commonComponent file
 		const self = this
-		const containerLayer = commonComponents_forms.New_fieldContainerLayer() // note use of _forms.
+		const containerLayer = commonComponents_forms.New_fieldContainerLayer()
 		containerLayer.style.display = "none" // initial state
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context) // note use of _forms.
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
 			containerLayer.appendChild(labelLayer)
 			//
 			const valueLayer = document.createElement("div")

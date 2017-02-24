@@ -64,6 +64,9 @@ class NavigationBarView extends View
 			{
 				layer.style.width = "100%"
 				layer.style.height = `${self.NavigationBarHeight()}px`
+				layer.style.backgroundColor = "#272527"
+			    layer.style.transition = "box-shadow 0.06 ease-in-out"
+				
 			}
 			{
 				layer.style.webkitAppRegion = "drag" // make draggable
@@ -72,15 +75,11 @@ class NavigationBarView extends View
 		}
 		{ // background decoration view
 			const view = new View({}, self.context)
-			{
-				const layer = self.layer
-				{
-					layer.style.position = "absolute"
-					layer.style.width = "100%"
-					layer.style.height = `${self.NavigationBarHeight()}px`
-				}
-				layer.style.backgroundColor = "#272527"
-			}
+			const layer = view.layer
+			layer.style.position = "absolute"
+			layer.style.width = "100%"
+			layer.style.height = `${self.NavigationBarHeight()}px`
+			layer.style.backgroundColor = "#272527"
 			self.backgroundView = view
 			self.addSubview(view)
 		}
@@ -129,28 +128,9 @@ class NavigationBarView extends View
 				layer.style.width = "15%"
 				layer.style.minWidth = `${self.NavigationBarHeight()}px`
 				layer.style.height = `${self.NavigationBarHeight()}px`
-				//
-				// layer.style.border = "1px solid red"
 			}
 			self.addSubview(view)
 			self.rightBarButtonHolderView = view
-		}
-		{ // navBarBottonScrollShadowLayer			
-			const layer = document.createElement("div")
-			{ // navBarBottonScrollShadowLayer
-				layer.style.position = "absolute"
-				layer.style.pointerEvents = "none" // allow to be clicked and scrolled through
-				layer.style.top = `${self.NavigationBarHeight()}px`
-				layer.style.left = "0px"
-				layer.style.width = "100%"
-				layer.style.height = "1px" // this can be modified later to display the shadow - maybe with a child element doing the decoration
-				layer.style.backgroundColor = "rgba(17, 17, 17, 0.5)" 
-				//
-				layer.style.opacity = "0" // initial state
-				self.navBarBottomScrollShadowLayer__cached_currentOpacity = "0" // see usage of this below for explanation
-			}
-			self.navBarBottomScrollShadowLayer = layer
-			self.layer.appendChild(layer)
 		}
 	}
 	//
@@ -167,7 +147,7 @@ class NavigationBarView extends View
 	//
 	NavigationBarHeight()
 	{
-		return 44
+		return 41
 	}
 	//
 	//
@@ -611,23 +591,17 @@ class NavigationBarView extends View
 	_configureNavBarScrollShadowAs_zeroOrNegScroll_hideShadow()
 	{
 		const self = this
-		if (self.navBarBottomScrollShadowLayer__cached_currentOpacity !== "0") { // cache used to prevent having to talk to the DOM
-			self.navBarBottomScrollShadowLayer__cached_currentOpacity = "0"
-			//
-			const layer = self.navBarBottomScrollShadowLayer
-			Animate(layer, "stop", true) // stop all animations, and clear all queued animations
-			Animate(layer, { opacity: 0 }, { duration: 60 });
+		if (self.isShowingScrollShadow !== false) {
+			self.isShowingScrollShadow = false
+			self.layer.style.boxShadow = "none"
 		}
 	}
 	_configureNavBarScrollShadowAs_positiveScroll_showShadow()
 	{
 		const self = this
-		if (self.navBarBottomScrollShadowLayer__cached_currentOpacity !== "1") { // cache used to prevent having to talk to the DOM
-			self.navBarBottomScrollShadowLayer__cached_currentOpacity = "1"
-			//
-			const layer = self.navBarBottomScrollShadowLayer
-			Animate(layer, "stop", true) // stop all animations, and clear all queued animations
-			Animate(layer, { opacity: 1 }, { duration: 60 });
+		if (self.isShowingScrollShadow !== true) {
+			self.isShowingScrollShadow = true
+			self.layer.style.boxShadow = "0 1px 0 0 rgba(0,0,0,0.60), 0 3px 6px 0 rgba(0,0,0,0.40)"
 		}
 	}
 }
