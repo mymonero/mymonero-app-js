@@ -473,7 +473,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			valueLayer.style.whiteSpace = "nowrap"
 			valueLayer.style.overflow = "hidden"
 			valueLayer.style.textOverflow = "ellipsis"
-			valueLayer.style.marginLeft = "23px"
+			valueLayer.style.marginLeft = "16px"
 			div.appendChild(valueLayer)
 		}
 		{

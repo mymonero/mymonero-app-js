@@ -251,9 +251,10 @@ class WalletDetailsView extends View
 		const self = this
 		//
 		const layer = document.createElement("div")
-		layer.style.border = "1px solid #ccc"
-		layer.style.borderRadius = "5px"
-		layer.style.margin = "16px 0"
+		layer.style.margin = "15px 0 16px 0"
+		layer.style.background = "#383638"
+		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+		layer.style.borderRadius = "5px"		
 		//
 		self.layer_transactions = layer
 		self.layer.appendChild(layer)
@@ -486,114 +487,128 @@ class WalletDetailsView extends View
 			//
 			return
 		}
-		const ul = document.createElement("ul")
+		const listContainerLayer = document.createElement("div")
 		{
 			const stateCachedTransactions = wallet.New_StateCachedTransactions()
 			stateCachedTransactions.forEach(
 				function(tx, i)
 				{
 					// console.log("tx", JSON.stringify(tx, null, '    '))
-					const li = document.createElement("li")
-					li.style.cursor = "pointer" // to make it look clickable
+					const listItemLayer = document.createElement("div")
+					listContainerLayer.appendChild(listItemLayer)
 					{
-						const table = document.createElement("table")
-						{ // tables forever
-							const tr_1 = document.createElement("tr")
+						const layer = listItemLayer
+						listItemLayer.style.position = "relative"
+						listItemLayer.style.left = "0"
+						listItemLayer.style.top = "0"
+						listItemLayer.style.width = "100%"
+						listItemLayer.style.height = "74px"
+					}
+					listItemLayer.addEventListener(
+						"click",
+						function(e)
+						{
+							e.preventDefault() // not that there would be one
 							{
-								{ // Amount
-									const td = document.createElement("td")
-									{
-										td.innerHTML = tx.approx_float_amount
-										td.style.textAlign = "left"
-										td.style.fontSize = "14px"
-										td.style.width = "75%"
-										td.style.fontFamily = "monospace" // TODO
-										td.style.color = tx.approx_float_amount < 0 ? "red" : "#f0f0f0"
-										//
-										// td.style.webkitUserSelect = "all" // decided to comment this because it interferes with cell click
-									}
-									tr_1.appendChild(td)
-								}
-								{ // Date
-									const td = document.createElement("td")
-									{
-										td.innerHTML = `${tx.timestamp.toString()}` // TODO: format per design (e.g. 27 NOV 2016)
-										td.style.textAlign = "right"
-										td.style.fontSize = "14px"
-										td.style.width = "25%"
-										td.style.fontFamily = "monospace" // TODO
-										td.style.color = "#ccc"
-									}
-									tr_1.appendChild(td)
-								}
+								const clicked_layer = this
+								// NOTE: here, we can safely capture the parent scope's `tx` or `i`
+								self._didClickTransaction(tx, i)
 							}
-							table.appendChild(tr_1)
-							//
-							const tr_2 = document.createElement("tr")
-							{
-								{ // Payment ID (or contact name?)
-									const td = document.createElement("td")
-									{
-										td.style.textAlign = "left"
-										td.style.width = "75%"
-									}
-									{
-										const paymentID_span = document.createElement("span")
-										{ // wrap to create ellipsis											
-											paymentID_span.style.display = "block" // to get width behavior
-											paymentID_span.style.width = "184px" // it would be nice to make this '70%' of the above '75%' but that doesn't seem to work properly
-											//
-											paymentID_span.style.whiteSpace = "nowrap"
-											paymentID_span.style.overflow = "hidden"
-											paymentID_span.style.textOverflow = "ellipsis"
-											paymentID_span.style.fontFamily = "monospace" // TODO
-											paymentID_span.style.fontSize = "14px"
-											paymentID_span.style.color = "#909090"
-											paymentID_span.style.textAlign = "left"
-											//
-											paymentID_span.innerHTML = `${ tx.payment_id || "N/A" }`
-										}
-										td.appendChild(paymentID_span)
-									}
-									tr_2.appendChild(td)
-								}
-								{ // Date
-									const td = document.createElement("td")
-									{
-										td.innerHTML = `${ tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED" }`
-										td.style.textAlign = "right"
-										td.style.fontSize = "11px"
-										td.style.width = "25%"
-										td.style.fontFamily = "monospace" // TODO
-										td.style.color = "#666"
-									}
-									tr_2.appendChild(td)
-								}
-							}
-							table.appendChild(tr_2)
+							return false
 						}
-						li.appendChild(table)
+					)
+					listItemLayer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer())
+					//
+					const layer1 = document.createElement("div")
+					layer1.style.width = "100%"
+					layer1.style.height = "38px"
+					listItemLayer.appendChild(layer1)
+					//
+					{ // Amount
+						const div = document.createElement("div")
+						layer1.appendChild(div)
+						div.style.verticalAlign = "top"
+						div.style.textAlign = "left"
+						div.style.fontSize = "12px" // design says 13px but looks too big in actual app
+						div.style.float = "left"
+						div.style.height = "34px"
+						div.style.fontWeight = "400"
+						div.style.boxSizing = "border-box"
+						div.style.padding = "21px 0 0 15px"
+						div.style.letterSpacing = "0.5px"
+						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.color = tx.approx_float_amount < 0 ? "#F97777" : "#FCFBFC"
+						//
+						// div.style.webkitUserSelect = "all" // decided to comment this because it interferes with cell click
+						div.innerHTML = tx.approx_float_amount
 					}
-					{ // observations
-						li.addEventListener(
-							"click",
-							function(e)
-							{
-								e.preventDefault() // not that there would be one
-								{
-									const clicked_layer = this
-									// NOTE: here, we can safely capture the parent scope's `tx` or `i`
-									self._didClickTransaction(tx, i)
-								}
-								return false
-							}
-						)
+					{ // Date
+						const div = document.createElement("div")
+						layer1.appendChild(div)
+						div.style.verticalAlign = "top"
+						div.style.float = "right"
+						div.style.fontSize = "12px" // design says 13px but looks too big in actual app
+						div.style.letterSpacing = "0.5px"
+						div.style.height = "34px"
+						div.style.boxSizing = "border-box"
+						div.style.padding = "21px 41px 0 0"
+						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontWeight = "100"
+						div.style.color = "#FCFBFC"
+						const date = tx.timestamp // TODO: this in UTC?
+						const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
+							'en-US'/*for now*/, 
+							{ year: 'numeric', month: 'short', day: 'numeric' }
+						).toUpperCase()
+						div.innerHTML = dateString 
 					}
-					ul.appendChild(li)
+					//
+					const layer2 = document.createElement("div")
+					layer2.style.width = "100%"
+					layer2.style.height = "34px"
+					listItemLayer.appendChild(layer2)
+					//
+					{ // Payment ID (or contact name?)
+						const div = document.createElement("div")
+						layer2.appendChild(div)
+						div.style.verticalAlign = "top"
+						div.style.float = "left"
+						div.style.width = "auto"
+						div.style.maxWidth = "189px"
+						div.style.boxSizing = "border-box"
+						div.style.padding = "1px 0 0 15px"
+						//
+						div.style.whiteSpace = "nowrap"
+						div.style.overflow = "hidden"
+						div.style.textOverflow = "ellipsis"
+						//
+						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontSize = "13px" 
+						div.style.color = "#9E9C9E"
+						div.style.fontWeight = "100"
+						//
+						div.innerHTML = `${ tx.payment_id || "N/A" }`
+					}
+					{ // Status
+						const div = document.createElement("div")
+						layer2.appendChild(div)
+						div.style.float = "right"
+						div.style.display = "inline-block"
+						div.style.textAlign = "right"
+						div.style.verticalAlign = "top"
+						div.style.fontSize = "10px" // design says 11 but next to 13px->12px, looks too big, so, 10
+						div.style.letterSpacing = "0.5px"
+						div.style.boxSizing = "border-box"
+						div.style.padding = "3px 41px 0 0"
+						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontWeight = "500"
+						div.style.color = "#6B696B"
+						div.innerHTML = `${ tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED" }`
+					}
 				}
 			)
 		}
-		layer_transactions.appendChild(ul)
+		layer_transactions.appendChild(listContainerLayer)
 	}
 	//
 	//
