@@ -534,7 +534,7 @@ class WalletDetailsView extends View
 						div.style.height = "34px"
 						div.style.fontWeight = "400"
 						div.style.boxSizing = "border-box"
-						div.style.padding = "21px 0 0 15px"
+						div.style.padding = "21px 0 0 16px"
 						div.style.letterSpacing = "0.5px"
 						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
 						div.style.color = tx.approx_float_amount < 0 ? "#F97777" : "#FCFBFC"
@@ -576,7 +576,7 @@ class WalletDetailsView extends View
 						div.style.width = "auto"
 						div.style.maxWidth = "189px"
 						div.style.boxSizing = "border-box"
-						div.style.padding = "1px 0 0 15px"
+						div.style.padding = "1px 0 0 16px"
 						//
 						div.style.whiteSpace = "nowrap"
 						div.style.overflow = "hidden"
