@@ -71,7 +71,8 @@ class TransactionDetailsView extends View
 		//
 		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		self.layer.style.width = "calc(100% - 20px)"
+		const margin_h = 16
+		self.layer.style.width = `calc(100% - ${2 * margin_h}px)`
 		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		//
 		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -79,7 +80,7 @@ class TransactionDetailsView extends View
 		self.layer.style.color = "#c0c0c0" // temporary
 		//
 		self.layer.style.overflowY = "scroll"
-		self.layer.style.padding = "0 16px 40px 16px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		self.layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		self.layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
@@ -229,7 +230,7 @@ class TransactionDetailsView extends View
 		}
 		// v- NOTE: only using commonComponents_forms for the styling here so that's somewhat fragile
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("DETAILS", self.context)
-		labelLayer.style.marginTop = "0"
+		labelLayer.style.marginTop = "15px"
 		labelLayer.style.marginBottom = "0"
 		labelLayer.style.paddingTop = "0"
 		labelLayer.style.paddingBottom = "0"
@@ -240,9 +241,9 @@ class TransactionDetailsView extends View
 		//
 		const containerLayer = document.createElement("div")
 		self.tableSection_containerLayer = containerLayer
-		containerLayer.style.margin = "16px 0"
+		containerLayer.style.margin = "8px 0"
 		containerLayer.style.boxSizing = "border-box"
-		containerLayer.style.padding = "0 16px"
+		containerLayer.style.padding = "0 16px 4px 16px"
 		containerLayer.style.border = "0.5px solid #494749"
 		containerLayer.style.borderRadius = "5px"
 		{
@@ -264,7 +265,7 @@ class TransactionDetailsView extends View
 	{
 		const self = this
 		const div = commonComponents_tables.New_fieldContainerLayer()
-		div.style.padding = "20px 0"
+		div.style.padding = "17px 0"
 		{
 			const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(title, self.context)
 			self.___styleLabelLayerAsFieldHeader(labelLayer)
@@ -274,6 +275,8 @@ class TransactionDetailsView extends View
 			if (typeof optl_color !== 'undefined' && optl_color) {
 				valueLayer.style.color = optl_color
 			}
+			valueLayer.style.marginTop = "-1px"
+			valueLayer.style.maxWidth = "75%" // should wrap
 			div.appendChild(valueLayer)
 			//
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?	
@@ -283,7 +286,12 @@ class TransactionDetailsView extends View
 	_addTableFieldLayer_date()
 	{
 		const self = this
-		const value = self.transaction.timestamp.toString() 
+		const date = self.transaction.timestamp
+		const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
+			'en-US'/*for now*/, 
+			{ year: 'numeric', month: 'short', day: 'numeric', hour: "numeric", minute: "numeric", second: "numeric" }
+		).toUpperCase()
+		const value = dateString
 		const title = "Date"
 		const div = self.__new_tableFieldLayer_simpleValue(
 			value,

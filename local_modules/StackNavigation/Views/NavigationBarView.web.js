@@ -88,8 +88,8 @@ class NavigationBarView extends View
 			{
 				self.defaultNavigationBarTitleColor = "#fcfbfc" // so we can use it at runtime
 				layer.style.color = self.defaultNavigationBarTitleColor
-				layer.style.fontSize = "13px"
 				layer.style.position = "absolute"
+				layer.style.fontSize = "12px"
 				layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 				layer.style.fontWeight = "500"
 				layer.style.top = "0%"

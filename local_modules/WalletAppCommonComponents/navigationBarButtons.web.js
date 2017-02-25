@@ -162,17 +162,16 @@ function New_RightSide_ValueDisplayLabelButtonView(context)
 		layer.href = "" // to make it non-clickable
 		layer.style.display = "block"
 		layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
-		layer.style.marginTop = "10px"
+		layer.style.marginTop = "12px"
 		layer.style.width = "auto"
 		layer.style.height = "auto"
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "11px"
-		layer.style.fontWeight = "100"
-		layer.style.fontFamily = "monospace"
-		layer.style.color = "#ccc"
+		layer.style.fontSize = "10px" // design is 11 but chrome renders too big, simulating
+		layer.style.letterSpacing = "0.5px"
+		layer.style.fontWeight = "500"
+		layer.style.fontFamily = context.themeController.FontFamily_monospace()
+		layer.style.color = "#9E9C9E"
 		layer.style.lineHeight = "200%" // % extra to get + aligned properly
-		layer.style.color = "#ccc"
-		layer.style.fontWeight = "100"
 		layer.style.textAlign = "center"
 		layer.style.cursor = "default"
 	}
