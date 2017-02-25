@@ -55,7 +55,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
-function New_fieldValue_textInputLayer(params)
+function New_fieldValue_textInputLayer(context, params)
 {
 	const layer = document.createElement("input")
 	{
@@ -81,8 +81,9 @@ function New_fieldValue_textInputLayer(params)
 		layer.style.border = "1px solid rgba(0,0,0,0)" // transparent border to preserve layout while showing validation clr border
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
+		layer.style.fontWeight = "100"
 		layer.style.padding = `0 ${padding_h}px`
-		layer.style.fontFamily = "monospace"
+		layer.style.fontFamily = context.themeController.FontFamily_monospace()
 		layer.style.outline = "none" // no focus ring
 	}
 	{

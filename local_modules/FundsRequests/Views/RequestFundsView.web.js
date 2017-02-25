@@ -135,7 +135,7 @@ class RequestFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "XMR"
 			})
 			self.amountInputLayer = valueLayer
@@ -163,7 +163,7 @@ class RequestFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "A description for this Monero request"
 			})
 			self.memoInputLayer = valueLayer

@@ -176,7 +176,7 @@ class SendFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
 			div.appendChild(labelLayer)
 			// ^ block
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "00.00"
 			})
 			valueLayer.style.textAlign = "right"
@@ -398,7 +398,7 @@ class SendFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "A specific payment ID"
 			})
 			self.manualPaymentIDInputLayer = valueLayer

@@ -85,7 +85,7 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("WALLET NAME", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "For your reference only"
 			})
 			self.walletNameInputLayer = valueLayer

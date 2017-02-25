@@ -127,7 +127,7 @@ class EnterExistingPasswordView extends View
 			containerLayer.appendChild(layer)
 		}
 		{
-			var layer = commonComponents_forms.New_fieldValue_textInputLayer({
+			var layer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "To continue",
 				target_width: 272
 			})

@@ -105,7 +105,7 @@ class EnterNewPasswordView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PIN OR PASSWORD", self.context)
 			div.appendChild(labelLayer)
 			//
-			const layer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const layer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: ""
 			})
 			layer.type = "password"
@@ -138,7 +138,7 @@ class EnterNewPasswordView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("CONFIRM", self.context)
 			div.appendChild(labelLayer)
 			//
-			const layer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const layer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: ""
 			})
 			layer.type = "password"

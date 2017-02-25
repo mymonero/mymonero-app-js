@@ -133,7 +133,7 @@ class ContactFormView extends View
 			div.appendChild(labelLayer)
 		}
 		{
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer({
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "Enter name"
 			})
 			self.fullnameInputLayer = valueLayer
@@ -200,7 +200,7 @@ class ContactFormView extends View
 			div.appendChild(labelLayer)
 		}
 		{
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self._overridable_initialValue_addressLayerOptions())
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, self._overridable_initialValue_addressLayerOptions())
 			self.addressInputLayer = valueLayer
 			{
 				valueLayer.addEventListener(
@@ -229,7 +229,7 @@ class ContactFormView extends View
 			}
 		}
 		{
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self._overridable_initialValue_paymentIDLayerOptions())
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, self._overridable_initialValue_paymentIDLayerOptions())
 			self.paymentIDInputLayer = valueLayer
 			if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
 				{
