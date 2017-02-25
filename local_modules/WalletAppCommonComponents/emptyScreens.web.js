@@ -32,7 +32,7 @@ const View = require('../Views/View.web')
 //
 const default__margin_side = 14
 //
-function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, context, optl_explicitMarginSide)
+function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, context, optl_explicitMarginSide, optl_contentTranslateYPX)
 {
 	const emoji = typeof optl_emoji === 'string' ? optl_emoji : ""
 	const messageText = typeof optl_messageText === 'string' ? optl_messageText : ""
@@ -56,7 +56,8 @@ function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, contex
 		const layer = document.createElement("div")
 		layer.style.display = "table-cell"
 		layer.style.verticalAlign = "middle"
-	    layer.style.transform = "translateY(-20px)" // pull everything up per design
+		const translateY_px = typeof optl_contentTranslateYPX == 'undefined' ? -20 : optl_contentTranslateYPX
+	    layer.style.transform = "translateY(" + translateY_px + "px)" // pull everything up per design
 		
 		contentContainerLayer = layer
 		view.layer.appendChild(layer)
@@ -78,11 +79,12 @@ function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, contex
 		const layer = document.createElement("div")
 		message_layer = layer
 		layer.innerHTML = messageText
-		layer.style.margin = "0 0 0 0"
+		layer.style.margin = "5px 0 0 0"
 		layer.style.width = "100%"
 		layer.style.height = "auto"
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "19px"
+		layer.style.fontWeight = "200"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.color = "#9e9c9e"
 		layer.style.textAlign = "center"

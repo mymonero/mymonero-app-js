@@ -33,6 +33,7 @@ const monero_config = require('../../monero_utils/monero_config')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
 const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
 class WalletDetailsView extends View
@@ -102,7 +103,7 @@ class WalletDetailsView extends View
 			layer.style.boxSizing = "border-box"
 			layer.style.width = "100%"
 			layer.style.height = "71px"
-			layer.style.marginTop = "12px"
+			layer.style.marginTop = "15px"
 			layer.style.padding = "17px 17px"
 			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 			layer.style.borderRadius = "5px"
@@ -244,7 +245,7 @@ class WalletDetailsView extends View
 			const layer = infoDisclosingView.layer
 			layer.style.margin = "16px 0 0 0"
 			layer.style.boxSizing = "border-box"
-			layer.style.border = "0.5px solid #494749"
+			layer.style.border = "0.5px solid #373537"
 			layer.style.borderRadius = "5px"
 			layer.style.padding = "0" // because padding, while useful, makes using pos:abslute to animate this more difficult in InfoDisclosingView
 		}
@@ -254,13 +255,7 @@ class WalletDetailsView extends View
 	setup_layers_transactions()
 	{
 		const self = this
-		//
 		const layer = document.createElement("div")
-		layer.style.margin = `16px 0 40px 0` // when we add 'Load more' btn, 40->16
-		layer.style.background = "#383638"
-		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-		layer.style.borderRadius = "5px"		
-		//
 		self.layer_transactions = layer
 		self.layer.appendChild(layer)
 	}
@@ -400,28 +395,26 @@ class WalletDetailsView extends View
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
 		const layer = view.layer
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					{ // v--- self.navigationController because self is presented packaged in a StackNavigationView				
-						const EditWalletView = require('./EditWalletView.web')
-						const view = new EditWalletView({
-							wallet: self.wallet
-						}, self.context)
-						self.current_EditWalletView = view
-						//
-						const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-						const navigationView = new StackAndModalNavigationView({}, self.context)
-						navigationView.SetStackViews([ view ])
-						self.navigationController.PresentView(navigationView, true)
-					}
-					return false
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				{ // v--- self.navigationController because self is presented packaged in a StackNavigationView				
+					const EditWalletView = require('./EditWalletView.web')
+					const view = new EditWalletView({
+						wallet: self.wallet
+					}, self.context)
+					self.current_EditWalletView = view
+					//
+					const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+					const navigationView = new StackAndModalNavigationView({}, self.context)
+					navigationView.SetStackViews([ view ])
+					self.navigationController.PresentView(navigationView, true)
 				}
-			)
-		}
+				return false
+			}
+		)
 		return view
 	}
 	//
@@ -482,22 +475,33 @@ class WalletDetailsView extends View
 			}
 		}
 		if (wallet.HasEverFetched_transactions() === false) {
-			{
-				const p = document.createElement("p")
-				{
-					p.innerHTML = "Loading…"
-				}
-				layer_transactions.appendChild(p)
-			}
+			const p = document.createElement("p")
+			p.innerHTML = "Loading…"
+			layer_transactions.appendChild(p)
 			//
 			return
 		}
 		const stateCachedTransactions = wallet.New_StateCachedTransactions()
 		if (stateCachedTransactions.length == 0) {
-			console.log("NO TRANSACTIONS HERE… what to show?")
+			const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
+				"😴", 
+				"You don't have any<br/>transactions yet.",
+				self.context,
+				0, // margin side
+				-12  // content translate y
+			)
+			const layer = view.layer
+			layer.style.margin = `16px 0 16px 0` // when we add 'Load more' btn, 40->16
+			layer.style.height = "276px"
+			self.addSubview(view)
+			//
 			return
 		}
 		const listContainerLayer = document.createElement("div")
+		listContainerLayer.style.margin = `16px 0 40px 0` // when we add 'Load more' btn, 40->16
+		listContainerLayer.style.background = "#383638"
+		listContainerLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+		listContainerLayer.style.borderRadius = "5px"		
 		{
 			stateCachedTransactions.forEach(
 				function(tx, i)
