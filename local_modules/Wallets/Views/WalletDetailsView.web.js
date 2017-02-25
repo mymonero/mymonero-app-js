@@ -158,8 +158,14 @@ class WalletDetailsView extends View
 				const coinUnitPlaces = monero_config.coinUnitPlaces
 				const raw_balanceString__components = raw_balanceString.split(".")
 				if (raw_balanceString__components.length == 1) {
-					finalized_main_string = raw_balanceString__components[0] + "."
-					finalized_paddingZeros_string = Array(coinUnitPlaces).join("0")
+					const balance_aspect_integer = raw_balanceString__components[0]
+					if (balance_aspect_integer === "0") {
+						finalized_main_string = ""
+						finalized_paddingZeros_string = "00." + Array(coinUnitPlaces).join("0")
+					} else {
+						finalized_main_string = balance_aspect_integer + "."
+						finalized_paddingZeros_string = Array(coinUnitPlaces).join("0")
+					}
 				} else if (raw_balanceString__components.length == 2) {
 					finalized_main_string = raw_balanceString
 					const decimalComponent = raw_balanceString__components[1]
