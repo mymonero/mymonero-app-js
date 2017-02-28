@@ -108,21 +108,38 @@ function New_ActionButtonView(
 	}
 	view.SetColorType = function(colorType)
 	{
+		layer.classList.remove(commonComponents_hoverableCells.ClassFor_GreyCell())
+		layer.classList.remove(commonComponents_hoverableCells.ClassFor_BlueCell())
+		layer.classList.remove(commonComponents_hoverableCells.ClassFor_RedCell())
+		//		
 		if (colorType === "grey") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 			layer.style.color = "#FCFBFC"
 			layer.style.backgroundColor = "#383638"
 			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			//
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "12px"
+			layer.style.letterSpacing = "0.5px"
+			layer.style.fontWeight = "400"
 		} else if (colorType == "blue") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
 			layer.style.color = "#161416"
 			layer.style.backgroundColor = "#00C6FF"
 			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+			//
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "13px"
+			layer.style.fontWeight = "bold"
 		} else if (colorType === "red") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_RedCell())
 			layer.style.color = "#161416"
 			layer.style.backgroundColor = "#f97777"
 			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+			//
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "13px"
+			layer.style.fontWeight = "bold"
 		} else {
 			throw "unrecognized colorType " + colorType
 		}
@@ -145,8 +162,6 @@ function New_ActionButtonView(
 			view.SetColorType(optl_colorType || "grey")
 		}		
 		layer.style.textDecoration = "none"
-		layer.style.fontSize = "13px"
-		layer.style.fontWeight = "500"
 		layer.style.lineHeight = ActionButton_h + "px"
 		layer.style.textAlign = "center"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()

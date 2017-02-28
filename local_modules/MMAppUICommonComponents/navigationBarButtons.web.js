@@ -35,8 +35,24 @@ const commonComponents_hoverableCells = require('./hoverableCells.web')
 function _New_ButtonBase_View(context)
 {
 	const view = new BarButtonBaseView({}, context)
+	const layer = view.layer
+	//
+	layer.style.borderRadius = "3px"
+	layer.style.height = "24px"
+	//
+	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+	layer.style.textAlign = "center"
+	layer.style.border = "none"
+	layer.style.textDecoration = "none"
+	layer.style.lineHeight = "24px"
+	//
+	layer.style.boxSizing = "border-box"
+	layer.style.width = "auto"
+	layer.style.padding = "0 8px"
+	//
 	view.SetEnabled(true)
-	view.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+	layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+	//
 	return view
 }
 exports.New_ButtonBase_View = _New_ButtonBase_View
@@ -46,18 +62,15 @@ function New_GreyButtonView(context)
 	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
-	layer.style.height = "24px"
-	layer.style.borderRadius = "3px"
 	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
 	layer.style.backgroundColor = "#383638"
-	layer.style.border = "none"
-	layer.style.textDecoration = "none"
-	layer.style.fontSize = "13px"
-	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-	layer.style.lineHeight = "24px"
 	layer.style.color = "#FCFBFC"
-	layer.style.fontWeight = "500"
-	layer.style.textAlign = "center"
+	
+	layer.style.webkitFontSmoothing = "subpixel-antialiased"
+	layer.style.fontSize = "12px"
+	layer.style.letterSpacing = "0.5px"
+	layer.style.fontWeight = "400"
+		
 	return view
 }
 exports.New_GreyButtonView = New_GreyButtonView
@@ -67,18 +80,14 @@ function New_BlueButtonView(context)
 	const view = _New_ButtonBase_View(context)
 	const layer = view.layer
 	layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
-	layer.style.height = "24px"
-	layer.style.borderRadius = "3px"
 	layer.style.backgroundColor = "#00c6ff"
 	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
 	layer.style.color = "#161416"
-	layer.style.border = "none"
-	layer.style.textDecoration = "none"
+		
+	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "13px"
-	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-	layer.style.lineHeight = "24px"
-	layer.style.fontWeight = "500"
-	layer.style.textAlign = "center"
+	layer.style.fontWeight = "bold"
+	
 	return view
 }
 function New_RightSide_AddButtonView(context)
@@ -110,7 +119,6 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 	layer.style.display = "block"
 	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 	layer.style.marginTop = "10px"
-	layer.style.width = "60px"
 	//
 	return view
 }
@@ -123,7 +131,6 @@ function New_RightSide_SaveButtonView(context)
 	layer.innerHTML = "Save"
 	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 	layer.style.marginTop = "10px"
-	layer.style.width = "68px"
 	return view
 }
 exports.New_RightSide_SaveButtonView = New_RightSide_SaveButtonView
@@ -136,7 +143,6 @@ function New_RightSide_EditButtonView(context)
 	layer.style.display = "block"
 	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 	layer.style.marginTop = "10px"
-	layer.style.width = "41px"
 	return view	
 }
 exports.New_RightSide_EditButtonView = New_RightSide_EditButtonView
