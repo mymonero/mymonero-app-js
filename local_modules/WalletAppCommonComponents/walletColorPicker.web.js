@@ -30,6 +30,7 @@
 //
 const commonComponents_walletIcons = require('./walletIcons.web')
 const commonComponents_cssRules = require('./cssRules.web')
+const commonComponents_hoverableCells = require('./hoverableCells.web')
 //
 // CSS rules
 const NamespaceName = "walletColorPicker"
@@ -131,6 +132,10 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 	for (let i = 0 ; i < numberOf_hexColorStrings ; i++) {
 		const hexColorString = hexColorStrings[i]
 		const li = document.createElement("li")
+		{ // TODO: set .disabled on SetEnabled
+			li.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			li.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+		}
 		{
 			const div = commonComponents_walletIcons.New_WalletIconLayer(hexColorString)
 			li.appendChild(div)
