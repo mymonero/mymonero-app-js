@@ -34,7 +34,6 @@ const commonComponents_cssRules = require('./cssRules.web')
 // CSS rules
 const NamespaceName = "walletColorPicker"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-document[haveCSSRulesBeenInjected_documentKey] = false
 const cssRules =
 [
 	`.oneOfN-walletColorPicker{

@@ -33,7 +33,6 @@ const commonComponents_cssRules = require('./cssRules.web')
 //
 const NamespaceName = "Tables"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-document[haveCSSRulesBeenInjected_documentKey] = false
 const cssRules =
 [
 	`.table_field {
@@ -519,7 +518,7 @@ function New_tableCell_separatorLayer()
 	const layer = document.createElement("div")
 	layer.style.background = "#413e40"
 	layer.style.position = "absolute"
-	layer.style.bottom = "0"
+	layer.style.bottom = "-0.5px" // instead of 0… to make sure hover effects look nicer (but it might not do much in the end)
 	layer.style.height = "1px"
 	const margin_left = 50
 	layer.style.width = `calc(100% - ${margin_left}px)`

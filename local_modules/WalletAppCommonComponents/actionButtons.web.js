@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../Views/View.web')
+const commonComponents_hoverableCells = require('./hoverableCells.web')
 //
 const ActionButton_h = 33
 const ActionButton_rightMargin = 8
@@ -82,27 +83,48 @@ function New_ActionButtonView(
 	isRightmostButtonInContainer,
 	clicked_fn, // (clickedLayer, e) -> Void
 	context,
-	optl_icon_bgPos_top
+	optl_icon_bgPos_top,
+	optl_colorType // "blue", "grey", "red"
 )
 {
 	const hasImage = iconimage_filename !== null && typeof iconimage_filename !== 'undefined'
 	const icon_bgPos_top = typeof optl_icon_bgPos_top === 'undefined' ? 8 : optl_icon_bgPos_top
 	//
 	const view = new View({ tag: "a" }, context)
+	const layer = view.layer
+	view.Disable = function()
+	{ // is this going to create a retain cycle?
+		view.isDisabled = true
+		layer.href = "" // to make it non-clickable
+		layer.style.opacity = "0.5"
+		layer.classList.add("disabled")
+	}
+	view.Enable = function()
+	{ // is this going to create a retain cycle?
+		view.isDisabled = false
+		layer.href = "#" // to make it clickable
+		layer.style.opacity = "1.0"
+		layer.classList.remove("disabled")
+	}
+	view.SetColorType = function(colorType)
 	{
-		view.Disable = function()
-		{ // is this going to create a retain cycle?
-			view.isDisabled = true
-			const layer = view.layer
-			layer.href = "" // to make it non-clickable
-			layer.style.opacity = "0.5"
-		}
-		view.Enable = function()
-		{ // is this going to create a retain cycle?
-			view.isDisabled = false
-			const layer = view.layer
-			layer.href = "#" // to make it clickable
-			layer.style.opacity = "1.0"
+		if (colorType === "grey") {
+			layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+			layer.style.color = "#FCFBFC"
+			layer.style.backgroundColor = "#383638"
+			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+		} else if (colorType == "blue") {
+			layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
+			layer.style.color = "#161416"
+			layer.style.backgroundColor = "#00C6FF"
+			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+		} else if (colorType === "red") {
+			layer.classList.add(commonComponents_hoverableCells.ClassFor_RedCell())
+			layer.style.color = "#161416"
+			layer.style.backgroundColor = "#f97777"
+			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+		} else {
+			throw "unrecognized colorType " + colorType
 		}
 	}
 	{ // setup/style
@@ -118,20 +140,23 @@ function New_ActionButtonView(
 		layer.style.width = `calc(50% - ${ActionButton_rightMargin/2}px` // we're assuming there are only two buttons
 		layer.style.height = ActionButton_h + "px"
 		layer.style.borderRadius = "3px"
-		layer.style.backgroundColor = "#383638"
-		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"			
+		{
+			layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			view.SetColorType(optl_colorType || "grey")
+		}		
 		layer.style.textDecoration = "none"
 		layer.style.fontSize = "13px"
 		layer.style.fontWeight = "500"
 		layer.style.lineHeight = ActionButton_h + "px"
-		layer.style.color = "#ddd" // TODO
 		layer.style.textAlign = "center"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		if (isRightmostButtonInContainer !== true) {
 			layer.style.marginRight = ActionButton_rightMargin + "px"
 		}
-		//
-		layer.addEventListener("click", function(e) 
+	}
+	layer.addEventListener(
+		"click", 
+		function(e) 
 		{
 			e.preventDefault()
 			if (view.isDisabled === true) {
@@ -140,8 +165,8 @@ function New_ActionButtonView(
 			const clickedLayer = this
 			clicked_fn(clickedLayer, e)
 			return false
-		})
-	}
+		}
+	)
 	return view
 }
 exports.New_ActionButtonView = New_ActionButtonView

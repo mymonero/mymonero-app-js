@@ -217,6 +217,7 @@ class FundsRequestsListView extends ListView
 				layer.style.background = "#383638"
 				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 				layer.style.borderRadius = "5px"
+				layer.style.overflow = "hidden" // to cut off hover style at borders
 				layer.style.display = "block"
 			}
 		}

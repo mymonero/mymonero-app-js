@@ -28,42 +28,47 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
+const commonComponents_cssRules = require('./cssRules.web')
 //
-class BarButtonBaseView extends View
+const NamespaceName = "hoverableCell"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.hoverable-cell {
+		transition: background-color 0.1s ease-out;
+	}`,
+	`.hoverable-cell.utility:not(.disabled):hover {
+		background-color: rgba(73, 71, 73, 0.75) !important;
+	}`,
+	`.hoverable-cell.action:not(.disabled):hover {
+		background-color: #33d1ff !important;
+	}`,
+	`.hoverable-cell.destructive:not(.disabled):hover {
+		background-color: #F77E7E !important;
+	}`
+]
+function __injectCSSRules_ifNecessary()
 {
-	constructor(options, context)
-	{
-		if (typeof options.tag !== 'undefined') {
-			options.tag = "a" // it's a button
-		}
-		super(options, context)
-		//
-		const self = this
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-	}
-	//
-	//
-	// Runtime - Imperatives
-	//
-	SetEnabled(isEnabled)
-	{
-		const self = this
-		self.isEnabled = isEnabled
-		const layer = self.layer
-		if (self.isEnabled) {
-			layer.style.opacity = "1.0"
-			layer.style.href = "#"
-			layer.classList.remove("disabled")
-		} else {
-			layer.style.opacity = "0.5"
-			layer.style.href = ""
-			layer.classList.add("disabled")
-		}
-	}
+	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
-module.exports = BarButtonBaseView
+
+exports.ClassFor_HoverableCell = function()
+{
+	__injectCSSRules_ifNecessary() 
+	return "hoverable-cell"
+}
+exports.ClassFor_GreyCell = function()
+{
+	__injectCSSRules_ifNecessary()
+	return "utility"
+}
+exports.ClassFor_BlueCell = function()
+{
+	__injectCSSRules_ifNecessary()
+	return "action"
+}
+exports.ClassFor_RedCell = function()
+{
+	__injectCSSRules_ifNecessary()
+	return "destructive"
+}

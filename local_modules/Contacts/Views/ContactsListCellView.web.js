@@ -30,6 +30,7 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
+const commonComponents_hoverableCells = require('../../WalletAppCommonComponents/hoverableCells.web')
 //
 class ContactsListCellView extends ListCellView
 {
@@ -43,6 +44,10 @@ class ContactsListCellView extends ListCellView
 		super.setup_views()
 		self.layer.style.position = "relative"
 		self.layer.style.padding = "19px 0 7px 0"
+		{ // hover effects/classes
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+		}
 		self.__setup_emojiLayer()
 		self.__setup_nameLayer()
 		self.__setup_addressLayer()

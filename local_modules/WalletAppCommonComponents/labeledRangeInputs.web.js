@@ -38,7 +38,6 @@ const k_runnableTrackHeight = k_knobWidth + 2
 // CSS rules
 const NamespaceName = "labeledRangeInputs"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-document[haveCSSRulesBeenInjected_documentKey] = false
 const cssRules =
 [
 	`.labeledRangeInput-container {

@@ -166,14 +166,10 @@ class WalletsListView extends ListView
 					return wizardController.WizardTask_Mode_FirstTime_CreateWallet()
 				})
 			},
-			self.context
+			self.context,
+			undefined,
+			"blue"
 		)
-		{
-			const layer = buttonView.layer
-			layer.style.color = "#150000"
-			layer.style.backgroundColor = "#00c6ff"
-			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
-		}
 		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	//

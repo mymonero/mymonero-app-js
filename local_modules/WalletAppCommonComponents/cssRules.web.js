@@ -30,7 +30,7 @@
 //
 function InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 {
-	if (document[haveCSSRulesBeenInjected_documentKey] === false) {
+	if (document[haveCSSRulesBeenInjected_documentKey] !== true) {
 		const reversed_cssRules = cssRules.reverse()
 		reversed_cssRules.forEach(
 			function(cssRuleString, i)
@@ -38,6 +38,7 @@ function InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRul
 				document.styleSheets[0].insertRule(cssRuleString, 0)
 			}
 		)
+		document[haveCSSRulesBeenInjected_documentKey] = true
 	}
 }
 exports.InjectCSSRules_ifNecessary = InjectCSSRules_ifNecessary

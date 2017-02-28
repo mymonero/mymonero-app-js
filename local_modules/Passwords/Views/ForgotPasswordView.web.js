@@ -160,14 +160,10 @@ class ForgotPasswordView extends View
 					}
 				)
 			},
-			self.context
+			self.context,
+			undefined,
+			"red" // 'destructive' cell
 		)
-		{
-			const layer = buttonView.layer
-			layer.style.color = "#161416"
-			layer.style.backgroundColor = "#f97777"
-			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"			
-		}
 		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	_setup_startObserving()

@@ -32,7 +32,6 @@ const commonComponents_cssRules = require('./cssRules.web')
 //
 const NamespaceName = "walletIcons"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-document[haveCSSRulesBeenInjected_documentKey] = false
 const cssRules =
 [
 	// set bg clr on .walletIcon and .walletIcon > span

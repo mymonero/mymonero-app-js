@@ -31,6 +31,7 @@
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
 const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
+const commonComponents_hoverableCells = require('../../WalletAppCommonComponents/hoverableCells.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
 //
 class FundsRequestsListCellView extends ListCellView
@@ -53,6 +54,9 @@ class FundsRequestsListCellView extends ListCellView
 		{
 			const layer = self.layer
 			layer.style.position = "relative"
+			// hover effects/classes
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
 		{ 
 			const layer = commonComponents_tables.New_tableCell_accessoryChevronLayer()

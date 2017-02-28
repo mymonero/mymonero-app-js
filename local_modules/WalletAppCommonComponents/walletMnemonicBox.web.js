@@ -35,7 +35,6 @@ const commonComponents_cssRules = require('./cssRules.web')
 //
 const NamespaceName = "walletMnemonicBox"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-document[haveCSSRulesBeenInjected_documentKey] = false
 const cssRules =
 [
 	`.mnemonic-container {
