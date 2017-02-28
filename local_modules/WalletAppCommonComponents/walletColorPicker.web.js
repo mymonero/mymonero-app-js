@@ -137,7 +137,8 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 			li.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
 		{
-			const div = commonComponents_walletIcons.New_WalletIconLayer(hexColorString)
+			const div = commonComponents_walletIcons.New_WalletIconLayer()
+			div.ConfigureWithHexColorString(hexColorString)
 			li.appendChild(div)
 		}
 		const input_id = fieldName + "__" + i

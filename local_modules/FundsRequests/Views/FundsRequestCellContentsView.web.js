@@ -56,7 +56,6 @@ class FundsRequestCellContentsView extends View
 		self.layer.style.padding = "19px 0 7px 0"
 		{
 			const div = commonComponents_walletIcons.New_WalletIconLayer(
-				"", // for now - we will config in a moment
 				"large-43" // size class - for css
 			) 
 			div.style.left = "16px"
@@ -248,7 +247,8 @@ class FundsRequestCellContentsView extends View
 				layer.style.height = `${self.qrCode_side}px`
 			}
 		}
-		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
+		const colorHexString = fundsRequest.to_walletHexColorString || ""
+		self.walletIconLayer.ConfigureWithHexColorString(colorHexString)
 		self.amountLayer.innerHTML = parseFloat("" + fundsRequest.amount) + " XMR"
 		var memoString = fundsRequest.message
 		if (!memoString || memoString.length == "") {

@@ -59,6 +59,7 @@ const cssRules =
 	  display: block;
 	  background: rgba(255, 255, 255, 0.2);
 	}`,
+	//
 	// size classes…
 	// large-48
 	`.walletIcon.large-48 {
@@ -72,12 +73,24 @@ const cssRules =
 	  border-radius: 6px 6px 0 0;
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
 	}`,
+	// // :after - base
 	`.walletIcon.large-48:after {
 	  width: 38px;
 	  height: 33px;
 	  border-radius: 0 0 3px 3px;
+	}`,
+	// // :after - variations
+	`.walletIcon.large-48:after, 
+	 .walletIcon.neutralBG.large-48:after {
 	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.4), 0 0 4px 0 rgba(255, 255, 255, 0.4);
 	}`,
+	`.walletIcon.darkBG.large-48:after {
+	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.2), 0 0 4px 0 rgba(255, 255, 255, 0.2);
+	}`,
+	`.walletIcon.lightBG.large-48:after {
+	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.7), 0 0 4px 0 rgba(255, 255, 255, 0.7);
+	}`,
+	// // span - the card
 	`.walletIcon.large-48 span {
 	  width: 38px;
 	  height: 6px;
@@ -88,6 +101,7 @@ const cssRules =
 	  border-radius: 3px 3px 0 0;
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 	}`,
+	//
 	// large-43
 	`.walletIcon.large-43 {
 	  width: 43px;
@@ -100,12 +114,25 @@ const cssRules =
 	  border-radius: 5px 5px 0 0;
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
 	}`,
+	// // :after - base
 	`.walletIcon.large-43:after {
 	  width: 35px;
 	  height: 30px;
 	  border-radius: 0 0 3px 3px;
 	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.4), 0 0 3px 0 rgba(255, 255, 255, 0.4);
 	}`,
+	// // :after - variations
+	`.walletIcon.large-43:after, 
+	 .walletIcon.neutralBG.large-43:after {
+   	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.4), 0 0 3px 0 rgba(255, 255, 255, 0.4);
+	}`,
+	`.walletIcon.darkBG.large-43:after {
+  	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.2), 0 0 3px 0 rgba(255, 255, 255, 0.2);
+	}`,
+	`.walletIcon.lightBG.large-43:after {
+  	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.7), 0 0 3px 0 rgba(255, 255, 255, 0.7);
+	}`,
+	// // span (the card)
 	`.walletIcon.large-43 span {
 	  width: 35px;
 	  height: 5px;
@@ -123,27 +150,57 @@ function __injectCSSRules_ifNecessary()
 	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
-function New_WalletIconLayer(hexColorString, optl_sizeClass)
+function New_WalletIconLayer(optl_sizeClass)
 {
 	var sizeClass = optl_sizeClass || "large-48"
 	//
 	__injectCSSRules_ifNecessary()
 	//
 	const div = document.createElement("div")
-	div.style.background = hexColorString
-	div.className = "walletIcon " + sizeClass
+	div.classList.add("walletIcon")
+	div.classList.add(sizeClass)
 	//
 	const span = document.createElement("span")
-	span.style.background = hexColorString
 	div.appendChild(span)
 	//
 	div.ConfigureWithHexColorString = function(to_hexColorString)
 	{
 		div.style.background = to_hexColorString
 		span.style.background = to_hexColorString
+		{
+			div.classList.remove(ColorClassFor_NeutralBG())
+			div.classList.remove(ColorClassFor_DarkBG())
+			div.classList.remove(ColorClassFor_LightBG())
+			//
+			var to_colorClass ;
+			switch (to_hexColorString) {
+				// TODO: these colors should probalby be accessed via context.walletsListController or (?) context.themeController
+				case "#6B696B": // dark grey	
+				case "#D975E1": // purple
+				case "#F97777": // salmon/red
+				case "#EB8316": // orange
+					to_colorClass = ColorClassFor_DarkBG()
+					break
+				case "#00F4CD": // teal
+					to_colorClass = ColorClassFor_LightBG()
+					break
+				default:
+					to_colorClass = ColorClassFor_NeutralBG() // not necessary to set tho
+					break
+			}
+			//
+			div.classList.add(to_colorClass)
+		}
 	}
 	//
 	return div
 }
 exports.New_WalletIconLayer = New_WalletIconLayer
+//
+function ColorClassFor_NeutralBG() { return "neutralBG" }
+function ColorClassFor_DarkBG() { return "darkBG" }
+function ColorClassFor_LightBG() { return "lightBG" }
 
+exports.ColorClassFor_NeutralBG = ColorClassFor_NeutralBG
+exports.ColorClassFor_DarkBG = ColorClassFor_DarkBG
+exports.ColorClassFor_LightBG = ColorClassFor_LightBG

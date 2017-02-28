@@ -58,7 +58,6 @@ class WalletCellContentsView extends View
 		}
 		{ // icon
 			const div = commonComponents_walletIcons.New_WalletIconLayer(
-				"", // for now - we will config in a moment
 				"large-48" // size class - for css
 			) 
 			div.style.position = "absolute"
@@ -208,7 +207,8 @@ class WalletCellContentsView extends View
 	_configureUIWithWallet__color()
 	{
 		const self = this
-		self.walletIconLayer.ConfigureWithHexColorString(self.wallet.swatch || "")
+		const colorHexString = self.wallet.swatch || ""
+		self.walletIconLayer.ConfigureWithHexColorString(colorHexString)
 	}
 	//
 	//
