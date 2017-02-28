@@ -77,7 +77,7 @@ const cssRules =
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 	}`,
 	// size classes…
-	// large
+	// large-48
 	`.walletIcon.large-48 {
 	  width: 48px;
 	  height: 48px;
@@ -105,7 +105,7 @@ const cssRules =
 	  border-radius: 3px 3px 0 0;
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 	}`,
-	//
+	// large-43
 	`.walletIcon.large-43 {
 	  width: 43px;
 	  height: 43px;
@@ -113,21 +113,21 @@ const cssRules =
 	}`,
 	`.walletIcon.large-43:before {
 	  width: 43px;
-	  height: 8px;
+	  height: 9px;
 	  border-radius: 5px 5px 0 0;
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
 	}`,
 	`.walletIcon.large-43:after {
 	  width: 35px;
-	  height: 31px;
+	  height: 30px;
 	  border-radius: 0 0 3px 3px;
 	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.4), 0 0 3px 0 rgba(255, 255, 255, 0.4);
 	}`,
 	`.walletIcon.large-43 span {
 	  width: 35px;
-	  height: 4px;
+	  height: 5px;
 	  border-radius: 3px 3px 0 0;
-	  margin-top: -4px;
+	  margin-top: -5px;
 	}`,
 	`.walletIcon.large-43 span:before {
 	  border-radius: 3px 3px 0 0;
