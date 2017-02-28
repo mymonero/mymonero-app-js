@@ -40,6 +40,7 @@ class BarButtonBaseView extends View
 		super(options, context)
 		//
 		const self = this
+		self.didConfigureInteractivity_fn = self.options.didConfigureInteractivity_fn || function(thisView) {}
 		self.setup()
 	}
 	setup()
@@ -64,6 +65,7 @@ class BarButtonBaseView extends View
 			layer.style.href = ""
 			layer.classList.add("disabled")
 		}
+		self.didConfigureInteractivity_fn(self)
 	}
 }
 module.exports = BarButtonBaseView

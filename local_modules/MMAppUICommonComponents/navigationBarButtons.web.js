@@ -32,9 +32,16 @@ const View = require('../Views/View.web')
 const BarButtonBaseView = require('../StackNavigation/Views/BarButtonBaseView.web')
 const commonComponents_hoverableCells = require('./hoverableCells.web')
 //	
-function _New_ButtonBase_View(context)
+function _New_ButtonBase_View(context, optl_didConfigureInteractivity_fn)
 {
-	const view = new BarButtonBaseView({}, context)
+	const view = new BarButtonBaseView({
+		didConfigureInteractivity_fn: function(thisView)
+		{
+			if (typeof optl_didConfigureInteractivity_fn !== 'undefined' && optl_didConfigureInteractivity_fn) {
+				optl_didConfigureInteractivity_fn(thisView)
+			}
+		}
+	}, context)
 	const layer = view.layer
 	//
 	layer.style.borderRadius = "3px"
@@ -59,7 +66,15 @@ exports.New_ButtonBase_View = _New_ButtonBase_View
 //
 function New_GreyButtonView(context)
 {
-	const view = _New_ButtonBase_View(context)
+	const view = _New_ButtonBase_View(
+		context, 
+		function(thisView)
+		{
+			if (thisView.isEnabled) {
+			} else {
+			}
+		}
+	)
 	const layer = view.layer
 	layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
@@ -77,17 +92,32 @@ exports.New_GreyButtonView = New_GreyButtonView
 //
 function New_BlueButtonView(context)
 {
-	const view = _New_ButtonBase_View(context)
+	const view = _New_ButtonBase_View(
+		context, 
+		function(thisView)
+		{
+			const layer = thisView.layer
+			if (thisView.isEnabled) {
+				layer.style.backgroundColor = "#00c6ff"
+				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
+				layer.style.color = "#161416"
+				//
+				layer.style.fontWeight = "600"	
+			} else {
+				layer.style.backgroundColor = "#383638"
+				layer.style.boxShadow = "none"
+				layer.style.color = "#6B696B"
+				//
+				layer.style.fontWeight = "600"
+			}
+		}
+	)
 	const layer = view.layer
 	layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
-	layer.style.backgroundColor = "#00c6ff"
-	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
-	layer.style.color = "#161416"
 		
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "12px"
 	layer.style.letterSpacing = "0.5px"
-	layer.style.fontWeight = "600"	
 	
 	return view
 }
