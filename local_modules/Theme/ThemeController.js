@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const commonComponents_navigationBarButtons = require('../MMAppUICommonComponents/navigationBarButtons.web')
+//
 class ThemeController
 {
 	constructor(options, context)
@@ -58,8 +60,25 @@ class ThemeController
 	}
 	//
 	//
-	// Accessors - UI - Metrics - Colors
+	// Delegation/Accessors/Protocol - Navigation Bar View - Buttons - Back button
 	//
-	
+	NavigationBarView__New_back_leftBarButtonView(clicked_fn)
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_LeftSide_BackButtonView(self.context)
+		const layer = view.layer
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled !== false) { // button is enabled
+					clicked_fn()
+				}
+				return false
+			}
+		)
+		return view
+	}
 }
 module.exports = ThemeController

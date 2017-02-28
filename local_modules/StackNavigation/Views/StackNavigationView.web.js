@@ -121,12 +121,6 @@ class StackNavigationView extends View
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
-	idPrefix()
-	{
-		const self = this
-		//
-		return "StackNavigationView" + "-" + self.uuid
-	}
 	_animationDuration_ms_navigationPush()
 	{
 		return 200

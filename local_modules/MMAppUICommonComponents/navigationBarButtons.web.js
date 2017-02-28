@@ -91,6 +91,25 @@ function New_BlueButtonView(context)
 	
 	return view
 }
+exports.New_BlueButtonView = New_BlueButtonView
+//
+function New_LeftSide_BackButtonView(context)
+{
+	const view = New_GreyButtonView(context)
+	const layer = view.layer
+	layer.style.display = "block"
+	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+	layer.style.marginTop = "10px"
+	layer.style.width = "26px"
+	layer.style.height = "24px"
+	layer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/backButtonIcon.png)"
+	layer.style.backgroundSize = "9px 14px"
+	layer.style.backgroundRepeat = "no-repeat"
+	layer.style.backgroundPosition = "8px 5px"
+	return view
+}
+exports.New_LeftSide_BackButtonView = New_LeftSide_BackButtonView
+//
 function New_RightSide_AddButtonView(context)
 {
 	const view = New_BlueButtonView(context)
@@ -118,7 +137,7 @@ function New_LeftSide_CancelButtonView(context, title_orUndefinedForDefaultCance
 	layer.innerHTML = title
 	//
 	layer.style.display = "block"
-	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
+	layer.style.float = "left" // so it sticks to the left of the left btn holder view layer
 	layer.style.marginTop = "10px"
 	//
 	return view

@@ -155,12 +155,6 @@ class NavigationBarView extends View
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
-	idPrefix()
-	{
-		const self = this
-		//
-		return "NavigationBarView" + "-of-" + self.navigationController.idPrefix() // borrow its uuid namespacing
-	}
 	_animationDuration_ms_navigationPush()
 	{
 		const self = this
@@ -169,42 +163,42 @@ class NavigationBarView extends View
 	}
 	//
 	//
-	//
 	// Runtime - Accessors - Internal - UI elements
 	//
 	new_back_leftBarButtonView()
 	{
 		const self = this
+		const clicked_fn = function()
+		{
+			self.emit(self.EventName_backButtonTapped()) // animated
+		}
+		const themeController = self.context.themeController
+		if (typeof themeController !== 'undefined' && themeController !== null) {
+			const _new_back_leftBarButtonView__fn = themeController.NavigationBarView__New_back_leftBarButtonView
+			if (typeof _new_back_leftBarButtonView__fn === 'function') {
+				const view = _new_back_leftBarButtonView__fn.apply(themeController, [ clicked_fn ])
+				if (view !== null && typeof view !== 'undefined') {
+					return view
+				} else {
+					throw "Got nil leftBarButtonView from themeController"
+				}
+			} else {
+				throw "themeController didn't implement NavigationBarView__New_back_leftBarButtonView"
+			}
+		} else {
+			throw self.constructor.name + " didn't find a context.themeController"
+		}
 		const view = new BarButtonBaseView({}, self.context)
 		view.SetEnabled(true)
 		const layer = view.layer
-		layer.innerHTML = "&lt;" // TODO
-		layer.style.display = "block"
-		layer.style.marginTop = "10px"
-		layer.style.width = "26px"
-		layer.style.height = "24px"
-		layer.style.borderRadius = "3px"
-		layer.style.backgroundColor = "#383638"
-		layer.style.borderRadius = "2px"
-		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-		layer.style.border = "none"			
-		layer.style.textDecoration = "none"
-		layer.style.fontSize = "22px"
-		layer.style.lineHeight = "115%" // % extra to get + aligned properly
-		layer.style.color = "#ffffff"
-		layer.style.fontWeight = "bold"
-		layer.style.textAlign = "center"
-		layer.addEventListener(
-			"click",
-			function(e)
-			{
-				e.preventDefault()
-				if (view.isEnabled !== false) {
-					self.emit(self.EventName_backButtonTapped()) // animated
-				}
-				return false
+		layer.innerHTML = "&lt;"
+		layer.addEventListener("click", function(e) {
+			e.preventDefault()
+			if (view.isEnabled !== false) {
+				clicked_fn()
 			}
-		)
+			return false
+		})
 		return view
 	}
 	//
