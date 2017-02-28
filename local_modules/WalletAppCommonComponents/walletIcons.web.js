@@ -88,7 +88,7 @@ const cssRules =
 	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.2), 0 0 4px 0 rgba(255, 255, 255, 0.2);
 	}`,
 	`.walletIcon.lightBG.large-48:after {
-	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.7), 0 0 4px 0 rgba(255, 255, 255, 0.7);
+	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.6), 0 0 4px 0 rgba(255, 255, 255, 0.6);
 	}`,
 	// // span - the card
 	`.walletIcon.large-48 span {
@@ -130,7 +130,7 @@ const cssRules =
   	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.2), 0 0 3px 0 rgba(255, 255, 255, 0.2);
 	}`,
 	`.walletIcon.lightBG.large-43:after {
-  	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.7), 0 0 3px 0 rgba(255, 255, 255, 0.7);
+  	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.6), 0 0 3px 0 rgba(255, 255, 255, 0.6);
 	}`,
 	// // span (the card)
 	`.walletIcon.large-43 span {
