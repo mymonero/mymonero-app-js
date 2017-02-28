@@ -29,8 +29,8 @@
 "use strict"
 //
 const ContactFormView = require('../../Contacts/Views/ContactFormView.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 //
 const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_utils')

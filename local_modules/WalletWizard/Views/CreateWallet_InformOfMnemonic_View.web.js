@@ -28,9 +28,9 @@
 //
 "use strict"
 //
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
-const commonComponents_walletMnemonicBox = require('../../WalletAppCommonComponents/walletMnemonicBox.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
 //
 const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
 //

@@ -29,10 +29,10 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
-const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
-const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
+const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
 class ForgotPasswordView extends View
 {

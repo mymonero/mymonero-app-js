@@ -29,7 +29,7 @@
 "use strict"
 //
 const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 //
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_utils')

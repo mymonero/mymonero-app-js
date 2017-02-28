@@ -29,11 +29,11 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
-const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
-const commonComponents_labeledRangeInputs = require('../../WalletAppCommonComponents/labeledRangeInputs.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
+const commonComponents_labeledRangeInputs = require('../../MMAppUICommonComponents/labeledRangeInputs.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 //
 class SettingsView extends View
 {

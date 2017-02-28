@@ -30,8 +30,8 @@
 //
 const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
-const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 //
 const ContactsListCellView = require('./ContactsListCellView.web')
 const ContactDetailsView = require('./ContactDetailsView.web')

@@ -29,7 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
+const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
 //
 class WalletCellContentsView extends View
 {

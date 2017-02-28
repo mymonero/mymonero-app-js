@@ -29,9 +29,9 @@
 "use strict"
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
-const commonComponents_hoverableCells = require('../../WalletAppCommonComponents/hoverableCells.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
 //
 class FundsRequestsListCellView extends ListCellView

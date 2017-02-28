@@ -29,9 +29,9 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 //
 class ContactDetailsView extends View
 {

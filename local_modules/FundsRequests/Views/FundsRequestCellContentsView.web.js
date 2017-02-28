@@ -31,8 +31,8 @@
 const QRCode = require('../Vendor/qrcode.min')
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
 //
 class FundsRequestCellContentsView extends View
 {

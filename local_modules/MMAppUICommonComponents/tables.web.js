@@ -502,7 +502,7 @@ function New_tableCell_accessoryChevronLayer()
 	//
 	const image_filename = "list_rightside_chevron.png"
 	const layer = document.createElement("img")
-	layer.src = "../../WalletAppCommonComponents/Resources/" + image_filename
+	layer.src = "../../MMAppUICommonComponents/Resources/" + image_filename
 	layer.style.position = "absolute"
 	layer.style.width = "7px"
 	const h = 12

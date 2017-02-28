@@ -31,9 +31,9 @@
 const View = require('../../Views/View.web')
 const monero_config = require('../../monero_utils/monero_config')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_emptyScreens = require('../../WalletAppCommonComponents/emptyScreens.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
 class WalletDetailsView extends View

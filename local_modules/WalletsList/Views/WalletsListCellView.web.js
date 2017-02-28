@@ -30,9 +30,9 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_walletIcons = require('../../WalletAppCommonComponents/walletIcons.web')
-const commonComponents_hoverableCells = require('../../WalletAppCommonComponents/hoverableCells.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 class WalletsListCellView extends ListCellView
 {

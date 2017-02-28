@@ -29,13 +29,13 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
-const commonComponents_walletSelect = require('../../WalletAppCommonComponents/walletSelect.web')
-const commonComponents_contactPicker = require('../../WalletAppCommonComponents/contactPicker.web')
-const commonComponents_activityIndicators = require('../../WalletAppCommonComponents/activityIndicators.web')
-const commonComponents_actionButtons = require('../../WalletAppCommonComponents/actionButtons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_walletSelect = require('../../MMAppUICommonComponents/walletSelect.web')
+const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
+const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const AddContactFromSendTabView = require('./AddContactFromSendTabView.web')

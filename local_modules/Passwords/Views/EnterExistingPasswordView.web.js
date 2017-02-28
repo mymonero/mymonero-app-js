@@ -29,9 +29,9 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_navigationBarButtons = require('../../WalletAppCommonComponents/navigationBarButtons.web')
-const commonComponents_tables = require('../../WalletAppCommonComponents/tables.web')
-const commonComponents_forms = require('../../WalletAppCommonComponents/forms.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 //
 const ForgotPasswordView = require('./ForgotPasswordView.web')
 //
