@@ -357,12 +357,12 @@ class RequestFundsView extends View
 	// Runtime - Imperatives - Submit button enabled state
 	//
 	disable_submitButton()
-	{ // TODO: encapsulate this all on the button component 
+	{
 		const self = this
 		if (self.isSubmitButtonDisabled !== true) {
 			self.isSubmitButtonDisabled = true
 			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "0.5"
+			self.rightBarButtonView.SetEnabled(false)
 		}
 	}
 	enable_submitButton()
@@ -370,8 +370,7 @@ class RequestFundsView extends View
 		const self = this
 		if (self.isSubmitButtonDisabled !== false) {
 			self.isSubmitButtonDisabled = false
-			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "1.0"
+			self.rightBarButtonView.SetEnabled(true)
 		}
 	}
 	//

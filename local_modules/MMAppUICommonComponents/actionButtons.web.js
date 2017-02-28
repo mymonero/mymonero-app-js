@@ -130,7 +130,8 @@ function New_ActionButtonView(
 			//
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.style.fontSize = "13px"
-			layer.style.fontWeight = "bold"
+			layer.style.letterSpacing = "0"
+			layer.style.fontWeight = "600"
 		} else if (colorType === "red") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_RedCell())
 			layer.style.color = "#161416"
@@ -139,7 +140,8 @@ function New_ActionButtonView(
 			//
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.style.fontSize = "13px"
-			layer.style.fontWeight = "bold"
+			layer.style.letterSpacing = "0"
+			layer.style.fontWeight = "600"
 		} else {
 			throw "unrecognized colorType " + colorType
 		}

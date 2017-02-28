@@ -349,8 +349,7 @@ class ContactFormView extends View
 		const self = this
 		if (self.isSubmitButtonDisabled !== true) {
 			self.isSubmitButtonDisabled = true
-			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "0.5"
+			self.rightBarButtonView.SetEnabled(false)
 		}
 	}
 	enable_submitButton()
@@ -358,8 +357,7 @@ class ContactFormView extends View
 		const self = this
 		if (self.isSubmitButtonDisabled !== false) {
 			self.isSubmitButtonDisabled = false
-			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "1.0"
+			self.rightBarButtonView.SetEnabled(true)
 		}
 	}
 	//

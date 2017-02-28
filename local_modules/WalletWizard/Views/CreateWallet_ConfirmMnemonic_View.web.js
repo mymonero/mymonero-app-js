@@ -280,8 +280,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		const self = this
 		if (self.isSubmitButtonDisabled !== true) {
 			self.isSubmitButtonDisabled = true
-			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "0.5"
+			self.rightBarButtonView.SetEnabled(false)
 		}
 	}
 	enable_submitButton()
@@ -289,8 +288,7 @@ class CreateWallet_ConfirmMnemonic_View extends AddWallet_Wizard_ScreenBaseView
 		const self = this
 		if (self.isSubmitButtonDisabled !== false) {
 			self.isSubmitButtonDisabled = false
-			const buttonLayer = self.rightBarButtonView.layer
-			buttonLayer.style.opacity = "1.0"
+			self.rightBarButtonView.SetEnabled(true)
 		}
 	}
 	//

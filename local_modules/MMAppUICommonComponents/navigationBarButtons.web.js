@@ -85,8 +85,9 @@ function New_BlueButtonView(context)
 	layer.style.color = "#161416"
 		
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	layer.style.fontSize = "13px"
-	layer.style.fontWeight = "bold"
+	layer.style.fontSize = "12px"
+	layer.style.letterSpacing = "0.5px"
+	layer.style.fontWeight = "600"	
 	
 	return view
 }
