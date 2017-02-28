@@ -48,7 +48,7 @@ function New_GreyButtonView(context)
 	layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 	layer.style.height = "24px"
 	layer.style.borderRadius = "3px"
-	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
 	layer.style.backgroundColor = "#383638"
 	layer.style.border = "none"
 	layer.style.textDecoration = "none"
@@ -70,7 +70,7 @@ function New_BlueButtonView(context)
 	layer.style.height = "24px"
 	layer.style.borderRadius = "3px"
 	layer.style.backgroundColor = "#00c6ff"
-	layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
+	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
 	layer.style.color = "#161416"
 	layer.style.border = "none"
 	layer.style.textDecoration = "none"
@@ -85,10 +85,13 @@ function New_RightSide_AddButtonView(context)
 {
 	const view = New_BlueButtonView(context)
 	const layer = view.layer
-	layer.innerHTML = "+" // TODO: image
 	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 	layer.style.marginTop = "10px"
-	layer.style.width = layer.style.height
+	layer.style.width = "26px" // instead of 24px - slightly wider than H 
+	layer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/addButtonIcon_10.png)"
+	layer.style.backgroundSize = "10px 10px"
+	layer.style.backgroundRepeat = "no-repeat"
+	layer.style.backgroundPosition = "center"
 	return view
 }
 exports.New_RightSide_AddButtonView = New_RightSide_AddButtonView
