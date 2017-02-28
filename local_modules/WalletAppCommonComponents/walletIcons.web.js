@@ -36,45 +36,28 @@ const cssRules =
 [
 	// set bg clr on .walletIcon and .walletIcon > span
 	`.walletIcon {
-	  width: 48px;
-	  height: 48px;
-	  border-radius: 6px;
 	  position: relative;
 	}`,
 	`.walletIcon:before {
 	  content: " ";
-	  width: 48px;
-	  height: 10px;
 	  display: block;
 	  background: rgba(0, 0, 0, 0.2);
-	  border-radius: 6px 6px 0 0;
-	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
 	}`,
 	`.walletIcon:after {
 	  content: " ";
-	  width: 38px;
-	  height: 33px;
 	  margin: auto;
 	  display: block;
-	  border-radius: 0 0 3px 3px;
-	  box-shadow: inset 0 -2px 4px 0 rgba(255, 255, 255, 0.4), 0 0 4px 0 rgba(255, 255, 255, 0.4);
 	}`,
 	`.walletIcon span {
-	  width: 38px;
-	  height: 6px;
 	  margin: auto;
-	  border-radius: 3px 3px 0 0;
 	  display: block;
-	  margin-top: -6px;
 	}`,
 	`.walletIcon span:before {
 	  content: " ";
 	  width: 100%;
 	  height: 100%;
 	  display: block;
-	  border-radius: 3px 3px 0 0;
 	  background: rgba(255, 255, 255, 0.2);
-	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 	}`,
 	// size classes…
 	// large-48
