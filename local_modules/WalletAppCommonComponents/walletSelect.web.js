@@ -191,12 +191,12 @@ function New_fieldValue_walletSelectLayer(params)
 						optionLayer._wallet_EventName_walletLabelChanged
 					)
 					//
-					optionLayer._wallet_EventName_walletSwatchChanged = function()
+					optionLayer._wallet_EventName_walletSwatchChanged = function(colorHexString)
 					{
-						_configureOptionLayerColor()
+						_configureOptionLayerColor(colorHexString)
 					}
 					wallet.on(
-						wallet.EventName_walletLabelChanged(),
+						wallet.EventName_walletSwatchChanged(),
 						optionLayer._wallet_EventName_walletSwatchChanged
 					)
 					//

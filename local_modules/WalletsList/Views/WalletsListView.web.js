@@ -192,7 +192,11 @@ class WalletsListView extends ListView
 	//
 	Navigation_Title()
 	{
-		return "Wallets"
+		const self = this
+		if (self.listController.records.length === 0) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
+			return "MyMonero"
+		}
+		return "My Monero Wallets"
 	}
 	Navigation_New_RightBarButtonView()
 	{
@@ -242,6 +246,7 @@ class WalletsListView extends ListView
 		const self = this
 		// so we update to return no right bar btn when there are no wallets as we show empty state action bar
 		self.navigationController.SetNavigationBarButtonsNeedsUpdate(false) // explicit: no animation
+		self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from whether there are wallets
 		const isEmptyVisible = records.length === 0
 		{
 			self.emptyStateContainerView.SetVisible(isEmptyVisible)
