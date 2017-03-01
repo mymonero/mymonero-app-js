@@ -68,6 +68,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SECRET MNEMONIC", self.context)
 			div.appendChild(labelLayer)
@@ -97,6 +98,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		self.addrAndKeysFieldsContainerLayer.style.display = "none" // for now
 		{ // wallet address
 			const div = commonComponents_forms.New_fieldContainerLayer()
+			div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
 				div.appendChild(labelLayer)
@@ -119,6 +121,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		}
 		{ // wallet viewKey
 			const div = commonComponents_forms.New_fieldContainerLayer()
+			div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("VIEW KEY", self.context)
 				div.appendChild(labelLayer)
@@ -141,6 +144,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		}
 		{ // wallet spendKey
 			const div = commonComponents_forms.New_fieldContainerLayer()
+			div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SPEND KEY", self.context)
 				div.appendChild(labelLayer)
@@ -171,7 +175,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		layer.style.fontSize = "11px"
 		layer.style.color = "#8d8b8d"
 		layer.style.letterSpacing = "0"
-		layer.style.margin = "10px 0 0 21px"
+		layer.style.margin = "9px 0 17px 21px"
 		layer.style.paddingBottom = "8px"
 		{
 			const span = document.createElement("span")
@@ -208,6 +212,18 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			layer.appendChild(a)
 		}
 		self.form_containerLayer.appendChild(layer)
+	}
+	_setup_form_walletNameField()
+	{
+		const self = this
+		super._setup_form_walletNameField()
+		self.walletNameFieldContainerLayer.style.paddingBottom = "11px" // special case for this screen - packed more tightly
+	}
+	_setup_form_walletSwatchField()
+	{
+		const self = this
+		super._setup_form_walletSwatchField()
+		self.walletSwatchFieldContainerLayer.style.paddingTop = "0px" // special case for this screen - packed more tightly
 	}
 	_setup_startObserving()
 	{
@@ -363,6 +379,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.spendKeyTextAreaView.layer.value = ""			
 			self.addrAndKeysFieldsContainerLayer.style.display = "block"
 		}
+		self.set_submitButtonNeedsUpdate()
 	}
 	
 	//

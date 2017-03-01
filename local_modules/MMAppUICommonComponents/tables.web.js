@@ -61,7 +61,7 @@ const cssRules =
 function __injectCSSRules_ifNecessary()
 {
 	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
-}	
+}
 //
 function New_fieldContainerLayer()
 {

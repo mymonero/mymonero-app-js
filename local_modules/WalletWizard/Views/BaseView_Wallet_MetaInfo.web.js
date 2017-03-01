@@ -100,6 +100,7 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 			}
 			div.appendChild(valueLayer)
 		}
+		self.walletNameFieldContainerLayer = div
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_walletSwatchField()
@@ -117,6 +118,7 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 			self.walletColorPickerInputView = view
 			div.appendChild(view.layer)
 		}
+		self.walletSwatchFieldContainerLayer = div
 		self.form_containerLayer.appendChild(div)
 	}
 	//

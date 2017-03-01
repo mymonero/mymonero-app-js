@@ -31,25 +31,50 @@
 const View = require('../Views/View.web')
 const commonComponents_cssRules = require('./cssRules.web')
 //
+const NamespaceName = "Forms"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.form_field {
+		padding: 0 10px 20px 10px;
+	}`,
+	`.form_field .field_title {
+	}`,
+	`.form_field .field_value {
+		-webkit-font-smoothing: subpixel-antialiased;
+	}`,
+	`.form_field .field_value::-webkit-input-placeholder  {
+		-webkit-font-smoothing: subpixel-antialiased;
+		color: #6B696B;
+	}`
+]
+function __injectCSSRules_ifNecessary()
+{
+	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+}
+//
 function _new_fieldContainerLayer()
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
-	layer.style.padding = "0 10px"
+	layer.className = "form_field"
 	return layer
 }
 exports.New_fieldContainerLayer = _new_fieldContainerLayer
 //
 function New_fieldTitle_labelLayer(labelText, context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("span")
+	layer.className = "field_title"
 	layer.innerHTML = labelText
 	layer.style.display = "block" // own line
-	layer.style.margin = "18px 0 8px 13px"
+	layer.style.margin = "15px 0 8px 13px"
 	layer.style.textAlign = "left"
 	layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
 	layer.style.letterSpacing = "0.5px"
-	layer.style.fontWeight = "300" // instead of 500, cause this color, white, is rendered strong
-	layer.style.color = "#f8f7f8"
+	layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
+	layer.style.color = "#F8F7F8"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	return layer
 }
@@ -57,8 +82,10 @@ exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
 function New_fieldValue_textInputLayer(context, params)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("input")
 	{
+		layer.className = "field_value"
 		layer.type = "text"
 		layer.style.display = "block" // own line
 		const existingValue = params.existingValue
@@ -69,7 +96,7 @@ function New_fieldValue_textInputLayer(context, params)
 		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 			layer.placeholder = placeholderText
 		}
-		layer.style.height = "30px"
+		layer.style.height = "29px"
 		const padding_h = 10
 		if (typeof params.target_width !== 'undefined') {
 			const width = params.target_width - 4 - 2 * padding_h
@@ -81,7 +108,7 @@ function New_fieldValue_textInputLayer(context, params)
 		layer.style.border = "1px solid rgba(0,0,0,0)" // transparent border to preserve layout while showing validation clr border
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
-		layer.style.fontWeight = "100"
+		layer.style.fontWeight = "200"
 		layer.style.padding = `0 ${padding_h}px`
 		layer.style.fontFamily = context.themeController.FontFamily_monospace()
 		layer.style.outline = "none" // no focus ring
@@ -115,9 +142,11 @@ exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
 //
 function New_fieldValue_textAreaView(params, context)
 {
+	__injectCSSRules_ifNecessary()
 	const view = new View({ tag: "textarea" }, context)
 	const layer = view.layer
 	{
+		layer.className = "field_value"
 		layer.style.display = "block" // own line
 		const existingValue = params.existingValue
 		if (typeof existingValue !== 'undefined' && existingValue !== null) {
@@ -127,7 +156,6 @@ function New_fieldValue_textAreaView(params, context)
 		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 			layer.placeholder = placeholderText
 		}
-		layer.style.className = "form-input"
 		const padding_h = 9
 		layer.style.padding = `9px ${padding_h}px`
 		layer.style.height = `${62 - 2 * padding_h}px`
@@ -137,10 +165,12 @@ function New_fieldValue_textAreaView(params, context)
 		layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
+		layer.style.fontWeight = "100"
 		layer.style.lineHeight = "15px"
 		layer.style.resize = "none" // not user-resizable
 		layer.style.outline = "none" // no focus ring
 		layer.style.fontFamily = context.themeController.FontFamily_monospace()
+		layer.style.wordBreak = "break-word"
 	}
 	{
 		view.SetEnabled = function(isEnabled)
@@ -166,6 +196,7 @@ exports.New_fieldValue_textAreaView = New_fieldValue_textAreaView
 //
 function New_fieldValue_selectLayer(params)
 {
+	__injectCSSRules_ifNecessary()
 	const values = params.values || []
 	const layer = document.createElement("select")
 	{
@@ -202,6 +233,7 @@ exports.New_fieldValue_selectLayer = New_fieldValue_selectLayer
 //
 function New_fieldAccessory_messageLayer(context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("p")
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	layer.style.fontSize = "11px"
@@ -215,6 +247,7 @@ function New_fieldAccessory_messageLayer(context)
 exports.New_fieldAccessory_messageLayer = New_fieldAccessory_messageLayer
 function New_fieldAccessory_validationMessageLayer(context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = New_fieldAccessory_messageLayer(context)
 	layer.style.color = "#f97777"
 	return layer

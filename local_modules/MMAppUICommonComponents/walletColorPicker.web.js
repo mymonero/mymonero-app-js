@@ -51,7 +51,7 @@ const cssRules =
 		width:88px;
 		height:88px;
 		display: inline-block;
-		margin: 0 0 5px 9px;
+		margin: 0 0 4px 9px;
 	}`,
 	`.oneOfN-walletColorPicker li .walletIcon {
 		position: absolute;

@@ -56,7 +56,7 @@ class ThemeController
 	}
 	FontFamily_monospace()
 	{
-		return 'native, input, menlo, monspace'
+		return 'native, input, menlo, monospace'
 	}
 	//
 	//
