@@ -293,6 +293,31 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	}
 	//
 	//
+	// Runtime - Imperatives - Interactivity
+	//
+	___reEnableFormFromSubmissionDisable()
+	{
+		const self = this
+		self.isDisabledFromSubmission = false
+		//
+		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+		self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
+		self.enable_submitButton()
+	}
+	//
+	//
+	// Runtime - Delegation - View lifecycle
+	//
+	viewDidAppear()
+	{
+		super.viewDidAppear()
+		const self = this
+		if (self.isDisabledFromSubmission == true) {
+			self.___reEnableFormFromSubmissionDisable() // user may have cancelled pw entry
+		}
+	}
+	//
+	//
 	// Runtime - Delegation - Interactions
 	//
 	_userSelectedNextButton()
@@ -315,6 +340,8 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const walletLabel = self.wizardController.walletMeta_name
 		const swatch = self.wizardController.walletMeta_colorHexString
 		{ // disable form
+			self.isDisabledFromSubmission = true
+			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
 			self.disable_submitButton()
@@ -326,9 +353,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			function(err, walletInstance)
 			{
 				if (err) {
-					self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
-					self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
-					self.enable_submitButton()
+					self.___reEnableFormFromSubmissionDisable()
 					throw err
 					return
 				}
