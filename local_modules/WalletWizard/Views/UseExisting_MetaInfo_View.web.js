@@ -381,7 +381,25 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		}
 		self.set_submitButtonNeedsUpdate()
 	}
-	
+	//
+	//
+	// Runtime - Imperatives - Interactivity
+	//
+	___reEnableFormFromSubmissionDisable()
+	{
+		const self = this
+		self.isDisabledFromSubmission = false
+		//
+		self.enable_submitButton()
+		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+		//
+		self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
+		self.walletNameInputLayer.disabled = undefined
+		self.addrTextAreaView.layer.disabled = undefined
+		self.viewKeyTextAreaView.layer.disabled = undefined
+		self.spendKeyTextAreaView.layer.disabled = undefined
+		self.addrAndKeysFieldsContainerLayer.disabled = undefined
+	}
 	//
 	//
 	// Runtime - Delegation - Navigation View special methods
@@ -397,12 +415,26 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	}
 	//
 	//
+	// Runtime - Delegation - View lifecycle
+	//
+	viewDidAppear()
+	{
+		super.viewDidAppear()
+		const self = this
+		if (self.isDisabledFromSubmission == true) {
+			self.___reEnableFormFromSubmissionDisable() 
+		}
+	}
+	//
+	//
 	// Runtime - Delegation - Interactions
 	//
 	_userSelectedNextButton()
 	{
 		const self = this
 		{
+			self.isDisabledFromSubmission = true
+			//
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
 			self.disable_submitButton()
@@ -415,23 +447,11 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.spendKeyTextAreaView.layer.disabled = true
 			self.addrAndKeysFieldsContainerLayer.disabled = true
 		}
-		function ___reEnableForm()
-		{
-			self.enable_submitButton()
-			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
-			//
-			self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
-			self.walletNameInputLayer.disabled = undefined
-			self.addrTextAreaView.layer.disabled = undefined
-			self.viewKeyTextAreaView.layer.disabled = undefined
-			self.spendKeyTextAreaView.layer.disabled = undefined
-			self.addrAndKeysFieldsContainerLayer.disabled = undefined
-		}
 		function __trampolineFor_failedWithErrStr(errStr)
 		{
 			self.layer.scrollTop = 0 // because we want to show the validation err msg
 			self.validationMessageLayer.SetValidationError(errStr)
-			___reEnableForm()
+			self.___reEnableFormFromSubmissionDisable()
 		}
 		function __trampolineFor_didAddWallet()
 		{
