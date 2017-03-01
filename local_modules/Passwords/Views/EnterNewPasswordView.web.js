@@ -221,21 +221,17 @@ class EnterNewPasswordView extends View
 		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
 		view.layer.innerHTML = "Next"
 		const layer = view.layer
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					{
-						if (view.isEnabled === true) {
-							self._tryToSubmitForm()
-						}
-					}
-					return false
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled === true) {
+					self._tryToSubmitForm()
 				}
-			)
-		}
+				return false
+			}
+		)
 		view.SetEnabled(false) // need to enter PW first
 		return view
 	}

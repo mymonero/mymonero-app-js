@@ -241,11 +241,17 @@ class StackAndModalNavigationView extends StackNavigationView
 			// console.log("old_topModalView" , old_topModalView.Description())
 			old_topModalView.removeFromSuperview()
 			old_topModalView.modalParentView = null
-			{ // manually simulate a view visibility events
-				topStackView.viewDidAppear()
-			}
 		}
 		if (to_modalView_orNullForTopStackView === null) { // pop all modalViews to top stackView
+			function __afterHavingFullyDismissedToTopStackView_cleanUpAndCallBack()
+			{
+				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+				{ // manually simulate a view visibility events
+					topStackView.viewDidAppear() // NOTE: topStackView
+				}
+				__trampolineFor_transitionEnded()
+				fn()
+			}
 			old_topModalView.layer.style.position = "absolute"
 			old_topModalView.layer.style.zIndex = "9"
 			//
@@ -259,32 +265,28 @@ class StackAndModalNavigationView extends StackNavigationView
 			self.topModalView = null
 			//
 			if (isAnimated === false) { // no need to animate anything - straight to end state
-				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
-				__trampolineFor_transitionEnded()
-				fn()
-			} else {
-				setTimeout(
-					function()
-					{ // wait til not blocked or we get choppiness
-						Animate(
-							old_topModalView.layer,
-							{
-								top: `${self.layer.offsetHeight}px`
-							},
-							{
-								duration: self._animationDuration_ms_modalDismiss(),
-								easing: "ease-in-out",
-								complete: function()
-								{
-									_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
-									__trampolineFor_transitionEnded()
-									fn()
-								}
-							}
-						)
-					}
-				)
+				__afterHavingFullyDismissedToTopStackView_cleanUpAndCallBack()
+				return
 			}
+			setTimeout(
+				function()
+				{ // wait til not blocked or we get choppiness
+					Animate(
+						old_topModalView.layer,
+						{
+							top: `${self.layer.offsetHeight}px`
+						},
+						{
+							duration: self._animationDuration_ms_modalDismiss(),
+							easing: "ease-in-out",
+							complete: function()
+							{
+								__afterHavingFullyDismissedToTopStackView_cleanUpAndCallBack()
+							}
+						}
+					)
+				}
+			)
 			return
 		}
 		const numberOf_modalViews = self.modalViews.length
@@ -302,19 +304,26 @@ class StackAndModalNavigationView extends StackNavigationView
 			__trampolineFor_transitionEnded()
 			return
 		}
+		function __afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
+		{
+			_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
+			{ // manually simulate a view visibility events
+				to_modalView.viewDidAppear() // NOTE: to_modalView
+			}
+			__trampolineFor_transitionEnded()
+			fn()
+		}
 		{ // make to_modalView the new top view
 			self.topModalView = to_modalView
 		}
 		{ // pre-insert the new top view, to_modalView, underneath the old_topModalView
 			const subviewUUIDs = self.subviews.map(function(v) { return v.View_UUID() })
-			// console.log("subviewUUIDs", subviewUUIDs)
 			const indexOf_old_topModalView_inSubviews = subviewUUIDs.indexOf(old_topModalView.View_UUID())
 			if (indexOf_old_topModalView_inSubviews === -1) {
 				throw `Asked to DismissModalViewsToView ${to_modalView.View_UUID()} but old_topModalView UUID not found in UUIDs of ${self.Description()} subviews.`
 				__trampolineFor_transitionEnded()
 				return
 			}
-			// console.log("indexOf_old_topStackView_inSubviews" , indexOf_old_topStackView_inSubviews)
 			if (isAnimated === true) { // prepare for animation
 				old_topModalView.layer.style.position = "absolute"
 				old_topModalView.layer.style.zIndex = "20" // starts out on top, as it would if we inserted to_modalView under it
@@ -323,9 +332,9 @@ class StackAndModalNavigationView extends StackNavigationView
 				to_modalView.layer.style.zIndex = "9" // because we want to make sure it goes under the current top modal view
 			}
 			{ // manually simulate a view visibility events
-				topStackView.viewWillAppear()
+				to_modalView.viewWillAppear()
 			}
-			self.stackViewStageView.insertSubview(
+			self.insertSubview(
 				to_modalView,
 				indexOf_old_topModalView_inSubviews
 			)
@@ -341,32 +350,28 @@ class StackAndModalNavigationView extends StackNavigationView
 				delete self.modalViews_scrollOffsetsOnPushedFrom_byViewUUID[to_modalView_View_UUID] // free
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
-				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
-				fn()
-				__trampolineFor_transitionEnded()
-			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
-				setTimeout(
-					function()
-					{ // wait til not blocked or we get choppiness
-						Animate(
-							old_topModalView.layer,
-							{
-								top: `${self.layer.offsetHeight}px`
-							},
-							{
-								duration: self._animationDuration_ms_modalDismiss(),
-								easing: "ease-in-out",
-								complete: function()
-								{
-									_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
-									fn()
-									__trampolineFor_transitionEnded()
-								}
-							}
-						)
-					}
-				)
+				__afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
+				return
 			}
+			setTimeout(
+				function()
+				{ // wait til not blocked or we get choppiness
+					Animate(
+						old_topModalView.layer,
+						{
+							top: `${self.layer.offsetHeight}px`
+						},
+						{
+							duration: self._animationDuration_ms_modalDismiss(),
+							easing: "ease-in-out",
+							complete: function()
+							{
+								__afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
+							}
+						}
+					)
+				}
+			)
 		}
 		{ // pop all views in model
 			const numberOf_modalViews = self.modalViews.length
