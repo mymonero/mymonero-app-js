@@ -31,9 +31,9 @@
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 //
-const Wallet_MetaInfo_BaseView = require('./Wallet_MetaInfo_BaseView.web')
+const BaseView_Wallet_MetaInfo = require('./BaseView_Wallet_MetaInfo.web')
 //
-class CreateWallet_MetaInfo_View extends Wallet_MetaInfo_BaseView
+class CreateWallet_MetaInfo_View extends BaseView_Wallet_MetaInfo
 {
 	_setup_views()
 	{

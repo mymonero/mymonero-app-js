@@ -33,9 +33,9 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
-const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
+const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
-class PickCreateOrUseExisting_Landing_View extends AddWallet_Wizard_ScreenBaseView
+class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen
 {
 	_setup_views()
 	{

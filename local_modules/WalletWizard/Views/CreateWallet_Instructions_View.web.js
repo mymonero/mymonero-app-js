@@ -32,9 +32,9 @@ const View = require('../../Views/View.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 //
-const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
+const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
-class CreateWallet_Instructions_View extends AddWallet_Wizard_ScreenBaseView
+class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 {
 	_setup_views()
 	{

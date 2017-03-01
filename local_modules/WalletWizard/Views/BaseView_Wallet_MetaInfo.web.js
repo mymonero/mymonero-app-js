@@ -33,9 +33,9 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_walletColorPicker = require('../../MMAppUICommonComponents/walletColorPicker.web')
 //
-const AddWallet_Wizard_ScreenBaseView = require('./AddWallet_Wizard_ScreenBaseView.web')
+const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
-class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
+class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 {
 	_setup_views()
 	{
@@ -220,4 +220,4 @@ class Wallet_MetaInfo_BaseView extends AddWallet_Wizard_ScreenBaseView
 		self.set_submitButtonNeedsUpdate()
 	}
 }
-module.exports = Wallet_MetaInfo_BaseView
+module.exports = BaseView_Wallet_MetaInfo

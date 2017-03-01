@@ -69,7 +69,7 @@ function New_GreyButtonView(context)
 	const view = _New_ButtonBase_View(
 		context, 
 		function(thisView)
-		{
+		{ // config from interactivity
 			if (thisView.isEnabled) {
 			} else {
 			}
@@ -95,7 +95,7 @@ function New_BlueButtonView(context)
 	const view = _New_ButtonBase_View(
 		context, 
 		function(thisView)
-		{
+		{ // config from interactivity
 			const layer = thisView.layer
 			if (thisView.isEnabled) {
 				layer.style.backgroundColor = "#00c6ff"
