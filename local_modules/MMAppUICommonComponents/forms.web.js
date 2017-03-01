@@ -36,7 +36,7 @@ const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+Names
 const cssRules =
 [
 	`.form_field {
-		padding: 0 10px 20px 10px;
+		padding: 0 14px 20px 14px;
 	}`,
 	`.form_field .field_title {
 	}`,
@@ -69,7 +69,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 	layer.className = "field_title"
 	layer.innerHTML = labelText
 	layer.style.display = "block" // own line
-	layer.style.margin = "15px 0 8px 13px"
+	layer.style.margin = "15px 0 8px 9px"
 	layer.style.textAlign = "left"
 	layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
 	layer.style.letterSpacing = "0.5px"
@@ -97,7 +97,7 @@ function New_fieldValue_textInputLayer(context, params)
 			layer.placeholder = placeholderText
 		}
 		layer.style.height = "29px"
-		const padding_h = 10
+		const padding_h = 7
 		if (typeof params.target_width !== 'undefined') {
 			const width = params.target_width - 4 - 2 * padding_h
 			layer.style.width = width + "px"
@@ -156,7 +156,7 @@ function New_fieldValue_textAreaView(params, context)
 		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 			layer.placeholder = placeholderText
 		}
-		const padding_h = 9
+		const padding_h = 8
 		layer.style.padding = `9px ${padding_h}px`
 		layer.style.height = `${62 - 2 * padding_h}px`
 		layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`

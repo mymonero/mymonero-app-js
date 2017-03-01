@@ -107,6 +107,7 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingRight = "0px" // special case
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR", self.context)
 			div.appendChild(labelLayer)
