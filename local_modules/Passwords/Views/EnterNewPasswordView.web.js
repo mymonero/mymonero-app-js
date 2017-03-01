@@ -66,21 +66,12 @@ class EnterNewPasswordView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.backgroundColor = "#272527"
-		const paddingTop = 44 // the
-		const padding_h = 14
+		const paddingTop = 41 // the nav bar height - we should prolly do this on VDA and ask for actual height
+		const padding_h = 10
 		layer.style.paddingTop = paddingTop + "px"
 		layer.style.width = `calc(100% - ${2 * 14}px)`
 		layer.style.paddingLeft = padding_h + "px"
 		layer.style.height = `calc(100% - ${paddingTop}px)`
-		self.layer.addEventListener(
-			"click",
-			function(e)
-			{
-				e.preventDefault()
-				self.passwordInputLayer.focus()
-				return false
-			}
-		)
 	}
 	_setup_form()
 	{
@@ -211,9 +202,6 @@ class EnterNewPasswordView extends View
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
-		if (self.isForChangingPassword !== true) {
-			return null
-		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
 		const layer = view.layer
 		layer.addEventListener(

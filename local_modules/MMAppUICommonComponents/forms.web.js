@@ -68,6 +68,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 	const layer = document.createElement("span")
 	layer.className = "field_title"
 	layer.innerHTML = labelText
+	layer.style.webkitUserSelect = "none"
 	layer.style.display = "block" // own line
 	layer.style.margin = "15px 0 8px 9px"
 	layer.style.textAlign = "left"
@@ -239,9 +240,10 @@ function New_fieldAccessory_messageLayer(context)
 	layer.style.fontSize = "11px"
 	layer.style.lineHeight = "15px"
 	layer.style.fontWeight = "100"
-	layer.style.margin = "7px 13px 0 13px"
+	layer.style.margin = "7px 7px 0 7px"
 	layer.style.color = "#8d8b8d"
 	layer.style.wordBreak = "break-word"
+	layer.style.webkitUserSelect = "none"
 	return layer
 }
 exports.New_fieldAccessory_messageLayer = New_fieldAccessory_messageLayer
