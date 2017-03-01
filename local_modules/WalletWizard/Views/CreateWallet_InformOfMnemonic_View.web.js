@@ -43,7 +43,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 		{
 			const text = "Write down your mnemonic"
 			const layer = self._new_messages_subheaderLayer(text)
-			layer.style.marginTop = "36px"
+			layer.style.marginTop = "39px"
 			layer.style.textAlign = "center"
 			layer.style.wordBreak = "break-word"
 			self.layer.appendChild(layer)
@@ -73,8 +73,10 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.style.fontWeight = "300"
 			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 			layer.style.fontSize = "11px"
+			layer.style.fontWeight = "400"
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.style.wordBreak = "break-word"
-			layer.style.color = "#f5e67e"
+			layer.style.color = "#F5E67E"
 			const text = "NOTE: This is the only way to access your wallet if you switch computers, use another Monero wallet app, or lose your&nbsp;data."
 			layer.innerHTML = text
 			self.layer.appendChild(layer)

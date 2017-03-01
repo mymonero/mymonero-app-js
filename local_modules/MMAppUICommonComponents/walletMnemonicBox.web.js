@@ -39,8 +39,8 @@ const cssRules =
 [
 	`.mnemonic-container {
 		background: #1D1B1D;
-		border: 1px solid #272527; /* invisible border for validation highlight layout */
-		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
+		border: 1px solid rgba(0,0,0,0); /* invisible border for validation highlight layout */
+		box-shadow: inset 0 0px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5); /* design stipulates 0.5px box shadow instead of 0px but since we need to use invisible border it creates a similar effect already */
 		border-radius: 5px;
 		margin: 0 auto 7px auto;
 	}`,
@@ -56,9 +56,9 @@ const cssRules =
 		cursor: default;
 		text-decoration: none;
 		text-transform: uppercase;
-		font-size: 11px;
+		font-size: 10px;
 		letter-spacing: 0.8px;
-		font-weight: 300;
+		font-weight: 100;
 		background: #383638;
 		padding: 4px 8px;
 		margin: 4px;

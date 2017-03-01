@@ -50,7 +50,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		{
 			const text = "Verify your mnemonic"
 			const layer = self._new_messages_subheaderLayer(text)
-			layer.style.marginTop = "36px"
+			layer.style.marginTop = "39px"
 			layer.style.textAlign = "center"
 			layer.style.wordBreak = "break-word"
 			self.layer.appendChild(layer)
