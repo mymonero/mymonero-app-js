@@ -95,6 +95,7 @@ class EditWalletView extends View
 	{ // Wallet Name
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingBottom = "10px" // special case
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("WALLET NAME", self.context)
 			div.appendChild(labelLayer)
@@ -121,6 +122,7 @@ class EditWalletView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingRight = "0px" // special case
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("COLOR", self.context)
 			div.appendChild(labelLayer)
