@@ -205,6 +205,18 @@ class PasswordController extends EventEmitter
 	{
 		return "EventName_ErroredWhileGettingExistingPassword"
 	}
+	EventName_canceledWhileEnteringExistingPassword()
+	{
+		return "EventName_canceledWhileEnteringExistingPassword"
+	}
+	EventName_canceledWhileEnteringNewPassword()
+	{
+		return "EventName_canceledWhileEnteringNewPassword"
+	}
+	EventName_canceledWhileChangingPassword()
+	{
+		return "EventName_canceledWhileChangingPassword"
+	}
 	EventName_errorWhileChangingPassword()
 	{
 		return "EventName_errorWhileChangingPassword"
@@ -297,55 +309,95 @@ class PasswordController extends EventEmitter
 	// Runtime - Imperatives - Public - Password management
 
 	WhenBootedAndPasswordObtained_PasswordAndType(
-		fn // (password, passwordType) -> Void
+		fn, // (password, passwordType) -> Void
+		optl__userDidCancel_fn
 	)
 	{ // this function is for convenience to wrap consumers' waiting for password readiness
+		const userDidCancel_fn = optl__userDidCancel_fn || function() {}
 		const self = this
-		self._executeWhenBooted(
-			function()
+		function callBackHavingObtainedPassword()
+		{
+			fn(self.password, self.userSelectedTypeOfPassword)
+		}
+		function callBackHavingCanceled()
+		{
+			userDidCancel_fn()
+		}
+		if (self.HasUserEnteredValidPasswordYet() === true) {
+			callBackHavingObtainedPassword()
+			return 
+		}
+		// then we have to wait for it
+		var hasCalledBack = false
+		var hasObtainedPassword = false
+		// declaring functions for listeners so we can also unsubscribe
+		var onFn_ObtainedNewPassword_fn;
+		var onFn_ObtainedCorrectExistingPassword_fn;
+		var onFn_canceledWhileEnteringExistingPassword_fn;
+		var onFn_canceledWhileEnteringNewPassword_fn;
+		function __startListening()
+		{
+			onFn_ObtainedNewPassword_fn = function()
 			{
-				function callBack()
-				{
-					fn(self.password, self.userSelectedTypeOfPassword)
-				}
-				if (self.HasUserEnteredValidPasswordYet() === true) {
-					callBack()
-					return 
-				}
-				// then we have to wait for it
-				var hasObtainedPassword = false
-				// declaring functions for listeners so we can also unsubscribe
-				var onFn_ObtainedNewPassword_fn;
-				var onFn_ObtainedCorrectExistingPassword_fn;
-				function _aPasswordWasObtained()
-				{
-					// immediately unsubscribe
-					self.removeListener(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
-					self.removeListener(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
-					// guard call to callBack()
-					if (hasObtainedPassword === true) {
-						console.log("PasswordController/WhenBootedAndPasswordObtained_PasswordAndType _aPasswordWasObtained called redundantly")
-						return // ^- shouldn't happen but just in case…
-					}
-					hasObtainedPassword = true
-					//
-					callBack()
-				}
-				onFn_ObtainedNewPassword_fn = function()
-				{
-					_aPasswordWasObtained()
-				}
-				onFn_ObtainedCorrectExistingPassword_fn = function()
-				{
-					_aPasswordWasObtained()
-				}
-				self.on(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
-				self.on(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
-				//
-				// now that we're subscribed, initiate the pw request
-				self.OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
+				_aPasswordWasObtained()
 			}
-		)
+			onFn_ObtainedCorrectExistingPassword_fn = function()
+			{
+				_aPasswordWasObtained()
+			}
+			onFn_canceledWhileEnteringExistingPassword_fn = function()
+			{
+				_obtainingPasswordWasCanceled()
+			}
+			onFn_canceledWhileEnteringNewPassword_fn = function()
+			{
+				_obtainingPasswordWasCanceled()
+			}
+			self.on(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
+			self.on(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
+			self.on(self.EventName_canceledWhileEnteringExistingPassword(), onFn_canceledWhileEnteringExistingPassword_fn)
+			self.on(self.EventName_canceledWhileEnteringNewPassword(), onFn_canceledWhileEnteringNewPassword_fn)
+		}
+		function __stopListening()
+		{
+			self.removeListener(self.EventName_ObtainedNewPassword(), onFn_ObtainedNewPassword_fn)
+			self.removeListener(self.EventName_ObtainedCorrectExistingPassword(), onFn_ObtainedCorrectExistingPassword_fn)
+			self.removeListener(self.EventName_canceledWhileEnteringExistingPassword(), onFn_canceledWhileEnteringExistingPassword_fn)
+			self.removeListener(self.EventName_canceledWhileEnteringNewPassword(), onFn_canceledWhileEnteringNewPassword_fn)
+			onFn_ObtainedNewPassword_fn = null
+			onFn_ObtainedCorrectExistingPassword_fn = null
+			onFn_canceledWhileEnteringExistingPassword_fn = null
+			onFn_canceledWhileEnteringNewPassword_fn = null
+		}
+		function ___guardAllCallBacks()
+		{
+			if (hasCalledBack === true) {
+				console.log("PasswordController/WhenBootedAndPasswordObtained_PasswordAndType hasCalledBack already true")
+				console.trace()
+				return false // ^- shouldn't happen but just in case…
+			}
+			hasCalledBack = true
+			return true
+		}
+		function _aPasswordWasObtained()
+		{
+			hasObtainedPassword = true
+			if (___guardAllCallBacks() != false) {
+				__stopListening() // immediately unsubscribe
+				callBackHavingObtainedPassword()
+			}
+		}
+		function _obtainingPasswordWasCanceled()
+		{
+			if (___guardAllCallBacks() != false) {
+				__stopListening() // immediately unsubscribe
+				callBackHavingCanceled()
+			}
+		}
+		// subscribe
+		__startListening()
+		// now that we're subscribed, initiate the pw request
+		self.OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
 	}
 	OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt()
 	{ // This function must be called in order to initiate a password entry screen being shown to the user
@@ -355,6 +407,7 @@ class PasswordController extends EventEmitter
 			function()
 			{
 				if (self.HasUserEnteredValidPasswordYet() === true) {
+					console.warn(self.constructor.name + " asked to OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt but already has password.")
 					return // already got it
 				}
 				{ // guard
@@ -390,6 +443,7 @@ class PasswordController extends EventEmitter
 								return
 							}
 							if (didCancel_orNil === true) {
+								self.emit(self.EventName_canceledWhileEnteringExistingPassword())
 								self.unguard_getNewOrExistingPassword()
 								return // just silently exit after unguarding
 							}
@@ -466,6 +520,7 @@ class PasswordController extends EventEmitter
 					}
 					if (didCancel_orNil === true) {
 						self.unguard_getNewOrExistingPassword()
+						self.emit(self.EventName_canceledWhileChangingPassword())
 						return // just silently exit after unguarding
 					}
 					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
@@ -527,6 +582,7 @@ class PasswordController extends EventEmitter
 				var validationErr_orNil = null // so far…
 				if (didCancel_orNil === true) {
 					// console.info("userDidCancel while having user enter their existing password")
+					// do not emit here
 				} else {
 					// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
 					
@@ -582,8 +638,9 @@ class PasswordController extends EventEmitter
 			isForChangePassword,
 			function(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{ // we're passing a function that the single observer should call
-				// if (didCancel_orNil) {
-				// }
+				if (didCancel_orNil) {
+					// don't emit here - consumer will
+				}
 				fn(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			}
 		)
@@ -603,6 +660,7 @@ class PasswordController extends EventEmitter
 			function(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
 			{
 				if (didCancel_orNil === true) {
+					self.emit(self.EventName_canceledWhileEnteringNewPassword())
 					self.unguard_getNewOrExistingPassword()
 					return // just silently exit after unguarding
 				}

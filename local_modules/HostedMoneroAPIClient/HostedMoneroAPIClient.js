@@ -501,7 +501,7 @@ class HostedMoneroAPIClient
 				} else {
 					json = body
 				}
-				// console.log("✅  " + completeURL + " " + statusCode)
+				console.log("✅  " + completeURL + " " + statusCode)
 				fn(null, json)
 			} else {
 				if (err) {

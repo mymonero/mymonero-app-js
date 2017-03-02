@@ -293,31 +293,6 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	}
 	//
 	//
-	// Runtime - Imperatives - Interactivity
-	//
-	___reEnableFormFromSubmissionDisable()
-	{
-		const self = this
-		self.isDisabledFromSubmission = false
-		//
-		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
-		self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
-		self.enable_submitButton()
-	}
-	//
-	//
-	// Runtime - Delegation - View lifecycle
-	//
-	viewDidAppear()
-	{
-		super.viewDidAppear()
-		const self = this
-		if (self.isDisabledFromSubmission == true) {
-			self.___reEnableFormFromSubmissionDisable() // user may have cancelled pw entry
-		}
-	}
-	//
-	//
 	// Runtime - Delegation - Interactions
 	//
 	_userSelectedNextButton()
@@ -337,6 +312,14 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		if (!walletInstance) {
 			throw "Missing expected walletInstance"
 		}
+		function ___reEnableFormFromSubmissionDisable()
+		{
+			self.isDisabledFromSubmission = false
+			//
+			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
+			self.enable_submitButton()
+		}
 		const walletLabel = self.wizardController.walletMeta_name
 		const swatch = self.wizardController.walletMeta_colorHexString
 		{ // disable form
@@ -346,18 +329,22 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
 			self.disable_submitButton()
 		}
-		self.context.walletsListController.WhenBooted_BootAndAdd_NewlyGeneratedWallet(
+		self.context.walletsListController.WhenBooted_ObtainPW_AddNewlyGeneratedWallet(
 			walletInstance,
 			walletLabel,
 			swatch,
 			function(err, walletInstance)
 			{
 				if (err) {
-					self.___reEnableFormFromSubmissionDisable()
+					___reEnableFormFromSubmissionDisable()
 					throw err
 					return
 				}
 				self.wizardController.ProceedToNextStep() // this should lead to a dismiss of the wizard
+			},
+			function()
+			{ // user canceled password entry
+				___reEnableFormFromSubmissionDisable()
 			}
 		)
 	}

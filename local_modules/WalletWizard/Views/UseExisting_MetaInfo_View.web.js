@@ -383,25 +383,6 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	}
 	//
 	//
-	// Runtime - Imperatives - Interactivity
-	//
-	___reEnableFormFromSubmissionDisable()
-	{
-		const self = this
-		self.isDisabledFromSubmission = false
-		//
-		self.enable_submitButton()
-		self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
-		//
-		self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
-		self.walletNameInputLayer.disabled = undefined
-		self.addrTextAreaView.layer.disabled = undefined
-		self.viewKeyTextAreaView.layer.disabled = undefined
-		self.spendKeyTextAreaView.layer.disabled = undefined
-		self.addrAndKeysFieldsContainerLayer.disabled = undefined
-	}
-	//
-	//
 	// Runtime - Delegation - Navigation View special methods
 	//
 	navigationView_viewIsBeingPoppedFrom()
@@ -412,18 +393,6 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.wizardController.WizardTask_Mode_PickCreateOrUseExisting(), 
 			0 // back to 0 from 1
 		)
-	}
-	//
-	//
-	// Runtime - Delegation - View lifecycle
-	//
-	viewDidAppear()
-	{
-		super.viewDidAppear()
-		const self = this
-		if (self.isDisabledFromSubmission == true) {
-			self.___reEnableFormFromSubmissionDisable() 
-		}
 	}
 	//
 	//
@@ -447,11 +416,25 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.spendKeyTextAreaView.layer.disabled = true
 			self.addrAndKeysFieldsContainerLayer.disabled = true
 		}
+		function ___reEnableFormFromSubmissionDisable()
+		{
+			self.isDisabledFromSubmission = false
+			//
+			self.enable_submitButton()
+			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
+			//
+			self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
+			self.walletNameInputLayer.disabled = undefined
+			self.addrTextAreaView.layer.disabled = undefined
+			self.viewKeyTextAreaView.layer.disabled = undefined
+			self.spendKeyTextAreaView.layer.disabled = undefined
+			self.addrAndKeysFieldsContainerLayer.disabled = undefined
+		}
 		function __trampolineFor_failedWithErrStr(errStr)
 		{
 			self.layer.scrollTop = 0 // because we want to show the validation err msg
 			self.validationMessageLayer.SetValidationError(errStr)
-			self.___reEnableFormFromSubmissionDisable()
+			___reEnableFormFromSubmissionDisable()
 		}
 		function __trampolineFor_didAddWallet()
 		{
@@ -462,7 +445,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		const colorHexString = self.lookup__colorHexString()
 		if (self.mode_loginWith == Modes_LoginWith.MnemonicSeed) {
 			const mnemonicSeed = self.lookup__mnemonicSeed()
-			walletsListController.WhenBooted_AddExtantWalletWith_mnemonicString(
+			walletsListController.WhenBooted_ObtainPW_AddExtantWalletWith_MnemonicString(
 				walletName,
 				colorHexString,
 				mnemonicSeed,
@@ -478,6 +461,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					}
 					// success
 					__trampolineFor_didAddWallet()
+				},
+				function()
+				{ // user canceled password entry
+					___reEnableFormFromSubmissionDisable()
 				}
 			)
 			
@@ -485,7 +472,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			const addr = self.lookup__addr()
 			const viewKey = self.lookup__viewKey()
 			const spendKey = self.lookup__spendKey()
-			walletsListController.WhenBooted_AddExtantWalletWith_addressAndKeys(
+			walletsListController.WhenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
 				walletName,
 				colorHexString,
 				addr,
@@ -503,6 +490,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					}
 					// success
 					__trampolineFor_didAddWallet()
+				},
+				function()
+				{ // user canceled password entry
+					___reEnableFormFromSubmissionDisable()
 				}
 			)
 		} else {

@@ -171,7 +171,7 @@ class WalletsListController extends ListBaseController
 	CreateNewWallet_NoBootNoListAdd(
 		fn // fn: (err: Error?, walletInstance: Wallet) -> Void
 	)
-	{ // call this first, then call WhenBooted_BootAndAdd_NewlyGeneratedWallet
+	{ // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
 		const self = this
 		const context = self.context
 		const options =
@@ -196,13 +196,15 @@ class WalletsListController extends ListBaseController
 		}
 		const wallet = new Wallet(options, context)
 	}	
-	WhenBooted_BootAndAdd_NewlyGeneratedWallet(
+	WhenBooted_ObtainPW_AddNewlyGeneratedWallet(
 		walletInstance,
 		walletLabel,
 		swatch,
-		fn // fn: (err: Error?, walletInstance: Wallet) -> Void
+		fn, // fn: (err: Error?, walletInstance: Wallet) -> Void
+		optl__userCanceledPasswordEntry_fn
 	)
 	{
+		const userCanceledPasswordEntry_fn = optl__userCanceledPasswordEntry_fn || function() {}
 		const self = this
 		const context = self.context
 		self.ExecuteWhenBooted(
@@ -212,6 +214,10 @@ class WalletsListController extends ListBaseController
 					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
 						_proceedWithPassword(obtainedPasswordString)
+					},
+					function()
+					{ // user canceled
+						userCanceledPasswordEntry_fn()
 					}
 				)
 				function _proceedWithPassword(persistencePassword)
@@ -235,13 +241,15 @@ class WalletsListController extends ListBaseController
 			}
 		)
 	}
-	WhenBooted_AddExtantWalletWith_mnemonicString(
+	WhenBooted_ObtainPW_AddExtantWalletWith_MnemonicString(
 		walletLabel,
 		swatch,
 		mnemonicString,
-		fn // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
+		fn, // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
+		optl__userCanceledPasswordEntry_fn
 	)
 	{
+		const userCanceledPasswordEntry_fn = optl__userCanceledPasswordEntry_fn || function() {}
 		const self = this
 		const context = self.context
 		self.ExecuteWhenBooted(
@@ -251,6 +259,10 @@ class WalletsListController extends ListBaseController
 					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
 						_proceedWithPassword(obtainedPasswordString)
+					},
+					function()
+					{ // user canceled
+						userCanceledPasswordEntry_fn()
 					}
 				)
 				function _proceedWithPassword(persistencePassword)
@@ -304,15 +316,17 @@ class WalletsListController extends ListBaseController
 			}
 		)
 	}
-	WhenBooted_AddExtantWalletWith_addressAndKeys(
+	WhenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys(
 		walletLabel,
 		swatch,
 		address,
 		view_key__private,
 		spend_key__private,
-		fn // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
+		fn, // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
+		optl__userCanceledPasswordEntry_fn
 	)
 	{
+		const userCanceledPasswordEntry_fn = optl__userCanceledPasswordEntry_fn || function() {}
 		const self = this
 		const context = self.context
 		self.ExecuteWhenBooted(
@@ -322,6 +336,10 @@ class WalletsListController extends ListBaseController
 					function(obtainedPasswordString, userSelectedTypeOfPassword)
 					{
 						_proceedWithPassword(obtainedPasswordString)
+					},
+					function()
+					{ // user canceled
+						userCanceledPasswordEntry_fn()
 					}
 				)
 				function _proceedWithPassword(persistencePassword)
@@ -332,7 +350,7 @@ class WalletsListController extends ListBaseController
 						const wallet = self.records[i]
 						if (wallet.public_address === address) {
 							// simply return existing wallet; note: this wallet might have mnemonic and thus seed
-							// so might not be exactly what consumer of WhenBooted_AddExtantWalletWith_addressAndKeys is expecting
+							// so might not be exactly what consumer of WhenBooted_ObtainPW_AddExtantWalletWith_AddressAndKeys is expecting
 							fn(null, wallet, true) // wasWalletAlreadyInserted: true
 							return
 						}
