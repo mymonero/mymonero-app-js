@@ -61,16 +61,18 @@ class FundsRequestsListView extends ListView
 		self.emptyStateContainerView = view
 		const layer = view.layer
 		const margin_side = 15
-		const marginTop = 54 - 44
+		const marginTop = 56 - 41 // TODO: do this in VDA and query actual nav bar height
+		const marginBottom = 14
 		layer.style.marginTop = `${marginTop}px`
 		layer.style.marginLeft = margin_side + "px"
 		layer.style.width = `calc(100% - ${2 * margin_side}px)`
-		layer.style.height = `calc(100% - ${marginTop + 10}px)`
+		layer.style.height = `calc(100% - ${marginTop + marginBottom}px)`
 		{
 			const emptyStateMessageContainerView = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
 				"🤑", 
 				"You haven't made any<br/>requests yet.",
 				self.context,
+				0,
 				0
 			)
 			self.emptyStateMessageContainerView = emptyStateMessageContainerView

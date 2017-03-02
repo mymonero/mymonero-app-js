@@ -44,10 +44,9 @@ class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen
 		self._setup_emptyStateMessageContainerView()
 		self._setup_actionButtonsContainerView()
 		{ // update empty state message container to accommodate 
-			const view = self.emptyStateMessageContainerView
-			const margin_side = view.__EmptyStateMessageContainerView_margin_side
-			const actionButtonsContainerView_style_height = self.actionButtonsContainerView.layer.style.height
-			view.layer.style.height = `calc(100% - ${2 * margin_side}px - ${actionButtonsContainerView_style_height/*no'px'*/})`
+			const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
+			self.emptyStateMessageContainerView.layer.style.height 
+				= `calc(100% - ${2 * margin_v}px + 3px - ${self.actionButtonsContainerView.layer.style.height/*no'px'*/})`
 		}
 	}
 	_setup_emptyStateMessageContainerView()
@@ -56,23 +55,24 @@ class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen
 		const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
 			"🤔", 
 			"How would you like to</br>add a wallet?",
-			self.context
+			self.context,
+			16,
+			19
 		)
-		{
-			const layer = view.layer
-			layer.style.margin = "14px 14px 0 14px" // not going to use margin on the btm because action bar is there
-		}
+		const layer = view.layer
+		layer.style.marginBottom = "0" // not going to use margin on the btm because action bar is there
 		self.emptyStateMessageContainerView = view
 		self.addSubview(view)
 	}
 	_setup_actionButtonsContainerView()
 	{
 		const self = this
-		const margin_h_side = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_side
+		const margin_h = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_h
+		const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
 		const view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-			margin_h_side, 
-			margin_h_side, 
-			margin_h_side,
+			margin_h, 
+			margin_h, 
+			margin_v - 3, // top
 			self.context
 		)
 		self.actionButtonsContainerView = view

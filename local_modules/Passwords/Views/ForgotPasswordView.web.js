@@ -62,10 +62,9 @@ class ForgotPasswordView extends View
 		self._setup_emptyStateMessageContainerView()
 		self._setup_actionButtonsContainerView()
 		{ // update empty state message container to accommodate 
-			const view = self.emptyStateMessageContainerView
-			const margin_side = view.__EmptyStateMessageContainerView_margin_side
-			const actionButtonsContainerView_style_height = self.actionButtonsContainerView.layer.style.height
-			view.layer.style.height = `calc(100% - ${2 * margin_side}px - ${actionButtonsContainerView_style_height/*no'px'*/})`
+			const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
+			self.emptyStateMessageContainerView.layer.style.height = 
+				`calc(100% - ${2 * margin_v}px + 3px - ${self.actionButtonsContainerView.layer.style.height/*no'px'*/})`
 		}
 	}
 	__setup_self_layer()
@@ -90,25 +89,26 @@ class ForgotPasswordView extends View
 	{
 		const self = this
 		const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
-			"😳", 
-			"There’s no way to recover<br/>because it’s truly secret. If you<br/>can't remember, you'll need to<br/>clear all data and start over.",
-			self.context
+			"😢", 
+			"Password reset is not possible,<br/>as your data is encrypted and local.<br/><br/>If you can't remember it, you'll need<br/>to clear all data and re-import your<br/>wallets to continue.",
+			self.context,
+			16,
+			19 // and we'll set btm to 0 manually
 		)
-		{
-			const layer = view.layer
-			layer.style.margin = "14px 14px 0 14px" // not going to use margin on the btm because action bar is there
-		}
+		const layer = view.layer
+		layer.style.marginBottom = "0" // not going to use margin on the btm because action bar is there
 		self.emptyStateMessageContainerView = view
 		self.addSubview(view)
 	}
 	_setup_actionButtonsContainerView()
 	{
 		const self = this
-		const margin_h_side = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_side
+		const margin_h = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_h
+		const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
 		const view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-			margin_h_side, 
-			margin_h_side, 
-			margin_h_side,
+			margin_h, 
+			margin_h, 
+			margin_v - 3,
 			self.context
 		)
 		self.actionButtonsContainerView = view

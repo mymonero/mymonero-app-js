@@ -31,8 +31,8 @@
 const View = require('../Views/View.web')
 const commonComponents_hoverableCells = require('./hoverableCells.web')
 //
-const ActionButton_h = 33
-const ActionButton_rightMargin = 8
+const ActionButton_h = 32
+const ActionButton_rightMargin = 9
 //
 const ActionButtonsContainerView_h = ActionButton_h
 const ActionButtonsContainerView_bottomMargin = 8
@@ -122,6 +122,7 @@ function New_ActionButtonView(
 			layer.style.fontSize = "12px"
 			layer.style.letterSpacing = "0.5px"
 			layer.style.fontWeight = "400"
+			layer.style.lineHeight = (ActionButton_h+2) + "px" // set for smaller font size so layout isn't messed
 		} else if (colorType == "blue") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
 			layer.style.color = "#161416"
@@ -132,6 +133,8 @@ function New_ActionButtonView(
 			layer.style.fontSize = "13px"
 			layer.style.letterSpacing = "0"
 			layer.style.fontWeight = "600"
+			layer.style.transform = "none" // reset
+			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else if (colorType === "red") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_RedCell())
 			layer.style.color = "#161416"
@@ -142,6 +145,7 @@ function New_ActionButtonView(
 			layer.style.fontSize = "13px"
 			layer.style.letterSpacing = "0"
 			layer.style.fontWeight = "600"
+			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else {
 			throw "unrecognized colorType " + colorType
 		}
@@ -158,13 +162,13 @@ function New_ActionButtonView(
 		layer.style.display = "inline-block"
 		layer.style.width = `calc(50% - ${ActionButton_rightMargin/2}px` // we're assuming there are only two buttons
 		layer.style.height = ActionButton_h + "px"
+		layer.style.boxSizing = "border-box"
 		layer.style.borderRadius = "3px"
 		{
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
 			view.SetColorType(optl_colorType || "grey")
 		}		
 		layer.style.textDecoration = "none"
-		layer.style.lineHeight = ActionButton_h + "px"
 		layer.style.textAlign = "center"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		if (isRightmostButtonInContainer !== true) {

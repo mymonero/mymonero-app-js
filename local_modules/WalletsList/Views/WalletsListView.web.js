@@ -81,7 +81,7 @@ class WalletsListView extends ListView
 		self.emptyStateContainerView = view
 		const layer = view.layer
 		const margin_side = 15
-		const marginTop = 54 - 41 // TODO: configure this with navigation bar height in VDA/VWA
+		const marginTop = 60 - 41 // TODO: configure this with navigation bar height in VDA/VWA
 		layer.style.marginTop = `${marginTop}px`
 		layer.style.marginLeft = margin_side + "px"
 		layer.style.width = `calc(100% - ${2 * margin_side}px)`
@@ -91,6 +91,7 @@ class WalletsListView extends ListView
 				"😃", 
 				"Welcome to MyMonero!<br/>Let's get started.",
 				self.context,
+				0,
 				0
 			)
 			self.emptyStateMessageContainerView = emptyStateMessageContainerView
@@ -193,7 +194,7 @@ class WalletsListView extends ListView
 	Navigation_Title()
 	{
 		const self = this
-		if (self.listController.records.length === 0) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
+		if (!self.listController.records || !self.listController.records.length) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return "MyMonero"
 		}
 		return "My Monero Wallets"

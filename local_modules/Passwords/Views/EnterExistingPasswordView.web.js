@@ -167,11 +167,6 @@ class EnterExistingPasswordView extends View
 		tr.appendChild(td)
 		table.appendChild(tr)
 		self.layer.appendChild(table)
-		//
-		setTimeout(function()
-		{ // let's wait til we're all presented or we might cause scroll weirdness
-			self.passwordInputLayer.focus()
-		}, 400)
 	}	
 	//
 	//
@@ -296,6 +291,21 @@ class EnterExistingPasswordView extends View
 		const self = this
 		const view = new ForgotPasswordView({}, self.context)
 		self.navigationController.PushView(view, true)
+	}
+	//
+	//
+	// Delegation - View visibility
+	// 
+	viewDidAppear()
+	{
+		super.viewDidAppear()
+		//
+		const self = this
+		setTimeout(function()
+		{ // let's wait til we're all presented or we might cause scroll weirdness
+			// and we'll do this in VDA instead of setup so it focuses selects every time we pop back to it too
+			self.passwordInputLayer.focus()
+		}, 400)
 	}
 }
 module.exports = EnterExistingPasswordView

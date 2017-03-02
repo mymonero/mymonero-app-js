@@ -487,11 +487,12 @@ class WalletDetailsView extends View
 				"😴", 
 				"You don't have any<br/>transactions yet.",
 				self.context,
-				0, // margin side
+				0, // explicit margin h
+				0, // explicit margin v
 				-12  // content translate y
 			)
 			const layer = view.layer
-			layer.style.margin = `16px 0 16px 0` // when we add 'Load more' btn, 40->16
+			layer.style.margin = `16px 0 16px 0`
 			layer.style.height = "276px"
 			self.addSubview(view)
 			//

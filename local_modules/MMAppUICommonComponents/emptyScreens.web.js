@@ -30,24 +30,34 @@
 //
 const View = require('../Views/View.web')
 //
-const default__margin_side = 14
+const default__margin_h = 16
+const default__margin_v = 18
 //
-function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, context, optl_explicitMarginSide, optl_contentTranslateYPX)
+function New_EmptyStateMessageContainerView(
+	optl_emoji, 
+	optl_messageText, 
+	context, 
+	optl_explicitMarginH, 
+	optl_explicitMarginV, 
+	optl_contentTranslateYPX
+)
 {
 	const emoji = typeof optl_emoji === 'string' ? optl_emoji : ""
 	const messageText = typeof optl_messageText === 'string' ? optl_messageText : ""
-	const margin_side__toUse = typeof optl_explicitMarginSide !== 'undefined' ? optl_explicitMarginSide : default__margin_side
+	const margin_h = typeof optl_explicitMarginH !== 'undefined' ? optl_explicitMarginH : default__margin_h
+	const margin_v = typeof optl_explicitMarginV !== 'undefined' ? optl_explicitMarginV : default__margin_v
 	const view = new View({}, context)
 	{
-		view.__EmptyStateMessageContainerView_margin_side = margin_side__toUse
+		view.__EmptyStateMessageContainerView_margin_h = margin_h
+		view.__EmptyStateMessageContainerView_margin_v = margin_v
 	}
 	{
 		const layer = view.layer
 		layer.style.position = "relative"
 		layer.style.display = "table" // for vertical align
-		layer.style.height = `calc(100% - ${2 * margin_side__toUse}px - 2px)` // -2px for border
-		layer.style.width = `calc(100% - ${2 * margin_side__toUse}px - 2px)` // -2px for border
-		layer.style.margin = margin_side__toUse + "px"
+		layer.style.width = `calc(100% - ${2 * margin_h}px - 2px)` // -2px for border
+		layer.style.height = `calc(100% - ${2 * margin_v}px - 2px)` // -2px for border
+		layer.style.margin = `${margin_v}px ${margin_h}px`
 		layer.style.border = "1px solid #373537"
 		layer.style.borderRadius = "5px"
 	}
@@ -56,7 +66,7 @@ function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, contex
 		const layer = document.createElement("div")
 		layer.style.display = "table-cell"
 		layer.style.verticalAlign = "middle"
-		const translateY_px = typeof optl_contentTranslateYPX == 'undefined' ? -20 : optl_contentTranslateYPX
+		const translateY_px = typeof optl_contentTranslateYPX == 'undefined' ? -16 : optl_contentTranslateYPX
 	    layer.style.transform = "translateY(" + translateY_px + "px)" // pull everything up per design
 		
 		contentContainerLayer = layer
@@ -67,11 +77,12 @@ function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, contex
 		const layer = document.createElement("div")
 		emoji_layer = layer
 		layer.innerHTML = emoji
-		layer.style.margin = "0 0 18px 0"
+		layer.style.margin = "0 0 23px 0"
 		layer.style.width = "100%"
 		layer.style.height = "21px"
 		layer.style.fontSize = "13px"
 		layer.style.textAlign = "center"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		contentContainerLayer.appendChild(layer)
 	}
 	var message_layer;
@@ -79,12 +90,13 @@ function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, contex
 		const layer = document.createElement("div")
 		message_layer = layer
 		layer.innerHTML = messageText
-		layer.style.margin = "5px 0 0 0"
+		layer.style.margin = "0 0 0 0"
 		layer.style.width = "100%"
 		layer.style.height = "auto"
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "19px"
 		layer.style.fontWeight = "200"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.color = "#9e9c9e"
 		layer.style.textAlign = "center"
