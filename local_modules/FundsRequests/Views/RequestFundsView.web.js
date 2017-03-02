@@ -120,6 +120,7 @@ class RequestFundsView extends View
 			//
 			const valueLayer = commonComponents_walletSelect.New_fieldValue_walletSelectLayer({
 				walletsListController: self.context.walletsListController,
+				themeController: self.context.themeController,
 				didChangeWalletSelection_fn: function(selectedWallet) { /* nothing to do */ }
 			})
 			self.walletSelectLayer = valueLayer

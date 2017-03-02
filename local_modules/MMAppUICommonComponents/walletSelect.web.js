@@ -28,29 +28,60 @@
 //
 "use strict"
 //
+const commonComponents_cssRules = require('./cssRules.web')
+//
+const NamespaceName = "walletSelect"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`select.walletSelect {
+		display: block; /* own line */
+		outline: none; /* no focus ring */
+
+		height: 57px;
+		width: 100%;
+		padding: 10px 10px;
+		box-sizing: border-box;
+
+		appearance: none;
+		background: #383638;
+		border: none;
+		box-shadow: 0 0 1px 0 #161416, inset 0 0 0 0 #494749;
+		border-radius: 5px;
+
+		text-align: left;
+		font-size: 14px;
+		color: #FCFBFC;
+	}`,
+	`select.walletSelect option {
+		background: #383638;
+		color: #FCFBFC;
+	}`
+]
+function __injectCSSRules_ifNecessary()
+{
+	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+}
+//
 function New_fieldValue_walletSelectLayer(params)
 {
+	__injectCSSRules_ifNecessary()
+	//
 	const didChangeWalletSelection_fn = params.didChangeWalletSelection_fn || function(selectedWallet) {}
 	const walletsListController = params.walletsListController
-	{
-		if (!walletsListController || typeof walletsListController === 'undefined') {
-			throw "_new_fieldValue_walletSelectLayer requires params.walletsListController"
-			return null
-		}
+	if (!walletsListController || typeof walletsListController === 'undefined') {
+		throw "_new_fieldValue_walletSelectLayer requires params.walletsListController"
+		return null
+	}
+	const themeController = params.themeController
+	if (!themeController || typeof themeController === 'undefined') {
+		throw "_new_fieldValue_walletSelectLayer requires params.themeController"
+		return null
 	}
 	const layer = document.createElement("select")
 	{
-		layer.style.display = "block"
-		layer.style.height = "30px"
-		layer.style.width = `calc(100% - 4px)`
-		layer.style.border = "1px inset #666"
-		layer.style.borderRadius = "4px"
-		layer.style.textAlign = "left"
-		layer.style.fontSize = "14px"
-		layer.style.color = "#fff"
-		layer.style.backgroundColor = "#999"
-		layer.style.padding = "0 10px"
-		layer.style.fontFamily = "monospace"
+		layer.className = "walletSelect"
+		layer.style.fontFamily = themeController.FontFamily_monospace()
 	}
 	{ // NOTES:
 		// layer.CurrentlySelectedWallet and layer.Lookup_CurrentlySelectedWallet() are defined after walletsListController booted. Use the following function to defer execution til they're ready
