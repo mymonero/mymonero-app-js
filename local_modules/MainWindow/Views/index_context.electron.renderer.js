@@ -97,7 +97,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../FundsRequests/Controllers/FundsRequestsListController",
+		module_path: __dirname + "/../../RequestFunds/Controllers/FundsRequestsListController",
 		instance_key: "fundsRequestsListController",
 		options: {}
 	},

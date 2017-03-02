@@ -39,7 +39,7 @@ const commonComponents_activityIndicators = require('../../MMAppUICommonComponen
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
 //
-class RequestFundsView extends View
+class CreateRequestView extends View
 {
 	constructor(options, context)
 	{
@@ -100,8 +100,14 @@ class RequestFundsView extends View
 		self.form_containerLayer = containerLayer
 		{
 			self._setup_form_walletSelectLayer()
-			self._setup_form_amountInputLayer()
-			self.form_containerLayer.appendChild(commonComponents_tables.New_spacerLayer())
+			{
+				const table = document.createElement("table")
+				table.style.width = "100%"
+				const tr_1 = document.createElement("tr")
+				self._setup_form_amountInputLayer(tr_1)
+				table.appendChild(tr_1)
+				self.form_containerLayer.appendChild(table)
+			}
 			self._setup_form_memoInputLayer()
 			self._setup_form_contactPickerLayer()
 			self._setup_form_resolving_activityIndicatorLayer()
@@ -128,17 +134,23 @@ class RequestFundsView extends View
 		}
 		self.form_containerLayer.appendChild(div)
 	}
-	_setup_form_amountInputLayer()
+	_setup_form_amountInputLayer(tr)
 	{ // Request funds from sender
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.display = "block"
+		div.style.width = "210px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
 			div.appendChild(labelLayer)
-			//
+			// ^ block
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "XMR"
+				placeholderText: "00.00"
 			})
+			valueLayer.style.textAlign = "right"
+			valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
+			valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
+			valueLayer.style.width = "128px"
 			self.amountInputLayer = valueLayer
 			{
 				valueLayer.addEventListener(
@@ -146,15 +158,30 @@ class RequestFundsView extends View
 					function(event)
 					{
 						if (event.keyCode === 13) {
-							self._tryToGenerateRequest()
+							self._tryToGenerateSend()
 							return
 						}
 					}
 				)
 			}
 			div.appendChild(valueLayer)
+			//
+			const currencyLabel = document.createElement("span")
+			currencyLabel.display = "inline-block"
+			currencyLabel.innerHTML = "XMR"
+			currencyLabel.style.marginLeft = "5px"
+			currencyLabel.style.fontSize = "11px"
+			currencyLabel.style.color = "#eee"
+			currencyLabel.style.fontFamily = "monospace"
+			currencyLabel.style.verticalAlign = "middle"
+			div.appendChild(currencyLabel)
 		}
-		self.form_containerLayer.appendChild(div)
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		const td = document.createElement("td")
+		td.style.width = "100px"
+		td.style.verticalAlign = "top"
+		td.appendChild(div)
+		tr.appendChild(td)
 	}
 	_setup_form_memoInputLayer()
 	{ // Memo
@@ -311,7 +338,7 @@ class RequestFundsView extends View
 	//
 	Navigation_Title()
 	{
-		return "Request Monero"
+		return "New Request"
 	}
 	Navigation_New_LeftBarButtonView()
 	{
@@ -637,4 +664,4 @@ class RequestFundsView extends View
 		)
 	}
 }
-module.exports = RequestFundsView
+module.exports = CreateRequestView

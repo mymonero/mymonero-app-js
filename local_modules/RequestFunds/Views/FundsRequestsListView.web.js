@@ -36,7 +36,7 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
 const GeneratedRequestView = require('./GeneratedRequestView.web')
 //
-const RequestFundsView = require('./RequestFundsView.web')
+const CreateRequestView = require('./CreateRequestView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
 class FundsRequestsListView extends ListView
@@ -50,7 +50,7 @@ class FundsRequestsListView extends ListView
 	_setup_views()
 	{
 		const self = this
-		self.currentlyPresented_RequestFundsView = null // zeroing for comparison
+		self.currentlyPresented_CreateRequestView = null // zeroing for comparison
 		super._setup_views()
 		self._setup_emptyStateContainerView()
 	}
@@ -104,7 +104,7 @@ class FundsRequestsListView extends ListView
 				emitter.EventName_didTrigger_requestFundsFromContact(), // observe 'did' so we're guaranteed to already be on right tab
 				function(contact)
 				{
-					self.presentRequestFundsView_withContact(contact)
+					self.presentCreateRequestView_withContact(contact)
 				}
 			)
 		}
@@ -113,14 +113,14 @@ class FundsRequestsListView extends ListView
 	{
 		const self = this
 		super.TearDown()
-		self.teardown_currentlyPresented_RequestFundsView()
+		self.teardown_currentlyPresented_CreateRequestView()
 	}
-	teardown_currentlyPresented_RequestFundsView()
+	teardown_currentlyPresented_CreateRequestView()
 	{
 		const self = this
-		if (self.currentlyPresented_RequestFundsView !== null) {
-			self.currentlyPresented_RequestFundsView.TearDown() // might not be necessary but method guards itself
-			self.currentlyPresented_RequestFundsView = null // must zero again and should free
+		if (self.currentlyPresented_CreateRequestView !== null) {
+			self.currentlyPresented_CreateRequestView.TearDown() // might not be necessary but method guards itself
+			self.currentlyPresented_CreateRequestView = null // must zero again and should free
 		}
 	}
 	overridable_listCellViewClass()
@@ -152,7 +152,7 @@ class FundsRequestsListView extends ListView
 			function(e)
 			{
 				e.preventDefault()
-				self.presentRequestFundsView_withoutValues()
+				self.presentCreateRequestView_withoutValues()
 				return false
 			}
 		)
@@ -162,27 +162,27 @@ class FundsRequestsListView extends ListView
 	//
 	// Runtime - Imperatives - Modal view presentation
 	//
-	presentRequestFundsView_withoutValues()
+	presentCreateRequestView_withoutValues()
 	{
 		const self = this
-		self._presentRequestFundsView_withOptions()
+		self._presentCreateRequestView_withOptions()
 	}
-	presentRequestFundsView_withContact(contact)
+	presentCreateRequestView_withContact(contact)
 	{
 		const self = this
-		self._presentRequestFundsView_withOptions({
+		self._presentCreateRequestView_withOptions({
 			fromContact: contact
 		})
 	}
-	_presentRequestFundsView_withOptions(options_orNilForDefault)
+	_presentCreateRequestView_withOptions(options_orNilForDefault)
 	{
 		const self = this
 		const options = options_orNilForDefault || {}
-		if (typeof self.currentlyPresented_RequestFundsView === 'undefined' || !self.currentlyPresented_RequestFundsView) {
+		if (typeof self.currentlyPresented_CreateRequestView === 'undefined' || !self.currentlyPresented_CreateRequestView) {
 			self.navigationController.PopToRootView(false) // not animated (since we're coming from another tab)
 			//
-			const view = new RequestFundsView(options, self.context)
-			self.currentlyPresented_RequestFundsView = view
+			const view = new CreateRequestView(options, self.context)
+			self.currentlyPresented_CreateRequestView = view
 			const navigationView = new StackAndModalNavigationView({}, self.context)
 			navigationView.SetStackViews([ view ])
 			self.navigationController.PresentView(navigationView, true)
@@ -191,7 +191,7 @@ class FundsRequestsListView extends ListView
 		}
 		const fromContact = options.fromContact
 		if (fromContact && typeof fromContact !== 'undefined') {
-			self.currentlyPresented_RequestFundsView.AtRuntime_reconfigureWith_fromContact(fromContact)
+			self.currentlyPresented_CreateRequestView.AtRuntime_reconfigureWith_fromContact(fromContact)
 		}
 	}
 	//
@@ -232,7 +232,7 @@ class FundsRequestsListView extends ListView
 	{
 		const self = this
 		super.viewDidAppear()
-		self.teardown_currentlyPresented_RequestFundsView() // we're assuming that on VDA if we have one of these it means we can tear it down
+		self.teardown_currentlyPresented_CreateRequestView() // we're assuming that on VDA if we have one of these it means we can tear it down
 	}
 }
 module.exports = FundsRequestsListView

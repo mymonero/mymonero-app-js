@@ -139,7 +139,6 @@ class SendFundsView extends View
 				table.appendChild(tr_1)
 				self.form_containerLayer.appendChild(table)
 			}
-			self.form_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer()) // as amt and mixin float
 			self._setup_form_contactOrAddressPickerLayer()
 			self._setup_form_resolving_activityIndicatorLayer()
 			self._setup_form_resolvedAddress_containerLayer()
@@ -169,6 +168,7 @@ class SendFundsView extends View
 	}
 	_setup_form_amountInputLayer(tr)
 	{ // Request funds from sender
+		// TODO: move this to a component
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
 		div.style.display = "block"

@@ -38,22 +38,22 @@ const cssRules =
 		display: block; /* own line */
 		outline: none; /* no focus ring */
 
-		height: 57px;
+		height: 66px;
 		width: 100%;
 		padding: 10px 10px;
 		box-sizing: border-box;
 
 		appearance: none;
 		background: #383638;
-		border: none;
-		box-shadow: 0 0 1px 0 #161416, inset 0 0 0 0 #494749;
+		border-width: 0;
+		box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
 		border-radius: 5px;
 
 		text-align: left;
 		font-size: 14px;
 		color: #FCFBFC;
 	}`,
-	`select.walletSelect option {
+	`select.walletSelect * {
 		background: #383638;
 		color: #FCFBFC;
 	}`
