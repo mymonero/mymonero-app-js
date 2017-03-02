@@ -274,15 +274,16 @@ function New_redTextButtonView(text, context)
 	layer.innerHTML = text
 	//
 	layer.style.display = "block" // own line
-	//
-	layer.style.fontSize = "10px" // design says 11 but chrome renders too large; simulating…
-	layer.style.letterSpacing = "0.5px"
-	layer.style.fontWeight = "500"
-	//
+    layer.style.float = "left" // but do not let it have 100% width
+	layer.style.clear = "left" // but do not let it have 100% width 
 	layer.style.marginLeft = "22px"
-	layer.style.fontWeight = "100"
+	//
 	layer.style.color = "#F97777"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontSize = "10px" // design says 11 but chrome renders too large; simulating…
+	layer.style.letterSpacing = "0.5px"
+	layer.style.fontWeight = "100"
+	//
 	//
 	layer.style.textDecoration = "none"
 	//
@@ -309,10 +310,12 @@ function New_redTextButtonView(text, context)
 			layer.href = "#"
 			layer.style.opacity = "1"
 			layer.style.cursor = "pointer"
+			layer.classList.remove("disabled")
 		} else {
 			layer.href = ""
 			layer.style.opacity = "0.7"
 			layer.style.cursor = "default"
+			layer.classList.add("disabled")
 		}
 	}
 	view.SetEnabled(true)
