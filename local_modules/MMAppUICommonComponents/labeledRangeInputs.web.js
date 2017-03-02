@@ -142,6 +142,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		sliderSide_labelLayer.innerHTML = text
 		sliderSide_labelLayer.style.fontFamily = context.themeController.FontFamily_monospace()
 		sliderSide_labelLayer.style.color = "#8d8b8d"
+		sliderSide_labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 		sliderSide_labelLayer.style.fontSize = "11px"
 		return sliderSide_labelLayer
 	}
@@ -171,6 +172,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	labelLayer.style.height = "15px"
 	labelLayer.style.fontFamily = context.themeController.FontFamily_monospace()
 	labelLayer.style.fontWeight = "100"
+	labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 	labelLayer.style.color = "#f8f8f8"
 	labelLayer.style.fontSize = "11px"
 	td_2.appendChild(labelLayer) // must be in container rather than on slider

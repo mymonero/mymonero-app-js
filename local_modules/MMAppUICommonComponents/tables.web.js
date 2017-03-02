@@ -284,7 +284,6 @@ function New_redTextButtonView(text, context)
 	layer.style.letterSpacing = "0.5px"
 	layer.style.fontWeight = "100"
 	//
-	//
 	layer.style.textDecoration = "none"
 	//
 	layer.addEventListener(

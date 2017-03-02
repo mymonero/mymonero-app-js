@@ -70,7 +70,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 	layer.innerHTML = labelText
 	layer.style.webkitUserSelect = "none"
 	layer.style.display = "block" // own line
-	layer.style.margin = "15px 0 8px 9px"
+	layer.style.margin = "15px 0 8px 8px"
 	layer.style.textAlign = "left"
 	layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
 	layer.style.letterSpacing = "0.5px"

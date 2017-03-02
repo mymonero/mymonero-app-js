@@ -104,11 +104,12 @@ class SettingsView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.padding = "19px 14px 20px 12px"
 		{
 			const view = commonComponents_navigationBarButtons.New_GreyButtonView(self.context)
 			view.layer.style.display = "inline-block"
 			view.layer.style.padding = "0 10px"
-			view.layer.style.margin = "0 3px"
+			view.layer.style.margin = "0"
 			self.changePasswordButtonView = view
 			view.layer.addEventListener("click", function(e)
 			{
@@ -150,7 +151,7 @@ class SettingsView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.marginTop = "43px"
+		div.style.paddingTop = "5px" // special case
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP TIMEOUT", self.context)
 			div.appendChild(labelLayer)
@@ -191,7 +192,7 @@ class SettingsView extends View
 					)
 				}
 			}, self.context)
-			const margin_h = 11
+			const margin_h = 5
 			view.layer.style.margin = `0 ${margin_h}px`
 			view.layer.style.width = `calc(100% - ${2 * margin_h}px)`
 			self.appTimeoutRangeInputView = view // NOTE: This must be torn down manually; see TearDown()
@@ -208,8 +209,7 @@ class SettingsView extends View
 	{
 		const self = this
 		const div = document.createElement("div")
-		div.style.paddingTop = "32px"
-		
+		div.style.paddingTop = "23px"
 		const view = commonComponents_tables.New_redTextButtonView("DELETE EVERYTHING…", self.context)
 		self.deleteEverything_buttonView = view
 		const layer = view.layer
