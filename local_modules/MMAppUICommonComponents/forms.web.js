@@ -48,10 +48,7 @@ const cssRules =
 		color: #6B696B;
 	}`
 ]
-function __injectCSSRules_ifNecessary()
-{
-	Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
-}
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
 function _new_fieldContainerLayer()
 {
@@ -72,6 +69,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 	layer.style.display = "block" // own line
 	layer.style.margin = "15px 0 8px 8px"
 	layer.style.textAlign = "left"
+	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
 	layer.style.letterSpacing = "0.5px"
 	layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
@@ -80,6 +78,19 @@ function New_fieldTitle_labelLayer(labelText, context)
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
+//
+function New_fieldTitle_rightSide_accessoryLayer(labelText, context)
+{
+	__injectCSSRules_ifNecessary()
+	const layer = New_fieldTitle_labelLayer("optional", context)
+	layer.style.float = "right"
+	layer.style.color = "#6B696B"
+	layer.style.fontSize = "11px"
+	layer.style.letterSpacing = "0"
+	layer.style.marginRight = "10px"
+	return layer
+}
+exports.New_fieldTitle_rightSide_accessoryLayer = New_fieldTitle_rightSide_accessoryLayer
 //
 function New_fieldValue_textInputLayer(context, params)
 {

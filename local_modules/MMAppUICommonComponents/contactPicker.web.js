@@ -28,7 +28,18 @@
 //
 "use strict"
 //
+const Views__cssRules = require('../Views/cssRules.web')
+const commonComponents_forms = require('./forms.web')
+//
+const NamespaceName = "contactPicker"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+//
 function New_contactPickerLayer(
+	context,
 	placeholderText, 
 	contactsListController,
 	didPickContact_fn,
@@ -45,7 +56,7 @@ function New_contactPickerLayer(
 		containerLayer.style.width = "100%"
 		containerLayer.style.webkitUserSelect = "none" // disable selection
 	}
-	const inputLayer = _new_inputLayer(placeholderText)
+	const inputLayer = _new_inputLayer(placeholderText, context)
 	containerLayer.ContactPicker_inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
 	containerLayer.appendChild(inputLayer)
 	{ // observation of inputLayer
@@ -264,25 +275,11 @@ function New_contactPickerLayer(
 }
 exports.New_contactPickerLayer = New_contactPickerLayer
 //
-function _new_inputLayer(placeholderText)
+function _new_inputLayer(placeholderText, context)
 {
-	const layer = document.createElement("input")
-	{
-		layer.type = "text"
-		layer.placeholder = placeholderText
-		// TODO: factor for base style when building UI to-design
-		layer.style.display = "block"
-		layer.style.height = "30px"
-		layer.style.width = `calc(100% - ${2 * 10}px)`
-		layer.style.border = "1px inset #222"
-		layer.style.borderRadius = "4px"
-		layer.style.textAlign = "left"
-		layer.style.fontSize = "13px"
-		layer.style.color = "#eee"
-		layer.style.backgroundColor = "#444"
-		layer.style.padding = "0 10px"
-		layer.style.fontFamily = "monospace"
-	}				
+	const layer = commonComponents_forms.New_fieldValue_textInputLayer(context, {
+		placeholderText: placeholderText
+	})
 	return layer
 }
 function _new_autocompleteResultsLayer()

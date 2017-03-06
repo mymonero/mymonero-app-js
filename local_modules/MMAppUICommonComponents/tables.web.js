@@ -82,9 +82,11 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 	a.innerHTML = buttonTitle
 	a.style.color = "#11bbec"
 	a.style.cursor = "pointer"
+	a.style.webkitFontSmoothing = "subpixel-antialiased"
 	a.style.fontFamily = context.themeController.FontFamily_monospace()
-	a.style.fontSize = "11px"
-	a.style.fontWeight = "100"
+	a.style.fontSize = "10px" // chrome renders 11px too big compared to sketch
+	a.style.letterSpacing = "0.5px"
+	a.style.fontWeight = "300"
 	a.style.display = "inline-block" // to get margin capability
 	a.style.margin = "8px 0 0 9px"
 	a.addEventListener("mouseenter", function()
@@ -333,41 +335,19 @@ function New_deleteRecordNamedButtonView(humanReadable_recordName, context, optl
 }
 exports.New_deleteRecordNamedButtonView = New_deleteRecordNamedButtonView
 //
-function New_createNewRecordNamedButton_aLayer(
-	lowercased_humanReadable_recordName
+function New_createNewRecordNamedButtonView(
+	lowercased_humanReadable_recordName,
+	context,
+	clicked_fn
 )
 {
 	__injectCSSRules_ifNecessary()
 	//
-	const layer = document.createElement("a")
-	{
-		layer.innerHTML = "+ CREATE NEW " + lowercased_humanReadable_recordName
-		layer.href = "#" // to make it look clickable
-		//
-		layer.style.display = "block" // own line
-		//
-		layer.style.textDecoration = "none"
-		layer.style.fontSize = "12px"
-		layer.style.fontWeight = "bold"
-		layer.style.color = "blue" // TODO
-		layer.addEventListener(
-			"mouseenter",
-			function()
-			{
-				layer.style.textDecoration = "underline"
-			}
-		)
-		layer.addEventListener(
-			"mouseleave",
-			function()
-			{
-				layer.style.textDecoration = "none"
-			}
-		)
-	}
+	const text = "+ CREATE NEW " + lowercased_humanReadable_recordName
+	const layer = New_clickableLinkButtonView(text, context, clicked_fn)
 	return layer
 }
-exports.New_createNewRecordNamedButton_aLayer = New_createNewRecordNamedButton_aLayer
+exports.New_createNewRecordNamedButtonView = New_createNewRecordNamedButtonView
 //
 function New_clearingBreakLayer()
 {

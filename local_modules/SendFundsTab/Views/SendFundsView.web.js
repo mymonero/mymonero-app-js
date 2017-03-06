@@ -145,7 +145,7 @@ class SendFundsView extends View
 			self._setup_form_resolving_activityIndicatorLayer()
 			self._setup_form_resolvedAddress_containerLayer()
 			self._setup_form_resolvedPaymentID_containerLayer()
-			self._setup_form_addPaymentIDButton_aLayer()
+			self._setup_form_addPaymentIDButtonView()
 			self._setup_form_manualPaymentIDInputLayer()
 		}
 		self.layer.appendChild(containerLayer)
@@ -272,11 +272,12 @@ class SendFundsView extends View
 			div.appendChild(labelLayer)
 			//
 			const layer = commonComponents_contactPicker.New_contactPickerLayer(
+				self.context,
 				"Enter contact name, or OpenAlias or integrated address",
 				self.context.contactsListController,
 				function(contact)
 				{ // did pick
-					self.addPaymentIDButton_aLayer.style.display = "none"
+					self.addPaymentIDButtonView.layer.style.display = "none"
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 					self.manualPaymentIDInputLayer.value = ""
 					//
@@ -290,7 +291,7 @@ class SendFundsView extends View
 					self._hideResolvedPaymentID()
 					self._hideResolvedAddress()
 					//
-					self.addPaymentIDButton_aLayer.style.display = "block" // can re-show this
+					self.addPaymentIDButtonView.layer.style.display = "block" // can re-show this
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
 					self.manualPaymentIDInputLayer.value = ""
 					//
@@ -367,27 +368,22 @@ class SendFundsView extends View
 		self.resolvedPaymentID_containerLayer = div
 		self.form_containerLayer.appendChild(div)
 	}
-	_setup_form_addPaymentIDButton_aLayer()
+	_setup_form_addPaymentIDButtonView()
 	{
-		const self = this
-		const layer = commonComponents_tables.New_createNewRecordNamedButton_aLayer("") 
-		layer.innerHTML = "+ ADD PAYMENT ID"
-		layer.addEventListener(
-			"click",
-			function(e)
+		const self = this		
+		const view = commonComponents_tables.New_clickableLinkButtonView(
+			"+ ADD PAYMENT ID", 
+			self.context, 
+			function()
 			{
-				e.preventDefault()
-				{
-					if (self.isFormDisabled !== true) {
-						self.manualPaymentIDInputLayer_containerLayer.style.display = "block"
-						layer.style.display = "none"
-					}
+				if (self.isFormDisabled !== true) {
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "block"
+					self.addPaymentIDButtonView.layer.style.display = "none"
 				}
-				return false
 			}
 		)
-		self.addPaymentIDButton_aLayer = layer
-		self.form_containerLayer.appendChild(layer)
+		self.addPaymentIDButtonView = view
+		self.form_containerLayer.appendChild(view.layer)
 	}
 	_setup_form_manualPaymentIDInputLayer()
 	{
@@ -1006,7 +1002,7 @@ class SendFundsView extends View
 									self.manualPaymentIDInputLayer.value = ""
 									self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 									//
-									self.addPaymentIDButton_aLayer.style.display = "block"
+									self.addPaymentIDButtonView.layer.style.display = "block"
 								}
 								// and lastly, importantly, re-enable everything
 								_reEnableFormElements()
@@ -1233,7 +1229,7 @@ class SendFundsView extends View
 			}
 			if (address__decode_result.intPaymentId) {
 				self._displayResolvedPaymentID(address__decode_result.intPaymentId)
-				self.addPaymentIDButton_aLayer.style.display = "none"
+				self.addPaymentIDButtonView.layer.style.display = "none"
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 				self.manualPaymentIDInputLayer.value = ""
 	        } else {
@@ -1289,14 +1285,14 @@ class SendFundsView extends View
 					}
 					
 					if (typeof payment_id !== 'undefined' && payment_id) {
-						self.addPaymentIDButton_aLayer.style.display = "none"
+						self.addPaymentIDButtonView.layer.style.display = "none"
 						self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 						self.manualPaymentIDInputLayer.value = ""
 						self._displayResolvedPaymentID(payment_id)
 					} else {
 						// we already hid resolved payment it above
 						if (self.manualPaymentIDInputLayer_containerLayer.style.display != "block") { // if manual payment field not showing
-							self.addPaymentIDButton_aLayer.style.display = "block" // then make sure we are at least shwign the + payment ID btn
+							self.addPaymentIDButtonView.layer.style.display = "block" // then make sure we are at least shwign the + payment ID btn
 						} else { // then one or the other is already visible - respect existing state
 							console.log("💬  It should be the case that either add pymt id btn or manual payment field is visible")
 						}
@@ -1432,13 +1428,13 @@ class SendFundsView extends View
 						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
 					}
 					if (payment_id_orNull !== null) {
-						self.addPaymentIDButton_aLayer.style.display = "none" // hide if showing
+						self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
 						self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
 						self.manualPaymentIDInputLayer.value = payment_id_orNull 
 					}
 				}
 			} else if (payment_id_orNull !== null) {
-				self.addPaymentIDButton_aLayer.style.display = "none" // hide if showing
+				self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
 				self.manualPaymentIDInputLayer.value = payment_id_orNull 
 			}

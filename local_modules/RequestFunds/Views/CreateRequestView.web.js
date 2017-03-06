@@ -113,7 +113,7 @@ class CreateRequestView extends View
 			self._setup_form_contactPickerLayer()
 			self._setup_form_resolving_activityIndicatorLayer()
 			self._setup_form_resolvedPaymentID_containerLayer()
-			self._setup_form_createNewRecordNamedButton_aLayer()
+			self._setup_form_createNewRecordNamedButtonView()
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -121,6 +121,8 @@ class CreateRequestView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.display = "block"
+		div.style.padding = "0 14px 0 14px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 			div.appendChild(labelLayer)
@@ -136,8 +138,8 @@ class CreateRequestView extends View
 	{ // Request funds from sender
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.display = "block"
 		div.style.width = "210px"
+		div.style.padding = "7px 14px 0 14px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
 			div.appendChild(labelLayer)
@@ -148,30 +150,25 @@ class CreateRequestView extends View
 			valueLayer.style.textAlign = "right"
 			valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
 			valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
-			valueLayer.style.width = "128px"
+			valueLayer.style.width = "98px"
 			self.amountInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) {
-							self._tryToGenerateSend()
-							return
-						}
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					if (event.keyCode === 13) {
+						self._tryToGenerateSend()
+						return
 					}
-				)
-			}
+				}
+			)
 			div.appendChild(valueLayer)
 			//
-			const currencyLabel = document.createElement("span")
-			currencyLabel.display = "inline-block"
-			currencyLabel.innerHTML = "XMR"
-			currencyLabel.style.marginLeft = "5px"
-			currencyLabel.style.fontSize = "11px"
-			currencyLabel.style.color = "#eee"
-			currencyLabel.style.fontFamily = "monospace"
+			const currencyLabel = commonComponents_forms.New_fieldTitle_labelLayer("XMR", self.context) // TODO: grab currency label from wallet selected
+			currencyLabel.style.display = "inline-block"
+			currencyLabel.style.margin = "0 0 0 8px"
 			currencyLabel.style.verticalAlign = "middle"
+			currencyLabel.style.color = "#8D8B8D"
 			div.appendChild(currencyLabel)
 		}
 		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
@@ -185,26 +182,32 @@ class CreateRequestView extends View
 	{ // Memo
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingTop = "31px"
+		div.style.paddingBottom = "0"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO", self.context)
+			labelLayer.style.float = "left"
 			div.appendChild(labelLayer)
+			//
+			const accessoryLabel = commonComponents_forms.New_fieldTitle_rightSide_accessoryLayer("optional", self.context)
+			div.appendChild(accessoryLabel)
+			//
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "A description for this Monero request"
 			})
 			self.memoInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) { // return key
-							self._tryToGenerateRequest()
-							return
-						}
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					if (event.keyCode === 13) { // return key
+						self._tryToGenerateRequest()
+						return
 					}
-				)
-			}
+				}
+			)
 			div.appendChild(valueLayer)
 		}
 		self.form_containerLayer.appendChild(div)
@@ -212,38 +215,54 @@ class CreateRequestView extends View
 	_setup_form_contactPickerLayer()
 	{ // Request funds from sender
 		const self = this
-		const layer = commonComponents_contactPicker.New_contactPickerLayer(
-			"Enter contact's name",
-			self.context.contactsListController,
-			function(contact)
-			{ // did pick
-				self._didPickContact(contact)
-			},
-			function(clearedContact)
-			{
-				self.cancelAny_requestHandle_for_oaResolution()
-				//
-				self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
-				self._hideResolvedPaymentID()
-				if (clearedContact && clearedContact.HasOpenAliasAddress() === true) {
-					self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
+		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingTop = "9px"
+		div.style.paddingBottom = "0"
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("REQUEST FROM", self.context)
+			labelLayer.style.float = "left"
+			div.appendChild(labelLayer)
+			//
+			const accessoryLabel = commonComponents_forms.New_fieldTitle_rightSide_accessoryLayer("optional", self.context)
+			div.appendChild(accessoryLabel)
+			//
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+			//
+			const layer = commonComponents_contactPicker.New_contactPickerLayer(
+				self.context,
+				"Enter contact name",
+				self.context.contactsListController,
+				function(contact)
+				{ // did pick
+					self._didPickContact(contact)
+				},
+				function(clearedContact)
+				{
+					self.cancelAny_requestHandle_for_oaResolution()
+					//
+					self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
+					self._hideResolvedPaymentID()
+					if (clearedContact && clearedContact.HasOpenAliasAddress() === true) {
+						self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
+					}
+					self.pickedContact = null
 				}
-				self.pickedContact = null
-			}
-		)
-		self.contactPickerLayer = layer
-		self.form_containerLayer.appendChild(layer)
-		{ // initial config
-			if (self.fromContact !== null) {
-				setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
-					function()
-					{
-						self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
-					},
-					1
-				)
+			)
+			self.contactPickerLayer = layer
+			div.appendChild(layer)
+			{ // initial config
+				if (self.fromContact !== null) {
+					setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
+						function()
+						{
+							self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
+						},
+						1
+					)
+				}
 			}
 		}
+		self.form_containerLayer.appendChild(div)
 	}	
 	_setup_form_resolving_activityIndicatorLayer()
 	{
@@ -276,31 +295,29 @@ class CreateRequestView extends View
 		self.resolvedPaymentID_containerLayer = containerLayer
 		self.form_containerLayer.appendChild(containerLayer)
 	}
-	_setup_form_createNewRecordNamedButton_aLayer()
+	_setup_form_createNewRecordNamedButtonView()
 	{
 		const self = this
-		const layer = commonComponents_tables.New_createNewRecordNamedButton_aLayer("CONTACT")
-		layer.addEventListener(
-			"click",
-			function(e)
+		const view = commonComponents_tables.New_createNewRecordNamedButtonView(
+			"CONTACT", 
+			self.context, 
+			function()
 			{
-				e.preventDefault()
-				{
-					const view = new AddContactFromOtherTabView({
-						emitNewlySavedContact_fn: function(contact)
-						{
-							self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
-						}
-					}, self.context)
-					const navigationView = new StackAndModalNavigationView({}, self.context)
-					navigationView.SetStackViews([ view ])
-					self.navigationController.PresentView(navigationView, true)
-				}
-				return false
+				const view = new AddContactFromOtherTabView({
+					emitNewlySavedContact_fn: function(contact)
+					{
+						self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
+					}
+				}, self.context)
+				const navigationView = new StackAndModalNavigationView({}, self.context)
+				navigationView.SetStackViews([ view ])
+				self.navigationController.PresentView(navigationView, true)
 			}
 		)
-		self.createNewRecordNamedButton_aLayer = layer
-		self.form_containerLayer.appendChild(layer)
+		view.layer.style.paddingTop = "16px"
+		view.layer.style.paddingLeft = "14px"
+		self.createNewRecordNamedButtonView = view
+		self.form_containerLayer.appendChild(view.layer)
 	}
 	//
 	//
