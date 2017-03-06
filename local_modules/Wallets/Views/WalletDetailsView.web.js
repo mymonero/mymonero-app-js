@@ -34,6 +34,7 @@ const TransactionDetailsView = require("./TransactionDetailsView.web")
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
 class WalletDetailsView extends View
@@ -78,10 +79,11 @@ class WalletDetailsView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		layer.style.boxSizing = "border-box" // so we don't need to account for padding in w/h
 		//
 		const margin_h = 16
-		layer.style.width = `calc(100% - ${ 2 * margin_h }px)`
-		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		layer.style.width = `100%`
+		layer.style.height = "100%"
 		layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -502,7 +504,8 @@ class WalletDetailsView extends View
 		listContainerLayer.style.margin = `16px 0 40px 0` // when we add 'Load more' btn, 40->16
 		listContainerLayer.style.background = "#383638"
 		listContainerLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-		listContainerLayer.style.borderRadius = "5px"		
+		listContainerLayer.style.borderRadius = "5px"
+		listContainerLayer.style.overflow = "hidden" // mask to bounds, for corner radius on cell hover highlight
 		{
 			stateCachedTransactions.forEach(
 				function(tx, i)
@@ -517,6 +520,9 @@ class WalletDetailsView extends View
 						listItemLayer.style.top = "0"
 						listItemLayer.style.width = "100%"
 						listItemLayer.style.height = "74px"
+						//
+						listItemLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+						listItemLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
 					}
 					listItemLayer.addEventListener(
 						"click",
@@ -686,11 +692,9 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
-			}
+		//
+		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px` // no need to set height as we're box-sizing: border-box
 		}
 	}
 	viewDidAppear()

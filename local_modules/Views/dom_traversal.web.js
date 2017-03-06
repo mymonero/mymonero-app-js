@@ -28,47 +28,18 @@
 //
 "use strict"
 //
-const Views__cssRules = require('../Views/cssRules.web')
-//
-const NamespaceName = "hoverableCell"
-const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	`.hoverable-cell {
-		transition: background-color 0.1s ease-out;
-	}`,
-	`.hoverable-cell.utility:not(.disabled):hover {
-		background-color: rgba(73, 71, 73, 0.75) !important;
-	}`,
-	`.hoverable-cell.action:not(.disabled):hover {
-		background-color: #33d1ff !important;
-	}`,
-	`.hoverable-cell.destructive:not(.disabled):hover {
-		background-color: #F77E7E !important;
-	}`
-]
-function __injectCSSRules_ifNecessary()
-{
-	Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+function DoesAnyParentOfElementMatch__sync(
+	possibleChildElement, 
+	match_fn // (anAncestorNode) -> Bool
+)
+{ // This function is to remain synchronous as named
+	var anAncestorNode = possibleChildElement.parentNode
+	while (anAncestorNode != null && typeof anAncestorNode !== 'undefined') {
+		if (match_fn(anAncestorNode) === true) {
+			return true // also exits
+		}
+		anAncestorNode = anAncestorNode.parentNode
+	}
+	return false
 }
-
-exports.ClassFor_HoverableCell = function()
-{
-	__injectCSSRules_ifNecessary() 
-	return "hoverable-cell"
-}
-exports.ClassFor_GreyCell = function()
-{
-	__injectCSSRules_ifNecessary()
-	return "utility"
-}
-exports.ClassFor_BlueCell = function()
-{
-	__injectCSSRules_ifNecessary()
-	return "action"
-}
-exports.ClassFor_RedCell = function()
-{
-	__injectCSSRules_ifNecessary()
-	return "destructive"
-}
+exports.DoesAnyParentOfElementMatch__sync = DoesAnyParentOfElementMatch__sync

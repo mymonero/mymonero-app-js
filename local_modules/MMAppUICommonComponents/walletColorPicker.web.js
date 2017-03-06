@@ -29,7 +29,7 @@
 "use strict"
 //
 const commonComponents_walletIcons = require('./walletIcons.web')
-const commonComponents_cssRules = require('./cssRules.web')
+const Views__cssRules = require('../Views/cssRules.web')
 const commonComponents_hoverableCells = require('./hoverableCells.web')
 //
 // CSS rules
@@ -91,7 +91,7 @@ const cssRules =
 ]
 function __injectCSSRules_ifNecessary()
 {
-	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+	Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
 function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUndefForDefault)

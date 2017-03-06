@@ -30,6 +30,7 @@
 //
 const View = require('../../Views/View.web')
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 class WalletCellContentsView extends View
 {
@@ -38,6 +39,7 @@ class WalletCellContentsView extends View
 		super(options, context)
 		//
 		const self = this
+		self.icon_sizeClass = self.options.icon_sizeClass || commonComponents_walletIcons.SizeClasses.Large48
 		self.setup()
 	}
 	setup()
@@ -48,6 +50,9 @@ class WalletCellContentsView extends View
 	setup_views()
 	{
 		const self = this
+		// hover effects/classes
+		self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+		self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		{ 
 			const layer = self.layer
 			layer.style.wordBreak = "break-all" // to get the text to wrap
@@ -57,11 +62,9 @@ class WalletCellContentsView extends View
 			layer.style.top = "0"
 		}
 		{ // icon
-			const div = commonComponents_walletIcons.New_WalletIconLayer(
-				"large-48" // size class - for css
-			) 
+			const div = commonComponents_walletIcons.New_WalletIconLayer(self.icon_sizeClass) 
 			div.style.position = "absolute"
-			div.style.left = "15px"
+			div.style.left = self._lookup_walletIconLayer_left() + "px"
 			div.style.top = "16px"
 			self.walletIconLayer = div
 			self.layer.appendChild(div)
@@ -69,19 +72,64 @@ class WalletCellContentsView extends View
 		self.__setup_titleLayer()
 		self.__setup_descriptionLayer()
 	}
+	_lookup_walletIconLayer_left()
+	{
+		const self = this
+		switch (self.icon_sizeClass) {
+			case commonComponents_walletIcons.SizeClasses.Large48:
+				return 15
+			case commonComponents_walletIcons.SizeClasses.Large43:
+				return 15
+			case commonComponents_walletIcons.SizeClasses.Medium32:
+				return 16
+		}
+		throw "Unhandled sef.icon_sizeClass in _lookup_walletIconLayer_left"
+		return 15
+	}
+	_lookup_labelsPaddingLeft()
+	{
+		const self = this
+		switch (self.icon_sizeClass) {
+			case commonComponents_walletIcons.SizeClasses.Large48:
+				return 80
+			case commonComponents_walletIcons.SizeClasses.Large43:
+				return 75
+			case commonComponents_walletIcons.SizeClasses.Medium32:
+				return 66
+		}
+		throw "Unhandled sef.icon_sizeClass in _lookup_labelsPaddingLeft"
+		return 80
+	}
+	_lookup_titlelabelPaddingTop()
+	{
+		const self = this
+		switch (self.icon_sizeClass) {
+			case commonComponents_walletIcons.SizeClasses.Large48:
+				return 20
+			case commonComponents_walletIcons.SizeClasses.Large43:
+				return 19
+			case commonComponents_walletIcons.SizeClasses.Medium32:
+				return 15
+		}
+		throw "Unhandled sef.icon_sizeClass in _lookup_titlelabelPaddingTop"
+		return 20
+	}
 	__setup_titleLayer()
 	{
 		const self = this
 		const layer = document.createElement("div")
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
-		layer.style.padding = "22px 66px 4px 80px"
+		const paddingTop = self._lookup_titlelabelPaddingTop()
+		const paddingLeft = self._lookup_labelsPaddingLeft()
+		layer.style.padding = paddingTop + "px 66px 4px "+paddingLeft+"px"
 		layer.style.letterSpacing = "0.5px"
 		layer.style.height = "auto"
 		layer.style.display = "block"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		layer.style.fontWeight = "400"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.wordBreak = "break-word"
 		layer.style.color = "#fcfbfc"
 		// layer.style.border = "1px solid red"
@@ -94,10 +142,12 @@ class WalletCellContentsView extends View
 		const layer = document.createElement("div")
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
-		layer.style.padding = "0px 66px 4px 80px"
+		const paddingLeft = self._lookup_labelsPaddingLeft()
+		layer.style.padding = "0px 66px 4px "+paddingLeft+"px"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
 		layer.style.fontWeight = "100"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.height = "20px"
 		layer.style.color = "#9e9c9e"
 		layer.style.whiteSpace = "nowrap"
@@ -161,9 +211,7 @@ class WalletCellContentsView extends View
 			)
 		}
 	}
-	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
-	//
 	ConfigureWithRecord(wallet)
 	{
 		const self = this

@@ -32,7 +32,6 @@ const ListCellView = require('../../Lists/Views/ListCellView.web')
 const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 class WalletsListCellView extends ListCellView
 {
@@ -52,10 +51,6 @@ class WalletsListCellView extends ListCellView
 		const margin_h = 16
 		{
 			const layer = self.layer
-			// hover effects/classes
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
-			//
 			layer.style.position = "relative"
 			layer.style.left = `${margin_h}px`
 			layer.style.top = "0"

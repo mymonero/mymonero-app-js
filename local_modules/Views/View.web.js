@@ -152,13 +152,20 @@ class View extends EventEmitter
 	addSubview(view)
 	{
 		const self = this
+		if (!view || typeof view === 'undefined') {
+			throw self.constructor.name + " asked to `addSubview` but passed nil `view`."
+			return
+		}
 		const toLayer = self.layer
 		self.addSubview_appendingToLayer(view, toLayer)
 	}
 	addSubview_appendingToLayer(view, superlayer)
 	{ // this is exposed so you can inject subviews into manually created children elements of your choice
 		const self = this
-		//
+		if (!view || typeof view === 'undefined') {
+			throw self.constructor.name + " asked to `addSubview` but passed nil `view`."
+			return
+		}
 		view.viewWillAppear()
 		{ // state:
 			// local:

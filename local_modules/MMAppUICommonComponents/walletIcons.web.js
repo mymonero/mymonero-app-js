@@ -28,7 +28,22 @@
 //
 "use strict"
 //
-const commonComponents_cssRules = require('./cssRules.web')
+const Views__cssRules = require('../Views/cssRules.web')
+// 
+function ColorClassFor_NeutralBG() { return "neutralBG" }
+function ColorClassFor_DarkBG() { return "darkBG" }
+function ColorClassFor_LightBG() { return "lightBG" }
+exports.ColorClassFor_NeutralBG = ColorClassFor_NeutralBG
+exports.ColorClassFor_DarkBG = ColorClassFor_DarkBG
+exports.ColorClassFor_LightBG = ColorClassFor_LightBG
+//
+const SizeClasses =
+{
+	Large48: "large-48",
+	Large43: "large-43",
+	Medium32: "medium-32",
+}
+exports.SizeClasses = SizeClasses
 //
 const NamespaceName = "walletIcons"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
@@ -119,7 +134,6 @@ const cssRules =
 	  width: 35px;
 	  height: 30px;
 	  border-radius: 0 0 3px 3px;
-	  box-shadow: inset 0 -1px 4px 0 rgba(255, 255, 255, 0.4), 0 0 3px 0 rgba(255, 255, 255, 0.4);
 	}`,
 	// // :after - variations
 	`.walletIcon.large-43:after, 
@@ -144,15 +158,55 @@ const cssRules =
 	  box-shadow: inset 0 -1px 1px 0 rgba(16, 14, 67, 0.3), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.2);
 	}`,
 	//
+	// medium-32
+	`.walletIcon.${SizeClasses.Medium32} {
+	  width: 32px;
+	  height: 32px;
+	  border-radius: 5px;
+	}`,
+	`.walletIcon.${SizeClasses.Medium32}:before {
+	  width: 32px;
+	  height: 7px;
+	  border-radius: 5px 5px 0 0;
+	  box-shadow: inset 0 -0.5px 1px 0 rgba(16, 14, 67, 0.2), 0 1px 0 0 rgba(255, 255, 255, 0.1);
+	}`,
+	// // :after - base
+	`.walletIcon.${SizeClasses.Medium32}:after {
+	  width: 26px;
+	  height: 23px;
+	  border-radius: 0 0 3px 3px;
+	}`,
+	// // :after - variations
+	`.walletIcon.${SizeClasses.Medium32}:after, 
+	 .walletIcon.neutralBG.${SizeClasses.Medium32}:after {
+   	  box-shadow: inset 0 -0.5px 1.5px 0 rgba(255, 255, 255, 0.4), 0 0 1.5px 0 rgba(255, 255, 255, 0.4);
+	}`,
+	`.walletIcon.darkBG.${SizeClasses.Medium32}:after {
+  	  box-shadow: inset 0 -0.5px 1.5px 0 rgba(255, 255, 255, 0.2), 0 0 1.5px 0 rgba(255, 255, 255, 0.2);
+	}`,
+	`.walletIcon.lightBG.${SizeClasses.Medium32}:after {
+  	  box-shadow: inset 0 -0.5px 1.5px 0 rgba(255, 255, 255, 0.6), 0 0 1.5px 0 rgba(255, 255, 255, 0.6);
+	}`,
+	// // span (the card)
+	`.walletIcon.${SizeClasses.Medium32} span {
+	  width: 26px;
+	  height: 4px;
+	  border-radius: 3px 3px 0 0;
+	  margin-top: -4px;
+	}`,
+	`.walletIcon.${SizeClasses.Medium32} span:before {
+	  border-radius: 3px 3px 0 0;
+	  box-shadow: inset 0 -.5px .5px 0 rgba(16, 14, 67, 0.2), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.1);
+	}`,
 ]
 function __injectCSSRules_ifNecessary()
 {
-	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+	Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
 function New_WalletIconLayer(optl_sizeClass)
 {
-	var sizeClass = optl_sizeClass || "large-48"
+	var sizeClass = optl_sizeClass || SizeClasses.Large48
 	//
 	__injectCSSRules_ifNecessary()
 	//
@@ -196,11 +250,3 @@ function New_WalletIconLayer(optl_sizeClass)
 	return div
 }
 exports.New_WalletIconLayer = New_WalletIconLayer
-//
-function ColorClassFor_NeutralBG() { return "neutralBG" }
-function ColorClassFor_DarkBG() { return "darkBG" }
-function ColorClassFor_LightBG() { return "lightBG" }
-
-exports.ColorClassFor_NeutralBG = ColorClassFor_NeutralBG
-exports.ColorClassFor_DarkBG = ColorClassFor_DarkBG
-exports.ColorClassFor_LightBG = ColorClassFor_LightBG

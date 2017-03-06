@@ -70,10 +70,11 @@ class TransactionDetailsView extends View
 		const self = this
 		//
 		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		self.layer.style.boxSizing = "border-box"
 		//
 		const margin_h = 16
-		self.layer.style.width = `calc(100% - ${2 * margin_h}px)`
-		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		self.layer.style.width = `100%`
+		self.layer.style.height = "100%"
 		//
 		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
@@ -401,7 +402,6 @@ class TransactionDetailsView extends View
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
 	}

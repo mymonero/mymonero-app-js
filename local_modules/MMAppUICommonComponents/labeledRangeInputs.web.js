@@ -29,7 +29,7 @@
 "use strict"
 //
 const View = require('../Views/View.web')
-const commonComponents_cssRules = require('./cssRules.web')
+const Views__cssRules = require('../Views/cssRules.web')
 //
 const k_knobWidth = 12
 const k_visibleTrackHeight = 2
@@ -99,7 +99,7 @@ const cssRules =
 ]
 function __injectCSSRules_ifNecessary()
 {
-	commonComponents_cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+	Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
 }
 //
 function New_fieldValue_labeledRangeInputView(params, context)

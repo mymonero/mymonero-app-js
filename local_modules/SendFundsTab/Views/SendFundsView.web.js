@@ -32,7 +32,9 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
-const commonComponents_walletSelect = require('../../MMAppUICommonComponents/walletSelect.web')
+//
+const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
+//
 const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
@@ -156,12 +158,9 @@ class SendFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = commonComponents_walletSelect.New_fieldValue_walletSelectLayer({
-				walletsListController: self.context.walletsListController,
-				themeController: self.context.themeController,
-				didChangeWalletSelection_fn: function(selectedWallet) { /* nothing to do */ }
-			})
-			self.walletSelectLayer = valueLayer
+			const view = new WalletsSelectView({}, self.context)
+			self.walletSelectView = view
+			const valueLayer = view.layer
 			div.appendChild(valueLayer)
 		}
 		self.form_containerLayer.appendChild(div)
@@ -527,8 +526,8 @@ class SendFundsView extends View
 			self.cancelAny_requestHandle_for_oaResolution()
 		}
 		{ // Tear down components that require us to call their TearDown
-			// // important! so they stop observing
-			self.walletSelectLayer.Component_TearDown()
+			// // important! so they stop observing…
+			self.walletSelectView.TearDown()
 			self.contactOrAddressPickerLayer.Component_TearDown()
 		}
 		{
@@ -719,7 +718,7 @@ class SendFundsView extends View
 			self.amountInputLayer.disabled = true
 			self.manualPaymentIDInputLayer.disabled = true
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
-			self.walletSelectLayer.disabled = 'disabled'
+			self.walletSelectView.SetEnabled(false)
 		}
 		{
 			self._dismissValidationMessageLayer()
@@ -732,7 +731,7 @@ class SendFundsView extends View
 			self.amountInputLayer.disabled = false
 			self.manualPaymentIDInputLayer.disabled = false
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
-			self.walletSelectLayer.disabled = undefined
+			self.walletSelectView.SetEnabled(true)
 			//
 			self.useCamera_buttonView.Enable()
 			self.chooseFile_buttonView.Enable()
@@ -743,7 +742,7 @@ class SendFundsView extends View
 			_reEnableFormElements()
 		}
 		//
-		const wallet = self.walletSelectLayer.CurrentlySelectedWallet
+		const wallet = self.walletSelectView.CurrentlySelectedRowItem
 		{
 			if (typeof wallet === 'undefined' || !wallet) {
 				_trampolineToReturnWithValidationErrorString("Please create a wallet to send Monero.")
