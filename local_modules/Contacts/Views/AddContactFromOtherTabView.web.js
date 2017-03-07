@@ -54,9 +54,7 @@ class AddContactFromOtherTabView extends AddContactView
 	_didSaveNewContact(contact)
 	{
 		const self = this
-		{
-			self.emitNewlySavedContact_fn(contact)
-		}
+		self.emitNewlySavedContact_fn(contact)
 		super._didSaveNewContact(contact) // this will cause self to be dismissed!! so, last-ish
 	}
 }

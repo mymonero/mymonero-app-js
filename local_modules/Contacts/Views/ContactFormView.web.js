@@ -45,7 +45,7 @@ class ContactFormView extends View
 		self.setup()
 	}
 	setup()
-	{
+	{ // overridable, but do call on super
 		const self = this
 		{
 			self.isSubmitButtonDisabled = false
@@ -53,23 +53,30 @@ class ContactFormView extends View
 		self.setup_views()
 	}
 	setup_views()
+	{ // overridable, but do call on super
+		const self = this
+		self.setup_self_layer()
+		self.setup_validationMessageLayer()
+		self.setup_form()
+	}
+	setup_self_layer()
+	{ // overridable, but do call on super
+		const self = this
+		const layer = self.layer
+		layer.style.boxSizing = "border-box"
+		layer.style.width = "100%"
+		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		layer.style.overflowY = "scroll"
+		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		//
+		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		//
+		layer.style.wordBreak = "break-all" // to get the text to wrap
+		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+	}
+	setup_validationMessageLayer()
 	{
 		const self = this
-		{
-			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-			//
-			self.layer.style.width = "calc(100% - 20px)"
-			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-			//
-			self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-			//
-			self.layer.style.color = "#c0c0c0" // temporary
-			//
-			self.layer.style.overflowY = "scroll"
-			self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-			//
-			self.layer.style.wordBreak = "break-all" // to get the text to wrap
-		}
 		{ // validation message
 			const initial_message = self._overridable_initial_inlineMessageString()
 			const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
@@ -80,17 +87,19 @@ class ContactFormView extends View
 			self.validationMessageLayer = layer
 			self.layer.appendChild(layer)				
 		}
-		{ // form
-			const containerLayer = document.createElement("div")
-			self.form_containerLayer = containerLayer
-			{
-				self._setup_field_fullname()
-				self._setup_field_emoji()
-				self._setup_field_address()
-				self._setup_field_paymentID()
-			}
-			self.layer.appendChild(containerLayer)
+	}
+	setup_form()
+	{
+		const self = this
+		const containerLayer = document.createElement("div")
+		self.form_containerLayer = containerLayer
+		{
+			self._setup_field_fullname()
+			self._setup_field_emoji()
+			self._setup_field_address()
+			self._setup_field_paymentID()
 		}
+		self.layer.appendChild(containerLayer)
 	}
 	_overridable_initial_inlineMessageString()
 	{
@@ -129,7 +138,7 @@ class ContactFormView extends View
 		div.style.width = `calc(100% - 75px - ${div.style.paddingLeft} - ${div.style.paddingRight})`
 		div.style.display = "inline-block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Name", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NAME", self.context)
 			div.appendChild(labelLayer)
 		}
 		{
@@ -164,7 +173,7 @@ class ContactFormView extends View
 		div.style.width = "75px"
 		div.style.display = "inline-block"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Emoji", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("EMOJI", self.context)
 		
 			div.appendChild(labelLayer)
 		}
@@ -196,7 +205,7 @@ class ContactFormView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Address", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
 			div.appendChild(labelLayer)
 		}
 		{
@@ -224,7 +233,7 @@ class ContactFormView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
 			if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
-				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("Payment ID", self.context)
+				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
 				div.appendChild(labelLayer)
 			}
 		}
@@ -379,15 +388,8 @@ class ContactFormView extends View
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		// teardown any child/referenced stack navigation views if necessary…
 	}
 }
 module.exports = ContactFormView
