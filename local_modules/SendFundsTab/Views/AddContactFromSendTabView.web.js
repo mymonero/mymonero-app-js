@@ -133,9 +133,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 				|| (self.is_enteredAddressValue_OAAddress == true // or is OA addr and are going to show the field
 					&& self._overridable_shouldNotDisplayPaymentIDNoteLayer() === false)
 			if (needsDetectedLabel) {
-				const detectedMessage = document.createElement("div")
-				detectedMessage.innerHTML = '<img src="detectedCheckmark.png" />&nbsp;<span>Detected</span>'
-				// ^- TODO: factor into component
+				const detectedMessage = commonComponents_forms.New_Detected_IconAndMessageLayer(self.context)
 				self.paymentIDField_containerLayer.appendChild(detectedMessage)
 			}
 		}

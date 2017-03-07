@@ -354,15 +354,11 @@ class SendFundsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
 			div.appendChild(labelLayer)
 			//
-			const valueLayer = document.createElement("div")
-			valueLayer.style.borderRadius = "4px"
-			valueLayer.style.backgroundColor = "#ccc"
-			valueLayer.style.color = "#737073"
+			const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
 			self.resolvedPaymentID_valueLayer = valueLayer
 			div.appendChild(valueLayer)
 			//
-			const detectedMessage = document.createElement("div")
-			detectedMessage.innerHTML = '<img src="detectedCheckmark.png" />&nbsp;<span>Detected</span>'
+			const detectedMessage = commonComponents_forms.New_Detected_IconAndMessageLayer(self.context)
 			div.appendChild(detectedMessage)
 		}
 		self.resolvedPaymentID_containerLayer = div

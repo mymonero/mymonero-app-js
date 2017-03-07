@@ -46,6 +46,19 @@ const cssRules =
 	`.form_field .field_value::-webkit-input-placeholder  {
 		-webkit-font-smoothing: subpixel-antialiased;
 		color: #6B696B;
+	}`,
+	//
+	// .iconAndMessageLayer
+	`.iconAndMessageLayer {
+		padding: 7px 10px 7px 10px;
+	}`,
+	`.iconAndMessageLayer > img {
+		display: inline-block;
+		position: relative;
+		top: 1px;
+	}`,
+	`.iconAndMessageLayer > span {
+		display: inline-block;
 	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
@@ -267,3 +280,64 @@ function New_fieldAccessory_validationMessageLayer(context)
 	return layer
 }
 exports.New_fieldAccessory_validationMessageLayer = New_fieldAccessory_validationMessageLayer
+//
+function New_NonEditable_ValueDisplayLayer(value, context)
+{
+	const layer = document.createElement("div")
+	layer.style.borderRadius = "3px"
+	layer.style.backgroundColor = "#383638"
+	layer.style.padding = "8px 11px"
+	layer.style.boxSizing = "border-box"
+	layer.style.width = "100%"
+	layer.style.height = "auto"
+	//
+	layer.style.color = "#7C7A7C"
+	layer.style.fontSize = "13px"
+	layer.style.fontWeight = "100"
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.webkitFontSmoothing = "subpixel-antialiased"
+	//
+	layer.innerHTML = value
+	//
+	return layer
+}
+exports.New_NonEditable_ValueDisplayLayer = New_NonEditable_ValueDisplayLayer
+function New_NonEditable_ValueDisplayLayer_BreakWord(value, context)
+{
+	const layer = New_NonEditable_ValueDisplayLayer(value, context)
+	layer.style.wordBreak = "break-word"
+	return layer
+}
+exports.New_NonEditable_ValueDisplayLayer_BreakWord = New_NonEditable_ValueDisplayLayer_BreakWord
+function New_NonEditable_ValueDisplayLayer_BreakChar(value, context)
+{
+	const layer = New_NonEditable_ValueDisplayLayer(value, context)
+	layer.style.wordBreak = "break-all"
+	return layer
+}
+exports.New_NonEditable_ValueDisplayLayer_BreakChar = New_NonEditable_ValueDisplayLayer_BreakChar
+//
+function New_IconAndMessageLayer(iconPath, messageText, context)
+{
+	__injectCSSRules_ifNecessary()
+	const layer = document.createElement("div")
+	layer.classList.add("iconAndMessageLayer")
+	layer.innerHTML = `<img src="${iconPath}" />&nbsp;<span>${messageText}</span>`
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.webkitFontSmoothing = "subpixel-antialiased"
+	layer.style.fontSize = "11px"
+	layer.style.fontWeight = "100"
+	layer.style.color = "#8D8B8D"
+	return layer		
+}
+exports.New_IconAndMessageLayer = New_IconAndMessageLayer
+function New_Detected_IconAndMessageLayer(context)
+{
+	const layer = New_IconAndMessageLayer( // will call `__inject…`
+		"../../MMAppUICommonComponents/Resources/detectedCheckmark.png",
+		"Detected",
+		context
+	)
+	return layer
+}
+exports.New_Detected_IconAndMessageLayer = New_Detected_IconAndMessageLayer

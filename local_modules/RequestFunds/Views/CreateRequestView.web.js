@@ -72,19 +72,21 @@ class CreateRequestView extends View
 	{
 		const self = this
 		//
-		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		const layer = self.layer
+		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		self.layer.style.position = "relative"
-		self.layer.style.width = "calc(100% - 20px)"
-		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		self.layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		self.layer.style.overflowY = "scroll"
+		layer.style.position = "relative"
+		layer.style.boxSizing = "border-box"
+		layer.style.width = "100%"
+		layer.style.height = "100%"
+		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.overflowY = "scroll"
 		//
-		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
-		self.layer.style.color = "#c0c0c0" // temporary
+		layer.style.color = "#c0c0c0" // temporary
 		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_validationMessageLayer()
 	{ // validation message
@@ -282,15 +284,11 @@ class CreateRequestView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
 			containerLayer.appendChild(labelLayer)
 			//
-			const valueLayer = document.createElement("div")
-			valueLayer.style.borderRadius = "4px"
-			valueLayer.style.backgroundColor = "#ccc"
-			valueLayer.style.color = "#737073"
+			const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
 			self.resolvedPaymentID_valueLayer = valueLayer
 			containerLayer.appendChild(valueLayer)
 			//
-			const detectedMessage = document.createElement("div")
-			detectedMessage.innerHTML = '<img src="detectedCheckmark.png" />&nbsp;<span>Detected</span>'
+			const detectedMessage = commonComponents_forms.New_Detected_IconAndMessageLayer(self.context)
 			containerLayer.appendChild(detectedMessage)
 		}
 		self.resolvedPaymentID_containerLayer = containerLayer
@@ -587,7 +585,6 @@ class CreateRequestView extends View
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
 	}
