@@ -236,6 +236,11 @@ class WalletCellContentsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
+		if (!wallet) {
+			self.titleLayer.innerHTML = ""
+			self.descriptionLayer.innerHTML = ""
+			return
+		}
 		if (wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true) { // unlikely but possible
 			self.titleLayer.innerHTML = "Error: Couldn't unlock wallet. Please contact support."
 			self.descriptionLayer.innerHTML = ""
@@ -255,7 +260,12 @@ class WalletCellContentsView extends View
 	_configureUIWithWallet__color()
 	{
 		const self = this
-		const colorHexString = self.wallet.swatch || ""
+		const fallbackColor = "#00C6FF"
+		const colorHexString = self.wallet ?
+								self.wallet.swatch ? 
+									self.wallet.swatch 
+									: fallbackColor 
+								: fallbackColor
 		self.walletIconLayer.ConfigureWithHexColorString(colorHexString)
 	}
 	//
@@ -284,6 +294,9 @@ class WalletCellContentsView extends View
 	startObserving_wallet()
 	{
 		const self = this
+		if (!self.wallet) {
+			return
+		}
 		if (typeof self.wallet === 'undefined' || self.wallet === null) {
 			throw "wallet undefined in start observing"
 			return

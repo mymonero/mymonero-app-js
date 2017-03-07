@@ -278,6 +278,9 @@ class FundsRequestCellContentsView extends View
 	// startObserving_wallet()
 	// {
 	// 	const self = this
+	// 	if (!self.wallet) {
+	// 		return
+	// 	}
 	// 	if (typeof self.wallet === 'undefined' || self.wallet === null) {
 	// 		throw "wallet undefined in start observing"
 	// 		return

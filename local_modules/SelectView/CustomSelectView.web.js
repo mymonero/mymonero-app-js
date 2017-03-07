@@ -230,11 +230,12 @@ class CustomSelectView extends View
 			throw `${self.constructor.name}/ConfigureWithRowItems: requires non-nil rowItems`
 		}
 		// for now, flush/flash whole UI:
+		self.hide__options_containerView()
 		self._removeAllOptionLayers() // (and stop observing)
 		// reconstruct UI:
 		const numberOf_rowItems = rowItems.length
 		var heightOfCellsSoFar = 0
-		var heightOfACell = null
+		var heightOfACell = null // null for comparison; if still null after iteration, -> 0
 		for (let i = 0 ; i < numberOf_rowItems ; i++) {
 			const rowItem = rowItems[i]
 			const rowItem_cellView = self.cellView_createAndReturnOne_fn(self)
@@ -277,11 +278,11 @@ class CustomSelectView extends View
 			self.options_cellViews_containerView.addSubview(rowItem_cellView)
 			self.options_cellViews.push(rowItem_cellView)
 		}
+		if (heightOfACell == null) {
+			heightOfACell = 0
+		}
 		//
 		// take this chance to style height of options container; maxHeight will kick in
-		if (heightOfACell == null) {
-			throw "heightOfACell still null"
-		}
 		const maxHeight_number = heightOfACell * self.overridable_maxNumberOfCellsToDisplayAtATime()
 		self.options_containerView.layer.style.maxHeight = maxHeight_number + "px"
 		self.options_cellViews_containerView.layer.style.maxHeight = maxHeight_number + "px" // so we get the scroll
