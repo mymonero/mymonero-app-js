@@ -101,6 +101,7 @@ class AddWallet_WizardController
 	TearDown()
 	{ // this is public and must be called manually by wallet
 		const self = this
+		console.log("♻️  Tearing down a " + self.constructor.name)
 	}
 	//
 	//

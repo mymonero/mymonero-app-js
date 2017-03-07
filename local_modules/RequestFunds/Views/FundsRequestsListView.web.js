@@ -113,9 +113,14 @@ class FundsRequestsListView extends ListView
 	{
 		const self = this
 		super.TearDown()
-		self.teardown_currentlyPresented_CreateRequestView()
 	}
-	teardown_currentlyPresented_CreateRequestView()
+	tearDownAnySpawnedReferencedPresentedViews()
+	{ // overridden - called for us
+		const self = this
+		super.tearDownAnySpawnedReferencedPresentedViews()
+		self._teardown_currentlyPresented_CreateRequestView()
+	}
+	_teardown_currentlyPresented_CreateRequestView()
 	{
 		const self = this
 		if (self.currentlyPresented_CreateRequestView !== null) {
@@ -223,16 +228,6 @@ class FundsRequestsListView extends ListView
 				layer.style.display = "block"
 			}
 		}
-	}
-	//
-	//
-	// Runtime - Delegation - View lifecycle
-	//
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		self.teardown_currentlyPresented_CreateRequestView() // we're assuming that on VDA if we have one of these it means we can tear it down
 	}
 }
 module.exports = FundsRequestsListView

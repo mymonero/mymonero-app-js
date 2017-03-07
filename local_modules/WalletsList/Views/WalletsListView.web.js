@@ -181,7 +181,16 @@ class WalletsListView extends ListView
 	{
 		const self = this
 		super.TearDown()
-		//
+	}
+	tearDownAnySpawnedReferencedPresentedViews()
+	{ // overridden - called for us
+		const self = this
+		super.tearDownAnySpawnedReferencedPresentedViews()
+		self._teardown__current_wizardController()
+	}
+	_teardown__current_wizardController()
+	{
+		const self = this
 		if (self.current_wizardController !== null) {
 			self.current_wizardController.TearDown()
 			self.current_wizardController = null
@@ -260,20 +269,6 @@ class WalletsListView extends ListView
 			} else {
 				layer.style.margin = "16px 0 0 0"
 			}
-		}
-	}
-	//
-	//
-	// Runtime - Delegation - Navigation/View lifecycle
-	//
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		//
-		if (self.current_wizardController !== null) {
-			self.current_wizardController.TearDown()
-			self.current_wizardController = null
 		}
 	}
 }

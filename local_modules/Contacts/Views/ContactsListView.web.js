@@ -46,6 +46,7 @@ class ContactsListView extends ListView
 		options.listController = context.contactsListController
 		// ^- injecting dep so consumer of self doesn't have to
 		super(options, context)
+		self.currentlyPresented_AddContactView = null // zeroing
 	}
 	overridable_listCellViewClass()
 	{ // override and return youir 
@@ -106,6 +107,22 @@ class ContactsListView extends ListView
 		self.addSubview(view)
 	}
 	//
+	tearDownAnySpawnedReferencedPresentedViews()
+	{ // overridden - called for us
+		const self = this
+		super.tearDownAnySpawnedReferencedPresentedViews()
+		self._teardown_currentlyPresented_AddContactView()
+	}
+	_teardown_currentlyPresented_AddContactView()
+	{
+		const self = this
+		// … is this sufficient? might need/want to tear down the stack nav too?
+		if (self.currentlyPresented_AddContactView !== null) {
+			self.currentlyPresented_AddContactView.TearDown() // might not be necessary but method guards itself
+			self.currentlyPresented_AddContactView = null // must zero again and should free
+		}
+	}
+	//
 	//
 	// Runtime - Accessors - Navigation
 	//
@@ -124,6 +141,7 @@ class ContactsListView extends ListView
 				e.preventDefault()
 				{
 					const view = new AddContactFromContactsTabView({}, self.context)
+					self.currentlyPresented_AddContactView = view
 					const navigationView = new StackAndModalNavigationView({}, self.context)
 					navigationView.SetStackViews([ view ])
 					self.navigationController.PresentView(navigationView, true)

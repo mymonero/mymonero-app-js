@@ -341,19 +341,20 @@ class WalletDetailsView extends View
 	{ // We're going to make sure we tear this down here as well as in VDA in case we get popped over back to root (thus never calling VDA but calling this)
 		const self = this
 		super.TearDown()
-		//
+		self.tearDownAnySpawnedReferencedPresentedViews()
 		self._stopObserving()
-		{
-			if (self.current_transactionDetailsView !== null) {
-				self.current_transactionDetailsView.TearDown()
-				self.current_transactionDetailsView = null
-			}
+	}
+	tearDownAnySpawnedReferencedPresentedViews()
+	{
+		const self = this
+		if (self.current_transactionDetailsView !== null) {
+			self.current_transactionDetailsView.TearDown()
+			self.current_transactionDetailsView = null
 		}
-		{
-			if (typeof self.current_EditWalletView !== 'undefined' && self.current_EditWalletView) {
-				self.current_EditWalletView.TearDown()
-				self.current_EditWalletView = null
-			}
+		//
+		if (typeof self.current_EditWalletView !== 'undefined' && self.current_EditWalletView) {
+			self.current_EditWalletView.TearDown()
+			self.current_EditWalletView = null
 		}
 	}
 	_stopObserving()
@@ -697,21 +698,23 @@ class WalletDetailsView extends View
 			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px` // no need to set height as we're box-sizing: border-box
 		}
 	}
-	viewDidAppear()
+	// Runtime - Protocol / Delegation - Stack & modal navigation 
+	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
+	navigationView_didDismissModalToRevealView()
 	{
 		const self = this
-		super.viewDidAppear()
-		{
-			// teardown any child/referenced stack navigation views if necessary…
-			if (self.current_transactionDetailsView !== null) {
-				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-				self.current_transactionDetailsView = null // must zero again and should free
-			}
-			if (typeof self.current_EditWalletView !== 'undefined' && self.current_EditWalletView) {
-				self.current_EditWalletView.TearDown()
-				self.current_EditWalletView = null
-			}
+		if (super.navigationView_didDismissModalToRevealView) {
+			super.navigationView_didDismissModalToRevealView() // in case it exists
 		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	navigationView_didPopToRevealView()
+	{
+		const self = this
+		if (super.navigationView_didPopToRevealView) {
+			super.navigationView_didPopToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
 	}
 	//
 	//

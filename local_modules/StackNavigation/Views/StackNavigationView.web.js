@@ -118,7 +118,6 @@ class StackNavigationView extends View
 	}
 	//
 	//
-	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
 	_animationDuration_ms_navigationPush()
@@ -426,6 +425,11 @@ class StackNavigationView extends View
 		}		
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
+			const didPopToRevealView_fn = to_stackView.navigationView_didPopToRevealView
+			if (didPopToRevealView_fn && typeof didPopToRevealView_fn === 'function') {
+				didPopToRevealView_fn.apply(to_stackView)
+			}
+			//
 			// console.log("old_topStackView" , old_topStackView.Description())
 			const willPopFrom_fn = old_topStackView.navigationView_viewIsBeingPoppedFrom
 			if (willPopFrom_fn && typeof willPopFrom_fn === 'function') {

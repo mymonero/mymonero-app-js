@@ -114,7 +114,11 @@ class ListView extends View
 	{
 		const self = this
 		super.TearDown()
-		//
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	tearDownAnySpawnedReferencedPresentedViews()
+	{ // provided for convenience as well - subclassers can override - but make sure to call on super!
+		const self = this
 		self.teardown_current_recordDetailsView()
 	}
 	teardown_current_recordDetailsView()
@@ -299,12 +303,23 @@ class ListView extends View
 			layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 		}
 	}
-	viewDidAppear()
+	// Runtime - Protocol / Delegation - Stack & modal navigation 
+	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
+	navigationView_didDismissModalToRevealView()
 	{
 		const self = this
-		super.viewDidAppear()
-		//
-		self.teardown_current_recordDetailsView() // we're assuming that on VDA if we have one of these it means we can tear it down
+		if (super.navigationView_didDismissModalToRevealView) {
+			super.navigationView_didDismissModalToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	navigationView_didPopToRevealView()
+	{
+		const self = this
+		if (super.navigationView_didPopToRevealView) {
+			super.navigationView_didPopToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
 	}
 }
 module.exports = ListView

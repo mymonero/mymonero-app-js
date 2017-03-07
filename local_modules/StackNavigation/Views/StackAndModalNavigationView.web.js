@@ -248,6 +248,11 @@ class StackAndModalNavigationView extends StackNavigationView
 				_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
 				{ // manually simulate a view visibility events
 					topStackView.viewDidAppear() // NOTE: topStackView
+					// this is the first case where we'll call this - the other is when dismissing a modal to modal under
+					const didDismissModalToRevealView_fn = topStackView.navigationView_didDismissModalToRevealView
+					if (didDismissModalToRevealView_fn && typeof didDismissModalToRevealView_fn === 'function') {
+						didDismissModalToRevealView_fn.apply(topStackView)
+					}
 				}
 				__trampolineFor_transitionEnded()
 				fn()
@@ -287,8 +292,10 @@ class StackAndModalNavigationView extends StackNavigationView
 					)
 				}
 			)
+			//
 			return
-		}
+		} // ^-- and then exit method early
+		// or, dismissing to a modal underneath…
 		const numberOf_modalViews = self.modalViews.length
 		const to_modalView = to_modalView_orNullForTopStackView // because we know now it's not null
 		var indexOf_to_modalView = -1 // to find:
@@ -309,6 +316,11 @@ class StackAndModalNavigationView extends StackNavigationView
 			_afterHavingFullyPresentedNewTopView_removeOldTopModalView()
 			{ // manually simulate a view visibility events
 				to_modalView.viewDidAppear() // NOTE: to_modalView
+				// the second place we'll call this:
+				const didDismissModalToRevealView_fn = to_modalView.navigationView_didDismissModalToRevealView
+				if (didDismissModalToRevealView_fn && typeof didDismissModalToRevealView_fn === 'function') {
+					didDismissModalToRevealView_fn.apply(to_modalView)
+				}
 			}
 			__trampolineFor_transitionEnded()
 			fn()

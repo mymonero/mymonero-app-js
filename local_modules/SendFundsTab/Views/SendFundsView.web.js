@@ -273,7 +273,7 @@ class SendFundsView extends View
 			//
 			const layer = commonComponents_contactPicker.New_contactPickerLayer(
 				self.context,
-				"Enter contact name, or OpenAlias or integrated address",
+				"Contact name, or OpenAlias / integrated address",
 				self.context.contactsListController,
 				function(contact)
 				{ // did pick
@@ -526,16 +526,19 @@ class SendFundsView extends View
 			self.walletSelectView.TearDown()
 			self.contactOrAddressPickerLayer.Component_TearDown()
 		}
-		{
-			if (self.current_transactionDetailsView !== null) {
-				self.current_transactionDetailsView.TearDown()
-				self.current_transactionDetailsView = null
-			}
-		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
 		{
 			self.stopObserving()
 		}
 		super.TearDown()
+	}
+	tearDownAnySpawnedReferencedPresentedViews()
+	{
+		const self = this
+		if (self.current_transactionDetailsView !== null) {
+			self.current_transactionDetailsView.TearDown()
+			self.current_transactionDetailsView = null
+		}
 	}
 	cancelAny_requestHandle_for_oaResolution()
 	{
@@ -1081,7 +1084,7 @@ class SendFundsView extends View
 			)
 			// Now… since this is JS, we have to manage the view lifecycle (specifically, teardown) so
 			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
-			// by tearing it down on self.viewDidAppear() below and on TearDown()
+			// by tearing it down on tearDownAnySpawnedReferencedPresentedViews()
 			self.current_transactionDetailsView = view
 		}
 	}
@@ -1103,22 +1106,23 @@ class SendFundsView extends View
 			}
 		}
 	}
-	viewDidAppear()
+	// Runtime - Protocol / Delegation - Stack & modal navigation 
+	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
+	navigationView_didDismissModalToRevealView()
 	{
 		const self = this
-		super.viewDidAppear()
-		// teardown any child/referenced stack navigation views if necessary…
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		{
-			if (self.current_transactionDetailsView !== null) {
-				self.current_transactionDetailsView.TearDown() // we're assuming that on VDA if we have one of these it means we can tear it down
-				self.current_transactionDetailsView = null // must zero again and should free
-			}
+		if (super.navigationView_didDismissModalToRevealView) {
+			super.navigationView_didDismissModalToRevealView() // in case it exists
 		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	navigationView_didPopToRevealView()
+	{
+		const self = this
+		if (super.navigationView_didPopToRevealView) {
+			super.navigationView_didPopToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
 	}
 	//
 	//

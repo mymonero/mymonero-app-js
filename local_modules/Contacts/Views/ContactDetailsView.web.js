@@ -232,11 +232,14 @@ class ContactDetailsView extends View
 		super.TearDown()
 		const self = this
 		self.stopObserving_contact()
-		{
-			if (typeof self.current_EditContactFromContactsTabView !== 'undefined' && self.current_EditContactFromContactsTabView) {
-				self.current_EditContactFromContactsTabView.TearDown()
-				self.current_EditContactFromContactsTabView = null
-			}
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	tearDownAnySpawnedReferencedPresentedViews()
+	{
+		const self = this
+		if (typeof self.current_EditContactFromContactsTabView !== 'undefined' && self.current_EditContactFromContactsTabView) {
+			self.current_EditContactFromContactsTabView.TearDown()
+			self.current_EditContactFromContactsTabView = null
 		}
 	}
 	stopObserving_contact()
@@ -342,15 +345,23 @@ class ContactDetailsView extends View
 			}
 		}
 	}
-	viewDidAppear()
+	// Runtime - Protocol / Delegation - Stack & modal navigation 
+	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
+	navigationView_didDismissModalToRevealView()
 	{
 		const self = this
-		super.viewDidAppear()
-		// teardown any child/referenced stack navigation views if necessary…
-		if (typeof self.current_EditContactFromContactsTabView !== 'undefined' && self.current_EditContactFromContactsTabView) {
-			self.current_EditContactFromContactsTabView.TearDown()
-			self.current_EditContactFromContactsTabView = null
+		if (super.navigationView_didDismissModalToRevealView) {
+			super.navigationView_didDismissModalToRevealView() // in case it exists
 		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	navigationView_didPopToRevealView()
+	{
+		const self = this
+		if (super.navigationView_didPopToRevealView) {
+			super.navigationView_didPopToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
 	}
 }
 module.exports = ContactDetailsView
