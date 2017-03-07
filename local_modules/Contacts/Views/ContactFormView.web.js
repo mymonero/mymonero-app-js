@@ -77,16 +77,14 @@ class ContactFormView extends View
 	setup_validationMessageLayer()
 	{
 		const self = this
-		{ // validation message
-			const initial_message = self._overridable_initial_inlineMessageString()
-			const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
-			const layer = commonComponents_tables.New_inlineMessageDialogLayer(initial_message, initial_message__exists)
-			if (initial_message__exists == false) {
-				layer.ClearAndHideMessage()
-			}
-			self.validationMessageLayer = layer
-			self.layer.appendChild(layer)				
+		const initial_message = self._overridable_initial_inlineMessageString()
+		const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer(initial_message, initial_message__exists)
+		self.validationMessageLayer = layer
+		if (initial_message__exists == false) {
+			layer.ClearAndHideMessage()
 		}
+		self.layer.appendChild(layer)				
 	}
 	setup_form()
 	{
@@ -96,6 +94,7 @@ class ContactFormView extends View
 		{
 			self._setup_field_fullname()
 			self._setup_field_emoji()
+			self.form_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			self._setup_field_address()
 			self._setup_field_paymentID()
 		}
@@ -135,9 +134,11 @@ class ContactFormView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.width = `calc(100% - 75px - ${div.style.paddingLeft} - ${div.style.paddingRight})`
-		div.style.display = "inline-block"
-
+		div.style.padding = "0 0 0 14px"
+		const emojiComponentWidth = 60 + 14 + 24
+		div.style.width = `calc(100% - ${emojiComponentWidth}px - 14px - 2px)` // -2px for border
+		div.style.float = "left"
+		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NAME", self.context)
 		div.appendChild(labelLayer)
 		//
@@ -163,40 +164,35 @@ class ContactFormView extends View
 		const self = this
 		const inUseEmojis = self.context.contactsListController.GivenBooted_CurrentlyInUseEmojis()
 		const emoji = emoji_selection.EmojiWhichIsNotAlreadyInUse(inUseEmojis)
-		const value = emoji // to retain code portability
+		const value = emoji 
 		//					
+		const paddingLeft = 24
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.width = "75px"
+		div.style.padding = "0 14px 0 24px"
+		div.style.width = "58px"
 		div.style.display = "inline-block"
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("EMOJI", self.context)
 		div.appendChild(labelLayer)
 		//
-		{ // TODO: make this into a custom picker
-			const valueLayer = document.createElement("input")
-			valueLayer.type = "text"
-			valueLayer.value = value
-			valueLayer.style.display = "inline-block"
-			valueLayer.style.height = "30px"
-			valueLayer.style.width = `calc(100% - 4px)`
-			valueLayer.style.border = "1px inset #222"
-			valueLayer.style.borderRadius = "4px"
-	 		valueLayer.style.float = "left"
-			valueLayer.style.textAlign = "left"
-			valueLayer.style.fontSize = "14px"
-			valueLayer.style.color = "#ccc"
-			valueLayer.style.backgroundColor = "#444"
-			valueLayer.style.padding = "0"
-			valueLayer.style.fontFamily = "monospace"
-			self.emojiInputLayer = valueLayer
-			div.appendChild(valueLayer)
-		}
+		// TODO: make this into a custom picker
+		const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {})
+		valueLayer.value = value
+		valueLayer.style.padding = "0"
+		valueLayer.style.boxSizing = "border-box"
+		valueLayer.style.width = "60px"
+		valueLayer.style.height = "31px"
+		self.emojiInputLayer = valueLayer
+		div.appendChild(valueLayer)
+		//
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_field_address()
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingTop = "9px"
+		div.style.paddingBottom = "0"
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
 		div.appendChild(labelLayer)
@@ -225,6 +221,8 @@ class ContactFormView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingTop = "9px"
+		div.style.paddingBottom = "0"
 		self.paymentIDField_containerLayer = div
 		//
 		if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
@@ -251,8 +249,6 @@ class ContactFormView extends View
 		// NOTE: Actually adding view.layer to div is deferred until a few lines down
 		if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
 			div.appendChild(view.layer)
-			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-			//
 			view.layer.addEventListener(
 				"keyup",
 				function(event)
@@ -267,6 +263,10 @@ class ContactFormView extends View
 		//
 		if (self._overridable_shouldNotDisplayPaymentIDNoteLayer() !== true) {
 			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
+			messageLayer.style.paddingTop = "7px"
+			messageLayer.style.paddingBottom = "0"
+			messageLayer.style.marginTop = "0"
+			messageLayer.style.marginBottom = "0"
 			messageLayer.innerHTML = "Unless you use an OpenAlias or integrated address, if you don't provide a payment ID, one will be generated."
 			div.appendChild(messageLayer)
 		}

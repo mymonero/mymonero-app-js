@@ -163,7 +163,7 @@ function New_fieldValue_textAreaView(params, context)
 	}
 	const padding_h = 8
 	layer.style.padding = `9px ${padding_h}px`
-	layer.style.height = `${62 - 2 * padding_h}px`
+	layer.style.height = `${61 - 2 * padding_h}px`
 	layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
 	layer.style.borderRadius = "3px"
 	layer.style.border = "none"
