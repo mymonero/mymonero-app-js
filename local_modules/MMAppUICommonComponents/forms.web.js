@@ -109,59 +109,39 @@ function New_fieldValue_textInputLayer(context, params)
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("input")
-	{
-		layer.className = "field_value"
-		layer.type = "text"
-		layer.style.display = "block" // own line
-		const existingValue = params.existingValue
-		if (typeof existingValue !== 'undefined' && existingValue !== null) {
-			layer.value = existingValue
-		}
-		const placeholderText = params.placeholderText
-		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
-			layer.placeholder = placeholderText
-		}
-		layer.style.height = "29px"
-		const padding_h = 7
-		const borderWidth = 0.5
-		if (typeof params.target_width !== 'undefined') {
-			const width = params.target_width - 4 - 2 * padding_h
-			layer.style.width = width + "px"
-		} else {
-			layer.style.width = `calc(100% - ${2*borderWidth}px - ${2 * padding_h}px)`
-		}
-		layer.style.borderRadius = "4px"
-		layer.style.border = `${borderWidth}px solid rgba(0,0,0,0)` // transparent border to preserve layout while showing validation clr border
-		layer.style.textAlign = "left"
-		layer.style.fontSize = "13px"
-		layer.style.fontWeight = "200"
-		layer.style.padding = `0 ${padding_h}px`
-		layer.style.fontFamily = context.themeController.FontFamily_monospace()
-		layer.style.outline = "none" // no focus ring
+	layer.className = "field_value"
+	layer.type = "text"
+	layer.style.display = "block" // own line
+	const existingValue = params.existingValue
+	if (typeof existingValue !== 'undefined' && existingValue !== null) {
+		layer.value = existingValue
 	}
-	{
-		layer.Component_MakeNonEditable = function()
-		{
-			layer.style.boxShadow = "none"
-			layer.style.color = "#dfdedf"
-			layer.style.backgroundColor = "#1d1b1d"
-			layer.disabled = true
-		}
-		layer.Component_MakeEditable = function()
-		{
-			layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
-			layer.style.color = "#dfdedf"
-			layer.style.backgroundColor = "#1d1b1d"
-			layer.disabled = false
-		}
+	const placeholderText = params.placeholderText
+	if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
+		layer.placeholder = placeholderText
 	}
-	{
-		if (params.isNonEditable === true) {
-			layer.Component_MakeNonEditable()
-		} else {
-			layer.Component_MakeEditable()
-		}
+	layer.style.height = "29px"
+	const padding_h = 7
+	const borderWidth = 0.5
+	if (typeof params.target_width !== 'undefined') {
+		const width = params.target_width - 4 - 2 * padding_h
+		layer.style.width = width + "px"
+	} else {
+		layer.style.width = `calc(100% - ${2*borderWidth}px - ${2 * padding_h}px)`
 	}
+	layer.style.borderRadius = "4px"
+	layer.style.border = `${borderWidth}px solid rgba(0,0,0,0)` // transparent border to preserve layout while showing validation clr border
+	layer.style.textAlign = "left"
+	layer.style.fontSize = "13px"
+	layer.style.fontWeight = "200"
+	layer.style.padding = `0 ${padding_h}px`
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.outline = "none" // no focus ring
+	// editable:true
+	layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+	layer.style.color = "#dfdedf"
+	layer.style.backgroundColor = "#1d1b1d"
+	layer.disabled = false
 	return layer
 }
 exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
@@ -171,51 +151,61 @@ function New_fieldValue_textAreaView(params, context)
 	__injectCSSRules_ifNecessary()
 	const view = new View({ tag: "textarea" }, context)
 	const layer = view.layer
-	{
-		layer.className = "field_value"
-		layer.style.display = "block" // own line
-		const existingValue = params.existingValue
-		if (typeof existingValue !== 'undefined' && existingValue !== null) {
-			layer.value = existingValue
-		}
-		const placeholderText = params.placeholderText
-		if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
-			layer.placeholder = placeholderText
-		}
-		const padding_h = 8
-		layer.style.padding = `9px ${padding_h}px`
-		layer.style.height = `${62 - 2 * padding_h}px`
-		layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
-		layer.style.borderRadius = "3px"
-		layer.style.border = "none"
-		layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
-		layer.style.textAlign = "left"
-		layer.style.fontSize = "13px"
-		layer.style.fontWeight = "100"
-		layer.style.lineHeight = "15px"
-		layer.style.resize = "none" // not user-resizable
-		layer.style.outline = "none" // no focus ring
-		layer.style.fontFamily = context.themeController.FontFamily_monospace()
-		layer.style.wordBreak = "break-word"
+	layer.className = "field_value"
+	layer.style.display = "block" // own line
+	const existingValue = params.existingValue
+	if (typeof existingValue !== 'undefined' && existingValue !== null) {
+		layer.value = existingValue
 	}
-	{
-		view.SetEnabled = function(isEnabled)
-		{
-			if (isEnabled) {
-				layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
-				//
-				layer.style.color = "#dfdedf"
-				layer.style.backgroundColor = "#1d1b1d"
-			} else {
-				layer.style.boxShadow = "none"
-				//
-				layer.style.color = "#dfdedf"
-				layer.style.backgroundColor = "#1d1b1d"
-			}
-			view.isEnabled = isEnabled // this going to cause a retain cycle ? 
-		}
+	const placeholderText = params.placeholderText
+	if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
+		layer.placeholder = placeholderText
 	}
-	view.SetEnabled(true)
+	const padding_h = 8
+	layer.style.padding = `9px ${padding_h}px`
+	layer.style.height = `${62 - 2 * padding_h}px`
+	layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
+	layer.style.borderRadius = "3px"
+	layer.style.border = "none"
+	layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+	layer.style.textAlign = "left"
+	layer.style.fontSize = "13px"
+	layer.style.fontWeight = "100"
+	layer.style.lineHeight = "15px"
+	layer.style.resize = "none" // not user-resizable
+	layer.style.outline = "none" // no focus ring
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.wordBreak = "break-word"
+	//
+	view.SetEnabled = function(isEnabled)
+	{
+		if (isEnabled) {
+			layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+			//
+			layer.style.color = "#dfdedf"
+			layer.style.backgroundColor = "#1d1b1d"
+		} else {
+			layer.style.boxShadow = "none"
+			//
+			layer.style.color = "#dfdedf"
+			layer.style.backgroundColor = "#1d1b1d"
+		}
+		view.isEnabled = isEnabled // this going to cause a retain cycle ? 
+	}
+	view.MakeNonEditable = function()
+	{
+		view.SetEnabled(false)
+		// now style specifically as 'non-editable' (over and above not-enabled)
+		layer.style.boxShadow = "none"
+		layer.style.color = "#dfdedf"
+		layer.style.backgroundColor = "#1d1b1d"
+		layer.disabled = true
+	} // at the moment, no reversion of MakeNonEditable fn has been implemented
+	if (params.isNonEditable === true) {
+		view.MakeNonEditable() // NOTE: This behaves a bit differently from the text input one. 
+	} else {
+		view.SetEnabled(true) // to get initial styling, any state, et al.
+	}
 	return view
 }
 exports.New_fieldValue_textAreaView = New_fieldValue_textAreaView
@@ -268,6 +258,8 @@ function New_fieldAccessory_messageLayer(context)
 	layer.style.margin = "7px 7px 0 7px"
 	layer.style.color = "#8d8b8d"
 	layer.style.wordBreak = "break-word"
+	// TODO: is there any merit to this? ---v
+	/* layer.style.wordBreak = "keep-all" // to get the text to wrap only at the word, not letter */
 	layer.style.webkitUserSelect = "none"
 	return layer
 }
