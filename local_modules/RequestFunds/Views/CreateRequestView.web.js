@@ -246,6 +246,7 @@ class CreateRequestView extends View
 						self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
 					}
 					self.pickedContact = null
+					self.createNewRecordNamedButtonView.layer.style.display = "block"
 				}
 			)
 			self.contactPickerLayer = layer
@@ -603,6 +604,9 @@ class CreateRequestView extends View
 	_didPickContact(contact)
 	{
 		const self = this
+		//
+		self.createNewRecordNamedButtonView.layer.style.display = "none"
+		//
 		self.pickedContact = contact
 		{ // payment id - if we already have one
 			if (self.pickedContact.HasOpenAliasAddress() === false) {

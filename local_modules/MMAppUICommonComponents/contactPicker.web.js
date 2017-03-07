@@ -165,8 +165,11 @@ function New_contactPickerLayer(
 		const numberOf_contacts = contacts.length
 		for (var i = 0 ; i < numberOf_contacts ; i++) {
 			const contact = contacts[i]
+			const isAtEnd = i === (numberOf_contacts-1)
 			const layer = _new_autocompleteResultRowLayer(
+				context,
 				contact, 
+				isAtEnd,
 				function(clicked_contact)
 				{
 					_pickContact(clicked_contact)
@@ -237,6 +240,7 @@ function New_contactPickerLayer(
 	function _displayPickedContact(contact)
 	{
 		__pickedContactLayer = _new_pickedContactLayer(
+			context,
 			contact,
 			function(this_pickedContactLayer)
 			{
@@ -301,21 +305,27 @@ function _new_autocompleteResultsLayer()
 	}
 	return layer
 }
-function _new_autocompleteResultRowLayer(contact, clicked_fn)
+function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 {
 	const layer = document.createElement("div")
+	const height = 31
 	{
-		const padding_h = 10
-		layer.style.color = "#111" // TODO
-		layer.style.fontSize = "14px"
-		layer.style.fontFamily = '"Helvetica Neue", Helvetica, sans-serif' // TODO
-		layer.style.width = `calc(100% - ${2 * padding_h}px)`
-		layer.style.lineHeight = "200%"
+		const padding_h = 15
+		layer.style.position = "relative"
+		layer.style.left = "0"
+		layer.style.boxSizing = "border-box"
 		layer.style.padding = `0 ${padding_h}px`
-		layer.style.height = "32px"
+		layer.style.width = `100%`
+		layer.style.height = height+"px"
+		//
+		layer.style.color = "#1D1B1D"
+		layer.style.fontSize = "13px"
+		layer.style.fontWeight = "600"
+		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+		layer.style.lineHeight = height+"px"
 		layer.style.webkitUserSelect = "none" // redundant but for explicitness
 		layer.style.cursor = "pointer"
-		layer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
+		layer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
 	}
 	{
 		layer.addEventListener("mouseover", function() { this.highlight() })
@@ -329,48 +339,71 @@ function _new_autocompleteResultRowLayer(contact, clicked_fn)
 			return false
 		})
 	}
+	layer.highlight = function()
 	{
-		layer.highlight = function()
-		{
-			this.style.backgroundColor = "#dfdedf"
-		}
-		layer.unhighlight = function()
-		{
-			this.style.backgroundColor = "transparent"
-		}
+		this.style.backgroundColor = "#DFDEDF"
 	}
+	layer.unhighlight = function()
+	{
+		this.style.backgroundColor = "transparent"
+	}
+	//
+	if (isAtEnd !== true) {
+		const lineLayer = document.createElement("div")
+		lineLayer.style.position = "absolute"
+		lineLayer.style.left = "50px"
+		lineLayer.style.right = "0"
+		const lineHeight = 1
+		lineLayer.style.height = lineHeight+"px"
+		lineLayer.style.top = (height - lineHeight) + "px"
+		lineLayer.style.backgroundColor = "#DFDEDF"
+		layer.appendChild(lineLayer)
+	}
+	//
 	return layer
 }
-function _new_pickedContactLayer(contact, didClickCloseBtn_fn)
+function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 {
 	const layer = document.createElement("div")
 	const contentLayer = document.createElement("div")
+	layer.appendChild(contentLayer)
 	{ // ^-- using a content layer here so we can get width-of-content behavior with inline-block
 		// while getting parent to give us display:block behavior
-		contentLayer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
-		contentLayer.style.padding = "5px 10px"
-		contentLayer.style.border = "1px outset #999"
-		contentLayer.style.borderRadius = "4px"
+		contentLayer.innerHTML = `${contact.emoji}&nbsp;&nbsp;${contact.fullname}`
+		contentLayer.style.padding = "4px 8px 6px 10px"
+		contentLayer.style.backgroundColor = "#383638"
+		contentLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+		contentLayer.style.borderRadius = "3px"
 		contentLayer.style.display = "inline-block"
 		contentLayer.style.cursor = "default"
-	}
-	layer.appendChild(contentLayer)
-	const xButtonLayer = document.createElement("a")
-	{
-		xButtonLayer.innerHTML = "X" // TODO
-		xButtonLayer.style.display = "inline-block" // to get margin
-		xButtonLayer.style.marginLeft = "20px"
-		xButtonLayer.style.cursor = "pointer"
-		xButtonLayer.addEventListener("click", function(e)
-		{
-			e.preventDefault()
-			const this_a = this
-			const this_pickedContactLayer = this_a.parentNode.parentNode // two levels due to contentLayer
-			didClickCloseBtn_fn(this_pickedContactLayer)
-			return false
-		})
-		//
+		contentLayer.style.fontSize = "13px"
+		contentLayer.style.fontWeight = "300"
+		contentLayer.style.fontFamily = context.themeController.FontFamily_monospace()
+		contentLayer.style.color = "#FCFBFC"
+		// contentLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+		const xButtonLayer = document.createElement("a")
 		contentLayer.appendChild(xButtonLayer)
+		{
+			xButtonLayer.style.display = "inline-block" // to get margin and bounds
+			xButtonLayer.style.width = "13px"
+			xButtonLayer.style.height = "12px"
+			xButtonLayer.style.verticalAlign = "middle"
+			xButtonLayer.style.marginLeft = "17px"
+			xButtonLayer.style.marginTop = "-1px"
+			xButtonLayer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/contactPicker_xBtnIcn.png)"
+			xButtonLayer.style.backgroundSize = "11px 10px"
+			xButtonLayer.style.backgroundPosition = "center"
+			xButtonLayer.style.backgroundRepeat = "no-repeat"
+			xButtonLayer.style.cursor = "pointer"
+			xButtonLayer.addEventListener("click", function(e)
+			{
+				e.preventDefault()
+				const this_a = this
+				const this_pickedContactLayer = this_a.parentNode.parentNode // two levels due to contentLayer
+				didClickCloseBtn_fn(this_pickedContactLayer)
+				return false
+			})
+		}
 	}
 	return layer
 }

@@ -110,14 +110,15 @@ function New_fieldValue_textInputLayer(context, params)
 		}
 		layer.style.height = "29px"
 		const padding_h = 7
+		const borderWidth = 0.5
 		if (typeof params.target_width !== 'undefined') {
 			const width = params.target_width - 4 - 2 * padding_h
 			layer.style.width = width + "px"
 		} else {
-			layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
+			layer.style.width = `calc(100% - ${2*borderWidth}px - ${2 * padding_h}px)`
 		}
 		layer.style.borderRadius = "4px"
-		layer.style.border = "1px solid rgba(0,0,0,0)" // transparent border to preserve layout while showing validation clr border
+		layer.style.border = `${borderWidth}px solid rgba(0,0,0,0)` // transparent border to preserve layout while showing validation clr border
 		layer.style.textAlign = "left"
 		layer.style.fontSize = "13px"
 		layer.style.fontWeight = "200"
