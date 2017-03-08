@@ -178,7 +178,8 @@ class ContactFormView extends View
 		//
 		// TODO: make this into a custom picker
 		const view = new EmojiPickerControlView({
-			value: value
+			value: value,
+			didPickEmoji_fn: function(emoji) {} // nothing to do as we simply read at submit
 		}, self.context)
 		const valueLayer = view.layer
 		self.emojiInputView = view

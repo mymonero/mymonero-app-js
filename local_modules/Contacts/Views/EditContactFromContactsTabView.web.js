@@ -53,7 +53,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		}
 		{ // initial view config
 			self.fullnameInputLayer.value = self.contact.fullname || ""
-			self.emojiInputView.layer.value = self.contact.emoji || "" // TODO: when picker built
+			self.emojiInputView.aLayer.value = self.emojiInputView.SetValue(self.contact.emoji || "")
 			self.addressInputLayer.value = self.contact.address || ""
 			self.paymentIDInputLayer.value = self.contact.payment_id || "" // to avoid 'undefined'
 		}

@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const EmojiPickerPopoverContentView = require('./EmojiPickerPopoverContentView.web')
 //
 class EmojiPickerPopoverView extends View
 {
@@ -38,6 +39,8 @@ class EmojiPickerPopoverView extends View
 		super(options, context)
 		//
 		const self = this
+		self.value = options.value || ""
+		self.didPickEmoji_fn = options.didPickEmoji_fn || function(emoji) {}
 		self.setup()
 	}
 	setup()
@@ -48,6 +51,32 @@ class EmojiPickerPopoverView extends View
 	setup_views()
 	{
 		const self = this
+		const bg_w = self.Width()
+		const bg_h = self.Height()
+		{
+			const layer = self.layer
+			layer.style.position = "absolute"
+			layer.style.width = bg_w+"px"
+			layer.style.height = bg_h+"px"
+			layer.style.boxSizing = "border-box"
+			// using a whole image instead of css for this due to more complex styling
+			layer.style.backgroundImage = "url(../../Emoji/Resources/popoverBG.png)"
+			layer.style.backgroundPosition = "0px 0px"
+			layer.style.backgroundRepeat = "no-repeat"
+			layer.style.backgroundSize = `${bg_w}px ${bg_h}px`
+		}
+		{
+			const view = new EmojiPickerPopoverContentView({
+				value: self.value, // if any
+				didPickEmoji_fn: function(emoji)
+				{
+					self.value = emoji
+					self.didPickEmoji_fn(emoji)
+				}
+			}, self.context)
+			self.emojiPickerPopoverContentView = view
+			self.addSubview(view)
+		}
 	}
 	// Lifecycle - Teardown
 	TearDown()
@@ -55,6 +84,15 @@ class EmojiPickerPopoverView extends View
 		super.TearDown()
 		//
 		const self = this
+	}
+	// Accessors
+	Width()
+	{
+		return 341
+	}
+	Height()
+	{
+		return 264
 	}
 }
 module.exports = EmojiPickerPopoverView

@@ -28,23 +28,33 @@
 //
 "use strict"
 //
+const Animate = require('velocity-animate')
+//
 const View = require('../../Views/View.web')
-const Views__cssRules = require('../../Views/cssRules.web')
+const dom_traversal = require('../../Views/dom_traversal.web')
+//
+const EmojiPickerPopoverView = require('./EmojiPickerPopoverView.web')
 //
 // CSS rules
+const Views__cssRules = require('../../Views/cssRules.web')
 const NamespaceName = "EmojiPickerControlView"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 const cssRules =
 [
 	`.${NamespaceName} {
-		display: block;
-		text-decoration: none;
+		box-sizing: border-box;
+		width: 58px;
+		height: 31px;
+	}`,
+	`.${NamespaceName} > a {
 		border-radius: 3px;
 		
+		display: block;
 		box-sizing: border-box;
 		width: 58px;
 		height: 31px;
 		
+		text-decoration: none;
 		text-align: left;
 		text-indent: 8px;
 		line-height: 31px;
@@ -59,8 +69,8 @@ const cssRules =
 		background-color: #383638;
 		box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
 	}`,
-	`.${NamespaceName}.active,
-	 .${NamespaceName}:hover {
+	`.${NamespaceName} > a.active,
+	 .${NamespaceName} > a:hover {
 		 background-color: #494749;
 		 box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #5A585A;
 	}`
@@ -73,32 +83,113 @@ class EmojiPickerControlView extends View
 	constructor(options, context)
 	{
 		options = options || {}
-		options.tag = "a"
+		options.tag = "div"
 		super(options, context)
 		//
 		const self = this
 		self.value = options.value || ""
+		self.didPickEmoji_fn = options.didPickEmoji_fn || function(emoji) {}
 		self.setup()
 	}
 	setup()
 	{
 		const self = this
 		self.setup_views()
+		self.startObserving()
 	}
 	setup_views()
 	{
 		const self = this
 		self._setup_self_layer()
+		self._setup_aLayer()
+		self._setup_popoverView()
 	}
 	_setup_self_layer()
 	{
 		const self = this
 		const layer = self.layer
-		layer.href = "#" // so it's clickable
-		layer.innerHTML = self.value
-		//
 		layer.classList.add("EmojiPickerControlView")
 		__injectCSSRules_ifNecessary()
+		layer.style.position = "relative" // for pos:abs children
+	}
+	_setup_aLayer()
+	{
+		const self = this
+		const layer = document.createElement("a")
+		self.aLayer = layer
+		layer.style.position = "absolute"
+		layer.style.left = "0"
+		layer.style.top = "0"
+		layer.style.width = "100%"
+		layer.style.height = "100%"
+		layer.href = "#" // so it's clickable
+		layer.innerHTML = self.value 
+		self.layer.appendChild(layer)
+		//
+		layer.addEventListener("click", function(e) {
+			e.preventDefault()
+			// TODO: this appears to trigger on 'enter' too… should that be detected and used to select hovered/highlighted cell if any?
+			self.togglePopoverViewVisibility(true)
+			return false
+		})
+	}
+	_setup_popoverView()
+	{
+		const self = this
+		const view = new EmojiPickerPopoverView({
+			value: self.value, // if any
+			didPickEmoji_fn: function(emoji)
+			{
+				self.value = emoji // must set this so consumers accessing Value() have correct value
+				self.aLayer.innerHTML = emoji
+				self.didPickEmoji_fn(emoji)
+				setTimeout(function() { // just so it's on next tick
+					self.hidePopoverView()
+				})
+			}
+		})
+		view.layer.style.right = "-37px" // to get arrow center aligned with emoji center
+		view.layer.style.top = "12px"
+		self.popoverView = view
+		self.hidePopoverView(false) // now that reference assigned but layer not yet in DOM; we can call this cause self.isPopoverVisible is still undefined
+		self.addSubview(view)
+	}
+	startObserving()
+	{
+		const self = this
+		// dismiss if not clicked on self
+		self._window_click_fn = function(e)
+		{ // Now we must check if we can trigger a 'hide' of the options container layer.
+		  // We do so by checking if the target of the click is the 'show opens container layer' spawn element or one of its children. If it isn't, we can hide the options.
+		  // If we don't check, we end up stepping on a the 'show' request on the self click
+			const e__target = e.target
+			const self__layer = self.layer
+			if (e__target !== self__layer) { // so, not clicking the self__layer itself…
+				const isTargetAChildOf_self = dom_traversal.DoesAnyParentOfElementMatch__sync(
+					e__target, 
+					function(anAncestorNode)
+					{
+						if (anAncestorNode === self__layer) {
+							return true // a match - an eventual parent is the self__layer
+						}
+						return false // keep climbing…
+					}
+				)
+				if (isTargetAChildOf_self == false) {
+					self.hidePopoverView(true)
+				}
+			}
+		}
+		window.addEventListener("click", self._window_click_fn)
+		// user hitting escape
+		self._document_keydown_fn = function(e)
+		{
+		    e = e || window.event
+			if (e.key === "Escape" || e.key === "Esc" || e.keyCode == 27) {
+				self.hidePopoverView(true) // if necessary
+		    }
+		}
+		document.addEventListener("keydown", self._document_keydown_fn)
 	}
 	// Lifecycle - Teardown
 	TearDown()
@@ -106,11 +197,98 @@ class EmojiPickerControlView extends View
 		super.TearDown()
 		//
 		const self = this
+		self.stopObserving()
+	}
+	stopObserving()
+	{
+		const self = this
+		self.stopObserving_fn(self)
+		// TODO: assert self._window_click_fn != nil
+		window.removeEventListener("click", self._window_click_fn)
+		// TODO: assert self._document_keydown_fn != nil
+		document.removeEventListener("keydown", self._document_keydown_fn)
 	}
 	// Runtime - Accessors
 	Value()
 	{
+		const self = this
 		return self.value
+	}
+	// Runtime - Accessors - State
+	SetValue(emoji)
+	{
+		const self = this
+		self.value = value
+		self.aLayer.innerHTML = value
+		if (self.isPopoverVisible) {
+			self.hidePopoverView()
+		}
+	}
+	// Runtime - Imperatives - Popover visibility
+	togglePopoverViewVisibility(optl_isAnimated)
+	{
+		const self = this
+		if (self.isPopoverVisible == false) {
+			self.showPopoverView(optl_isAnimated)
+		} else {
+			self.hidePopoverView(optl_isAnimated)
+		}
+	}
+	showPopoverView(optl_isAnimated)
+	{
+		const isAnimated = optl_isAnimated === false ? false : true // default true
+		//
+		const self = this
+		if (self.isPopoverVisible === true) {
+			console.log("Popover already visible. Bailing.")
+			return
+		}
+		self.isPopoverVisible = true
+		self.aLayer.classList.add("active")
+		if (isAnimated) {
+			self.popoverView.layer.style.opacity = "0"
+			self.popoverView.layer.style.display = "block"
+			Animate(
+				self.popoverView.layer,
+				{ opacity: "1" },
+				{
+					duration: 100,
+					easing: "ease-out",
+					complete: function(){}
+				}
+			)
+		} else {
+			self.popoverView.layer.style.display = "block"
+			self.popoverView.layer.style.opacity = "1"
+		}
+	}
+	hidePopoverView(optl_isAnimated)
+	{
+		const isAnimated = optl_isAnimated === false ? false : true // default true
+		//
+		const self = this
+		if (self.isPopoverVisible === false) {
+			console.log("Popover already not visible. Bailing.")
+			return
+		}
+		self.isPopoverVisible = false
+		self.aLayer.classList.remove("active")
+		if (!isAnimated) {
+			self.popoverView.layer.style.display = "none"
+		} else {
+			Animate(
+				self.popoverView.layer,
+				{ opacity: "0" },
+				{
+					duration: 75,
+					easing: "ease-out",
+					complete: function()
+					{
+						self.popoverView.layer.style.display = "none"
+					}
+				}
+			)
+		}
 	}
 }
 module.exports = EmojiPickerControlView
