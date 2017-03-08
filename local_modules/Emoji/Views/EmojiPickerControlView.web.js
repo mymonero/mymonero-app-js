@@ -132,6 +132,13 @@ class EmojiPickerControlView extends View
 			self.togglePopoverViewVisibility(true)
 			return false
 		})
+		layer.addEventListener("keydown", function(e) {
+			// to trigger the effect of the click event from the keyboard
+			var code = e.which
+			if (code === 13 || code === 32) { // 13 = Return, 32 = Space
+				self.togglePopoverViewVisibility(true)
+			}
+		})
 	}
 	_setup_popoverView()
 	{

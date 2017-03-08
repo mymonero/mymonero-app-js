@@ -159,6 +159,10 @@ class ContactFormView extends View
 		)
 		div.appendChild(valueLayer)
 		self.form_containerLayer.appendChild(div)
+		//
+		setTimeout(function() {
+			self.fullnameInputLayer.focus()
+		}, 400)
 	}
 	_setup_field_emoji()
 	{
