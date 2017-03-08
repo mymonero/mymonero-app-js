@@ -30,7 +30,7 @@
 //
 const View = require('../../Views/View.web')
 //
-class EmojiSelectionContentView extends View
+class EmojiPickerContentView extends View
 {
 	constructor(options, context)
 	{
@@ -59,4 +59,4 @@ class EmojiSelectionContentView extends View
 		const self = this
 	}
 }
-module.exports = EmojiSelectionContentView
+module.exports = EmojiPickerContentView
