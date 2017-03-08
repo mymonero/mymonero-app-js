@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const EmojiPickerControlView = require('../../Emoji/Views/EmojiPickerControlView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
@@ -176,13 +177,11 @@ class ContactFormView extends View
 		div.appendChild(labelLayer)
 		//
 		// TODO: make this into a custom picker
-		const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {})
-		valueLayer.value = value
-		valueLayer.style.padding = "0"
-		valueLayer.style.boxSizing = "border-box"
-		valueLayer.style.width = "60px"
-		valueLayer.style.height = "31px"
-		self.emojiInputLayer = valueLayer
+		const view = new EmojiPickerControlView({
+			value: value
+		}, self.context)
+		const valueLayer = view.layer
+		self.emojiInputView = view
 		div.appendChild(valueLayer)
 		//
 		self.form_containerLayer.appendChild(div)

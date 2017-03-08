@@ -53,7 +53,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		}
 		{ // initial view config
 			self.fullnameInputLayer.value = self.contact.fullname || ""
-			self.emojiInputLayer.value = self.contact.emoji || "" // TODO: when picker built
+			self.emojiInputView.layer.value = self.contact.emoji || "" // TODO: when picker built
 			self.addressInputLayer.value = self.contact.address || ""
 			self.paymentIDInputLayer.value = self.contact.payment_id || "" // to avoid 'undefined'
 		}
@@ -155,7 +155,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		const self = this
 		//
 		const fullname = self.fullnameInputLayer.value
-		const emoji = self.emojiInputLayer.value // TODO: when picker built
+		const emoji = self.emojiInputView.Value()
 		const address = self.addressInputLayer.value
 		var paymentID = self.paymentIDInputLayer.value
 		//

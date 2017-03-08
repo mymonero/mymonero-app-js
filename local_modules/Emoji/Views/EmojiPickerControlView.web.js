@@ -29,15 +29,55 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const Views__cssRules = require('../../Views/cssRules.web')
 //
-class EmojiPickerContentView extends View
+// CSS rules
+const NamespaceName = "EmojiPickerControlView"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.${NamespaceName} {
+		display: block;
+		text-decoration: none;
+		border-radius: 3px;
+		
+		box-sizing: border-box;
+		width: 58px;
+		height: 31px;
+		
+		text-align: left;
+		text-indent: 8px;
+		line-height: 31px;
+		font-size: 13px;
+		
+		background-image: url(../../Emoji/Resources/popoverDisclosureArrow.png);
+		background-size: 8px 7px;
+		background-position: 42px 13px;
+		background-repeat: no-repeat;
+		
+		transition: background-color 0.1s ease-out, box-shadow 0.1s ease-out;
+		background-color: #383638;
+		box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
+	}`,
+	`.${NamespaceName}.active,
+	 .${NamespaceName}:hover {
+		 background-color: #494749;
+		 box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #5A585A;
+	}`
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+//
+class EmojiPickerControlView extends View
 {
 	// Lifecycle - Init
 	constructor(options, context)
 	{
+		options = options || {}
+		options.tag = "a"
 		super(options, context)
 		//
 		const self = this
+		self.value = options.value || ""
 		self.setup()
 	}
 	setup()
@@ -48,6 +88,17 @@ class EmojiPickerContentView extends View
 	setup_views()
 	{
 		const self = this
+		self._setup_self_layer()
+	}
+	_setup_self_layer()
+	{
+		const self = this
+		const layer = self.layer
+		layer.href = "#" // so it's clickable
+		layer.innerHTML = self.value
+		//
+		layer.classList.add("EmojiPickerControlView")
+		__injectCSSRules_ifNecessary()
 	}
 	// Lifecycle - Teardown
 	TearDown()
@@ -56,5 +107,10 @@ class EmojiPickerContentView extends View
 		//
 		const self = this
 	}
+	// Runtime - Accessors
+	Value()
+	{
+		return self.value
+	}
 }
-module.exports = EmojiPickerContentView
+module.exports = EmojiPickerControlView

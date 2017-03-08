@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 //
 class EmojiPickerPopoverView extends View
 {
+	// Lifecycle - Init
 	constructor(options, context)
 	{
 		super(options, context)
@@ -48,10 +49,7 @@ class EmojiPickerPopoverView extends View
 	{
 		const self = this
 	}
-	//
-	//
 	// Lifecycle - Teardown
-	//
 	TearDown()
 	{
 		super.TearDown()

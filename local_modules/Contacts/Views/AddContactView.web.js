@@ -84,7 +84,7 @@ class AddContactView extends ContactFormView
 		const self = this
 		//
 		const fullname = self.fullnameInputLayer.value
-		const emoji = self.emojiInputLayer.value // TODO: when picker built
+		const emoji = self.emojiInputView.Value()
 		const address = self.addressInputLayer.value
 		var paymentID = self.paymentIDInputLayer.value
 		//
