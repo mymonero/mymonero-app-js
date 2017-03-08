@@ -79,10 +79,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.mnemonicTextAreaView = view
 			{
 				view.layer.addEventListener(
-					"keyup",
+					"keypress",
 					function(event)
 					{
-						self.AWalletFieldInput_did_keyup(event) // defined on super
+						self.AWalletFieldInput_did_keypress(event) // defined on super
 					}
 				)
 			}
@@ -108,10 +108,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				self.addrTextAreaView = view
 				{
 					view.layer.addEventListener(
-						"keyup",
+						"keypress",
 						function(event)
 						{
-							self.AWalletFieldInput_did_keyup(event) // defined on super
+							self.AWalletFieldInput_did_keypress(event) // defined on super
 						}
 					)
 				}
@@ -131,10 +131,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				self.viewKeyTextAreaView = view
 				{
 					view.layer.addEventListener(
-						"keyup",
+						"keypress",
 						function(event)
 						{
-							self.AWalletFieldInput_did_keyup(event) // defined on super
+							self.AWalletFieldInput_did_keypress(event) // defined on super
 						}
 					)
 				}
@@ -154,10 +154,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				self.spendKeyTextAreaView = view
 				{
 					view.layer.addEventListener(
-						"keyup",
+						"keypress",
 						function(event)
 						{
-							self.AWalletFieldInput_did_keyup(event) // defined on super
+							self.AWalletFieldInput_did_keypress(event) // defined on super
 						}
 					)
 				}

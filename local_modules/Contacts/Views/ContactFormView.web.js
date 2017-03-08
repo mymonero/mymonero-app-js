@@ -204,12 +204,13 @@ class ContactFormView extends View
 		const inputLayer = view.layer
 		self.addressInputLayer = inputLayer
 		inputLayer.addEventListener(
-			"keyup",
+			"keypress", // press, not up, to be able to control what goes into field
 			function(event)
 			{
 				if (event.keyCode === 13) { // return key
+					event.preventDefault() // do not let return/accept create a newline
 					self._tryToCreateContact()
-					return
+					return false // do not let return/accept create a newline
 				}
 			}
 		)
@@ -236,26 +237,17 @@ class ContactFormView extends View
 		)
 		const inputLayer = view.layer
 		self.paymentIDInputLayer = inputLayer
-		inputLayer.addEventListener(
-			"keyup",
-			function(event)
-			{
-				if (event.keyCode === 13) { // return key
-					self._tryToCreateContact()
-					return
-				}
-			}
-		)
 		// NOTE: Actually adding view.layer to div is deferred until a few lines down
 		if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
-			div.appendChild(view.layer)
-			view.layer.addEventListener(
-				"keyup",
+			div.appendChild(inputLayer)
+			inputLayer.addEventListener(
+				"keypress", // press, not up, to be able to control what goes into field
 				function(event)
 				{
 					if (event.keyCode === 13) { // return key
+						event.preventDefault() // do not let return/accept create a newline
 						self._tryToCreateContact()
-						return
+						return false // do not let return/accept create a newline
 					}
 				}
 			)

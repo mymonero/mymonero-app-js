@@ -107,10 +107,10 @@ class EditWalletView extends View
 			self.walletNameInputLayer = valueLayer
 			{
 				valueLayer.addEventListener(
-					"keyup",
+					"keypress",
 					function(event)
 					{
-						self.AWalletFieldInput_did_keyup(event)
+						self.AWalletFieldInput_did_keypress(event)
 					}
 				)
 			}
@@ -364,14 +364,15 @@ class EditWalletView extends View
 	//
 	// Runtime - Delegation - Interactions
 	//
-	AWalletFieldInput_did_keyup(event)
+	AWalletFieldInput_did_keypress(event)
 	{
 		const self = this
 		if (event.keyCode === 13) { // return key
+			event.preventDefault() // do not let return/accept create a newline ; in case this is a textarea
 			if (self.isSubmitButtonDisabled !== true) {
 				self._userSelectedNextButton()
 			}
-			return
+			return false // do not let return/accept create a newline
 		}
 		self.set_submitButtonNeedsUpdate()
 	}
