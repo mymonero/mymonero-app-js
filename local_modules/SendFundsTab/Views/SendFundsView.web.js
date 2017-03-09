@@ -141,8 +141,7 @@ class SendFundsView extends View
 				table.appendChild(tr_1)
 				self.form_containerLayer.appendChild(table)
 			}
-			self._setup_form_contactOrAddressPickerLayer()
-			self._setup_form_resolving_activityIndicatorLayer()
+			self._setup_form_contactOrAddressPickerLayer() // this will set up the 'resolving' activity indicator
 			self._setup_form_resolvedAddress_containerLayer()
 			self._setup_form_resolvedPaymentID_containerLayer()
 			self._setup_form_addPaymentIDButtonView()
@@ -238,66 +237,64 @@ class SendFundsView extends View
 	{ // Request funds from sender
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
-			labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
-			div.appendChild(labelLayer)
-			//
-			const layer = commonComponents_contactPicker.New_contactPickerLayer(
-				self.context,
-				"Contact name, or OpenAlias / integrated address",
-				self.context.contactsListController,
-				function(contact)
-				{ // did pick
-					self.addPaymentIDButtonView.layer.style.display = "none"
-					self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
-					self.manualPaymentIDInputLayer.value = ""
-					//
-					self._didPickContact(contact)
-				},
-				function(clearedContact)
-				{
-					self.cancelAny_requestHandle_for_oaResolution()
-					//
-					self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
-					self._hideResolvedPaymentID()
-					self._hideResolvedAddress()
-					//
-					self.addPaymentIDButtonView.layer.style.display = "block" // can re-show this
-					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
-					self.manualPaymentIDInputLayer.value = ""
-					//
-					self.pickedContact = null
-				},
-				function()
-				{ // didFinishTypingInInput_fn
-					self._didFinishTypingInContactPickerInput()
-				}
-			)
-			self.contactOrAddressPickerLayer = layer
-			div.appendChild(layer)
-			{ // initial config
-				if (self.fromContact !== null) {
-					setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
-						function()
-						{
-							self.contactOrAddressPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
-						},
-						1
-					)
-				}
+		//
+		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
+		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
+		div.appendChild(labelLayer)
+		//
+		const layer = commonComponents_contactPicker.New_contactPickerLayer(
+			self.context,
+			"Contact name, or OpenAlias / integrated address",
+			self.context.contactsListController,
+			function(contact)
+			{ // did pick
+				self.addPaymentIDButtonView.layer.style.display = "none"
+				self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+				self.manualPaymentIDInputLayer.value = ""
+				//
+				self._didPickContact(contact)
+			},
+			function(clearedContact)
+			{
+				self.cancelAny_requestHandle_for_oaResolution()
+				//
+				self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
+				self._hideResolvedPaymentID()
+				self._hideResolvedAddress()
+				//
+				self.addPaymentIDButtonView.layer.style.display = "block" // can re-show this
+				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
+				self.manualPaymentIDInputLayer.value = ""
+				//
+				self.pickedContact = null
+			},
+			function()
+			{ // didFinishTypingInInput_fn
+				self._didFinishTypingInContactPickerInput()
 			}
+		)
+		self.contactOrAddressPickerLayer = layer
+		div.appendChild(layer)
+		{ // initial config
+			if (self.fromContact !== null) {
+				setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
+					function()
+					{
+						self.contactOrAddressPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
+					},
+					1
+				)
+			}
+		}
+		{ // 'resolving' act ind
+			const layer = commonComponents_activityIndicators.New_Resolving_ActivityIndicatorLayer(self.context)
+			layer.style.display = "none" // initial state
+			layer.style.paddingLeft = "7px"
+			self.resolving_activityIndicatorLayer = layer
+			div.appendChild(layer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}	
-	_setup_form_resolving_activityIndicatorLayer()
-	{
-		const self = this
-		const layer = commonComponents_activityIndicators.New_Resolving_ActivityIndicatorLayer(self.context)
-		layer.style.display = "none" // initial state
-		self.resolving_activityIndicatorLayer = layer
-		self.form_containerLayer.appendChild(layer)
-	}
 	_setup_form_resolvedAddress_containerLayer()
 	{ // TODO: factor this into a commonComponent file
 		const self = this
@@ -1187,6 +1184,9 @@ class SendFundsView extends View
 		//
 		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
 		if (!enteredPossibleAddress || typeof enteredPossibleAddress === 'undefined') {
+			if (self.manualPaymentIDInputLayer_containerLayer.style.display === "none") {
+				self.addPaymentIDButtonView.layer.style.display = "block" // show if hidden as we may have hidden it
+			}
 			return
 		}
 		//
@@ -1218,6 +1218,7 @@ class SendFundsView extends View
 			self.resolving_activityIndicatorLayer.style.display = "block"
 			self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 			self.manualPaymentIDInputLayer.value = ""
+			self.addPaymentIDButtonView.layer.style.display = "none"
 			//
 			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
 		}

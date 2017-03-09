@@ -71,7 +71,7 @@ const cssRules =
 	`.${NamespaceName}.graphicAndLabel > div.loader {
 		display: inline-block;
 		position: relative;
-		top: 1px;
+		top: 0px;
 	}`,
 	`.${NamespaceName}.graphicAndLabel > span {
 		display: inline-block;
