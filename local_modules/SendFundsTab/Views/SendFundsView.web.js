@@ -142,8 +142,6 @@ class SendFundsView extends View
 				self.form_containerLayer.appendChild(table)
 			}
 			self._setup_form_contactOrAddressPickerLayer() // this will set up the 'resolving' activity indicator
-			self._setup_form_resolvedAddress_containerLayer()
-			self._setup_form_resolvedPaymentID_containerLayer()
 			self._setup_form_addPaymentIDButtonView()
 			self._setup_form_manualPaymentIDInputLayer()
 		}
@@ -293,46 +291,39 @@ class SendFundsView extends View
 			self.resolving_activityIndicatorLayer = layer
 			div.appendChild(layer)
 		}
+		{ // resolved monero address field - only really used when a manual OA addr yields an addr
+			const fieldContainerLayer = document.createElement("div")
+			self.resolvedAddress_containerLayer = fieldContainerLayer
+			div.appendChild(fieldContainerLayer)
+			fieldContainerLayer.style.display = "none" // initial state
+			{
+				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MONERO ADDRESS", self.context)
+				fieldContainerLayer.appendChild(labelLayer)
+				//
+				const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
+				self.resolvedAddress_valueLayer = valueLayer
+				fieldContainerLayer.appendChild(valueLayer)
+			}
+		}
+		{ // resolved monero payment id
+			const fieldContainerLayer = document.createElement("div")
+			self.resolvedPaymentID_containerLayer = fieldContainerLayer
+			div.appendChild(fieldContainerLayer)
+			fieldContainerLayer.style.display = "none" // initial state
+			{
+				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
+				fieldContainerLayer.appendChild(labelLayer)
+				//
+				const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
+				self.resolvedPaymentID_valueLayer = valueLayer
+				fieldContainerLayer.appendChild(valueLayer)
+				//
+				const detectedMessage = commonComponents_forms.New_Detected_IconAndMessageLayer(self.context)
+				fieldContainerLayer.appendChild(detectedMessage)
+			}
+		}
 		self.form_containerLayer.appendChild(div)
 	}	
-	_setup_form_resolvedAddress_containerLayer()
-	{ // TODO: factor this into a commonComponent file
-		const self = this
-		const div = document.createElement("div")
-		div.style.display = "none" // initial state
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MONERO ADDRESS", self.context)
-			div.appendChild(labelLayer)
-			//
-			const valueLayer = document.createElement("div")
-			valueLayer.style.borderRadius = "4px"
-			valueLayer.style.backgroundColor = "#ccc"
-			valueLayer.style.color = "#737073"
-			self.resolvedAddress_valueLayer = valueLayer
-			div.appendChild(valueLayer)
-		}
-		self.resolvedAddress_containerLayer = div
-		self.form_containerLayer.appendChild(div)
-	}
-	_setup_form_resolvedPaymentID_containerLayer()
-	{ // TODO: factor this into a commonComponent file
-		const self = this
-		const div = document.createElement("div")
-		div.style.display = "none" // initial state
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
-			div.appendChild(labelLayer)
-			//
-			const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
-			self.resolvedPaymentID_valueLayer = valueLayer
-			div.appendChild(valueLayer)
-			//
-			const detectedMessage = commonComponents_forms.New_Detected_IconAndMessageLayer(self.context)
-			div.appendChild(detectedMessage)
-		}
-		self.resolvedPaymentID_containerLayer = div
-		self.form_containerLayer.appendChild(div)
-	}
 	_setup_form_addPaymentIDButtonView()
 	{
 		const self = this		

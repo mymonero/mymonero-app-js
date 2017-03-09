@@ -38,7 +38,7 @@ const cssRules =
 		transition: background-color 0.1s ease-out;
 	}`,
 	`.hoverable-cell.utility:not(.disabled):hover {
-		background-color: rgba(73, 71, 73, 0.75) !important;
+		background-color: #3f3e3f !important;
 	}`,
 	`.hoverable-cell.action:not(.disabled):hover {
 		background-color: #33d1ff !important;
