@@ -33,7 +33,7 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
 //
-class GeneratedRequestView extends View
+class FundsRequestDetailsView extends View
 {
 	constructor(options, context)
 	{
@@ -383,4 +383,4 @@ class GeneratedRequestView extends View
 		)
 	}
 }
-module.exports = GeneratedRequestView
+module.exports = FundsRequestDetailsView

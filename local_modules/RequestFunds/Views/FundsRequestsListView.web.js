@@ -34,7 +34,7 @@ const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emp
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 //
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
-const GeneratedRequestView = require('./GeneratedRequestView.web')
+const FundsRequestDetailsView = require('./FundsRequestDetailsView.web')
 //
 const CreateRequestView = require('./CreateRequestView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
@@ -138,7 +138,7 @@ class FundsRequestsListView extends ListView
 	}
 	overridable_recordDetailsViewClass()
 	{
-		return GeneratedRequestView
+		return FundsRequestDetailsView
 	}
 	//
 	//

@@ -543,12 +543,12 @@ class CreateRequestView extends View
 				{
 					self.validationMessageLayer.ClearAndHideMessage()
 				}
-				const GeneratedRequestView = require('./GeneratedRequestView.web')
+				const FundsRequestDetailsView = require('./FundsRequestDetailsView.web')
 				const options = 
 				{
 					record: fundsRequest
 				}
-				const view = new GeneratedRequestView(options, self.context)
+				const view = new FundsRequestDetailsView(options, self.context)
 				const modalParentView = self.navigationController.modalParentView
 				const underlying_navigationController = modalParentView
 				underlying_navigationController.PushView(view, false) // not animated
