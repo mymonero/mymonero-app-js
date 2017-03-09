@@ -117,6 +117,7 @@ class FundsRequestCellContentsView extends View
 		layer.style.fontWeight = "400"
 		layer.style.wordBreak = "break-word"
 		layer.style.color = "#fcfbfc"
+		layer.style.cursor = "default"
 		self.amountLayer = layer
 		self.amountAndSenderContainerLayer.appendChild(layer)
 	}
@@ -136,6 +137,7 @@ class FundsRequestCellContentsView extends View
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
 		layer.style.wordBreak = "break-word"
+		layer.style.cursor = "default"
 		self.senderLayer = layer
 		self.amountAndSenderContainerLayer.appendChild(layer)
 	}
@@ -154,6 +156,7 @@ class FundsRequestCellContentsView extends View
 		layer.style.whiteSpace = "nowrap"
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
+		layer.style.cursor = "default"
 		self.memoLayer = layer
 		self.layer.appendChild(layer)
 	}

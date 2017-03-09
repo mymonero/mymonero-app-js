@@ -63,6 +63,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.top = "20px"
 		layer.style.fontSize = "13px"
 		layer.style.color = "#9e9c9e"
+		layer.style.cursor = "default"
 		self.emojiLayer = layer
 		self.layer.appendChild(layer)
 	}
@@ -78,6 +79,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.fontWeight = "400"
 		layer.style.wordBreak = "break-word"
 		layer.style.color = "#fcfbfc"
+		layer.style.cursor = "default"
 		self.nameLayer = layer
 		self.layer.appendChild(layer)
 	}
@@ -95,6 +97,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.whiteSpace = "nowrap"
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
+		layer.style.cursor = "default"
 		self.addressLayer = layer
 		self.layer.appendChild(layer)
 	}

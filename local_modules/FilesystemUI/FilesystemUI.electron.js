@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const fs = require('fs')
+//
 const FilesystemUI_Abstract = require('./FilesystemUI_Abstract')
 //
 class FilesytemUI extends FilesystemUI_Abstract
@@ -62,8 +64,9 @@ class FilesytemUI extends FilesystemUI_Abstract
 		if (ext === 'jpg') {
 			extensions.push('jpeg')
 		}
-		const fs = require('fs')
-		const dialog = require('electron').remote.dialog
+		const remote = require('electron').remote
+		const dialog = remote.dialog
+		const electronWindow = remote.getCurrentWindow()
 		const options = 
 		{
 			title: title || "Save File",
@@ -73,6 +76,7 @@ class FilesytemUI extends FilesystemUI_Abstract
 			]
 		}
 		dialog.showSaveDialog(
+			electronWindow,
 			options,
 			function(path)
 			{
@@ -104,8 +108,9 @@ class FilesytemUI extends FilesystemUI_Abstract
 	{
 		const self = this
 		//
-		const remote__electron = require('electron').remote
-		const dialog = remote__electron.dialog
+		const remote = require('electron').remote
+		const dialog = remote.dialog
+		const electronWindow = remote.getCurrentWindow()
 		const options = 
 		{
 			title: title || "Open File",
@@ -114,6 +119,7 @@ class FilesytemUI extends FilesystemUI_Abstract
 			]
 		}
 		dialog.showOpenDialog(
+			electronWindow,
 			options,
 			function(path)
 			{

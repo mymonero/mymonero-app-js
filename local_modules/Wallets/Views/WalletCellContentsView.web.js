@@ -132,6 +132,7 @@ class WalletCellContentsView extends View
 		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.wordBreak = "break-word"
 		layer.style.color = "#fcfbfc"
+		layer.style.cursor = "default"
 		// layer.style.border = "1px solid red"
 		self.titleLayer = layer
 		self.layer.appendChild(layer)
@@ -153,6 +154,7 @@ class WalletCellContentsView extends View
 		layer.style.whiteSpace = "nowrap"
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
+		layer.style.cursor = "default"
 		self.descriptionLayer = layer
 		self.layer.appendChild(layer)
 	}
