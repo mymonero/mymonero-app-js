@@ -137,43 +137,19 @@ class CreateRequestView extends View
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_amountInputLayer(tr)
-	{ // Request funds from sender
+	{ // Request funds amount from sender
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.width = "210px"
-		div.style.padding = "7px 14px 0 14px"
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
-			div.appendChild(labelLayer)
-			// ^ block
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "00.00"
-			})
-			valueLayer.style.textAlign = "right"
-			valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
-			valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
-			valueLayer.style.width = "98px"
-			self.amountInputLayer = valueLayer
-			valueLayer.addEventListener(
-				"keyup",
-				function(event)
-				{
-					if (event.keyCode === 13) {
-						self._tryToGenerateSend()
-						return
-					}
-				}
-			)
-			div.appendChild(valueLayer)
-			//
-			const currencyLabel = commonComponents_forms.New_fieldTitle_labelLayer("XMR", self.context) // TODO: grab currency label from wallet selected
-			currencyLabel.style.display = "inline-block"
-			currencyLabel.style.margin = "0 0 0 8px"
-			currencyLabel.style.verticalAlign = "middle"
-			currencyLabel.style.color = "#8D8B8D"
-			div.appendChild(currencyLabel)
-		}
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		const pkg = commonComponents_forms.New_AmountInputFieldPKG(
+			self.context,
+			"XMR", // TODO: grab, update from selected wallet
+			function()
+			{ // enter btn pressed
+				self._tryToGenerateRequest()
+			}
+		)		
+		const div = pkg.containerLayer
+		self.amountInputLayer = pkg.valueLayer
+		//
 		const td = document.createElement("td")
 		td.style.width = "100px"
 		td.style.verticalAlign = "top"
@@ -314,7 +290,7 @@ class CreateRequestView extends View
 			}
 		)
 		view.layer.style.paddingTop = "16px"
-		view.layer.style.paddingLeft = "14px"
+		view.layer.style.paddingLeft = "13px"
 		self.createNewRecordNamedButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
 	}

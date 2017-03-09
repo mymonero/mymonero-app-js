@@ -85,7 +85,7 @@ class EnterExistingPasswordView extends View
 	_setup_inputFieldGroup()
 	{
 		const self = this
-		const table = document.createElement("table") // cause table are amazing
+		const table = document.createElement("table")
 		table.style.height = "100%"
 		table.style.width = "100%"
 		table.style.marginTop = "-26px" // to get exact visual offset

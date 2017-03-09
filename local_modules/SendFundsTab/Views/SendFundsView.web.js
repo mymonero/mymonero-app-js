@@ -100,20 +100,20 @@ class SendFundsView extends View
 	_setup_self_layer()
 	{
 		const self = this
+		const layer = self.layer
+		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		layer.style.position = "relative"
+		layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
+		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.overflowY = "scroll"
 		//
-		self.layer.style.position = "relative"
-		self.layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
-		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		self.layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		self.layer.style.overflowY = "scroll"
+		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
-		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		layer.style.color = "#c0c0c0" // temporary
 		//
-		self.layer.style.color = "#c0c0c0" // temporary
-		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_validationMessageLayer()
 	{ // validation message
@@ -166,60 +166,31 @@ class SendFundsView extends View
 		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_amountInputLayer(tr)
-	{ // Request funds from sender
-		// TODO: move this to a component
+	{ 
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.display = "block"
-		div.style.width = "210px"
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", self.context)
-			div.appendChild(labelLayer)
-			// ^ block
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "00.00"
-			})
-			valueLayer.style.textAlign = "right"
-			valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
-			valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
-			valueLayer.style.width = "128px"
-			self.amountInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) {
-							self._tryToGenerateSend()
-							return
-						}
-					}
-				)
+
+		const pkg = commonComponents_forms.New_AmountInputFieldPKG(
+			self.context,
+			"XMR", // TODO: grab, update from selected wallet
+			function()
+			{ // enter btn pressed
+				self._tryToGenerateSend()
 			}
-			div.appendChild(valueLayer)
-			//
-			const currencyLabel = document.createElement("span")
-			currencyLabel.display = "inline-block"
-			currencyLabel.innerHTML = "XMR"
-			currencyLabel.style.marginLeft = "5px"
-			currencyLabel.style.fontSize = "11px"
-			currencyLabel.style.color = "#eee"
-			currencyLabel.style.fontFamily = "monospace"
-			currencyLabel.style.verticalAlign = "middle"
-			div.appendChild(currencyLabel)
-		}
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-		{
-			const layer = document.createElement("div")
-			layer.style.textAlign = "left"
-			layer.style.marginTop = "9px"
-			layer.style.fontSize = "11px"
-			layer.style.color = "#999"
-			layer.style.fontFamily = "monospace"
-			layer.innerHTML = self._new_estimatedTransactionFee_displayString()
+		)		
+		const div = pkg.containerLayer
+		div.style.paddingTop = "2px"
+		const labelLayer = pkg.labelLayer
+		labelLayer.style.marginTop = "0"
+		self.amountInputLayer = pkg.valueLayer
+		{ // addtl element on this screen
+			const layer = commonComponents_forms.New_fieldTitle_labelLayer("", self.context)
+			layer.style.marginTop = "8px"
+			layer.style.color = "#9E9C9E"
 			self.feeEstimateLayer = layer
+			self.refresh_feeEstimateLayer() // now that reference assigned…
 			div.appendChild(layer)
 		}
+		// TODO: add '?' tooltip btn inline with this ^ layer
 		const td = document.createElement("td")
 		td.style.width = "100px"
 		td.style.verticalAlign = "top"
@@ -269,6 +240,7 @@ class SendFundsView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer()
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
+			labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
 			div.appendChild(labelLayer)
 			//
 			const layer = commonComponents_contactPicker.New_contactPickerLayer(
@@ -378,6 +350,8 @@ class SendFundsView extends View
 				}
 			}
 		)
+		view.layer.style.marginTop = "4px"
+		view.layer.style.marginLeft = "22px"
 		self.addPaymentIDButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
 	}
@@ -388,6 +362,7 @@ class SendFundsView extends View
 		div.style.display = "none" // initial
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
+			labelLayer.style.marginTop = "4px"
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
@@ -611,7 +586,7 @@ class SendFundsView extends View
 		)
 		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
-		var displayString = `+ ${estimatedTotalFee_str} fee`
+		var displayString = `+ ${estimatedTotalFee_str} FEE`
 		//
 		return displayString
 	}

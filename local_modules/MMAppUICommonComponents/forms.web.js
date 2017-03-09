@@ -31,6 +31,8 @@
 const View = require('../Views/View.web')
 const Views__cssRules = require('../Views/cssRules.web')
 //
+const commonComponents_tables = require('./tables.web')
+//
 const NamespaceName = "Forms"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 const cssRules =
@@ -63,14 +65,14 @@ const cssRules =
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
-function _new_fieldContainerLayer()
+function New_fieldContainerLayer()
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.className = "form_field"
 	return layer
 }
-exports.New_fieldContainerLayer = _new_fieldContainerLayer
+exports.New_fieldContainerLayer = New_fieldContainerLayer
 //
 function New_fieldTitle_labelLayer(labelText, context)
 {
@@ -333,3 +335,53 @@ function New_Detected_IconAndMessageLayer(context)
 	return layer
 }
 exports.New_Detected_IconAndMessageLayer = New_Detected_IconAndMessageLayer
+//
+//
+function New_AmountInputFieldPKG(
+	context,
+	humanReadable_currencyAbbrv, // e.g. "XMR"
+	optl__enterPressed_fn
+)
+{ // -> {} // Experimental 'pkg' style return… maybe refactor into :View later
+	const enterPressed_fn = optl__enterPressed_fn ? optl__enterPressed_fn : function() {}
+	//
+	const div = New_fieldContainerLayer()
+	div.style.width = "210px"
+	div.style.padding = "7px 14px 0 14px"
+	//
+	const labelLayer = New_fieldTitle_labelLayer("AMOUNT", context)
+	div.appendChild(labelLayer)
+	// ^ block
+	const valueLayer = New_fieldValue_textInputLayer(context, {
+		placeholderText: "00.00"
+	})
+	valueLayer.style.textAlign = "right"
+	valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
+	valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
+	valueLayer.style.width = "98px"
+	valueLayer.addEventListener("keyup", function(event)
+	{
+		if (event.keyCode === 13) {
+			enterPressed_fn()
+			return
+		}
+	})
+	div.appendChild(valueLayer)
+	//
+	const currencyLabel = New_fieldTitle_labelLayer(humanReadable_currencyAbbrv, context)
+	currencyLabel.style.display = "inline-block"
+	currencyLabel.style.margin = "0 0 0 8px"
+	currencyLabel.style.verticalAlign = "middle"
+	currencyLabel.style.color = "#8D8B8D"
+	div.appendChild(currencyLabel)
+	//
+	div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+	
+	return {
+		containerLayer: div,
+		labelLayer: labelLayer,
+		valueLayer: valueLayer,
+		currencyLabel: currencyLabel
+	}
+}
+exports.New_AmountInputFieldPKG = New_AmountInputFieldPKG

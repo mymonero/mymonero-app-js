@@ -74,7 +74,9 @@ class ListView extends View
 		//
 		const layer = self.layer
 		layer.style.overflowY = "scroll"
-		layer.style.width = `calc(100% - ${2 * padding_h}px)` 
+		layer.style.boxSizing = "border-box"
+		layer.style.width = "100%" 
+		layer.style.height = "100%"
 		layer.style.padding = `0 ${padding_h}px ${padding_btm}px ${padding_h}px`
 		// we wait til viewWillAppear is called by the nav controller to set height
 		//
@@ -300,7 +302,6 @@ class ListView extends View
 		if (self.navigationController && typeof self.navigationController !== 'undefined') {
 			const layer = self.layer // TODO: this can probably be done only once rather than every time
 			layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-			layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 		}
 	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
