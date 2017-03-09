@@ -225,8 +225,9 @@ class EmojiPickerControlView extends View
 	SetValue(emoji)
 	{
 		const self = this
-		self.value = value
-		self.aLayer.innerHTML = value
+		// TODO: validate emoji in set of emoji?
+		self.value = emoji
+		self.aLayer.innerHTML = emoji
 		if (self.isPopoverVisible) {
 			self.hidePopoverView()
 		}
