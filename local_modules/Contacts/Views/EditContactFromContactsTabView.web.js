@@ -63,6 +63,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		const self = this
 		const view = commonComponents_tables.New_deleteRecordNamedButtonView("contact", self.context)
 		const layer = view.layer
+		layer.style.marginTop = "21px"
 		function __proceedTo_deleteRecord()
 		{
 			const record_id = self.contact._id
