@@ -169,13 +169,10 @@ function New_separatorLayer()
 	__injectCSSRules_ifNecessary()
 	//
 	const layer = document.createElement("div")
-	{
-		layer.style.width = "calc(100% - 15px)"
-		layer.style.marginLeft = "15px"
-		layer.style.height = "1px"
-		layer.style.backgroundColor = "#666"
-		layer.style.color = "#ccc"
-	}				
+	layer.style.width = "100%" 
+	layer.style.height = "0.5px"
+	layer.style.backgroundColor = "#494749"
+	//
 	return layer
 }
 exports.New_separatorLayer = New_separatorLayer

@@ -59,34 +59,35 @@ class ContactDetailsView extends View
 		const self = this
 		const margin_h = 10
 		{
-			self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+			const layer = self.layer
+			layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 			//
-			self.layer.style.position = "relative" // to make sure children with position:fixed are laid out relative to parent
-			self.layer.style.width = `calc(100% - ${2 * margin_h}px)`
-			self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+			layer.style.position = "relative" // to make sure children with position:fixed are laid out relative to parent
+			layer.style.boxSizing = "border-box"
+			layer.style.width = "100%"
+			layer.style.height = "100%"
 			//
-			self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+			layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 			//
-			self.layer.style.color = "#c0c0c0" // temporary
+			layer.style.color = "#c0c0c0" // temporary
 			//
-			self.layer.style.overflowY = "scroll"
-			self.layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+			layer.style.overflowY = "scroll"
+			layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 			//
-			self.layer.style.wordBreak = "break-all" // to get the text to wrap
+			layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
 		{
 			const containerLayer = document.createElement("div")
-			{
-				containerLayer.style.border = "1px solid #888"
-				containerLayer.style.borderRadius = "5px"
-			}
+			containerLayer.style.border = "0.5px solid #494749"
+			containerLayer.style.borderRadius = "5px"
+			containerLayer.style.margin = `15px 6px 0px 6px`
+			containerLayer.style.padding = "0 0 0 15px"
+			//
 			self.tableSection_containerLayer = containerLayer
 			{
 				self._setup_field_address()
 				self._setup_field__cached_OAResolved_XMR_address()
-				{
-					containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
-				}
+				containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
 				self._setup_field_paymentID()
 			}
 			self.layer.appendChild(containerLayer)
@@ -116,6 +117,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		div.style.paddingRight = "15px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.address__valueField_component = div
 		self.tableSection_containerLayer.appendChild(div)
 	}
@@ -132,6 +134,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		div.style.paddingRight = "15px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.cached_OAResolved_XMR_address__valueField_component = div
 		if (typeof value === 'undefined' || !value) {
 			div.style.display = "none"
@@ -151,6 +154,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
+		div.style.paddingRight = "15px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.payment_id__valueField_component = div
 		self.tableSection_containerLayer.appendChild(div)
 	}
@@ -159,7 +163,7 @@ class ContactDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Send", 
-			"send_actionButton_iconImage", 
+			"../../Contacts/Resources/actionButton_iconImage__send.png", // relative to index.html
 			false,
 			function(layer, e)
 			{
@@ -174,7 +178,7 @@ class ContactDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Request", 
-			"request_actionButton_iconImage", 
+			"../../Contacts/Resources/actionButton_iconImage__request.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
@@ -338,11 +342,8 @@ class ContactDetailsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
-			}
+		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 		}
 	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
