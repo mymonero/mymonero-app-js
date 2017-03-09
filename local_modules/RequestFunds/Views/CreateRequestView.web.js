@@ -270,7 +270,7 @@ class CreateRequestView extends View
 	_setup_form_resolving_activityIndicatorLayer()
 	{
 		const self = this
-		const layer = commonComponents_activityIndicators.New_Resolving_ActivityIndicator()
+		const layer = commonComponents_activityIndicators.New_Resolving_ActivityIndicatorLayer(self.context)
 		layer.style.display = "none" // initial state
 		self.resolving_activityIndicatorLayer = layer
 		self.form_containerLayer.appendChild(layer)

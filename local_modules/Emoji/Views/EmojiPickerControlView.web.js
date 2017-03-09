@@ -275,7 +275,7 @@ class EmojiPickerControlView extends View
 		//
 		const self = this
 		if (self.isPopoverVisible === false) {
-			console.log("Popover already not visible. Bailing.")
+			// console.log("Popover already not visible. Bailing.") // likely user just clicking around - make this low comp overhead and just bail
 			return
 		}
 		self.isPopoverVisible = false
