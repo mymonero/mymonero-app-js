@@ -446,6 +446,34 @@ class SendFundsView extends View
 			layer.style.borderRadius = "6px"
 			view.addSubview(contentView)
 		}
+		{ // QR code graphic in contentView
+			const div = document.createElement("div")
+			const side = 48
+			div.style.width = "100%" // cause centering in css is……
+			div.style.height = side+"px"
+			div.style.backgroundSize = side+"px " + side+"px"
+			div.style.backgroundImage = "url(../../SendFundsTab/Resources/qrDropzoneIcon.png)"
+			div.style.backgroundPosition = "center"
+			div.style.backgroundRepeat = "no-repeat"
+			div.style.marginTop = "108px"
+			self.qrCodeInputs_contentView.layer.appendChild(div)
+		}
+		{ // label in contentView
+			const div = document.createElement("div")
+			div.style.width = "100%" // cause centering in css is……
+			div.style.height = "auto"
+			div.style.textAlign = "center"
+			div.style.marginTop = "24px"
+			//
+			div.style.fontSize = "13px"
+			div.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+			div.style.color = "#9E9C9E"
+			div.style.fontWeight = "300"
+			div.style.webkitFontSmoothing = "subpixel-antialiased"
+			//
+			div.innerHTML = "Drag and drop a<br/>Monero Request Code "
+			self.qrCodeInputs_contentView.layer.appendChild(div)
+		}
 		self.addSubview(view)
 	}
 	//
