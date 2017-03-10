@@ -118,7 +118,9 @@ class SendFundsView extends View
 	_setup_validationMessageLayer()
 	{ // validation message
 		const self = this
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
+		layer.style.width = "calc(100% - 30px)"
+		layer.style.marginLeft = "16px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				
@@ -739,16 +741,16 @@ class SendFundsView extends View
 		var amount_Number = null;
 		{
 			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
-				_trampolineToReturnWithValidationErrorString("Please enter a Monero amount to send.")
+				_trampolineToReturnWithValidationErrorString("Please enter the amount to send.")
 				return
 			}
 			amount_Number = +raw_amount_String // turns into Number, apparently
 			if (isNaN(amount_Number)) {
-				_trampolineToReturnWithValidationErrorString("Please enter a valid amount.")
+				_trampolineToReturnWithValidationErrorString("Please enter a valid amount of Monero.")
 				return
 			}
-			if (amount_Number === 0) {
-				_trampolineToReturnWithValidationErrorString("Please enter an amount greater than zero.")
+			if (amount_Number <= 0) {
+				_trampolineToReturnWithValidationErrorString("The amount to send must be greater than zero.")
 				return
 			}
 		}

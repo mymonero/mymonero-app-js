@@ -80,7 +80,9 @@ class ContactFormView extends View
 		const self = this
 		const initial_message = self._overridable_initial_inlineMessageString()
 		const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer(initial_message, initial_message__exists)
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, initial_message, initial_message__exists)
+		layer.style.width = "calc(100% - 31px)"
+		layer.style.marginLeft = "14px"
 		self.validationMessageLayer = layer
 		if (initial_message__exists == false) {
 			layer.ClearAndHideMessage()

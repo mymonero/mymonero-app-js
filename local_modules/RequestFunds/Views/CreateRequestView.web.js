@@ -91,7 +91,9 @@ class CreateRequestView extends View
 	_setup_validationMessageLayer()
 	{ // validation message
 		const self = this
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
+		layer.style.width = "calc(100% - 30px)"
+		layer.style.marginLeft = "16px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				
@@ -444,15 +446,15 @@ class CreateRequestView extends View
 		var amount_Number = null;
 		{
 			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
-				self.validationMessageLayer.SetValidationError("Please enter a Monero amount to send.")
+				self.validationMessageLayer.SetValidationError("Please enter an amount to request.")
 				return
 			}
 			amount_Number = +raw_amount_String // turns into Number, apparently
 			if (isNaN(amount_Number)) {
-				self.validationMessageLayer.SetValidationError("Please enter a valid amount.")
+				self.validationMessageLayer.SetValidationError("Please enter a valid amount of Monero.")
 				return
 			}
-			if (amount_Number === 0) {
+			if (amount_Number <= 0) {
 				self.validationMessageLayer.SetValidationError("Please enter an amount greater than zero.")
 				return
 			}

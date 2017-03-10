@@ -269,6 +269,7 @@ function New_NonEditable_ValueDisplayLayer(value, context)
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
+	layer.value = value // setting this so there is a common interface with _textView above - some consumers rely on it. this should be standardized into a Value() method of a View
 	layer.style.borderRadius = "3px"
 	layer.style.backgroundColor = "#383638"
 	layer.style.padding = "8px 11px"

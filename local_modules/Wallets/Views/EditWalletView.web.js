@@ -75,7 +75,9 @@ class EditWalletView extends View
 			self.layer.style.wordBreak = "break-all" // to get the text to wrap
 		}
 		{ // validation message
-			const layer = commonComponents_tables.New_inlineMessageDialogLayer("", false)
+			const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "", false)
+			layer.style.width = "calc(100% - 30px)"
+			layer.style.marginLeft = "16px"
 			layer.ClearAndHideMessage()
 			self.validationMessageLayer = layer
 			self.layer.appendChild(layer)				

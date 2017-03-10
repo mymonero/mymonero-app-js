@@ -136,6 +136,17 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 			}
 		}
 	}
+	setup_validationMessageLayer()
+	{
+		const self = this
+		super.setup_validationMessageLayer()
+		const layer = self.validationMessageLayer
+		if (!layer) {
+			throw "!layer"
+		}
+		layer.style.width = "calc(100% - 12px)"
+		layer.style.marginLeft = "6px"
+	}
 	//
 	//
 	// Runtime - Accessors - Navigation

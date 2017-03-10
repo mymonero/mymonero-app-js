@@ -213,14 +213,18 @@ class TransactionDetailsView extends View
 			if (transaction.isUnlocked !== true) {
 				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
 				var messageString = "This transaction is currently locked. " + lockedReason
-				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString, true)
+				const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, messageString, true)
+				layer.style.width = "calc(100% - 0px)"
+				layer.style.marginLeft = "0px"
 				self.layer.appendChild(layer)
 			}
 		}
 		{ // messages/alerts - pending/confirmation
 			if (transaction.isJustSentTransaction === true) {
 				const messageString = "Your Monero is on its way."
-				const layer = commonComponents_tables.New_inlineMessageDialogLayer(messageString, true)
+				const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, messageString, true)
+				layer.style.width = "calc(100% - 0px)"
+				layer.style.marginLeft = "0px"
 				self.layer.appendChild(layer)
 			}
 			if (self.navigationController) {

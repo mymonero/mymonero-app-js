@@ -56,6 +56,47 @@ const cssRules =
 		display: block;
 		padding: 0 0 18px 0;
 		word-break: break-word;
+	}`,
+	//
+	`.inlineMessageDialogLayer {
+		background: rgba(245,230,125,0.05);
+		border: 0.5px solid rgba(245,230,125,0.30);
+		border-radius: 3px;
+		min-height: 29px;
+		box-sizing: border-box;
+		margin-left: 0;
+		margin-right: 0;
+		padding: 6px 8px 8px 8px;
+		margin-top: 15px;
+		margin-bottom: 10px;
+		height: auto;
+		width: 100%; /* feel free to set, along with margin left */
+		color: #F5E67E;
+		font-size: 11px;
+		font-weight: 400;
+		letter-spacing: 0.5px;
+		-webkit-font-smoothing: subpixel-antialiased;
+		word-break: break-word;
+		position: relative;
+		top: 0;
+		left: 0;
+	}`,
+	`.inlineMessageDialogLayer > a.close-btn {
+		background-image: url(../../MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn.png);
+		background-size: 8px 8px;
+		background-repeat: no-repeat;
+		background-position: center;
+		width: 27px;
+		height: 27px;
+		position: absolute;
+		right: 0px;
+		top: 0px;
+		display: block; /* for bounds as an a tag */
+		opacity: 0.8;
+		transition: opacity 0.05s ease-out;
+	}`,
+	`.inlineMessageDialogLayer > a.close-btn:hover {
+		opacity: 1.0;
 	}`
 ]
 function __injectCSSRules_ifNecessary()
@@ -367,34 +408,43 @@ function New_spacerLayer()
 }
 exports.New_spacerLayer = New_spacerLayer
 //
-function New_inlineMessageDialogLayer(messageString, immediatelyVisible)
-{ // NOTE: These are configured to not be visible at first
-	__injectCSSRules_ifNecessary()
+function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVisible)
+{
+	const immediatelyVisible = optl_immediatelyVisible === true ? true : false // These are configured to not by default be initially visible
 	//
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
-	layer.innerHTML = messageString
-	layer.style.border = "1px solid #ccc"
-	layer.style.backgroundColor = "#333"
-	layer.style.margin = "0 0 10px 0"
-	layer.style.display = immediatelyVisible === true ? "block" : "none" // initial visibility
+	layer.classList.add("inlineMessageDialogLayer")
+	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+	layer.style.display = immediatelyVisible ? "block" : "none" // initial visibility
+	//
+	const messageLayer = document.createElement("span")
+	messageLayer.innerHTML = messageString
+	layer.appendChild(messageLayer)
+	//
+	const closeBtnLayer = document.createElement("a")
+	closeBtnLayer.href = "#" // to make clickable
+	closeBtnLayer.classList.add("close-btn")
+	layer.appendChild(closeBtnLayer)
+	closeBtnLayer.addEventListener("click", function(e) {
+		e.preventDefault()
+		layer.style.display = "none"
+		return false
+	})
+	//
+	layer.SetValidationError = function(to_messageString)
 	{
-		layer.SetValidationError = function(to_messageString)
-		{
-			if (to_messageString === "") {
-				layer.ClearAndHideMessage()
-				return
-			}
-			layer.innerHTML = to_messageString
-			layer.style.display = "block"
+		if (to_messageString === "") {
+			layer.ClearAndHideMessage()
+			return
 		}
-		layer.ClearAndHideMessage = function()
-		{
-			layer.innerHTML = ""
-			layer.style.display = "none"
-		}
+		messageLayer.innerHTML = to_messageString
+		layer.style.display = "block"
 	}
+	layer.ClearAndHideMessage = function()
 	{
-		// TODO: add X button which removes layer from parent (i think)
+		messageLayer.innerHTML = ""
+		layer.style.display = "none"
 	}
 	return layer
 }

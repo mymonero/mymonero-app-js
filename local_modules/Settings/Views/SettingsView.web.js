@@ -81,7 +81,9 @@ class SettingsView extends View
 	_setup_validationMessageLayer()
 	{ // validation message
 		const self = this
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer("")
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
+		layer.style.width = "calc(100% - 12px)"
+		layer.style.marginLeft = "6px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				
