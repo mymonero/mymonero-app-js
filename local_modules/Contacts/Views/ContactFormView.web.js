@@ -101,23 +101,31 @@ class ContactFormView extends View
 		}
 		self.layer.appendChild(containerLayer)
 	}
+	_overridable_new_fieldInputLayer__address()
+	{
+		const self = this
+		const view = commonComponents_forms.New_fieldValue_textAreaView(
+			{
+				placeholderText: "Enter integrated address or OpenAlias"
+			},
+			self.context
+		)
+		return view.layer // for the moment, only returning the layer
+	}
+	_overridable_new_fieldInputLayer__paymentID()
+	{
+		const self = this
+		const view = commonComponents_forms.New_fieldValue_textAreaView(
+			{
+				placeholderText: "Optional"
+			},
+			self.context
+		)
+		return view.layer // for the moment, only returning the layer
+	}
 	_overridable_initial_inlineMessageString()
 	{
 		return ""
-	}
-	_overridable_initialValue_addressLayerOptions()
-	{
-		const self = this
-		return {
-			placeholderText: "Enter integrated address or OpenAlias"
-		}
-	}
-	_overridable_initialValue_paymentIDLayerOptions()
-	{
-		const self = this
-		return {
-			placeholderText: "Optional"
-		}
 	}
 	_overridable_shouldNotDisplayPaymentIDFieldLayer()
 	{
@@ -201,11 +209,7 @@ class ContactFormView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
 		div.appendChild(labelLayer)
 		//
-		const view = commonComponents_forms.New_fieldValue_textAreaView(
-			self._overridable_initialValue_addressLayerOptions(), 
-			self.context
-		)
-		const inputLayer = view.layer
+		const inputLayer = self._overridable_new_fieldInputLayer__address()
 		self.addressInputLayer = inputLayer
 		inputLayer.addEventListener(
 			"keypress", // press, not up, to be able to control what goes into field
@@ -218,7 +222,7 @@ class ContactFormView extends View
 				}
 			}
 		)
-		div.appendChild(view.layer)
+		div.appendChild(inputLayer)
 		//
 		self.form_containerLayer.appendChild(div)
 	}
@@ -235,11 +239,7 @@ class ContactFormView extends View
 			div.appendChild(labelLayer)
 		}
 		//
-		const view = commonComponents_forms.New_fieldValue_textAreaView(
-			self._overridable_initialValue_paymentIDLayerOptions(), 
-			self.context
-		)
-		const inputLayer = view.layer
+		const inputLayer = self._overridable_new_fieldInputLayer__paymentID()
 		self.paymentIDInputLayer = inputLayer
 		// NOTE: Actually adding view.layer to div is deferred until a few lines down
 		if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show

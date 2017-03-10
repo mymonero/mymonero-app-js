@@ -589,7 +589,7 @@ class SendFundsView extends View
 		const self = this
 		var mixin_str;
 		if (typeof self.mixinSelectLayer === 'undefined' || !self.mixinSelectLayer) {
-			mixin_str = "3"
+			mixin_str = "12"
 		} else {
 			mixin_str = self.mixinSelectLayer.value
 		}
@@ -602,7 +602,7 @@ class SendFundsView extends View
 		)
 		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
-		var displayString = `+ ${estimatedTotalFee_str} FEE`
+		var displayString = `+ ${estimatedTotalFee_str} EST. FEE`
 		//
 		return displayString
 	}
@@ -960,7 +960,7 @@ class SendFundsView extends View
 									navigationView.SetStackViews([ view ])
 									self.navigationController.PresentView(navigationView, true)
 								},
-								750 // after the navigation transition just above has taken place
+								750 + 300 // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
 							)
 						}
 					}
@@ -1507,7 +1507,17 @@ class SendFundsView extends View
 	{
 		const self = this
 		if (self.__shared_isAllowedToPerformDropOps()) {
-			const absoluteFilePath = e.dataTransfer.files[0].path // outside of timeout
+			const files = e.dataTransfer.files
+			if (!files || files.length == 0) {
+				console.warn("No files")
+				return
+			}
+			const file = files[0]
+			const absoluteFilePath = file.path // outside of timeout
+			if (absoluteFilePath == null || absoluteFilePath == "" || typeof absoluteFilePath === 'undefined') {
+				console.warn("No filepath in dropped. Bailing.")
+				return
+			}
 			setTimeout(
 				function()
 				{

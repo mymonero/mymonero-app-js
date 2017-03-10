@@ -74,28 +74,25 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		return "Your Monero is on its way."
 	}
-	_overridable_initialValue_addressLayerOptions()
+	_overridable_new_fieldInputLayer__address()
 	{
 		const self = this
-		const options = super._overridable_initialValue_addressLayerOptions()
-		const enteredAddressValue = self.enteredAddressValue // i /think/ this should always be the address we save as the Contact address
-		options.existingValue = enteredAddressValue
-		options.isNonEditable = true // lock
-		//
-		return options
+		const value = self.enteredAddressValue // i /think/ this should always be the address we save as the Contact address
+		const layer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar(
+			value, 
+			self.context
+		)
+		return layer
 	}
-	_overridable_initialValue_paymentIDLayerOptions()
+	_overridable_new_fieldInputLayer__paymentID()
 	{
 		const self = this
-		const options = super._overridable_initialValue_paymentIDLayerOptions()
-		const existingValue = self.paymentID_valueToUse
-		options.existingValue = existingValue
-		options.isNonEditable = true // lock
-		if (!existingValue || typeof existingValue === 'undefined') {
-			options.hidden = true // TODO
-		}
-		//
-		return options
+		const value = self.paymentID_valueToUse
+		const layer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar(
+			value, 
+			self.context
+		) // will be hidden if necessary with _overridable_shouldNotDisplayPaymentIDFieldLayer
+		return layer
 	}
 	_overridable_shouldNotDisplayPaymentIDFieldLayer()
 	{
@@ -111,14 +108,15 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	setup_views()
 	{
 		super.setup_views()
-		//
 		const self = this
 		{
 			const layer = self.form_containerLayer
-			layer.style.border = "1px solid #ccc"
-			layer.style.borderRadius = "4px"
-			layer.style.paddingTop = "10px"
-			layer.style.paddingBottom = "10px"
+			layer.style.margin = "8px 6px"
+			layer.style.boxSizing = "border-box"
+			layer.style.padding = "8px 8px 16px 8px"
+			layer.style.border = "0.5px solid #494749"
+			layer.style.borderRadius = "5px"
+			layer.style.minHeight = "84%"
 		}
 		{ // field title label
 			const titleMessageString = "SAVE THIS ADDRESS AS A CONTACT?"
@@ -157,6 +155,14 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	_overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
 	{
 		return "Don't Save" // contextual - instead of 'Cancel'
+	}
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		const view = super.Navigation_New_LeftBarButtonView()
+		view.layer.style.width = "85px"
+		//
+		return view
 	}
 	//
 	//

@@ -186,28 +186,18 @@ function New_fieldValue_textAreaView(params, context)
 			//
 			layer.style.color = "#dfdedf"
 			layer.style.backgroundColor = "#1d1b1d"
+			layer.disabled = undefined
 		} else {
 			layer.style.boxShadow = "none"
 			//
 			layer.style.color = "#dfdedf"
 			layer.style.backgroundColor = "#1d1b1d"
+			layer.disabled = true
 		}
 		view.isEnabled = isEnabled // this going to cause a retain cycle ? 
 	}
-	view.MakeNonEditable = function()
-	{
-		view.SetEnabled(false)
-		// now style specifically as 'non-editable' (over and above not-enabled)
-		layer.style.boxShadow = "none"
-		layer.style.color = "#dfdedf"
-		layer.style.backgroundColor = "#1d1b1d"
-		layer.disabled = true
-	} // at the moment, no reversion of MakeNonEditable fn has been implemented
-	if (params.isNonEditable === true) {
-		view.MakeNonEditable() // NOTE: This behaves a bit differently from the text input one. 
-	} else {
-		view.SetEnabled(true) // to get initial styling, any state, et al.
-	}
+	view.SetEnabled(true) // to get initial styling, any state, et al.
+	//
 	return view
 }
 exports.New_fieldValue_textAreaView = New_fieldValue_textAreaView
@@ -277,6 +267,7 @@ exports.New_fieldAccessory_validationMessageLayer = New_fieldAccessory_validatio
 //
 function New_NonEditable_ValueDisplayLayer(value, context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.style.borderRadius = "3px"
 	layer.style.backgroundColor = "#383638"
@@ -290,7 +281,6 @@ function New_NonEditable_ValueDisplayLayer(value, context)
 	layer.style.fontWeight = "100"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	//
 	layer.innerHTML = value
 	//
 	return layer

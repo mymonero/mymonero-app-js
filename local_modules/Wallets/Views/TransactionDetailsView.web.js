@@ -287,7 +287,10 @@ class TransactionDetailsView extends View
 	_addTableFieldLayer_date()
 	{
 		const self = this
-		const date = self.transaction.timestamp
+		var date = self.transaction.timestamp
+		if (typeof date === 'string') {
+			date = new Date(date)
+		}
 		const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
 			'en-US'/*for now*/, 
 			{ year: 'numeric', month: 'short', day: 'numeric', hour: "numeric", minute: "numeric", second: "numeric" }
