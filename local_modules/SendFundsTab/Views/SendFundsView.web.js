@@ -119,8 +119,8 @@ class SendFundsView extends View
 	{ // validation message
 		const self = this
 		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
-		layer.style.width = "calc(100% - 30px)"
-		layer.style.marginLeft = "16px"
+		layer.style.width = "calc(100% - 28px)"
+		layer.style.marginLeft = "14px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				
