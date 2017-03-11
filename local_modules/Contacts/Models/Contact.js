@@ -417,7 +417,7 @@ class Contact extends EventEmitter
 				if (err) {
 					console.error("Failed to save new valuesByKey", err)
 				} else {
-					console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
+					// console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
 					self._atRuntime_contactInfoUpdated()
 				}
 				fn(err)

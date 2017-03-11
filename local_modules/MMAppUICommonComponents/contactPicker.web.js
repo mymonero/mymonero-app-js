@@ -44,7 +44,7 @@ function New_contactPickerLayer(
 	contactsListController,
 	didPickContact_fn,
 	didClearPickedContact_fn,
-	didFinishTypingInInput_fn
+	didFinishTypingInInput_fn // ((event) -> Void)?
 ) //  -> Component (which is just a customized DOM element obj)
 { // NOTE: You must call Component_TearDown when you're done with this component
 	if (!contactsListController) {
@@ -109,7 +109,7 @@ function New_contactPickerLayer(
 					typingDebounceTimeout = null // clear for next
 					//
 					if (didFinishTypingInInput_fn) {
-						didFinishTypingInInput_fn()
+						didFinishTypingInInput_fn(event)
 					}
 					_searchForAndDisplaySearchResults()
 				}, 250)

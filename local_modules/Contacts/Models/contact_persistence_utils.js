@@ -68,7 +68,7 @@ function SaveToDisk(
 {
 	const self = instance
 	const document_cryptor__background = self.context.document_cryptor__background
-	console.log("📝  Saving contact to disk ", self.Description())
+	// console.log("📝  Saving contact to disk ", self.Description())
 	//
 	fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
 	//
@@ -186,7 +186,7 @@ function SaveToDisk(
 					fn(new Error("❌  Number of documents affected by _id'd update was 0"))
 					return // bail
 				}
-				console.log("✅  Saved update to contact with _id " + self._id + ".")
+				// console.log("✅  Saved update to contact with _id " + self._id + ".")
 				fn()
 			}
 		)

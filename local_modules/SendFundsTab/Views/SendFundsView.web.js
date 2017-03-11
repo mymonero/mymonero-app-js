@@ -215,15 +215,13 @@ class SendFundsView extends View
 			})
 			valueLayer.style.width = "63px"
 			self.mixinSelectLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"change",
-					function(event)
-					{
-						self.refresh_feeEstimateLayer()
-					}
-				)
-			}
+			valueLayer.addEventListener(
+				"change",
+				function(event)
+				{
+					self.refresh_feeEstimateLayer()
+				}
+			)
 			div.appendChild(valueLayer)
 		}
 		const td = document.createElement("td")
@@ -268,9 +266,9 @@ class SendFundsView extends View
 				//
 				self.pickedContact = null
 			},
-			function()
+			function(event)
 			{ // didFinishTypingInInput_fn
-				self._didFinishTypingInContactPickerInput()
+				self._didFinishTypingInContactPickerInput(event)
 			}
 		)
 		self.contactOrAddressPickerLayer = layer
@@ -1195,16 +1193,28 @@ class SendFundsView extends View
 			}
 		)
 	}
-	_didFinishTypingInContactPickerInput()
+	_didFinishTypingInContactPickerInput(event)
 	{
 		const self = this
+		//
+		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
+		const hasEnteredNoAddressContent = !enteredPossibleAddress || typeof enteredPossibleAddress === 'undefined'
+		//
+		const wasEnterKey = event.keyCode == 13
+		if (wasEnterKey) {
+			let requestExists = typeof self.requestHandle_for_oaResolution !== 'undefined' && self.requestHandle_for_oaResolution !== null
+			if (requestExists) { // means we are currently requesting still and they just hit the enter btn - just "ignore"
+				console.warn("User hit return on contact picker input while still resolving a contact. Bailing.")
+				return
+			}
+		}
+		// 
 		//
 		self.cancelAny_requestHandle_for_oaResolution()
 		self._hideResolvedAddress()
 		self._hideResolvedPaymentID()
 		//
-		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
-		if (!enteredPossibleAddress || typeof enteredPossibleAddress === 'undefined') {
+		if (hasEnteredNoAddressContent == true) {
 			if (self.manualPaymentIDInputLayer_containerLayer.style.display === "none") {
 				self.addPaymentIDButtonView.layer.style.display = "block" // show if hidden as we may have hidden it
 			}
@@ -1243,6 +1253,12 @@ class SendFundsView extends View
 			//
 			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
 		}
+		if (wasEnterKey) {
+			// TODO: it appeared at cursory glance to get a little complicated, which is why it's not done here,
+			// but is there a good way to implement detecting and not redundantly resolving if the user is hitting
+			// enter after just having resolved?
+			// To fill the UX gap, for now, on success of the below resolve, we call _tryToGenerateSend
+		}
 		self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 			enteredPossibleAddress,
 			function(
@@ -1270,30 +1286,34 @@ class SendFundsView extends View
 					console.warn("⚠️  The addressWhichWasPassedIn to the ResolveOpenAliasAddress call of which this is a callback is different than the enteredPossibleAddress. Bailing")
 					return
 				}
-				if (err) { // no need to display since it's likely to be 
+				if (err) {
 					console.log("err.toString()" , err.toString())
+					self.validationMessageLayer.SetValidationError(err.toString())
 					return
 				}
-				{
-					if (typeof moneroReady_address !== 'undefined' && moneroReady_address) {
-						self._displayResolvedAddress(moneroReady_address)
-					} else {
-						// we already hid it above
+				//
+				if (typeof moneroReady_address !== 'undefined' && moneroReady_address) {
+					self._displayResolvedAddress(moneroReady_address)
+				} else {
+					// we already hid it above
+				}
+				
+				if (typeof payment_id !== 'undefined' && payment_id) {
+					self.addPaymentIDButtonView.layer.style.display = "none"
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+					self.manualPaymentIDInputLayer.value = ""
+					self._displayResolvedPaymentID(payment_id)
+				} else {
+					// we already hid resolved payment it above
+					if (self.manualPaymentIDInputLayer_containerLayer.style.display != "block") { // if manual payment field not showing
+						self.addPaymentIDButtonView.layer.style.display = "block" // then make sure we are at least shwign the + payment ID btn
+					} else { // then one or the other is already visible - respect existing state
+						console.log("💬  It should be the case that either add pymt id btn or manual payment field is visible")
 					}
-					
-					if (typeof payment_id !== 'undefined' && payment_id) {
-						self.addPaymentIDButtonView.layer.style.display = "none"
-						self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
-						self.manualPaymentIDInputLayer.value = ""
-						self._displayResolvedPaymentID(payment_id)
-					} else {
-						// we already hid resolved payment it above
-						if (self.manualPaymentIDInputLayer_containerLayer.style.display != "block") { // if manual payment field not showing
-							self.addPaymentIDButtonView.layer.style.display = "block" // then make sure we are at least shwign the + payment ID btn
-						} else { // then one or the other is already visible - respect existing state
-							console.log("💬  It should be the case that either add pymt id btn or manual payment field is visible")
-						}
-					}
+				}
+				//
+				if (wasEnterKey) {
+					self._tryToGenerateSend() // to fulfil what the user is expecting this to do
 				}
 			}
 		)
