@@ -1365,6 +1365,9 @@ class SendFundsView extends View
 	_shared_didPickRequestURIStringForAutofill(requestURIString)
 	{
 		const self = this
+		//
+		self.cancelAny_requestHandle_for_oaResolution()
+		//
 		var requestPayload;
 		try {
 			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromRequestURIString(requestURIString)
@@ -1499,7 +1502,16 @@ class SendFundsView extends View
 		}
 		if (self.isFormDisabled === true) {
 			return false
-		}		
+		}
+		if (!self.navigationController) {
+			return false // probably will never happen
+		}
+		if (self.navigationController.modalViews.length > 0) {
+			// not going to return false here - they will be auto-dismissed and probably are still transitioning
+		}
+		if (self.navigationController.stackViews.length != 1) { // we will never see this case, because we auto-pop to root (self)
+			// not going to return false here - they will be auto-dismissed and probably are still transitioning
+		}
 		return true
 	}
 	_proxied_ondragenter(e)
@@ -1529,32 +1541,34 @@ class SendFundsView extends View
 	_proxied_ondrop(e)
 	{
 		const self = this
-		if (self.__shared_isAllowedToPerformDropOps()) {
-			const files = e.dataTransfer.files
-			if (!files || files.length == 0) {
-				console.warn("No files")
-				return
-			}
-			const file = files[0]
-			const absoluteFilePath = file.path // outside of timeout
-			if (absoluteFilePath == null || absoluteFilePath == "" || typeof absoluteFilePath === 'undefined') {
-				console.warn("No filepath in dropped. Bailing.")
-				return
-			}
-			setTimeout(
-				function()
-				{
-					self.qrCodeInputs_containerView.Hide()
-					//
-					if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
-						self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
-						return // nothing picked / canceled
-					}
-					self._shared_didPickQRCodeAtPath(absoluteFilePath)
-				},
-				10
-			)
+		if (self.__shared_isAllowedToPerformDropOps() == false) {
+			// would be nice to NSBeep() here
+			return
 		}
+		const files = e.dataTransfer.files
+		if (!files || files.length == 0) {
+			console.warn("No files")
+			return
+		}
+		const file = files[0]
+		const absoluteFilePath = file.path // outside of timeout
+		if (absoluteFilePath == null || absoluteFilePath == "" || typeof absoluteFilePath === 'undefined') {
+			console.warn("No filepath in dropped. Bailing.")
+			return
+		}
+		setTimeout(
+			function()
+			{
+				self.qrCodeInputs_containerView.Hide()
+				//
+				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
+					self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
+					return // nothing picked / canceled
+				}
+				self._shared_didPickQRCodeAtPath(absoluteFilePath)
+			},
+			10
+		)
 	}
 }
 module.exports = SendFundsView

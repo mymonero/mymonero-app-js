@@ -108,6 +108,17 @@ class SendTabContentView extends StackAndModalNavigationView
 	_proxied_ondragenter(e)
 	{
 		const self = this
+		if (self.modalViews.length > 0) {
+			// prevent this?
+		}
+		self.DismissModalViewsToView( // whether we should force-dismiss these is debatable… see check for nonzero modals just above
+			null, 
+			true, // null -> to top stack view
+			function() 
+			{ // must wait til done or 'currently transitioning' will race 
+				self.PopToRootView(true) // in case they're not on root (debated making this not animated)
+			}
+		) 
 		self.sendFundsView._proxied_ondragenter(e)
 	}
     _proxied_ondragleave(e)

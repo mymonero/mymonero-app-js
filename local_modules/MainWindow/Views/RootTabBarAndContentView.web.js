@@ -215,10 +215,6 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 								function()
 								{ // we must not manipulate the DOM in dragenter/start because that causes dragleave to fire immediately in Chrome.
 									// self.selectTab_sendFunds()
-									//
-									self.sendTabContentView.PopToRootView(true) // in case they're not on root (debated making this not animated)
-									self.sendTabContentView.DismissModalViewsToView(null, true) // null -> to top stack view
-									//
 									self.sendTabContentView._proxied_ondragenter(e)
 								}
 							)
