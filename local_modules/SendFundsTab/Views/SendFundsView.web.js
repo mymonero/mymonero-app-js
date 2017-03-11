@@ -1213,6 +1213,7 @@ class SendFundsView extends View
 		self.cancelAny_requestHandle_for_oaResolution()
 		self._hideResolvedAddress()
 		self._hideResolvedPaymentID()
+		self._dismissValidationMessageLayer()
 		//
 		if (hasEnteredNoAddressContent == true) {
 			if (self.manualPaymentIDInputLayer_containerLayer.style.display === "none") {

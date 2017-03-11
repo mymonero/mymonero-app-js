@@ -191,16 +191,19 @@ function New_fieldValue_labelLayer(labelText, context)
 	__injectCSSRules_ifNecessary()
 	//
 	const layer = document.createElement("span")
+	layer.innerHTML = labelText
+	layer.className = "field_value"
+	layer.style.float = "right"
+	layer.style.textAlign = "right"
+	layer.style.fontSize = "13px"
+	layer.style.color = "#9E9C9E"
+	layer.style.fontWeight = "100"
+	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.Component_SetValue = function(value)
 	{
-		layer.innerHTML = labelText
-		layer.className = "field_value"
-		layer.style.float = "right"
-		layer.style.textAlign = "right"
-		layer.style.fontSize = "13px"
-		layer.style.color = "#9E9C9E"
-		layer.style.fontWeight = "100"
-		layer.style.fontFamily = context.themeController.FontFamily_monospace()
+		layer.innerHTML = value
 	}
+	//
 	return layer
 }
 exports.New_fieldValue_labelLayer = New_fieldValue_labelLayer
@@ -429,6 +432,8 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 	closeBtnLayer.addEventListener("click", function(e) {
 		e.preventDefault()
 		layer.style.display = "none"
+		layer.userHasClosedThisLayer = true // so consumers can tell when user has intentionally closed the dialog
+		// TODO: callback?
 		return false
 	})
 	//
