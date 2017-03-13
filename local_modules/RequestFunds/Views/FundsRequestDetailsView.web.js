@@ -173,22 +173,17 @@ class FundsRequestDetailsView extends View
 				div.appendChild(labelLayer)
 			}
 			{ // right
+				// copying both html and plaintext
+				const plaintextString = self.new_requesteeMessagePlaintextString()
+				const CopyContentTypes = self.context.pasteboard.CopyContentTypes()
+				const toCopy_valuesByContentType = {}
+				toCopy_valuesByContentType[CopyContentTypes.Text] = plaintextString
+				toCopy_valuesByContentType[CopyContentTypes.HTML] = htmlString
 				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 					self.context,
-					htmlString,
+					toCopy_valuesByContentType,
 					true,
-					self.context.pasteboard,
-					self.context.pasteboard.CopyContentTypes().HTML,
-					function(
-						runtime_valueToCopy, 
-						runtime_pasteboard_valueContentType_orText
-					)
-					{
-						console.log("TODO: Also copy the plaintext version of this: ", runtime_valueToCopy)
-						// pasteboard.CopyString(
-						// 	message_plaintextString,
-						// )
-					}
+					self.context.pasteboard
 				)
 				buttonLayer.style.float = "right"
 				buttonLayer.style.marginTop = "1px"
@@ -272,6 +267,30 @@ class FundsRequestDetailsView extends View
 	//
 	// Constructor - Accessors
 	//
+	new_requesteeMessagePlaintextString()
+	{
+		const self = this
+		var value = ""
+		value += "Someone wants some Monero."
+		value += "\n---------------------------"
+		{
+			value += `\n${self.fundsRequest.amount} XMR`
+			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
+				value += `\n${self.fundsRequest.message}`
+			}
+			if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
+				value += `\n${self.fundsRequest.description}`
+			}
+		}
+		value += "\n" // spacer
+		value += "\n---------------------------"
+		value += `\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI()}`
+		const appDownloadLink_domainAndPath = "mymonero.com/desktop"
+		const appDownloadLink_fullURL = "https://" + appDownloadLink_domainAndPath
+		value += `\nIf you don't have MyMonero installed, download it from ${appDownloadLink_fullURL}`
+		//
+		return value
+	}
 	new_requesteeMessageHTMLString()
 	{
 		const self = this

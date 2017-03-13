@@ -221,11 +221,9 @@ function New_separatorLayer()
 }
 exports.New_separatorLayer = New_separatorLayer
 //
-function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, pasteboard_valueContentType_orText, optl_didCopy_fn)
-{
+function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard)
+{ // defaults to 'text' content type
 	__injectCSSRules_ifNecessary()
-	var didCopy_fn = optl_didCopy_fn || function(runtime_valueToCopy, runtime_pasteboard_valueContentType_orText) {}
-	//
 	const layer = document.createElement("a")
 	{ // setup
 		layer.innerHTML = "COPY"
@@ -250,60 +248,67 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard, paste
 			layer.style.textDecoration = "none"
 		})
 	}
+	// state var declarations
 	var runtime_valueToCopy = value
-	var runtime_pasteboard_valueContentType_orText = pasteboard_valueContentType_orText
-	{ // component fns
-		layer.Component_SetEnabled = function(enabled)
-		{
-			layer.Component_IsEnabled = enabled
-			if (enabled !== false) {
-				layer.href = "#" // to make it look clickable
-				layer.style.opacity = "1"
-				layer.style.cursor = "pointer"
-				layer.style.color = "#00C6FF"
-			} else {
-				layer.href = ""
-				layer.style.opacity = "0.2"
-				layer.style.cursor = "default"
-				layer.style.color = "#CCCCCC"
-			}
-		}
-		layer.Component_SetValue = function(to_value, to_pasteboard_valueContentType_orText)
-		{
-			runtime_valueToCopy = to_value
-			runtime_pasteboard_valueContentType_orText = to_pasteboard_valueContentType_orText
-			if (to_value === "" || typeof to_value === 'undefined' || !to_value) {
-				layer.Component_SetEnabled(false)
-			} else {
-				layer.Component_SetEnabled(true)
-			}
+	// component fns
+	layer.Component_SetEnabled = function(enabled)
+	{
+		layer.Component_IsEnabled = enabled
+		if (enabled !== false) {
+			layer.href = "#" // to make it look clickable
+			layer.style.opacity = "1"
+			layer.style.cursor = "pointer"
+			layer.style.color = "#00C6FF"
+		} else {
+			layer.href = ""
+			layer.style.opacity = "0.2"
+			layer.style.cursor = "default"
+			layer.style.color = "#CCCCCC"
 		}
 	}
-	{ // initial config
-		layer.Component_SetEnabled(enabled_orTrue)
+	layer.Component_SetValue = function(to_value__orValuesByContentType)
+	{ // defaults to 'text' type
+		runtime_valueToCopy = to_value__orValuesByContentType
+		if (to_value === "" || typeof to_value === 'undefined' || !to_value) {
+			layer.Component_SetEnabled(false)
+		} else {
+			layer.Component_SetEnabled(true)
+		}
 	}
-	{ // start observing
-		layer.addEventListener(
-			"click",
-			function(e)
-			{
-				e.preventDefault()
-				{
-					if (layer.Component_IsEnabled !== false) {
-						pasteboard.CopyString(
-							runtime_valueToCopy, 
-							runtime_pasteboard_valueContentType_orText
-						)
-						didCopy_fn(
-							runtime_valueToCopy, 
-							runtime_pasteboard_valueContentType_orText
-						)
-					}
+	// initial config
+	layer.Component_SetEnabled(enabled_orTrue)
+	// start observing
+	layer.addEventListener(
+		"click",
+		function(e)
+		{
+			e.preventDefault()
+			if (layer.Component_IsEnabled !== false) {
+				if (typeof runtime_valueToCopy === "string") {
+					pasteboard.CopyString(
+						valueToCopy, 
+						pasteboard_valueContentType_orNil
+					)
+				} else if (typeof runtime_valueToCopy === 'object') {
+					const valuesByContentType = runtime_valueToCopy // actually is a map of content types to values to copy
+					const contentTypes_ofValues = Object.keys(valuesByContentType)
+					contentTypes_ofValues.forEach(
+						function(contentTypeAsKey, idx)
+						{ // I figure there won't be /that/ many types here so perf not an issue
+							const valueToCopy = valuesByContentType[contentTypeAsKey]
+							pasteboard.CopyString(
+								valueToCopy, 
+								contentTypeAsKey
+							)
+						}
+					)
+				} else {
+					throw `unrecognized typeof value to copy ${typeof runtime_valueToCopy} in New_copyButton_aLayer`
 				}
-				return false
 			}
-		)
-	}
+			return false
+		}
+	)
 	return layer
 }
 exports.New_copyButton_aLayer = New_copyButton_aLayer
