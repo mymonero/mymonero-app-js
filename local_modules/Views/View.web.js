@@ -320,6 +320,7 @@ class View extends EventEmitter
 	viewDidAppear()
 	{
 		const self = this
+		self._restoreAnyCachedUIStateFromHavingBeenRemovedFromHierarchy()
 		// console.log(self.constructor.name + " viewDidAppear")
 		for (var i in self.subviews) {
 			const subview = self.subviews[i]
@@ -330,6 +331,7 @@ class View extends EventEmitter
 	{		
 		const self = this
 		// console.log(self.constructor.name + " viewWillDisappear")
+		self._recordUIStateUponBeingRemovedFromDOM()
 		for (var i in self.subviews) {
 			const subview = self.subviews[i]
 			subview.viewWillDisappear()
@@ -344,9 +346,10 @@ class View extends EventEmitter
 			subview.viewDidDisappear()
 		}
 	}
-	// Runtime - Delegation - Navigation/Modal specific special(native) integration
-	// This is to preserve scroll offset on add/remove from DOM as that doesn't persist
-	RecordUIStateUponBeingTransitionedFrom()
+	// Runtime - Imperatives -
+	// To preserve scroll offset on add/remove from DOM as that doesn't persist
+	// To solve bugs seen in Nav & TabBar View Controllers
+	_recordUIStateUponBeingRemovedFromDOM()
 	{
 		const self = this
 		const layer = self.layer
@@ -356,12 +359,11 @@ class View extends EventEmitter
 			Top: layer.scrollTop
 		}
 	}
-	RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom()
+	_restoreAnyCachedUIStateFromHavingBeenRemovedFromHierarchy()
 	{
 		const self = this
 		const scrollOffsets = self.scrollOffsetsUponTransitionedFrom
-		if (typeof scrollOffsets === 'undefined' || !scrollOffsets) {
-			console.warn(`${self.constructor.name} asked to RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom but nil self.scrollOffsetsUponTransitionedFrom`)
+		if (typeof scrollOffsets === 'undefined' || scrollOffsets === null) {
 			return
 		}
 		const layer = self.layer

@@ -263,7 +263,6 @@ class StackNavigationView extends View
 		{
 			{ // before we remove the old_topStackView, let's record its styling which would be lost on removal like scroll offset 
 				if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) { // as in stack views were set before this push was done
-					old_topStackView.RecordUIStateUponBeingTransitionedFrom()
 					old_topStackView.removeFromSuperview()
 				}
 			}
@@ -381,9 +380,6 @@ class StackNavigationView extends View
 				to_stackView,
 				indexOf_old_topStackView_inSubviews
 			)
-			{ // and reconstitute lost/held styling such as scroll offset
-				to_stackView.RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom()
-			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 				__trampolineFor_transitionEnded() // must unlock fn

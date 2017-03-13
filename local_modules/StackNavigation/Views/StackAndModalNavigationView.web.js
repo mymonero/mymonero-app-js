@@ -162,7 +162,6 @@ class StackAndModalNavigationView extends StackNavigationView
 		{
 			if (old_topModalView && typeof old_topModalView !== 'undefined') {
 				// before we remove the old_topModalOrStackView, let's record its styling if it's a modal, which would be lost on removal like scroll offset
-				old_topModalView.RecordUIStateUponBeingTransitionedFrom()
 				old_topModalView.removeFromSuperview()
 			}
 		}
@@ -344,9 +343,6 @@ class StackAndModalNavigationView extends StackNavigationView
 				to_modalView,
 				indexOf_old_topModalView_inSubviews
 			)
-			{ // and reconstitute lost/held styling such as scroll offset
-				to_modalView.RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom()
-			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				__afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
 				return
