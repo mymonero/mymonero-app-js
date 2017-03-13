@@ -115,7 +115,6 @@ class TabBarItemButtonView extends View
 				var str = value__backgroundImage
 				str = str.replace(/^url\(/, '')
 				str = str.replace(/\)$/, '')
-				console.log("str" , str)
 				return str
 			}
 			const base__url__orNil = _backgroundImageURLFrom_baseStyleTemplate(self.icon_selected_baseStyleTemplate)

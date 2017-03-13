@@ -177,7 +177,7 @@ class EditWalletView extends View
 					}
 					self.context.windowDialogs.PresentQuestionAlertDialogWith(
 						'Remove this wallet?', 
-						'You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?',
+						'You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?',
 						[ 'Remove', 'Cancel' ],
 						function(err, selectedButtonIdx)
 						{

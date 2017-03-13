@@ -70,14 +70,13 @@ class ListView extends View
 	{
 		const self = this
 		const padding_h = self.overridable_padding_h()
-		const padding_btm = self.overridable_padding_btm()
 		//
 		const layer = self.layer
 		layer.style.overflowY = "scroll"
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%" 
 		layer.style.height = "100%"
-		layer.style.padding = `0 ${padding_h}px ${padding_btm}px ${padding_h}px`
+		layer.style.padding = `0 ${padding_h}px 0px ${padding_h}px`
 		// we wait til viewWillAppear is called by the nav controller to set height
 		//
 		layer.style.webkitUserSelect = "none"
@@ -89,10 +88,6 @@ class ListView extends View
 	overridable_padding_h()
 	{
 		return 0
-	}
-	overridable_padding_btm()
-	{
-		return 40
 	}
 	_setup_startObserving()
 	{
