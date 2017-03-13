@@ -69,7 +69,8 @@ class FundsRequestDetailsView extends View
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		layer.style.width = "calc(100% - 20px)"
+		layer.style.boxSizing = "border-box"
+		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -355,7 +356,6 @@ class FundsRequestDetailsView extends View
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
 	}

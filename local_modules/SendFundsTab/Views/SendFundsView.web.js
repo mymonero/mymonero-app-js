@@ -104,8 +104,9 @@ class SendFundsView extends View
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
 		layer.style.position = "relative"
-		layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
-		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		layer.style.boxSizing = "border-box"
+		layer.style.width = "100%"
+		layer.style.height = "100%"
 		layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "scroll"
 		//
@@ -1086,7 +1087,6 @@ class SendFundsView extends View
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 				//
 				self.qrCodeInputs_contentView.layer.style.height = `calc(100% - ${15 * 2 + self.navigationController.NavigationBarHeight() + 2}px)` // +2 for border
 				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + self.navigationController.NavigationBarHeight()}px`

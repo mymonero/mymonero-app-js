@@ -44,18 +44,15 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 		{ // metrics / caches
 			self.margin_h = 10
 		}
-		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
 	}
-	_setup_self_layer()
+	__setup_self_layer()
 	{
 		const self = this
-		//
-		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		//
-		self.layer.style.width = `calc(100% - ${ 2 * self.margin_h }px)`
-		self.layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		super.__setup_self_layer()
+		// adding padding
+		self.layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px`
 	}
 	_setup_validationMessageLayer()
 	{ // validation message

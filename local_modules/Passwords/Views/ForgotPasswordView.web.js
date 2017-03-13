@@ -71,19 +71,21 @@ class ForgotPasswordView extends View
 	{
 		const self = this
 		//
-		self.layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		const layer = self.layer
+		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		//
-		self.layer.style.position = "relative"
-		self.layer.style.width = "100%"
-		self.layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		self.layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		self.layer.style.overflowY = "scroll"
+		layer.style.position = "relative"
+		layer.style.boxSizing = "border-box"
+		layer.style.width = "100%"
+		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
+		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.overflowY = "scroll"
 		//
-		self.layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
-		self.layer.style.color = "#c0c0c0" // temporary
+		layer.style.color = "#c0c0c0" // temporary
 		//
-		self.layer.style.wordBreak = "break-all" // to get the text to wrap
+		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_emptyStateMessageContainerView()
 	{
@@ -214,7 +216,6 @@ class ForgotPasswordView extends View
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
 				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-				self.layer.style.height = `calc(100% - ${self.navigationController.NavigationBarHeight()}px)`
 			}
 		}
 	}

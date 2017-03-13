@@ -54,7 +54,7 @@ class WalletsListCellView extends ListCellView
 			layer.style.position = "relative"
 			layer.style.left = `${margin_h}px`
 			layer.style.top = "0"
-			layer.style.width = `calc(100% - ${ 2 * margin_h }px)`
+			layer.style.width = `calc(100% - ${2 * margin_h}px)`
 			layer.style.height = "80px"
 			layer.style.background = "#383638"
 			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
