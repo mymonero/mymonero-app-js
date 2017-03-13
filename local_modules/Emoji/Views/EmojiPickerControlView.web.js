@@ -144,7 +144,6 @@ class EmojiPickerControlView extends View
 	{
 		const self = this
 		const view = new EmojiPickerPopoverView({
-			value: self.value, // if any
 			didPickEmoji_fn: function(emoji)
 			{
 				self.value = emoji // must set this so consumers accessing Value() have correct value
@@ -175,7 +174,7 @@ class EmojiPickerControlView extends View
 				const isTargetAChildOf_self = dom_traversal.DoesAnyParentOfElementMatch__sync(
 					e__target, 
 					function(anAncestorNode)
-					{
+					{ // match fn
 						if (anAncestorNode === self__layer) {
 							return true // a match - an eventual parent is the self__layer
 						}
@@ -256,6 +255,7 @@ class EmojiPickerControlView extends View
 		if (isAnimated) {
 			self.popoverView.layer.style.opacity = "0"
 			self.popoverView.layer.style.display = "block"
+			self.popoverView.SetPreVisibleSelectedEmoji(self.value) // only now that display is block - cause otherwise we won't be able to get the scroll offset of the selected emoji!
 			Animate(
 				self.popoverView.layer,
 				{ opacity: "1" },
@@ -267,6 +267,7 @@ class EmojiPickerControlView extends View
 			)
 		} else {
 			self.popoverView.layer.style.display = "block"
+			self.popoverView.SetPreVisibleSelectedEmoji(self.value) // only now that display is block - cause otherwise we won't be able to get the scroll offset of the selected emoji!
 			self.popoverView.layer.style.opacity = "1"
 		}
 	}

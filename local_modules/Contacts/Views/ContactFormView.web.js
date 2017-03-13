@@ -162,7 +162,7 @@ class ContactFormView extends View
 			function(event)
 			{
 				if (event.keyCode === 13) { // return key
-					self._tryToCreateContact()
+					self._tryToCreateOrSaveContact()
 					return
 				}
 			}
@@ -174,12 +174,17 @@ class ContactFormView extends View
 			self.fullnameInputLayer.focus()
 		}, 400)
 	}
-	_setup_field_emoji()
+	_overridable_initial_emoji_value()
 	{
 		const self = this
 		const inUseEmojis = self.context.contactsListController.GivenBooted_CurrentlyInUseEmojis()
-		const emoji = emoji_selection.EmojiWhichIsNotAlreadyInUse(inUseEmojis)
-		const value = emoji 
+		const value = emoji_selection.EmojiWhichIsNotAlreadyInUse(inUseEmojis)
+		return value
+	}
+	_setup_field_emoji()
+	{
+		const self = this
+		const value = self._overridable_initial_emoji_value()
 		//					
 		const paddingLeft = 24
 		const div = commonComponents_forms.New_fieldContainerLayer()
@@ -190,7 +195,6 @@ class ContactFormView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("EMOJI", self.context)
 		div.appendChild(labelLayer)
 		//
-		// TODO: make this into a custom picker
 		const view = new EmojiPickerControlView({
 			value: value,
 			didPickEmoji_fn: function(emoji) {} // nothing to do as we simply read at submit
@@ -219,7 +223,7 @@ class ContactFormView extends View
 			{
 				if (event.keyCode === 13) { // return key
 					event.preventDefault() // do not let return/accept create a newline
-					self._tryToCreateContact()
+					self._tryToCreateOrSaveContact()
 					return false // do not let return/accept create a newline
 				}
 			}
@@ -252,7 +256,7 @@ class ContactFormView extends View
 				{
 					if (event.keyCode === 13) { // return key
 						event.preventDefault() // do not let return/accept create a newline
-						self._tryToCreateContact()
+						self._tryToCreateOrSaveContact()
 						return false // do not let return/accept create a newline
 					}
 				}
@@ -344,10 +348,12 @@ class ContactFormView extends View
 		}
 		return view
 	}
-	//
-	//
+	// Runtime - Imperatives - Overridable
+	_tryToCreateOrSaveContact()
+	{
+		throw `You must implement ${self.constructor.name}/_tryToCreateOrSaveContact.`
+	}
 	// Runtime - Imperatives - Submit button enabled state
-	//
 	disable_submitButton()
 	{
 		const self = this

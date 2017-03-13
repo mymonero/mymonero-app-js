@@ -79,7 +79,7 @@ class AddContactView extends ContactFormView
 	//
 	// Runtime - Imperatives - Contact operation
 	//
-	_tryToCreateContact()
+	_tryToCreateOrSaveContact()
 	{
 		const self = this
 		//
@@ -227,7 +227,7 @@ class AddContactView extends ContactFormView
 		super._saveButtonView_pressed()
 		//
 		const self = this
-		self._tryToCreateContact()
+		self._tryToCreateOrSaveContact()
 	}
 	//
 	//

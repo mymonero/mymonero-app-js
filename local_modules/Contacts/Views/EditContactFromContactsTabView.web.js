@@ -40,23 +40,30 @@ class EditContactFromContactsTabView extends ContactFormView
 	setup()
 	{
 		const self = this
-		super.setup()
-		//
-		{ // options
+		{ // before -setup
 			self.contact = self.options.contact
 			if (!self.contact) {
 				throw self.constructor.name + " requires an options.contact"
 			}
 		}
+		super.setup()
 		{ // addtl UI elements
 			self._setup_deleteRecordButtonLayer()
 		}
 		{ // initial view config
 			self.fullnameInputLayer.value = self.contact.fullname || ""
-			self.emojiInputView.aLayer.value = self.emojiInputView.SetValue(self.contact.emoji || "")
+			// this is commented because it is accomplished via _overridable_initial_emoji_value; may be deleted soon
+			// self.emojiInputView.aLayer.value = self.emojiInputView.SetValue(self.contact.emoji || "") 
 			self.addressInputLayer.value = self.contact.address || ""
 			self.paymentIDInputLayer.value = self.contact.payment_id || "" // to avoid 'undefined'
 		}
+	}
+
+	_overridable_initial_emoji_value()
+	{
+		const self = this
+		const value = self.contact.emoji || ""
+		return value
 	}
 	_setup_deleteRecordButtonLayer()
 	{
@@ -151,7 +158,7 @@ class EditContactFromContactsTabView extends ContactFormView
 	//
 	// Runtime - Imperatives - Contact operation
 	//
-	_tryToSaveContact()
+	_tryToCreateOrSaveContact()
 	{
 		const self = this
 		//
@@ -284,7 +291,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		super._saveButtonView_pressed()
 		//
 		const self = this
-		self._tryToSaveContact()
+		self._tryToCreateOrSaveContact()
 	}
 	//
 	//

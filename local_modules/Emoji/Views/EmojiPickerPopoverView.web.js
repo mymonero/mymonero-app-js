@@ -39,7 +39,6 @@ class EmojiPickerPopoverView extends View
 		super(options, context)
 		//
 		const self = this
-		self.value = options.value || ""
 		self.didPickEmoji_fn = options.didPickEmoji_fn || function(emoji) {}
 		self.setup()
 	}
@@ -64,16 +63,17 @@ class EmojiPickerPopoverView extends View
 			layer.style.backgroundPosition = "0px 0px"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.backgroundSize = `${bg_w}px ${bg_h}px`
+			layer.style.pointerEvents = "none" // otherwise the transparent part of the bg img interferes with clicking on the control, itself
 		}
 		{
 			const view = new EmojiPickerPopoverContentView({
-				value: self.value, // if any
 				didPickEmoji_fn: function(emoji)
 				{
 					self.value = emoji
 					self.didPickEmoji_fn(emoji)
 				}
 			}, self.context)
+			view.layer.style.pointerEvents = "all" // must offset self.layer.style.pointerEvents
 			self.emojiPickerPopoverContentView = view
 			self.addSubview(view)
 		}
@@ -93,6 +93,12 @@ class EmojiPickerPopoverView extends View
 	Height()
 	{
 		return 264
+	}
+	// Runtime - Imperatives
+	SetPreVisibleSelectedEmoji(emoji)
+	{
+		const self = this
+		self.emojiPickerPopoverContentView.SetPreVisibleSelectedEmoji(emoji)
 	}
 }
 module.exports = EmojiPickerPopoverView
