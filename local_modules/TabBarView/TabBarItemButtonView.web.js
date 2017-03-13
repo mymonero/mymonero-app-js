@@ -54,6 +54,7 @@ class TabBarItemButtonView extends View
 		{ // state defaults
 			self.isEnabled = true
 		}
+		self.setup__preloadStateImages()
 		self.setup_views()
 		self.Deselect() // also sets selected state
 	}
@@ -99,18 +100,49 @@ class TabBarItemButtonView extends View
 			)
 		}
 	}
-	//
-	//
+	setup__preloadStateImages()
+	{
+		const self = this
+		function _new_lookup_imageURLsForAllStates()
+		{
+			const urls = []
+			function _backgroundImageURLFrom_baseStyleTemplate(baseStyleTemplate)
+			{
+				const value__backgroundImage = baseStyleTemplate.backgroundImage
+				if (!value__backgroundImage) {
+					throw "!value__backgroundImage"
+				}
+				var str = value__backgroundImage
+				str = str.replace(/^url\(/, '')
+				str = str.replace(/\)$/, '')
+				console.log("str" , str)
+				return str
+			}
+			const base__url__orNil = _backgroundImageURLFrom_baseStyleTemplate(self.icon_selected_baseStyleTemplate)
+			const selected__url__orNil = _backgroundImageURLFrom_baseStyleTemplate(self.icon_baseStyleTemplate)
+			if (base__url__orNil) {
+				urls.push(base__url__orNil)
+			}
+			if (selected__url__orNil) {
+				urls.push(selected__url__orNil)
+			}
+			return urls
+		}
+		self.preloadedImages = []
+		const imageURLs = _new_lookup_imageURLsForAllStates()
+		for (let i = 0; i < imageURLs.length; i++) {
+			const imageURL = imageURLs[i]
+			const image = new Image()
+			image.src = imageURL
+			self.preloadedImages.push(image)
+	    }
+	}
 	// Runtime - Accessors - Events
-	//
 	EventName_clicked()
 	{
 		return "EventName_clicked"
 	}
-	//
-	//
 	// Runtime - Accessors - State
-	//
 	IsSelected()
 	{
 		const self = this
@@ -121,10 +153,9 @@ class TabBarItemButtonView extends View
 		const self = this
 		return self.isEnabled === true
 	}
-	//
-	//
+	// Runtime - Accessors - 
+
 	// Runtime - Imperatives - UI config - Shared
-	//
 	__applyStylesToLayer(styles, layer)
 	{
 		const styles_keys = Object.keys(styles)
@@ -135,10 +166,7 @@ class TabBarItemButtonView extends View
 			layer.style[key] = value
 		}
 	}
-	//
-	//
 	// Runtime - Imperatives - Selection
-	//
 	Select()
 	{
 		const self = this
@@ -154,10 +182,7 @@ class TabBarItemButtonView extends View
 		self.isSelected = false
 		self.__applyStylesToLayer(self.icon_baseStyleTemplate, self.iconImageLayer)
 	}	
-	//
-	//
 	// Runtime - Imperatives - Selection
-	//
 	Enable()
 	{
 		const self = this
