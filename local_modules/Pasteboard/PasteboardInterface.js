@@ -30,8 +30,8 @@
 //
 const _contentTypes = 
 {
-	Text: "Text", // the default
-	HTML: "HTML"
+	Text: "text", // the default
+	HTML: "html"
 }
 //
 class Pasteboard
@@ -61,7 +61,13 @@ class Pasteboard
 	{
 		const self = this
 		const _cmd = "CopyString(string, contentType_orText)"
-		throw `You must override and implement ${_cmd} ${self.costructor.name}`
+		throw `You must override and implement ${_cmd} in ${self.constructor.name}`
+	}
+	CopyValuesByType(valuesByType)
+	{
+		const self = this
+		const _cmd = "CopyValuesByType(valuesByType)"
+		throw `You must override and implement ${_cmd} in ${self.constructor.name}`
 	}
 }
 module.exports = Pasteboard

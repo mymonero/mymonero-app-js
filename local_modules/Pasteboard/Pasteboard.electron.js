@@ -48,15 +48,18 @@ class Pasteboard extends PasteboardInterface
 			contentType = contentType_orText
 		}
 		if (contentType === contentTypes.Text) {
-			console.log("copying text")
 			electron__clipboard.writeText(string)
 		} else if (contentType === contentTypes.HTML) {
-			console.log("copying html")
 			electron__clipboard.writeHTML(string)
 		} else {
 			throw "Unrecognized content type " + contentType
 		}
 		console.log(`📋  Copied ${contentType} string to pasteboard: "${string}".`)
+	}
+	CopyValuesByType(valuesByType)
+	{
+		electron__clipboard.write(valuesByType)
+		console.log(`📋  Copied values of types ${Object.keys(valuesByType)}.`)
 	}
 }
 module.exports = Pasteboard

@@ -177,8 +177,8 @@ class FundsRequestDetailsView extends View
 				const plaintextString = self.new_requesteeMessagePlaintextString()
 				const CopyContentTypes = self.context.pasteboard.CopyContentTypes()
 				const toCopy_valuesByContentType = {}
-				toCopy_valuesByContentType[CopyContentTypes.Text] = plaintextString
 				toCopy_valuesByContentType[CopyContentTypes.HTML] = htmlString
+				toCopy_valuesByContentType[CopyContentTypes.Text] = plaintextString
 				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 					self.context,
 					toCopy_valuesByContentType,

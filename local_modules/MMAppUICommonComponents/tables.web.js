@@ -221,7 +221,7 @@ function New_separatorLayer()
 }
 exports.New_separatorLayer = New_separatorLayer
 //
-function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard)
+function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_orTrue, pasteboard)
 { // defaults to 'text' content type
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("a")
@@ -249,7 +249,7 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard)
 		})
 	}
 	// state var declarations
-	var runtime_valueToCopy = value
+	var runtime_valueToCopy = value__orValuesByContentType
 	// component fns
 	layer.Component_SetEnabled = function(enabled)
 	{
@@ -269,7 +269,7 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard)
 	layer.Component_SetValue = function(to_value__orValuesByContentType)
 	{ // defaults to 'text' type
 		runtime_valueToCopy = to_value__orValuesByContentType
-		if (to_value === "" || typeof to_value === 'undefined' || !to_value) {
+		if (to_value__orValuesByContentType === "" || typeof to_value__orValuesByContentType === 'undefined' || !to_value__orValuesByContentType) {
 			layer.Component_SetEnabled(false)
 		} else {
 			layer.Component_SetEnabled(true)
@@ -285,23 +285,9 @@ function New_copyButton_aLayer(context, value, enabled_orTrue, pasteboard)
 			e.preventDefault()
 			if (layer.Component_IsEnabled !== false) {
 				if (typeof runtime_valueToCopy === "string") {
-					pasteboard.CopyString(
-						valueToCopy, 
-						pasteboard_valueContentType_orNil
-					)
+					pasteboard.CopyString(runtime_valueToCopy)
 				} else if (typeof runtime_valueToCopy === 'object') {
-					const valuesByContentType = runtime_valueToCopy // actually is a map of content types to values to copy
-					const contentTypes_ofValues = Object.keys(valuesByContentType)
-					contentTypes_ofValues.forEach(
-						function(contentTypeAsKey, idx)
-						{ // I figure there won't be /that/ many types here so perf not an issue
-							const valueToCopy = valuesByContentType[contentTypeAsKey]
-							pasteboard.CopyString(
-								valueToCopy, 
-								contentTypeAsKey
-							)
-						}
-					)
+					pasteboard.CopyValuesByType(runtime_valueToCopy)
 				} else {
 					throw `unrecognized typeof value to copy ${typeof runtime_valueToCopy} in New_copyButton_aLayer`
 				}
