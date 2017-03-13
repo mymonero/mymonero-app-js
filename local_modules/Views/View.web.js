@@ -343,6 +343,30 @@ class View extends EventEmitter
 			const subview = self.subviews[i]
 			subview.viewDidDisappear()
 		}
+	}
+	// Runtime - Delegation - Navigation/Modal specific special(native) integration
+	// This is to preserve scroll offset on add/remove from DOM as that doesn't persist
+	RecordUIStateUponBeingTransitionedFrom()
+	{
+		const self = this
+		const layer = self.layer
+		self.scrollOffsetsUponTransitionedFrom =
+		{
+			Left: layer.scrollLeft,
+			Top: layer.scrollTop
+		}
+	}
+	RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom()
+	{
+		const self = this
+		const scrollOffsets = self.scrollOffsetsUponTransitionedFrom
+		if (typeof scrollOffsets === 'undefined' || !scrollOffsets) {
+			console.warn(`${self.constructor.name} asked to RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom but nil self.scrollOffsetsUponTransitionedFrom`)
+			return
+		}
+		const layer = self.layer
+		layer.scrollLeft = scrollOffsets.Left
+		layer.scrollTop = scrollOffsets.Top
 	}	
 }
 module.exports = View

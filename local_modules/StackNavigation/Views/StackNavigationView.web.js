@@ -49,7 +49,6 @@ class StackNavigationView extends View
 			self.uuid = uuidV1()
 			//
 			self.stackViews = []
-			self.stackViews_scrollOffsetsOnPushedFrom_byViewUUID = {} // [ String: [ String(Left|Top): Number ] ]
 			self.topStackView = null
 		}
 		{ // self.layer
@@ -264,11 +263,7 @@ class StackNavigationView extends View
 		{
 			{ // before we remove the old_topStackView, let's record its styling which would be lost on removal like scroll offset 
 				if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) { // as in stack views were set before this push was done
-					self.stackViews_scrollOffsetsOnPushedFrom_byViewUUID[old_topStackView.View_UUID()] =
-					{
-						Left: old_topStackView.layer.scrollLeft,
-						Top: old_topStackView.layer.scrollTop
-					}
+					old_topStackView.RecordUIStateUponBeingTransitionedFrom()
 					old_topStackView.removeFromSuperview()
 				}
 			}
@@ -387,15 +382,7 @@ class StackNavigationView extends View
 				indexOf_old_topStackView_inSubviews
 			)
 			{ // and reconstitute lost/held styling such as scroll offset
-				const to_stackView_View_UUID = to_stackView.View_UUID()
-				const to_stackView_scrollOffsetsOnPushedFrom = self.stackViews_scrollOffsetsOnPushedFrom_byViewUUID[to_stackView_View_UUID]
-				{
-					const cached_to_stackView__Left = to_stackView_scrollOffsetsOnPushedFrom.Left
-					const cached_to_stackView__Top = to_stackView_scrollOffsetsOnPushedFrom.Top
-					to_stackView.layer.scrollLeft = cached_to_stackView__Left
-					to_stackView.layer.scrollTop = cached_to_stackView__Top
-				}
-				delete self.stackViews_scrollOffsetsOnPushedFrom_byViewUUID[to_stackView_View_UUID] // free
+				to_stackView.RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom()
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()

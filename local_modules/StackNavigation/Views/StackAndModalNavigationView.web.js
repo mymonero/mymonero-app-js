@@ -42,8 +42,6 @@ class StackAndModalNavigationView extends StackNavigationView
 		{ // initial state
 			self.modalViews = []
 			self.topModalView = null
-			//
-			self.modalViews_scrollOffsetsOnPushedFrom_byViewUUID = {}
 		}
 	}
 	//
@@ -164,11 +162,7 @@ class StackAndModalNavigationView extends StackNavigationView
 		{
 			if (old_topModalView && typeof old_topModalView !== 'undefined') {
 				// before we remove the old_topModalOrStackView, let's record its styling if it's a modal, which would be lost on removal like scroll offset
-				self.modalViews_scrollOffsetsOnPushedFrom_byViewUUID[old_topModalView.View_UUID()] =
-				{
-					Left: old_topModalView.layer.scrollLeft,
-					Top: old_topModalView.layer.scrollTop
-				}
+				old_topModalView.RecordUIStateUponBeingTransitionedFrom()
 				old_topModalView.removeFromSuperview()
 			}
 		}
@@ -351,15 +345,7 @@ class StackAndModalNavigationView extends StackNavigationView
 				indexOf_old_topModalView_inSubviews
 			)
 			{ // and reconstitute lost/held styling such as scroll offset
-				const to_modalView_View_UUID = to_modalView.View_UUID()
-				const to_modalView_scrollOffsetsOnPushedFrom = self.modalViews_scrollOffsetsOnPushedFrom_byViewUUID[to_modalView_View_UUID]
-				{
-					const cached_to_modalView__Left = to_modalView_scrollOffsetsOnPushedFrom.Left
-					const cached_to_modalView__Top = to_modalView_scrollOffsetsOnPushedFrom.Top
-					to_modalView.layer.scrollLeft = cached_to_modalView__Left
-					to_modalView.layer.scrollTop = cached_to_modalView__Top
-				}
-				delete self.modalViews_scrollOffsetsOnPushedFrom_byViewUUID[to_modalView_View_UUID] // free
+				to_modalView.RestoreUIStateUponBeingRevealedAfterHavingTransitionedFrom()
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				__afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
