@@ -76,17 +76,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			const view = commonComponents_forms.New_fieldValue_textAreaView({
 				placeholderText: "From your existing wallet"
 			}, self.context)
-			self.mnemonicTextAreaView = view
-			{
-				view.layer.addEventListener(
-					"keypress",
-					function(event)
-					{
-						self.AWalletFieldInput_did_keypress(event) // defined on super
-					}
-				)
-			}
 			div.appendChild(view.layer)
+			self.mnemonicTextAreaView = view
+			view.layer.addEventListener(
+				"keypress",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keypress(event) // defined on super
+				}
+			)
+			view.layer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keyup(event) // defined on super
+				}
+			)
 		}
 		self.walletMnemonicField_layer = div
 		self.form_containerLayer.appendChild(div)
@@ -105,17 +110,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
-				self.addrTextAreaView = view
-				{
-					view.layer.addEventListener(
-						"keypress",
-						function(event)
-						{
-							self.AWalletFieldInput_did_keypress(event) // defined on super
-						}
-					)
-				}
 				div.appendChild(view.layer)
+				self.addrTextAreaView = view
+				view.layer.addEventListener(
+					"keypress",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keypress(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
 			}
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
@@ -128,17 +138,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
-				self.viewKeyTextAreaView = view
-				{
-					view.layer.addEventListener(
-						"keypress",
-						function(event)
-						{
-							self.AWalletFieldInput_did_keypress(event) // defined on super
-						}
-					)
-				}
 				div.appendChild(view.layer)
+				self.viewKeyTextAreaView = view
+				view.layer.addEventListener(
+					"keypress",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keypress(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
 			}
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
@@ -151,17 +166,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
-				self.spendKeyTextAreaView = view
-				{
-					view.layer.addEventListener(
-						"keypress",
-						function(event)
-						{
-							self.AWalletFieldInput_did_keypress(event) // defined on super
-						}
-					)
-				}
 				div.appendChild(view.layer)
+				self.spendKeyTextAreaView = view
+				view.layer.addEventListener(
+					"keypress",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keypress(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"keyup",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
 			}
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
@@ -255,19 +275,17 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
 		const layer = view.layer
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					if (view.isEnabled !== false) {
-						self.wizardController._fromScreen_userPickedCancel()
-					}
-					return false
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled !== false) {
+					self.wizardController._fromScreen_userPickedCancel()
 				}
-			)
-		}
+				return false
+			}
+		)
 		return view
 	}
 	// Navigation_New_RightBarButtonView()

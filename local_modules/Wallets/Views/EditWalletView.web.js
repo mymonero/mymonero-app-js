@@ -109,15 +109,20 @@ class EditWalletView extends View
 			})
 			valueLayer.value = self.wallet.walletLabel
 			self.walletNameInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keypress",
-					function(event)
-					{
-						self.AWalletFieldInput_did_keypress(event)
-					}
-				)
-			}
+			valueLayer.addEventListener(
+				"keypress",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keypress(event)
+				}
+			)
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keyup(event) // defined on super
+				}
+			)
 			div.appendChild(valueLayer)
 		}
 		self.form_containerLayer.appendChild(div)
@@ -274,8 +279,11 @@ class EditWalletView extends View
 	set_submitButtonNeedsUpdate()
 	{
 		const self = this
-		// v- we use a local property instead of the one on the nav C cause we can't guarantee it is set yet
-		self.rightBarButtonView.SetEnabled(self._canEnableSubmitButton())
+		setTimeout(function()
+		{ // to make sure consumers' prior updates have a chance to kick in
+			// v- we use a local property instead of the one on the nav C cause we can't guarantee it is set yet
+			self.rightBarButtonView.SetEnabled(self._canEnableSubmitButton())
+		})
 	}
 	//
 	//
@@ -377,6 +385,11 @@ class EditWalletView extends View
 			}
 			return false // do not let return/accept create a newline
 		}
+		self.set_submitButtonNeedsUpdate()
+	}
+	AWalletFieldInput_did_keyup(event)
+	{
+		const self = this
 		self.set_submitButtonNeedsUpdate()
 	}
 }

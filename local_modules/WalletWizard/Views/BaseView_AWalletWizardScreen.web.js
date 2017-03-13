@@ -73,7 +73,7 @@ class AddWallet_LandingScreenView extends View
 		//
 		layer.style.color = "#c0c0c0" // temporary
 		//
-	Zlayer.style.wordBreak = "break-all" // to get the text to wrap
+		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_startObserving()
 	{

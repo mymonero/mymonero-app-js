@@ -88,15 +88,20 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 				placeholderText: "For your reference only"
 			})
 			self.walletNameInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keypress",
-					function(event)
-					{
-						self.AWalletFieldInput_did_keypress(event)
-					}
-				)
-			}
+			valueLayer.addEventListener(
+				"keypress",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keypress(event)
+				}
+			)
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keyup(event) // defined on super
+				}
+			)
 			div.appendChild(valueLayer)
 		}
 		self.walletNameFieldContainerLayer = div
@@ -194,12 +199,15 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 	set_submitButtonNeedsUpdate()
 	{
 		const self = this
-		const canEnable = self._overridable_canEnableSubmitButton()
-		if (canEnable == true) {
-			self.enable_submitButton() // can just call directly cause it locks by state
-		} else {
-			self.disable_submitButton()
-		}
+		setTimeout(function()
+		{ // to make sure consumers' prior updates have a chance to kick in
+			const canEnable = self._overridable_canEnableSubmitButton()
+			if (canEnable == true) {
+				self.enable_submitButton() // can just call directly cause it locks by state
+			} else {
+				self.disable_submitButton()
+			}
+		})
 	}
 	//
 	//
@@ -220,6 +228,11 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 			}
 			return false // do not let return/accept create a newline
 		}
+		self.set_submitButtonNeedsUpdate()
+	}
+	AWalletFieldInput_did_keyup(event)
+	{
+		const self = this
 		self.set_submitButtonNeedsUpdate()
 	}
 }
