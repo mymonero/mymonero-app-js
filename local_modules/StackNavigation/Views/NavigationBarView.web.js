@@ -52,26 +52,19 @@ class NavigationBarView extends View
 	setup()
 	{
 		const self = this
-		{ // initial state
-		}
 		{ // self.layer
 			const layer = self.layer
-			{
-				layer.style.position = "absolute" // https://developers.google.com/web/updates/2016/12/position-sticky
-				layer.style.top = "0%"
-				layer.style.zIndex = "9"
-			}
-			{
-				layer.style.width = "100%"
-				layer.style.height = `${self.NavigationBarHeight()}px`
-				layer.style.backgroundColor = "#272527"
-			    layer.style.transition = "box-shadow 0.06 ease-in-out"
-				
-			}
-			{
-				layer.style.webkitAppRegion = "drag" // make draggable
-				layer.style.webkitUserSelect = "none"
-			}
+			layer.style.position = "absolute" // https://developers.google.com/web/updates/2016/12/position-sticky
+			layer.style.top = "0%"
+			layer.style.zIndex = "9"
+			//
+			layer.style.width = "100%"
+			layer.style.height = `${self.NavigationBarHeight()}px`
+			layer.style.backgroundColor = "#272527"
+		    layer.style.transition = "box-shadow 0.06 ease-in-out"
+			//
+			layer.style.webkitAppRegion = "drag" // make draggable
+			layer.style.webkitUserSelect = "none"
 		}
 		{ // background decoration view
 			const view = new View({}, self.context)
@@ -85,53 +78,47 @@ class NavigationBarView extends View
 		}
 		{
 			const layer = document.createElement("span")
-			{
-				self.defaultNavigationBarTitleColor = "#fcfbfc" // so we can use it at runtime
-				layer.style.color = self.defaultNavigationBarTitleColor
-				layer.style.position = "absolute"
-				layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
-				layer.style.fontSize = "12px" // design says 13 but browser renders oddly, simulating with…
-				layer.style.fontWeight = "500"
-				layer.style.letterSpacing = "0.5px"
-				layer.style.top = "-1px"
-				self.titleLayer_marginX_pxComponent = 16
-				self.titleLayer_marginX_pctComponent = .15
-				layer.style.left = `calc(${100*self.titleLayer_marginX_pctComponent}% + ${self.titleLayer_marginX_pxComponent}px)`
-				layer.style.width = `calc(${ 100 - 2*100*self.titleLayer_marginX_pctComponent }% - ${2 * self.titleLayer_marginX_pxComponent}px`
-				layer.style.height = `${self.NavigationBarHeight()}px`
-				layer.style.textAlign = "center"
-				layer.style.lineHeight = `${self.NavigationBarHeight()}px`
-			}
-			self.layer.appendChild(layer)
 			self.titleLayer = layer
+			//
+			self.defaultNavigationBarTitleColor = "#fcfbfc" // so we can use it at runtime
+			layer.style.color = self.defaultNavigationBarTitleColor
+			layer.style.position = "absolute"
+			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+			layer.style.fontSize = "12px" // design says 13 but browser renders oddly, simulating with…
+			layer.style.fontWeight = "500"
+			layer.style.letterSpacing = "0.5px"
+			layer.style.top = "-1px"
+			self.titleLayer_marginX_pxComponent = 16
+			self.titleLayer_marginX_pctComponent = .15
+			layer.style.left = `calc(${100*self.titleLayer_marginX_pctComponent}% + ${self.titleLayer_marginX_pxComponent}px)`
+			layer.style.width = `calc(${ 100 - 2*100*self.titleLayer_marginX_pctComponent }% - ${2 * self.titleLayer_marginX_pxComponent}px`
+			layer.style.height = `${self.NavigationBarHeight()}px`
+			layer.style.textAlign = "center"
+			layer.style.lineHeight = `${self.NavigationBarHeight()}px`
+			//
+			self.layer.appendChild(layer)
 		}
 		{ // leftBarButtonHolderView
 			const view = new View({}, self.context)
-			const layer = view.layer
-			{
-				layer.style.position = "absolute"
-				layer.style.left = "16px"
-				layer.style.width = "15%"
-				layer.style.minWidth = `${self.NavigationBarHeight()}px`
-				layer.style.height = `${self.NavigationBarHeight()}px`
-				//
-				// layer.style.border = "1px solid green"
-			}
-			self.addSubview(view)
 			self.leftBarButtonHolderView = view
+			const layer = view.layer
+			layer.style.position = "absolute"
+			layer.style.left = "16px"
+			layer.style.width = "15%"
+			layer.style.minWidth = `${self.NavigationBarHeight()}px`
+			layer.style.height = `${self.NavigationBarHeight()}px`
+			self.addSubview(view)
 		}
 		{ // rightBarButtonHolderView
 			const view = new View({}, self.context)
-			const layer = view.layer
-			{
-				layer.style.position = "absolute"
-				layer.style.right = "16px"
-				layer.style.width = "15%"
-				layer.style.minWidth = `${self.NavigationBarHeight()}px`
-				layer.style.height = `${self.NavigationBarHeight()}px`
-			}
-			self.addSubview(view)
 			self.rightBarButtonHolderView = view
+			const layer = view.layer
+			layer.style.position = "absolute"
+			layer.style.right = "16px"
+			layer.style.width = "15%"
+			layer.style.minWidth = `${self.NavigationBarHeight()}px`
+			layer.style.height = `${self.NavigationBarHeight()}px`
+			self.addSubview(view)
 		}
 	}
 	//
@@ -150,7 +137,6 @@ class NavigationBarView extends View
 	{
 		return 41
 	}
-	//
 	//
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
@@ -219,7 +205,7 @@ class NavigationBarView extends View
 			self.__stopObserving_old_topStackView(old_topStackView)
 		}
 		self.SetTitleFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft, trueIfPoppingToRoot)
-		self.SetBarButtonsFromTopStackView(stackView, old_topStackView, isAnimated, trueIfPoppingToRoot)
+		self.SetBarButtonsFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft, trueIfPoppingToRoot)
 		{ // configure scroll shadow visibility
 			if (typeof stackView !== 'undefined' && stackView !== null) {
 				const scrollTop = stackView.layer.scrollTop
@@ -341,7 +327,7 @@ class NavigationBarView extends View
 			}
 		)
 	}
-	SetButtonsNeedsUpdate(stackView, stackViews, optl_isAnimated)
+	SetButtonsNeedsUpdate(stackView, stackViews, optl_isAnimated, ifAnimated_isFromRightNotLeft)
 	{
 		const isAnimated = optl_isAnimated === true ? true : false
 		//
@@ -377,6 +363,7 @@ class NavigationBarView extends View
 			stackView,
 			mocked__old_topStackView,
 			isAnimated,
+			ifAnimated_isFromRightNotLeft,
 			false // not popping to root
 		)
 	}
@@ -384,22 +371,27 @@ class NavigationBarView extends View
 		stackView, 
 		old_topStackView,
 		isAnimated,
+		ifAnimated_isFromRightNotLeft,
 		trueIfPoppingToRoot
 	)
 	{
 		const self = this
+		const buttonOffsetForTransition = (self.layer.offsetWidth * 0.3)+ "px"
 		{ // remove existing
 			{ // left btn
 				const view = self.leftBarButtonView
 				self.leftBarButtonView = null // free
 				if (typeof view !== 'undefined' && view !== null) {
 					if (isAnimated) {
-						// fade out then remove
+						// fade & slide out then remove
 						const layer = view.layer
 						Animate(layer, "stop", true) // stop all animations, and clear all queued animations
 						Animate(
 							layer, 
-							{ opacity: 0 }, 
+							{ 
+								opacity: 0,
+								left: ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition/*TODO: offsetbyw*/ : buttonOffsetForTransition
+							}, 
 							{
 								duration: self._animationDuration_ms_navigationPush(),
 								complete: function()
@@ -418,12 +410,15 @@ class NavigationBarView extends View
 				self.rightBarButtonView = null // free
 				if (typeof view !== 'undefined' && view !== null) {
 					if (isAnimated) {
-						// fade out then remove
+						// fade & slide out then remove
 						const layer = view.layer
 						Animate(layer, "stop", true) // stop all animations, and clear all queued animations
 						Animate(
 							layer, 
-							{ opacity: 0 }, 
+							{ 
+								opacity: 0,
+								right: ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition : "-"+buttonOffsetForTransition/*TODO: offsetbyw*/
+							}, 
 							{
 								duration: self._animationDuration_ms_navigationPush(),
 								complete: function()
@@ -438,109 +433,107 @@ class NavigationBarView extends View
 				}
 			}
 		}
-		{ // add new
-			if (typeof stackView !== 'undefined' && stackView !== null) {
-				{ // left btn
-					var buttonView = null
-					const factoryFn = stackView.Navigation_New_LeftBarButtonView
-					if (typeof factoryFn === 'function') {
-						buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
-					}
-					if (typeof buttonView === 'undefined' || buttonView === null) { // if no button specified by stackView
-						if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) {
-							// then it means stackView is not the root stackView on the nav controller,
-							// and since the left buttonView is nil here, that means we should throw up a back button
-							// TODO: we could ask the stackView being presented if it wants to explicitly
-							// 		 disallow back buttons here when/if that becomes necessary
-							if (trueIfPoppingToRoot !== true) { // because we don't want a back button in this case
-								var hidesBackButton = false
-								const hidesBackButton_fn = stackView.Navigation_HidesBackButton
-								if (typeof hidesBackButton_fn === 'function') {
-									hidesBackButton = hidesBackButton_fn.apply(stackView) // use .apply to maintain stackView as this
-								}
-								if (hidesBackButton !== true) {
-									buttonView = self.new_back_leftBarButtonView()
-								}
-							}
+		// add new
+		if (typeof stackView === 'undefined' || stackView === null) { // validate
+			return
+		}
+		{ // left btn
+			var buttonView = null
+			const factoryFn = stackView.Navigation_New_LeftBarButtonView
+			if (typeof factoryFn === 'function') {
+				buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+			}
+			if (typeof buttonView === 'undefined' || buttonView === null) { // if no button specified by stackView
+				if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) {
+					// then it means stackView is not the root stackView on the nav controller,
+					// and since the left buttonView is nil here, that means we should throw up a back button
+					// TODO: we could ask the stackView being presented if it wants to explicitly
+					// 		 disallow back buttons here when/if that becomes necessary
+					if (trueIfPoppingToRoot !== true) { // because we don't want a back button in this case
+						var hidesBackButton = false
+						const hidesBackButton_fn = stackView.Navigation_HidesBackButton
+						if (typeof hidesBackButton_fn === 'function') {
+							hidesBackButton = hidesBackButton_fn.apply(stackView) // use .apply to maintain stackView as this
 						}
-					}
-					if (typeof buttonView !== 'undefined' && buttonView !== null) { 
-						{
-							buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
-						}
-						{ // take over layout
-							buttonView.layer.style.position = "absolute"
-							buttonView.layer.style.left = "0" // so it sticks to the left of the btn holder view layer
-						}
-						self.leftBarButtonView = buttonView
-						{ // now present
-							if (isAnimated === true) {
-								const layer = buttonView.layer
-								Animate(layer, "stop", true) // stop all animations, and clear all queued animations
-								const opacity = layer.style.opacity
-								const toOpacity = opacity !== "" && opacity !== null && typeof opacity !== undefined ? opacity : "1" // read instead of hardcode
-								const toOpacity_float = parseFloat(toOpacity)
-								if (isNaN(toOpacity_float)) {
-									throw "toOpacity is NaN"
-								}
-								layer.style.opacity = "0" // first make invisible 
-								self.leftBarButtonHolderView.addSubview(buttonView) // then add to the view
-								// then fade in
-								Animate(
-									layer, 
-									{ opacity: toOpacity_float }, 
-									{
-										duration: self._animationDuration_ms_navigationPush(),
-										complete: function() {}
-									}
-								)
-							} else {
-								self.leftBarButtonHolderView.addSubview(buttonView)
-							}
+						if (hidesBackButton !== true) {
+							buttonView = self.new_back_leftBarButtonView()
 						}
 					}
 				}
-				{ // right btn
-					var buttonView = null
-					const factoryFn = stackView.Navigation_New_RightBarButtonView
-					if (typeof factoryFn === 'function') {
-						buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+			}
+			if (typeof buttonView !== 'undefined' && buttonView !== null) { 
+				buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
+				buttonView.layer.style.position = "absolute" // take over layout - we must set 'left'
+				self.leftBarButtonView = buttonView
+				// now present
+				if (isAnimated === true) {
+					const layer = buttonView.layer
+					Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+					const opacity = layer.style.opacity
+					const toOpacity = opacity !== "" && opacity !== null && typeof opacity !== undefined ? opacity : "1" // read instead of hardcode
+					const toOpacity_float = parseFloat(toOpacity)
+					if (isNaN(toOpacity_float)) {
+						throw "toOpacity is NaN"
 					}
-					if (typeof buttonView !== 'undefined' && buttonView !== null) {
+					layer.style.opacity = "0" // first make invisible 
+					layer.style.left = ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition : "-"+buttonOffsetForTransition/*TODO: offsetbyw*/
+					self.leftBarButtonHolderView.addSubview(buttonView) // then add to the view
+					// then fade in
+					Animate(
+						layer, 
+						{ 
+							opacity: toOpacity_float,
+							left: "0px" // so it sticks to left
+						}, 
 						{
-							buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
+							duration: self._animationDuration_ms_navigationPush(),
+							complete: function() {}
 						}
-						{ // take over layout
-							buttonView.layer.style.position = "absolute"
-							buttonView.layer.style.right = "0" // so it sticks to the left of the btn holder view layer
-						}
-						self.rightBarButtonView = buttonView
-						{ // now present
-							if (isAnimated === true) {
-								const layer = buttonView.layer
-								Animate(layer, "stop", true) // stop all animations, and clear all queued animations
-								const opacity = layer.style.opacity
-								const toOpacity = opacity !== "" && opacity !== null && typeof opacity !== undefined ? opacity : "1" // read instead of hardcode
-								const toOpacity_float = parseFloat(toOpacity)
-								if (isNaN(toOpacity_float)) {
-									throw "toOpacity is NaN"
-								}
-								layer.style.opacity = "0" // first make invisible 
-								self.rightBarButtonHolderView.addSubview(buttonView) // then add to the view
-								// then fade in
-								Animate(
-									layer, 
-									{ opacity: toOpacity_float }, 
-									{
-										duration: self._animationDuration_ms_navigationPush(),
-										complete: function() {}
-									}
-								)
-							} else {
-								self.rightBarButtonHolderView.addSubview(buttonView)
-							}
-						}
+					)
+				} else {
+					buttonView.layer.style.left = "0" // so it sticks to left
+					self.leftBarButtonHolderView.addSubview(buttonView)
+				}
+			}
+		}
+		{ // right btn
+			var buttonView = null
+			const factoryFn = stackView.Navigation_New_RightBarButtonView
+			if (typeof factoryFn === 'function') {
+				buttonView = factoryFn.apply(stackView) // use .apply to maintain stackView as this
+			}
+			if (typeof buttonView !== 'undefined' && buttonView !== null) {
+				buttonView.layer.style.webkitAppRegion = "no-drag" // make clickable
+				buttonView.layer.style.position = "absolute" // take over layout - we must set 'right' before exit
+				self.rightBarButtonView = buttonView
+				// now present
+				if (isAnimated === true) {
+					const layer = buttonView.layer
+					Animate(layer, "stop", true) // stop all animations, and clear all queued animations
+					const opacity = layer.style.opacity
+					const toOpacity = opacity !== "" && opacity !== null && typeof opacity !== undefined ? opacity : "1" // read instead of hardcode
+					const toOpacity_float = parseFloat(toOpacity)
+					if (isNaN(toOpacity_float)) {
+						throw "toOpacity is NaN"
 					}
+					layer.style.opacity = "0" // first make invisible 
+					layer.style.right = ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition/*TODO: offsetbyw*/ : buttonOffsetForTransition
+					self.rightBarButtonHolderView.addSubview(buttonView) // then add to the view
+					// then fade in
+					Animate(
+						layer, 
+						{ 
+							opacity: toOpacity_float,
+							right: "0px" // so it sticks to right
+						}, 
+						{
+							duration: self._animationDuration_ms_navigationPush(),
+							complete: function() {}
+						}
+					)
+				} else {
+					buttonView.layer.style.right = "0" // so it sticks to right
+					self.rightBarButtonHolderView.addSubview(buttonView)
 				}
 			}
 		}

@@ -443,13 +443,14 @@ class StackNavigationView extends View
 			self.topStackView
 		)
 	}
-	SetNavigationBarButtonsNeedsUpdate(optl_isAnimated)
-	{
+	SetNavigationBarButtonsNeedsUpdate()
+	{ // not animated
 		const self = this
 		self.navigationBarView.SetButtonsNeedsUpdate(
 			self.topStackView, 
 			self.stackViews, // needs to be passed
-			optl_isAnimated
+			false,
+			undefined // ifAnimated_isFromRightNotLeft
 		)
 	}
 	//
