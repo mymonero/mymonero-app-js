@@ -216,7 +216,7 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 	_userSelectedNextButton()
 	{
 		const self = this 
-		// NOTE: Override this in your subclass
+		throw "You must override " + self.constructor.name + "/_userSelectedNextButton() in your subclass."
 	}
 	AWalletFieldInput_did_keypress(event)
 	{

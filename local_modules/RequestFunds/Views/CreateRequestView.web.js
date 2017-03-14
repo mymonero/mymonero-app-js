@@ -511,7 +511,7 @@ class CreateRequestView extends View
 			amount_String,
 			memo, // description, AKA memo or label
 			message,
-			function(err, fundsRequest)
+			function(err, record)
 			{
 				if (err) {
 					console.error("Error while creating funds request", err)
@@ -521,21 +521,25 @@ class CreateRequestView extends View
 				{
 					self.validationMessageLayer.ClearAndHideMessage()
 				}
-				const FundsRequestDetailsView = require('./FundsRequestDetailsView.web')
-				const options = 
-				{
-					record: fundsRequest
-				}
-				const view = new FundsRequestDetailsView(options, self.context)
-				const modalParentView = self.navigationController.modalParentView
-				const underlying_navigationController = modalParentView
-				underlying_navigationController.PushView(view, false) // not animated
-				setTimeout(function()
-				{ // just to make sure the PushView finished
-					modalParentView.DismissTopModalView(true)
-				})
+				_proceedTo_pushViewForRecord(record)
 			}
 		)
+		function _proceedTo_pushViewForRecord(record)
+		{
+			const FundsRequestDetailsView = require('./FundsRequestDetailsView.web')
+			const options = 
+			{
+				record: record // the fundsRequest
+			}
+			const view = new FundsRequestDetailsView(options, self.context)
+			const modalParentView = self.navigationController.modalParentView
+			const underlying_navigationController = modalParentView
+			underlying_navigationController.PushView(view, false) // not animated
+			setTimeout(function()
+			{ // on next tick just to make sure the PushView finished
+				modalParentView.DismissTopModalView(true)
+			})
+		}
 	}
 	//
 	//

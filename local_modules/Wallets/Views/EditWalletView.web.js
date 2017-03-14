@@ -381,7 +381,7 @@ class EditWalletView extends View
 		if (event.keyCode === 13) { // return key
 			event.preventDefault() // do not let return/accept create a newline ; in case this is a textarea
 			if (self.isSubmitButtonDisabled !== true) {
-				self._userSelectedNextButton()
+				self._saveButtonView_pressed() // patch to 
 			}
 			return false // do not let return/accept create a newline
 		}
