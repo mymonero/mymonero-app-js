@@ -113,17 +113,9 @@ class AddWallet_LandingScreenView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-			}
+		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 		}
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		// teardown any child/referenced stack navigation views if necessary…
 	}
 }
 module.exports = AddWallet_LandingScreenView

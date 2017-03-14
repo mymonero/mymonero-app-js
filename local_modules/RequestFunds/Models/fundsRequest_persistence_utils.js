@@ -43,7 +43,9 @@ const documentCryptScheme =
 	payment_id: { type: CryptSchemeFieldValueTypes.String },
 	amount: { type: CryptSchemeFieldValueTypes.String },
 	message: { type: CryptSchemeFieldValueTypes.String },
-	description: { type: CryptSchemeFieldValueTypes.String }
+	description: { type: CryptSchemeFieldValueTypes.String },
+	//
+	qrCode_imgDataURIString: { type: CryptSchemeFieldValueTypes.String }, // hopefully encrypting and saving this doesn't turn out to have been a terrible idea
 }
 exports.DocumentCryptScheme = documentCryptScheme
 //
@@ -72,6 +74,7 @@ function HydrateInstance(
 	self.amount = plaintextDocument.amount
 	self.message = plaintextDocument.message
 	self.description = plaintextDocument.description
+	self.qrCode_imgDataURIString = plaintextDocument.qrCode_imgDataURIString
 }
 exports.HydrateInstance = HydrateInstance
 //
@@ -109,6 +112,7 @@ function SaveToDisk(
 		amount: "" + self.amount, // we're storing this as a string
 		message: self.message || "",
 		description: self.description || "",
+		qrCode_imgDataURIString: self.qrCode_imgDataURIString || ""
 	}
 	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,

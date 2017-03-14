@@ -28,8 +28,6 @@
 //
 "use strict"
 //
-const QRCode = require('../Vendor/qrcode.min')
-//
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
@@ -76,17 +74,15 @@ class FundsRequestCellContentsView extends View
 			div.style.boxShadow = "0 1px 2px 0 rgba(0,0,0,0.20), 0 1px 3px 0 rgba(0,0,0,0.10), inset 0 0 0 0 #FFFFFF"			
 			self.qrCodeContainerLayer = div
 			self.layer.appendChild(div)
-			self.qrCode_side = 20 // for later usage… 
+			const qrCode_side = 20 // for later usage… 
 			{ // qrcode div
-				const layer = document.createElement("div")
-				{
-					layer.style.width = `${self.qrCode_side}px`
-					layer.style.height = `${self.qrCode_side}px`
-					layer.style.margin = "2px 0 0 2px"
-					layer.style.backgroundColor = "black" // not strictly necessary… mostly for debug
-				}
-				self.qrCode_div = layer
+				const layer = document.createElement("img")
+				self.qrCode_img = layer
 				div.appendChild(layer)
+				layer.style.width = `${qrCode_side}px`
+				layer.style.height = `${qrCode_side}px`
+				layer.style.margin = "2px 0 0 2px"
+				layer.style.backgroundColor = "black" // not strictly necessary… mostly for debug
 			}
 		}
 		{ // same line
@@ -181,18 +177,6 @@ class FundsRequestCellContentsView extends View
 	}
 	//
 	//
-	// Runtime - Accessors - QR Code
-	//
-	QRCode_imgData_base64String()
-	{
-		const self = this
-		if (!self.qrCode_imgLayer || typeof self.qrCode_imgLayer === 'undefined') {
-			throw "QRCode_imgData_base64String but nil qrCode_imgLayer"
-		}
-		return self.qrCode_imgLayer.src
-	}
-	//
-	//
 	// Interface - Runtime - Imperatives - State/UI Configuration
 	//
 	ConfigureWithRecord(record)
@@ -214,7 +198,7 @@ class FundsRequestCellContentsView extends View
 		const self = this
 		function __clearAllLayers()
 		{
-			self.qrCode_div.innerHTML = ""
+			self.qrCode_img.src = ""
 			self.amountLayer.innerHTML = ""
 			self.memoLayer.innerHTML = ""
 			self.senderLayer.innerHTML = ""
@@ -233,25 +217,8 @@ class FundsRequestCellContentsView extends View
 			self.amountLayer.innerHTML = "❌ Error: Contact support"
 			return
 		}
-		const uri = fundsRequest.Lazy_URI()
-		{ // qr code
-			self.qrCode_div.innerHTML = "" // clear first - not sure if we need to do this
-	        const qrCode = new QRCode(
-				self.qrCode_div,
-				{
-	            	correctLevel: QRCode.CorrectLevel.L
-				}
-			)
-			qrCode.makeCode(uri)
-			{ // now must set height of qr code img layer (unless we use css rules)
-				const layer = self.qrCode_div.querySelector("img")
-				self.qrCode_imgLayer = layer
-				layer.style.width = `${self.qrCode_side}px`
-				layer.style.height = `${self.qrCode_side}px`
-			}
-		}
-		const colorHexString = fundsRequest.to_walletHexColorString || ""
-		self.walletIconLayer.ConfigureWithHexColorString(colorHexString)
+		self.qrCode_img.src = fundsRequest.qrCode_imgDataURIString
+		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
 		self.amountLayer.innerHTML = parseFloat("" + fundsRequest.amount) + " XMR"
 		var memoString = fundsRequest.message
 		if (!memoString || memoString.length == "") {

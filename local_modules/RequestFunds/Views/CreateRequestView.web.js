@@ -568,12 +568,6 @@ class CreateRequestView extends View
 			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 		}
 	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		// teardown any child/referenced stack navigation views if necessary…
-	}
 	//
 	//
 	// Runtime/Setup - Delegation - Contact selection

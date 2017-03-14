@@ -34,6 +34,7 @@ const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const fundsRequest_persistence_utils = require('./fundsRequest_persistence_utils')
 //
 const monero_requestURI_utils = require('../../monero_utils/monero_requestURI_utils')
+const QRCode = require('../Vendor/qrcode.min')
 //
 class FundsRequest extends EventEmitter
 {
@@ -112,20 +113,32 @@ class FundsRequest extends EventEmitter
 			self.payment_id = self.options.payment_id
 			self.message = self.options.message
 			self.description = self.options.description
-		}
-		self.saveToDisk(
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to save new fundsRequest", err)
-					self.__setup_didFailToBoot(err)
-					return
+			//
+			self.qrCode_imgDataURIString = self._new_qrCode_imgDataURIString(
+				function(qrCode_imgDataURIString)
+				{
+					self.qrCode_imgDataURIString = qrCode_imgDataURIString
+					__proceedTo_save()
 				}
-				console.log("📝  Successfully saved new fundsRequest.")
-				//
-				self.__setup_didBoot()
-			}
-		)
+			)
+		}
+
+		function __proceedTo_save()
+		{
+			self.saveToDisk(
+				function(err)
+				{
+					if (err) {
+						console.error("Failed to save new fundsRequest", err)
+						self.__setup_didFailToBoot(err)
+						return
+					}
+					console.log("📝  Successfully saved new fundsRequest.")
+					//
+					self.__setup_didBoot()
+				}
+			)
+		}
 	}
 	_setup_fetchExistingDocumentWithId()
 	{
@@ -233,6 +246,11 @@ class FundsRequest extends EventEmitter
 			throw "Lazy_URI() called while FundsRequest instance not booted"
 			return
 		}
+		return self._assumingBootedOrEquivalent__Lazy_URI()
+	}
+	_assumingBootedOrEquivalent__Lazy_URI()
+	{
+		const self = this
 		if (typeof self.uri === 'undefined' || !self.uri) {
 			self.uri = monero_requestURI_utils.New_RequestFunds_URI({
 				address: self.to_address,
@@ -244,8 +262,33 @@ class FundsRequest extends EventEmitter
 		}
 		return self.uri
 	}
-	
-	// NOTE: QR code is generated in the UI as it needs a document element
+	_new_qrCode_imgDataURIString(fn)
+	{
+		const self = this
+		const div = document.createElement("div")
+		div.style.width = "200px"
+		div.style.height = "200px"
+		div.style.display = "none"
+		document.body.appendChild(div)
+		const qrCode = new QRCode(
+			div,
+			{
+				correctLevel: QRCode.CorrectLevel.L
+			}
+		)
+		const uri = self._assumingBootedOrEquivalent__Lazy_URI() // since we're not booted yet but we're only calling this when we know we have all the info
+		qrCode.makeCode(uri)
+		setTimeout(function()
+		{ // must wait until the qr code is made and, i guess, displayed in DOM
+			const img = div.querySelector("img")
+			const imgDataURIString = img.src.slice()
+			setTimeout(function()
+			{ // now we've got that we can dispose of the div
+				div.parentNode.removeChild(div)
+			})
+			fn(imgDataURIString)
+		})
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -254,10 +297,7 @@ class FundsRequest extends EventEmitter
 	saveToDisk(fn)
 	{
 		const self = this
-		fundsRequest_persistence_utils.SaveToDisk(
-			self,
-			fn
-		)
+		fundsRequest_persistence_utils.SaveToDisk(self, fn)
 	}
 
 
@@ -265,14 +305,11 @@ class FundsRequest extends EventEmitter
 	// Runtime - Imperatives - Public - Deletion
 
 	Delete(
-		fn // (err?) -> Void
+		fn /* (err?) -> Void */
 	)
 	{
 		const self = this
-		fundsRequest_persistence_utils.DeleteFromDisk(
-			self,
-			fn
-		)
+		fundsRequest_persistence_utils.DeleteFromDisk(self, fn)
 	}
 	
 

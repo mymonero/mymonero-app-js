@@ -344,7 +344,6 @@ class SettingsView extends View
 				self.appTimeoutRangeInputView.SetValue(self.context.settingsController.appTimeoutAfterS)
 			}
 		}
-		// teardown any child/referenced stack navigation views if necessary…
 	}
 }
 module.exports = SettingsView

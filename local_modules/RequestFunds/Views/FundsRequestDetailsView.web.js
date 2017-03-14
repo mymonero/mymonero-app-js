@@ -353,17 +353,9 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-			}
+		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 		}
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-		// teardown any child/referenced stack navigation views if necessary…
 	}
 	//
 	//
@@ -377,7 +369,6 @@ class FundsRequestDetailsView extends View
 	_userSelectedDownloadButton()
 	{
 		const self = this
-		const qrCode_imgData_base64String = self.cellContentsView.QRCode_imgData_base64String() // defer grabbing this til here because we want to wait for the QR code to be properly generated (for now)
 		self.rightBarButtonView.SetEnabled(false)
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
 		// ^ so we don't get torn down while dialog open
@@ -387,7 +378,7 @@ class FundsRequestDetailsView extends View
 			self.context.userIdleInWindowController.ReEnable_userIdle()
 		}
 		self.context.filesystemUI.PresentDialogToSaveBase64ImageStringAsImageFile(
-			qrCode_imgData_base64String,
+			self.fundsRequest.qrCode_imgDataURIString,
 			"Save Monero Request",
 			"Monero request",
 			function(err)
