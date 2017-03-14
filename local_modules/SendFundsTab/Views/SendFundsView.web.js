@@ -485,13 +485,26 @@ class SendFundsView extends View
 			const emitter = self.context.walletAppCoordinator
 			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact = function(contact)
 			{
-				if (self.isSubmitButtonDisabled == true) {
-					console.warn("Triggered send funds from contact while submit btn disabled. Beep.")
-					// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
-					// TODO: mayyybe alert tx in progress
-					return
-				}
-				self.contactOrAddressPickerLayer.ContactPicker_pickContact(contact)
+				self.navigationController.DismissModalViewsToView( // whether we should force-dismiss these (create new contact) is debatable… 
+					null, 
+					true, // null -> to top stack view
+					function() 
+					{ // must wait til done or 'currently transitioning' will race 
+						self.navigationController.PopToRootView( // now pop pushed stack views - essential for the case they're viewing a transaction
+							true, // animated
+							function(err)
+							{
+								if (self.isSubmitButtonDisabled == true) {
+									console.warn("Triggered send funds from contact while submit btn disabled. Beep.")
+									// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+									// TODO: mayyybe alert tx in progress
+									return
+								}
+								self.contactOrAddressPickerLayer.ContactPicker_pickContact(contact)
+							}
+						)
+					}
+				)
 			}
 			emitter.on(
 				emitter.EventName_didTrigger_sendFundsToContact(), // observe 'did' so we're guaranteed to already be on right tab

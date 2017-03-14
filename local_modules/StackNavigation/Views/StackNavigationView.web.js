@@ -269,18 +269,24 @@ class StackNavigationView extends View
 		}
 	}
 	PopView(
-		isAnimated_orTrue
+		isAnimated_orTrue,
+		fn
 	)
 	{
+		fn = fn || function(err) {}
 		const self = this
 		if (self.stackViews.length == 0) {
-			throw "PopView called with 0 self.stackViews"
+			const errStr = "PopView called with 0 self.stackViews"
+			const err = new Error(errStr)
+			throw errStr
+			fn(err)
 			return
 		}
 		const root_stackView = self.stackViews[0]
 		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
 			// TODO: assert self.stackViews.length === 1?
 			console.warn("⚠️  PopView called but already at root. (Probably fine.)")
+			fn()
 			return // bail
 		}
 		// TODO: assert self.stackView.length >= 2?
@@ -290,36 +296,46 @@ class StackNavigationView extends View
 		self.PopToView(
 			justPrevious_stackView,
 			indexOf_justPrevious_stackView,
-			isAnimated_orTrue
+			isAnimated_orTrue,
+			fn
 		)
 	}
 	PopToRootView(
-		isAnimated_orTrue
+		isAnimated_orTrue,
+		fn
 	)
 	{
+		fn = fn || function(err) {}
 		const self = this
 		if (self.stackViews.length == 0) {
-			throw "PopView called with 0 self.stackViews"
+			const errStr = "PopView called with 0 self.stackViews"
+			const err = new Error(errStr)
+			throw errStr
+			fn(err)
 			return
 		}
 		const root_stackView = self.stackViews[0]
 		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
 			// TODO: assert self.stackViews.length === 1?
 			console.warn("⚠️  PopToRootView called but already at root. (Probably fine.)")
+			fn()
 			return // bail
 		}
 		self.PopToView(
 			root_stackView,
 			0,
-			isAnimated_orTrue
+			isAnimated_orTrue,
+			fn
 		)
 	}
 	PopToView(
 		to_stackView,
 		indexOf_to_stackView, // this is asked for so don't have to search the list
-		isAnimated_orTrue
+		isAnimated_orTrue,
+		fn
 	)
 	{
+		fn = fn || function(err) {}
 		const self = this
 		const isAnimated = 
 			isAnimated_orTrue === true
@@ -328,11 +344,15 @@ class StackNavigationView extends View
 			? true /* default true */ 
 			: false
 		if (to_stackView === null || typeof to_stackView === 'undefined') {
-			throw "StackNavigationView asked to PopToView nil to_stackView"
+			const errStr = "StackNavigationView asked to PopToView nil to_stackView"
+			const err = new Error(errStr)
+			throw errStr
+			fn(err)
 			return
 		}
 		if (self.isCurrentlyTransitioningAManagedView === true) {
 			console.warn("⚠️  Asked to " + self.constructor.name + "/PopToView but already self.isCurrentlyTransitioningAManagedView.")
+			fn()
 			return
 		}
 		{
@@ -341,6 +361,7 @@ class StackNavigationView extends View
 		function __trampolineFor_transitionEnded()
 		{
 			self.isCurrentlyTransitioningAManagedView = false
+			fn()
 		}
 		const old_topStackView = self.topStackView
 		// pre-insert the new top view, to_stackView, underneath the old_topStackView
@@ -349,7 +370,7 @@ class StackNavigationView extends View
 		const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
 		if (indexOf_old_topStackView_inSubviews === -1) {
 			throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
-			__trampolineFor_transitionEnded() // must unlock fn
+			__trampolineFor_transitionEnded() // must unlock this function; calls 'fn' for us
 			return
 		}
 		{ // make to_stackView the new top view
@@ -382,7 +403,7 @@ class StackNavigationView extends View
 			)
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
-				__trampolineFor_transitionEnded() // must unlock fn
+				__trampolineFor_transitionEnded() // must unlock this function; called 'fn' for us
 			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
 				setTimeout(
 					function()
@@ -398,14 +419,14 @@ class StackNavigationView extends View
 								complete: function()
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
-									__trampolineFor_transitionEnded() // must unlock fn
+									__trampolineFor_transitionEnded() // must unlock this function; called 'fn' for us
 								}
 							}
 						)
 					}
 				)
 			}
-		}		
+		}
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
 			const didPopToRevealView_fn = to_stackView.navigationView_didPopToRevealView

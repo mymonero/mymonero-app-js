@@ -104,7 +104,13 @@ class FundsRequestsListView extends ListView
 				emitter.EventName_didTrigger_requestFundsFromContact(), // observe 'did' so we're guaranteed to already be on right tab
 				function(contact)
 				{
-					self.presentCreateRequestView_withContact(contact)
+					self.navigationController.PopToRootView( // essential for the case they're viewing a request…
+						true, // animated
+						function(err)
+						{
+							self.presentCreateRequestView_withContact(contact)
+						}
+					)
 				}
 			)
 		}
