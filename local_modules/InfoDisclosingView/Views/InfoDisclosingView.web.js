@@ -155,11 +155,11 @@ class InfoDisclosingView extends View
 	}
 	_layout_transitionAnimationDuration_ms()
 	{
-		return 350
+		return 340
 	}
 	_fade_transitionAnimationDuration_ms()
 	{
-		return 320
+		return 280
 	}
 	//
 	//
