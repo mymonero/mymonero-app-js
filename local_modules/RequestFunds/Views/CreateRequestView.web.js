@@ -482,26 +482,26 @@ class CreateRequestView extends View
 				}
 			}
 		}
-		self.__generateRequestWith(
-			hasPickedAContact ? self.pickedContact.fullname : null,// from_fullname
-			wallet.swatch,
-			wallet.public_address,
-			payment_id,
-			"" + amount_Number,
-			self.memoInputLayer.value, // request description, AKA memo or label
-			undefined // "message"; no support yet 
-		)
+		self.__generateRequestWith({
+			optl__from_fullname: hasPickedAContact ? self.pickedContact.fullname : null,// from_fullname
+			optl__to_walletHexColorString: wallet.swatch,
+			receiveTo_address: wallet.public_address,
+			payment_id: payment_id,
+			amount_String: "" + amount_Number,
+			memo: self.memoInputLayer.value, // request description, AKA memo or label
+			message: undefined // "message"; no support yet 
+		})
 	}
-	__generateRequestWith(
-		optl__from_fullname,
-		optl__to_walletHexColorString,
-		receiveTo_address,
-		payment_id,
-		amount_String,
-		memo,
-		message
-	)
+	__generateRequestWith(params)
 	{
+		const optl__from_fullname = params.optl__from_fullname
+		const optl__to_walletHexColorString = params.optl__to_walletHexColorString
+		const receiveTo_address = params.receiveTo_address
+		const payment_id = params.payment_id
+		const amount_String = params.amount_String
+		const memo = params.memo
+		const message = params.message
+		//
 		const self = this
 		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
 			optl__from_fullname,
