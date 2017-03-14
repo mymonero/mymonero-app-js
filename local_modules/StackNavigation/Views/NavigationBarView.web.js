@@ -376,8 +376,10 @@ class NavigationBarView extends View
 	)
 	{
 		const self = this
-		const buttonOffsetForTransition = (self.layer.offsetWidth * 0.3)+ "px"
+		const self_layer_width = self.layer.offsetWidth
 		{ // remove existing
+			const buttonOffsetForTransition_outgoingButtons_fromLeft = (self_layer_width * 0.5)+ "px" // from left+outgoing: mimick page sliding out
+			const buttonOffsetForTransition_outgoingButtons_fromRight = (self_layer_width * 0.26)+ "px" // from right+outgoing: mimick btn slide out to reveal new page coming in
 			{ // left btn
 				const view = self.leftBarButtonView
 				self.leftBarButtonView = null // free
@@ -390,7 +392,7 @@ class NavigationBarView extends View
 							layer, 
 							{ 
 								opacity: 0,
-								left: ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition/*TODO: offsetbyw*/ : buttonOffsetForTransition
+								left: ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition_outgoingButtons_fromRight/*TODO: offsetbyw*/ : buttonOffsetForTransition_outgoingButtons_fromLeft
 							}, 
 							{
 								duration: self._animationDuration_ms_navigationPush(),
@@ -417,7 +419,7 @@ class NavigationBarView extends View
 							layer, 
 							{ 
 								opacity: 0,
-								right: ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition : "-"+buttonOffsetForTransition/*TODO: offsetbyw*/
+								right: ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition_outgoingButtons_fromRight : "-"+buttonOffsetForTransition_outgoingButtons_fromLeft
 							}, 
 							{
 								duration: self._animationDuration_ms_navigationPush(),
@@ -437,6 +439,8 @@ class NavigationBarView extends View
 		if (typeof stackView === 'undefined' || stackView === null) { // validate
 			return
 		}
+		const buttonOffsetForTransition_incomingButtons_fromLeft = (self_layer_width * 0.26)+ "px" // the constant factor is to mimick the page on top sliding out to reveal existing buttons
+		const buttonOffsetForTransition_incomingButtons_fromRight = (self_layer_width * 0.5)+ "px" // from right+incoming: mimick btns of new page sliding in
 		{ // left btn
 			var buttonView = null
 			const factoryFn = stackView.Navigation_New_LeftBarButtonView
@@ -476,7 +480,7 @@ class NavigationBarView extends View
 						throw "toOpacity is NaN"
 					}
 					layer.style.opacity = "0" // first make invisible 
-					layer.style.left = ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition : "-"+buttonOffsetForTransition/*TODO: offsetbyw*/
+					layer.style.left = ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition_incomingButtons_fromRight : "-"+buttonOffsetForTransition_incomingButtons_fromLeft
 					self.leftBarButtonHolderView.addSubview(buttonView) // then add to the view
 					// then fade in
 					Animate(
@@ -517,7 +521,7 @@ class NavigationBarView extends View
 						throw "toOpacity is NaN"
 					}
 					layer.style.opacity = "0" // first make invisible 
-					layer.style.right = ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition/*TODO: offsetbyw*/ : buttonOffsetForTransition
+					layer.style.right = ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition_incomingButtons_fromRight : buttonOffsetForTransition_incomingButtons_fromLeft
 					self.rightBarButtonHolderView.addSubview(buttonView) // then add to the view
 					// then fade in
 					Animate(
