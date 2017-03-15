@@ -113,9 +113,17 @@ function New_fieldContainerLayer()
 }
 exports.New_fieldContainerLayer = New_fieldContainerLayer
 //
-function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
+function New_clickableLinkButtonView(
+	buttonTitle, 
+	context, 
+	clicked_fn,
+	optl__mouseEnter_fn,
+	optl__mouseLeave_fn
+)
 {
 	clicked_fn = clicked_fn || function() {}
+	const mouseEnter_fn = optl__mouseEnter_fn || function() {}
+	const mouseLeave_fn = optl__mouseLeave_fn || function() {}
 	//
 	const view = new View({ tag: "a" }, context)
 	const a = view.layer
@@ -137,10 +145,15 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn)
 		} else {
 			a.style.textDecoration = "none"
 		}
+		if (view.isEnabled !== false) {
+			mouseEnter_fn()
+		}
 	})
 	a.addEventListener("mouseleave", function()
-	{
+	{ // note going to check enabled here cause mouseleave may be needed
+	  // to reset element to its neutral state after having been deactivated
 		a.style.textDecoration = "none"
+		mouseLeave_fn()
 	})
 	view.SetEnabled = function(isEnabled)
 	{

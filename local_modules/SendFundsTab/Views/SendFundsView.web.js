@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
@@ -168,7 +169,6 @@ class SendFundsView extends View
 	_setup_form_amountInputLayer(tr)
 	{ 
 		const self = this
-
 		const pkg = commonComponents_forms.New_AmountInputFieldPKG(
 			self.context,
 			"XMR", // TODO: grab, update from selected wallet
@@ -190,7 +190,6 @@ class SendFundsView extends View
 			self.refresh_feeEstimateLayer() // now that reference assigned…
 			div.appendChild(layer)
 		}
-		// TODO: add '?' tooltip btn inline with this ^ layer
 		const td = document.createElement("td")
 		td.style.width = "100px"
 		td.style.verticalAlign = "top"
@@ -239,6 +238,12 @@ class SendFundsView extends View
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
+		{
+			const tooltipText = "Please double-check the accuracy of<br/>your recipient information as Monero<br/>transactions are irreversible."
+			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+			const layer = view.layer
+			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+		}
 		div.appendChild(labelLayer)
 		//
 		const layer = commonComponents_contactPicker.New_contactPickerLayer(
