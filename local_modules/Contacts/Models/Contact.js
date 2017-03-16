@@ -30,7 +30,7 @@
 //
 const EventEmitter = require('events')
 //
-const Emojis = require('../../Emoji/emoji').Emojis
+const Emojis = require('../../Emoji/emoji_set').Emojis
 //
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const contact_persistence_utils = require('./contact_persistence_utils')

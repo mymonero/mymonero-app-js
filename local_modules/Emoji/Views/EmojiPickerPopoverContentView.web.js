@@ -29,7 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const emoji = require('../emoji')
+const emoji_set = require('../emoji_set')
 //
 const EmojiButtonView_height = 30	
 //

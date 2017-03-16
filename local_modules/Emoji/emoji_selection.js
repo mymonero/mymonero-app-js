@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const Emojis = require('./emoji').Emojis
+const Emojis = require('./emoji_set').Emojis
 const numberOf_Emojis = Emojis.length
 // 
 function EmojiWhichIsNotAlreadyInUse(inUseEmojis)
