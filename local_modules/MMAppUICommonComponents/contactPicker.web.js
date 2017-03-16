@@ -317,7 +317,9 @@ function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 		layer.style.padding = `0 ${padding_h}px`
 		layer.style.width = `100%`
 		layer.style.height = height+"px"
-		//
+		layer.style.whiteSpace = "nowrap"
+		layer.style.overflow = "hidden"
+		layer.style.textOverflow = "ellipsis"
 		layer.style.color = "#1D1B1D"
 		layer.style.fontSize = "13px"
 		layer.style.fontWeight = "600"
@@ -370,7 +372,13 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 	{ // ^-- using a content layer here so we can get width-of-content behavior with inline-block
 		// while getting parent to give us display:block behavior
 		contentLayer.innerHTML = `${contact.emoji}&nbsp;&nbsp;${contact.fullname}`
+		contentLayer.style.boxSizing = "border-box"
 		contentLayer.style.padding = "4px 8px 6px 10px"
+		// I would like to limit width but since X btn is added inline it will take a little more
+		// contentLayer.style.maxWidth = "250px"
+		// contentLayer.style.whiteSpace = "nowrap"
+		// contentLayer.style.overflow = "hidden"
+		// contentLayer.style.textOverflow = "ellipsis"
 		contentLayer.style.backgroundColor = "#383638"
 		contentLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 		contentLayer.style.borderRadius = "3px"

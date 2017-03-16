@@ -78,6 +78,9 @@ class ContactsListCellView extends ListCellView
 		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		layer.style.fontWeight = "400"
 		layer.style.wordBreak = "break-word"
+		layer.style.whiteSpace = "nowrap"
+		layer.style.overflow = "hidden"
+		layer.style.textOverflow = "ellipsis"
 		layer.style.color = "#fcfbfc"
 		layer.style.cursor = "default"
 		self.nameLayer = layer

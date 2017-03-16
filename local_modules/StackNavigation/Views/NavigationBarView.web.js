@@ -95,6 +95,9 @@ class NavigationBarView extends View
 			layer.style.height = `${self.NavigationBarHeight()}px`
 			layer.style.textAlign = "center"
 			layer.style.lineHeight = `${self.NavigationBarHeight()}px`
+			layer.style.whiteSpace = "nowrap"
+			layer.style.overflow = "hidden"
+			layer.style.textOverflow = "ellipsis"
 			//
 			self.layer.appendChild(layer)
 		}
