@@ -295,9 +295,9 @@ function _new_autocompleteResultsLayer()
 		layer.style.width = "100%"
 		layer.style.maxHeight = "155px"
 		layer.style.minHeight = "30px"
-		layer.style.backgroundColor = "white"
+		layer.style.backgroundColor = "#FCFBFC"
 		layer.style.borderRadius = "3px"
-		layer.style.boxShadow = "0px 3px 9px -1px rgba(0,0,0,0.75)"
+		layer.style.boxShadow = "0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.30)"
 		layer.style.overflowY = "scroll"
 		layer.style.zIndex = "100"
 		//
