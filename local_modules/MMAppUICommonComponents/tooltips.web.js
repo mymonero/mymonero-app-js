@@ -209,23 +209,7 @@ function New_TooltipSpawningButtonView(tooltipText, context)
 	__injectCSSRules_ifNecessary()
 	var tooltip;
 	const buttonTitle = "?"
-	const clicked_fn = function() 
-	{ // toggle visibility
-		// if (tooltip.visible == true) {
-		// 	tooltip.hide()
-		// } else {
-		// 	tooltip.show()
-		// }
-	}
-	const mouseEnter_fn = function()
-	{
-        // tooltip.show()
-	}
-	const mouseLeave_fn = function()
-	{ // we have to manage this manually for some reason
-		// tooltip.prepareToHide()
-	}
-	const view = commonComponents_tables.New_clickableLinkButtonView(buttonTitle, context, clicked_fn, mouseEnter_fn, mouseLeave_fn)
+	const view = commonComponents_tables.New_clickableLinkButtonView(buttonTitle, context)
 	const layer = view.layer
 	layer.style.marginLeft = "7px"
 	layer.style.display = "inline" // same line
