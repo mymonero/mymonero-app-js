@@ -57,7 +57,7 @@ class ContactDetailsView extends View
 	setup_views()
 	{
 		const self = this
-		const margin_h = 10
+		const margin_h = 16
 		{
 			const layer = self.layer
 			layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
@@ -80,7 +80,7 @@ class ContactDetailsView extends View
 			const containerLayer = document.createElement("div")
 			containerLayer.style.border = "0.5px solid #494749"
 			containerLayer.style.borderRadius = "5px"
-			containerLayer.style.margin = `15px 6px 0px 6px`
+			containerLayer.style.margin = `16px 0 0px 0`
 			containerLayer.style.padding = "0 0 0 15px"
 			//
 			self.tableSection_containerLayer = containerLayer
@@ -93,8 +93,9 @@ class ContactDetailsView extends View
 			self.layer.appendChild(containerLayer)
 		}
 		{ // action buttons toolbar
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = margin_h
+			const actionButtonsContainerView_margin_h = 16
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + actionButtonsContainerView_margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = actionButtonsContainerView_margin_h
 			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
 			self.actionButtonsContainerView = view
 			{
@@ -117,7 +118,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
-		div.style.paddingRight = "15px" // manually here cause we removed right padding on container to get separator flush with right side 
+		div.style.paddingRight = "16px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.address__valueField_component = div
 		self.tableSection_containerLayer.appendChild(div)
 	}
@@ -134,7 +135,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
-		div.style.paddingRight = "15px" // manually here cause we removed right padding on container to get separator flush with right side 
+		div.style.paddingRight = "16px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.cached_OAResolved_XMR_address__valueField_component = div
 		if (typeof value === 'undefined' || !value) {
 			div.style.display = "none"
@@ -154,7 +155,7 @@ class ContactDetailsView extends View
 			self.context.pasteboard, 
 			valueToDisplayIfValueNil
 		)
-		div.style.paddingRight = "15px" // manually here cause we removed right padding on container to get separator flush with right side 
+		div.style.paddingRight = "16px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.payment_id__valueField_component = div
 		self.tableSection_containerLayer.appendChild(div)
 	}

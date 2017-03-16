@@ -53,7 +53,7 @@ class SettingsView extends View
 	{
 		const self = this
 		{ // metrics / caches
-			self.margin_h = 10
+			self.margin_h = 0
 		}
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
@@ -107,7 +107,7 @@ class SettingsView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.padding = "19px 14px 20px 12px"
+		div.style.padding = "19px 24px 20px 24px"
 		{
 			const view = commonComponents_navigationBarButtons.New_GreyButtonView(self.context)
 			view.layer.style.display = "inline-block"

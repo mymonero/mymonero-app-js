@@ -80,7 +80,7 @@ class WalletsListView extends ListView
 		const view = new View({}, self.context)
 		self.emptyStateContainerView = view
 		const layer = view.layer
-		const margin_side = 15
+		const margin_side = 16
 		const marginTop = 60 - 41 // TODO: configure this with navigation bar height in VDA/VWA
 		layer.style.marginTop = `${marginTop}px`
 		layer.style.marginLeft = margin_side + "px"

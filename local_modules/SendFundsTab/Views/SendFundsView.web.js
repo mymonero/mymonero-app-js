@@ -79,15 +79,16 @@ class SendFundsView extends View
 			self.current_transactionDetailsView = null
 		}
 		{ // metrics / caches
-			self.margin_h = 10
+			self.margin_h = 0
 		}
 		self._setup_self_layer()
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
 		{ // action buttons toolbar
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + self.margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = self.margin_h
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + 16 // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = 16
 			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
+			view.layer.style.paddingLeft = "16px"
 			self.actionButtonsContainerView = view
 			{
 				// self._setup_actionButton_useCamera()
@@ -108,7 +109,7 @@ class SendFundsView extends View
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%"
-		layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "scroll"
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -121,8 +122,8 @@ class SendFundsView extends View
 	{ // validation message
 		const self = this
 		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
-		layer.style.width = "calc(100% - 28px)"
-		layer.style.marginLeft = "14px"
+		layer.style.width = "calc(100% - 48px)"
+		layer.style.marginLeft = "24px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				
@@ -131,7 +132,9 @@ class SendFundsView extends View
 	{
 		const self = this
 		const containerLayer = document.createElement("div")
-		const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h + commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin + 10
+		const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h 
+								+ commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin 
+								+ 10
 		containerLayer.style.paddingBottom = `${paddingBottom}px`
 		self.form_containerLayer = containerLayer
 		{
@@ -356,7 +359,7 @@ class SendFundsView extends View
 			}
 		)
 		view.layer.style.marginTop = "4px"
-		view.layer.style.marginLeft = "22px"
+		view.layer.style.marginLeft = "24px"
 		self.addPaymentIDButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
 	}
@@ -374,18 +377,16 @@ class SendFundsView extends View
 				placeholderText: "A specific payment ID"
 			})
 			self.manualPaymentIDInputLayer = valueLayer
-			{
-				valueLayer.addEventListener(
-					"keyup",
-					function(event)
-					{
-						if (event.keyCode === 13) { // return key
-							self._tryToGenerateSend()
-							return
-						}
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					if (event.keyCode === 13) { // return key
+						self._tryToGenerateSend()
+						return
 					}
-				)
-			}
+				}
+			)
 			div.appendChild(valueLayer)
 		}
 		self.manualPaymentIDInputLayer_containerLayer = div
@@ -728,7 +729,9 @@ class SendFundsView extends View
 			self.disable_submitButton()
 			self.isFormDisabled = true
 			//
-			self.useCamera_buttonView.Disable()
+			if (self.useCamera_buttonView) {
+				self.useCamera_buttonView.Disable()
+			}
 			self.chooseFile_buttonView.Disable()
 			// 
 			self.amountInputLayer.disabled = true
@@ -749,7 +752,9 @@ class SendFundsView extends View
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
 			self.walletSelectView.SetEnabled(true)
 			//
-			self.useCamera_buttonView.Enable()
+			if (self.useCamera_buttonView) {
+				self.useCamera_buttonView.Enable()
+			}
 			self.chooseFile_buttonView.Enable()
 		}
 		function _trampolineToReturnWithValidationErrorString(errStr)

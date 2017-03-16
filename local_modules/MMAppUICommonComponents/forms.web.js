@@ -38,7 +38,7 @@ const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+Names
 const cssRules =
 [
 	`.form_field {
-		padding: 0 14px 20px 14px;
+		padding: 0 24px 20px 24px;
 	}`,
 	`.form_field .field_title {
 	}`,
@@ -124,9 +124,9 @@ function New_fieldValue_textInputLayer(context, params)
 	}
 	layer.style.height = "29px"
 	const padding_h = 7
-	const borderWidth = 0.5
+	const borderWidth = 1
 	if (typeof params.target_width !== 'undefined') {
-		const width = params.target_width - 4 - 2 * padding_h
+		const width = params.target_width - 2*borderWidth - 2*padding_h
 		layer.style.width = width + "px"
 	} else {
 		layer.style.width = `calc(100% - ${2*borderWidth}px - ${2 * padding_h}px)`
@@ -166,7 +166,7 @@ function New_fieldValue_textAreaView(params, context)
 	const padding_h = 8
 	layer.style.padding = `9px ${padding_h}px`
 	layer.style.height = `${61 - 2 * padding_h}px`
-	layer.style.width = `calc(100% - 4px - ${2 * padding_h}px)`
+	layer.style.width = `calc(100% - ${2 * padding_h}px)` // no border so no -2*brdr_w
 	layer.style.borderRadius = "3px"
 	layer.style.border = "none"
 	layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
@@ -338,7 +338,7 @@ function New_AmountInputFieldPKG(
 	//
 	const div = New_fieldContainerLayer()
 	div.style.width = "210px"
-	div.style.padding = "7px 14px 0 14px"
+	div.style.padding = "7px 22px 0 22px"
 	//
 	const labelLayer = New_fieldTitle_labelLayer("AMOUNT", context)
 	div.appendChild(labelLayer)

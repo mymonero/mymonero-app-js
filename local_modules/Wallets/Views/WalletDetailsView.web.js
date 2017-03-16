@@ -105,7 +105,7 @@ class WalletDetailsView extends View
 			layer.style.boxSizing = "border-box"
 			layer.style.width = "100%"
 			layer.style.height = "71px"
-			layer.style.marginTop = "15px"
+			layer.style.marginTop = "16px"
 			layer.style.padding = "17px 17px"
 			layer.style.boxShadow = "0 0.5px 1px 0 rgba(0,0,0,0.20), inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 			layer.style.borderRadius = "5px"

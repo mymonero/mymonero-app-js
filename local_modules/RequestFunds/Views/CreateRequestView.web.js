@@ -79,7 +79,7 @@ class CreateRequestView extends View
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%"
-		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "scroll"
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
@@ -92,8 +92,8 @@ class CreateRequestView extends View
 	{ // validation message
 		const self = this
 		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
-		layer.style.width = "calc(100% - 30px)"
-		layer.style.marginLeft = "16px"
+		layer.style.width = "calc(100% - 48px)"
+		layer.style.marginLeft = "24px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				
@@ -126,7 +126,7 @@ class CreateRequestView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
 		div.style.display = "block"
-		div.style.padding = "0 14px 0 14px"
+		div.style.padding = "0 24px 0 24px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 			div.appendChild(labelLayer)
@@ -292,7 +292,7 @@ class CreateRequestView extends View
 			}
 		)
 		view.layer.style.paddingTop = "16px"
-		view.layer.style.paddingLeft = "13px"
+		view.layer.style.paddingLeft = "24px"
 		self.createNewRecordNamedButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
 	}

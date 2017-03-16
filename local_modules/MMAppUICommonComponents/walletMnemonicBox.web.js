@@ -42,7 +42,7 @@ const cssRules =
 		border: 1px solid rgba(0,0,0,0); /* invisible border for validation highlight layout */
 		box-shadow: inset 0 0px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5); /* design stipulates 0.5px box shadow instead of 0px but since we need to use invisible border it creates a similar effect already */
 		border-radius: 5px;
-		margin: 0 auto 7px auto;
+		margin: 0 16px 7px 16px;
 	}`,
 	`.mnemonic-container.errored {
 		border: 1px solid #f97777;
@@ -99,7 +99,7 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 	const padding_v = 35
 	layer.style.minHeight = `${128 - 2*padding_v}px`
 	layer.style.padding = `${padding_v}px 24px`
-	layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+	layer.style.width = `calc(100% - ${2*16}px - ${2 * 1}px - ${2*24}px)`
 	layer.style.wordBreak = "break-word"
 	layer.style.lineHeight = "20px"
 	layer.style.fontSize = "13px"
@@ -127,7 +127,7 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 		const padding_v = 20 // instead of 24, because word elements have v margin of 4
 		layer.style.minHeight = `${129 - 2*padding_v}px`
 		layer.style.padding = `${padding_v}px 24px`
-		layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+		layer.style.width = `calc(100% - ${2*16}px - ${2 * 1}px - ${2*24}px)`
 		layer.style.textAlign = "center"
 	}
 	const mnemonicWords = mnemonicString.split(" ")

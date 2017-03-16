@@ -220,7 +220,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		layer.style.fontSize = "11px"
 		layer.style.color = "#8d8b8d"
 		layer.style.letterSpacing = "0"
-		layer.style.margin = "9px 0 17px 21px"
+		layer.style.margin = "9px 0 17px 24px"
 		layer.style.paddingBottom = "8px"
 		{
 			const span = document.createElement("span")

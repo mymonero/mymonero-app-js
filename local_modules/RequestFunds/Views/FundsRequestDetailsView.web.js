@@ -78,7 +78,7 @@ class FundsRequestDetailsView extends View
 		layer.style.color = "#c0c0c0" // temporary
 		//
 		layer.style.overflowY = "scroll"
-		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
@@ -89,7 +89,7 @@ class FundsRequestDetailsView extends View
 		{
 			layer.style.border = "0.5px solid #494749"
 			layer.style.borderRadius = "5px"
-			layer.style.margin = `${isFirst ? 20 : 24}px 10px 0px 10px`
+			layer.style.margin = `${isFirst ? 16 : 20}px 16px 0px 16px`
 			layer.style.padding = "0"
 		}
 		return layer

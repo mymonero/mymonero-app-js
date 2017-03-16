@@ -58,8 +58,8 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 	{ // validation message
 		const self = this
 		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
-		layer.style.width = "calc(100% - 30px)"
-		layer.style.marginLeft = "16px"
+		layer.style.width = "calc(100% - 48px)"
+		layer.style.marginLeft = "24px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
 		self.layer.appendChild(layer)				

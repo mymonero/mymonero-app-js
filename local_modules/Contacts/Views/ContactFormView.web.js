@@ -68,7 +68,7 @@ class ContactFormView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		layer.style.overflowY = "scroll"
-		layer.style.padding = "0 10px 40px 10px" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//
@@ -81,8 +81,8 @@ class ContactFormView extends View
 		const initial_message = self._overridable_initial_inlineMessageString()
 		const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
 		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, initial_message, initial_message__exists)
-		layer.style.width = "calc(100% - 31px)"
-		layer.style.marginLeft = "14px"
+		layer.style.width = "calc(100% - 48px)"
+		layer.style.marginLeft = "24px"
 		self.validationMessageLayer = layer
 		if (initial_message__exists == false) {
 			layer.ClearAndHideMessage()
@@ -145,9 +145,9 @@ class ContactFormView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.padding = "0 0 0 14px"
-		const emojiComponentWidth = 60 + 14 + 24
-		div.style.width = `calc(100% - ${emojiComponentWidth}px - 14px - 2px)` // -2px for border
+		div.style.padding = "0 0 0 24px"
+		const emojiComponentWidth = 60 + 24 + 24
+		div.style.width = `calc(100% - ${emojiComponentWidth}px - 24px + 2px)` // -24px for right side margin
 		div.style.float = "left"
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NAME", self.context)
@@ -188,7 +188,7 @@ class ContactFormView extends View
 		//					
 		const paddingLeft = 24
 		const div = commonComponents_forms.New_fieldContainerLayer()
-		div.style.padding = "0 14px 0 24px"
+		div.style.padding = "0 24px 0 24px"
 		div.style.width = "58px"
 		div.style.display = "inline-block"
 		//

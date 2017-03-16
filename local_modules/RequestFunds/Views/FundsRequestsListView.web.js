@@ -60,7 +60,7 @@ class FundsRequestsListView extends ListView
 		const view = new View({}, self.context)
 		self.emptyStateContainerView = view
 		const layer = view.layer
-		const margin_side = 15
+		const margin_side = 16
 		const marginTop = 56 - 41 // TODO: do this in VDA and query actual nav bar height
 		const marginBottom = 14
 		layer.style.marginTop = `${marginTop}px`
@@ -226,7 +226,7 @@ class FundsRequestsListView extends ListView
 			if (isEmptyVisible == true) {
 				layer.style.display = "none"
 			} else {
-				layer.style.margin = "16px 15px 15px 15px"
+				layer.style.margin = "16px 16px 15px 16px"
 				layer.style.background = "#383638"
 				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 				layer.style.borderRadius = "5px"
