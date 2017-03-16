@@ -182,14 +182,25 @@ class SendFundsView extends View
 		const labelLayer = pkg.labelLayer
 		labelLayer.style.marginTop = "0"
 		self.amountInputLayer = pkg.valueLayer
+		//
+		const breakingDiv = document.createElement("div")
 		{ // addtl element on this screen
 			const layer = commonComponents_forms.New_fieldTitle_labelLayer("", self.context)
 			layer.style.marginTop = "8px"
 			layer.style.color = "#9E9C9E"
+			layer.style.display = "inline-block"
 			self.feeEstimateLayer = layer
 			self.refresh_feeEstimateLayer() // now that reference assigned…
-			div.appendChild(layer)
+			breakingDiv.appendChild(layer)
+		}		
+		{
+			const tooltipText = "This figure is based on network<br/>fee estimate, and is not final."
+			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+			const layer = view.layer
+			breakingDiv.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
 		}
+		div.appendChild(breakingDiv)
+		//
 		const td = document.createElement("td")
 		td.style.width = "100px"
 		td.style.verticalAlign = "top"
