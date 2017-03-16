@@ -103,7 +103,7 @@ class EmojiPickerPopoverContentView extends View
 		layer.style.overflowY = "scroll"
 		layer.classList.add(NamespaceName)
 		//
-		const emojis = emoji.Emojis
+		const emojis = emoji_set.Emojis
 		const emojis_length = emojis.length
 		for (let i = 0 ; i < emojis_length ; i++) {
 			const emoji = emojis[i]
