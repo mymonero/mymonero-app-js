@@ -250,7 +250,7 @@ class SendFundsView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
 		{
-			const tooltipText = "Please double-check the accuracy of<br/>your recipient information as Monero<br/>transactions are irreversible."
+			const tooltipText = "Please double-check the accuracy of<br/>your recipient information as Monero<br/>transactions are irreversible.<br/><br/>Monero 'mixin' value set automatically."
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
