@@ -192,12 +192,12 @@ class SendFundsView extends View
 			self.feeEstimateLayer = layer
 			self.refresh_feeEstimateLayer() // now that reference assigned…
 			breakingDiv.appendChild(layer)
-		}		
+		}
 		{
 			const tooltipText = "This figure is based on network<br/>fee estimate, and is not final."
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
-			breakingDiv.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+			breakingDiv.appendChild(layer)
 		}
 		div.appendChild(breakingDiv)
 		//

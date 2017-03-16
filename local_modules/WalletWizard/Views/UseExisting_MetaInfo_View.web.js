@@ -32,6 +32,7 @@ const View = require('../../Views/View.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
 const BaseView_Wallet_MetaInfo = require('./BaseView_Wallet_MetaInfo.web')
 //
@@ -72,6 +73,12 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SECRET MNEMONIC", self.context)
 			div.appendChild(labelLayer)
+			{
+				const tooltipText = "This secret mnemonic is never<br/>sent to the MyMonero server."
+				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+				const layer = view.layer
+				labelLayer.appendChild(layer)
+			}
 			//
 			const view = commonComponents_forms.New_fieldValue_textAreaView({
 				placeholderText: "From your existing wallet"
@@ -107,6 +114,12 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
 				div.appendChild(labelLayer)
+				{
+					const tooltipText = "Your wallet's public address"
+					const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+					const layer = view.layer
+					labelLayer.appendChild(layer)
+				}
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
@@ -135,6 +148,12 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("VIEW KEY", self.context)
 				div.appendChild(labelLayer)
+				{
+					const tooltipText = "This private view key and the wallet<br/>address are the only things sent<br/>to the MyMonero server."
+					const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+					const layer = view.layer
+					labelLayer.appendChild(layer)
+				}
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
@@ -163,6 +182,12 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SPEND KEY", self.context)
 				div.appendChild(labelLayer)
+				{
+					const tooltipText = "This private spend key is never<br/>sent to the MyMonero server."
+					const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+					const layer = view.layer
+					labelLayer.appendChild(layer)
+				}
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)

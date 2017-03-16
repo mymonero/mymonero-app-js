@@ -227,6 +227,7 @@ function New_TooltipSpawningButtonView(tooltipText, context)
 	}
 	const view = commonComponents_tables.New_clickableLinkButtonView(buttonTitle, context, clicked_fn, mouseEnter_fn, mouseLeave_fn)
 	const layer = view.layer
+	layer.style.marginLeft = "7px"
 	layer.style.display = "inline" // same line
 	tooltip = new Opentip(layer, {
 		target: true, // target trigger (`layer`)
