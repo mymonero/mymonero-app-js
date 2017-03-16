@@ -90,7 +90,7 @@ class SendFundsView extends View
 			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
 			self.actionButtonsContainerView = view
 			{
-				self._setup_actionButton_useCamera()
+				// self._setup_actionButton_useCamera()
 				self._setup_actionButton_chooseFile()
 			}
 			self.addSubview(view)
