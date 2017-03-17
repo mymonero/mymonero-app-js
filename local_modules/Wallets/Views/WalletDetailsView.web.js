@@ -432,8 +432,7 @@ class WalletDetailsView extends View
 		const mnemonic = wallet.mnemonicString
 		const viewKey = wallet.private_keys.view
 		const spendKey = wallet.private_keys.spend
-		if (wallet.didFailToInitialize_flag == true 
-			|| wallet.didFailToBoot_flag == true) { // failed to initialize
+		if (wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true) { // failed to initialize
 			self.preview__address_fieldView.SetValue(null)
 			self.disclosed__address_fieldView.SetValue(null)
 			self.viewKey_fieldView.SetValue(null)
@@ -478,9 +477,9 @@ class WalletDetailsView extends View
 			}
 		}
 		if (wallet.HasEverFetched_transactions() === false) {
-			const p = document.createElement("p")
-			p.innerHTML = "Loading…"
-			layer_transactions.appendChild(p)
+			// const p = document.createElement("p")
+			// p.innerHTML = "Loading…"
+			// layer_transactions.appendChild(p)
 			//
 			return
 		}
