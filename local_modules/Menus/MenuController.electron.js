@@ -110,7 +110,11 @@ class MenuController extends EventEmitter
 				label: appName,
 				submenu: [
 					{
-						role: 'about'
+						label: 'About MyMonero',
+						click: function(menuItem, browserWindow, event)
+						{
+							self.context.aboutWindowController.MakeKeyAndVisible()
+						}
 					},
 					{
 						type: 'separator'
@@ -235,50 +239,49 @@ class MenuController extends EventEmitter
 		// 	]
 		// })
 			
-		// v------- The window menu is commented for now because it also shows show:false (background process) windows
-		// { // Window menu
-		// 	const menuSpec =
-		// 	{
-		// 		role: 'window'
-		// 	}
-		// 	if (isMacOS === true) {
-		// 		menuSpec.submenu =
-		// 		[
-		// 			{
-		// 				label: 'Close',
-		// 				accelerator: 'CmdOrCtrl+W',
-		// 				role: 'close'
-		// 			},
-		// 			{
-		// 				label: 'Minimize',
-		// 				accelerator: 'CmdOrCtrl+M',
-		// 				role: 'minimize'
-		// 			},
-		// 			{
-		// 				label: 'Zoom',
-		// 				role: 'zoom'
-		// 			},
-		// 			{
-		// 				type: 'separator'
-		// 			},
-		// 			{
-		// 				label: 'Bring All to Front',
-		// 				role: 'front'
-		// 			}
-		// 		]
-		// 	} else {
-		// 		menuSpec.submenu =
-		// 		[
-		// 			{
-		// 				role: 'minimize'
-		// 			},
-		// 			{
-		// 				role: 'close'
-		// 			}
-		// 		]
-		// 	}
-		// 	menuSpecs.push(menuSpec)
-		// }
+		{ // Window menu
+			const menuSpec =
+			{
+				role: 'window'
+			}
+			if (isMacOS === true) {
+				menuSpec.submenu =
+				[
+					{
+						label: 'Close',
+						accelerator: 'CmdOrCtrl+W',
+						role: 'close'
+					},
+					{
+						label: 'Minimize',
+						accelerator: 'CmdOrCtrl+M',
+						role: 'minimize'
+					},
+					{
+						label: 'Zoom',
+						role: 'zoom'
+					},
+					{
+						type: 'separator'
+					},
+					{
+						label: 'Bring All to Front',
+						role: 'front'
+					}
+				]
+			} else {
+				menuSpec.submenu =
+				[
+					{
+						role: 'minimize'
+					},
+					{
+						role: 'close'
+					}
+				]
+			}
+			menuSpecs.push(menuSpec)
+		}
 		{ // Help
 			menuSpecs.push({
 				role: 'help',

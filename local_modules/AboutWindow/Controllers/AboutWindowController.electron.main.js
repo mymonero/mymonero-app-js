@@ -30,13 +30,9 @@
 //
 const electron = require('electron')
 //
-class MainWindowController
+class AboutWindowController
 {
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Initialization
-	
+	// Lifecycle - Init
 	constructor(options, context)
 	{
 		const self = this
@@ -49,57 +45,25 @@ class MainWindowController
 	setup()
 	{
 		const self = this
-		self.setup_window()
-		self.startObserving_app()
-	}
-	setup_window()
-	{
-		const self = this
-		const app = self.context.app
-		//
 		self.window = null // zeroing and declaration
+		// window created on demand
 	}
-	startObserving_app()
-	{
-		const self = this
-		const app = self.context.app
-		app.on('window-all-closed', function()
-		{
-			self._allWindowsDidClose()
-		})
-		app.on('activate', function()
-		{
-			if (self.window === null) {
-				self._create_window_ifNecessary()
-			}
-		})
-		// custom:
-		app.on('launched-duplicatively', function()
-		{ // bring window to forefront however necessary
-			if (self.window !== null) {
-			    if (self.window.isMinimized()) {
-					self.window.restore()
-				}
-			    self.window.focus()
-			}
-		})
-	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
 	// Accessors - Window
-
 	_new_window()
 	{
 		const self = this
 		const window = new electron.BrowserWindow({
-			width: 500,
-			height: 500,
-			minWidth: 400,
-			minHeight: 420,
+			fullscreenable: false,
+			maximizable: false,
+			resizable: false,
+			minimizable: true,
 			//
-			show: false, // shown on ready
+			show: false, // do not show by default
 			//
+			width: 200,
+			height: 200,
+			minWidth: 200,
+			minHeight: 200,
 			backgroundColor: "#272527",
 			titleBarStyle: "hidden-inset",
 			webPreferences: { // these are all currently the default values but stating them here to be explicit…
@@ -112,25 +76,21 @@ class MainWindowController
 		//
 		return window
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Window
-
-	create_window_whenAppReady()
+	create_window_whenAppReady(andShowImmediately)
 	{
 		const self = this
 		const app = self.context.app
 		if (app.isReady() === true) { // this is probably not going to be true as the app is fairly zippy to set up
-			self._create_window_ifNecessary()
+			self._create_window_ifNecessary(andShowImmediately)
 		} else {
 			app.on('ready', function()
 			{
-				self._create_window_ifNecessary()
+				self._create_window_ifNecessary(andShowImmediately)
 			})
 		}
 	}
-	_create_window_ifNecessary()
+	_create_window_ifNecessary(andShowImmediately)
 	{
 		const self = this
 		if (self.window !== null && typeof self.window !== 'undefined') {
@@ -138,42 +98,42 @@ class MainWindowController
 		}
 		const window = self._new_window()
 		self.window = window
-		window.once('ready-to-show', function()
-		{
-			window.show()
-		})
 		window.on('closed', function() // this is not within new_window because such accessors should never directly or indirectly modify state of anything but within its own fn scope
 		{
 			self.window = null // release
 		})
-		window.webContents.on("will-navigate", function(e)
-		{
-			e.preventDefault() // do not allow navigation when users drop links
-		})
+		if (andShowImmediately) {
+			window.once('ready-to-show', function()
+			{
+				window.show()
+			})
+		}
 		{ // hardening
-			const allowDevTools = process.env.NODE_ENV === 'development'
-			const openDevTools = allowDevTools === true && true
-			if (allowDevTools !== true) { // this prevents the dev tools from staying open
-				window.webContents.on( // but it would be nicer to completely preclude it opening
-					'devtools-opened',
-					function()
-					{
-						if (self.window) {
-							self.window.webContents.closeDevTools()
-						}
+			window.webContents.on("will-navigate", function(e)
+			{
+				e.preventDefault() // do not allow navigation when users drop links
+			})
+			window.webContents.on( // but it would be nicer to completely preclude it opening
+				'devtools-opened',
+				function()
+				{
+					if (self.window) {
+						self.window.webContents.closeDevTools()
 					}
-				)
-			}
-			if (openDevTools === true) {
-				self.window.webContents.openDevTools()
-			}
+				}
+			)
 		}
 	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
+	MakeKeyAndVisible()
+	{
+		const self = this
+		if (self.window) {
+			self.window.show()
+		} else {
+			self.create_window_whenAppReady(true)
+		}
+	}
 	// Runtime - Delegation - Post-instantiation hook
-	
 	RuntimeContext_postWholeContextInit_setup()
 	{
 		const self = this
@@ -184,18 +144,5 @@ class MainWindowController
 		// to present things like the password entry fields in the UI
 		self.create_window_whenAppReady()
 	}
-
-		
-	////////////////////////////////////////////////////////////////////////////////
-	// Delegation - Private - Windows
-
-	_allWindowsDidClose()
-	{
-		const self = this
-		const app = self.context.app
-		if (process.platform === 'darwin') { // because macos apps stay active while main window closed
-			app.quit()
-		}
-	}
 }
-module.exports = MainWindowController
+module.exports = AboutWindowController

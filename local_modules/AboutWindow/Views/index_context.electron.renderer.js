@@ -25,39 +25,29 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+
 "use strict"
 //
 // Hydrate context
 var context_object_instantiation_descriptions =
 [
 	{
-		module_path: __dirname + "/../Menus/MenuController.electron",
-		instance_key: "menuController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../MainWindow/Controllers/MainWindowController.electron.main",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../AboutWindow/Controllers/AboutWindowController.electron.main",
-		instance_key: "aboutWindowController",
+		module_path: __dirname + "/../../Theme/ThemeController",
+		instance_key: "themeController",
 		options: {}
 	}
-	/*
-		NOTE: Most of the actual electron application context lives
-		in local_modules/MainWindow/Views/index_context.electron.renderer.js
-	*/
 ]
-function NewHydratedContext(app)
+function NewHydratedContext(
+	app, 
+	menuController
+)
 {
 	var initialContext =
 	{
-		app: app
+		app: app,
+		menuController: menuController
 	}
 
-	return require("../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
 }
 module.exports.NewHydratedContext = NewHydratedContext
