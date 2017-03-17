@@ -42,3 +42,21 @@ function InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRul
 	}
 }
 exports.InjectCSSRules_ifNecessary = InjectCSSRules_ifNecessary
+//
+function InjectCSSFile_ifNecessary(stylesheetHref)
+{
+	const key = "hasCSSFileBeenInjected_" + stylesheetHref
+	if (document[key] !== true) {
+		var head = document.getElementsByTagName('head')[0]
+		var link = document.createElement('link')
+		link.id = key
+		link.rel = 'stylesheet'
+		link.type = 'text/css'
+		link.href = stylesheetHref
+		link.media = 'all'
+		head.appendChild(link)
+		//
+		document[key] = true
+	}
+}
+exports.InjectCSSFile_ifNecessary = InjectCSSFile_ifNecessary
