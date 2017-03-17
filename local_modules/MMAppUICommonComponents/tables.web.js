@@ -323,7 +323,7 @@ function New_redTextButtonView(text, context)
 	layer.style.display = "block" // own line
     layer.style.float = "left" // but do not let it have 100% width
 	layer.style.clear = "left" // but do not let it have 100% width 
-	layer.style.marginLeft = "24px"
+	layer.style.marginLeft = "26px"
 	//
 	layer.style.color = "#F97777"
 	layer.style.fontFamily = context.themeController.FontFamily_monospace()
