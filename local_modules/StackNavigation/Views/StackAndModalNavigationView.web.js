@@ -93,16 +93,16 @@ class StackAndModalNavigationView extends StackNavigationView
 		if (typeof old_topStackView === 'undefined' || old_topStackView == null) {
 			throw self.constructor.name + " PresentView currently expects there to be an old_topStackView"
 		}
-		if (self.isCurrentlyTransitioningAManagedView === true) {
-			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView.")
+		if (self.isCurrentlyTransitioningAManagedView__Modal === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal.")
 			return
 		}
 		{
-			self.isCurrentlyTransitioningAManagedView = true
+			self.isCurrentlyTransitioningAManagedView__Modal = true
 		}
 		function __trampolineFor_transitionEnded()
 		{
-			self.isCurrentlyTransitioningAManagedView = false
+			self.isCurrentlyTransitioningAManagedView__Modal = false
 		}
 		const old_topModalView = self.topModalView
 		const old_topModalOrStackView = old_topModalView ? old_topModalView : old_topStackView
@@ -218,16 +218,16 @@ class StackAndModalNavigationView extends StackNavigationView
 			fn()
 			return // just bailing
 		}
-		if (self.isCurrentlyTransitioningAManagedView === true) {
-			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView.")
+		if (self.isCurrentlyTransitioningAManagedView__Modal === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal.")
 			return
 		}
 		{
-			self.isCurrentlyTransitioningAManagedView = true
+			self.isCurrentlyTransitioningAManagedView__Modal = true
 		}
 		function __trampolineFor_transitionEnded()
 		{
-			self.isCurrentlyTransitioningAManagedView = false
+			self.isCurrentlyTransitioningAManagedView__Modal = false
 		}
 		function _afterHavingFullyPresentedNewTopView_removeOldTopModalView()
 		{

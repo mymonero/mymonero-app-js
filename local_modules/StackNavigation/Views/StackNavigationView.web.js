@@ -193,16 +193,16 @@ class StackNavigationView extends View
 			 || isAnimated_orTrue == null 
 			? true /* default true */ 
 			: false
-		if (self.isCurrentlyTransitioningAManagedView === true) {
-			console.warn("⚠️  Asked to " + self.constructor.name + "/PushView but already self.isCurrentlyTransitioningAManagedView.")
+		if (self.isCurrentlyTransitioningAManagedView__Stack === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PushView but already self.isCurrentlyTransitioningAManagedView__Stack.")
 			return
 		}
 		{
-			self.isCurrentlyTransitioningAManagedView = true
+			self.isCurrentlyTransitioningAManagedView__Stack = true
 		}
 		function __trampolineFor_transitionEnded()
 		{
-			self.isCurrentlyTransitioningAManagedView = false
+			self.isCurrentlyTransitioningAManagedView__Stack = false
 		}
 		const old_topStackView = self.topStackView
 		{ // make stackView the new top view
@@ -350,17 +350,17 @@ class StackNavigationView extends View
 			fn(err)
 			return
 		}
-		if (self.isCurrentlyTransitioningAManagedView === true) {
-			console.warn("⚠️  Asked to " + self.constructor.name + "/PopToView but already self.isCurrentlyTransitioningAManagedView.")
+		if (self.isCurrentlyTransitioningAManagedView__Stack === true) {
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PopToView but already self.isCurrentlyTransitioningAManagedView__Stack.")
 			fn()
 			return
 		}
 		{
-			self.isCurrentlyTransitioningAManagedView = true
+			self.isCurrentlyTransitioningAManagedView__Stack = true
 		}
 		function __trampolineFor_transitionEnded()
 		{
-			self.isCurrentlyTransitioningAManagedView = false
+			self.isCurrentlyTransitioningAManagedView__Stack = false
 			fn()
 		}
 		const old_topStackView = self.topStackView

@@ -53,6 +53,7 @@ function HydrateInstance_withUnencryptedValues(
 	// console.log("encryptedDocument", encryptedDocument)
 	self.isLoggedIn = encryptedDocument.isLoggedIn
 	self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
+	self.shouldDisplayImportAccountOption = encryptedDocument.shouldDisplayImportAccountOption
 	{
 		function _isNonNil_dateStr(v)
 		{
@@ -191,6 +192,7 @@ function SaveToDisk(
 		dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally,
 		//
 		isInViewOnlyMode: self.isInViewOnlyMode,
+		shouldDisplayImportAccountOption: self.shouldDisplayImportAccountOption,
 		//
 		transactions: self.transactions || [], 
 		heights: heights,
@@ -201,7 +203,6 @@ function SaveToDisk(
 	// console.log("type of account_scanned_height", typeof plaintextDocument.heights.account_scanned_height)
 	// console.log("totals", JSON.stringify(plaintextDocument.totals))
 	// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))
-	//
 	
 	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,
