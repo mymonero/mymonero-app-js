@@ -187,7 +187,10 @@ class EditWalletView extends View
 							}
 							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {
-								__proceedTo_deleteRecord()
+								setTimeout(function()
+								{ // make sure we're on next tick from this dialog cb
+									__proceedTo_deleteRecord()
+								})
 							}
 						}
 					)
