@@ -1,1 +1,1 @@
-electron-packager . MyMonero --all --out=./build --overwrite
+npm run-script build-all-desktop
