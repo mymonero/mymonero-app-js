@@ -93,6 +93,7 @@ class ImportTransactionsModalView extends View
 		layer.style.width = "100%"
 		layer.style.textAlign = "center"
 		layer.style.marginTop = "18px"
+		layer.style.paddingBottom = "10px" // for spacing
 		layer.style.color = "#9E9C9E"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
@@ -472,7 +473,7 @@ class ImportTransactionsModalView extends View
 					{
 						self.informationalHeaderLayer.innerHTML = `This requires a one-time import fee of ${raw_formattedMoney} XMR`
 						//
-						const tooltipText = "Importing your wallet info means the server must scan the entire Monero blockchain, then keep things up-to-date. This means lots of server work, so to prevent spam, import is triggered by sending a fee with a specific payment ID to import.mymonero.com."
+						const tooltipText = "Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to import.mymonero.com."
 						const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 						const layer = view.layer
 						self.informationalHeaderLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
@@ -490,7 +491,7 @@ class ImportTransactionsModalView extends View
 					}
 					{
 						// const command = `transfer 3 import.mymonero.com ${import_fee__JSBigInt} ${payment_id}`
-						const tooltipText = "For convenience you may send the fee from MyMonero, the official CLI or GUI tools, or any other Monero wallet.<br/><br/>Please be sure to use the exact payment ID below."
+						const tooltipText = "For convenience you may send the fee from MyMonero here, or the official CLI or GUI tools, or any other Monero wallet.<br/><br/>Please be sure to use the exact payment ID below, so the server knows which wallet to import."
 						const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 						const layer = view.layer
 						self.walletSelectLabelLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
