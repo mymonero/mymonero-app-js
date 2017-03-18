@@ -153,6 +153,8 @@ class ImportTransactionsModalView extends View
 		inputLayer.style.boxShadow = "none"
 		inputLayer.style.backgroundColor = "#383638"
 		inputLayer.style.color = "#7c7a7c"
+		inputLayer.style.cursor = "default"
+		inputLayer.style.webkitUserSelect = "none" // as we have the COPY btns
 	}
 	_setup_form_amountInputLayer(tr)
 	{ 
@@ -183,16 +185,34 @@ class ImportTransactionsModalView extends View
 	{ // Request funds from sender
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingTop = "22px"
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
-		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
+		labelLayer.style.margin = "0 0 8px 8px"
+		labelLayer.style.float = "left"
+		labelLayer.style.display = "block"
+		div.appendChild(labelLayer)
+		{ // right
+			// copying both html and plaintext
+			const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+				self.context,
+				"", // for now
+				true,
+				self.context.pasteboard
+			)
+			buttonLayer.style.margin = "-1px 0 0 0"
+			buttonLayer.style.float = "right"
+			self.copyButtonLayerFor_addressInput = buttonLayer
+			div.appendChild(buttonLayer)
+		}
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+		
 		// {
 		// 	const tooltipText = ""
 		// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 		// 	const layer = view.layer
 		// 	labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
 		// }
-		div.appendChild(labelLayer)
 		//
 		const layer = commonComponents_forms.New_fieldValue_textInputLayer(
 			self.context,
@@ -210,10 +230,27 @@ class ImportTransactionsModalView extends View
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer()
+		div.style.paddingTop = "4px"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
-			labelLayer.style.marginTop = "4px"
+			labelLayer.style.margin = "0 0 8px 8px"
+			labelLayer.style.float = "left"
+			labelLayer.style.display = "block"
 			div.appendChild(labelLayer)
+			{ // right
+				// copying both html and plaintext
+				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
+					self.context,
+					"", // for now
+					true,
+					self.context.pasteboard
+				)
+				buttonLayer.style.margin = "-1px 0 0 0"
+				buttonLayer.style.float = "right"
+				self.copyButtonLayerFor_paymentID = buttonLayer
+				div.appendChild(buttonLayer)
+			}
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "Loading…"
@@ -480,7 +517,10 @@ class ImportTransactionsModalView extends View
 					}
 					{
 						self.addressInputLayer.value = payment_address
-						self.manualPaymentIDInputLayer.value = payment_id					
+						self.copyButtonLayerFor_addressInput.Component_SetValue(payment_address)
+						//
+						self.manualPaymentIDInputLayer.value = payment_id
+						self.copyButtonLayerFor_paymentID.Component_SetValue(payment_id)
 						//
 						var amountStr = raw_formattedMoney
 						if (amountStr.indexOf(".") == -1) {

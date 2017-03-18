@@ -247,6 +247,7 @@ function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_or
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.fontWeight = "500"
 		layer.style.fontSize = "11px"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.textDecoration = "none"
 		layer.addEventListener("mouseenter", function()
 		{
