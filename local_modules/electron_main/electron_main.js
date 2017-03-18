@@ -30,13 +30,6 @@
 //
 const electron = require('electron')
 const app = electron.app
-app.on('will-finish-launching', function()
-{
-	app.on("open-url", function(event, url)
-	{
-		console.log("open-url",event,url)
-	})
-})
 //
 const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
 module.exports = context

@@ -528,6 +528,20 @@ class SendFundsView extends View
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
 			)
 		}
+		{ // urlOpeningController
+			const controller = self.context.urlOpeningController
+			controller.on(
+				controller.EventName_ReceivedURLToOpen_FundsRequest(),
+				function(url)
+				{
+					if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() != true) {
+						console.warn("Not allowed to perform URL opening ops yet.")
+						return false
+					}
+					self._shared_didPickRequestURIStringForAutofill(url)
+				}
+			)
+		}
 	}
 	//
 	//
@@ -1525,13 +1539,16 @@ class SendFundsView extends View
 	//
 	// Runtime - Delegation - Request URI string picking - Entrypoints - Proxied drag & drop
 	//
-	__shared_isAllowedToPerformDropOps()
+	__shared_isAllowedToPerformDropOrURLOpeningOps()
 	{
 		const self = this
 		if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
 			return false
 		}
 		if (self.context.passwordController.IsUserChangingPassword() === true) {
+			return false
+		}
+		if (!self.context.walletsListController.records || self.context.walletsListController.records == 0) {
 			return false
 		}
 		if (self.isFormDisabled === true) {
@@ -1551,7 +1568,7 @@ class SendFundsView extends View
 	_proxied_ondragenter(e)
 	{
 		const self = this
-		if (self.__shared_isAllowedToPerformDropOps()) {
+		if (self.__shared_isAllowedToPerformDropOrURLOpeningOps()) {
 			setTimeout(
 				function()
 				{
@@ -1575,7 +1592,7 @@ class SendFundsView extends View
 	_proxied_ondrop(e)
 	{
 		const self = this
-		if (self.__shared_isAllowedToPerformDropOps() == false) {
+		if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() == false) {
 			// would be nice to NSBeep() here
 			return
 		}

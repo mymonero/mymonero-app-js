@@ -36,11 +36,15 @@ const options =
 	// buildVersion: 1, // maybe specify because it defailts to appVersion
 	icon: "./local_modules/electron_main/resources/icons/icon", // note: when no ext provided, completes to ico/icns/PNG per platform, given all:true
 	// name: "MyMonero", // omitted as inferred from package.json
-	appBundleId: "com.mymonero.mymonero",
+	appBundleId: "com.mymonero.mymonero", // TODO: why doesn't this get used in the plist?
 	appCategoryType: "public.app-category.finance", 
 	// Registering URL schemes (MacOS)
-	protocolName: [ "Monero Funds Request URL" ],
-	protocol: [ "monero" ],
+	protocols: [
+		{
+			name: "Monero Funds Request URL",
+			schemes: [ "monero" ],
+		}
+	],
 	win32metadata: {
 		CompanyName: "MyMonero",
 		FileDescription: "MyMonero Wallet App",
@@ -51,20 +55,22 @@ const options =
 	},
 	//
 	// building
-	all: true, // build for all platforms 
+	all: true, // build for all platforms
+	 //	// platform: "darwin", // for debug/testing
 	dir: ".", // source directory (must this be a parent of node_modules?)
-	ignore: function(file, arg2)
-	{
-		console.log("ignore file?", file, arg2)
-		return false
-	},
+	ignore: 
+	// function(file, arg2)
+	// {
+	// 	console.log("ignore file?", file, arg2)
+	// 	return false
+	// },
 	[ // TODO: this is fragile as new files must be added; can we change `dir` above to be something like "./src"?
 		/test_products/,
-		/^\.*$/,
+		/^\./,
 		/npm_debug\.log/,
 		/README\.md/,
 		/LICENSE\.txt/,
-		/\/?bin\/.*/
+		/\/?bin\//
 	],
 	//
 	// pre-packaging

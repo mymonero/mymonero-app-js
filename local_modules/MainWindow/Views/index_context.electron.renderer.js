@@ -121,13 +121,15 @@ var context_object_instantiation_descriptions =
 ]
 function NewHydratedContext(
 	app, 
-	menuController
+	menuController,
+	urlOpeningController
 )
 {
 	var initialContext =
 	{
 		app: app,
 		menuController: menuController,
+		urlOpeningController: urlOpeningController,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}
 

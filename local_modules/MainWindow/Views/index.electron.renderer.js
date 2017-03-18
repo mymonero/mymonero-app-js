@@ -61,7 +61,8 @@ function new_rootView()
 	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
 	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
 		remote__app, 
-		remote__context.menuController // for UI and app runtime access
+		remote__context.menuController, // for UI and app runtime access
+		remote__context.urlOpeningController
 	)
 	const options = {}
 	const view = new RootView(options, renderer_context)

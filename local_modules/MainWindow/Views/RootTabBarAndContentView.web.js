@@ -174,6 +174,28 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				}
 			)
 		}
+		{ // urlOpeningController
+			const controller = self.context.urlOpeningController
+			controller.on(
+				controller.EventName_ReceivedURLToOpen_FundsRequest(),
+				function(url)
+				{
+					if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
+						console.log("User hasn't entered valid pw yet")
+						return false
+					}
+					if (self.context.passwordController.IsUserChangingPassword() === true) {
+						console.log("User is changing pw.")
+						return false
+					}
+					if (!self.context.walletsListController.records || self.context.walletsListController.records.length == 0) {
+						console.log("No wallets.")
+						return false
+					}
+					self.selectTab_sendFunds()
+				}
+			)
+		}
 		{ // drag and drop - stuff like tab auto-selection
 			function _isAllowedToPerformDropOps()
 			{
@@ -184,7 +206,11 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 				if (self.context.passwordController.IsUserChangingPassword() === true) {
 					console.log("User is changing pw.")
 					return false
-				}				
+				}
+				if (!self.context.walletsListController.records || self.context.walletsListController.records.length == 0) {
+					console.log("No wallets.")
+					return false
+				}
 				return true
 			}
 			self.layer.ondragover = function(e)

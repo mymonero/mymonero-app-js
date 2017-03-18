@@ -28,41 +28,47 @@
 //
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../Menus/MenuController.electron",
-		instance_key: "menuController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../URLOpening/URLOpeningController.electron",
-		instance_key: "urlOpeningController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../MainWindow/Controllers/MainWindowController.electron.main",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../AboutWindow/Controllers/AboutWindowController.electron.main",
-		instance_key: "aboutWindowController",
-		options: {}
-	}
-	/*
-		NOTE: Most of the actual electron application context lives
-		in local_modules/MainWindow/Views/index_context.electron.renderer.js
-	*/
-]
-function NewHydratedContext(app)
+const EventEmitter = require('events')
+//
+class URLOpeningController extends EventEmitter
 {
-	var initialContext =
+	//
+	// Lifecycle - Init
+	constructor(options, context)
 	{
-		app: app
+		super() // must can before accessing `this`
+		const self = this
+		self.options = options
+		self.context = context
+		self.setup()
 	}
-
-	return require("../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	setup()
+	{
+		const self = this
+		self._startObserving()
+	}
+	_startObserving()
+	{
+		const self = this
+		const app = self.context.app
+		app.on('will-finish-launching', function()
+		{ // ^ we might not need to do this
+			app.on("open-url", function(event, url)
+			{
+				if (url.indexOf("monero:") !== 0) {
+					console.warn("Given a non-'monero:' URL of", url)
+					return
+				}
+				event.preventDefault()
+				self.emit(self.EventName_ReceivedURLToOpen_FundsRequest(), url)
+			})
+		})
+	}
+	//
+	// Runtime - Accessors - Event Names
+	EventName_ReceivedURLToOpen_FundsRequest()
+	{
+		return "EventName_ReceivedURLToOpen_FundsRequest"
+	}
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports = URLOpeningController
