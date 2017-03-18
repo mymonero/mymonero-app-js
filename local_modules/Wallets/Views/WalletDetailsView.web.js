@@ -28,14 +28,20 @@
 //
 "use strict"
 //
-const View = require('../../Views/View.web')
 const monero_config = require('../../monero_utils/monero_config')
-const TransactionDetailsView = require("./TransactionDetailsView.web")
+//
+const View = require('../../Views/View.web')
+//
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
+//
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+const TransactionDetailsView = require("./TransactionDetailsView.web")
+const ImportTransactionsModalView = require('./ImportTransactionsModalView.web')
 //
 class WalletDetailsView extends View
 {
@@ -58,6 +64,7 @@ class WalletDetailsView extends View
 		const self = this
 		{ // zeroing / initialization
 			self.current_transactionDetailsView = null
+			self.currentlyPresented_AddContactView = null // zeroing
 		}
 		self._setup_views()
 		self._setup_startObserving()
@@ -356,6 +363,11 @@ class WalletDetailsView extends View
 			self.current_EditWalletView.TearDown()
 			self.current_EditWalletView = null
 		}
+		// … is this sufficient? might need/want to tear down the stack nav too?
+		if (self.currentlyPresented_ImportTransactionsModalView !== null && typeof self.currentlyPresented_ImportTransactionsModalView !== 'undefined') {
+			self.currentlyPresented_ImportTransactionsModalView.TearDown() // might not be necessary but method guards itself
+			self.currentlyPresented_ImportTransactionsModalView = null // must zero again and should free
+		}
 	}
 	_stopObserving()
 	{
@@ -497,6 +509,22 @@ class WalletDetailsView extends View
 			layer.style.margin = `16px 0 16px 0`
 			layer.style.height = "276px"
 			self.addSubview(view)
+			//
+			if (wallet.shouldDisplayImportAccountOption == true) {
+				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
+					"IMPORT TRANSACTIONS",
+					self.context, 
+					function()
+					{
+						self._present_importTransactionsModal()
+					}
+				)
+				const buttonView_layer = buttonView.layer
+				buttonView_layer.style.position = "absolute"
+				buttonView_layer.style.left = "6px"
+				buttonView_layer.style.top = "5px"
+				layer.appendChild(buttonView_layer)
+			}
 			//
 			return
 		}
@@ -683,6 +711,17 @@ class WalletDetailsView extends View
 			// by tearing it down on self.viewDidAppear() below and on TearDown()
 			self.current_transactionDetailsView = view
 		}
+	}
+	_present_importTransactionsModal()
+	{
+		const self = this
+		const view = new ImportTransactionsModalView({
+			wallet: self.wallet
+		}, self.context)
+		self.currentlyPresented_ImportTransactionsModalView = view
+		const navigationView = new StackAndModalNavigationView({}, self.context)
+		navigationView.SetStackViews([ view ])
+		self.navigationController.PresentView(navigationView, true)
 	}
 	//
 	//

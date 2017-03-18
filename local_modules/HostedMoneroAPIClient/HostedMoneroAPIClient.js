@@ -263,7 +263,51 @@ class HostedMoneroAPIClient
 		return requestHandle
 	}
 	//
-	// Sending coins
+	// Getting wallet txs import info
+	ImportRequestInfoAndStatus(
+		address,
+		view_key__private,
+		fn
+	) // -> RequestHandle
+	{
+		const self = this
+		const endpointPath = "import_wallet_request"
+		const parameters = 
+		{
+			address: address,
+			view_key: view_key__private
+		}
+		const requestHandle = self._API_doRequest_returningRequestHandle(
+			endpointPath,
+			parameters,
+			function(err, data)
+			{
+				if (err) {
+					fn(err)
+					return
+				}
+				__proceedTo_parseAndCallBack(data)
+			}
+		)
+		function __proceedTo_parseAndCallBack(data)
+		{
+			const payment_id = data.payment_id;
+			const payment_address = data.payment_address;
+			const import_fee__JSBigInt = new JSBigInt(data.import_fee);
+			const feeReceiptStatus = data.status;
+			fn(
+				null, 
+				payment_id, 
+				payment_address, 
+				import_fee__JSBigInt, 
+				feeReceiptStatus
+			)
+		}
+		return requestHandle
+	}
+	
+	//
+	// Getting outputs for sending funds
 	UnspentOuts(
 		address,
 		view_key__private,
@@ -373,6 +417,8 @@ class HostedMoneroAPIClient
 		}
 		return requestHandle
 	}
+	//
+	// Resolving OA addresses
 	TXTRecords(
 		domain,
 		fn

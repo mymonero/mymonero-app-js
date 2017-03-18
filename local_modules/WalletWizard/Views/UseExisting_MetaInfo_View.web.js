@@ -454,6 +454,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(false)
 			self.walletNameInputLayer.disabled = true
+			self.mnemonicTextAreaView.layer.disabled = true
 			self.addrTextAreaView.layer.disabled = true
 			self.viewKeyTextAreaView.layer.disabled = true
 			self.spendKeyTextAreaView.layer.disabled = true
@@ -468,6 +469,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
 			self.walletNameInputLayer.disabled = undefined
+			self.mnemonicTextAreaView.layer.disabled = undefined
 			self.addrTextAreaView.layer.disabled = undefined
 			self.viewKeyTextAreaView.layer.disabled = undefined
 			self.spendKeyTextAreaView.layer.disabled = undefined
