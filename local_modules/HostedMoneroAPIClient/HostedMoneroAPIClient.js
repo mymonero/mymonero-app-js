@@ -40,11 +40,8 @@ const BackgroundAPIResponseParser = require('./BackgroundAPIResponseParser.elect
 //
 class HostedMoneroAPIClient
 {
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Lifecycle - Initialization
-
 	constructor(options)
 	{
 		var self = this
@@ -68,11 +65,8 @@ class HostedMoneroAPIClient
 			self.responseParser = new BackgroundAPIResponseParser(options)
 		}
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Runtime - Accessors - Public - Metrics/lookups/transforms
-
 	HostingServiceChargeFor_transactionWithNetworkFee(networkFee)
 	{
 		const self = this
@@ -84,11 +78,8 @@ class HostedMoneroAPIClient
 	{ // -> String
 		return config__MyMonero.HostingServiceFee_depositAddress
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Runtime - Accessors - Public - Requests
-
 	LogIn(address, view_key__private, fn)
 	{ // fn: (err?, new_address?) -> RequestHandle
 		const self = this
@@ -384,7 +375,7 @@ class HostedMoneroAPIClient
 		//
 		var amounts = [];
 		for (var l = 0; l < using_outs.length; l++) {
-			amounts.push(using_outs[l].amount.toString())
+			amounts.push(using_outs[l].rct ? "0" : using_outs[l].amount.toString())
 		}
 		//
 		var parameters =
@@ -461,11 +452,8 @@ class HostedMoneroAPIClient
 		}
 		return requestHandle
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Runtime - Imperatives - Public - Sending funds
-
 	SubmitSerializedSignedTransaction(
 		address,
 		view_key__private,
@@ -501,11 +489,8 @@ class HostedMoneroAPIClient
 		}
 		return requestHandle
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Runtime - Accessors - Private - Requests
-
 	_new_parameters_forWalletRequest(address, view_key__private)
 	{
 		return {
@@ -513,11 +498,8 @@ class HostedMoneroAPIClient
 			view_key: view_key__private
 		}
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Runtime - Imperatives - Private
-
 	_API_doRequest_returningRequestHandle(endpointPath, parameters, fn)
 	{ // fn: (err?, data?) -> new Request
 		const self = this
@@ -565,10 +547,5 @@ class HostedMoneroAPIClient
 		//
 		return requestHandle
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private
-
 }
 module.exports = HostedMoneroAPIClient

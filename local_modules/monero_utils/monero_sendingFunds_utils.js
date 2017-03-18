@@ -51,9 +51,7 @@ function calculate_fee(fee_per_kb_JSBigInt, numberOf_bytes, fee_multiplier)
 	return fee
 }
 //
-//
 // Fee estimation for SendFunds
-//
 function EstimatedTransaction_ringCT_networkFee(
 	nonZero_mixin_int
 )
@@ -141,6 +139,7 @@ function EstimatedTransaction_ringCT_txSize(
 // Actually sending funds
 // 
 function SendFunds(
+	isRingCT,
 	target_address, // currency-ready wallet address, but not an OA address (resolve before calling)
 	amount, // number
 	wallet__public_address,
@@ -312,10 +311,12 @@ function SendFunds(
     ) 
 	{
 		// status: constructing transaction…
-		const network_minimumFee = monero_config.feePerKB_JSBigInt // we're going to try using this but the codepath
-		// has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb
-		// than the minimum fee we're attempting to send it off with
-		__reenterable_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin_findingLowestNetworkFee(
+		const feePerKB_JSBigInt = monero_config.feePerKB_JSBigInt
+		// Transaction will need at least 1KB fee (13KB for RingCT)
+		const network_minimumTXSize_kb = isRingCT ? 13 : 1
+		var network_minimumFee = feePerKB_JSBigInt.multiply(network_minimumTXSize_kb)
+		// ^-- now we're going to try using this minimum fee but the codepath has to be able to be re-entered if we find after constructing the whole tx that it is larger in kb than the minimum fee we're attempting to send it off with
+		__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 			moneroReady_targetDescription_address,
 			totalAmountWithoutFee_JSBigInt,
 			final__payment_id,
@@ -324,41 +325,60 @@ function SendFunds(
 			network_minimumFee
 		)
 	}		
-    function __reenterable_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin_findingLowestNetworkFee(
+    function __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 		moneroReady_targetDescription_address,
 		totalAmountWithoutFee_JSBigInt,
 		final__payment_id,
 		final__pid_encrypt,
 		unusedOuts,
-		attemptAt_network_minimumFee
+		passedIn_attemptAt_network_minimumFee
     ) 
-	{
-        // We need to establish some values for balance validation and to construct the transaction
-		const hostingService_chargeAmount = hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(attemptAt_network_minimumFee)
-        const totalAmountIncludingNetworkAndHostingService = totalAmountWithoutFee_JSBigInt.add(attemptAt_network_minimumFee).add(hostingService_chargeAmount)
-        console.log("Balance required: " + monero_utils.formatMoneySymbol(totalAmountIncludingNetworkAndHostingService))
-		//
-		const usableOutputsAndAmounts = OutputsAndAmountToUseForMixin(
-			totalAmountIncludingNetworkAndHostingService,
-			unusedOuts
+	{ // Now we need to establish some values for balance validation and to construct the transaction
+		console.log("Entered re-enterable tx building codepath…", unusedOuts)
+		var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
+		// const hostingService_chargeAmount = hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(attemptAt_network_minimumFee)
+        var totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(attemptAt_network_minimumFee)/*.add(hostingService_chargeAmount) NOTE service fee removed for now */
+		const usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
+			totalAmountIncludingFees,
+			unusedOuts,
+			isRingCT
 		)
-		const usingOuts = usableOutputsAndAmounts.usingOuts
-		const usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
-		//
+		// v-- now if RingCT compute fee as closely as possible before hand
+		var usingOuts = usableOutputsAndAmounts.usingOuts
+		var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
+		var remaining_unusedOuts = usingOutsAmount.remaining_unusedOuts
+		if (isRingCT) { 
+			if (usingOuts.length > 1) {
+			    var newNeededFee = new JSBigInt(Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(monero_config.feePerKB_JSBigInt)
+			    totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
+			    // add outputs 1 at a time till we either have them all or can meet the fee
+			    while (usingOutsAmount.compare(totalAmountIncludingFees) < 0 && remaining_unusedOuts.length > 0) {
+					const out = _popAndReturnRandomElementFromList(remaining_unusedOuts)
+			        usingOuts.push(out)
+			        usingOutsAmount = usingOutsAmount.add(out.amount)
+			        console.log("Using output: " + monero_utils.formatMoney(out.amount) + " - " + JSON.stringify(out))
+			        newNeededFee = new JSBigInt(
+						Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)
+					).multiply(monero_config.feePerKB_JSBigInt)
+			        totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
+			    }
+			    console.log("New fee: " + monero_utils.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs")
+			    attemptAt_network_minimumFee = newNeededFee
+			}
+		}
+        console.log("~ Balance required: " + monero_utils.formatMoneySymbol(totalAmountIncludingFees))
         // Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
-		const usingOutsAmount_comparedTo_totalAmount = usingOutsAmount.compare(totalAmountIncludingNetworkAndHostingService)
+		const usingOutsAmount_comparedTo_totalAmount = usingOutsAmount.compare(totalAmountIncludingFees)
         if (usingOutsAmount_comparedTo_totalAmount < 0) {
 			__trampolineFor_err_withStr(
 				"Not enough spendable outputs / balance too low (have: " 
 				+ monero_utils.formatMoneyFull(usingOutsAmount) 
 				+ " need: " 
-				+ monero_utils.formatMoneyFull(totalAmountIncludingNetworkAndHostingService) 
+				+ monero_utils.formatMoneyFull(totalAmountIncludingFees) 
 				+ ")"
 			)
             return
         }
-		//
-		//
 		// Now we can put together the list of fund transfers we need to perform
 		const fundTransferDescriptions = [] // to build…
 		// I. the actual transaction the user is asking to do
@@ -367,30 +387,48 @@ function SendFunds(
 			amount: totalAmountWithoutFee_JSBigInt				
 		})
 		// II. the fee that the hosting provider charges
-		fundTransferDescriptions.push({ 
-            address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
-            amount: hostingService_chargeAmount
-		})
+		// NOTE: The fee has been removed for RCT until a later date
+		// fundTransferDescriptions.push({
+		//             address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
+		//             amount: hostingService_chargeAmount
+		// })
 		// III. some amount of the total outputs will likely need to be returned to the user as "change":			
 		if (usingOutsAmount_comparedTo_totalAmount > 0) {
-            var changeAmount = usingOutsAmount.subtract(totalAmountIncludingNetworkAndHostingService)
+            var changeAmount = usingOutsAmount.subtract(totalAmountIncludingFees)
 			console.log("changeAmount" , changeAmount)
-            // do not give ourselves change < dust threshold
-            var changeAmountDivRem = changeAmount.divRem(monero_config.dustThreshold)
-			console.log("💬  changeAmountDivRem", changeAmountDivRem)
-            if (changeAmountDivRem[1].toString() !== "0") {
-                // miners will add dusty change to fee
-                console.log("💬  Miners will add change of " + monero_utils.formatMoneyFullSymbol(changeAmountDivRem[1]) + " to transaction fee (below dust threshold)")
-            }
-            if (changeAmountDivRem[0].toString() !== "0") {
-                // send non-dusty change to our address
-                var usableChange = changeAmountDivRem[0].multiply(monero_config.dustThreshold)
-                console.log("💬  Sending change of " + monero_utils.formatMoneySymbol(usableChange) + " to " + wallet__public_address)
+			if (isRingCT) { // for RCT we don't presently care about dustiness so add entire change amount
+                console.log("Sending change of " + monero_utils.formatMoneySymbol(changeAmount) + " to " + wallet__public_address)
                 fundTransferDescriptions.push({
                     address: wallet__public_address,
-                    amount: usableChange
+                    amount: changeAmount
                 })
-            }
+			} else { // pre-ringct
+	            // do not give ourselves change < dust threshold
+	            var changeAmountDivRem = changeAmount.divRem(monero_config.dustThreshold)
+				console.log("💬  changeAmountDivRem", changeAmountDivRem)
+	            if (changeAmountDivRem[1].toString() !== "0") {
+	                // miners will add dusty change to fee
+	                console.log("💬  Miners will add change of " + monero_utils.formatMoneyFullSymbol(changeAmountDivRem[1]) + " to transaction fee (below dust threshold)")
+	            }
+	            if (changeAmountDivRem[0].toString() !== "0") {
+	                // send non-dusty change to our address
+	                var usableChange = changeAmountDivRem[0].multiply(monero_config.dustThreshold)
+	                console.log("💬  Sending change of " + monero_utils.formatMoneySymbol(usableChange) + " to " + wallet__public_address)
+	                fundTransferDescriptions.push({
+	                    address: wallet__public_address,
+	                    amount: usableChange
+	                })
+				}
+			}
+        } else if (usingOutsAmount_comparedTo_totalAmount == 0) {
+        	if (isRingCT) { // then create random destination to keep 2 outputs always in case of 0 change
+				var fakeAddress = monero_utils.create_address(monero_utils.random_scalar()).public_addr
+				console.log("Sending 0 XMR to a fake address to keep tx uniform (no change exists): " + fakeAddress)
+				fundTransferDescriptions.push({
+					address: fakeAddress,
+					amount: 0
+				})
+        	}
         }
 		console.log("fundTransferDescriptions so far", fundTransferDescriptions)
 		if (mixin < 0 || isNaN(mixin)) {
@@ -416,29 +454,74 @@ function SendFunds(
 		}
 		function __createTxAndAttemptToSend(mix_outs)
 		{
-			const serializedSignedTx = __new_serializedSignedMoneroTx(
-				mix_outs,
-				attemptAt_network_minimumFee
-			)
-	        var tx_hash = monero_utils.cn_fast_hash(
-				serializedSignedTx,
-				serializedSignedTx.length / 2
-			)
+            var signedTx;
+            try {
+                console.log('Destinations: ')
+                monero_utils.printDsts(fundTransferDescriptions)
+				//
+				var realDestViewKey // need to get viewkey for encrypting here, because of splitting and sorting
+                if (final__pid_encrypt) {
+                    realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
+					console.log("got realDestViewKey" , realDestViewKey)
+                }
+                var splitDestinations = monero_utils.decompose_tx_destinations(
+					fundTransferDescriptions, 
+					isRingCT
+				)
+                console.log('Decomposed destinations:')
+                monero_utils.printDsts(splitDestinations)
+				//
+                signedTx = monero_utils.create_transaction(
+					wallet__public_keys, 
+					wallet__private_keys, 
+					splitDestinations, 
+					usingOuts, 
+					mix_outs, 
+					mixin, 
+					attemptAt_network_minimumFee, 
+					final__payment_id, 
+					final__pid_encrypt, 
+					realDestViewKey, 
+					0,
+					isRingCT
+				)
+            } catch (e) {
+				var errStr;
+				if (e) {
+					errStr = typeof e == "string" ? e : e.toString()
+				} else {
+					errStr = "Failed to create transaction with unknown error."
+				}
+                __trampolineFor_err_withStr(errStr)
+                return
+            }
+            console.log("signed tx: ", JSON.stringify(signedTx))
+			//
+			var serialized_signedTx;
+			var tx_hash;
+            if (signedTx.version === 1) {
+                serialized_signedTx = monero_utils.serialize_tx(signedTx)
+                tx_hash = monero_utils.cn_fast_hash(raw_tx)
+            } else {
+                const raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
+				serialized_signedTx = raw_tx_and_hash.raw
+				tx_hash = raw_tx_and_hash.hash
+            }
+            console.log("tx serialized: " + serialized_signedTx)
 	        console.log("Tx hash: " + tx_hash)
 			//
             // work out per-kb fee for transaction and verify that it's enough
-            var prevFee = attemptAt_network_minimumFee
-            var txBlobBytes = serializedSignedTx.length / 2
+            var txBlobBytes = serialized_signedTx.length / 2
             var numKB = Math.floor(txBlobBytes / 1024)
             if (txBlobBytes % 1024) {
                 numKB++
             }
-            console.log(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(prevFee) + ")")
+            console.log(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + ")")
             const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
             // if we need a higher fee
-            if (feeActuallyNeededByNetwork.compare(prevFee) > 0) {
-                console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(prevFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
-				__reenterable_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin_findingLowestNetworkFee(
+            if (feeActuallyNeededByNetwork.compare(attemptAt_network_minimumFee) > 0) {
+                console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
+				__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 					moneroReady_targetDescription_address,
 					totalAmountWithoutFee_JSBigInt,
 					final__payment_id,
@@ -457,14 +540,14 @@ function SendFunds(
 			hostedMoneroAPIClient.SubmitSerializedSignedTransaction(
 				wallet__public_address,
 				wallet__private_keys.view,
-				serializedSignedTx,
+				serialized_signedTx,
 				function(err)
 				{
 					if (err) {
 						__trampolineFor_err_withStr("Something unexpected occurred when submitting your transaction:", err)
 						return
 					}
-					const tx_fee = attemptAt_network_minimumFee.add(hostingService_chargeAmount)
+					const tx_fee = final_networkFee/*.add(hostingService_chargeAmount) NOTE: Service charge removed to reduce bloat for now */
 					__trampolineFor_success(
 						moneroReady_targetDescription_address,
 						amount,
@@ -475,48 +558,6 @@ function SendFunds(
 				}
 			)
 		}
-        function __new_serializedSignedMoneroTx(
-			mix_outs,
-			networkFee
-		)
-		{ // Construct & serialize transaction
-            var signedTx;
-            try {
-                console.log('Destinations: ')
-                monero_utils.printDsts(fundTransferDescriptions)
-				//
-				var realDestViewKey // need to get viewkey for encrypting here, because of splitting and sorting
-                if (final__pid_encrypt) {
-                    realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
-					console.log("got realDestViewKey" , realDestViewKey)
-                }
-                var splitDestinations = monero_utils.decompose_tx_destinations(fundTransferDescriptions)
-                console.log('Decomposed destinations:')
-                monero_utils.printDsts(splitDestinations)
-				//
-                signedTx = monero_utils.create_transaction(
-					wallet__public_keys, 
-					wallet__private_keys, 
-					splitDestinations, 
-					usingOuts, 
-					mix_outs, 
-					mixin, 
-					networkFee, 
-					final__payment_id, 
-					final__pid_encrypt, 
-					realDestViewKey, 
-					0
-				)
-            } catch (e) {
-                __trampolineFor_err_withStr("Failed to create transaction: ", e)
-                return
-            }
-            console.log("signed tx: ", JSON.stringify(signedTx))
-            var serialized_signedTx = monero_utils.serialize_tx(signedTx)
-            console.log("tx serialized: " + serialized_signedTx)
-            //
-			return serialized_signedTx
-        }
     }
 }
 exports.SendFunds = SendFunds
@@ -574,42 +615,41 @@ function new_moneroReadyTargetDescriptions_fromTargetDescriptions(
 	)
 }
 //
-function OutputsAndAmountToUseForMixin(
+function __randomIndex(list)
+{
+	return Math.floor(Math.random() * list.length);
+}
+function _popAndReturnRandomElementFromList(list)
+{
+	var idx = __randomIndex(list)
+	var val = list[idx]
+	list.splice(idx, 1)
+	//
+	return val
+}
+function _outputsAndAmountToUseForMixin(
 	target_amount,
-	unusedOuts
+	unusedOuts,
+	isRingCT
 )
 {
-	function __randomIndex(list)
-	{
-		return Math.floor(Math.random() * list.length);
-	}
-	function _poppedRandomValueFromList(list)
-	{
-		var idx = __randomIndex(list)
-		var val = list[idx]
-		list.splice(idx, 1)
-		//
-		return val
-	}
 	console.log("Selecting outputs to use. target: " + monero_utils.formatMoney(target_amount))
 	var toFinalize_usingOutsAmount = new JSBigInt(0)
 	const toFinalize_usingOuts = []
-	while (toFinalize_usingOutsAmount.compare(target_amount) < 0 && unusedOuts.length > 0) {
-		var out = _poppedRandomValueFromList(unusedOuts)
+	const remaining_unusedOuts = unusedOuts.slice() // take copy so as to prevent issue if we must re-enter tx building fn if fee too low after building
+	while (toFinalize_usingOutsAmount.compare(target_amount) < 0 && remaining_unusedOuts.length > 0) {
+		var out = _popAndReturnRandomElementFromList(remaining_unusedOuts)
+		if (!isRingCT && out.rct) { // out.rct is set by the server
+			continue; // skip rct outputs if not creating rct tx
+		}
 		const out_amount = out.amount
 		toFinalize_usingOuts.push(out)
 		toFinalize_usingOutsAmount = toFinalize_usingOutsAmount.add(out_amount)
-		console.log(
-			"Using output: "
-			+ monero_utils.formatMoney(out_amount) 
-			+ " - " 
-			+ JSON.stringify(out)
-		)
+		console.log("Using output: " + monero_utils.formatMoney(out_amount) + " - " + JSON.stringify(out))
 	}
-	//
 	return {
 		usingOuts: toFinalize_usingOuts,
-		usingOutsAmount: toFinalize_usingOutsAmount
+		usingOutsAmount: toFinalize_usingOutsAmount,
+		remaining_unusedOuts: remaining_unusedOuts
 	}
 }
-exports.OutputsAndAmountToUseForMixin = OutputsAndAmountToUseForMixin

@@ -841,6 +841,7 @@ class Wallet extends EventEmitter
 		}
 		//
 		monero_sendingFunds_utils.SendFunds(
+			true, // isRingCT
 			target_address,
 			amount,
 			self.public_address,

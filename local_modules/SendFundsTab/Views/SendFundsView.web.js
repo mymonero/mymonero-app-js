@@ -196,12 +196,12 @@ class SendFundsView extends View
 			self.refresh_feeEstimateLayer() // now that reference assigned…
 			breakingDiv.appendChild(layer)
 		}
-		{
-			const tooltipText = "This figure is based on network<br/>fee estimate, and is not final."
-			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-			const layer = view.layer
-			breakingDiv.appendChild(layer)
-		}
+		// {
+		// 	const tooltipText = "This figure is based on network<br/>fee estimate, and is not final."
+		// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+		// 	const layer = view.layer
+		// 	breakingDiv.appendChild(layer)
+		// }
 		div.appendChild(breakingDiv)
 		//
 		const td = document.createElement("td")
@@ -632,6 +632,7 @@ class SendFundsView extends View
 	_new_estimatedTransactionFee_displayString()
 	{
 		const self = this
+		/*
 		var mixin_str;
 		if (typeof self.mixinSelectLayer === 'undefined' || !self.mixinSelectLayer) {
 			mixin_str = "12"
@@ -645,8 +646,12 @@ class SendFundsView extends View
 		const hostingServiceFee_JSBigInt = self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
 			estimatedNetworkFee_JSBigInt
 		)
-		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
+		// NOTE: the hostingServiceFee has been disabled with RCT for now
+		const estimatedTotalFee_JSBigInt = /*hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
+		*/
+		const estimatedTotalFee_str = "0.028" 
+		// Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
 		var displayString = `+ ${estimatedTotalFee_str} EST. FEE`
 		//
 		return displayString

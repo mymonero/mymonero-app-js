@@ -38,19 +38,11 @@ exports.New_TransactionID = New_TransactionID
 //
 function IsValidPaymentIDOrNoPaymentID(payment_id)
 {
-	if (
-		payment_id 
-			&&
-		(
-			payment_id.length !== 64 
-				|| 
-			!(/^[0-9a-fA-F]{64}$/.test(payment_id))
-		) 
-			&& 
-		payment_id.length !== 16
-	) {
-		return false
+	if (payment_id) {
+		if (payment_id.length !== 64 || !(/^[0-9a-fA-F]{64}$/.test(payment_id))) { // not a valid 64 char pid
+			return false // then not valid
+		} 
 	}
-	return true
+	return true // then either no pid or is a valid one
 }
 exports.IsValidPaymentIDOrNoPaymentID = IsValidPaymentIDOrNoPaymentID
