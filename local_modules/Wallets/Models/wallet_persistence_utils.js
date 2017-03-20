@@ -199,7 +199,7 @@ function SaveToDisk(
 		totals: totals,
 		spent_outputs: self.spent_outputs || [] // maybe not fetched yet
 	}
-	// console.log("debug info: going to save plaintextDocument", JSON.stringify(plaintextDocument, null, '\t'))
+	console.log("debug info: going to save plaintextDocument", JSON.stringify(plaintextDocument, null, '\t'))
 	// console.log("type of account_scanned_height", typeof plaintextDocument.heights.account_scanned_height)
 	// console.log("totals", JSON.stringify(plaintextDocument.totals))
 	// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))

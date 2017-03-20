@@ -72,33 +72,29 @@ class WalletDetailsView extends View
 		self._configureUIWithWallet__accountInfo()
 		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
+		self._configureUIWithWallet__heightsAndImportState()
 	}
 	_setup_views()
 	{
 		const self = this
-		self.setup_self_layer()
+		self._setup_self_layer()
 		self._setup_balanceLabelView()
-		self._setup__account_InfoDisclosingView()
-		self.setup_layers_transactions()
+		self._setup_account_InfoDisclosingView()
+		self._setup_layers_transactionsAndHeightsContainerLayer()
 	}
-	setup_self_layer()
+	_setup_self_layer()
 	{
 		const self = this
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		layer.style.boxSizing = "border-box" // so we don't need to account for padding in w/h
-		//
-		const margin_h = 16
 		layer.style.width = `100%`
 		layer.style.height = "100%"
-		layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		//
-		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
-		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.overflowY = "scroll"
-		//
+		const margin_h = 16
+		layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		layer.style.color = "#c0c0c0" // temporary
 		layer.style.wordBreak = "break-all" // to get the text to wrap	
 	}
 	_setup_balanceLabelView()
@@ -216,7 +212,7 @@ class WalletDetailsView extends View
 		}
 		return fieldView
 	}	
-	_setup__account_InfoDisclosingView()
+	_setup_account_InfoDisclosingView()
 	{
 		const self = this
 		const previewView = new View({}, self.context)
@@ -261,12 +257,20 @@ class WalletDetailsView extends View
 		self.account_InfoDisclosingView = infoDisclosingView
 		self.addSubview(infoDisclosingView)
 	}
-	setup_layers_transactions()
+	_setup_layers_transactionsAndHeightsContainerLayer()
 	{
 		const self = this
+		//
+		const transactionsAndHeightsContainerLayer = document.createElement("div")
+		transactionsAndHeightsContainerLayer.style.position = "relative"
+		transactionsAndHeightsContainerLayer.style.left = "0"
+		transactionsAndHeightsContainerLayer.style.top = "0"
+		self.transactionsAndHeightsContainerLayer = transactionsAndHeightsContainerLayer
+		self.layer.appendChild(transactionsAndHeightsContainerLayer)
+		//
 		const layer = document.createElement("div")
 		self.layer_transactions = layer
-		self.layer.appendChild(layer)
+		transactionsAndHeightsContainerLayer.appendChild(layer)
 	}
 	_setup_startObserving()
 	{
@@ -307,6 +311,15 @@ class WalletDetailsView extends View
 		self.wallet.on(
 			self.wallet.EventName_balanceChanged(),
 			self.wallet_EventName_balanceChanged_listenerFunction
+		)
+		// balance
+		self.wallet_EventName_heightsUpdated_listenerFunction = function()
+		{
+			self.wallet_EventName_heightsUpdated()
+		}
+		self.wallet.on(
+			self.wallet.EventName_heightsUpdated(),
+			self.wallet_EventName_heightsUpdated_listenerFunction
 		)
 		//
 		// txs updated
@@ -358,7 +371,6 @@ class WalletDetailsView extends View
 			self.current_transactionDetailsView.TearDown()
 			self.current_transactionDetailsView = null
 		}
-		//
 		if (typeof self.current_EditWalletView !== 'undefined' && self.current_EditWalletView) {
 			self.current_EditWalletView.TearDown()
 			self.current_EditWalletView = null
@@ -381,6 +393,10 @@ class WalletDetailsView extends View
 			self.wallet_EventName_walletSwatchChanged_listenerFunction
 		)
 		self.wallet.removeListener(
+			self.wallet.EventName_heightsUpdated(),
+			self.wallet_EventName_heightsUpdated_listenerFunction
+		)
+		self.wallet.removeListener(
 			self.wallet.EventName_balanceChanged(),
 			self.wallet_EventName_balanceChanged_listenerFunction
 		)
@@ -393,7 +409,6 @@ class WalletDetailsView extends View
 			self._wallet_EventName_willBeDeleted_fn
 		)
 	}
-	
 	//
 	//
 	// Runtime - Accessors - Navigation
@@ -483,16 +498,13 @@ class WalletDetailsView extends View
 			return
 		}
 		const layer_transactions = self.layer_transactions
-		{ // clear layer_transactions
-			while (layer_transactions.firstChild) {
-			    layer_transactions.removeChild(layer_transactions.firstChild)
-			}
+		while (layer_transactions.firstChild) {
+		    layer_transactions.removeChild(layer_transactions.firstChild)
 		}
 		if (wallet.HasEverFetched_transactions() === false) {
 			// const p = document.createElement("p")
 			// p.innerHTML = "Loading…"
 			// layer_transactions.appendChild(p)
-			//
 			return
 		}
 		const stateCachedTransactions = wallet.New_StateCachedTransactions()
@@ -508,23 +520,7 @@ class WalletDetailsView extends View
 			const layer = view.layer
 			layer.style.margin = `16px 0 16px 0`
 			layer.style.height = "276px"
-			self.addSubview(view)
-			//
-			if (wallet.shouldDisplayImportAccountOption == true) {
-				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
-					"IMPORT TRANSACTIONS",
-					self.context, 
-					function()
-					{
-						self._present_importTransactionsModal()
-					}
-				)
-				const buttonView_layer = buttonView.layer
-				buttonView_layer.style.position = "absolute"
-				buttonView_layer.style.left = "6px"
-				buttonView_layer.style.top = "5px"
-				layer.appendChild(buttonView_layer)
-			}
+			layer_transactions.appendChild(view.layer) // to layer_transactions so it gets removed
 			//
 			return
 		}
@@ -557,11 +553,9 @@ class WalletDetailsView extends View
 						function(e)
 						{
 							e.preventDefault() // not that there would be one
-							{
-								const clicked_layer = this
-								// NOTE: here, we can safely capture the parent scope's `tx` or `i`
-								self._didClickTransaction(tx, i)
-							}
+							const clicked_layer = this
+							// NOTE: here, we can safely capture the parent scope's `tx` or `i`
+							self._didClickTransaction(tx, i)
 							return false
 						}
 					)
@@ -657,6 +651,35 @@ class WalletDetailsView extends View
 			)
 		}
 		layer_transactions.appendChild(listContainerLayer)
+	}
+	_configureUIWithWallet__heightsAndImportState()
+	{
+		const self = this
+		const wallet = self.wallet
+		const transactionsAndHeightsContainerLayer = self.transactionsAndHeightsContainerLayer
+		if (wallet.shouldDisplayImportAccountOption == true) {
+			if (!self.importTransactionsButtonView || typeof self.importTransactionsButtonView === 'undefined') {
+				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
+					"IMPORT TRANSACTIONS",
+					self.context, 
+					function()
+					{
+						self._present_importTransactionsModal()
+					}
+				)
+				self.importTransactionsButtonView = buttonView
+				const buttonView_layer = buttonView.layer
+				buttonView_layer.style.position = "absolute"
+				buttonView_layer.style.left = "6px"
+				buttonView_layer.style.top = "5px"
+				transactionsAndHeightsContainerLayer.appendChild(buttonView_layer)
+			}
+		} else {
+			if (self.importTransactionsButtonView) {
+				self.importTransactionsButtonView.parentNode.removeChild(self.importTransactionsButtonView.layer)
+			}
+		}
+		
 	}
 	//
 	//
@@ -777,6 +800,11 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		self._configureUIWithWallet__transactions()
+	}
+	wallet_EventName_heightsUpdated()
+	{
+		const self = this
+		self._configureUIWithWallet__heightsAndImportState()
 	}
 	//
 	//
