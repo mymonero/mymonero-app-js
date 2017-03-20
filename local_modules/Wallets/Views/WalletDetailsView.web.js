@@ -37,6 +37,7 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
@@ -80,7 +81,7 @@ class WalletDetailsView extends View
 		self._setup_self_layer()
 		self._setup_balanceLabelView()
 		self._setup_account_InfoDisclosingView()
-		self._setup_layers_transactionsAndHeightsContainerLayer()
+		self._setup_layers_transactionsListLayerContainerLayer()
 	}
 	_setup_self_layer()
 	{
@@ -92,7 +93,7 @@ class WalletDetailsView extends View
 		layer.style.height = "100%"
 		layer.style.overflowY = "scroll"
 		const margin_h = 16
-		layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = `0 ${margin_h}px 0px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		layer.style.color = "#c0c0c0" // temporary
 		layer.style.wordBreak = "break-all" // to get the text to wrap	
@@ -257,20 +258,20 @@ class WalletDetailsView extends View
 		self.account_InfoDisclosingView = infoDisclosingView
 		self.addSubview(infoDisclosingView)
 	}
-	_setup_layers_transactionsAndHeightsContainerLayer()
+	_setup_layers_transactionsListLayerContainerLayer()
 	{
 		const self = this
 		//
-		const transactionsAndHeightsContainerLayer = document.createElement("div")
-		transactionsAndHeightsContainerLayer.style.position = "relative"
-		transactionsAndHeightsContainerLayer.style.left = "0"
-		transactionsAndHeightsContainerLayer.style.top = "0"
-		self.transactionsAndHeightsContainerLayer = transactionsAndHeightsContainerLayer
-		self.layer.appendChild(transactionsAndHeightsContainerLayer)
+		const transactionsListLayerContainerLayer = document.createElement("div")
+		transactionsListLayerContainerLayer.style.position = "relative"
+		transactionsListLayerContainerLayer.style.left = "0"
+		transactionsListLayerContainerLayer.style.top = "0"
+		self.transactionsListLayerContainerLayer = transactionsListLayerContainerLayer
+		self.layer.appendChild(transactionsListLayerContainerLayer)
 		//
 		const layer = document.createElement("div")
 		self.layer_transactions = layer
-		transactionsAndHeightsContainerLayer.appendChild(layer)
+		transactionsListLayerContainerLayer.appendChild(layer)
 	}
 	_setup_startObserving()
 	{
@@ -501,6 +502,8 @@ class WalletDetailsView extends View
 		while (layer_transactions.firstChild) {
 		    layer_transactions.removeChild(layer_transactions.firstChild)
 		}
+		self.transactions_listContainerLayer = null
+		self.noTransactions_emptyStateView = null
 		if (wallet.HasEverFetched_transactions() === false) {
 			// const p = document.createElement("p")
 			// p.innerHTML = "Loading…"
@@ -519,12 +522,14 @@ class WalletDetailsView extends View
 			)
 			const layer = view.layer
 			layer.style.margin = `16px 0 16px 0`
-			layer.style.height = "276px"
+			self.noTransactions_emptyStateView = view
+			self.__configure_noTransactions_emptyStateView_height()
 			layer_transactions.appendChild(view.layer) // to layer_transactions so it gets removed
 			//
 			return
 		}
 		const listContainerLayer = document.createElement("div")
+		self.transactions_listContainerLayer = listContainerLayer
 		listContainerLayer.style.margin = `16px 0 40px 0` // when we add 'Load more' btn, 40->16
 		listContainerLayer.style.background = "#383638"
 		listContainerLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
@@ -656,8 +661,10 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		const transactionsAndHeightsContainerLayer = self.transactionsAndHeightsContainerLayer
-		if (wallet.shouldDisplayImportAccountOption == true) {
+		const transactionsListLayerContainerLayer = self.transactionsListLayerContainerLayer
+		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true
+		var shouldShow_catchingUpProgressAndActivityIndicator = wallet.IsScannerCatchingUp()
+		if (shouldShow_importTxsBtn) {
 			if (!self.importTransactionsButtonView || typeof self.importTransactionsButtonView === 'undefined') {
 				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
 					"IMPORT TRANSACTIONS",
@@ -668,18 +675,80 @@ class WalletDetailsView extends View
 					}
 				)
 				self.importTransactionsButtonView = buttonView
-				const buttonView_layer = buttonView.layer
-				buttonView_layer.style.position = "absolute"
-				buttonView_layer.style.left = "6px"
-				buttonView_layer.style.top = "5px"
-				transactionsAndHeightsContainerLayer.appendChild(buttonView_layer)
+				const layer = buttonView.layer
+				layer.style.position = "absolute"
+				layer.style.left = "6px"
+				layer.style.top = "5px"
+				layer.style.width = "150px"
+				layer.style.height = "13px"
+				transactionsListLayerContainerLayer.appendChild(layer)
 			}
 		} else {
 			if (self.importTransactionsButtonView) {
-				self.importTransactionsButtonView.parentNode.removeChild(self.importTransactionsButtonView.layer)
+				self.importTransactionsButtonView.layer.parentNode.removeChild(self.importTransactionsButtonView.layer)
 			}
 		}
-		
+		if (shouldShow_catchingUpProgressAndActivityIndicator) {
+			if (!self.catchingUpProgressAndActivityIndicatorView || typeof self.catchingUpProgressAndActivityIndicatorView === 'undefined') {
+				const view = new View({}, self.context)
+				view.Set_CatchingUpPercentageFloat = function(to_float)
+				{
+					const formattedFloatStr = "" + (to_float * 100).toFixed(0) + "%"
+					self.progressLabelLayer.innerHTML = formattedFloatStr
+				}
+				const layer = view.layer
+				layer.style.position = "relative"
+				layer.style.left = "0"
+				layer.style.top = "0"
+				layer.style.marginTop = "5px"
+				layer.style.boxSizing = "border-box"
+				layer.style.width = "100%"
+				layer.style.height = "18px"
+				layer.style.padding = "0 14px 0 19px"
+				self.catchingUpProgressAndActivityIndicatorView = view
+				//
+				const activityIndicatorLayer = commonComponents_activityIndicators.New_GraphicAndLabel_ActivityIndicatorLayer(
+					"SCANNING BLOCKCHAIN…",
+					self.context
+				)
+				activityIndicatorLayer.style.paddingLeft = "0" // overriding
+				activityIndicatorLayer.style.color = "#9E9C9E" // overriding
+				self.catchingUpProgressAndActivityIndicatorView.layer.appendChild(activityIndicatorLayer)
+				//
+				const progressLabelLayer = document.createElement("span")
+				self.progressLabelLayer = progressLabelLayer
+				progressLabelLayer.style.position = "absolute"
+				progressLabelLayer.style.width = "40px"
+				progressLabelLayer.style.height = "14px"
+				progressLabelLayer.style.textAlign = "right"
+				progressLabelLayer.style.right = "19px"
+				progressLabelLayer.style.top = "8px"
+				progressLabelLayer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+				progressLabelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+				progressLabelLayer.style.fontSize = "10px" // sketch renders it less heavily than chrome so using 10px to mimick sketch 11px
+				progressLabelLayer.style.letterSpacing = "0.5px"
+				progressLabelLayer.style.fontWeight = "300"
+				progressLabelLayer.style.color = "#9E9C9E"
+				layer.appendChild(progressLabelLayer)
+				//
+				self.layer.insertBefore(layer, self.transactionsListLayerContainerLayer)
+				// ^ insert the constructed view before the transactionsListLayerContainerLayer
+			}
+			self.catchingUpProgressAndActivityIndicatorView.Set_CatchingUpPercentageFloat(wallet.CatchingUpPercentageFloat())
+		} else {
+			if (self.catchingUpProgressAndActivityIndicatorView) {
+				self.catchingUpProgressAndActivityIndicatorView.layer.parentNode(self.catchingUpProgressAndActivityIndicatorView.layer)
+				self.progressLabelLayer = null // can assume we only need to nil this here
+			}
+		}
+		self.__configure_noTransactions_emptyStateView_height()
+	}
+	__configure_noTransactions_emptyStateView_height()
+	{
+		const self = this
+		if (self.noTransactions_emptyStateView) {
+			self.noTransactions_emptyStateView.layer.style.height = self.catchingUpProgressAndActivityIndicatorView ? "254px" : "276px"
+		}
 	}
 	//
 	//

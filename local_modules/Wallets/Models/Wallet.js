@@ -623,6 +623,7 @@ class Wallet extends EventEmitter
 		return "EventName_deleted"
 	}
 
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Wallet properties
 	
@@ -651,6 +652,40 @@ class Wallet extends EventEmitter
 		}
 		//
 		return true
+	}
+	IsScannerCatchingUp()
+	{
+		const self = this
+		if (self.blockchain_height == 0 || typeof self.blockchain_height == 'undefined' || self.blockchain_height == null) {
+			console.warn("IsScannerCatchingUp() called while nil/0 blockchain_height")
+			return true
+		}
+		if (self.account_scanned_block_height == 0 || typeof self.account_scanned_block_height === 'undefined' || self.account_scanned_block_height == null) {
+			console.warn("IsScannerCatchingUp() called while nil/0 account_scanned_block_height.")
+			return true
+		}
+		const nBlocksBehind = self.blockchain_height - self.account_scanned_block_height
+		if (nBlocksBehind >= 10) {
+			return true
+		} else if (nBlocksBehind < 0) {
+			throw "nBlocksBehind < 0" // maybe replace with warn log
+			return false 
+		}
+		return false
+	}
+	CatchingUpPercentageFloat() // btn 0 and 1.0
+	{
+		const self = this
+		if (self.account_scanned_height == 0 || typeof self.account_scanned_height === 'undefined' || self.account_scanned_height === null) {
+			throw "CatchingUpPercentageFloat() requested but self.account_scanned_height still 0" // maybe replace with warn log
+			return 0
+		} else if (self.transaction_height == 0 || typeof self.transaction_height === 'undefined' || self.transaction_height === null) {
+			throw "CatchingUpPercentageFloat() requested but self.transaction_height still 0" // maybe replace with warn log
+			return 0
+		}
+		const pctFloat = self.account_scanned_height / self.transaction_height
+		console.log(`CatchingUpPercentageFloat ${self.account_scanned_height}/${self.transaction_height}=${pctFloat.toFixed(0)}%`)
+		return pctFloat
 	}
 	IsTransactionConfirmed(tx)
 	{
