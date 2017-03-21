@@ -109,10 +109,15 @@ class MainWindowController
 				allowRunningInsecureContent: false // html/js/css from https only
 			}
 		}
-		const isLinux = /^linux/.test(process.platform)
+		const isWin = /^win/.test(process.platform)
+		const isLinux = /linux/.test(process.platform)
 		if (isLinux) {
 			const pathTo_iconImage_png = __dirname + "../../local_modules/electron_main/resources/icons/icon.png"
 			options.icon = pathTo_iconImage_png
+		}
+		if (isWin || isLinux) {
+			options.height += 55
+			options.maxHeight += 55
 		}
 		const window = new electron.BrowserWindow(options)
 		window.loadURL(`file://${__dirname}/../Views/index.electron.html`)
