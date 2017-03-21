@@ -216,7 +216,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	{
 		const self = this
 		const layer = document.createElement("div")
-		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontSize = "11px"
 		layer.style.color = "#8d8b8d"
 		layer.style.letterSpacing = "0"

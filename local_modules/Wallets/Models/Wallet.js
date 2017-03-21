@@ -673,6 +673,20 @@ class Wallet extends EventEmitter
 		}
 		return false
 	}
+	NBlocksBehind()
+	{
+		const self = this
+		if (self.blockchain_height == 0 || typeof self.blockchain_height == 'undefined' || self.blockchain_height == null) {
+			console.warn("IsScannerCatchingUp() called while nil/0 blockchain_height")
+			return 0
+		}
+		if (self.account_scanned_block_height == 0 || typeof self.account_scanned_block_height === 'undefined' || self.account_scanned_block_height == null) {
+			console.warn("IsScannerCatchingUp() called while nil/0 account_scanned_block_height.")
+			return 0
+		}
+		const nBlocksBehind = self.blockchain_height - self.account_scanned_block_height
+		return nBlocksBehind
+	}
 	CatchingUpPercentageFloat() // btn 0 and 1.0
 	{
 		const self = this
@@ -684,9 +698,10 @@ class Wallet extends EventEmitter
 			return 0
 		}
 		const pctFloat = self.account_scanned_height / self.transaction_height
-		console.log(`CatchingUpPercentageFloat ${self.account_scanned_height}/${self.transaction_height}=${pctFloat.toFixed(0)}%`)
+		console.log(`CatchingUpPercentageFloat ${self.account_scanned_height}/${self.transaction_height}=${pctFloat.toFixed(2)}%`)
 		return pctFloat
 	}
+	
 	IsTransactionConfirmed(tx)
 	{
 		const self = this

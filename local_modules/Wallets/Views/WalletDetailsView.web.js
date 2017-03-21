@@ -122,7 +122,7 @@ class WalletDetailsView extends View
 		const mainLabelSpan = document.createElement("span")
 		{
 			const layer = mainLabelSpan
-			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontWeight = "100"
 			layer.style.fontSize = "32px"
 			view.layer.appendChild(layer)
@@ -130,7 +130,7 @@ class WalletDetailsView extends View
 		const paddingZeroesLabelSpan = document.createElement("span")
 		{
 			const layer = paddingZeroesLabelSpan			
-			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontWeight = "100"
 			layer.style.fontSize = "32px"
 			view.layer.appendChild(layer)
@@ -583,7 +583,7 @@ class WalletDetailsView extends View
 						div.style.boxSizing = "border-box"
 						div.style.padding = "21px 0 0 16px"
 						div.style.letterSpacing = "0.5px"
-						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontFamily = self.context.themeController.FontFamily_monospaceRegular()
 						div.style.color = tx.approx_float_amount < 0 ? "#F97777" : "#FCFBFC"
 						//
 						// div.style.webkitUserSelect = "all" // decided to comment this because it interferes with cell click
@@ -599,7 +599,7 @@ class WalletDetailsView extends View
 						div.style.height = "34px"
 						div.style.boxSizing = "border-box"
 						div.style.padding = "21px 41px 0 0"
-						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 						div.style.fontWeight = "100"
 						div.style.color = "#FCFBFC"
 						const date = tx.timestamp // TODO: this in UTC?
@@ -629,7 +629,7 @@ class WalletDetailsView extends View
 						div.style.overflow = "hidden"
 						div.style.textOverflow = "ellipsis"
 						//
-						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 						div.style.fontSize = "13px" 
 						div.style.color = "#9E9C9E"
 						div.style.fontWeight = "100"
@@ -647,7 +647,7 @@ class WalletDetailsView extends View
 						div.style.letterSpacing = "0.5px"
 						div.style.boxSizing = "border-box"
 						div.style.padding = "3px 41px 0 0"
-						div.style.fontFamily = self.context.themeController.FontFamily_monospace()
+						div.style.fontFamily = self.context.themeController.FontFamily_monospaceRegular()
 						div.style.fontWeight = "500"
 						div.style.color = "#6B696B"
 						div.innerHTML = `${ tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED" }`
@@ -691,10 +691,11 @@ class WalletDetailsView extends View
 		if (shouldShow_catchingUpProgressAndActivityIndicator) {
 			if (!self.catchingUpProgressAndActivityIndicatorView || typeof self.catchingUpProgressAndActivityIndicatorView === 'undefined') {
 				const view = new View({}, self.context)
-				view.Set_CatchingUpPercentageFloat = function(to_float)
+				view.ConfigureWithProgress = function()
 				{
-					const formattedFloatStr = "" + (to_float * 100).toFixed(0) + "%"
-					self.progressLabelLayer.innerHTML = formattedFloatStr
+					// const formattedFloatStr = "" + (to_float * 100).toFixed(0) + "%"
+					const innerHTMLStr = `${self.wallet.NBlocksBehind()} blocks behind`
+					self.progressLabelLayer.innerHTML = innerHTMLStr
 				}
 				const layer = view.layer
 				layer.style.position = "relative"
@@ -718,12 +719,12 @@ class WalletDetailsView extends View
 				const progressLabelLayer = document.createElement("span")
 				self.progressLabelLayer = progressLabelLayer
 				progressLabelLayer.style.position = "absolute"
-				progressLabelLayer.style.width = "40px"
+				progressLabelLayer.style.width = "auto"
 				progressLabelLayer.style.height = "14px"
 				progressLabelLayer.style.textAlign = "right"
 				progressLabelLayer.style.right = "19px"
 				progressLabelLayer.style.top = "8px"
-				progressLabelLayer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+				progressLabelLayer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 				progressLabelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 				progressLabelLayer.style.fontSize = "10px" // sketch renders it less heavily than chrome so using 10px to mimick sketch 11px
 				progressLabelLayer.style.letterSpacing = "0.5px"
@@ -734,10 +735,10 @@ class WalletDetailsView extends View
 				self.layer.insertBefore(layer, self.transactionsListLayerContainerLayer)
 				// ^ insert the constructed view before the transactionsListLayerContainerLayer
 			}
-			self.catchingUpProgressAndActivityIndicatorView.Set_CatchingUpPercentageFloat(wallet.CatchingUpPercentageFloat())
+			self.catchingUpProgressAndActivityIndicatorView.ConfigureWithProgress()
 		} else {
 			if (self.catchingUpProgressAndActivityIndicatorView) {
-				self.catchingUpProgressAndActivityIndicatorView.layer.parentNode(self.catchingUpProgressAndActivityIndicatorView.layer)
+				self.catchingUpProgressAndActivityIndicatorView.layer.parentNode.removeChild(self.catchingUpProgressAndActivityIndicatorView.layer)
 				self.progressLabelLayer = null // can assume we only need to nil this here
 			}
 		}

@@ -132,7 +132,7 @@ function New_clickableLinkButtonView(
 	a.style.color = "#11bbec"
 	a.style.cursor = "pointer"
 	a.style.webkitFontSmoothing = "subpixel-antialiased"
-	a.style.fontFamily = context.themeController.FontFamily_monospace()
+	a.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	a.style.fontSize = "10px" // chrome renders 11px too big compared to sketch
 	a.style.letterSpacing = "0.5px"
 	a.style.fontWeight = "300"
@@ -211,7 +211,7 @@ function New_fieldValue_labelLayer(labelText, context)
 	layer.style.fontSize = "13px"
 	layer.style.color = "#9E9C9E"
 	layer.style.fontWeight = "100"
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.Component_SetValue = function(value)
 	{
 		layer.innerHTML = value
@@ -327,7 +327,7 @@ function New_redTextButtonView(text, context)
 	layer.style.marginLeft = "26px"
 	//
 	layer.style.color = "#F97777"
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.fontSize = "10px" // design says 11 but chrome renders too large; simulating…
 	layer.style.letterSpacing = "0.5px"
 	layer.style.fontWeight = "100"

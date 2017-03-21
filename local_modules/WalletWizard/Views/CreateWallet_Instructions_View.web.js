@@ -155,7 +155,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 			layer.style.textIndent = `${37 - 12}px`
 			layer.style.width = "72px"
 			layer.style.height = `${32 - 10 * 2 }px`
-			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontSize = "11px"
 			layer.style.color = "#f8f7f8"
 			layer.style.background = "#383638"

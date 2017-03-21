@@ -386,7 +386,7 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 		contentLayer.style.cursor = "default"
 		contentLayer.style.fontSize = "13px"
 		contentLayer.style.fontWeight = "300"
-		contentLayer.style.fontFamily = context.themeController.FontFamily_monospace()
+		contentLayer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
 		contentLayer.style.color = "#FCFBFC"
 		// contentLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 		const xButtonLayer = document.createElement("a")

@@ -106,7 +106,7 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 	layer.style.marginBottom = "23px"
 	layer.style.color = "#9e9c9e"
 	layer.style.webkitUserSelect = "all" // allow selection here
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
 	layer.innerHTML = mnemonicString
 	//
 	return view
@@ -243,7 +243,7 @@ function _new_MnemonicConfirmation_WordView(word, wordUUID, context)
 	const layer = view.layer
 	layer.className = "mnemonic-pill"
 	layer.href = "#" // clickable by default
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.innerHTML = word.toUpperCase()
 	{ // for retrieval later
 		layer.__component_mnemonicWord = word

@@ -212,7 +212,7 @@ function New_RightSide_ValueDisplayLabelButtonView(context)
 		layer.style.fontSize = "10px" // design is 11 but chrome renders too big, simulating
 		layer.style.letterSpacing = "0.5px"
 		layer.style.fontWeight = "500"
-		layer.style.fontFamily = context.themeController.FontFamily_monospace()
+		layer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
 		layer.style.color = "#9E9C9E"
 		layer.style.lineHeight = "200%" // % extra to get + aligned properly
 		layer.style.textAlign = "center"

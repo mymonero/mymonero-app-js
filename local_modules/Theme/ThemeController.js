@@ -30,6 +30,27 @@
 //
 const commonComponents_navigationBarButtons = require('../MMAppUICommonComponents/navigationBarButtons.web')
 //
+const Views__cssRules = require('../Views/cssRules.web')
+const NamespaceName = "ThemeController"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`@font-face {
+		font-family: Native-Regular;
+		src: url("${__dirname}/Resources/Native-Regular.otf") format("opentype");
+	}`,
+	`@font-face {
+		font-family: Native-Light;
+		src: url("${__dirname}/Resources/Native-Light.otf") format("opentype");
+	}`,
+	`@font-face {
+		font-family: Native-Bold;
+		src: url("${__dirname}/Resources/Native-Bold.otf") format("opentype");
+	}`,
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+
+//
 class ThemeController
 {
 	constructor(options, context)
@@ -37,6 +58,7 @@ class ThemeController
 		const self = this
 		self.options = options
 		self.context = context
+		__injectCSSRules_ifNecessary()
 	}
 	//
 	//
@@ -54,9 +76,17 @@ class ThemeController
 	{
 		return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 	}
-	FontFamily_monospace()
+	FontFamily_monospaceLight()
 	{
-		return 'native, input, menlo, monospace'
+		return 'Native-Light, input, menlo, monospace'
+	}
+	FontFamily_monospaceRegular()
+	{
+		return 'Native-Regular, input, menlo, monospace'
+	}
+	FontFamily_monospaceBold()
+	{
+		return 'Native, input, menlo, monospace'
 	}
 	//
 	//

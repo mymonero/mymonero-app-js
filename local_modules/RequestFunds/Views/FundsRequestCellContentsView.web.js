@@ -124,7 +124,7 @@ class FundsRequestCellContentsView extends View
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontWeight = "100"
 		layer.style.height = "20px"
 		layer.style.color = "#9e9c9e"
@@ -145,7 +145,7 @@ class FundsRequestCellContentsView extends View
 		layer.style.display = "block" // next line
 		layer.style.margin = `0 ${self.margin_right}px 8px 78px`
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontWeight = "100"
 		layer.style.height = "20px"
 		layer.style.color = "#9e9c9e"

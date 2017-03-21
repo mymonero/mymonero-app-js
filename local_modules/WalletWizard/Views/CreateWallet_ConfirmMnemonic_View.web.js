@@ -94,7 +94,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		{
 			const layer = document.createElement("div")
 			layer.style.fontSize = "11px"
-			layer.style.fontFamily = self.context.themeController.FontFamily_monospace()
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontSize = "11px"
 			layer.style.lineHeight = "14px"
 			layer.style.color = "#f97777"

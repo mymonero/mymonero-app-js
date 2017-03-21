@@ -89,7 +89,7 @@ function New_fieldTitle_labelLayer(labelText, context)
 	layer.style.letterSpacing = "0.5px"
 	layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
 	layer.style.color = "#F8F7F8"
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
@@ -137,7 +137,7 @@ function New_fieldValue_textInputLayer(context, params)
 	layer.style.fontSize = "13px"
 	layer.style.fontWeight = "200"
 	layer.style.padding = `0 ${padding_h}px`
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.outline = "none" // no focus ring
 	// editable:true
 	layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
@@ -176,7 +176,7 @@ function New_fieldValue_textAreaView(params, context)
 	layer.style.lineHeight = "15px"
 	layer.style.resize = "none" // not user-resizable
 	layer.style.outline = "none" // no focus ring
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.wordBreak = "break-word"
 	//
 	view.SetEnabled = function(isEnabled)
@@ -243,7 +243,7 @@ function New_fieldAccessory_messageLayer(context)
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("p")
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.fontSize = "11px"
 	layer.style.lineHeight = "15px"
 	layer.style.fontWeight = "100"
@@ -280,7 +280,7 @@ function New_NonEditable_ValueDisplayLayer(value, context)
 	layer.style.color = "#7C7A7C"
 	layer.style.fontSize = "13px"
 	layer.style.fontWeight = "100"
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.innerHTML = value
 	//
@@ -308,7 +308,7 @@ function New_IconAndMessageLayer(iconPath, messageText, context)
 	const layer = document.createElement("div")
 	layer.classList.add("iconAndMessageLayer")
 	layer.innerHTML = `<img src="${iconPath}" />&nbsp;<span>${messageText}</span>`
-	layer.style.fontFamily = context.themeController.FontFamily_monospace()
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "11px"
 	layer.style.fontWeight = "100"
