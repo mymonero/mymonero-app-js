@@ -56,7 +56,7 @@ const options =
 	//
 	// building
 	all: true, // build for all platforms
-	 //	// platform: "darwin", // for debug/testing
+		// // platform: "win32",//"darwin", // for debug/testing
 	dir: ".", // source directory (must this be a parent of node_modules?)
 	ignore: 
 	// function(file, arg2)

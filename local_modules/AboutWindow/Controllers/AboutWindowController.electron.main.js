@@ -79,12 +79,13 @@ class AboutWindowController
 			const pathTo_iconImage_png = __dirname + "../../local_modules/electron_main/resources/icons/icon.png"
 			options.icon = pathTo_iconImage_png
 		}
-		if (isWin || isLinux) {
-			options.height += 55
-			options.maxHeight += 55
+		if (isWin || isLinux) { // for window decoration
+			options.height += 27
+			options.maxHeight += 27
 		}
 		const window = new electron.BrowserWindow(options)
 		window.loadURL(`file://${__dirname}/../Views/index.electron.html`)
+		window.setMenu(null) // because on Windows and Linux we do not want to have a menubar on top of this about menu
 		//
 		return window
 	}

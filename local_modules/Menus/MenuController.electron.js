@@ -129,71 +129,76 @@ class MenuController extends EventEmitter
 		const appName = self.context.app.getName()
 		//
 		const menuSpecs = []
-		if (isMacOS === true) {
+		{ // MyMonero menu
+			const submenu = 
+			[
+				{
+					label: 'About MyMonero',
+					click: function(menuItem, browserWindow, event)
+					{
+						self.context.aboutWindowController.MakeKeyAndVisible()
+					}
+				},
+				{
+					type: 'separator'
+				},
+				{
+					label: self.MenuItemName_Preferences(),
+					accelerator: 'CmdOrCtrl+,',
+					click: function(menuItem, browserWindow, event)
+					{
+						self.emit(self.EventName_menuItemSelected_Preferences())
+					}
+				},
+				{
+					label: self.MenuItemName_ChangePassword(),
+					enabled: false, // wait for first PW entry to enable
+					click: function(menuItem, browserWindow, event)
+					{
+						self.emit(self.EventName_menuItemSelected_ChangePassword())
+					}
+				},
+				{
+					label: 'Check for Updates',
+					click: function(menuItem, browserWindow, event)
+					{
+						console.log("TODO: check for updates")
+					}
+				},
+				{
+					type: 'separator'
+				}
+			]
+			if (isMacOS) {
+				submenu.push({
+					role: 'services',
+					submenu: []
+				})
+				submenu.push({
+					type: 'separator'
+				})
+				submenu.push({
+					role: 'hide'
+				})
+				submenu.push({
+					role: 'hideothers'
+				})
+				submenu.push({
+					role: 'unhide'
+				})
+				submenu.push({
+					type: 'separator'
+				})
+			}
+			// and finally, for all platforms…
+			submenu.push({
+				role: 'quit'
+			})
 			menuSpecs.push({
 				label: appName,
-				submenu: [
-					{
-						label: 'About MyMonero',
-						click: function(menuItem, browserWindow, event)
-						{
-							self.context.aboutWindowController.MakeKeyAndVisible()
-						}
-					},
-					{
-						type: 'separator'
-					},
-					{
-						label: self.MenuItemName_Preferences(),
-						accelerator: 'CmdOrCtrl+,',
-						click: function(menuItem, browserWindow, event)
-						{
-							self.emit(self.EventName_menuItemSelected_Preferences())
-						}
-					},
-					{
-						label: self.MenuItemName_ChangePassword(),
-						enabled: false, // wait for first PW entry to enable
-						click: function(menuItem, browserWindow, event)
-						{
-							self.emit(self.EventName_menuItemSelected_ChangePassword())
-						}
-					},
-					{
-						label: 'Check for Updates',
-						click: function(menuItem, browserWindow, event)
-						{
-							console.log("check for updates")
-						}
-					},
-					{
-						type: 'separator'
-					},
-					{
-						role: 'services',
-						submenu: []
-					},
-					{
-						type: 'separator'
-					},
-					{
-						role: 'hide'
-					},
-					{
-						role: 'hideothers'
-					},
-					{
-						role: 'unhide'
-					},
-					{
-						type: 'separator'
-					},
-					{
-						role: 'quit'
-					}
-				]
+				submenu: submenu
 			})
-		}
+		}		
 		{ // Edit
 			const submenu = 
 			[
@@ -344,15 +349,6 @@ class MenuController extends EventEmitter
 					}
 				}
 			]
-			if (isMacOS != true) {
-				submenu.unshift({
-					label: 'About MyMonero',
-					click: function(menuItem, browserWindow, event)
-					{
-						self.context.aboutWindowController.MakeKeyAndVisible()
-					}
-				})
-			}
 			menuSpecs.push({
 				role: 'help',
 				submenu: submenu

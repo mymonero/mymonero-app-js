@@ -63,10 +63,6 @@ class MainWindowController
 	{
 		const self = this
 		const app = self.context.app
-		app.on('window-all-closed', function()
-		{ // this should probably be moved out of this main window and into, perhaps, the main process
-			self._allWindowsDidClose()
-		})
 		app.on('activate', function()
 		{
 			if (self.window === null) {
@@ -157,28 +153,33 @@ class MainWindowController
 		window.on('closed', function() // this is not within new_window because such accessors should never directly or indirectly modify state of anything but within its own fn scope
 		{
 			self.window = null // release
-		})
-		window.webContents.on("will-navigate", function(e)
-		{
-			e.preventDefault() // do not allow navigation when users drop links
+			// Now since window-all-closed seems to not like to fire, ever, and since we have a main window…
+			// I'll just use this to quit the app:
+			if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
+				self.context.app.quit()
+			}
 		})
 		{ // hardening
-			// const allowDevTools = process.env.NODE_ENV === 'development'
-			// const openDevTools = allowDevTools === true && true
-			// if (allowDevTools !== true) { // this prevents the dev tools from staying open
-			// 	window.webContents.on( // but it would be nicer to completely preclude it opening
-			// 		'devtools-opened',
-			// 		function()
-			// 		{
-			// 			if (self.window) {
-			// 				self.window.webContents.closeDevTools()
-			// 			}
-			// 		}
-			// 	)
-			// }
-			// if (openDevTools === true) {
+			window.webContents.on("will-navigate", function(e)
+			{
+				e.preventDefault() // do not allow navigation when users drop links
+			})
+			const allowDevTools = process.env.NODE_ENV === 'development'
+			const openDevTools = allowDevTools === true && false
+			if (allowDevTools !== true) { // this prevents the dev tools from staying open
+				window.webContents.on( // but it would be nicer to completely preclude it opening
+					'devtools-opened',
+					function()
+					{
+						if (self.window) {
+							self.window.webContents.closeDevTools()
+						}
+					}
+				)
+			}
+			if (openDevTools === true) {
 				self.window.webContents.openDevTools()
-			// }
+			}
 		}
 	}
 	
@@ -200,14 +201,5 @@ class MainWindowController
 		
 	////////////////////////////////////////////////////////////////////////////////
 	// Delegation - Private - Windows
-
-	_allWindowsDidClose()
-	{
-		const self = this
-		const app = self.context.app
-		if (process.platform !== 'darwin') { // because macos apps stay active while main window closed
-			app.quit()
-		}
-	}
 }
 module.exports = MainWindowController
