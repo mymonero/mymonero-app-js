@@ -283,44 +283,55 @@ class MenuController extends EventEmitter
 			menuSpecs.push(menuSpec)
 		}
 		{ // Help
+			const submenu = 
+			[
+				{
+					label: 'MyMonero.com',
+					click: function(menuItem, browserWindow, event)
+					{
+						electron_shell.openExternal('https://mymonero.com/')
+					}
+				},
+				{
+					type: 'separator'
+				},
+				{
+					label: 'Support',
+					click: function(menuItem, browserWindow, event)
+					{
+						electron_shell.openExternal('https://mymonero.com/#/support')
+					}
+				},
+				{
+					type: 'separator'
+				},
+				{
+					label: 'Privacy Policy',
+					click: function(menuItem, browserWindow, event)
+					{
+						electron_shell.openExternal('https://mymonero.com/#/privacy-policy')
+					}
+				},
+				{
+					label: 'Terms of Use',
+					click: function(menuItem, browserWindow, event)
+					{
+						electron_shell.openExternal('https://mymonero.com/#/terms')
+					}
+				}
+			]
+			if (isMacOS != true) {
+				submenu.unshift({
+					label: 'About MyMonero',
+					click: function(menuItem, browserWindow, event)
+					{
+						self.context.aboutWindowController.MakeKeyAndVisible()
+					}
+				})
+			}
 			menuSpecs.push({
 				role: 'help',
-				submenu: [
-					{
-						label: 'MyMonero.com',
-						click: function(menuItem, browserWindow, event)
-						{
-							electron_shell.openExternal('https://mymonero.com/')
-						}
-					},
-					{
-						type: 'separator'
-					},
-					{
-						label: 'Support',
-						click: function(menuItem, browserWindow, event)
-						{
-							electron_shell.openExternal('https://mymonero.com/#/support')
-						}
-					},
-					{
-						type: 'separator'
-					},
-					{
-						label: 'Privacy Policy',
-						click: function(menuItem, browserWindow, event)
-						{
-							electron_shell.openExternal('https://mymonero.com/#/privacy-policy')
-						}
-					},
-					{
-						label: 'Terms of Use',
-						click: function(menuItem, browserWindow, event)
-						{
-							electron_shell.openExternal('https://mymonero.com/#/terms')
-						}
-					}
-				]
+				submenu: submenu
 			})
 		}
 		//
