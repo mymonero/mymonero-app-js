@@ -298,7 +298,7 @@ function _new_autocompleteResultsLayer()
 		layer.style.backgroundColor = "#FCFBFC"
 		layer.style.borderRadius = "3px"
 		layer.style.boxShadow = "0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.30)"
-		layer.style.overflowY = "scroll"
+		layer.style.overflowY = "auto"
 		layer.style.zIndex = "100"
 		//
 		layer.style.display = "none" // for now - no results at init!

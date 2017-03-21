@@ -56,7 +56,7 @@ class RootView extends View
 			layer.style.height = "100%"
 			layer.style.left = "0px"
 			layer.style.top = "0px"
-			// layer.style.overflow = "hidden"
+			layer.style.overflow = "hidden" // prevent scroll bar
 		}
 		//
 		self.setup_tabBarAndContentView()

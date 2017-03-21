@@ -72,7 +72,7 @@ class ListView extends View
 		const padding_h = self.overridable_padding_h()
 		//
 		const layer = self.layer
-		layer.style.overflowY = "scroll"
+		layer.style.overflowY = "hidden" // here, anyway. the cell container is what scrolls
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%" 
 		layer.style.height = "100%"
@@ -200,6 +200,11 @@ class ListView extends View
 		{ // now add cells - TODO: recycle cell views and simply call `ConfigureWithRecord`
 			const context = self.context
 			const numberOf_records = records.length
+			if (numberOf_records == 0) { // TODO: expose this so subclassers can override
+				self.layer.style.overflowY = "hidden"
+			} else {
+				self.layer.style.overflowY = "auto"
+			}
 			records.forEach(
 				function(record, i)
 				{

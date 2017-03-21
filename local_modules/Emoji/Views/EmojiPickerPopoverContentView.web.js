@@ -39,7 +39,7 @@ const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+Names
 const cssRules =
 [
 	`.${NamespaceName} {
-		overflow-y: scroll;
+		overflow-y: auto;
 	}`,
 	`.${NamespaceName} > .EmojiButtonView {
 		width: 34px;
@@ -100,7 +100,7 @@ class EmojiPickerPopoverContentView extends View
 		layer.style.padding = `${self.padding_top}px 6px ${self.padding_bottom}px 6px` // btm is 1 lower because we already have 1px space
 		layer.style.borderRadius = "4px"
 		layer.style.overflowX = "hidden"
-		layer.style.overflowY = "scroll"
+		layer.style.overflowY = "auto"
 		layer.classList.add(NamespaceName)
 		//
 		const emojis = emoji_set.Emojis

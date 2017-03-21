@@ -113,7 +113,7 @@ class CustomSelectView extends View
 			layer.style.width = "100%"
 			layer.style.height = "100%"
 			layer.style.zIndex = "20" // above potential bg view
-			layer.style.overflowY = "scroll" // this layer is what scrolls
+			layer.style.overflowY = "auto" // this layer is what scrolls
 			layer.classList.add("options_cellViews_containerView")
 			self.options_cellViews_containerView = view
 			self.options_containerView.addSubview(view)

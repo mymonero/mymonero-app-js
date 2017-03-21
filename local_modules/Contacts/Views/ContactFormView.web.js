@@ -67,7 +67,8 @@ class ContactFormView extends View
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		layer.style.overflowY = "scroll"
+		layer.style.overflowY = "auto"
+		layer.style.overflowX = "hidden" // cause the Emoji picker likes to protrude
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view

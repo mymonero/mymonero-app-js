@@ -70,7 +70,7 @@ class TabBarAndContentView extends View
 				const options = {}
 				const view = new View(options, context)
 				{
-					view.layer.style.overflowY = "scroll"
+					view.layer.style.overflow = "hidden" // subviews/layers not allowed to control scroll here - if you want to, you must create your own wrapper
 				}
 				self.contentAreaView = view
 				self.addSubview(view)
