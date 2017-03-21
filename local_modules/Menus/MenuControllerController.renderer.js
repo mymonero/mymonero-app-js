@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const {Menu} = require('electron')
+const {ipcRenderer} = require('electron')
 //
 class MenuControllerController
 { // Silly as it sounds, this class exists to integrate the main process menuController with event
@@ -104,17 +104,23 @@ class MenuControllerController
 	enableMenuItem_ChangePassword()
 	{
 		const self = this
-		self.menuController.SetItemNamedEnabled(
-			self.menuController.MenuItemName_ChangePassword(),
-			"true" // passing string rather than bool to support IPC on windows
+		ipcRenderer.send(
+			self.menuController.IPCMethod__MenuController_SetItemNamedEnabled(),
+			{
+				itemName: self.menuController.MenuItemName_ChangePassword(),
+				isEnabled: true
+			}
 		)
 	}
 	disableMenuItem_ChangePassword()
 	{
 		const self = this
-		self.menuController.SetItemNamedEnabled(
-			self.menuController.MenuItemName_ChangePassword(),
-			"false" // passing string rather than bool to support IPC on windows
+		ipcRenderer.send(
+			self.menuController.IPCMethod__MenuController_SetItemNamedEnabled(),
+			{
+				itemName: self.menuController.MenuItemName_ChangePassword(),
+				isEnabled: false
+			}
 		)
 	}
 }

@@ -153,7 +153,12 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 			layer.style.display = "block"
 			layer.style.padding = "10px 12px"
 			layer.style.textIndent = `${37 - 12}px`
-			layer.style.width = "72px"
+			const isMacOS = process.platform === 'darwin' // TODO: check for iOS too I suppose
+			if (isMacOS) {
+				layer.style.width = "72px"
+			} else {
+				layer.style.width = "85px"
+			}
 			layer.style.height = `${32 - 10 * 2 }px`
 			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontSize = "11px"

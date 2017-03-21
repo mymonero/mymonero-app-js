@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const {Menu, electron_shell} = require('electron')
+const {Menu, electron_shell, ipcMain} = require('electron')
 const isMacOS = process.platform === 'darwin'
 //
 const EventEmitter = require('events')
@@ -49,6 +49,7 @@ class MenuController extends EventEmitter
 	{
 		const self = this
 		self.setup_menu()
+		self.startObserving_ipc()
 	}
 	setup_menu()
 	{
@@ -68,6 +69,29 @@ class MenuController extends EventEmitter
 				app.on('ready', _setMenu)
 			}
 		}
+	}
+	startObserving_ipc()
+	{
+		const self = this
+		ipcMain.on(
+			self.IPCMethod__MenuController_SetItemNamedEnabled(), 
+			function(event, params)
+			{
+				self.SetItemNamedEnabled(
+					params.itemName, 
+					params.isEnabled
+				)
+			}
+		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors - IPC Method names
+	
+	IPCMethod__MenuController_SetItemNamedEnabled()
+	{
+		return "IPCMethod__MenuController_SetItemNamedEnabled"
 	}
 
 
