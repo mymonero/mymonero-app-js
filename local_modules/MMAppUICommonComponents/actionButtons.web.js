@@ -92,6 +92,7 @@ function New_ActionButtonView(
 	//
 	const view = new View({ tag: "a" }, context)
 	const layer = view.layer
+	layer.ondragstart = function(e) { e.preventDefault(); return false; } // disable link dragging
 	view.Disable = function()
 	{ // is this going to create a retain cycle?
 		view.isDisabled = true

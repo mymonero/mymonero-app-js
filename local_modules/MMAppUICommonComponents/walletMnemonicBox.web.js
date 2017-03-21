@@ -244,6 +244,7 @@ function _new_MnemonicConfirmation_WordView(word, wordUUID, context)
 	layer.className = "mnemonic-pill"
 	layer.href = "#" // clickable by default
 	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
+	layer.ondragstart = function(e) { e.preventDefault(); return false; } // disable link dragging
 	layer.innerHTML = word.toUpperCase()
 	{ // for retrieval later
 		layer.__component_mnemonicWord = word
@@ -265,7 +266,7 @@ function New_MnemonicConfirmation_SelectableWordsView(
 		const layer = view.layer
 		const padding_v = 24
 		layer.style.padding = `${padding_v}px 24px`
-		layer.style.width = `calc(100% - ${2*16}px - ${2*24}px)`
+		layer.style.width = `calc(100% - ${2*24}px)`
 		layer.style.textAlign = "center"
 		layer.style.marginTop = "10px"
 	}

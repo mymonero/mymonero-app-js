@@ -46,6 +46,8 @@ class BarButtonBaseView extends View
 	setup()
 	{
 		const self = this
+		const layer = self.layer
+		layer.ondragstart = function(e) { e.preventDefault(); return false; } // disable link dragging
 	}
 	//
 	//

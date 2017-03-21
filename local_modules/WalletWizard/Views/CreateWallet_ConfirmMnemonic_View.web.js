@@ -99,7 +99,9 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.style.lineHeight = "14px"
 			layer.style.color = "#f97777"
 			layer.style.width = "267px"
-			layer.style.margin = "4px 16px 0 16px"
+			layer.style.boxSizing = "border-box"
+			layer.style.paddingLeft = "16px"
+			layer.style.margin = `4px 16px 0 calc(50% - 16px - ${268/2}px)`
 			layer.style.display = "none"
 			layer.style.wordBreak = "break-word"
 			layer.innerHTML = "That’s not right. You can try again or start over with a new mnemonic."

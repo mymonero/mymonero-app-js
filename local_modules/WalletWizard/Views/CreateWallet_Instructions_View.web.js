@@ -65,7 +65,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		}
 		{
 			const centeringLayer = document.createElement("div")
-			centeringLayer.style.margin = "0 auto 44px auto"
+			centeringLayer.style.margin = "0 auto 24px auto"
 			centeringLayer.style.width = "236px"
 			const view = self._new_acceptCheckboxButtonView()
 			centeringLayer.appendChild(view.layer)

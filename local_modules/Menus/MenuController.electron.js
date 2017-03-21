@@ -364,6 +364,7 @@ class MenuController extends EventEmitter
 	
 	SetItemNamedEnabled(itemName, isEnabled)
 	{
+		isEnabled = typeof isEnabled === 'string' ? isEnabled == 'true' : isEnabled // to support IPC on windows… apparently cannot pass booleans
 		const self = this
 		const menuItem = self._firstMenuItemNamed(itemName)
 		if (menuItem === null) {

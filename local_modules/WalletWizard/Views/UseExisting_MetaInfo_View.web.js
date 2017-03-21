@@ -217,10 +217,13 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		const self = this
 		const layer = document.createElement("div")
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
-		layer.style.fontSize = "11px"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
+		layer.style.fontSize = "11px" // chrome renders 11px too big compared to sketch
+		layer.style.letterSpacing = "0"
+		layer.style.fontWeight = "200"
 		layer.style.color = "#8d8b8d"
 		layer.style.letterSpacing = "0"
-		layer.style.margin = "9px 0 17px 24px"
+		layer.style.margin = "9px 0 17px 32px"
 		layer.style.paddingBottom = "8px"
 		{
 			const span = document.createElement("span")
@@ -250,6 +253,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.toggleLoginModeButtonATagLayerView = view
 			const a = view.layer
 			a.style.margin = "0" // since this is not a standalone button
+			a.style.fontSize = "11px" // chrome renders 11px too big compared to sketch
+			a.style.letterSpacing = "0"
+			a.style.fontWeight = "200"
 			view.ConfigureWithLoginMode = function()
 			{
 				a.innerHTML = _new_titleFor_loginModeButton()

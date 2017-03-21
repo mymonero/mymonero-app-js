@@ -76,6 +76,13 @@ class MenuControllerController
 					self.enableMenuItem_ChangePassword()
 				}
 			)
+			controller.on(
+				controller.EventName_didDeconstructBootedStateAndClearPassword(),
+				function()
+				{
+					self.disableMenuItem_ChangePassword()
+				}
+			)
 		}
 	}
 	setupWith_menuController()
@@ -99,15 +106,15 @@ class MenuControllerController
 		const self = this
 		self.menuController.SetItemNamedEnabled(
 			self.menuController.MenuItemName_ChangePassword(),
-			true
+			"true" // passing string rather than bool to support IPC on windows
 		)
 	}
 	disableMenuItem_ChangePassword()
 	{
 		const self = this
-		self.menuController.SetItemNamedDisabled(
+		self.menuController.SetItemNamedEnabled(
 			self.menuController.MenuItemName_ChangePassword(),
-			true
+			"false" // passing string rather than bool to support IPC on windows
 		)
 	}
 }
