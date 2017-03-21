@@ -37,15 +37,15 @@ const cssRules =
 [
 	`@font-face {
 		font-family: Native-Regular;
-		src: url("${__dirname}/Resources/Native-Regular.otf") format("opentype");
+		src: url("../../Theme/Resources/Native-Regular.otf") format("opentype");
 	}`,
 	`@font-face {
 		font-family: Native-Light;
-		src: url("${__dirname}/Resources/Native-Light.otf") format("opentype");
+		src: url("../../Theme/Resources/Native-Light.otf") format("opentype");
 	}`,
 	`@font-face {
 		font-family: Native-Bold;
-		src: url("${__dirname}/Resources/Native-Bold.otf") format("opentype");
+		src: url("../../Theme/Resources/Native-Bold.otf") format("opentype");
 	}`,
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
