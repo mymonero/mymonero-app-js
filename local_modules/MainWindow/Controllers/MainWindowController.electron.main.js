@@ -92,7 +92,8 @@ class MainWindowController
 	_new_window()
 	{
 		const self = this
-		const window = new electron.BrowserWindow({
+		const options =
+		{
 			width: 500,
 			height: 500,
 			minWidth: 400,
@@ -107,7 +108,13 @@ class MainWindowController
 				allowDisplayingInsecureContent: false, // https content only
 				allowRunningInsecureContent: false // html/js/css from https only
 			}
-		})
+		}
+		const isLinux = /^linux/.test(process.platform)
+		if (isLinux) {
+			const pathTo_iconImage_png = __dirname + "../../local_modules/electron_main/resources/icons/icon.png"
+			options.icon = pathTo_iconImage_png
+		}
+		const window = new electron.BrowserWindow(options)
 		window.loadURL(`file://${__dirname}/../Views/index.electron.html`)
 		//
 		return window

@@ -34,7 +34,7 @@ const options =
 	// meta-data
 	// appVersion: "",// not specifying because it infers from package.json
 	// buildVersion: 1, // maybe specify because it defailts to appVersion
-	icon: "./local_modules/electron_main/resources/icons/icon", // note: when no ext provided, completes to ico/icns/PNG per platform, given all:true
+	icon: "./local_modules/electron_main/resources/icons/icon", // note: when no ext provided, completes to ico/icns per platform, given all:true… and we set the icon property of all BrowserWindows for Linux
 	// name: "MyMonero", // omitted as inferred from package.json
 	appBundleId: "com.mymonero.mymonero", // TODO: why doesn't this get used in the plist?
 	appCategoryType: "public.app-category.finance", 
