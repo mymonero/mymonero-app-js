@@ -30,6 +30,8 @@
 //
 const EventEmitter = require('events')
 //
+const PROTOCOL_PREFIX = "monero" // this is also specified for MacOS in packager.js under scheme
+//
 class URLOpeningController extends EventEmitter
 {
 	//
@@ -55,13 +57,14 @@ class URLOpeningController extends EventEmitter
 		{ // ^ we might not need to do this
 			app.on("open-url", function(event, url)
 			{
-				if (url.indexOf("monero:") !== 0) {
+				if (url.indexOf(PROTOCOL_PREFIX+":") !== 0) {
 					console.warn("Given a non-'monero:' URL of", url)
 					return
 				}
 				event.preventDefault()
 				self.emit(self.EventName_ReceivedURLToOpen_FundsRequest(), url)
 			})
+			app.setAsDefaultProtocolClient(PROTOCOL_PREFIX) // this seems to be mainly necessary for Windows
 		})
 	}
 	//

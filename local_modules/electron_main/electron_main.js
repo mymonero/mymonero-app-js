@@ -36,13 +36,14 @@ const context = require('./electron_main_context').NewHydratedContext(app) // el
 module.exports = context
 global.context = context
 //
+//
 process.on('uncaughtException', function (error)
 { // We're going to observe this here (for electron especially) so
   // that the exceptions are prevented from bubbling up to the UI.
 	console.error("Observed uncaught exception", error)
 	// TODO: re-emit and send this to the error reporting service
 })
-
+//
 var shouldQuit = app.makeSingleInstance( // ensure only one instance of the app
 // can be run... not only for UX reasons but so we don't get any conditions
 // which might mess with db sanity
