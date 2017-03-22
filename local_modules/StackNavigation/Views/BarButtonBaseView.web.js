@@ -47,6 +47,7 @@ class BarButtonBaseView extends View
 	{
 		const self = this
 		const layer = self.layer
+		layer.style.cursor = "default" // to prevent ibar
 		layer.ondragstart = function(e) { e.preventDefault(); return false; } // disable link dragging
 	}
 	//
