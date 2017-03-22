@@ -455,6 +455,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			//
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
+			self.rightBarButtonView.layer.innerHTML = "Loading…"
 			self.disable_submitButton()
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			//
@@ -470,6 +471,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		{
 			self.isDisabledFromSubmission = false
 			//
+			self.rightBarButtonView.layer.innerHTML = "Next"
 			self.enable_submitButton()
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
 			//

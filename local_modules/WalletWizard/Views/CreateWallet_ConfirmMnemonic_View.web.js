@@ -41,6 +41,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	{
 		const self = this
 		super._setup_views()
+		//
 		const walletInstance = self.wizardController.walletInstance
 		const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
 		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
@@ -320,6 +321,8 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
+			//
+			self.rightBarButtonView.layer.innerHTML = "Confirm"
 			self.enable_submitButton()
 		}
 		const walletLabel = self.wizardController.walletMeta_name
@@ -329,6 +332,8 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
+			//
+			self.rightBarButtonView.layer.innerHTML = "Loading…"
 			self.disable_submitButton()
 		}
 		self.context.walletsListController.WhenBooted_ObtainPW_AddNewlyGeneratedWallet(
