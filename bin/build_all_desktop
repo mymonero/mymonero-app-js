@@ -1,1 +1,1 @@
-npm run-script build-all-desktop
+npm run-script dist

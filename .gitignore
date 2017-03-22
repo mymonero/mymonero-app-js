@@ -1,8 +1,8 @@
 .DS_Store
 
 node_modules
-
-build
+npm-debug.log
+dist
 test_products
 
 **/tests_config.js

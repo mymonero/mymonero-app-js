@@ -29,8 +29,10 @@
 "use strict"
 //
 // require('crash-reporter').start() // TODO
-//
+//	
 const {app} = require('electron')
+const appId = process.env.npm_package_build_appId // package_json.build.appId aka bundle id
+app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
 //
 const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
 module.exports = context
