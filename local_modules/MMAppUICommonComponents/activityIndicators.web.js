@@ -66,7 +66,7 @@ const cssRules =
 	//
 	// .graphicAndLabel
 	`.${NamespaceName}.graphicAndLabel {
-		padding: 8px 10px 7px 24px;
+		padding: 8px 10px 7px 32px;
 	}`,
 	`.${NamespaceName}.graphicAndLabel > div.loader {
 		display: inline-block;
