@@ -70,7 +70,7 @@ class MainWindowController
 			}
 		})
 		// custom:
-		app.on('launched-duplicatively', function()
+		app.on('launched-duplicatively', function(argv)
 		{ // bring window to forefront however necessary
 			if (self.window !== null) {
 			    if (self.window.isMinimized()) {
@@ -165,7 +165,7 @@ class MainWindowController
 				e.preventDefault() // do not allow navigation when users drop links
 			})
 			const allowDevTools = process.env.NODE_ENV === 'development'
-			const openDevTools = allowDevTools === true && false
+			const openDevTools = allowDevTools === true && true // flip this && BOOL to enable/disable in dev
 			if (allowDevTools !== true) { // this prevents the dev tools from staying open
 				window.webContents.on( // but it would be nicer to completely preclude it opening
 					'devtools-opened',

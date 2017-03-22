@@ -271,24 +271,24 @@ class FundsRequestDetailsView extends View
 	new_requesteeMessagePlaintextString()
 	{
 		const self = this
-		var value = ""
+		var value = "" // must use \r\n instead of \n for Windows
 		value += "Someone wants some Monero."
-		value += "\n---------------------------"
+		value += "\r\n---------------------------"
 		{
-			value += `\n${self.fundsRequest.amount} XMR`
+			value += `\r\n${self.fundsRequest.amount} XMR`
 			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
-				value += `\n${self.fundsRequest.message}`
+				value += `\r\n${self.fundsRequest.message}`
 			}
 			if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
-				value += `\n${self.fundsRequest.description}`
+				value += `\r\n${self.fundsRequest.description}`
 			}
 		}
-		value += "\n" // spacer
-		value += "\n---------------------------"
-		value += `\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI()}`
+		value += "\r\n" // spacer
+		value += "\r\n---------------------------"
+		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI()}`
 		const appDownloadLink_domainAndPath = "mymonero.com/desktop"
 		const appDownloadLink_fullURL = "https://" + appDownloadLink_domainAndPath
-		value += `\nIf you don't have MyMonero installed, download it from ${appDownloadLink_fullURL}`
+		value += `\r\nIf you don't have MyMonero installed, download it from ${appDownloadLink_fullURL}`
 		//
 		return value
 	}

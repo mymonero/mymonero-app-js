@@ -28,30 +28,28 @@
 //
 "use strict"
 //
-// require('crash-reporter').start() // TODO
-//	
-const {app} = require('electron')
-const appId = process.env.npm_package_build_appId // package_json.build.appId aka bundle id
-app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
-//
-const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
-module.exports = context
-global.context = context
-//
-//
 process.on('uncaughtException', function (error)
 { // We're going to observe this here (for electron especially) so
   // that the exceptions are prevented from bubbling up to the UI.
 	console.error("Observed uncaught exception", error)
 	// TODO: re-emit and send this to the error reporting service
 })
+// require('crash-reporter').start() // TODO
+//	
+const {app} = require('electron')
+const appId = "com.mymonero.mymonero" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
+app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
+//
+const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
+module.exports = context
+global.context = context
 //
 var shouldQuit = app.makeSingleInstance( // ensure only one instance of the app
 // can be run... not only for UX reasons but so we don't get any conditions
 // which might mess with db sanity
 	function(argv, workingDirectory)
 	{ // Single instance context being passed control when user attempted to launch duplicate instance. Emit event so that main window may be focused
-		app.emit('launched-duplicatively') // custom event
+		app.emit('launched-duplicatively', argv) // custom event
 	}
 )
 if (shouldQuit) { // would be true if this is a duplicative app instance

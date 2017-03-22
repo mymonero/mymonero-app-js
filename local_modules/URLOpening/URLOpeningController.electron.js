@@ -58,14 +58,24 @@ class URLOpeningController extends EventEmitter
 		{ // ^ we might not need to do this
 			app.on("open-url", function(event, url)
 			{
-				if (url.indexOf(PROTOCOL_PREFIX+":") !== 0) {
-					console.warn("Given a non-'monero:' URL of", url)
-					return
-				}
-				event.preventDefault()
-				self.emit(self.EventName_ReceivedURLToOpen_FundsRequest(), url)
+				self.__didReceivePossibleURIToOpen(
+					url,
+					function()
+					{
+						event.preventDefault()
+					}
+				)
+			})
+			app.on('launched-duplicatively', function(argv)
+			{ // main window listens for this too - and brings itself to forefont…
+				// we need to listen for this here for Windows (not MacOS)
+				self._didLaunchOrReOpenWithArgv(argv)
 			})
 			app.setAsDefaultProtocolClient(PROTOCOL_PREFIX) // this seems to be mainly necessary for Windows
+		})
+		setTimeout(function()
+		{
+			self._didLaunchOrReOpenWithArgv(process.argv)
 		})
 	}
 	//
@@ -73,6 +83,38 @@ class URLOpeningController extends EventEmitter
 	EventName_ReceivedURLToOpen_FundsRequest()
 	{
 		return "EventName_ReceivedURLToOpen_FundsRequest"
+	}
+	//
+	// Delegation - URL reception, launch handling
+	__didReceivePossibleURIToOpen(possibleURI, willConsiderAsURI_fn)
+	{
+		willConsiderAsURI_fn = willConsiderAsURI_fn || function() {}
+		const self = this
+		if (possibleURI.indexOf(PROTOCOL_PREFIX+":") !== 0) {
+			const {dialog} = require('electron')
+			dialog.showMessageBox({
+				"message": "Sorry, that does not appear to be a valid Monero URL."
+			})
+			return
+		}
+		const url = possibleURI // we'll suppose it is one
+		self.emit( // and yield
+			self.EventName_ReceivedURLToOpen_FundsRequest(), 
+			url
+		)
+	}
+	_didLaunchOrReOpenWithArgv(argv)
+	{
+		const self = this
+		const isMacOS = process.platform === "darwin"
+		if (isMacOS == true) { // as we handle this with open-url
+			return
+		}
+		if (argv.length <= 1) { // simply launched, no args
+			return
+		}
+		const possibleURI = argv[1]
+		self.__didReceivePossibleURIToOpen(possibleURI) // patch to URI reception handler
 	}
 }
 module.exports = URLOpeningController

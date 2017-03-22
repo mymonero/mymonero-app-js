@@ -72,7 +72,10 @@ function New_ParsedPayload_FromRequestURIString(uriString)
 	if (protocol !== monero_config.coinUriPrefix) {
 		throw "Request URI has non-Monero protocol"
 	}
-	const target_address = url.pathname
+	var target_address = url.pathname // var instead of const as have to finalize it
+	if (target_address.indexOf("//") == 0) {
+		target_address = target_address.slice(0 + "//".length, target_address.length) // strip prefixing "//" in case URL had protocol:// instead of protocol:
+	}
 	const searchParams = url.searchParams // needs to be parsed it seems
 	//
 	const payload =
