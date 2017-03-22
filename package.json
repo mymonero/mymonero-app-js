@@ -1,34 +1,38 @@
 {
-  "name": "MyMonero",
-  "author": "MyMonero",
-  "repository": "",
-  "description": "Please see ./README.md",
-  "version": "1.0.0",
-  "private": true,
-  "license": "SEE LICENSE IN LICENSE.txt",
-  "engines": {
-    "node": "7.4.0"
-  },
-  "main": "./local_modules/electron_main/electron_main.js",
-  "scripts": {
-    "start": "electron ./local_modules/electron_main/electron_main.js",
-    "start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
-    "build-all-desktop": "node ./local_modules/electron_main/packager.js"
-  },
-  "dependencies": {
-    "async": "^2.1.2",
-    "jsqr": "^0.2.1",
-    "mixpanel": "^0.4.0",
-    "nedb": "^1.8.0",
-    "node-notifier": "^4.6.1",
-    "underscore": "^1.8.3",
-    "uuid": "^3.0.1",
-    "velocity-animate": "^1.4.0",
-    "xhr": "^2.3.1"
-  },
-  "devDependencies": {
-    "electron": "^1.6.2",
-    "electron-packager": "^8.1.0",
-    "request": "^2.79.0"
-  }
+	"name": "MyMonero",
+	"author": "MyMonero",
+	"description": "The simplest way to use Monero",
+	"version": "1.0.0",
+	
+	"license": "SEE LICENSE IN LICENSE.txt",
+
+	"repository": "",
+	"private": false,
+	
+	"main": "./local_modules/electron_main/electron_main.js",
+	"scripts": {
+		"start": "electron ./local_modules/electron_main/electron_main.js",
+		"start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
+		"build-all-desktop": "node ./local_modules/electron_main/packager.js"
+	},
+
+	"engines": {
+		"node": "7.4.0"
+	},
+	"dependencies": {
+		"async": "^2.1.2",
+		"jsqr": "^0.2.1",
+		"mixpanel": "^0.4.0",
+		"nedb": "^1.8.0",
+		"node-notifier": "^4.6.1",
+		"underscore": "^1.8.3",
+		"uuid": "^3.0.1",
+		"velocity-animate": "^1.4.0",
+		"xhr": "^2.3.1"
+	},
+	"devDependencies": {
+		"electron": "^1.6.2",
+		"electron-packager": "^8.1.0",
+		"request": "^2.79.0"
+	}
 }
