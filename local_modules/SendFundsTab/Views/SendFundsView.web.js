@@ -359,7 +359,7 @@ class SendFundsView extends View
 			}
 		)
 		view.layer.style.marginTop = "4px"
-		view.layer.style.marginLeft = "24px"
+		view.layer.style.marginLeft = "32px"
 		self.addPaymentIDButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
 	}
