@@ -57,6 +57,7 @@ function ensureEnv()
 	if (process.platform === 'linux') {
 		// Grab process.env from main process, which doesn't happen by default on Linux
 		// https://github.com/atom/electron/issues/3306
+		const remote__electron = require('electron').remote
 		const remote__process = remote__electron.process
 		const remote__env = remote__process.env
 	    var newEnv = _.extend({}, process.env, remote__env);
