@@ -95,7 +95,7 @@ function New_EmptyStateMessageContainerView(
 		layer.style.height = "auto"
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "19px"
-		layer.style.fontWeight = "200"
+		layer.style.fontWeight = "300"
 		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
 		layer.style.color = "#9e9c9e"
