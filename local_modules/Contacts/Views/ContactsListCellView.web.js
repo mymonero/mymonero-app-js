@@ -32,6 +32,25 @@ const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
+const emoji_web = require('../../Emoji/emoji_web')
+emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
+//
+// CSS rules
+const Views__cssRules = require('../../Views/cssRules.web')
+const NamespaceName = "ContactsListCellView"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.${NamespaceName} .emoji-label {
+	}`,
+	`.${NamespaceName} .emoji-label .emojione {
+		transform: scale(${17/64});
+		margin-left: -20px;
+		margin-top: -22px;
+	}`
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+//
 class ContactsListCellView extends ListCellView
 {
 	constructor(options, context)
@@ -42,6 +61,8 @@ class ContactsListCellView extends ListCellView
 	{
 		const self = this
 		super.setup_views()
+		__injectCSSRules_ifNecessary()
+		self.layer.classList.add(NamespaceName)
 		self.layer.style.position = "relative"
 		self.layer.style.padding = "19px 0 7px 0"
 		{ // hover effects/classes
@@ -58,6 +79,7 @@ class ContactsListCellView extends ListCellView
 	{
 		const self = this
 		const layer = document.createElement("span")
+		layer.classList.add("emoji-label")
 		layer.style.position = "absolute"
 		layer.style.left = "16px"
 		layer.style.top = "20px"
@@ -172,12 +194,12 @@ class ContactsListCellView extends ListCellView
 			return
 		}
 		if (self.record.didFailToInitialize_flag === true || self.record.didFailToBoot_flag === true) { // unlikely, but possible
-			self.emojiLayer.innerHTML = "❌"
+			self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText("❌")
 			self.nameLayer.innerHTML = "Error: Please contact support."
 			self.addressLayer.innerHTML = ""
 			return
 		}
-		self.emojiLayer.innerHTML = self.record.emoji
+		self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(self.record.emoji)
 		self.nameLayer.innerHTML = self.record.fullname
 		self.addressLayer.innerHTML = self.record.address
 		// self.DEBUG_BorderAllLayers()

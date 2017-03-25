@@ -30,6 +30,8 @@
 //
 const View = require('../../Views/View.web')
 const emoji_set = require('../emoji_set')
+const emoji_web = require('../emoji_web')
+emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 const EmojiButtonView_height = 30	
 //
@@ -59,6 +61,11 @@ const cssRules =
  		background: #F2F1F2;
  		box-shadow: 0 0.5px 0 0 #FFFFFF, inset 0 0.5px 1px 0 #DFDEDF;
  		border-radius: 3px;
+	}`,
+	`.${NamespaceName} > .EmojiButtonView .emojione {
+		transform: scale(${17/64});
+		margin-left: -11px;
+		margin-top: -14px;
 	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
@@ -121,7 +128,7 @@ class EmojiPickerPopoverContentView extends View
 		const layer = view.layer
 		layer.style.position = "relative" // so we can read offsetTop
 		layer.style.display = "inline-block"
-		layer.innerHTML = emoji
+		layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(emoji)
 		layer.classList.add("EmojiButtonView")
 		layer.addEventListener(
 			"click",

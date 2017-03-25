@@ -33,7 +33,6 @@ const numberOf_Emojis = Emojis.length
 // 
 function EmojiWhichIsNotAlreadyInUse(inUseEmojis)
 {
-	const self = this
 	inUseEmojis = inUseEmojis || []
 	for (let i = 0 ; i < numberOf_Emojis ; i++) { // start looking for a usable emoji
 		const this_Emoji = Emojis[i]

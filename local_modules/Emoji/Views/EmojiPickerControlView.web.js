@@ -32,8 +32,9 @@ const Animate = require('velocity-animate')
 //
 const View = require('../../Views/View.web')
 const dom_traversal = require('../../Views/dom_traversal.web')
-//
 const EmojiPickerPopoverView = require('./EmojiPickerPopoverView.web')
+const emoji_web = require('../emoji_web')
+emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 // CSS rules
 const Views__cssRules = require('../../Views/cssRules.web')
@@ -73,6 +74,11 @@ const cssRules =
 	 .${NamespaceName} > a:hover {
 		 background-color: #494749;
 		 box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #5A585A;
+	}`,
+	`.${NamespaceName} > a .emojione {
+		transform: scale(${17/64});
+		margin-left: -24px;
+		margin-top: -14px;
 	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
@@ -123,7 +129,7 @@ class EmojiPickerControlView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 		layer.href = "#" // so it's clickable
-		layer.innerHTML = self.value 
+		self._configureALayerWithEmoji()
 		self.layer.appendChild(layer)
 		//
 		layer.addEventListener("click", function(e) {
@@ -147,7 +153,7 @@ class EmojiPickerControlView extends View
 			didPickEmoji_fn: function(emoji)
 			{
 				self.value = emoji // must set this so consumers accessing Value() have correct value
-				self.aLayer.innerHTML = emoji
+				self._configureALayerWithEmoji()
 				self.didPickEmoji_fn(emoji)
 				setTimeout(function() { // just so it's on next tick
 					self.hidePopoverView()
@@ -226,7 +232,7 @@ class EmojiPickerControlView extends View
 		const self = this
 		// TODO: validate emoji in set of emoji?
 		self.value = emoji
-		self.aLayer.innerHTML = emoji
+		self._configureALayerWithEmoji()
 		if (self.isPopoverVisible) {
 			self.hidePopoverView()
 		}
@@ -298,6 +304,12 @@ class EmojiPickerControlView extends View
 				}
 			)
 		}
+	}
+	// Imperatives - UI config - Content
+	_configureALayerWithEmoji()
+	{
+		const self = this
+		self.aLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(self.value)
 	}
 }
 module.exports = EmojiPickerControlView

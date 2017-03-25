@@ -27,46 +27,38 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
+//	
+const emojione = require('./Vendor/emojione.min')
+emojione.imageType = "png" // png instead of svg as svg appear too slow to display en-masse
+emojione.sprites = true
 //
-function InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
-{
-	if (document[haveCSSRulesBeenInjected_documentKey] !== true) {
-		const reversed_cssRules = cssRules.reverse()
-		reversed_cssRules.forEach(
-			function(cssRuleString, i)
-			{
-				document.styleSheets[0].insertRule(cssRuleString, 0)
-			}
-		)
-		document[haveCSSRulesBeenInjected_documentKey] = true
-	}
-}
-exports.InjectCSSRules_ifNecessary = InjectCSSRules_ifNecessary
+const Views__cssRules = require('../Views/cssRules.web')
+const stylesheetPaths =
+[
+	"../../Emoji/Vendor/emojione.min.css",
+	"../../Emoji/Vendor/emojione.spritesheet.css"
+]
+function __injectCSS_ifNecessary() { Views__cssRules.InjectCSSFiles_ifNecessary(stylesheetPaths) }
 //
-function InjectCSSFile_ifNecessary(stylesheetHref)
-{
-	const key = "hasCSSFileBeenInjected_" + stylesheetHref
-	if (document[key] !== true) {
-		var head = document.getElementsByTagName('head')[0]
-		var link = document.createElement('link')
-		link.id = key
-		link.rel = 'stylesheet'
-		link.type = 'text/css'
-		link.href = stylesheetHref
-		link.media = 'all'
-		head.appendChild(link)
-		//
-		document[key] = true
-	}
+var cached_spritesheetImage;
+function PreLoad()
+{ // preload sprites to prevent delay
+	const image = new Image()
+	image.src = "../../Emoji/Vendor/emojione.sprites.png"
+	cached_spritesheetImage = image
+	//
+	__injectCSS_ifNecessary()
 }
-exports.InjectCSSFile_ifNecessary = InjectCSSFile_ifNecessary
-//
-function InjectCSSFiles_ifNecessary(stylesheetHrefs)
+exports.PreLoad = PreLoad
+// 
+function NativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 {
-	const numberOf_stylesheetHrefs = stylesheetHrefs.length
-	for (let i = 0 ; i < numberOf_stylesheetHrefs ; i++) {
-		const stylesheetHref = stylesheetHrefs[i]
-		InjectCSSFile_ifNecessary(stylesheetHref)
-	}
+	// perhaps uncomment this in the near future, but ensure emoji font size (esp on retina):
+	// if (process.platform === "darwin") { // because MacOS has good support for Emoji; add iOS here too
+	// 	return nativeEmojiText
+	// }
+	__injectCSS_ifNecessary()
+	const text = emojione.unicodeToImage(nativeEmojiText)
+	return text
 }
-exports.InjectCSSFiles_ifNecessary = InjectCSSFiles_ifNecessary
+exports.NativeEmojiTextToImageBackedEmojiText = NativeEmojiTextToImageBackedEmojiText

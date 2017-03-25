@@ -33,6 +33,25 @@ const Animate = require('velocity-animate')
 const View = require('../../Views/View.web')
 const BarButtonBaseView = require('./BarButtonBaseView.web')
 //
+const emoji_web = require('../../Emoji/emoji_web')
+emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
+//
+// CSS rules
+const Views__cssRules = require('../../Views/cssRules.web')
+const NamespaceName = "NavigationBarView"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.${NamespaceName} .title-label {
+	}`,
+	`.${NamespaceName} .title-label .emojione {
+		transform: scale(${17/64});
+		margin: -9px 0 0 -32px;
+		position: absolute; 
+	}`
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+//
 class NavigationBarView extends View
 {
 	constructor(options, context)
@@ -52,8 +71,10 @@ class NavigationBarView extends View
 	setup()
 	{
 		const self = this
+		__injectCSSRules_ifNecessary()
 		{ // self.layer
 			const layer = self.layer
+			layer.classList.add(NamespaceName)
 			layer.style.position = "absolute" // https://developers.google.com/web/updates/2016/12/position-sticky
 			layer.style.top = "0%"
 			layer.style.zIndex = "9"
@@ -78,6 +99,7 @@ class NavigationBarView extends View
 		}
 		{
 			const layer = document.createElement("span")
+			layer.classList.add("title-label")
 			self.titleLayer = layer
 			//
 			self.defaultNavigationBarTitleColor = "#fcfbfc" // so we can use it at runtime
@@ -242,7 +264,7 @@ class NavigationBarView extends View
 		const titleString = stackView.Navigation_Title()
 		//
 		self.titleLayer.style.color = titleTextColor
-		self.titleLayer.innerHTML = titleString
+		self.titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString)
 	}
 	SetTitleFromTopStackView(
 		stackView,
@@ -273,14 +295,14 @@ class NavigationBarView extends View
 		const titleString = stackView.Navigation_Title()
 		if (isAnimated === false) {
 			self.titleLayer.style.color = titleTextColor
-			self.titleLayer.innerHTML = titleString
+			self.titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString)
 			return
 		}
 		const old_titleLayer = self.titleLayer
 		const successor_titleLayer = self.titleLayer.cloneNode()
 		{
 			successor_titleLayer.style.color = titleTextColor
-			successor_titleLayer.innerHTML = titleString // set up with new title
+			successor_titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString) // set up with new title
 		}
 		const parentWidth = self.titleLayer.parentNode.offsetWidth
 		const titleLayer_width = self.titleLayer.offsetWidth
