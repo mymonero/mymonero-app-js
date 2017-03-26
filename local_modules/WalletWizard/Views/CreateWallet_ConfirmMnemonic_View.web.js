@@ -137,14 +137,16 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Try again", 
-			"../../WalletWizard/Resources/actionButton_iconImage__tryAgain.png", // relative to index.html
+			"../../WalletWizard/Resources/actionButton_iconImage__tryAgain@2x.png", // relative to index.html
 			false,
 			function(layer, e)
 			{
 				self.__didSelect_actionButton__tryAgain()
 			},
 			self.context,
-			8
+			8,
+			undefined,
+			"14px 16px"
 		)
 		self.buttonView__tryAgain = buttonView
 		self.actionButtonsContainerView.addSubview(buttonView)
@@ -154,14 +156,16 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Start Over", 
-			"../../WalletWizard/Resources/actionButton_iconImage__startOver.png", // relative to index.html
+			"../../WalletWizard/Resources/actionButton_iconImage__startOver@2x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
 				self.__didSelect_actionButton__startOver()
 			},
 			self.context,
-			9
+			9,
+			undefined,
+			"16px 14px"
 		)
 		self.buttonView__startOver = buttonView
 		self.actionButtonsContainerView.addSubview(buttonView)

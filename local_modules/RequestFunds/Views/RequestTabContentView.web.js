@@ -67,18 +67,20 @@ class RequestTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../RequestFunds/Resources/icon_tabBar_fundsRequests.png)",
+			backgroundImage: "url(../../RequestFunds/Resources/icon_tabBar_fundsRequests@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 24px"
 		}
 	}
 	TabBarItem_icon_selected_customStyle()
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../RequestFunds/Resources/icon_tabBar_fundsRequests__active.png)",
+			backgroundImage: "url(../../RequestFunds/Resources/icon_tabBar_fundsRequests__active@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 24px"
 		}
 	}
 	// interactivity

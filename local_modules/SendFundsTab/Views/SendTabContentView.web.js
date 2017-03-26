@@ -67,18 +67,20 @@ class SendTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../SendFundsTab/Resources/icon_tabBar_sendFunds.png)",
+			backgroundImage: "url(../../SendFundsTab/Resources/icon_tabBar_sendFunds@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 25px"
 		}
 	}
 	TabBarItem_icon_selected_customStyle()
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../SendFundsTab/Resources/icon_tabBar_sendFunds__active.png)",
+			backgroundImage: "url(../../SendFundsTab/Resources/icon_tabBar_sendFunds__active@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 25px"
 		}
 	}
 	// interactivity

@@ -61,7 +61,7 @@ const cssRules =
 		line-height: 31px;
 		font-size: 13px;
 		
-		background-image: url(../../Emoji/Resources/popoverDisclosureArrow.png);
+		background-image: url(../../Emoji/Resources/popoverDisclosureArrow@2x.png);
 		background-size: 8px 7px;
 		background-position: 42px 13px;
 		background-repeat: no-repeat;

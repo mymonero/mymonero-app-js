@@ -399,14 +399,16 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
-			"../../SendFundsTab/Resources/actionButton_iconImage__useCamera.png", 
+			"../../SendFundsTab/Resources/actionButton_iconImage__useCamera@2x.png", 
 			false,
 			function(layer, e)
 			{
 				console.log("TODO: use camera to get QR code")
 			},
 			self.context,
-			9 // px from top of btn - due to shorter icon
+			9, // px from top of btn - due to shorter icon
+			undefined,
+			"14px 14px"
 		)
 		self.useCamera_buttonView = buttonView
 		self.actionButtonsContainerView.addSubview(buttonView)
@@ -416,13 +418,16 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
-			"../../SendFundsTab/Resources/actionButton_iconImage__chooseFile.png", 
+			"../../SendFundsTab/Resources/actionButton_iconImage__chooseFile@2x.png", 
 			true,
 			function(layer, e)
 			{
 				self.__didSelect_actionButton_chooseFile()
 			},
-			self.context
+			self.context,
+			undefined,
+			undefined,
+			"16px 16px"
 		)
 		self.chooseFile_buttonView = buttonView
 		self.actionButtonsContainerView.addSubview(buttonView)
@@ -470,9 +475,10 @@ class SendFundsView extends View
 			div.style.width = "100%" // cause centering in css is……
 			div.style.height = side+"px"
 			div.style.backgroundSize = side+"px " + side+"px"
-			div.style.backgroundImage = "url(../../SendFundsTab/Resources/qrDropzoneIcon.png)"
+			div.style.backgroundImage = "url(../../SendFundsTab/Resources/qrDropzoneIcon@2x.png)"
 			div.style.backgroundPosition = "center"
 			div.style.backgroundRepeat = "no-repeat"
+			div.style.backgroundSize = "48px 48px"
 			div.style.marginTop = "108px"
 			self.qrCodeInputs_contentView.layer.appendChild(div)
 		}

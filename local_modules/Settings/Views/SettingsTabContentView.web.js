@@ -70,18 +70,20 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings.png)",
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "16px 16px"
 		}
 	}
 	TabBarItem_icon_selected_customStyle()
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings__active.png)",
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings__active@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "16px 16px"
 		}
 	}
 	// interactivity

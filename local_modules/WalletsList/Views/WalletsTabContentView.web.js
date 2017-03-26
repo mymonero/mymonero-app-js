@@ -67,18 +67,20 @@ class WalletsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets.png)",
+			backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 24px"
 		}
 	}
 	TabBarItem_icon_selected_customStyle()
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets__active.png)",
+			backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets__active@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 24px"
 		}
 	}
 	// interactivity

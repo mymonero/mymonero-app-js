@@ -82,7 +82,7 @@ const cssRules =
 		left: 0;
 	}`,
 	`.inlineMessageDialogLayer > a.close-btn {
-		background-image: url(../../MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn.png);
+		background-image: url(../../MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@2x.png);
 		background-size: 8px 8px;
 		background-repeat: no-repeat;
 		background-position: center;
@@ -547,7 +547,7 @@ function New_tableCell_accessoryChevronLayer()
 {
 	__injectCSSRules_ifNecessary()
 	//
-	const image_filename = "list_rightside_chevron.png"
+	const image_filename = "list_rightside_chevron@2x.png"
 	const layer = document.createElement("img")
 	layer.src = "../../MMAppUICommonComponents/Resources/" + image_filename
 	layer.style.position = "absolute"

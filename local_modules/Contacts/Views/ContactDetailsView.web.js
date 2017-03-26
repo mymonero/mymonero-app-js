@@ -164,13 +164,16 @@ class ContactDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Send", 
-			"../../Contacts/Resources/actionButton_iconImage__send.png", // relative to index.html
+			"../../Contacts/Resources/actionButton_iconImage__send@2x.png", // relative to index.html
 			false,
 			function(layer, e)
 			{
 				self.context.walletAppCoordinator.Trigger_sendFundsToContact(self.contact)
 			},
-			self.context
+			self.context,
+			undefined,
+			undefined,
+			"16px 16px"
 		)
 		self.actionButtonsContainerView.addSubview(buttonView)
 	}
@@ -179,13 +182,16 @@ class ContactDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Request", 
-			"../../Contacts/Resources/actionButton_iconImage__request.png", // relative to index.html
+			"../../Contacts/Resources/actionButton_iconImage__request@2x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
 				self.context.walletAppCoordinator.Trigger_requestFundsFromContact(self.contact)
 			},
-			self.context
+			self.context,
+			undefined,
+			undefined,
+			"16px 16px"
 		)
 		self.actionButtonsContainerView.addSubview(buttonView)
 	}

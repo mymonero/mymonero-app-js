@@ -302,26 +302,29 @@ function New_NonEditable_ValueDisplayLayer_BreakChar(value, context)
 }
 exports.New_NonEditable_ValueDisplayLayer_BreakChar = New_NonEditable_ValueDisplayLayer_BreakChar
 //
-function New_IconAndMessageLayer(iconPath, messageText, context)
+function New_IconAndMessageLayer(iconPath, messageText, context, optl_imgW, optl_imgH)
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.classList.add("iconAndMessageLayer")
-	layer.innerHTML = `<img src="${iconPath}" />&nbsp;<span>${messageText}</span>`
+	layer.innerHTML = `<img src="${iconPath}" ${optl_imgW ? 'width="'+ optl_imgW + '"' : ""} ${optl_imgH ? 'height="'+ optl_imgH + '"' : ""} />&nbsp;<span>${messageText}</span>`
 	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "11px"
 	layer.style.fontWeight = "100"
 	layer.style.color = "#8D8B8D"
+	
 	return layer		
 }
 exports.New_IconAndMessageLayer = New_IconAndMessageLayer
 function New_Detected_IconAndMessageLayer(context)
 {
 	const layer = New_IconAndMessageLayer( // will call `__inject…`
-		"../../MMAppUICommonComponents/Resources/detectedCheckmark.png",
+		"../../MMAppUICommonComponents/Resources/detectedCheckmark@2x.png",
 		"Detected",
-		context
+		context,
+		"9px",
+		"7px"
 	)
 	return layer
 }

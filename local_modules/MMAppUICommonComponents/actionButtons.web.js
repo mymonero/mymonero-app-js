@@ -84,7 +84,8 @@ function New_ActionButtonView(
 	clicked_fn, // (clickedLayer, e) -> Void
 	context,
 	optl_icon_bgPos_top,
-	optl_colorType // "blue", "grey", "red"
+	optl_colorType, // "blue", "grey", "red"
+	optl_icon_bgSize // e.g. "12px 14px"
 )
 {
 	const hasImage = iconimage_filename !== null && typeof iconimage_filename !== 'undefined'
@@ -159,6 +160,9 @@ function New_ActionButtonView(
 			layer.style.backgroundImage = "url(" + iconimage_filename + ")"
 			layer.style.backgroundPosition = `17px ${icon_bgPos_top}px`
 			layer.style.backgroundRepeat = "no-repeat"
+			if (optl_icon_bgSize && typeof optl_icon_bgSize !== 'undefined') {
+				layer.style.backgroundSize = optl_icon_bgSize
+			}
 		}
 		layer.style.display = "inline-block"
 		layer.style.width = `calc(50% - ${ActionButton_rightMargin/2}px` // we're assuming there are only two buttons

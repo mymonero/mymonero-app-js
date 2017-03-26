@@ -65,18 +65,20 @@ class ContactsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts.png)",
+			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 23px"
 		}
 	}
 	TabBarItem_icon_selected_customStyle()
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts__active.png)",
+			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts__active@2x.png)",
 			backgroundPosition: "center",
-			backgroundRepeat: "no-repeat"
+			backgroundRepeat: "no-repeat",
+			backgroundSize: "24px 23px"
 		}
 	}
 	// interactivity

@@ -67,7 +67,7 @@ class RootView extends View
 			layer.style.width = 50+"px"
 			layer.style.height = 50+"px"
 			layer.style.backgroundSize = `${w}px ${h}px`
-			layer.style.backgroundImage = "url(../../AboutWindow/Resources/logo_solid_light.png)"
+			layer.style.backgroundImage = "url(../../AboutWindow/Resources/logo_solid_light@2x.png)"
 			layer.style.backgroundPosition = "center"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.margin = "66px auto 14px auto"
