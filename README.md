@@ -21,6 +21,29 @@ In exchange for the convenience and features made possible by MyMonero, there is
 ![Welcome to MyMonero! Let's get started.](./docs/assets/ss_1.png_ "Welcome to MyMonero! Let's get started.")
 
 
+## Present State of the Apps
+
+At present, the desktop app is ready to be tested. The mobile apps are being built.
+
+The desktop app has support for features such as…
+
+* Managing multiple wallets at a time
+
+* Contacts address book
+
+* Deep OpenAlias integration (use domain or email instead of long Monero address)
+
+* Creating QR codes and messages to request Monero be sent to you
+
+* Send money to contacts, OpenAlias, or other Monero addresses (these may be input manually, or automatically by either dropping a request QR code on the Send screen or clicking a `monero:…` request URL)
+
+* Settings, for clearing data or managing prefernces such as idle timeout
+
+* Strong (AES256) encryption to password protect all sensitive user data 
+
+* Improved UX, including educational tooltips
+
+
 ## Requirements
 
 The desktop app is built on [Electron](https://electron.atom.io) and can be packaged for and is intended to run on modern versions of MacOS (.app), Windows (installer), and Linux (.appimage).
@@ -44,50 +67,6 @@ Please do not post private info such as your wallet address or private keys in t
 For support or to send feedback, you can also [contact us](https://mymonero.com/support) directly.
 
 
-## Why we built the native apps
-
-From MyMonero's creation in 2014 as a web wallet until the release of these downloadable apps in early 2017, the only way to access the service was via a browser on the MyMonero website. Since your spend key is never sent to the server, many operations could not be done on the server, and that meant that a lot of Javascript code had to be sent to and run within your browser (such as creating new wallets, or sending money).
-
-Downloading that Javascript code opened up the possibility of an attacker inserting something malicious which, for example, could theoretically enable them to steal your funds. Another issue, which was actually observed, was that users would simply get misdirected (perhaps by search engine) to a scam/phishing site which was impersonating MyMonero under a different domain, which presumably tricked users into running malicious code.
-
-There were other limitations with the web wallet, such as the inability to use it behind Tor. And, as a downloaded web app, it was significantly limited by the facilities available in common browsers. For example, in the web wallet, users could only access one wallet at a time, had to log in each time, and as a security precaution were quickly logged off once they became idle.
-
-The native apps were conceived of in order to…
-
-* solve the above security issues and feature limitations, 
- 
-* provide a solid foundation on which to build out and iterate upon a much more featureful experience, and to
-
-* open MyMonero up as a light wallet project for the community to not only find reference implementation examples, but which they can contribute back to and have their contributions shipped and used by everyone else.
-
-
-## Present State of the Apps
-
-At present, only the desktop app is ready for usage, while the mobile apps are being built.
-
-The desktop app has support for features such as…
-
-* Managing multiple wallets at a time
-
-* Contacts address book
-
-* Deep OpenAlias integration (use domain or email instead of long Monero address)
-
-* Creating QR codes and messages to request Monero be sent to you
-
-* Send money to contacts, OpenAlias, or other Monero addresses (these may be input manually, or automatically by either dropping a request QR code on the Send screen or clicking a `monero:…` request URL)
-
-* Settings, for clearing data or managing prefernces such as idle timeout
-
-* Strong (AES256) encryption to password protect all sensitive user data 
-
-* Improved UX, including educational tooltips
-
-----------------------
-
-# For developers & pre-release testers
-
-
 ## Repository contents
 * Executable scripts for common tasks are located in `bin/`
 
@@ -109,13 +88,6 @@ The desktop app has support for features such as…
 3. Install all dependencies by executing `npm install`.
 
 
-## Running the desktop app in development mode
-
-Testing in development mode does not require you to package, sign, and install the app, and will cause the Developer window to be shown.
-
-To launch the desktop app in dev mode, run `bin/start_dev_desktop`.
-
-
 ## Building for production
 
 Unless you are a MyMonero pre-release tester you will probably never need produce a production build of MyMonero, especially as you want to be using a verified build of MyMonero for daily usage. However, if you're testing a pre-release version of this app, you may want to build a production-ready version of the app rather than only running it in dev mode. 
@@ -123,17 +95,25 @@ Unless you are a MyMonero pre-release tester you will probably never need produc
 See [Building the app for production](./docs/PRODUCTION_BUILDS.md) for information.
 
 
+## Running in development mode
+
+Testing in development mode does not require you to package, sign, and install the app, and will cause the Developer window to be shown.
+
+To launch the desktop app in dev mode, run `bin/start_dev_desktop`.
+
+
 ## Contributing
 
 Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are quite welcome. 
 
-If you would like to contribute, please read the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. 
+If you would like to contribute, please read the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. Feel free to create a Github issue if you find any areas of the code which could use explanation or if you'd like to discuss improvements, report bugs, or ask non-support, developer-only questions.
 
-Feel free to create a Github issue if you find any areas of the code which could use explanation or if you'd like to discuss improvements, report bugs, or ask non-support, developer-only questions.
+For background on this project, see [Why we built the native apps](./docs/WHY_NATIVE.md).
 
 You may also like to read the unofficial [roadmap](./docs/ROADMAP.md) to get a picture of our thoughts for the future.
 
-There's also an icebox of ideas and todos waiting to be knocked out.
+There's also an icebox of ideas, features, improvements, fixes, and other todos waiting to be knocked out.
+
 
 
 ## Contributors
