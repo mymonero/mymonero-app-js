@@ -1,29 +1,27 @@
 # MyMonero Desktop & Mobile Apps
 
-![Logo](./docs/assets/logo.png_ "Logo")
+![Logo](./docs/assets/logo.png "Logo")
 
-## What's in this repo?
+## What's in This Repo?
 
 This repository holds the source code, resources, and build scripts for the official [MyMonero](https://www.mymonero.com) downloadable desktop and mobile apps.
 
 ## What is MyMonero?
 
-MyMonero is a very simple, safe, and featureful way to use the next-generation private digital currency called [Monero](http://www.getmonero.org). 
+MyMonero is a very simple, secure, and featureful way to use the next-generation private digital currency called [Monero](http://www.getmonero.org). 
 
-The MyMonero app lets you securely manage your Monero wallets, address book, and transactions by storing most information locally and keeping it encrypted. 
+The MyMonero app lets you manage your Monero wallets, address book, and transactions by storing most information locally and keeping it encrypted. 
 
-The major benefit of using MyMonero is it handles almost all of the work that Monero users must do themselves in order to use their Monero wallets.
+The major benefit of using MyMonero is it handles most of the work that Monero users must do themselves in order to set up access to their Monero wallets.
 
-In exchange for the convenience and features made possible by MyMonero, there is the minor privacy trade-off of sharing your Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions. However, it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, as all of the rest of your information is either never sent to our server, or its encrypted with information only you have. So MyMonero is often described as "non-custodial of your private keys", unlike so many other services. 
+In exchange for the convenience and features made possible by MyMonero, there is the minor privacy trade-off of sharing your Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions. However, it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "spend key" and "private seed" are never sent to our server. So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end which anybody can run as their own server at home.
 
-(However, even the above trade-off of sharing your view key with the MyMonero server will soon be eliminated, as we are presently working to open-source a version of the back-end which anybody can run as their own server at home.)
+MyMonero is currently available for Mac, Windows, and Linux, with mobile clients on the way.
 
 ![Welcome to MyMonero! Let's get started.](./docs/assets/ss_1.png_ "Welcome to MyMonero! Let's get started.")
 
 
-## Present State of the Apps
-
-At present, the desktop app is ready to be tested. The mobile apps are being built.
+## Features
 
 The desktop app has support for features such as…
 
@@ -35,39 +33,53 @@ The desktop app has support for features such as…
 
 * Creating QR codes and messages to request Monero be sent to you
 
-* Send money to contacts, OpenAlias, or other Monero addresses (these may be input manually, or automatically by either dropping a request QR code on the Send screen or clicking a `monero:…` request URL)
+* Sending money to contacts, OpenAlias, or other Monero addresses (these may be input manually, or automatically by either dropping a request QR code on the Send screen or clicking a `monero:…` request URL on MacOS or Windows)
 
-* Settings, for clearing data or managing prefernces such as idle timeout
+* Settings (for clearing data, managing preferences such as idle timeout, etc.)
 
 * Strong (AES256) encryption to password protect all sensitive user data 
 
-* Improved UX, including educational tooltips
+* Improved UX, including informative tooltips
+
+* Auto-update (coming soon via Github Releases)
 
 
 ## Requirements
 
-The desktop app is built on [Electron](https://electron.atom.io) and can be packaged for and is intended to run on modern versions of MacOS (.app), Windows (installer), and Linux (.appimage).
+The desktop app is built on [Electron](https://electron.atom.io) and can be packaged for and is intended to run on modern versions of:
+
+* MacOS (.app)
+* Windows (installer)
+* Linux (.appimage) - pkg manager repos under consideration
+
+## Downloads
+
+Download the latest version from our website at [mymonero.com/desktop](https://www.mymonero.com/desktop) or from the Releases tab. *(Coming soon)* 
+
+To get set up with the source code, please see **Getting the Source Code** below.
 
 
-## Downloads & More info
+## Reporting bugs & Making feature requests
 
-*(Coming soon)* Download the latest version from our website at [mymonero.com/desktop](https://www.mymonero.com/desktop).
+If you would like to report an issue or share a feature request, please create a Github Issue on this project.
 
-Follow us on Twitter at [@MyMonero](https://www.twitter.com/mymonero) to get the latest updates.
+If you're reporting a bug, be sure to include all information which we would need to reproduce the issue, such as the operating system and app version on which you saw the bug, and the steps you took, if you can tell. 
 
+For customer support, you can also [contact](https://mymonero.com/support) us directly.
 
-## Reporting bugs & Sharing feature requests
-
-If you would like to report an issue or share a feature request, please create an Github Issue on this repository.
-
-If you're reporting a bug, please be sure to include all information which would be necessary to reproduce the issue, such as the operating system and app version on which you saw the bug. 
-
-Please do not post private info such as your wallet address or private keys in the issue description. 
-
-For support or to send feedback, you can also [contact us](https://mymonero.com/support) directly.
+# Contributing & Testing
 
 
-## Repository contents
+## Getting the Source Code
+
+1. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
+
+2. (If you are a developer) Switch to the `develop` branch by executing `git checkout develop`.
+
+3. Install all dependencies by executing `npm install`.
+
+
+## Repository Contents
 * Executable scripts for common tasks are located in `bin/`
 
 * Local, application source code is located in `local_modules/`. This includes bundled/static third-party "Vendor" libraries such as [EmojiOne](http://emojione.com).
@@ -79,23 +91,14 @@ For support or to send feedback, you can also [contact us](https://mymonero.com/
 * This readme is located at `README.md`, and the license is located at `LICENSE.txt`.
 
 
-## Installing
-
-1. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
-
-2. (If you are a developer) Switch to the `develop` branch by executing `git checkout develop`.
-
-3. Install all dependencies by executing `npm install`.
-
-
-## Building for production
+## Building for Production
 
 Unless you are a MyMonero pre-release tester you will probably never need produce a production build of MyMonero, especially as you want to be using a verified build of MyMonero for daily usage. However, if you're testing a pre-release version of this app, you may want to build a production-ready version of the app rather than only running it in dev mode. 
 
 See [Building the app for production](./docs/PRODUCTION_BUILDS.md) for information.
 
 
-## Running in development mode
+## Running in Development Mode
 
 Testing in development mode does not require you to package, sign, and install the app, and will cause the Developer window to be shown.
 
@@ -104,25 +107,33 @@ To launch the desktop app in dev mode, run `bin/start_dev_desktop`.
 
 ## Contributing
 
-Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are quite welcome. 
+Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are very welcome, and you will be credited below if your PR is accepted.
 
-If you would like to contribute, please read the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. Feel free to create a Github issue if you find any areas of the code which could use explanation or if you'd like to discuss improvements, report bugs, or ask non-support, developer-only questions.
+If you would like to contribute, please scan the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. Feel free to create a Github issue if you find any areas of the code which could use more explanation or if you'd like to discuss improvements, report bugs, or ask non-support development/testing-only questions. Questions about the MyMonero technology or how to use the app should generally be asked either on StackExchange, reddit, IRC, or by contacting customer support.
 
 For background on this project, see [Why we built the native apps](./docs/WHY_NATIVE.md).
 
-You may also like to read the unofficial [roadmap](./docs/ROADMAP.md) to get a picture of our thoughts for the future.
+There is no specific code styleguide as yet, but we ask that code contributions…
 
-There's also an icebox of ideas, features, improvements, fixes, and other todos waiting to be knocked out.
+* be kept modular or well factored, either platform-agnostic or with platform specified (see [Architecture notes](./docs/ARCHITECTURE.md)),
+* be written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
+* employ best practices, and 
+* are well tested and don't break anything, especially security.
 
+Aside from that, most everything's fair game.
+
+You may also like to read the unofficial [technology roadmap](./docs/ROADMAP.md) to get a peek at what we're thinking about for the future.
+
+There's also an icebox of ideas, features, improvements, known issues, and other todos waiting to be knocked out. (Link coming soon)
 
 
 ## Contributors
 
 * 🏂 [Paul Shapiro](https://github.com/paulshapiro) aka `endogenic`
-	* Lead client app dev, project maintainer; Partner
+	* Project maintainer; Lead client app dev; Partner
 
 * 🦄 [Riccardo Spagni](https://github.com/fluffypony) aka `fluffyponyza` 
-	* Advisor; Partner; Lead maintainer of [Monero](http://www.getmonero.org)
+	* Advisor; Partner; [Monero](http://www.getmonero.org) project core member
 
 * 😎 [Lee Clagett](https://github.com/vtnerd) aka `vtnerd`
 	* Lead back-end dev
@@ -133,10 +144,8 @@ There's also an icebox of ideas, features, improvements, fixes, and other todos 
 * 🍄 [luigi1111](https://github.com/luigi1111) aka `luigi1112`
 	* Monero tech advisor; Added RingCT support to client
 
- 
-
-## License and copyrights
-
-This app's source code and assets are copyright © 2014-2017 by MyMonero, and is released as a free, open-source project under a modified MIT license. All rights reserved.
+## License and Copyrights
 
 See `LICENSE.txt` for license.
+
+All app source code and assets copyright © 2014-2017 by MyMonero. All rights reserved.

@@ -1,6 +1,6 @@
 # MyMonero Desktop & Mobile Apps
 
-![Logo](./assets/logo.png_ "Logo")
+![Logo](./assets/logo.png "Logo")
 
 ## Architecture notes
 
