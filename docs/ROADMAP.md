@@ -6,14 +6,14 @@
 
 There is no official roadmap for the MyMonero apps, and anyone is free to submit a pull request containing anything of their choice. 
 
-There are however a number of interesting features we are planning to introduce. This list is not exhaustive and is not necessarily ordered.
+There are, however, a number of interesting features we are planning to introduce. This list is not exhaustive and is not necessarily ordered.
 
 * Mobile app for iOS and Android (current priority)
 
-* (Possibly after refactors to wallet2.cpp) Binding (via node-gyp in JS) directly to official Monero lib wallet code [1], so that
-	* we can scrap the current JS reimplementation of Monero, including emscripten-compiled CryptoNote utils, 
+* (Possibly after necessary work on `wallet2.cpp`) Binding (via node-gyp in JS) directly to official Monero lib wallet code [1], so that we can:
+	* scrap the current JS reimplementation of Monero, including emscripten-compiled CryptoNote utils, 
 	
-	* we can automatically keep up-to-date with baseline project's new features and protocol updates, and
+	* automatically keep up-to-date with baseline project's new features and protocol updates, and
 	
 	* gain performance improvements, etc. 
 	
@@ -43,4 +43,4 @@ There are however a number of interesting features we are planning to introduce.
 
 * https://github.com/zone117x/node-multi-hashing
 
-* (example) https://github.com/M5M400/node-cryptonote-util/compare/xmr-Nan-2.0...Snipa22:xmr-Nan-2.0
+* (example integration) https://github.com/M5M400/node-cryptonote-util/compare/xmr-Nan-2.0...Snipa22:xmr-Nan-2.0

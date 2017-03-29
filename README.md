@@ -10,22 +10,22 @@ This repository holds the source code, resources, and build scripts for the offi
 
 MyMonero is a very simple, secure, and featureful way to use the next-generation private digital currency called [Monero](http://www.getmonero.org). 
 
-The MyMonero app lets you manage your Monero wallets, address book, and transactions by storing most information locally and keeping it encrypted. 
+The MyMonero app lets you manage your Monero wallets, address book, and transactions by storing your information locally and keeping it encrypted. 
 
-The major benefit of using MyMonero is it handles most of the work that Monero users must do themselves in order to set up access to their Monero wallets.
+The main reason people have used MyMonero is its high degree of convenience. 
 
-In exchange for the convenience and features made possible by MyMonero, there is the minor privacy trade-off of sharing your Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions. However, it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "spend key" and "private seed" are never sent to our server. So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end which anybody can run as their own server at home.
+To accomplish this convenience and other features of MyMonero, there's the privacy trade-off of sharing your Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions. However, it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "spend key" and "private seed" are never sent to our server. So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end, which anybody can run as their own server at home.
 
-MyMonero is currently available for Mac, Windows, and Linux, with mobile clients on the way.
+MyMonero is currently available for Mac, Windows, and Linux – with mobile clients on the way.
 
 ![Welcome to MyMonero! Let's get started.](./docs/assets/ss_1.png_ "Welcome to MyMonero! Let's get started.")
 
 
 ## Features
 
-The desktop app has support for features such as…
+The desktop app supports:
 
-* Managing multiple wallets at a time
+* Multiple wallets at a time
 
 * Contacts address book
 
@@ -59,7 +59,7 @@ Download the latest version from our website at [mymonero.com/desktop](https://w
 To get set up with the source code, please see **Getting the Source Code** below.
 
 
-## Reporting bugs & Making feature requests
+## Reporting Bugs & Making Feature Requests
 
 If you would like to report an issue or share a feature request, please create a Github Issue on this project.
 
@@ -74,7 +74,7 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 1. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
 
-2. (If you are a developer) Switch to the `develop` branch by executing `git checkout develop`.
+2. (If you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
 
 3. Install all dependencies by executing `npm install`.
 
@@ -93,7 +93,7 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 ## Building for Production
 
-Unless you are a MyMonero pre-release tester you will probably never need produce a production build of MyMonero, especially as you want to be using a verified build of MyMonero for daily usage. However, if you're testing a pre-release version of this app, you may want to build a production-ready version of the app rather than only running it in dev mode. 
+Unless you are a MyMonero pre-release tester, you will probably never need to produce a production build of MyMonero, especially as you want to be using a verified build of MyMonero for daily usage. However, if you're testing a pre-release version of this app, you may want to build a production-ready version of the app rather than only running it in dev mode. 
 
 See [Building the app for production](./docs/PRODUCTION_BUILDS.md) for information.
 
@@ -109,20 +109,20 @@ To launch the desktop app in dev mode, run `bin/start_dev_desktop`.
 
 Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are very welcome, and you will be credited below if your PR is accepted.
 
-If you would like to contribute, please scan the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. Feel free to create a Github issue if you find any areas of the code which could use more explanation or if you'd like to discuss improvements, report bugs, or ask non-support development/testing-only questions. Questions about the MyMonero technology or how to use the app should generally be asked either on StackExchange, reddit, IRC, or by contacting customer support.
+If you would like to contribute, please scan the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. Feel free to create a Github issue if you find any areas of the code which could use more explanation, or if you'd like to discuss improvements, report bugs, or ask non-support development/testing-only questions. Questions about the MyMonero technology or how to use the app should generally be asked either on StackExchange, reddit, IRC, or by contacting customer support.
 
-For background on this project, see [Why we built the native apps](./docs/WHY_NATIVE.md).
+For background on this project, see [Why We Built the Native Apps](./docs/WHY_NATIVE.md).
 
-There is no specific code styleguide as yet, but we ask that code contributions…
+There is no specific code styleguide yet, but we ask that code contributions…
 
-* be kept modular or well factored, either platform-agnostic or with platform specified (see [Architecture notes](./docs/ARCHITECTURE.md)),
-* be written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
+* are kept modular or well factored, either platform-agnostic or with platform specified (see [Architecture Notes](./docs/ARCHITECTURE.md)),
+* are written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
 * employ best practices, and 
 * are well tested and don't break anything, especially security.
 
-Aside from that, most everything's fair game.
+Aside from that, almost everything is fair game.
 
-You may also like to read the unofficial [technology roadmap](./docs/ROADMAP.md) to get a peek at what we're thinking about for the future.
+You may also like to read the unofficial [Technology Roadmap](./docs/ROADMAP.md) to get a peek at what we're thinking about for the future.
 
 There's also an icebox of ideas, features, improvements, known issues, and other todos waiting to be knocked out. (Link coming soon)
 
