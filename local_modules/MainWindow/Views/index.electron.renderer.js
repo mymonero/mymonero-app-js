@@ -29,7 +29,9 @@
 "use strict"
 //
 const setup_utils = require('../../electron_renderer_utils/renderer_setup_utils')
-setup_utils()
+setup_utils({
+	crashReporting_processName: "MainWindow"
+})
 //
 const remote__electron = require('electron').remote
 const remote__app = remote__electron.app

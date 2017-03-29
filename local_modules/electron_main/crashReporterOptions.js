@@ -28,51 +28,11 @@
 //
 "use strict"
 //
-const _ = require('underscore') // minor optimization for other platforms 
-// would be to embed this require only where it's used below but here for clarity
-//
-module.exports = function(params)
+module.exports = 
 {
-	params = params || {}
-	//
-	startCrashReporting(params.crashReporting_processName)
-	hardenRuntime()
-	identifyRuntime()
-	ensureEnv()
-}
-//
-//
-function startCrashReporting(crashReporting_processName)
-{
-	const {crashReporter} = require('electron')
-	const options_template = require('../electron_main/crashReporterOptions')
-	const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
-	options.extra.process = crashReporting_processName
-	crashReporter.start(options)
-}
-//
-function hardenRuntime()
-{
-	// disable eval
-	window.eval = global.eval = function()
-	{
-		throw new Error("MyMonero does not support window.eval() for security reasons.")
-	}
-}
-function identifyRuntime()
-{
-	window.IsElectronRendererProcess = true
-}
-//
-function ensureEnv()
-{
-	if (process.platform === 'linux') {
-		// Grab process.env from main process, which doesn't happen by default on Linux
-		// https://github.com/atom/electron/issues/3306
-		const remote__electron = require('electron').remote
-		const remote__process = remote__electron.process
-		const remote__env = remote__process.env
-	    var newEnv = _.extend({}, process.env, remote__env);
-	    process.env = newEnv;
-	}
+    productName: "MyMonero",
+    companyName: "MyMonero",
+    submitURL: "https://a.mymonero.com/crashReport",
+    uploadToServer: true,
+	extra: {} // feel free to add properties to this
 }

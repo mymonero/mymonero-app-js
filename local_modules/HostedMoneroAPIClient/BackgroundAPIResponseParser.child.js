@@ -234,4 +234,4 @@ const tasksByName =
 //
 // Kicking off runtime:
 //
-child_ipc.InitWithTasks_AndStartListening(tasksByName)
+child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundAPIResponseParser.child")

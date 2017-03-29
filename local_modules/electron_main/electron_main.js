@@ -27,26 +27,29 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-process.on('uncaughtException', function (error)
-{ // We're going to observe this here (for electron especially) so
-  // that the exceptions are prevented from bubbling up to the UI.
-	console.error("Observed uncaught exception", error)
-	// TODO: re-emit and send this to the error reporting service
-})
-// require('crash-reporter').start() // TODO
 //	
-const {app} = require('electron')
-const appId = "com.mymonero.mymonero" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
-app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
-//
-const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
-module.exports = context
-global.context = context
-//
-var shouldQuit = app.makeSingleInstance( // ensure only one instance of the app
-// can be run... not only for UX reasons but so we don't get any conditions
-// which might mess with db sanity
+const {crashReporter, app} = require('electron')
+{ // Crash reporting
+	const options_template = require('./crashReporterOptions')
+	const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
+	options.extra.process = "electron_main"
+	crashReporter.start(options)
+	/* Commented this for now to check whether crash reported relays exceptions
+	process.on('uncaughtException', function(error) { // We're going to observe this here (for electron especially) so that the exceptions are prevented from bubbling up to the UI.
+		console.error("Observed uncaught exception", error) // TODO: re-emit and send this to the error reporting service?
+	})
+	*/	
+}
+{ // `app` configuration
+	const appId = "com.mymonero.mymonero" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
+	app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
+}
+{ // Application
+	const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
+	module.exports = context
+	global.context = context
+}
+var shouldQuit = app.makeSingleInstance( // ensure only one instance of the app can be run... not only for UX reasons but so we don't get any conditions which might mess with db sanity
 	function(argv, workingDirectory)
 	{ // Single instance context being passed control when user attempted to launch duplicate instance. Emit event so that main window may be focused
 		app.emit('launched-duplicatively', argv) // custom event

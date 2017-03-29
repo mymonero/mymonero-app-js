@@ -27,10 +27,18 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+//	
 // Public - Setup - Entrypoints:
-function InitWithTasks_AndStartListening(tasksByName)
+function InitWithTasks_AndStartListening(tasksByName, crashReporting_processName)
 { // Call this to set up the child
+	{ // start crash reporting
+		const options_template = require('../electron_main/crashReporterOptions')
+		const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
+		options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes
+		options.extra.process = crashReporting_processName
+		process.crashReporter.start(options) // and child processes must access process.crashReporter
+	}
+	//
 	{ // start observing incoming messages
 		process.on('message', function(m)
 		{
