@@ -2,7 +2,7 @@
 
 ![Logo](./assets/logo.png "Logo")
 
-## Roadmap
+## Technology Roadmap
 
 There is no official roadmap for the MyMonero apps, and anyone is free to submit a pull request containing anything of their choice. 
 
@@ -20,5 +20,7 @@ TODO: add references to node-gyp bindings to Monero code
 * new b/e, polling -> zmq
 
 * Possibly lmdb
+
+* Automated tests
 
 TODO: more… and check icebox

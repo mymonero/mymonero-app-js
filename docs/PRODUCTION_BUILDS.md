@@ -4,13 +4,20 @@
 
 ## Building the app for production
 
-In order to produce a production build, you must first have installed all of the `electron-builder` required system packages for building apps. See [electron-builder: Multi Platform Build](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build).
+### Pre-requisites
 
-Please note: in order to create a production build for Mac, you must be on a Mac, and you'll need an installed Mac developer certificate to sign the build with, and you will need to edit `package.json` to specify the name of your certificate signing identity. To do so, update `CSC_NAME` in `scripts.dist` and `scripts.pack` with your identity name, which can be found via Keychain.app.
+In order to produce a production build, you must first have installed all of the `electron-builder` required system packages for building apps for the desired platforms. See [electron-builder: Multi Platform Build](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build).
 
-If you would like to build for only a specific platform, you must edit `package.json` to change occurrences of the argument `-mwl` in `scripts.pack` and `scripts.dist` to contain only the letter of the platform for which you'd like to build. For example, to build for Linux only, change the argument from `-mwl` to `-l`. 
+**Please note:** in order to create a production build for Mac, you must be on a Mac, you'll need an installed Mac developer certificate to sign the build with, and you'll need to edit `package.json` to specify the name of your own certificate signing identity. To do so, edit `package.json` by updating `CSC_NAME` in `scripts.dist` and `scripts.pack` with your identity name, which can be found via Keychain.app.
 
-In order to actually initiate the build for all desktop platforms, execute `bin/build_all_desktop`. 
+If you would like to build for only a specific platform, you can edit `package.json` to change occurrences of the argument `-mwl` in `scripts.pack` and `scripts.dist` to contain only the letter of the platform for which you'd like to build. For example, to build for Linux only, change the argument from `-mwl` to `-l`. 
+
+(Just be careful not to commit/submit these changes in any pull requests.)
+
+
+### Building
+
+In order to actually perform the production build for desktop, execute `bin/build_all_desktop`. 
 
 This command relies upon resources present in `build`, and will output your build products in the directory `dist`.
 

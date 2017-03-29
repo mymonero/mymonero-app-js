@@ -2,13 +2,17 @@
 
 ![Logo](./assets/logo.png "Logo")
 
-## Why we built the native apps
+## Why We Built the Native Apps
 
-From MyMonero's creation in 2014 as a web wallet until the release of these downloadable apps in early 2017, the only way to access the service was via a browser on the MyMonero website. Since your spend key is never sent to the server, many operations could not be done on the server, and that meant that a lot of Javascript code had to be sent to and run within your browser (such as creating new wallets, or sending money).
+(**tl;dr** for better scurity, and to build better apps.
 
-Downloading that Javascript code opened up the possibility of an attacker inserting something malicious which, for example, could theoretically enable them to steal your funds. Another issue, which was actually observed, was that users would simply get misdirected (perhaps by search engine) to a scam/phishing site which was impersonating MyMonero under a different domain, which presumably tricked users into running malicious code.
+From 2014 until the release of these downloadable apps, the MyMonero service was only accessible as a web wallet on the MyMonero website. 
 
-There were other limitations with the web wallet, such as the inability to use it behind Tor. And, as a downloaded web app, it was significantly limited by the facilities available in common browsers. For example, in the web wallet, users could only access one wallet at a time, had to log in each time, and as a security precaution were quickly logged off once they became idle.
+Since your "private spend key" and "wallet seed" must never be sent to the server as a security feature, many operations (such as creating new wallets, and constructing transations to send money) could not be done on the server… and that meant that a lot of Javascript code which reimplements large parts of Monero had to be sent to, and run within users' web browsers.
+
+Loading that Javascript code opened up the possibility of an attacker inserting something malicious which, for example, could theoretically enable them to steal your funds. Another issue - which was actually observed – was users simply getting misdirected (perhaps by search engine) to a phishing site which was impersonating MyMonero under a different domain, which presumably tricked some users into having their keys stolen.
+
+There were other limitations with the web wallet, such as the inability to use it behind Tor. In addition, as a downloaded web app, it was significantly limited by the facilities available in common browsers. For example, in the web wallet, users could only access one wallet at a time, had to log in with keys each time, and as a security precaution, were quickly logged off once they became idle.
 
 The native apps were conceived of in order to…
 
@@ -16,4 +20,4 @@ The native apps were conceived of in order to…
  
 * provide a solid foundation on which to build out and iterate upon a much more featureful experience, and to
 
-* open MyMonero up as a light wallet project for the community to not only find reference implementation examples, but which they can contribute back to and have their contributions shipped and used by everyone else.
+* open MyMonero up as a light wallet project for the community to not only use as a reference implementation, but which they can even contribute back to and have their own contributions shipped in the official version to be used by thousands of people.
