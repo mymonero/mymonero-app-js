@@ -11,9 +11,9 @@ There are however a number of interesting features we are planning to introduce.
 * Mobile app for iOS and Android (current priority)
 
 * (Possibly after refactors to wallet2.cpp) Binding (via node-gyp in JS) directly to official Monero lib wallet code [1], so that
-	* current JS reimplementation may be scrapped, 
+	* we can scrap the current JS reimplementation of Monero, including emscripten-compiled CryptoNote utils, 
 	
-	* we automatically keep up-to-date with baseline project's new features and protocol updates, and
+	* we can automatically keep up-to-date with baseline project's new features and protocol updates, and
 	
 	* gain performance improvements, etc. 
 	
@@ -27,10 +27,11 @@ There are however a number of interesting features we are planning to introduce.
 
 * Automated tests
 
+* Automatic association of incoming transactions with Contacts
 
-TODO: more… and check icebox
+* Ledger integration
 
-
+--
 
 1. Native/compiled Monero binding
 
