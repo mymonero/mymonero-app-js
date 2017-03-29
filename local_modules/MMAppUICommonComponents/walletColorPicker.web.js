@@ -88,6 +88,9 @@ const cssRules =
 	`.oneOfN-walletColorPicker li input:checked ~ .selectionIndicator {
 		border: 4px solid #00c6ff;
 	}`,
+	`.oneOfN-walletColorPicker li.disabled input:checked ~ .selectionIndicator {
+		border: 4px solid #d4d4d4;
+	}`
 ]
 function __injectCSSRules_ifNecessary()
 {
@@ -129,10 +132,13 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 	const ul = view.layer
 	ul.className = "oneOfN-walletColorPicker"
 	ul.style.listStyleType = "none"
+	const inputs = []
+	const lis = []
 	for (let i = 0 ; i < numberOf_hexColorStrings ; i++) {
 		const hexColorString = hexColorStrings[i]
 		const li = document.createElement("li")
-		{ // TODO: set .disabled on SetEnabled
+		lis.push(li)
+		{
 			li.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
 			li.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
@@ -149,13 +155,16 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 			"click", 
 			function()
 			{
-				radioInput.focus()
-				radioInput.checked = "checked"
+				if (radioInput.disabled !== true) {
+					radioInput.focus()
+					radioInput.checked = "checked"
+				}
 			}
 		)
 		li.appendChild(label)
 		{
 			const input = document.createElement("input")
+			inputs.push(input)
 			radioInput = input // for reference above
 			input.type = "radio"
 			input.name = fieldName
@@ -164,6 +173,7 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 			if (hexColorString === selectHexColorString) {
 				input.checked = "checked"
 			}
+			//
 			label.appendChild(input) // append to label to get clickable
 		}
 		{ // selection indicator layer - must be /after/ input for sibling CSS to work
@@ -185,6 +195,22 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 		}
 		throw "Didn't find a selected wallet swatch color."
 		return undefined
+	}
+	view.SetEnabled = function(isEnabled)
+	{
+		const numberOf_lis = lis.length // should be same as numberOf_hexColorStrings
+		// going to assume the lis and inputs correspond 1:1
+		for (var i = 0; i < numberOf_lis ; i++) {
+			const li = lis[i]
+			const input = inputs[i]
+			if (isEnabled) {
+				li.classList.remove("disabled")
+				input.disabled = undefined
+			} else {
+				li.classList.add("disabled")
+				input.disabled = true
+			}
+		}
 	}
 	return view
 }

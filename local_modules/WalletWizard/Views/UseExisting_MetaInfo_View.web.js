@@ -460,6 +460,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(false)
+			self.walletColorPickerInputView.SetEnabled(false)
 			self.walletNameInputLayer.disabled = true
 			self.mnemonicTextAreaView.layer.disabled = true
 			self.addrTextAreaView.layer.disabled = true
@@ -476,6 +477,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
+			self.walletColorPickerInputView.SetEnabled(true)
 			self.walletNameInputLayer.disabled = undefined
 			self.mnemonicTextAreaView.layer.disabled = undefined
 			self.addrTextAreaView.layer.disabled = undefined
@@ -493,6 +495,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		{
 			self.wizardController.ProceedToNextStep() // will dismiss
 		}
+		//
 		const walletsListController = self.context.walletsListController
 		const walletName = self.lookup__walletName()
 		const colorHexString = self.lookup__colorHexString()
