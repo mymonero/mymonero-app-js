@@ -3,6 +3,8 @@
 node_modules
 npm-debug.log
 dist
-test_products
 
+test_products
 **/tests_config.js
+
+electron_child_crashReport_tmp
