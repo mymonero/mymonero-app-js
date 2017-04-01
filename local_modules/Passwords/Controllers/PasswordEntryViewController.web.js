@@ -76,14 +76,20 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ObtainedNewPassword(),
 			function() 
 			{
-				self.view.Dismiss()
+				setTimeout(function()
+				{ // give everything time to set up/reconstitute underneath - to avoid jitters 
+					self.view.Dismiss()
+				}, 100)
 			}
 		)
 		controller.on(
 			controller.EventName_ObtainedCorrectExistingPassword(),
 			function() 
 			{
-				self.view.Dismiss()
+				setTimeout(function()
+				{ // give everything time to set up/reconstitute underneath - to avoid jitters 
+					self.view.Dismiss()
+				}, 100)
 			}
 		)
 		controller.on(
