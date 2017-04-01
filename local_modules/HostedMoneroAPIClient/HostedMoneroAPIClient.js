@@ -514,35 +514,43 @@ class HostedMoneroAPIClient
 				"Accept": "application/json"
 			},
 			json: parameters,
-		}, function(err, res, body)
+		}, function(err_orProgressEvent, res, body)
 		{
+			// err appears to actually be a ProgressEvent
+			var err = null
 			const statusCode = typeof res !== 'undefined' ? res.statusCode : -1
-			if (!err && statusCode == 200) {
-				var json
-				if (typeof body === 'string') {
-					try {
-						json = JSON.parse(body);
-					} catch (e) {
-						console.error("❌  HostedMoneroAPIClient Error: Unable to parse json with exception:", e, "\nbody:", body);
-						fn(e, null)
-					}
+			if (statusCode == 0 || statusCode == -1) { // we'll treat 0 as a lack of internet connection.. unless there's a better way to make use of err_orProgressEvent which is apparently going to be typeof ProgressEvent here
+				err = new Error("Connection Failure")
+			} else if (statusCode !== 200) {
+				const body_Error = body && typeof body == 'object' ? body.Error : undefined
+				const statusMessage = res && res.statusMessage ? res.statusMessage : undefined
+				if (typeof body_Error !== 'undefined' && body_Error) {
+					err = new Error(body_Error)
+				} else if (typeof statusMessage !== 'undefined' && statusMessage) {
+					err = new Error(statusMessage)
 				} else {
-					json = body
+					err = new Error("Unknown " + statusCode + " error")
 				}
-				console.log("✅  " + completeURL + " " + statusCode)
-				fn(null, json)
-			} else {
-				if (err) {
-					console.error("❌  HostedMoneroAPIClient Error:", err);
-					fn(err, null)
-					return
-				}
-				var errStr = "HostedMoneroAPIClient Error: " + statusCode + " " + res.statusMessage + " " + completeURL
-				console.error("❌  " + errStr);
-				// console.error("Body:", body)
-				var err = new Error(errStr)
-				fn(err, null)
 			}
+			if (err) {
+				console.error("❌  " + err);
+				// console.error("Body:", body)
+				fn(err, null)
+				return
+			}
+			var json;
+			if (typeof body === 'string') {
+				try {
+					json = JSON.parse(body);
+				} catch (e) {
+					console.error("❌  HostedMoneroAPIClient Error: Unable to parse json with exception:", e, "\nbody:", body);
+					fn(e, null)
+				}
+			} else {
+				json = body
+			}
+			console.log("✅  " + completeURL + " " + statusCode)
+			fn(null, json)
 		})
 		//
 		return requestHandle

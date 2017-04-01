@@ -70,7 +70,8 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 		function(err, records, dnssec_used, secured, dnssec_fail_reason)
 		{
 			if (err) {
-				const errStr = "Failed to resolve DNS records for '" + openAlias_domain + "': " + err
+				const message = err.message ? err.message : err.toString()
+				const errStr = "Couldn't look up '" + openAlias_domain + "'… " + message
 				const returnableErr = new Error(errStr)
 				fn(returnableErr)
 				return
