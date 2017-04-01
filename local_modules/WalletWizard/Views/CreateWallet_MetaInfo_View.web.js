@@ -45,7 +45,7 @@ class CreateWallet_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		setTimeout(function()
 		{
 			self.walletNameInputLayer.focus()
-		}, 400)
+		}, 900)
 	}
 	_setup_startObserving()
 	{

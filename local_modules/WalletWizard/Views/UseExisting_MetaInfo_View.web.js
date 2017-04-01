@@ -63,7 +63,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		setTimeout(function()
 		{ // after visible…
 			self.mnemonicTextAreaView.layer.focus()
-		}, 400)
+		}, 900)
 	}
 	_setup_form_walletMnemonicField()
 	{

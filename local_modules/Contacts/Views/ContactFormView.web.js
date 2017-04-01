@@ -173,7 +173,7 @@ class ContactFormView extends View
 		//
 		setTimeout(function() {
 			self.fullnameInputLayer.focus()
-		}, 400)
+		}, 900)
 	}
 	_overridable_initial_emoji_value()
 	{

@@ -119,9 +119,13 @@ class StackNavigationView extends View
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
-	_animationDuration_ms_navigationPush()
+	_animation_navigationPush_duration_ms()
 	{
-		return 200
+		return 430
+	}
+	_animation_navigationPush_easing()
+	{
+		return "easeOutCubic"
 	}
 	//
 	//
@@ -223,6 +227,7 @@ class StackNavigationView extends View
 		}
 		{ // and then actually present the view:
 			const stackView_layer = stackView.layer
+			const preExisting_boxShadow = stackView_layer.style.boxShadow
 			if (isAnimated === true) { // prepare for animation
 				old_topStackView.layer.style.position = "absolute"
 				old_topStackView.layer.style.zIndex = "0"
@@ -230,6 +235,9 @@ class StackNavigationView extends View
 				stackView_layer.style.position = "absolute"
 				stackView_layer.style.zIndex = "2" // 2 because we'll want to insert a semi-trans curtain view under the stackView_layer above the old_topStackView
 				stackView_layer.style.left = `${self.stackViewStageView.layer.offsetWidth}px` // we use the stackViewStageView because it's already in the DOM and sized
+				//
+				const to_boxShadow = "0px 0px 12px 2px rgba(0,0,0,0.3)"
+				stackView_layer.style.boxShadow = to_boxShadow
 			}
 			self.stackViewStageView.addSubview(stackView)
 			if (isAnimated === false) { // no need to animate anything - straight to end state
@@ -245,11 +253,12 @@ class StackNavigationView extends View
 								left: "0px"
 							},
 							{
-								duration: self._animationDuration_ms_navigationPush(),
-								easing: "ease-in-out",
+								duration: self._animation_navigationPush_duration_ms(),
+								easing: self._animation_navigationPush_easing(),
 								complete: function()
 								{
-									stackView_layer.style.zIndex = "0" 
+									stackView_layer.style.zIndex = "0"
+									stackView_layer.style.boxShadow = preExisting_boxShadow // restore pre-existing, in case consumer had put one on
 									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 									__trampolineFor_transitionEnded() // must unlock fn
 								}
@@ -414,8 +423,8 @@ class StackNavigationView extends View
 								left: `${self.stackViewStageView.layer.offsetWidth}px`
 							},
 							{
-								duration: self._animationDuration_ms_navigationPush(),
-								easing: "ease-in-out",
+								duration: self._animation_navigationPush_duration_ms(),
+								easing: self._animation_navigationPush_easing(),
 								complete: function()
 								{
 									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()

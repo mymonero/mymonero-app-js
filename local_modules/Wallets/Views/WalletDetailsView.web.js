@@ -738,7 +738,11 @@ class WalletDetailsView extends View
 			self.catchingUpProgressAndActivityIndicatorView.ConfigureWithProgress()
 		} else {
 			if (self.catchingUpProgressAndActivityIndicatorView) {
-				self.catchingUpProgressAndActivityIndicatorView.layer.parentNode.removeChild(self.catchingUpProgressAndActivityIndicatorView.layer)
+				const layer = self.catchingUpProgressAndActivityIndicatorView.layer
+				const parentNode = layer.parentNode
+				if (parentNode) { // just in case - i.e. during special debug case
+					parentNode.removeChild(layer)
+				}
 				self.progressLabelLayer = null // can assume we only need to nil this here
 			}
 		}

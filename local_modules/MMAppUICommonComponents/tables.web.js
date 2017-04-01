@@ -131,6 +131,7 @@ function New_clickableLinkButtonView(
 	a.innerHTML = buttonTitle
 	a.style.color = "#11bbec"
 	a.style.cursor = "pointer"
+	a.style.webkitUserSelect = "none" // disable selection
 	a.style.webkitFontSmoothing = "subpixel-antialiased"
 	a.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	a.style.fontSize = "10px" // chrome renders 11px too big compared to sketch

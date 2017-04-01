@@ -166,11 +166,15 @@ class NavigationBarView extends View
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
-	_animationDuration_ms_navigationPush()
+	_animation_navigationPush_duration_ms()
 	{
 		const self = this
-		//
-		return self.navigationController._animationDuration_ms_navigationPush()
+		return self.navigationController._animation_navigationPush_duration_ms()
+	}
+	_animation_navigationPush_easing()
+	{
+		const self = this
+		return self.navigationController._animation_navigationPush_easing()
 	}
 	//
 	//
@@ -323,7 +327,8 @@ class NavigationBarView extends View
 				left: successor_final_left
 			},
 			{
-				duration: self._animationDuration_ms_navigationPush(),
+				duration: self._animation_navigationPush_duration_ms(),
+				easing: self._animation_navigationPush_easing(),
 				complete: function()
 				{
 					successor_titleLayer.style.left = `calc(${100*self.titleLayer_marginX_pctComponent}% + ${self.titleLayer_marginX_pxComponent}px)`
@@ -345,7 +350,8 @@ class NavigationBarView extends View
 				left: old_titleLayer_final_left
 			},
 			{
-				duration: self._animationDuration_ms_navigationPush(),
+				duration: self._animation_navigationPush_duration_ms(),
+				easing: self._animation_navigationPush_easing(),
 				complete: function()
 				{
 				}
@@ -420,7 +426,8 @@ class NavigationBarView extends View
 								left: ifAnimated_isFromRightNotLeft ? "-"+buttonOffsetForTransition_outgoingButtons_fromRight/*TODO: offsetbyw*/ : buttonOffsetForTransition_outgoingButtons_fromLeft
 							}, 
 							{
-								duration: self._animationDuration_ms_navigationPush(),
+								duration: self._animation_navigationPush_duration_ms(),
+								easing: self._animation_navigationPush_easing(),
 								complete: function()
 								{
 									view.removeFromSuperview()
@@ -447,7 +454,8 @@ class NavigationBarView extends View
 								right: ifAnimated_isFromRightNotLeft ? buttonOffsetForTransition_outgoingButtons_fromRight : "-"+buttonOffsetForTransition_outgoingButtons_fromLeft
 							}, 
 							{
-								duration: self._animationDuration_ms_navigationPush(),
+								duration: self._animation_navigationPush_duration_ms(),
+								easing: self._animation_navigationPush_easing(),
 								complete: function()
 								{
 									view.removeFromSuperview()
@@ -515,7 +523,8 @@ class NavigationBarView extends View
 							left: "0px" // so it sticks to left
 						}, 
 						{
-							duration: self._animationDuration_ms_navigationPush(),
+							duration: self._animation_navigationPush_duration_ms(),
+							easing: self._animation_navigationPush_easing(),
 							complete: function() {}
 						}
 					)
@@ -556,7 +565,8 @@ class NavigationBarView extends View
 							right: "0px" // so it sticks to right
 						}, 
 						{
-							duration: self._animationDuration_ms_navigationPush(),
+							duration: self._animation_navigationPush_duration_ms(),
+							easing: self._animation_navigationPush_easing(),
 							complete: function() {}
 						}
 					)

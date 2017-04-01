@@ -117,9 +117,9 @@ class EnterNewPasswordView extends View
 		self.form_containerLayer.appendChild(div)
 		//
 		setTimeout(function()
-		{ // let's wait til we're all presented or we might cause scroll weirdness
+		{
 			self.passwordInputLayer.focus()
-		}, 400)
+		}, 900)
 	}
 	_setup_form_confirmPasswordInputField()
 	{

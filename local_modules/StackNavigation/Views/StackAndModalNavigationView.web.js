@@ -60,13 +60,21 @@ class StackAndModalNavigationView extends StackNavigationView
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//
-	_animationDuration_ms_modalPresent()
+	_animation_modalPresent_duration_ms()
 	{
-		return 220
+		return 660
 	}
-	_animationDuration_ms_modalDismiss()
+	_animation_modalPresent_easing()
 	{
-		return 170
+		return "easeOutQuint"
+	}
+	_animation_modalDismiss_duration_ms()
+	{
+		return 140
+	}
+	_animation_modalDismiss_easing()
+	{
+		return "easeInSine"
 	}
 	//
 	//
@@ -115,6 +123,7 @@ class StackAndModalNavigationView extends StackNavigationView
 		}
 		{ // and then actually present the view:
 			const modalView_layer = modalView.layer
+			const preExisting_boxShadow = modalView_layer.style.boxShadow
 			if (isAnimated === true) { // prepare for animation
 				if (typeof old_topModalView !== 'undefined' && old_topModalView) {
 					old_topModalView.layer.style.position = "absolute"
@@ -123,6 +132,9 @@ class StackAndModalNavigationView extends StackNavigationView
 				modalView_layer.style.position = "absolute"
 				modalView_layer.style.zIndex = "20" // 2 because we'll want to insert a semi-trans curtain view under the modalView_layer above the old_topStackView
 				modalView_layer.style.top = `${ self.layer.offsetHeight }px`
+				//
+				const to_boxShadow = "0px 0px 100px 2px rgba(0,0,0,0.5)"
+				modalView_layer.style.boxShadow = to_boxShadow
 			}
 			{ // manually simulate a view visibility events
 				old_topStackView.viewWillDisappear()
@@ -144,11 +156,12 @@ class StackAndModalNavigationView extends StackNavigationView
 								top: "0px"
 							},
 							{
-								duration: self._animationDuration_ms_modalPresent(),
-								easing: "ease-in-out",
+								duration: self._animation_modalPresent_duration_ms(),
+								easing: self._animation_modalPresent_easing(),
 								complete: function()
 								{
 									modalView_layer.style.zIndex = "10"
+									modalView_layer.style.boxShadow = preExisting_boxShadow // restore pre-existing, in case consumer had put one on
 									_afterHavingFullyPresentedNewModalView_removeOldTopModalView()
 									__trampolineFor_transitionEnded()
 								}
@@ -275,8 +288,8 @@ class StackAndModalNavigationView extends StackNavigationView
 							top: `${self.layer.offsetHeight}px`
 						},
 						{
-							duration: self._animationDuration_ms_modalDismiss(),
-							easing: "ease-in-out",
+							duration: self._animation_modalDismiss_duration_ms(),
+							easing: self._animation_modalDismiss_easing(),
 							complete: function()
 							{
 								__afterHavingFullyDismissedToTopStackView_cleanUpAndCallBack()
@@ -356,8 +369,8 @@ class StackAndModalNavigationView extends StackNavigationView
 							top: `${self.layer.offsetHeight}px`
 						},
 						{
-							duration: self._animationDuration_ms_modalDismiss(),
-							easing: "ease-in-out",
+							duration: self._animation_modalDismiss_duration_ms(),
+							easing: self._animation_modalDismiss_easing(),
 							complete: function()
 							{
 								__afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
