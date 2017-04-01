@@ -121,7 +121,7 @@ class StackNavigationView extends View
 	//
 	_animation_navigationPush_duration_ms()
 	{
-		return 430
+		return 420
 	}
 	_animation_navigationPush_easing()
 	{

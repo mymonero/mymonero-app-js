@@ -62,7 +62,7 @@ class StackAndModalNavigationView extends StackNavigationView
 	//
 	_animation_modalPresent_duration_ms()
 	{
-		return 660
+		return 650
 	}
 	_animation_modalPresent_easing()
 	{
