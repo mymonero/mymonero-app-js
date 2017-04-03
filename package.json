@@ -16,29 +16,39 @@
   },
   "build": {
     "appId": "com.mymonero.mymonero",
-	"copyright": "Copyright © 2014-2017 MyMonero/",
-	"asar": true,
-	"forceCodeSigning": false,
+    "copyright": "Copyright © 2014-2017 MyMonero/",
+    "asar": true,
+    "forceCodeSigning": false,
     "mac": {
       "category": "public.app-category.finance",
-	  "target": [ "dir" ],
-	  "icon": "build/icon.icns"
+      "target": [
+        "dir"
+      ],
+      "icon": "build/icon.icns"
     },
-	"win": {
-		"target": [ "nsis" ],
-		"legalTrademarks": "Copyright © 2014-2017 MyMonero.",
-		"publisherName": "MyMonero"
-	},
-	"nsis": {
-		"perMachine": true
-	},
-	"linux": {
-		"target": [ "AppImage" ]
-	},
-	"protocols": [{
-		"name": "Monero Funds Request URL",
-		"schemes": [ "monero"]
-	}]
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "legalTrademarks": "Copyright © 2014-2017 MyMonero.",
+      "publisherName": "MyMonero"
+    },
+    "nsis": {
+      "perMachine": true
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
+    "protocols": [
+      {
+        "name": "Monero Funds Request URL",
+        "schemes": [
+          "monero"
+        ]
+      }
+    ]
   },
   "engines": {
     "node": "7.4.0"
@@ -58,6 +68,8 @@
     "electron": "^1.6.2",
     "electron-builder": "^16.0.1",
     "electron-packager": "^8.1.0",
-    "request": "^2.79.0"
+    "mocha": "^3.2.0",
+    "request": "^2.79.0",
+    "spectron": "^3.6.1"
   }
 }
