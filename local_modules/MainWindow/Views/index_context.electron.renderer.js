@@ -28,7 +28,12 @@
 
 "use strict"
 //
-// Hydrate context
+const instantiation_description__hostedMoneroAPIClient =
+{ // this one is broken out so we can configure options with `app` object once we have it
+	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
+	instance_key: "hostedMoneroAPIClient",
+	options: {}
+}
 var context_object_instantiation_descriptions =
 [
 	{ // might as well put it in the renderer proc so we don't have to do IPC to pasteboard
@@ -58,11 +63,7 @@ var context_object_instantiation_descriptions =
 		instance_key: "persister",
 		options: {}
 	},
-	{
-		module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
-		instance_key: "hostedMoneroAPIClient",
-		options: {}
-	},
+	instantiation_description__hostedMoneroAPIClient,
 	{
 		module_path: __dirname + "/../../OpenAlias/OpenAliasResolver",
 		instance_key: "openAliasResolver",
@@ -132,7 +133,13 @@ function NewHydratedContext(
 		urlOpeningController: urlOpeningController,
 		userDataAbsoluteFilepath: app.getPath('userData')
 	}
-
-	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	// required options (which can only be obtained with `app`, etc.)
+	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()
+	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_version = app.getVersion()	
+	//
+	return require("../../runtime_context/runtime_context").NewHydratedContext(
+		context_object_instantiation_descriptions, 
+		initialContext
+	)
 }
 module.exports.NewHydratedContext = NewHydratedContext

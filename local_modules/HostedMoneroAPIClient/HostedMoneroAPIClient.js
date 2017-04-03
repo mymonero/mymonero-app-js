@@ -52,15 +52,24 @@ class HostedMoneroAPIClient
 	setup()
 	{
 		var self = this
-		{
+		{ // options
 			self.scheme = config__MyMonero.API__protocolScheme
-			self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // later will be configurable
+			self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // to be exposed via app Preferences
 			self.baseURL = self.scheme + "://" + self.host
+			//
+			self.appUserAgent_product = self.options.appUserAgent_product
+			if (!self.appUserAgent_product) {
+				throw `${self.constructor.name} requires options.appUserAgent_product`
+			}
+			self.appUserAgent_version = self.options.appUserAgent_version
+			if (!self.appUserAgent_version) {
+				throw `${self.constructor.name} requires options.appUserAgent_version`
+			}
 		}
-		{
+		{ // derived caches
 			self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
 		}
-		{
+		{ // objects - parser
 			const options = {}
 			self.responseParser = new BackgroundAPIResponseParser(options)
 		}
@@ -77,6 +86,81 @@ class HostedMoneroAPIClient
 	HostingServiceFeeDepositAddress()
 	{ // -> String
 		return config__MyMonero.HostingServiceFee_depositAddress
+	}
+	//
+	// Runtime - Accessors - Private - Requests
+	_new_parameters_forWalletRequest(address, view_key__private)
+	{
+		return {
+			address: address,
+			view_key: view_key__private
+		}
+	}
+	//
+	// Runtime - Imperatives - Private
+	_API_doRequest_returningRequestHandle(endpointPath, parameters, fn)
+	{ // fn: (err?, data?) -> new Request
+		const self = this
+		//
+		parameters = parameters || {}
+		// setting these on params instead of as header field User-Agent so as to retain all info found in User-Agent, such as platform… and these are set so server has option to control delivery
+		parameters.app_name = self.appUserAgent_product 
+		parameters.app_version = self.appUserAgent_version
+		//
+		const completeURL = self.baseURL + endpointPath
+		console.log("📡  " + completeURL)
+		//
+		const request_options =
+		{
+			method: "POST", // maybe break this out
+			url: completeURL,
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json"
+			},
+			json: parameters
+		}
+		const request_handlerFn = function(err_orProgressEvent, res, body)
+		{
+			// err appears to actually be a ProgressEvent
+			var err = null
+			const statusCode = typeof res !== 'undefined' ? res.statusCode : -1
+			if (statusCode == 0 || statusCode == -1) { // we'll treat 0 as a lack of internet connection.. unless there's a better way to make use of err_orProgressEvent which is apparently going to be typeof ProgressEvent here
+				err = new Error("Connection Failure")
+			} else if (statusCode !== 200) {
+				const body_Error = body && typeof body == 'object' ? body.Error : undefined
+				const statusMessage = res && res.statusMessage ? res.statusMessage : undefined
+				if (typeof body_Error !== 'undefined' && body_Error) {
+					err = new Error(body_Error)
+				} else if (typeof statusMessage !== 'undefined' && statusMessage) {
+					err = new Error(statusMessage)
+				} else {
+					err = new Error("Unknown " + statusCode + " error")
+				}
+			}
+			if (err) {
+				console.error("❌  " + err);
+				// console.error("Body:", body)
+				fn(err, null)
+				return
+			}
+			var json;
+			if (typeof body === 'string') {
+				try {
+					json = JSON.parse(body);
+				} catch (e) {
+					console.error("❌  HostedMoneroAPIClient Error: Unable to parse json with exception:", e, "\nbody:", body);
+					fn(e, null)
+				}
+			} else {
+				json = body
+			}
+			console.log("✅  " + completeURL + " " + statusCode)
+			fn(null, json)
+		}
+		const requestHandle = request(request_options, request_handlerFn)
+		//
+		return requestHandle
 	}
 	//
 	// Runtime - Accessors - Public - Requests
@@ -487,72 +571,6 @@ class HostedMoneroAPIClient
 			// console.log("debug: info: submit_raw_tx: data", data)
 			fn(null)
 		}
-		return requestHandle
-	}
-	//
-	// Runtime - Accessors - Private - Requests
-	_new_parameters_forWalletRequest(address, view_key__private)
-	{
-		return {
-			address: address,
-			view_key: view_key__private
-		}
-	}
-	//
-	// Runtime - Imperatives - Private
-	_API_doRequest_returningRequestHandle(endpointPath, parameters, fn)
-	{ // fn: (err?, data?) -> new Request
-		const self = this
-		parameters = parameters || {}
-		const completeURL = self.baseURL + endpointPath
-		console.log("📡  " + completeURL)
-		const requestHandle = request({
-			method: "POST", // maybe break this out
-			url: completeURL,
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json"
-			},
-			json: parameters,
-		}, function(err_orProgressEvent, res, body)
-		{
-			// err appears to actually be a ProgressEvent
-			var err = null
-			const statusCode = typeof res !== 'undefined' ? res.statusCode : -1
-			if (statusCode == 0 || statusCode == -1) { // we'll treat 0 as a lack of internet connection.. unless there's a better way to make use of err_orProgressEvent which is apparently going to be typeof ProgressEvent here
-				err = new Error("Connection Failure")
-			} else if (statusCode !== 200) {
-				const body_Error = body && typeof body == 'object' ? body.Error : undefined
-				const statusMessage = res && res.statusMessage ? res.statusMessage : undefined
-				if (typeof body_Error !== 'undefined' && body_Error) {
-					err = new Error(body_Error)
-				} else if (typeof statusMessage !== 'undefined' && statusMessage) {
-					err = new Error(statusMessage)
-				} else {
-					err = new Error("Unknown " + statusCode + " error")
-				}
-			}
-			if (err) {
-				console.error("❌  " + err);
-				// console.error("Body:", body)
-				fn(err, null)
-				return
-			}
-			var json;
-			if (typeof body === 'string') {
-				try {
-					json = JSON.parse(body);
-				} catch (e) {
-					console.error("❌  HostedMoneroAPIClient Error: Unable to parse json with exception:", e, "\nbody:", body);
-					fn(e, null)
-				}
-			} else {
-				json = body
-			}
-			console.log("✅  " + completeURL + " " + statusCode)
-			fn(null, json)
-		})
-		//
 		return requestHandle
 	}
 }
