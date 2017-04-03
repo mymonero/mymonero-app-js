@@ -31,10 +31,41 @@
 const Views__cssRules = require('../Views/cssRules.web')
 const commonComponents_forms = require('./forms.web')
 //
+const emoji_web = require('../Emoji/emoji_web')
+emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
+//
 const NamespaceName = "contactPicker"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 const cssRules =
 [
+	// autocomplete-results rows
+	`.${NamespaceName} .autocomplete-results .row .emojione {
+		position: absolute;
+		left: -10px;
+		top: -17px;
+		transform: scale(${17/64});
+	}`,
+	`.${NamespaceName} .autocomplete-results .row .title {
+		position: absolute;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+
+		top: 0px;
+		left: 48px;
+		width: calc(100% - 48px - 12px)
+	}`,
+	//
+	// picked contacts
+	`.${NamespaceName} .picked-contact .emojione {
+		position: absolute;
+		left: -15px;
+		top: -17px;
+		transform: scale(${17/64});
+	}`,
+	`.${NamespaceName} .picked-contact .title {
+		margin-left: 21px;
+	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
@@ -50,12 +81,14 @@ function New_contactPickerLayer(
 	if (!contactsListController) {
 		throw "New_contactPickerLayer requires a contactsListController"
 	}
+	__injectCSSRules_ifNecessary()
+	//
 	const containerLayer = document.createElement("div")
-	{
-		containerLayer.style.position = "relative"
-		containerLayer.style.width = "100%"
-		containerLayer.style.webkitUserSelect = "none" // disable selection
-	}
+	containerLayer.classList.add(NamespaceName)
+	containerLayer.style.position = "relative"
+	containerLayer.style.width = "100%"
+	containerLayer.style.webkitUserSelect = "none" // disable selection
+	//
 	const inputLayer = _new_inputLayer(placeholderText, context)
 	containerLayer.ContactPicker_inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
 	containerLayer.appendChild(inputLayer)
@@ -117,9 +150,7 @@ function New_contactPickerLayer(
 		)
 	}
 	const autocompleteResultsLayer = _new_autocompleteResultsLayer()
-	{
-		containerLayer.appendChild(autocompleteResultsLayer)
-	}
+	containerLayer.appendChild(autocompleteResultsLayer)
 	//
 	// imperatives
 	function _removeAllAndHideAutocompleteResults()
@@ -289,46 +320,46 @@ function _new_inputLayer(placeholderText, context)
 function _new_autocompleteResultsLayer()
 {
 	const layer = document.createElement("div")
-	{
-		layer.style.position = "absolute"
-		layer.style.top = "30px" // below txt field -- TODO:? pass value as arg/constant
-		layer.style.width = "100%"
-		layer.style.maxHeight = "155px"
-		layer.style.minHeight = "30px"
-		layer.style.backgroundColor = "#FCFBFC"
-		layer.style.borderRadius = "3px"
-		layer.style.boxShadow = "0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.30)"
-		layer.style.overflowY = "auto"
-		layer.style.zIndex = "100"
-		//
-		layer.style.display = "none" // for now - no results at init!
-	}
+	layer.classList.add("autocomplete-results")
+	layer.style.position = "absolute"
+	layer.style.top = "30px" // below txt field -- TODO:? pass value as arg/constant
+	layer.style.width = "100%"
+	layer.style.maxHeight = "155px"
+	layer.style.minHeight = "30px"
+	layer.style.backgroundColor = "#FCFBFC"
+	layer.style.borderRadius = "3px"
+	layer.style.boxShadow = "0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.30)"
+	layer.style.overflowY = "auto"
+	layer.style.zIndex = "100"
+	//
+	layer.style.display = "none" // for now - no results at init!
+	//
 	return layer
 }
 function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 {
-	const layer = document.createElement("div")
 	const height = 31
-	{
-		const padding_h = 15
-		layer.style.position = "relative"
-		layer.style.left = "0"
-		layer.style.boxSizing = "border-box"
-		layer.style.padding = `0 ${padding_h}px`
-		layer.style.width = `100%`
-		layer.style.height = height+"px"
-		layer.style.whiteSpace = "nowrap"
-		layer.style.overflow = "hidden"
-		layer.style.textOverflow = "ellipsis"
-		layer.style.color = "#1D1B1D"
-		layer.style.fontSize = "13px"
-		layer.style.fontWeight = "600"
-		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-		layer.style.lineHeight = height+"px"
-		layer.style.webkitUserSelect = "none" // redundant but for explicitness
-		layer.style.cursor = "pointer"
-		layer.innerHTML = `${contact.emoji}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${contact.fullname}`
-	}
+	const padding_h = 15
+	const layer = document.createElement("div")
+	layer.classList.add("row")
+	layer.style.position = "relative"
+	layer.style.left = "0"
+	layer.style.boxSizing = "border-box"
+	layer.style.padding = `0 ${padding_h}px`
+	layer.style.width = `100%`
+	layer.style.height = height+"px"
+	layer.style.color = "#1D1B1D"
+	layer.style.fontSize = "13px"
+	layer.style.fontWeight = "500"
+	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+	layer.style.lineHeight = height+"px" // this is commented because it's overridden in the CSS rules above
+	layer.style.webkitUserSelect = "none" // redundant but for explicitness
+	layer.style.cursor = "pointer"
+	layer.style.whiteSpace = "nowrap"
+	layer.style.overflow = "hidden"
+	layer.style.textOverflow = "ellipsis"
+	const imageBackedEmojiHTMLString = emoji_web.NativeEmojiTextToImageBackedEmojiText(contact.emoji)		
+	layer.innerHTML = `${imageBackedEmojiHTMLString}&nbsp;<span class="title">${contact.fullname}</span>`
 	{
 		layer.addEventListener("mouseover", function() { this.highlight() })
 		layer.addEventListener("mouseleave", function() { this.unhighlight() }) // will this be enough?
@@ -367,18 +398,22 @@ function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 {
 	const layer = document.createElement("div")
+	layer.classList.add("picked-contact")
 	const contentLayer = document.createElement("div")
 	layer.appendChild(contentLayer)
 	{ // ^-- using a content layer here so we can get width-of-content behavior with inline-block
 		// while getting parent to give us display:block behavior
-		contentLayer.innerHTML = `${contact.emoji}&nbsp;&nbsp;${contact.fullname}`
+		const imageBackedEmojiHTMLString = emoji_web.NativeEmojiTextToImageBackedEmojiText(contact.emoji)		
+		contentLayer.innerHTML = `${imageBackedEmojiHTMLString}&nbsp;<span class="title">${contact.fullname}</span>`
 		contentLayer.style.boxSizing = "border-box"
-		contentLayer.style.padding = "4px 8px 6px 10px"
-		// I would like to limit width but since X btn is added inline it will take a little more
-		// contentLayer.style.maxWidth = "250px"
-		// contentLayer.style.whiteSpace = "nowrap"
-		// contentLayer.style.overflow = "hidden"
-		// contentLayer.style.textOverflow = "ellipsis"
+		contentLayer.style.position = "relative"
+		contentLayer.style.left = "0"
+		contentLayer.style.padding = `8px ${8 + 30}px 5px 10px`
+		contentLayer.style.maxWidth = "274px"
+		contentLayer.style.height = "31px"
+		contentLayer.style.whiteSpace = "nowrap"
+		contentLayer.style.overflow = "hidden"
+		contentLayer.style.textOverflow = "ellipsis"
 		contentLayer.style.backgroundColor = "#383638"
 		contentLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 		contentLayer.style.borderRadius = "3px"
@@ -392,12 +427,12 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 		const xButtonLayer = document.createElement("a")
 		contentLayer.appendChild(xButtonLayer)
 		{
-			xButtonLayer.style.display = "inline-block" // to get margin and bounds
+			xButtonLayer.style.display = "block" // to get margin and bounds
+			xButtonLayer.style.position = "absolute"
+			xButtonLayer.style.right = "11px"
+			xButtonLayer.style.top = "10px"
 			xButtonLayer.style.width = "13px"
 			xButtonLayer.style.height = "12px"
-			xButtonLayer.style.verticalAlign = "middle"
-			xButtonLayer.style.marginLeft = "17px"
-			xButtonLayer.style.marginTop = "-1px"
 			xButtonLayer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/contactPicker_xBtnIcn@2x.png)"
 			xButtonLayer.style.backgroundSize = "11px 10px"
 			xButtonLayer.style.backgroundPosition = "center"

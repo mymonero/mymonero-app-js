@@ -47,7 +47,7 @@ function PreLoad()
 	image.src = "../../Emoji/Vendor/emojione.sprites.png"
 	cached_spritesheetImage = image
 	//
-	__injectCSS_ifNecessary()
+	__injectCSS_ifNecessary() // good time to do this
 }
 exports.PreLoad = PreLoad
 // 
