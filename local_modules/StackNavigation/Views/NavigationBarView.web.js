@@ -112,8 +112,11 @@ class NavigationBarView extends View
 			layer.style.top = "-1px"
 			self.titleLayer_marginX_pxComponent = 16
 			self.titleLayer_marginX_pctComponent = .15
+			layer.style.boxSizing = "border-box"
 			layer.style.left = `calc(${100*self.titleLayer_marginX_pctComponent}% + ${self.titleLayer_marginX_pxComponent}px)`
-			layer.style.width = `calc(${ 100 - 2*100*self.titleLayer_marginX_pctComponent }% - ${2 * self.titleLayer_marginX_pxComponent}px`
+			const extra_paddingLeft = 10
+			layer.style.width = self._new_titleLayer_styleWidth_withExtraPaddingLeft(extra_paddingLeft)
+			layer.style.paddingLeft = extra_paddingLeft+"px" // not necessary but added for clarity
 			layer.style.height = `${self.NavigationBarHeight()}px`
 			layer.style.textAlign = "center"
 			layer.style.lineHeight = `${self.NavigationBarHeight()}px`
@@ -176,6 +179,14 @@ class NavigationBarView extends View
 		const self = this
 		return self.navigationController._animation_navigationPush_easing()
 	}
+	_new_titleLayer_styleWidth_withExtraPaddingLeft(paddingLeft)
+	{
+		paddingLeft = typeof paddingLeft !== 'undefined' ? paddingLeft : 0
+		const self = this
+		const width = `calc(${ 100 - 2*100*self.titleLayer_marginX_pctComponent }% - ${2 * self.titleLayer_marginX_pxComponent}px - ${paddingLeft}px)`
+		//
+		return width
+	}
 	//
 	//
 	// Runtime - Accessors - Internal - UI elements
@@ -230,20 +241,17 @@ class NavigationBarView extends View
 	{
 		const self = this
 		//
-		{
-			self.__stopObserving_old_topStackView(old_topStackView)
-		}
+		self.__stopObserving_old_topStackView(old_topStackView)
+		//
 		self.SetTitleFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft, trueIfPoppingToRoot)
 		self.SetBarButtonsFromTopStackView(stackView, old_topStackView, isAnimated, ifAnimated_isFromRightNotLeft, trueIfPoppingToRoot)
-		{ // configure scroll shadow visibility
-			if (typeof stackView !== 'undefined' && stackView !== null) {
-				const scrollTop = stackView.layer.scrollTop
-				self._configureNavBarScrollShadowWithScrollTop(scrollTop)
-			}
+		// configure scroll shadow visibility
+		if (typeof stackView !== 'undefined' && stackView !== null) {
+			const scrollTop = stackView.layer.scrollTop
+			self._configureNavBarScrollShadowWithScrollTop(scrollTop)
 		}
-		{ // start observing this new top view
-			self.__startObserving_new_topStackView(stackView)
-		}	
+		//
+		self.__startObserving_new_topStackView(stackView)
 	}
 	SetTitleNeedsUpdate(stackView)
 	{
@@ -252,12 +260,11 @@ class NavigationBarView extends View
 			self.titleLayer.innerHTML = "" // clear
 			return
 		}
-		{
-			if (typeof stackView.Navigation_Title !== 'function') {
-				console.error("Error: stackView didn't define Navigation_Title()", stackView)
-				throw "stackView.Navigation_Title() not a function"
-			}
+		if (typeof stackView.Navigation_Title !== 'function') {
+			console.error("Error: stackView didn't define Navigation_Title()", stackView)
+			throw "stackView.Navigation_Title() not a function"
 		}
+		//
 		var titleTextColor = self.defaultNavigationBarTitleColor
 		if (typeof stackView.Navigation_TitleColor === 'function') {
 			const read_titleColor = stackView.Navigation_TitleColor()
@@ -266,9 +273,15 @@ class NavigationBarView extends View
 			}
 		}
 		const titleString = stackView.Navigation_Title()
+		var extra_paddingLeft = 0
+		if (typeof stackView.Navigation_Title_pageSpecificCSS_paddingLeft == 'function') {
+			extra_paddingLeft = stackView.Navigation_Title_pageSpecificCSS_paddingLeft()
+		}
 		//
 		self.titleLayer.style.color = titleTextColor
 		self.titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString)
+		self.titleLayer.style.width = self._new_titleLayer_styleWidth_withExtraPaddingLeft(extra_paddingLeft)
+		self.titleLayer.style.paddingLeft = extra_paddingLeft+"px"
 	}
 	SetTitleFromTopStackView(
 		stackView,
@@ -283,12 +296,11 @@ class NavigationBarView extends View
 			self.titleLayer.innerHTML = "" // clear
 			return
 		}
-		{
-			if (typeof stackView.Navigation_Title !== 'function') {
-				console.error("Error: stackView didn't define Navigation_Title()", stackView)
-				throw "stackView.Navigation_Title() not a function"
-			}
+		if (typeof stackView.Navigation_Title !== 'function') {
+			console.error("Error: stackView didn't define Navigation_Title()", stackView)
+			throw "stackView.Navigation_Title() not a function"
 		}
+		//
 		var titleTextColor = self.defaultNavigationBarTitleColor
 		if (typeof stackView.Navigation_TitleColor === 'function') {
 			const read_titleColor = stackView.Navigation_TitleColor()
@@ -297,17 +309,26 @@ class NavigationBarView extends View
 			}
 		}
 		const titleString = stackView.Navigation_Title()
+		var extra_paddingLeft = 0
+		if (typeof stackView.Navigation_Title_pageSpecificCSS_paddingLeft == 'function') {
+			extra_paddingLeft = stackView.Navigation_Title_pageSpecificCSS_paddingLeft()
+		}
+		const to_styleWidth = self._new_titleLayer_styleWidth_withExtraPaddingLeft(extra_paddingLeft)
+		//
 		if (isAnimated === false) {
 			self.titleLayer.style.color = titleTextColor
 			self.titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString)
+			self.titleLayer.style.width = to_styleWidth
+			self.titleLayer.style.paddingLeft = extra_paddingLeft+"px"
 			return
 		}
 		const old_titleLayer = self.titleLayer
 		const successor_titleLayer = self.titleLayer.cloneNode()
-		{
-			successor_titleLayer.style.color = titleTextColor
-			successor_titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString) // set up with new title
-		}
+		successor_titleLayer.style.color = titleTextColor
+		successor_titleLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(titleString) // set up with new title
+		successor_titleLayer.style.width = to_styleWidth
+		successor_titleLayer.style.paddingLeft = extra_paddingLeft+"px"
+		//
 		const parentWidth = self.titleLayer.parentNode.offsetWidth
 		const titleLayer_width = self.titleLayer.offsetWidth
 		const layer_fadeOutPosition_leftmost = "0px"
@@ -335,7 +356,7 @@ class NavigationBarView extends View
 					// ^ setting this to maintain some consistency in the starting state of the above animation
 					// and more importantly to retain flexibility of layout
 					//
-					self.titleLayer = successor_titleLayer
+					self.titleLayer = successor_titleLayer // and swap references
 					//
 					old_titleLayer.parentNode.removeChild(old_titleLayer)
 				}

@@ -281,6 +281,10 @@ class ContactDetailsView extends View
 		//
 		return title
 	}
+	Navigation_Title_pageSpecificCSS_paddingLeft()
+	{
+		return 10 // to account for the emojione img getting cut off when title too long
+	}
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
