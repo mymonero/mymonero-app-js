@@ -2,7 +2,7 @@
 
 ![Logo](./assets/logo.png "Logo")
 
-## Architecture Notes
+## Technology Notes
 
 ### Initial Scope
 
@@ -128,3 +128,18 @@ All of these conventions taken together have enabled the code to remain modular 
 
 1. `local_modules/WindowDialogs`, `local_modules/FilesystemUI`
 
+
+
+## Tests
+
+[Mocha](https://mochajs.org) has been chosen as the framework for writing unit and integration tests.
+
+Under Electron, integration testing is done with Mocha via the [Spectron](https://github.com/electron/spectron) framework.
+
+These frameworks are installed as dev dependencies of the project. 
+
+### Test Coverage
+
+At present, only manual / custom tests have been written, which are out-dated and should not be relied upon. Unit tests are structured such that they reside within a subdirectly of the module they are testing. Integration tests may require their own modules if no suitable home is found. All tests which are platform-specific should have their filenames suffixed with the platform, like app code files.
+
+Help is wanted writing integration and unit tests, especially now that the APIs for most modules is becoming fairly stable. However, tests were not written until now as it can often become wasted effort to write and maintain tests for app components which are in significant flux. For this reason we expect to write many more tests after a few months have passed. However, keeping that caveat in mind, we will greatly appreciate any contributions to increase the amount of test coverage, especially on the more stable, business-logic-centric, and critical modules such as Wallet, Passwords, etc.

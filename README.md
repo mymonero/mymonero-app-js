@@ -109,13 +109,15 @@ To launch the desktop app in dev mode, run `bin/start_dev_desktop`.
 
 Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are very welcome, and you will be credited below if your PR is accepted.
 
-If you would like to contribute, please scan the [architecture notes](./docs/ARCHITECTURE.md) in order to familiarize yourself with the reasons behind the current structure. Feel free to create a Github issue if you find any areas of the code which could use more explanation, or if you'd like to discuss improvements, report bugs, or ask non-support development/testing-only questions. Questions about the MyMonero technology or how to use the app should generally be asked either on StackExchange, reddit, IRC, or by contacting customer support.
+If you would like to contribute, please read the [technology notes](./docs/TECHNOLOGY.md) in order to find information on libraries used, the reasons behind various architectural choices, and how to write tests. 
+
+Feel free to create a Github issue if you find any areas of the code which could use more explanation, or if you'd like to discuss improvements, report bugs, or ask non-support development/testing-only questions. Questions about the MyMonero technology or how to use the app should generally be asked either on StackExchange, reddit, IRC, or by contacting customer support.
 
 For background on this project, see [Why We Built the Native Apps](./docs/WHY_NATIVE.md).
 
 There is no specific code styleguide yet, but we ask that code contributions…
 
-* are kept modular or well factored, either platform-agnostic or with platform specified (see [Architecture Notes](./docs/ARCHITECTURE.md)),
+* are kept modular or well factored, either platform-agnostic or with platform specified (see [Technology Notes](./docs/TECHNOLOGY.md)),
 * are written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
 * employ best practices, and 
 * are well tested and don't break anything, especially security.
