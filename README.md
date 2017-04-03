@@ -129,22 +129,23 @@ You may also like to read the unofficial [Technology Roadmap](./docs/ROADMAP.md)
 There's also an icebox of ideas, features, improvements, known issues, and other todos waiting to be knocked out. (Link coming soon)
 
 
-## Contributors
+## MyMonero Core Contributors
 
-* 🏂 [Paul Shapiro](https://github.com/paulshapiro) aka `endogenic`
-	* Project maintainer; Lead client app dev; Partner
+All contributors are credited in release notes.
 
-* 🦄 [Riccardo Spagni](https://github.com/fluffypony) aka `fluffyponyza` 
-	* Advisor; Partner; [Monero](http://www.getmonero.org) project core member
+MyMonero Core Contributors are those who either work on MyMonero full-time or who have made ongoing and/or critical contributions to the MyMonero app.
 
-* 😎 [Lee Clagett](https://github.com/vtnerd) aka `vtnerd`
-	* Lead back-end dev
+* 🏂 [Paul Shapiro](https://github.com/paulshapiro) `endogenic` – Project maintainer; Lead client app developer; Partner
 
-* 🔥 [Matt D Smith](http://mds.is) aka `mds`
-	* v1/MVP designer
+* 🦄 [Riccardo Spagni](https://github.com/fluffypony) `fluffyponyza` – Advisor; Partner; [Monero](http://www.getmonero.org) project core member
 
-* 🍄 [luigi1111](https://github.com/luigi1111) aka `luigi1112`
-	* Monero tech advisor; Added RingCT support to client
+* 😎 [Lee Clagett](https://github.com/vtnerd) `vtnerd` – Lead back-end developer
+
+* 🔥 [Matt D Smith](http://mds.is) `mds` – v1/MVP app designer
+
+* 🍄 [luigi1111](https://github.com/luigi1111) `luigi1112` – Monero tech advisor; Built client-side RingCT support
+
+* 🌠 Your name here?
 
 ## License and Copyrights
 
