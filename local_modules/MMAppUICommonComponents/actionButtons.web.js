@@ -163,6 +163,7 @@ function New_ActionButtonView(
 			if (optl_icon_bgSize && typeof optl_icon_bgSize !== 'undefined') {
 				layer.style.backgroundSize = optl_icon_bgSize
 			}
+			layer.style.textIndent = "10px" // to prevent visual weirdness as button gets so small text may overlap image… would be nice to have a better solution which takes into account size of text and maybe size of button
 		}
 		layer.style.display = "inline-block"
 		layer.style.width = `calc(50% - ${ActionButton_rightMargin/2}px` // we're assuming there are only two buttons
