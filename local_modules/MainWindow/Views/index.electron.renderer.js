@@ -37,7 +37,12 @@ const remote__electron = require('electron').remote
 const remote__app = remote__electron.app
 const remote__context = remote__electron.getGlobal("context")
 //
-const rootView = new_rootView() // hang onto reference
+const rootView = new_rootView() // hang onto reference for imminent insertion
+{ // manually attach the rootView to the DOM and specify view's usual managed reference(s)
+	const superlayer = document.body
+	rootView.superlayer = superlayer
+	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
+}
 //
 if (process.env.NODE_ENV !== 'development') { // cause it's slightly intrusive to the dev process and obscures stack trace
 	process.on('uncaughtException', function (error)
@@ -55,9 +60,7 @@ if (process.env.NODE_ENV !== 'development') { // cause it's slightly intrusive t
 	})
 }
 //
-//
 // Accessors - Factories
-//
 function new_rootView()
 {
 	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
@@ -68,15 +71,7 @@ function new_rootView()
 	)
 	const options = {}
 	const view = new RootView(options, renderer_context)
-	{
-		view.superview = null // just to be explicit
-	}
-	{
-		const superlayer = document.body
-		view.superlayer = superlayer
-		// manually attach the rootView to the DOM
-		superlayer.appendChild(view.layer) // the `layer` is actually the DOM element
-	}
+	view.superview = null // just to be explicit; however we will set a .superlayer
 	//
 	return view
 }
