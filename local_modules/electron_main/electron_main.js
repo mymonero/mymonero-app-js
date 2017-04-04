@@ -40,6 +40,20 @@ const {crashReporter, app} = require('electron')
 	})
 	*/	
 }
+{ // Exception reporting
+	const Raven = require('raven')
+	const appVersion = app.getVersion()
+	const options = require('./exceptionReporterOptions')(appVersion, "electron_main")
+	const sentry_dsn = options.sentry_dsn
+	const raven_params = 
+	{
+		autoBreadcrumbs: options.autoBreadcrumbs,
+		release: options.release,
+		environment: options.environment,
+		extra: options.extra
+	}
+	Raven.config(sentry_dsn, raven_params).install()
+}
 { // `app` configuration
 	const appId = "com.mymonero.mymonero" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
 	app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up

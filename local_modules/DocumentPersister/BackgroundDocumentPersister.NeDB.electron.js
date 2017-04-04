@@ -41,7 +41,10 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 		if (!databaseFileParentDirectory) {
 			throw self.constructor.name + " requires a databaseFileParentDirectory"
 		}
-		options.argsForChild = [ databaseFileParentDirectory ]
+		const electron = require('electron')
+		const app = electron.app || electron.remote.app
+		const forReporting_appVersion = app.getVersion()
+		options.argsForChild = [ databaseFileParentDirectory, forReporting_appVersion ]
 		//
 		super(options, context)
 	}

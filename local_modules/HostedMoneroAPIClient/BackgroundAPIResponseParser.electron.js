@@ -36,7 +36,11 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 	{
 		options = options || {}
 		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundAPIResponseParser.child.js'
-		options.argsForChild = []
+		//
+		const electron = require('electron')
+		const app = electron.app || electron.remote.app
+		const forReporting_appVersion = app.getVersion()
+		options.argsForChild = [ forReporting_appVersion ]
 		//
 		super(options, context)
 	}

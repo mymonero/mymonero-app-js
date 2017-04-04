@@ -30,6 +30,11 @@
 //
 const child_ipc = require('../electron_background/child_ipc.electron')
 //
+const reporting_appVersion = process.argv[2]
+if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
+	throw "BackgroundAPIResponseParser.child.js requires argv[2] reporting_appVersion"
+}	
+//
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
 const monero_keyImage_cache_utils = require('../monero_utils/monero_keyImage_cache_utils')
@@ -234,4 +239,4 @@ const tasksByName =
 //
 // Kicking off runtime:
 //
-child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundAPIResponseParser.child")
+child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundAPIResponseParser.child", reporting_appVersion)

@@ -31,6 +31,11 @@
 const document_cryptor = require('./document_cryptor')
 const child_ipc = require('../electron_background/child_ipc.electron')
 //
+const reporting_appVersion = process.argv[2]
+if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
+	throw "BackgroundDocumentCryptor.child.js requires argv[2] reporting_appVersion"
+}
+//
 //
 // Declaring tasks:
 //
@@ -79,4 +84,4 @@ const tasksByName =
 //
 // Kicking off runtime:
 //
-child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundDocumentCryptor.child")
+child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundDocumentCryptor.child", reporting_appVersion)

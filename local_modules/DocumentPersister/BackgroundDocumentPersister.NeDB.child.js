@@ -32,7 +32,11 @@ const child_ipc = require('../electron_background/child_ipc.electron')
 //
 const databaseFileParentDirectory = process.argv[2]
 if (typeof databaseFileParentDirectory === 'undefined' || !databaseFileParentDirectory) {
-	throw "Requires databaseFileParentDirectory"
+	throw "BackgroundDocumentPersister.NeDB.child.js requires argv[2] databaseFileParentDirectory"
+}
+const reporting_appVersion = process.argv[3]
+if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
+	throw "BackgroundDocumentPersister.NeDB.child.js requires argv[3] reporting_appVersion"
 }
 //	
 const DocumentPersister_NeDB = require('./DocumentPersister.NeDB')
@@ -134,4 +138,4 @@ const tasksByName =
 //
 // Kicking off runtime:
 //
-child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundDocumentPersister.NeDB.child")
+child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundDocumentPersister.NeDB.child", reporting_appVersion)

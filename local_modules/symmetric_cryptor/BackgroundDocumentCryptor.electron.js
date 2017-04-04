@@ -37,6 +37,11 @@ class BackgroundDocumentCryptor extends BackgroundTaskExecutor
 		options = options || {}
 		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentCryptor.child.js'
 		//
+		const electron = require('electron')
+		const app = electron.app || electron.remote.app
+		const forReporting_appVersion = app.getVersion()
+		options.argsForChild = [ forReporting_appVersion ]
+		//
 		super(options, context)
 	}
 	//

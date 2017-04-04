@@ -30,7 +30,7 @@
 //
 const setup_utils = require('../../electron_renderer_utils/renderer_setup_utils')
 setup_utils({
-	crashReporting_processName: "AboutWindow"
+	reporting_processName: "AboutWindow"
 })
 //
 const remote__electron = require('electron').remote
@@ -38,26 +38,13 @@ const remote__app = remote__electron.app
 const remote__context = remote__electron.getGlobal("context")
 //
 const rootView = new_rootView() // hang onto reference
-//
-if (process.env.NODE_ENV !== 'development') { // cause it's slightly intrusive to the dev process and obscures stack trace
-	process.on('uncaughtException', function (error)
-	{ // We're going to observe this here (for electron especially) so
-	  // that the exceptions are prevented from bubbling up to the UI.
-		console.error("Observed uncaught exception", error)
-		// TODO: re-emit and send this to the error reporting service
-		var errStr;
-		if (error) {
-			errStr = "An unexpected application error occurred.\n\nPlease let us know of the following error message as it could be a bug:\n\n"+ error.toString()
-		} else {
-			errStr = "An unexpected application error occurred.\n\nPlease let us know of this issue as it could be a bug."
-		}
-		alert(errStr)
-	})
+{ // manually attach the rootView to the DOM, manually managing internal references in this special case
+	const superlayer = document.body
+	rootView.superlayer = superlayer
+	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
 }
 //
-//
 // Accessors - Factories
-//
 function new_rootView()
 {
 	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
@@ -67,15 +54,7 @@ function new_rootView()
 	)
 	const options = {}
 	const view = new RootView(options, renderer_context)
-	{
-		view.superview = null // just to be explicit
-	}
-	{
-		const superlayer = document.body
-		view.superlayer = superlayer
-		// manually attach the rootView to the DOM
-		superlayer.appendChild(view.layer) // the `layer` is actually the DOM element
-	}
+	view.superview = null // just to be explicit
 	//
 	return view
 }

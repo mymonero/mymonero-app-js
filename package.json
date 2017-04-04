@@ -59,6 +59,7 @@
     "mixpanel": "^0.4.0",
     "nedb": "^1.8.0",
     "node-notifier": "^4.6.1",
+    "raven": "^1.2.0",
     "underscore": "^1.8.3",
     "uuid": "^3.0.1",
     "velocity-animate": "^1.4.0",
