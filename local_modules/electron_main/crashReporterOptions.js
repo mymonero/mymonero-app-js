@@ -32,7 +32,7 @@ module.exports =
 {
     productName: "MyMonero",
     companyName: "MyMonero",
-    submitURL: "https://a.mymonero.com/crashReport",
+    submitURL: "https://cr.mymonero.com/post",
     uploadToServer: true,
 	extra: {} // feel free to add properties to this
 }
