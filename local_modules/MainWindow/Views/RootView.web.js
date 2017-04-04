@@ -48,36 +48,31 @@ class RootView extends View
 	{
 		const self = this
 		//
-		{
-			const layer = self.layer
-			layer.style.background = "#272527"
-			layer.style.position = "absolute"
-			layer.style.width = "100%"
-			layer.style.height = "100%"
-			layer.style.left = "0px"
-			layer.style.top = "0px"
-			layer.style.overflow = "hidden" // prevent scroll bar
-		}
+		const layer = self.layer
+		layer.style.background = "#272527"
+		layer.style.position = "absolute"
+		layer.style.width = "100%"
+		layer.style.height = "100%"
+		layer.style.left = "0px"
+		layer.style.top = "0px"
+		layer.style.overflow = "hidden" // prevent scroll bar
 		//
 		self.setup_tabBarAndContentView()
 		self.setup_passwordEntryViewController() // this is technically a controller, not a view
-		{ // disable space bar to scroll in document
-			window.onkeydown = function(e)
-			{
-				if (e.keyCode == 32 && e.target == document.body) {
-					e.preventDefault()
-				}
+		self.setup_connectivityMessageBarView()
+		// disable space bar to scroll in document
+		window.onkeydown = function(e)
+		{
+			if (e.keyCode == 32 && e.target == document.body) {
+				e.preventDefault()
 			}
 		}
 	}
 	setup_tabBarAndContentView()
 	{
 		const self = this
-		const context = self.context
-		//
-		const options = {}
 		const LeftSideTabBarAndContentView = require('./RootTabBarAndContentView.web')
-		const tabBarViewAndContentView = new LeftSideTabBarAndContentView(options, context)
+		const tabBarViewAndContentView = new LeftSideTabBarAndContentView({}, self.context)
 		self.tabBarViewAndContentView = tabBarViewAndContentView
 		self.addSubview(tabBarViewAndContentView)
 	}
@@ -104,6 +99,14 @@ class RootView extends View
 				}
 			)
 		}
+	}
+	setup_connectivityMessageBarView()
+	{
+		const self = this
+		const ConnectivityMessageBarView = require('./ConnectivityMessageBarView.web')
+		const view = new ConnectivityMessageBarView({}, self.context)
+		self.connectivityMessageBarView = view
+		self.addSubview(view)
 	}
 }
 module.exports = RootView
