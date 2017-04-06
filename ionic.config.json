@@ -1,0 +1,7 @@
+{
+	"name": "MyMonero",
+	"app_id": "com.mymonero.mymonero-mobile",
+	"watchPatterns": [
+		"local_modules/*",
+	]
+}
