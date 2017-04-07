@@ -1,1 +1,1 @@
-cordova platform add ios ; bin/_assemble_cordova && cordova run ios
+cordova platform add ios ; bin/_assemble_cordova_www && cordova run ios

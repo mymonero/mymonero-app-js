@@ -66,11 +66,13 @@
     "xhr": "^2.3.1"
   },
   "devDependencies": {
+    "browserify": "^14.3.0",
     "electron": "^1.6.5",
     "electron-builder": "^16.0.1",
     "electron-packager": "^8.1.0",
     "mocha": "^3.2.0",
     "request": "^2.79.0",
-    "spectron": "^3.6.1"
+    "spectron": "^3.6.1",
+    "uglify-js": "github:mishoo/UglifyJS2#harmony"
   }
 }
