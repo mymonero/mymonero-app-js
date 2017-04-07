@@ -175,6 +175,7 @@ function bundleAndPackageJS()
 		works for now. Since using CLI, may as well browserify via it too. */
 	var exec = require('child_process').exec
 	var cmd = `node_modules/.bin/browserify ${cordovaIndexJS_relativeFilepath} | node_modules/.bin/uglifyjs > ${bundledFinalJS_relativeFilepath}`
+	// var cmd = `node_modules/.bin/browserify ${cordovaIndexJS_relativeFilepath} > ${bundledFinalJS_relativeFilepath}`
 	console.log(`🔁  ${cmd}`)
 	exec(cmd, function(error, stdout, stderr)
 	{

@@ -35,36 +35,51 @@
 //
 var rootView;
 var context;
-var app = {}
+var app_version;
+var app_name;
+var userDataAbsolutePath;
+var app = 
+{ // implementing some methods to provide same API as electron
+	getVersion: function()
+	{
+		return app_version
+	},
+	getName: function()
+	{
+		return app_name
+	},
+	getPath: function(pathType)
+	{
+		if (pathType != 'userData') {
+			throw 'app.getPath(): unrecognized pathType'
+		}
+		return "TODO"
+	}
+}
 document.addEventListener(
 	'deviceready', 
 	function()
 	{
-		alert("device is ready")
-		// cordova-specifically, let's construct an app object
-		cordova.getAppVersion.getVersionNumber(function(app_version)
+		alert("app ready") // this is to give developer chance to open inspector - remove
+		
+		// cordova-specific - need to request various info - and it's async, which kinda sucks
+		cordova.getAppVersion.getVersionNumber(function(versionNumber)
 		{
-			app.version = app_version
-			cordova.getAppVersion.getAppName(function(app_name)
+			app_version = versionNumber
+			cordova.getAppVersion.getAppName(function(appName)
 			{
-				app.name = app_name
-				//
+				app_name = appName
 				// TODO: get/set userDataAbsoluteFilepath on app
-				
-				
-				_proceedTo_constructContext()
+				_proceedTo_setupApp()
 			})
 		})
-		function _proceedTo_constructContext()
-		{
-			_proceedTo_setupApp()
-		}
 	}, 
 	false
 )
 // Setup
 function _proceedTo_setupApp()
 {
+	console.log("_proceedTo_setupApp app" , app)
 	{ // context
 		context = require('./index_context.cordova').NewHydratedContext(app)
 	}

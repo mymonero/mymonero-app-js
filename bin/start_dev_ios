@@ -1,1 +1,5 @@
-cordova platform add ios ; bin/_assemble_cordova_www && cordova run ios
+cordova platform add ios; 
+bin/_assemble_cordova_www; 
+killall Simulator; 
+cordova run ios;
+bin/_open_ios_sim_webinspector
