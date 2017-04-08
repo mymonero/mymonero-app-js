@@ -36,7 +36,6 @@ const monero_config = require('../monero_utils/monero_config')
 const monero_keyImage_cache_utils = require('../monero_utils/monero_keyImage_cache_utils')
 //
 const config__MyMonero = require('./config__MyMonero')
-const BackgroundAPIResponseParser = require('./BackgroundAPIResponseParser.electron')
 //
 class HostedMoneroAPIClient
 {
@@ -46,6 +45,11 @@ class HostedMoneroAPIClient
 	{
 		var self = this
 		self.options = options 
+		//
+		self.responseParser = options.responseParser
+		if (!self.responseParser) {
+			throw `${self.constructor.name} requires an options.responseParser`
+		}
 		//
 		self.setup()
 	}
@@ -68,10 +72,6 @@ class HostedMoneroAPIClient
 		}
 		{ // derived caches
 			self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
-		}
-		{ // objects - parser
-			const options = {}
-			self.responseParser = new BackgroundAPIResponseParser(options)
 		}
 	}
 	//

@@ -38,7 +38,7 @@
 //		 options: {}
 //	 },
 //	 {
-//		 module_path: "../raw_objects/raw_row_objects",
+//		 module: require("../raw_objects/raw_row_objects"),
 //		 instance_key: "raw_row_objects_controller",
 //		 options: {}
 //	 }
@@ -51,7 +51,7 @@ function NewHydratedContext(context_object_instantiation_descriptions, initialCo
 	var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {}
 	for (var i in context_object_instantiation_descriptions) {
 		var description = context_object_instantiation_descriptions[i]
-		var module = require("" + description.module_path)
+		var module = description.module || require("" + description.module_path)
 		if (typeof module === 'undefined' || module === null) {
 			console.log("Error: Unable to require " + description.module_path + ". Skipping.")
 			

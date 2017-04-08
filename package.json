@@ -53,8 +53,12 @@
   "engines": {
     "node": "7.4.0"
   },
+  "browser": {
+    "fs": "html5-fs"
+  },
   "dependencies": {
     "async": "^2.1.2",
+    "html5-fs": "^0.1.1",
     "jsqr": "^0.2.1",
     "mixpanel": "^0.4.0",
     "nedb": "^1.8.0",

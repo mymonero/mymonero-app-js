@@ -28,106 +28,109 @@
 //
 "use strict"
 //
-const instantiation_description__hostedMoneroAPIClient =
-{ // this one is broken out so we can configure options with `app` object once we have it
-	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
-	instance_key: "hostedMoneroAPIClient",
-	options: {}
-}
-var context_object_instantiation_descriptions =
-[
-	{ // might as well put it in the renderer proc so we don't have to do IPC to pasteboard
-		module_path: __dirname + "/../../Pasteboard/Pasteboard.cordova",
-		instance_key: "pasteboard",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../FilesystemUI/FilesystemUI.cordova",
-		instance_key: "filesystemUI",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../WindowDialogs/WindowDialogs.cordova",
-		instance_key: "windowDialogs",
-		options: {}
-	},
-	//
-	// services
-	{
-		module_path: __dirname + "/../../symmetric_cryptor/BackgroundDocumentCryptor.cordova",
-		instance_key: "document_cryptor__background",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../DocumentPersister/DocumentPersister.NeDB",
-		instance_key: "persister",
-		options: {}
-	},
-	instantiation_description__hostedMoneroAPIClient,
-	{
-		module_path: __dirname + "/../../OpenAlias/OpenAliasResolver",
-		instance_key: "openAliasResolver",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../Theme/ThemeController",
-		instance_key: "themeController",
-		options: {}
-	},
-	//
-	// app controllers
-	{
-		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
-		instance_key: "passwordController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../Settings/Controllers/SettingsController",
-		instance_key: "settingsController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../UserIdle/UserIdleInWindowController",
-		instance_key: "userIdleInWindowController",
-		options: {}
-	},
-	// The following should go after the passwordController, persister, etc
-	{
-		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",
-		instance_key: "walletsListController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../RequestFunds/Controllers/FundsRequestsListController",
-		instance_key: "fundsRequestsListController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../Contacts/Controllers/ContactsListController",
-		instance_key: "contactsListController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../WalletAppCoordinator/WalletAppCoordinator",
-		instance_key: "walletAppCoordinator",
-		options: {}
-	}
-]
 function NewHydratedContext(
-	app, 
-	urlOpeningController
+	app
 )
 {
-	console.log("TODO: set up urlOpeningController, userDataAbsoluteFilepath")
-	var initialContext =
-	{
-//		urlOpeningController: urlOpeningController, // TODO
-		// TODO:
-//		userDataAbsoluteFilepath: app.userDataAbsoluteFilepath
-	}
-	// required options (which can only be obtained with `app`, etc.)
-	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.name
-	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_version = app.version
+	console.log("TODO: set up urlOpeningController for cordova")
+	var initialContext = {}
+	const APIResponseParser = require('../../HostedMoneroAPIClient/APIResponseParser.cordova')
+	// placing this in here so we can get the console opened in time to catch any errors (sigh)
+	var context_object_instantiation_descriptions =
+	[
+		// using module+require instead of module_path+string b/c browserify can't handle dynamic requires
+		{
+			module: require("../../Pasteboard/Pasteboard.cordova"),
+			instance_key: "pasteboard",
+			options: {}
+		},
+		{
+			module: require("../../FilesystemUI/FilesystemUI.cordova"),
+			instance_key: "filesystemUI",
+			options: {}
+		},
+		{
+			module: require("../../WindowDialogs/WindowDialogs.cordova"),
+			instance_key: "windowDialogs",
+			options: {}
+		},
+		//
+		// services
+/*
+		{ // is not actually background, at the moment
+			module: require("../../symmetric_cryptor/BackgroundDocumentCryptor.cordova"),
+			instance_key: "document_cryptor__background",
+			options: {}
+		},
+*/
+		{
+			module: require("../../DocumentPersister/DocumentPersister.NeDB"),
+			instance_key: "persister",
+			options: {
+				userDataAbsoluteFilepath: app.getPath('userData')
+			}
+		},
+		{
+			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient"),
+			instance_key: "hostedMoneroAPIClient",
+			options: {
+				appUserAgent_product: app.getName(),
+				appUserAgent_version: app.getVersion(),
+				responseParser: new APIResponseParser({})
+			}
+		},
+/*
+		{
+			module: require("../../OpenAlias/OpenAliasResolver"),
+			instance_key: "openAliasResolver",
+			options: {}
+		},
+		{
+			module: require("../../Theme/ThemeController"),
+			instance_key: "themeController",
+			options: {}
+		},
+		//
+		// app controllers
+		{
+			module: require("../../Passwords/Controllers/PasswordController"),
+			instance_key: "passwordController",
+			options: {}
+		},
+		{
+			module: require("../../Settings/Controllers/SettingsController"),
+			instance_key: "settingsController",
+			options: {}
+		},
+		{
+			module: require("../../UserIdle/UserIdleInWindowController"),
+			instance_key: "userIdleInWindowController",
+			options: {}
+		},
+		// The following should go after the passwordController, persister, etc
+		{
+			module: require("../../WalletsList/Controllers/WalletsListController"),
+			instance_key: "walletsListController",
+			options: {}
+		},
+		{
+			module: require("../../RequestFunds/Controllers/FundsRequestsListController"),
+			instance_key: "fundsRequestsListController",
+			options: {}
+		},
+		{
+			module: require("../../Contacts/Controllers/ContactsListController"),
+			instance_key: "contactsListController",
+			options: {}
+		},
+		{
+			module: require("../../WalletAppCoordinator/WalletAppCoordinator"),
+			instance_key: "walletAppCoordinator",
+			options: {}
+		}
+*/
+	]
+	
 	//
 	return require("../../runtime_context/runtime_context").NewHydratedContext(
 		context_object_instantiation_descriptions, 

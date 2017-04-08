@@ -28,11 +28,14 @@
 //
 "use strict"
 //
+const APIResponseParser = require('../../HostedMoneroAPIClient/BackgroundAPIResponseParser.electron')
 const instantiation_description__hostedMoneroAPIClient =
 { // this one is broken out so we can configure options with `app` object once we have it
 	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
 	instance_key: "hostedMoneroAPIClient",
-	options: {}
+	options: {
+		responseParser: new APIResponseParser({})
+	}
 }
 var context_object_instantiation_descriptions =
 [

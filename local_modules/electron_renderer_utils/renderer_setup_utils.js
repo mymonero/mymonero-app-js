@@ -35,8 +35,10 @@ module.exports = function(params)
 {
 	params = params || {}
 	//
-	startCrashReporting(params.reporting_processName) // do we really need crash reporting in renderer proc? is that for Chrome crashes?
-	startExceptionReporting(params.exceptionReporting_processName)
+	if (process.env.NODE_ENV !== 'development') {
+		startCrashReporting(params.reporting_processName) // do we really need crash reporting in renderer proc? is that for Chrome crashes?
+		startExceptionReporting(params.exceptionReporting_processName)
+	}
 	startAlertingExceptions()
 	//
 	hardenRuntime()

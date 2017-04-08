@@ -35,51 +35,58 @@
 //
 var rootView;
 var context;
-var app_version;
-var app_name;
-var userDataAbsolutePath;
+const cached_metadata = {}
 var app = 
 { // implementing some methods to provide same API as electron
-	getVersion: function()
-	{
-		return app_version
-	},
-	getName: function()
-	{
-		return app_name
-	},
+	getVersion: function() { return cached_metadata.app_version },
+	getName: function() { return cached_metadata.app_name },
+	getDeviceManufacturer: function() { return cached_metadata.deviceManufacturer },
+	getIsDebug: function() { return cached_metadata.isDebug },
 	getPath: function(pathType)
 	{
-		if (pathType != 'userData') {
-			throw 'app.getPath(): unrecognized pathType'
+		if (pathType == 'userData') {
+			return cached_metadata.userDataAbsoluteFilepath
 		}
-		return "TODO"
+		throw 'app.getPath(): unrecognized pathType'
 	}
 }
 document.addEventListener(
 	'deviceready', 
 	function()
 	{
-		alert("app ready") // this is to give developer chance to open inspector - remove
-		
-		// cordova-specific - need to request various info - and it's async, which kinda sucks
-		cordova.getAppVersion.getVersionNumber(function(versionNumber)
+		// just going to pre-emptively fetch whether isDebug before loading main body of metadata
+		cordova.plugins.DeviceMeta.getDeviceMeta(function(result)
 		{
-			app_version = versionNumber
-			cordova.getAppVersion.getAppName(function(appName)
-			{
-				app_name = appName
-				// TODO: get/set userDataAbsoluteFilepath on app
-				_proceedTo_setupApp()
-			})
+			cached_metadata.isDebug = result.debug
+			cached_metadata.deviceManufacturer = result.manufacturer
+			if (cached_metadata.isDebug === true) {
+				alert("Press OK to load app") // this is to give developer chance to open inspector - remove
+				// after short delay so alert actually done(?)
+				setTimeout(_proceedTo_loadMetaDataBeforeAppSetup, 500)
+			} else {
+				_proceedTo_loadMetaDataBeforeAppSetup()
+			}
 		})
 	}, 
 	false
 )
 // Setup
+function _proceedTo_loadMetaDataBeforeAppSetup()
+{ // cordova-specific - need to request various info - and they're mostly async, which sucks
+	cached_metadata.userDataAbsoluteFilepath = cordova.file.applicationStorageDirectory
+	cordova.getAppVersion.getVersionNumber(function(versionNumber)
+	{
+		cached_metadata.app_version = versionNumber
+		cordova.getAppVersion.getAppName(function(appName)
+		{
+			cached_metadata.app_name = appName
+			_proceedTo_setupApp()
+		})
+	})
+}
 function _proceedTo_setupApp()
 {
-	console.log("_proceedTo_setupApp app" , app)
+	console.log("_proceedTo_setupApp")
 	{ // context
 		context = require('./index_context.cordova').NewHydratedContext(app)
 	}
