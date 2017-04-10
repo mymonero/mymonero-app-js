@@ -53,9 +53,6 @@
   "engines": {
     "node": "7.4.0"
   },
-  "browser": {
-    "fs": "html5-fs"
-  },
   "dependencies": {
     "async": "^2.1.2",
     "html5-fs": "^0.1.1",
@@ -70,13 +67,14 @@
     "xhr": "^2.3.1"
   },
   "devDependencies": {
-    "browserify": "^14.3.0",
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
     "electron": "^1.6.5",
     "electron-builder": "^16.0.1",
     "electron-packager": "^8.1.0",
     "mocha": "^3.2.0",
     "request": "^2.79.0",
     "spectron": "^3.6.1",
-    "uglify-js": "github:mishoo/UglifyJS2#harmony"
+    "webpack": "^2.3.3"
   }
 }

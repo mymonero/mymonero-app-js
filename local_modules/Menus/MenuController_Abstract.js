@@ -28,78 +28,36 @@
 //
 "use strict"
 //
-const {Menu, electron_shell, ipcMain} = require('electron')
-const isMacOS = process.platform === 'darwin'
+const EventEmitter = require('events')
 //
-const MenuController_Abstract = require('./MenuController_Abstract')
-//
-class MenuController extends MenuController_Abstract
+class MenuController extends EventEmitter
 {
 	constructor(options, context)
 	{
-		super(options, context) // must call before accessing `this`
+		super() // must call before accessing `this`
+		//
+		const self = this
+		self.options = options
+		self.context = context
+		//
+		self.setup()
 	}
 	setup()
 	{
 		const self = this
-		super.setup()
-		self.setup_menu()
-		self.startObserving_ipc()
-	}
-	setup_menu()
-	{
-		const self = this
-		const menuSpecs = self._new_menuSpecs()
-		const menu = Menu.buildFromTemplate(menuSpecs)
-		self.menu = menu
-		{
-			const app = self.context.app
-			function _setMenu()
-			{
-				Menu.setApplicationMenu(menu)
-			}
-			if (app.isReady()) {
-				_setMenu()
-			} else {
-				app.on('ready', _setMenu)
-			}
-		}
-	}
-	startObserving_ipc()
-	{
-		const self = this
-		ipcMain.on(
-			self.IPCMethod__MenuController_SetItemNamedEnabled(), 
-			function(event, params)
-			{
-				self.SetItemNamedEnabled(
-					params.itemName, 
-					params.isEnabled
-				)
-			}
-		)
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - IPC Method names
 	
-	IPCMethod__MenuController_SetItemNamedEnabled()
-	{
-		return "IPCMethod__MenuController_SetItemNamedEnabled"
-	}
-
-
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Menu item names
+	// Runtime - Accessors - Event Names
 	
-	MenuItemName_ChangePassword()
+	EventName_menuItemSelected_ChangePassword()
 	{
-		return "Change Password"
+		return "EventName_menuItemSelected_ChangePassword"
 	}
-	MenuItemName_Preferences()
+	EventName_menuItemSelected_Preferences()
 	{
-		return "Preferences"
+		return "EventName_menuItemSelected_Preferences"
 	}
 	
 
@@ -110,7 +68,6 @@ class MenuController extends MenuController_Abstract
 	{
 		const self = this
 		const appName = self.context.app.getName()
-		//
 		const menuSpecs = []
 		{ // MyMonero menu
 			const submenu = 
@@ -343,44 +300,18 @@ class MenuController extends MenuController_Abstract
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Searches
+	// Runtime - Imperatives
 	
-	_firstMenuItemNamed(itemName)
+	SetItemNamedEnabled(itemName, isEnabled)
 	{
+		isEnabled = typeof isEnabled === 'string' ? isEnabled == 'true' : isEnabled // to support IPC on windows… apparently cannot pass booleans
 		const self = this
-		const menuItems = self.menu.items
-		for (let menuItem of menuItems) {
-			const menuItemItems = menuItem.submenu.items
-			for (let menuItemItem of menuItemItems) {
-				const role = menuItemItem.role
-				if (typeof role !== 'undefined') {
-					if (itemName.toLowerCase == role) {
-						return menuItemItem
-					}
-				}
-				//
-				const label = menuItemItem.label
-				if (label === itemName) {
-					return menuItemItem
-				}
-			}
-		}
-		//
-		return null
+		self.override_setItemNamedEnabled(itemName, isEnabled)
 	}
-	
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Override/implementations
-	
 	override_setItemNamedEnabled(itemName, isEnabled)
 	{
 		const self = this
-		const menuItem = self._firstMenuItemNamed(itemName)
-		if (menuItem === null) {
-			throw "Menu item not found"
-		}
-		menuItem.enabled = isEnabled
+		throw `You must implement setItemNamedEnabled in ${self.constructor.name}`
 	}
 	
 

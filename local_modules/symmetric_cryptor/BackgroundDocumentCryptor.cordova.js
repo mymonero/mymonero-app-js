@@ -34,9 +34,9 @@ class BackgroundDocumentCryptor
 {
 	constructor(options, context)
 	{
-		options = options || {}
-		//
-		super(options, context)
+		const self = this
+		self.options = options || {}
+		self.context = context
 	}
 	//
 	// Runtime - Accessors - Interface

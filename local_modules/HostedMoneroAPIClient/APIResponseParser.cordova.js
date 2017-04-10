@@ -28,28 +28,19 @@
 //
 "use strict"
 //
-const BackgroundTaskExecutor = require('../electron_background/BackgroundTaskExecutor.electron')
+const response_parser_utils = require('./response_parser_utils')
 //
-class BackgroundAPIResponseParser extends BackgroundTaskExecutor
+class APIResponseParser
 {
 	constructor(options, context)
 	{
-		options = options || {}
-		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundAPIResponseParser.child.js'
-		//
-		const electron = require('electron')
-		const app = electron.app || electron.remote.app
-		const forReporting_appVersion = app.getVersion()
-		options.argsForChild = [ forReporting_appVersion ]
-		//
-		super(options, context)
+		const self = this
+		self.options = options || {}
+		self.context = context
 	}
-	
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Runtime - Imperatives - Public
-
-	Parse_AddressInfo(
+	Parsed_AddressInfo(
 		data, 
 		address,
 		view_key__private,
@@ -58,24 +49,16 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 		fn
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parse_AddressInfo',
-			function(err, returnValuesByKey) // fn goes as second arg
-			{
-				fn(err, returnValuesByKey)
-			},
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private				
-			]
+		response_parser_utils.Parsed_AddressInfo(
+			data, 
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			fn
 		)
 	}
-
-	Parse_AddressTransactions(
+	Parsed_AddressTransactions(
 		data, 
 		address,
 		view_key__private,
@@ -84,24 +67,16 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 		fn
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parse_AddressTransactions',
-			function(err, returnValuesByKey) // fn goes as second arg
-			{
-				fn(err, returnValuesByKey)
-			},
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private				
-			]
+		response_parser_utils.Parsed_AddressTransactions(
+			data, 
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			fn
 		)
 	}
-
-	Parse_UnspentOuts(
+	Parsed_UnspentOuts(
 		data, 
 		address,
 		view_key__private,
@@ -110,21 +85,14 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 		fn
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parse_UnspentOuts',
-			function(err, returnValuesByKey) // fn goes as second arg
-			{
-				fn(err, returnValuesByKey)
-			},
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private				
-			]
+		response_parser_utils.Parsed_UnspentOuts(
+			data, 
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			fn
 		)
 	}
 }
-module.exports = BackgroundAPIResponseParser
+module.exports = APIResponseParser

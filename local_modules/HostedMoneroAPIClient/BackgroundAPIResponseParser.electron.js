@@ -49,7 +49,7 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
 
-	Parse_AddressInfo(
+	Parsed_AddressInfo(
 		data, 
 		address,
 		view_key__private,
@@ -60,7 +60,7 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 	{
 		const self = this
 		self.executeBackgroundTaskNamed(
-			'Parse_AddressInfo',
+			'Parsed_AddressInfo',
 			function(err, returnValuesByKey) // fn goes as second arg
 			{
 				fn(err, returnValuesByKey)
@@ -75,7 +75,7 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 		)
 	}
 
-	Parse_AddressTransactions(
+	Parsed_AddressTransactions(
 		data, 
 		address,
 		view_key__private,
@@ -86,7 +86,7 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 	{
 		const self = this
 		self.executeBackgroundTaskNamed(
-			'Parse_AddressTransactions',
+			'Parsed_AddressTransactions',
 			function(err, returnValuesByKey) // fn goes as second arg
 			{
 				fn(err, returnValuesByKey)
@@ -101,7 +101,7 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 		)
 	}
 
-	Parse_UnspentOuts(
+	Parsed_UnspentOuts(
 		data, 
 		address,
 		view_key__private,
@@ -112,7 +112,7 @@ class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 	{
 		const self = this
 		self.executeBackgroundTaskNamed(
-			'Parse_UnspentOuts',
+			'Parsed_UnspentOuts',
 			function(err, returnValuesByKey) // fn goes as second arg
 			{
 				fn(err, returnValuesByKey)

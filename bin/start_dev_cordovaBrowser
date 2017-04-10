@@ -1,0 +1,3 @@
+cordova platform add browser; 
+bin/_build_cordova_www; 
+cordova run browser

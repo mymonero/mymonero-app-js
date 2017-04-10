@@ -30,7 +30,7 @@
 //
 // Load emojis
 var fs = require('fs');
-var emojiDescriptionsByKey = JSON.parse(fs.readFileSync(__dirname + '/Vendor/emoji_strategy.json'), 'utf8')
+var emojiDescriptionsByKey = require("./Vendor/emoji_strategy.json")
 // Generate array
 const emojiChars = []
 const keys = Object.keys(emojiDescriptionsByKey)

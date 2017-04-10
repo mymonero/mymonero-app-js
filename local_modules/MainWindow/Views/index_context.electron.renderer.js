@@ -34,7 +34,8 @@ const instantiation_description__hostedMoneroAPIClient =
 	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
 	instance_key: "hostedMoneroAPIClient",
 	options: {
-		responseParser: new APIResponseParser({})
+		responseParser: new APIResponseParser({}),
+		request_conformant_module: require('xhr')
 	}
 }
 var context_object_instantiation_descriptions =

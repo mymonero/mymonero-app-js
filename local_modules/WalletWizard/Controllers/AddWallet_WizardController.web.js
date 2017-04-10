@@ -31,21 +31,30 @@
 const WizardTask_Modes =
 {
 	FirstTime_CreateWallet: "FirstTime_CreateWallet",
-	FirstTime_UseExisting: "FirstTime_UseExisting",
+	FirstTime_UseExisting: 	"FirstTime_UseExisting",
 	//
-	PickCreateOrUseExisting: "PickCreateOrUseExisting", // this will patch into one of the following two:
-	AfterPick_CreateWallet: "AfterPick_CreateWallet",
-	AfterPick_UseExisting: "AfterPick_UseExisting"
+	PickCreateOrUseExisting: 	"PickCreateOrUseExisting", // this will patch into one of the following two:
+	AfterPick_CreateWallet: 	"AfterPick_CreateWallet",
+	AfterPick_UseExisting: 		"AfterPick_UseExisting"
 }
 const WizardTaskStepScreenViewFilePrefix_By_WizardTaskModeName =
 {
 	FirstTime_CreateWallet: "CreateWallet",
-	FirstTime_UseExisting: "UseExisting",
+	FirstTime_UseExisting: 	"UseExisting",
 	//
-	PickCreateOrUseExisting: "PickCreateOrUseExisting", // this will patch into one of the following two:
-	AfterPick_CreateWallet: "CreateWallet",
-	AfterPick_UseExisting: "UseExisting"
+	PickCreateOrUseExisting: 	"PickCreateOrUseExisting", // this will patch into one of the following two:
+	AfterPick_CreateWallet: 	"CreateWallet",
+	AfterPick_UseExisting: 		"UseExisting"
 }
+const StaticCacheForBundling_WizardTaskStepScreenViewModules_byViewFilename = 
+{
+	"PickCreateOrUseExisting_Landing_View.web": require("../Views/PickCreateOrUseExisting_Landing_View.web"),
+	"UseExisting_MetaInfo_View.web": 			require("../Views/UseExisting_MetaInfo_View.web"),
+	"CreateWallet_MetaInfo_View.web": 			require("../Views/CreateWallet_MetaInfo_View.web"),
+	"CreateWallet_Instructions_View.web": 		require("../Views/CreateWallet_Instructions_View.web"),
+	"CreateWallet_InformOfMnemonic_View.web": 	require("../Views/CreateWallet_InformOfMnemonic_View.web"),
+	"CreateWallet_ConfirmMnemonic_View.web": 	require("../Views/CreateWallet_ConfirmMnemonic_View.web")
+} 
 const WizardTask_ModeStepNamesByIdxStr_ByTaskModeName =
 {
 	FirstTime_CreateWallet: {
@@ -95,18 +104,14 @@ class AddWallet_WizardController
 		}
 	}
 	//
-	//
 	// Lifecycle - Teardown
-	//
 	TearDown()
 	{ // this is public and must be called manually by wallet
 		const self = this
 		console.log("♻️  Tearing down a " + self.constructor.name)
 	}
 	//
-	//
 	// Runtime - Accessors - Lookups
-	//
 	WizardTask_Mode_FirstTime_CreateWallet()
 	{
 		return WizardTask_Modes.FirstTime_CreateWallet
@@ -162,16 +167,14 @@ class AddWallet_WizardController
 		return stepName
 	}
 	//
-	//
 	// Runtime - Accessors - Factories
-	//
 	_new_current_wizardTaskMode_stepView()
 	{
 		const self = this
-		const viewsDirectory_absoluteFilepath = __dirname + "/../Views"
 		const viewFilePrefix = WizardTaskStepScreenViewFilePrefix_By_WizardTaskModeName[self.current_wizardTaskModeName]
-		const viewModule_absoluteFilepath = `${viewsDirectory_absoluteFilepath}/${viewFilePrefix}_${self.current_wizardTaskMode_stepName}_View.web`
-		const viewConstructor = require(viewModule_absoluteFilepath)
+		const viewModuleFilename = `${viewFilePrefix}_${self.current_wizardTaskMode_stepName}_View.web`
+		// now we access the module not by dynamic inclusion but statically (see webpack)
+		const viewConstructor = StaticCacheForBundling_WizardTaskStepScreenViewModules_byViewFilename[viewModuleFilename]
 		if (!viewConstructor || typeof viewConstructor === 'undefined') {
 			throw "Unable to find the file at " + viewModule_absoluteFilepath
 			return
@@ -189,9 +192,7 @@ class AddWallet_WizardController
 		return initialView
 	}	
 	//
-	//
 	// Runtime - Imperatives - Entrypoints / Control
-	//
 	EnterWizardTaskMode_returningNavigationView(taskModeName)
 	{ // -> StackAndModalNavigationView
 		const self = this
@@ -255,9 +256,7 @@ class AddWallet_WizardController
 		self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
 	}
 	//
-	//
 	// Runtime - Imperatives - Steps
-	//
 	ProceedToNextStep()
 	{
 		const self = this
@@ -294,9 +293,7 @@ class AddWallet_WizardController
 		)
 	}
 	//
-	//
-	//
-	//
+	// Runtime - Delegation
 	_fromScreen_userPickedCancel()
 	{
 		const self = this

@@ -1,0 +1,1 @@
+node_modules/.bin/webpack --config webpack.cordova.config.js --display-modules

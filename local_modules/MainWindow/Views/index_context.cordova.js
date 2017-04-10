@@ -32,13 +32,22 @@ function NewHydratedContext(
 	app
 )
 {
-	console.log("TODO: set up urlOpeningController for cordova")
 	var initialContext = {}
 	const APIResponseParser = require('../../HostedMoneroAPIClient/APIResponseParser.cordova')
-	// placing this in here so we can get the console opened in time to catch any errors (sigh)
+	// placing context_object_instantiation_descriptions in here so we can get the console opened in time to catch any errors (sigh)
 	var context_object_instantiation_descriptions =
 	[
-		// using module+require instead of module_path+string b/c browserify can't handle dynamic requires
+		// using module+require instead of module_path+string b/c browserify/webpack can't handle dynamic requires
+		{
+			module: require("../../URLOpening/URLOpeningController.cordova"),
+			instance_key: "urlOpeningController",
+			options: {}
+		},
+		{ // ios etc don't have menus, so this is just a stub so the root tab bar can include menuController observations
+			module: require("../../Menus/MenuController_Stub.cordova.js"),
+			instance_key: "menuController",
+			options: {}
+		},
 		{
 			module: require("../../Pasteboard/Pasteboard.cordova"),
 			instance_key: "pasteboard",
@@ -56,13 +65,11 @@ function NewHydratedContext(
 		},
 		//
 		// services
-/*
 		{ // is not actually background, at the moment
 			module: require("../../symmetric_cryptor/BackgroundDocumentCryptor.cordova"),
 			instance_key: "document_cryptor__background",
 			options: {}
 		},
-*/
 		{
 			module: require("../../DocumentPersister/DocumentPersister.NeDB"),
 			instance_key: "persister",
@@ -76,10 +83,10 @@ function NewHydratedContext(
 			options: {
 				appUserAgent_product: app.getName(),
 				appUserAgent_version: app.getVersion(),
-				responseParser: new APIResponseParser({})
+				responseParser: new APIResponseParser({}),
+				request_conformant_module: require('xhr')
 			}
 		},
-/*
 		{
 			module: require("../../OpenAlias/OpenAliasResolver"),
 			instance_key: "openAliasResolver",
@@ -128,9 +135,7 @@ function NewHydratedContext(
 			instance_key: "walletAppCoordinator",
 			options: {}
 		}
-*/
-	]
-	
+	]	
 	//
 	return require("../../runtime_context/runtime_context").NewHydratedContext(
 		context_object_instantiation_descriptions, 

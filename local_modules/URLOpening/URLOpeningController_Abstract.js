@@ -28,66 +28,57 @@
 //
 "use strict"
 //
-const URLOpeningController_Abstract = require('./URLOpeningController_Abstract')
+const EventEmitter = require('events')
 //
-class URLOpeningController extends URLOpeningController_Abstract
+const PROTOCOL_PREFIX = "monero" // this is also specified for MacOS in packager.js under scheme
+// maybe support "mymonero" too
+//
+class URLOpeningController_Abstract extends EventEmitter
 {
+	//
+	// Lifecycle - Init
 	constructor(options, context)
 	{
-		super(options, context)
+		super() // must call before accessing `this`
+		const self = this
+		self.options = options
+		self.context = context
+		self.setup()
+	}
+	setup()
+	{
+		const self = this
+		self._override_startObserving()
 	}
 	_override_startObserving()
 	{
 		const self = this
-		const app = self.context.app
-		app.on('will-finish-launching', function()
-		{ // ^ we might not need to do this
-			app.on("open-url", function(event, url)
-			{
-				self.__didReceivePossibleURIToOpen(
-					url,
-					function()
-					{
-						event.preventDefault()
-					}
-				)
-			})
-			app.on('launched-duplicatively', function(argv)
-			{ // main window listens for this too - and brings itself to forefont…
-				// we need to listen for this here for Windows (not MacOS)
-				self._didLaunchOrReOpenWithArgv(argv)
-			})
-			app.setAsDefaultProtocolClient(self.PROTOCOL_PREFIX()) // this seems to be mainly necessary for Windows
-		})
-		setTimeout(function()
-		{
-			self._didLaunchOrReOpenWithArgv(process.argv)
-		})
 	}
 	//
-	// Delegation - Override implementations
-	_override_didReceiveInvalidURL()
+	// Runtime - Accessors
+	EventName_ReceivedURLToOpen_FundsRequest()
 	{
-		const self = this
-		const {dialog} = require('electron')
-		dialog.showMessageBox({
-			"message": "Sorry, that does not appear to be a valid Monero URL."
-		})
+		return "EventName_ReceivedURLToOpen_FundsRequest"
+	}
+	PROTOCOL_PREFIX()
+	{
+		return PROTOCOL_PREFIX
 	}
 	//
-	// Delegation - Electron-specific
-	_didLaunchOrReOpenWithArgv(argv)
+	// Delegation - URL reception, launch handling
+	__didReceivePossibleURIToOpen(possibleURI, willConsiderAsURI_fn)
 	{
+		willConsiderAsURI_fn = willConsiderAsURI_fn || function() {}
 		const self = this
-		const isMacOS = process.platform === "darwin"
-		if (isMacOS == true) { // as we handle this with open-url
+		if (possibleURI.indexOf(PROTOCOL_PREFIX+":") !== 0) {
+			self._override_didReceiveInvalidURL()
 			return
 		}
-		if (argv.length <= 1) { // simply launched, no args
-			return
-		}
-		const possibleURI = argv[1]
-		self.__didReceivePossibleURIToOpen(possibleURI) // patch to URI reception handler, which happens to be on super
+		const url = possibleURI // we'll suppose it is one
+		self.emit( // and yield
+			self.EventName_ReceivedURLToOpen_FundsRequest(), 
+			url
+		)
 	}
 }
-module.exports = URLOpeningController
+module.exports = URLOpeningController_Abstract

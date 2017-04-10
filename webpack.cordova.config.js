@@ -25,38 +25,52 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../../../HostedMoneroAPIClient/HostedMoneroAPIClient",
-		instance_key: "hostedMoneroAPIClient",
-		options: {
-			request_conformant_module: require('request')
-		}
-	},
-	{
-		module_path: __dirname + "/../../../DocumentPersister/DocumentPersister.NeDB",
-		instance_key: "persister",
-		options: {
-			userDataAbsoluteFilepath: "./test_products"
-		}
-	},
-	{
-		module_path: __dirname + "/../../../symmetric_cryptor/BackgroundDocumentCryptor.interfaceForTests",
-		instance_key: "document_cryptor__background",
-		options: {}
-	}
-]
-function NewHydratedContext()
+const path = require('path')
+//
+module.exports = 
 {
-	var initialContext =
-	{
-	}
+	devtool: "inline-source-map",
+	context: __dirname,
+	entry: "./local_modules/MainWindow/Views/index.cordova.js",
+	output: {
+		path: path.resolve(__dirname, "www"),
+		filename: "bundle.js"
+	},
+    resolve: {
+        alias: {
+            fs: "html5-fs"
+        }
+    },
+	module: {
+		loaders: [
+			{ 
+				test: /\.(otf|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+				loader: 'file-loader'
+			},
+			{
+				test: /\.json$/,
+				loader: 'json-loader'
+			},
+			{
+				test: /\.css$/,
+				loader: 'style!css!postcss'
+			},
+			{
+				test: /\.styl$/,
+				loader: 'style!css!postcss!stylus?paths=node_modules'
+			},
+			{
+				test: /\.js$/,
+				loader: 'babel-loader',
+				options: {
+					cacheDirectory: false,
+				},
+				exclude: path.join(__dirname, 'node_modules')
+			},
 
-	return require("../../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+		]
+	}
 }
-module.exports.NewHydratedContext = NewHydratedContext

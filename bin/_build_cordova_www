@@ -1,0 +1,2 @@
+node bin/__assemble_cordova_www.node.js; 
+bin/__webpack_cordova

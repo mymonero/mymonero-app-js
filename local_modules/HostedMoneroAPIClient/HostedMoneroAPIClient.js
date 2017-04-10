@@ -28,7 +28,6 @@
 
 "use strict"
 //
-const request = require(typeof window !== 'undefined' ? 'xhr' : 'request') // 'request' to support tests
 const async = require('async')
 //
 const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
@@ -49,6 +48,10 @@ class HostedMoneroAPIClient
 		self.responseParser = options.responseParser
 		if (!self.responseParser) {
 			throw `${self.constructor.name} requires an options.responseParser`
+		}
+		self.request = options.request_conformant_module
+		if (!self.request) {
+			throw `${self.constructor.name} requires an options.request_conformant_module such as require('request' / 'xhr')`
 		}
 		//
 		self.setup()
@@ -158,7 +161,7 @@ class HostedMoneroAPIClient
 			console.log("✅  " + completeURL + " " + statusCode)
 			fn(null, json)
 		}
-		const requestHandle = request(request_options, request_handlerFn)
+		const requestHandle = self.request(request_options, request_handlerFn)
 		//
 		return requestHandle
 	}
@@ -220,7 +223,7 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			self.responseParser.Parse_AddressInfo(
+			self.responseParser.Parsed_AddressInfo(
 				data,
 				address,
 				view_key__private,
@@ -299,7 +302,7 @@ class HostedMoneroAPIClient
 		)
 		function __parseAndCallBack(data)
 		{
-			self.responseParser.Parse_AddressTransactions(
+			self.responseParser.Parsed_AddressTransactions(
 				data,
 				address,
 				view_key__private,
@@ -419,7 +422,7 @@ class HostedMoneroAPIClient
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			self.responseParser.Parse_UnspentOuts(
+			self.responseParser.Parsed_UnspentOuts(
 				data,
 				address,
 				view_key__private,

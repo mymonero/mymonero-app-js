@@ -41,7 +41,9 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../../../HostedMoneroAPIClient/HostedMoneroAPIClient",
 		instance_key: "hostedMoneroAPIClient",
-		options: {}
+		options: {
+			request_conformant_module: require('request')
+		}
 	},
 	{
 		module_path: __dirname + "/../../../DocumentPersister/DocumentPersister.NeDB",

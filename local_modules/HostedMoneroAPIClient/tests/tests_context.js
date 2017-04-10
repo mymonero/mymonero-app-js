@@ -34,7 +34,9 @@ var context_object_instantiation_descriptions =
 	{
 		module_path: __dirname + "/../HostedMoneroAPIClient",
 		instance_key: "hostedMoneroAPIClient",
-		options: {}
+		options: {
+			request_conformant_module: require('request')
+		}
 	}
 ]
 function NewHydratedContext() 

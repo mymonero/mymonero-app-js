@@ -8,3 +8,5 @@ test_products
 **/tests_config.js
 
 electron_child_crashReport_tmp
+
+stats.json

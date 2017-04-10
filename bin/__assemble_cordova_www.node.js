@@ -39,7 +39,7 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^tests$/i,
 	/\.child\./, // slightly ambiguous but we don't want these as, in cordova, everything runs in WebCore
 	//
-	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify to analyze the dependency graph and bundle our JS for us
+	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us
 ]
 const numberOf_doNotCopyOrEnterFilepathsMatching = doNotCopyOrEnterFilepathsMatching.length
 //
@@ -59,7 +59,7 @@ deleteAll_assembled_www_contents_exceptGitIgnore()
 enumerateAndRecursivelyCopyDirContents("", true)
 //
 // III.
-bundleAndPackageJS()
+// bundleAndPackageJS() // NOTE: this is handled on the command line in bin/_assemble_cordova_www
 //
 // implementations
 function deleteAll_assembled_www_contents_exceptGitIgnore()
@@ -164,54 +164,4 @@ function copyFile(fromPath, toPath)
 		toPath,
 		fs.readFileSync(fromPath)
 	)
-}
-//
-function bundleAndPackageJS()
-{
-	const cordovaIndexJS_relativeFilepath = "local_modules/MainWindow/Views/index.cordova.js"
-	const bundledFinalJS_relativeFilepath = "www/final_bundle.js"
-	/* So, for some reason, the harmony branch (to support es6) of UglifyJS outputs an
-		empty string when used via API like this. So just dropping down to cmd line, which
-		works for now. Since using CLI, may as well browserify via it too. */
-	var exec = require('child_process').exec
-	var cmd = `node_modules/.bin/browserify ${cordovaIndexJS_relativeFilepath} | node_modules/.bin/uglifyjs > ${bundledFinalJS_relativeFilepath}`
-	// var cmd = `node_modules/.bin/browserify ${cordovaIndexJS_relativeFilepath} > ${bundledFinalJS_relativeFilepath}`
-	console.log(`🔁  ${cmd}`)
-	exec(cmd, function(error, stdout, stderr)
-	{
-		if (error) {
-			throw error
-		}
-		if (stderr) {
-			console.error(stderr)
-		}
-		if (stdout) {
-			console.log(stdout)
-		}
-	});
-	
-	// browserify:
-	// const browserify = require('browserify')
-	// const browserifiedJS_relativeFilepath = "www/_temp_browserified_bundle.js"
-	// console.log(`🎩  browserify ${cordovaIndexJS_relativeFilepath} > ${browserifiedJS_relativeFilepath}`)
-	// const browserifiedJS_readStream = browserify(cordovaIndexJS_relativeFilepath).bundle()
-	// // now we must write to file before we can uglify (stream method would be nice - note we're currently using harmony branch)
-	// const browserifiedJS_writeStream = fs.createWriteStream(browserifiedJS_relativeFilepath)
-	// browserifiedJS_readStream.pipe(
-	// 	browserifiedJS_writeStream
-	// )
-	// // now uglify:
-	// console.log(`📦  uglify ${browserifiedJS_relativeFilepath} > ${bundledFinalJS_relativeFilepath}`)
-	// const UglifyJS = require('uglify-js')
-	// const minificationResult = UglifyJS.minify(
-	// 	[ browserifiedJS_relativeFilepath ],
-	// 	{
-	// 		verbose: true,
-	// 		debug: true
-	// 	}
-	// )
-	// console.log("minificationResult" , minificationResult)
-	// const minifiedCodeString = minificationResult.code
-	// // now (over-)write:
-	// fs.writeFileSync(bundledFinalJS_relativeFilepath, minifiedCodeString)
 }

@@ -39,55 +39,39 @@ class URLOpeningController extends URLOpeningController_Abstract
 	_override_startObserving()
 	{
 		const self = this
-		const app = self.context.app
-		app.on('will-finish-launching', function()
-		{ // ^ we might not need to do this
-			app.on("open-url", function(event, url)
-			{
-				self.__didReceivePossibleURIToOpen(
-					url,
-					function()
-					{
-						event.preventDefault()
-					}
-				)
-			})
-			app.on('launched-duplicatively', function(argv)
-			{ // main window listens for this too - and brings itself to forefont…
-				// we need to listen for this here for Windows (not MacOS)
-				self._didLaunchOrReOpenWithArgv(argv)
-			})
-			app.setAsDefaultProtocolClient(self.PROTOCOL_PREFIX()) // this seems to be mainly necessary for Windows
-		})
-		setTimeout(function()
-		{
-			self._didLaunchOrReOpenWithArgv(process.argv)
-		})
+		console.log("TODO: implement _override_startObserving in URLOpeningController")
+		// TODO:
+		// const app = self.context.app
+		// app.on('will-finish-launching', function()
+		// { // ^ we might not need to do this
+		// 	app.on("open-url", function(event, url)
+		// 	{
+		// 		self.__didReceivePossibleURIToOpen(
+		// 			url,
+		// 			function()
+		// 			{
+		// 				event.preventDefault()
+		// 			}
+		// 		)
+		// 	})
+		// 	app.on('launched-duplicatively', function(argv)
+		// 	{ // main window listens for this too - and brings itself to forefont…
+		// 		// we need to listen for this here for Windows (not MacOS)
+		// 		self._didLaunchOrReOpenWithArgv(argv)
+		// 	})
+		// 	app.setAsDefaultProtocolClient(self.PROTOCOL_PREFIX()) // this seems to be mainly necessary for Windows
+		// })
+		// setTimeout(function()
+		// {
+		// 	self._didLaunchOrReOpenWithArgv(process.argv)
+		// })
 	}
 	//
 	// Delegation - Override implementations
 	_override_didReceiveInvalidURL()
 	{
 		const self = this
-		const {dialog} = require('electron')
-		dialog.showMessageBox({
-			"message": "Sorry, that does not appear to be a valid Monero URL."
-		})
-	}
-	//
-	// Delegation - Electron-specific
-	_didLaunchOrReOpenWithArgv(argv)
-	{
-		const self = this
-		const isMacOS = process.platform === "darwin"
-		if (isMacOS == true) { // as we handle this with open-url
-			return
-		}
-		if (argv.length <= 1) { // simply launched, no args
-			return
-		}
-		const possibleURI = argv[1]
-		self.__didReceivePossibleURIToOpen(possibleURI) // patch to URI reception handler, which happens to be on super
+		alert("Sorry, that does not appear to be a valid Monero URL.")
 	}
 }
 module.exports = URLOpeningController

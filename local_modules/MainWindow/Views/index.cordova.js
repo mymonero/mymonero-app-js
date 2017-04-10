@@ -27,32 +27,51 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-// const setup_utils = require('../../renderer_utils/setup.cordova')
-// setup_utils({
-// 	reporting_processName: "MainWindow"
-// })
-//
-var rootView;
-var context;
-const cached_metadata = {}
-var app = 
-{ // implementing some methods to provide same API as electron
-	getVersion: function() { return cached_metadata.app_version },
-	getName: function() { return cached_metadata.app_name },
-	getDeviceManufacturer: function() { return cached_metadata.deviceManufacturer },
-	getIsDebug: function() { return cached_metadata.isDebug },
-	getPath: function(pathType)
-	{
-		if (pathType == 'userData') {
-			return cached_metadata.userDataAbsoluteFilepath
+window.BootApp = function()
+{ // encased in a functino to prevent scope being lost on mobile
+	//
+	// const setup_utils = require('../../renderer_utils/setup.cordova')
+	// setup_utils({
+	// 	reporting_processName: "MainWindow"
+	// })
+	//
+	var rootView;
+	var context;
+	const cached_metadata = {}
+	const app = 
+	{ // implementing some methods to provide same API as electron
+		getVersion: function() { return cached_metadata.app_version },
+		getName: function() { return cached_metadata.app_name },
+		getDeviceManufacturer: function() { return cached_metadata.deviceManufacturer },
+		getIsDebug: function() { return cached_metadata.isDebug },
+		getPath: function(pathType)
+		{
+			if (pathType == 'userData') {
+				return cached_metadata.userDataAbsoluteFilepath
+			}
+			throw 'app.getPath(): unrecognized pathType'
 		}
-		throw 'app.getPath(): unrecognized pathType'
 	}
-}
-document.addEventListener(
-	'deviceready', 
-	function()
+	console.log("window.cordova.platformId" , window.cordova.platformId)
+	if (window.cordova && window.cordova.platformId != "browser") { // Cordova
+		document.addEventListener(
+			'deviceready', 
+			function() { _proceedTo_loadCordovaEnvBeforeLoadingCachedMetadata() }, 
+			false
+		)
+	} else { // Web page, i.e. `cordova serve`
+		// mock cached_metadata values for browser-/non-cordova env… probably can be improved
+		cached_metadata.isDebug = true
+		cached_metadata.deviceManufacturer = "Debug"
+		cached_metadata.userDataAbsoluteFilepath = "./Debug"
+		cached_metadata.app_version = "0.0.1"
+		cached_metadata.app_name = "MyMonero"
+		//
+		// patch straight to
+		_proceedTo_createContextAndRootView()
+	}  
+	// Implementations - Setup - Cordova-specific
+	function _proceedTo_loadCordovaEnvBeforeLoadingCachedMetadata()
 	{
 		// just going to pre-emptively fetch whether isDebug before loading main body of metadata
 		cordova.plugins.DeviceMeta.getDeviceMeta(function(result)
@@ -62,41 +81,41 @@ document.addEventListener(
 			if (cached_metadata.isDebug === true) {
 				alert("Press OK to load app") // this is to give developer chance to open inspector - remove
 				// after short delay so alert actually done(?)
-				setTimeout(_proceedTo_loadMetaDataBeforeAppSetup, 500)
+				setTimeout(function() { _proceedTo_loadAsyncMetaDataBeforeAppSetup() }, 500)
 			} else {
-				_proceedTo_loadMetaDataBeforeAppSetup()
+				_proceedTo_loadAsyncMetaDataBeforeAppSetup()
 			}
 		})
-	}, 
-	false
-)
-// Setup
-function _proceedTo_loadMetaDataBeforeAppSetup()
-{ // cordova-specific - need to request various info - and they're mostly async, which sucks
-	cached_metadata.userDataAbsoluteFilepath = cordova.file.applicationStorageDirectory
-	cordova.getAppVersion.getVersionNumber(function(versionNumber)
-	{
-		cached_metadata.app_version = versionNumber
-		cordova.getAppVersion.getAppName(function(appName)
+	}
+	function _proceedTo_loadAsyncMetaDataBeforeAppSetup()
+	{ // cordova-specific - need to request various info - and they're mostly async, which sucks
+		cached_metadata.userDataAbsoluteFilepath = cordova.file.applicationStorageDirectory
+		cordova.getAppVersion.getVersionNumber(function(versionNumber)
 		{
-			cached_metadata.app_name = appName
-			_proceedTo_setupApp()
+			cached_metadata.app_version = versionNumber
+			cordova.getAppVersion.getAppName(function(appName)
+			{
+				cached_metadata.app_name = appName
+				_proceedTo_createContextAndRootView()
+			})
 		})
-	})
-}
-function _proceedTo_setupApp()
-{
-	console.log("_proceedTo_setupApp")
-	{ // context
-		context = require('./index_context.cordova').NewHydratedContext(app)
 	}
-	{ // root view
-		const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
-		rootView = new RootView({}, context) // hang onto reference
-		rootView.superview = null // just to be explicit; however we will set a .superlayer
-		// manually attach the rootView to the DOM and specify view's usual managed reference(s)
-		const superlayer = document.body
-		rootView.superlayer = superlayer
-		superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
+	// Implementations - Setup - Cordova and Browser/serve
+	function _proceedTo_createContextAndRootView()
+	{
+		console.log("_proceedTo_setupApp")
+		{ // context
+			context = require('./index_context.cordova').NewHydratedContext(app)
+		}
+		{ // root view
+			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
+			rootView = new RootView({}, context) // hang onto reference
+			rootView.superview = null // just to be explicit; however we will set a .superlayer
+			// manually attach the rootView to the DOM and specify view's usual managed reference(s)
+			const superlayer = document.body
+			rootView.superlayer = superlayer
+			superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
+		}
 	}
 }
+window.BootApp()

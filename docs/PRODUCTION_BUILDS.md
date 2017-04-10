@@ -17,7 +17,7 @@ If you would like to build for only a specific platform, you can edit `package.j
 
 ### Building
 
-In order to actually perform the production build for desktop, execute `bin/build_all_desktop`. 
+In order to actually perform the production build for desktop, execute `bin/package_all_desktop`. 
 
 This command relies upon resources present in `build`, and will output your build products in the directory `dist`.
 
