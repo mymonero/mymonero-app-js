@@ -31,28 +31,30 @@
 // Public - Setup - Entrypoints:
 function InitWithTasks_AndStartListening(tasksByName, reporting_processName, reporting_appVersion)
 { // Call this to set up the child
-	{ // start crash reporting
-		const options_template = require('../electron_main/crashReporterOptions')
-		const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
-		options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes
-		options.extra.process = reporting_processName
-		process.crashReporter.start(options) // and child processes must access process.crashReporter
-	}
-	{ // start exception reporting
-		const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
-		const options = require('../electron_main/exceptionReporterOptions')(
-			reporting_appVersion, 
-			reporting_processName
-		)
-		const sentry_dsn = options.sentry_dsn
-		const raven_params = 
-		{
-			autoBreadcrumbs: options.autoBreadcrumbs,
-			release: options.release,
-			environment: options.environment,
-			extra: options.extra
+	if (process.env.NODE_ENV !== 'development') {
+		{ // start crash reporting
+			const options_template = require('../electron_main/crashReporterOptions')
+			const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
+			options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes
+			options.extra.process = reporting_processName
+			process.crashReporter.start(options) // and child processes must access process.crashReporter
 		}
-		Raven.config(sentry_dsn, raven_params).install()
+		{ // start exception reporting
+			const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
+			const options = require('../electron_main/exceptionReporterOptions')(
+				reporting_appVersion, 
+				reporting_processName
+			)
+			const sentry_dsn = options.sentry_dsn
+			const raven_params = 
+			{
+				autoBreadcrumbs: options.autoBreadcrumbs,
+				release: options.release,
+				environment: options.environment,
+				extra: options.extra
+			}
+			Raven.config(sentry_dsn, raven_params).install()
+		}
 	}
 	//
 	{ // start observing incoming messages

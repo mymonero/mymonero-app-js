@@ -16,12 +16,13 @@ This version has been reimplemented in javascript and placed in public domain.
 	} else {
 		isNodeJSOrElectronRenderer = true
 	}
-	var nodeJS__crypto
+	//
+	var crc32 = require('./crc32').crc32
+	var nodeJS__crypto;
 	if (isNodeJSOrElectronRenderer == true) {
 		nodeJS__crypto = require('crypto')
-		crc32 = require('./crc32').crc32
-	}	
-	
+	}
+	//
 	var mn_default_wordset = 'english';
 	exports.mn_default_wordset = mn_default_wordset;
 
