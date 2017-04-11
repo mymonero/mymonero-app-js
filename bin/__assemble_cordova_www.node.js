@@ -48,7 +48,7 @@ const pathTo_assembled_www = path.join(__dirname, "..", "www")
 //
 // (in case www doesn't exist…)
 if (fs.existsSync(pathTo_assembled_www) == false) {
-	console.log(`📁  Creating ${pathTo_assembled_www}`)
+	// console.log(`📁  Creating ${pathTo_assembled_www}`)
     fs.mkdirSync(pathTo_assembled_www)
 }
 //
@@ -96,7 +96,7 @@ function rmDirContents_recursively(path, isRootLvl, alsoDeleteDir)
 				return
             }
 			// otherwise, simply delete file
-			console.log(`🗑  Deleting ${file}`)
+			// console.log(`🗑  Deleting ${file}`)
             fs.unlinkSync(filepath)
         }
 	)
@@ -122,7 +122,7 @@ function enumerateAndRecursivelyCopyDirContents(parentDir_prefix, isRootOf_local
 			}
 		}
 		if (shouldSkipThisFilename) {
-			console.log(`❎  Skipping copy of ${filename}`)
+			// console.log(`❎  Skipping copy of ${filename}`)
 			continue // skip this one
 		}
 		const filepath = path.join(parentDir, filename)
@@ -132,20 +132,20 @@ function enumerateAndRecursivelyCopyDirContents(parentDir_prefix, isRootOf_local
 		if (isSubdirAtPath) {
 			// first re-create this dir in pathTo_assembled_www/…
 			if (fs.existsSync(filepathIn_www) == false) {
-				console.log(`📁  Creating ${filepathPrefix}`)
+				// console.log(`📁  Creating ${filepathPrefix}`)
 				fs.mkdirSync(filepathIn_www)
 			}
 			// now traverse downwards…
-			console.log(`📂  Entering ${filepathPrefix}`)
+			// console.log(`📂  Entering ${filepathPrefix}`)
 			enumerateAndRecursivelyCopyDirContents(
 				filepathPrefix, // the new parentDir_prefix for recursion
 				false
 			)
-			console.log(`📂  Exiting ${filepathPrefix}`)
+			// console.log(`📂  Exiting ${filepathPrefix}`)
 			// finally, after going through the source contents, if no destination contents exist, delete this destination contents container directory
 			const filenamesIn_subdir = fs.readdirSync(filepathIn_www)
 			if (filenamesIn_subdir.length == 0) {
-				console.log(`🗑  Since empty, actually removing ${filepathPrefix}`)
+				// console.log(`🗑  Since empty, actually removing ${filepathPrefix}`)
 				fs.rmdirSync(filepathIn_www)
 			}
 		} else {
