@@ -37,7 +37,6 @@ window.BootApp = function()
 		getVersion: function() { return cached_metadata.app_version },
 		getName: function() { return cached_metadata.app_name },
 		getDeviceManufacturer: function() { return cached_metadata.deviceManufacturer },
-		getIsDebug: function() { return cached_metadata.isDebug },
 		getPath: function(pathType)
 		{
 			if (pathType == 'userData') {
@@ -45,7 +44,7 @@ window.BootApp = function()
 			}
 			throw 'app.getPath(): unrecognized pathType'
 		}
-	}
+	}	
 	const isRunningInBrowser = window.cordova.platformId == "browser"
 	if (window.cordova && isRunningInBrowser == false) { // Cordova
 		document.addEventListener(
@@ -60,6 +59,7 @@ window.BootApp = function()
 		cached_metadata.userDataAbsoluteFilepath = "./Debug"
 		cached_metadata.app_version = "0.0.1"
 		cached_metadata.app_name = "MyMonero"
+		cached_metadata.crossPlatform_appBundledAssetsRootPath = "../.." // cause can't access via browser at abs path for some reason
 		//
 		// patch straight to
 		_proceedTo_createContextAndRootView()
@@ -83,7 +83,10 @@ window.BootApp = function()
 	}
 	function _proceedTo_loadAsyncMetaDataBeforeAppSetup()
 	{ // cordova-specific - need to request various info - and they're mostly async, which sucks
+		// synchronous fetches:
 		cached_metadata.userDataAbsoluteFilepath = cordova.file.applicationStorageDirectory
+		cached_metadata.crossPlatform_appBundledAssetsRootPath = cordova.file.applicationDirectory + "www"
+		// asynchronous fetches:
 		cordova.getAppVersion.getVersionNumber(function(versionNumber)
 		{
 			cached_metadata.app_version = versionNumber
@@ -97,7 +100,6 @@ window.BootApp = function()
 	// Implementations - Setup - Cordova and Browser/serve
 	function _proceedTo_createContextAndRootView()
 	{
-		console.log("_proceedTo_setupApp")
 		{
 			const setup_utils = require('../../MMAppRendererSetup/renderer_setup.cordova')
 			setup_utils({
@@ -106,7 +108,11 @@ window.BootApp = function()
 			})
 		}
 		{ // context
-			context = require('./index_context.cordova').NewHydratedContext(app)
+			context = require('./index_context.cordova').NewHydratedContext({
+				app: app,
+				isDebug: cached_metadata.isDebug,
+				crossPlatform_appBundledAssetsRootPath: cached_metadata.crossPlatform_appBundledAssetsRootPath, // in this case, an absolute path.
+			})
 		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM

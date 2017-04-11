@@ -140,7 +140,10 @@ function NewHydratedContext(
 		app: app,
 		menuController: menuController,
 		urlOpeningController: urlOpeningController,
-		userDataAbsoluteFilepath: app.getPath('userData')
+		userDataAbsoluteFilepath: app.getPath('userData'),
+		isDebug: process.env.NODE_ENV === 'development',
+		crossPlatform_appBundledAssetsRootPath: "../.."
+
 	}
 	// required options (which can only be obtained with `app`, etc.)
 	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()

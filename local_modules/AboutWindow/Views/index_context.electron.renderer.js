@@ -45,7 +45,9 @@ function NewHydratedContext(
 	var initialContext =
 	{
 		app: app,
-		menuController: menuController
+		menuController: menuController,
+		isDebug: process.env.NODE_ENV === 'development',
+		crossPlatform_appBundledAssetsRootPath: "../..",
 	}
 
 	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
