@@ -28,34 +28,21 @@
 //
 "use strict"
 //
-const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
-setup_utils({
-	reporting_processName: "MainWindow"
-})
+const isDev = process.env.NODE_ENV === 'development'
 //
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const rootView = new_rootView() // hang onto reference for imminent insertion
-{ // manually attach the rootView to the DOM and specify view's usual managed reference(s)
-	const superlayer = document.body
-	rootView.superlayer = superlayer
-	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
-}
-//
-// Accessors - Factories
-function new_rootView()
+module.exports = function(appVersion, processType)
 {
-	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
-	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-		remote__app, 
-		remote__context.menuController, // for UI and app runtime access
-		remote__context.urlOpeningController
-	)
-	const options = {}
-	const view = new RootView(options, renderer_context)
-	view.superview = null // just to be explicit; however we will set a .superlayer
-	//
-	return view
+	return {
+	    sentry_dsn: "https://2f7104daa7ed48d8bd7cd5930687d4d3:ce435690e43b4a87aa907dd3eca3276d@sentry.io/155215",
+		autoBreadcrumbs: {
+			console: true,
+			http: false // server should get 'em anyway and this could leak info like addr/viewkeys
+		},
+		release: "7ed0d576195d11e7be78002590f37c52", // generated on sentry.io… maybe move to package.json
+		environment: process.env.NODE_ENV || "production", // is nil in production
+		extra: { 
+			process: processType, 
+			version: appVersion
+		}
+	}
 }

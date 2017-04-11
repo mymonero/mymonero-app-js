@@ -28,34 +28,20 @@
 //
 "use strict"
 //
-const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
-setup_utils({
-	reporting_processName: "MainWindow"
-})
+const renderer_setup_utils = require('./renderer_setup_utils')
 //
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const rootView = new_rootView() // hang onto reference for imminent insertion
-{ // manually attach the rootView to the DOM and specify view's usual managed reference(s)
-	const superlayer = document.body
-	rootView.superlayer = superlayer
-	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
-}
-//
-// Accessors - Factories
-function new_rootView()
+module.exports = function(params)
 {
-	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
-	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-		remote__app, 
-		remote__context.menuController, // for UI and app runtime access
-		remote__context.urlOpeningController
-	)
-	const options = {}
-	const view = new RootView(options, renderer_context)
-	view.superview = null // just to be explicit; however we will set a .superlayer
+	params = params || {}
 	//
-	return view
+	if (process.env.NODE_ENV !== 'development') {
+		renderer_setup_utils.StartExceptionReporting(
+			require("../reporting/exceptionReporterOptions.cordova"),
+			params.appVersion, 
+			params.reporting_processName
+		)
+		renderer_setup_utils.StartAlertingExceptions()
+	}
+	renderer_setup_utils.HardenRuntime()
+	renderer_setup_utils.IdentifyRuntime("IsCordovaElectronRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
 }

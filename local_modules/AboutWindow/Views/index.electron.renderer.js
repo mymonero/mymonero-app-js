@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const setup_utils = require('../../electron_renderer_utils/renderer_setup_utils')
+const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
 setup_utils({
 	reporting_processName: "AboutWindow"
 })

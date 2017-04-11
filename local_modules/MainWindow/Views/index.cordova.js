@@ -28,13 +28,7 @@
 //
 "use strict"
 window.BootApp = function()
-{ // encased in a functino to prevent scope being lost on mobile
-	//
-	// const setup_utils = require('../../renderer_utils/setup.cordova')
-	// setup_utils({
-	// 	reporting_processName: "MainWindow"
-	// })
-	//
+{ // encased in a function to prevent scope being lost/freed on mobile
 	var rootView;
 	var context;
 	const cached_metadata = {}
@@ -52,8 +46,8 @@ window.BootApp = function()
 			throw 'app.getPath(): unrecognized pathType'
 		}
 	}
-	console.log("window.cordova.platformId" , window.cordova.platformId)
-	if (window.cordova && window.cordova.platformId != "browser") { // Cordova
+	const isRunningInBrowser = window.cordova.platformId == "browser"
+	if (window.cordova && isRunningInBrowser == false) { // Cordova
 		document.addEventListener(
 			'deviceready', 
 			function() { _proceedTo_loadCordovaEnvBeforeLoadingCachedMetadata() }, 
@@ -104,6 +98,13 @@ window.BootApp = function()
 	function _proceedTo_createContextAndRootView()
 	{
 		console.log("_proceedTo_setupApp")
+		{
+			const setup_utils = require('../../MMAppRendererSetup/renderer_setup.cordova')
+			setup_utils({
+				appVersion: app.getVersion(),
+				reporting_processName: "CordovaWindow"
+			})
+		}
 		{ // context
 			context = require('./index_context.cordova').NewHydratedContext(app)
 		}

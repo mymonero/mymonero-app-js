@@ -28,8 +28,7 @@
 //
 "use strict"
 //
-const _ = require('underscore') // minor optimization for other platforms 
-// would be to embed this require only where it's used below but here for clarity
+const renderer_setup_utils = require('./renderer_setup_utils')
 //
 module.exports = function(params)
 {
@@ -37,73 +36,30 @@ module.exports = function(params)
 	//
 	if (process.env.NODE_ENV !== 'development') {
 		startCrashReporting(params.reporting_processName) // do we really need crash reporting in renderer proc? is that for Chrome crashes?
-		startExceptionReporting(params.exceptionReporting_processName)
+		//
+		const remote__electron = require('electron').remote
+		const remote__app = remote__electron.app
+		const appVersion = remote__app.getVersion()
+		renderer_setup_utils.StartExceptionReporting(
+			require("../reporting/exceptionReporterOptions.electron"),
+			appVersion, 
+			params.reporting_processName
+		)
+		renderer_setup_utils.StartAlertingExceptions()
 	}
-	startAlertingExceptions()
-	//
-	hardenRuntime()
-	identifyRuntime()
+	renderer_setup_utils.HardenRuntime()
+	renderer_setup_utils.IdentifyRuntime("IsElectronRendererProcess") // set key-value to `true` on `window`
 	ensureEnv()
 }
-//
 //
 function startCrashReporting(reporting_processName)
 {
 	const {crashReporter} = require('electron')
-	const options_template = require('../electron_main/crashReporterOptions')
+	const options_template = require('../reporting/crashReporterOptions.electron')
 	const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
 	options.extra.process = reporting_processName
 	crashReporter.start(options)
 }
-function startExceptionReporting(exceptionReporting_processName)
-{
-	const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
-	const remote__electron = require('electron').remote
-	const remote__app = remote__electron.app
-	const appVersion = remote__app.getVersion()
-	const options = require('../electron_main/exceptionReporterOptions')(appVersion, exceptionReporting_processName)
-	const sentry_dsn = options.sentry_dsn
-	const raven_params = 
-	{
-		autoBreadcrumbs: options.autoBreadcrumbs,
-		release: options.release,
-		environment: options.environment,
-		extra: options.extra
-	}
-	Raven.config(sentry_dsn, raven_params).install()
-}
-function startAlertingExceptions()
-{
-	if (process.env.NODE_ENV !== 'development') { // cause it's slightly intrusive to the dev process and obscures stack trace - and though we're catching these here, Raven still appears to pick them up
-		process.on(
-			'uncaughtException', 
-			function(error)
-			{
-				var errStr = "An unexpected application error occurred.\n\nPlease let us know of ";
-				if (error) {
-					errStr += "the following error message as it could be a bug:\n\n"+ error.toString()
-				} else {
-					errStr += "this issue as it could be a bug."
-				}
-				alert(errStr)
-			}
-		)
-	}
-}
-//
-function hardenRuntime()
-{
-	// disable eval
-	window.eval = global.eval = function()
-	{
-		throw new Error("MyMonero does not support window.eval() for security reasons.")
-	}
-}
-function identifyRuntime()
-{
-	window.IsElectronRendererProcess = true
-}
-//
 function ensureEnv()
 {
 	if (process.platform === 'linux') {
@@ -112,6 +68,7 @@ function ensureEnv()
 		const remote__electron = require('electron').remote
 		const remote__process = remote__electron.process
 		const remote__env = remote__process.env
+		const _ = require('underscore')
 	    var newEnv = _.extend({}, process.env, remote__env);
 	    process.env = newEnv;
 	}

@@ -33,15 +33,15 @@ function InitWithTasks_AndStartListening(tasksByName, reporting_processName, rep
 { // Call this to set up the child
 	if (process.env.NODE_ENV !== 'development') {
 		{ // start crash reporting
-			const options_template = require('../electron_main/crashReporterOptions')
+			const options_template = require('../reporting/crashReporterOptions.electron')
 			const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
-			options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes
+			options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes; TODO: does this really work in prod?
 			options.extra.process = reporting_processName
 			process.crashReporter.start(options) // and child processes must access process.crashReporter
 		}
 		{ // start exception reporting
 			const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
-			const options = require('../electron_main/exceptionReporterOptions')(
+			const options = require('../reporting/exceptionReporterOptions.electron')(
 				reporting_appVersion, 
 				reporting_processName
 			)

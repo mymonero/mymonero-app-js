@@ -44,6 +44,9 @@ module.exports =
             fs: "html5-fs"
         }
     },
+    externals: {
+    	"pg": "pg" // we simply want to prevent webpack from trying to bundle Raven -> pg
+    },
 	module: {
 		loaders: [
 			{ 

@@ -28,34 +28,56 @@
 //
 "use strict"
 //
-const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
-setup_utils({
-	reporting_processName: "MainWindow"
-})
-//
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const rootView = new_rootView() // hang onto reference for imminent insertion
-{ // manually attach the rootView to the DOM and specify view's usual managed reference(s)
-	const superlayer = document.body
-	rootView.superlayer = superlayer
-	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
-}
-//
-// Accessors - Factories
-function new_rootView()
+function StartExceptionReporting(
+	exceptionReporterOptions_requiredModule, 
+	appVersion, 
+	exceptionReporting_processName
+)
 {
-	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
-	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-		remote__app, 
-		remote__context.menuController, // for UI and app runtime access
-		remote__context.urlOpeningController
-	)
-	const options = {}
-	const view = new RootView(options, renderer_context)
-	view.superview = null // just to be explicit; however we will set a .superlayer
-	//
-	return view
+	const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
+	const options = exceptionReporterOptions_requiredModule(appVersion, exceptionReporting_processName)
+	const sentry_dsn = options.sentry_dsn
+	const raven_params = 
+	{
+		autoBreadcrumbs: options.autoBreadcrumbs,
+		release: options.release,
+		environment: options.environment,
+		extra: options.extra
+	}
+	Raven.config(sentry_dsn, raven_params).install()
 }
+exports.StartExceptionReporting = StartExceptionReporting
+//
+function StartAlertingExceptions()
+{
+	process.on(
+		'uncaughtException', 
+		function(error)
+		{
+			var errStr = "An unexpected application error occurred.\n\nPlease let us know of ";
+			if (error) {
+				errStr += "the following error message as it could be a bug:\n\n"+ error.toString()
+			} else {
+				errStr += "this issue as it could be a bug."
+			}
+			alert(errStr)
+		}
+	)
+}
+exports.StartAlertingExceptions = StartAlertingExceptions
+//
+function HardenRuntime()
+{
+	// disable eval
+	window.eval = global.eval = function()
+	{
+		throw new Error("MyMonero does not support window.eval() for security reasons.")
+	}
+}
+exports.HardenRuntime = HardenRuntime
+//
+function IdentifyRuntime(runtimeNameFlag)
+{
+	window[runtimeNameFlag] = true // e.g. IsElectronRendererProcess
+}
+exports.IdentifyRuntime = IdentifyRuntime

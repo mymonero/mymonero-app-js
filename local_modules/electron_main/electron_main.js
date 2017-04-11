@@ -31,7 +31,7 @@
 const {crashReporter, app} = require('electron')
 if (process.env.NODE_ENV !== 'development') {
 	{ // Crash reporting
-		const options_template = require('./crashReporterOptions')
+		const options_template = require('../reporting/crashReporterOptions.electron')
 		const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
 		options.extra.process = "electron_main"
 		crashReporter.start(options)
@@ -44,7 +44,7 @@ if (process.env.NODE_ENV !== 'development') {
 	{ // Exception reporting
 		const Raven = require('raven')
 		const appVersion = app.getVersion()
-		const options = require('./exceptionReporterOptions')(appVersion, "electron_main")
+		const options = require('../reporting/exceptionReporterOptions.electron')(appVersion, "electron_main")
 		const sentry_dsn = options.sentry_dsn
 		const raven_params = 
 		{
