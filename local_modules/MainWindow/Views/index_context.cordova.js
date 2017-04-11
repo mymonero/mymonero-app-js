@@ -65,6 +65,11 @@ function NewHydratedContext(
 		},
 		//
 		// services
+		{
+			module: require("../../Locale/Locale.cordova"),
+			instance_key: "locale",
+			options: {}
+		},
 		{ // is not actually background, at the moment
 			module: require("../../symmetric_cryptor/BackgroundDocumentCryptor.cordova"),
 			instance_key: "document_cryptor__background",

@@ -28,23 +28,31 @@
 //
 "use strict"
 //
-const monero_wallet_utils = require('./monero_wallet_utils')
+const Locale_Abstract = require('./Locale_Abstract')
 //
-function mnemonicWordsetNameAccordingToLocaleWithApp(app)
+class Locale extends Locale_Abstract
 {
-	const self = this
-	const currentLocale = app.getLocale()
-	const mnemonicWordsetNamesByAppLocaleNames = monero_wallet_utils.MnemonicWordsetNamesByAppLocaleNames
-	if (currentLocale.indexOf('en') === 0) {
-		return mnemonicWordsetNamesByAppLocaleNames.English
-	} else if (currentLocale.indexOf('es') === 0) {
-		return mnemonicWordsetNamesByAppLocaleNames.Spanish
-	} else if (currentLocale.indexOf('pt') === 0) {
-		return mnemonicWordsetNamesByAppLocaleNames.Portuguese
-	} else if (currentLocale.indexOf('ja') === 0) {
-		return mnemonicWordsetNamesByAppLocaleNames.Japanese
+	constructor(options, context)
+	{
+		super(options, context)
+		if (!navigator.globalization) {
+			throw "Missing navigator.globalization under Cordova"
+		}
 	}
-	return monero_wallet_utils.DefaultWalletMnemonicWordsetName // which would be .English
-	
+	Locale(fn)
+	{
+		const self = this
+		navigator.globalization.getLocaleName(
+		    function (locale)
+		    {
+		    	const currentLocale = locale.value
+		    	fn(null, currentLocale)
+		    },
+		    function ()
+		    {
+		    	fn(new Error("Unknown Error Obtaining Locale"), null)
+		    }
+		)
+	}
 }
-exports.MnemonicWordsetNameAccordingToLocaleWithApp = mnemonicWordsetNameAccordingToLocaleWithApp
+module.exports = Locale

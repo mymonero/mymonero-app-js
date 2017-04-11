@@ -61,9 +61,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self._setup_form_walletSwatchField()
 		}
 		setTimeout(function()
-		{ // after visible…
+		{ // after visible… (TODO: improve by doing on VDA or other trigger)
 			self.mnemonicTextAreaView.layer.focus()
-		}, 900)
+		}, 600)
 	}
 	_setup_form_walletMnemonicField()
 	{

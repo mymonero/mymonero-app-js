@@ -35,6 +35,7 @@ const extend = require('util')._extend
 const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
 const monero_txParsing_utils = require('../../monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
+const monero_wallet_locale = require('../../monero_utils/monero_wallet_locale')
 const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
 const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
 //
@@ -174,25 +175,27 @@ class Wallet extends EventEmitter
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false
 		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default
-		if (typeof self.context.app === 'undefined') {
-			self.mnemonic_wordsetName = monero_wallet_utils.DefaultWalletMnemonicWordsetName
-			console.log(`Defaulting to ${self.mnemonic_wordsetName} as self.context.app missing and so won't detect locale.`)
-		} else {
-			// for now, we'll assume this is electron
-			const monero_wallet_locale = require('../../monero_utils/monero_wallet_locale.electron') // include other lib when supporting other platforms
-			self.mnemonic_wordsetName = monero_wallet_locale.MnemonicWordsetNameAccordingToLocaleWithApp(self.context.app) // will default to english if no match
-		}
-		//
-		// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
-		// case I: user is inputting mnemonic string
-		// case II: user is inputting address + view & spend keys
-		// case III: we're creating a new wallet
-		if (self.options.generateNewWallet === true) { // generate new mnemonic seed -- we will pick this up later in the corresponding Boot_*
-			self.generatedOnInit_walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName)
-		}
-		//
-		// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
-		self.successfullyInitialized_cb()
+		self.context.locale.Locale(function(err, currentLocale)
+		{
+			if (err) {
+				console.error("Error obtaining locale.")
+				throw err
+				self.failedToInitialize_cb(err)
+				return
+			}
+			self.mnemonic_wordsetName = monero_wallet_locale.MnemonicWordsetNameWithLocale(currentLocale) // will default to english if no match
+			//
+			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
+			// case I: user is inputting mnemonic string
+			// case II: user is inputting address + view & spend keys
+			// case III: we're creating a new wallet
+			if (self.options.generateNewWallet === true) { // generate new mnemonic seed -- we will pick this up later in the corresponding Boot_*
+				self.generatedOnInit_walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName)
+			}
+			//
+			// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
+			self.successfullyInitialized_cb()
+		})
 	}
 
 	

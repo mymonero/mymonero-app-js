@@ -41,11 +41,11 @@ class CreateWallet_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		super._setup_views()
 		self._setup_form_walletNameField()
 		self._setup_form_walletSwatchField()
-		// after visible…
+		// after visible… (TODO: improve this by doing on VDA or other trigger)
 		setTimeout(function()
 		{
 			self.walletNameInputLayer.focus()
-		}, 900)
+		}, 600)
 	}
 	_setup_startObserving()
 	{

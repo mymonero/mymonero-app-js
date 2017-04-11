@@ -170,10 +170,10 @@ class ContactFormView extends View
 		)
 		div.appendChild(valueLayer)
 		self.form_containerLayer.appendChild(div)
-		//
+		// after visible… (TODO: improve this by doing on VDA or other trigger)
 		setTimeout(function() {
 			self.fullnameInputLayer.focus()
-		}, 900)
+		}, 600)
 	}
 	_overridable_initial_emoji_value()
 	{

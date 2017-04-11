@@ -119,7 +119,7 @@ class EnterNewPasswordView extends View
 		setTimeout(function()
 		{
 			self.passwordInputLayer.focus()
-		}, 900)
+		}, 600)
 	}
 	_setup_form_confirmPasswordInputField()
 	{
