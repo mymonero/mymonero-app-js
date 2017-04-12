@@ -31,7 +31,6 @@
 const View = require('../../Views/View.web')
 const emoji_set = require('../emoji_set')
 const emoji_web = require('../emoji_web')
-emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 const EmojiButtonView_height = 30	
 //

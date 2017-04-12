@@ -33,7 +33,6 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 const emoji_web = require('../../Emoji/emoji_web')
-emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 // CSS rules
 const Views__cssRules = require('../../Views/cssRules.web')

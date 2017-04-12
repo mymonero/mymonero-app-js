@@ -30,7 +30,6 @@
 //
 const View = require('../Views/View.web')
 const emoji_web = require('../Emoji/emoji_web')
-emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 const default__margin_h = 16
 const default__margin_v = 18

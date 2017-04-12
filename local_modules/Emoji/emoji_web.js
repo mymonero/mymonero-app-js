@@ -41,10 +41,10 @@ const stylesheetPaths =
 function __injectCSS_ifNecessary() { Views__cssRules.InjectCSSFiles_ifNecessary(stylesheetPaths) }
 //
 var cached_spritesheetImage;
-function PreLoad()
+function PreLoad(context) // sadly we need the context so we defer this instead of more rigorously calling it anytime someone requires emoji_web
 { // preload sprites to prevent delay
 	const image = new Image()
-	image.src = "../../Emoji/Vendor/emojione.sprites.png"
+	image.src = context.crossPlatform_appBundledAssetsRootPath+"/Emoji/Vendor/emojione.sprites.png"
 	cached_spritesheetImage = image
 	//
 	__injectCSS_ifNecessary() // good time to do this

@@ -34,7 +34,6 @@ const View = require('../../Views/View.web')
 const BarButtonBaseView = require('./BarButtonBaseView.web')
 //
 const emoji_web = require('../../Emoji/emoji_web')
-emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 // CSS rules
 const Views__cssRules = require('../../Views/cssRules.web')

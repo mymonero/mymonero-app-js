@@ -34,7 +34,6 @@ const View = require('../../Views/View.web')
 const dom_traversal = require('../../Views/dom_traversal.web')
 const EmojiPickerPopoverView = require('./EmojiPickerPopoverView.web')
 const emoji_web = require('../emoji_web')
-emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 // CSS rules
 const Views__cssRules = require('../../Views/cssRules.web')

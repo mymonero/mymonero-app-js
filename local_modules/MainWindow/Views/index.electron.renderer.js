@@ -37,7 +37,21 @@ const remote__electron = require('electron').remote
 const remote__app = remote__electron.app
 const remote__context = remote__electron.getGlobal("context")
 //
-const rootView = new_rootView() // hang onto reference for imminent insertion
+const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
+const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
+	remote__app, 
+	remote__context.menuController, // for UI and app runtime access
+	remote__context.urlOpeningController
+)
+{ // since we're using emoji, now that we have the context, let's call PreLoad
+	const emoji_web = require('../../Emoji/emoji_web')
+	emoji_web.PreLoad(renderer_context) // to prevent delay before display / perform sprite preload
+}
+const options = {}
+const rootView = new RootView(options, renderer_context)
+rootView.superview = null // just to be explicit; however we will set a .superlayer
+
+
 { // manually attach the rootView to the DOM and specify view's usual managed reference(s)
 	const superlayer = document.body
 	rootView.superlayer = superlayer
@@ -45,17 +59,3 @@ const rootView = new_rootView() // hang onto reference for imminent insertion
 }
 //
 // Accessors - Factories
-function new_rootView()
-{
-	const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
-	const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-		remote__app, 
-		remote__context.menuController, // for UI and app runtime access
-		remote__context.urlOpeningController
-	)
-	const options = {}
-	const view = new RootView(options, renderer_context)
-	view.superview = null // just to be explicit; however we will set a .superlayer
-	//
-	return view
-}

@@ -32,7 +32,6 @@ const Views__cssRules = require('../Views/cssRules.web')
 const commonComponents_forms = require('./forms.web')
 //
 const emoji_web = require('../Emoji/emoji_web')
-emoji_web.PreLoad() // to prevent delay before display / perform sprite preload
 //
 const NamespaceName = "contactPicker"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
