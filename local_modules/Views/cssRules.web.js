@@ -28,9 +28,20 @@
 //
 "use strict"
 //
-function InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+function InjectCSSRules_ifNecessary(
+	haveCSSRulesBeenInjected_documentKey, 
+	cssRules__orGeneratorFn,
+	context__orNil
+)
 {
 	if (document[haveCSSRulesBeenInjected_documentKey] !== true) {
+		var cssRules;
+		if (typeof cssRules__orGeneratorFn === 'function') {
+			cssRules = cssRules__orGeneratorFn(context__orNil)
+		} else {
+			cssRules = cssRules__orGeneratorFn
+		}
+		//
 		const reversed_cssRules = cssRules.reverse()
 		reversed_cssRules.forEach(
 			function(cssRuleString, i)

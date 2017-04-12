@@ -39,48 +39,59 @@ const emoji_web = require('../emoji_web')
 const Views__cssRules = require('../../Views/cssRules.web')
 const NamespaceName = "EmojiPickerControlView"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	`.${NamespaceName} {
-		box-sizing: border-box;
-		width: 58px;
-		height: 31px;
-	}`,
-	`.${NamespaceName} > a {
-		border-radius: 3px;
-		
-		display: block;
-		box-sizing: border-box;
-		width: 58px;
-		height: 31px;
-		
-		text-decoration: none;
-		text-align: left;
-		text-indent: 8px;
-		line-height: 31px;
-		font-size: 13px;
-		
-		background-image: url(../../Emoji/Resources/popoverDisclosureArrow@2x.png);
-		background-size: 8px 7px;
-		background-position: 42px 13px;
-		background-repeat: no-repeat;
-		
-		transition: background-color 0.1s ease-out, box-shadow 0.1s ease-out;
-		background-color: #383638;
-		box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
-	}`,
-	`.${NamespaceName} > a.active,
-	 .${NamespaceName} > a:hover {
-		 background-color: #494749;
-		 box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #5A585A;
-	}`,
-	`.${NamespaceName} > a .emojione {
-		transform: scale(${17/64});
-		margin-left: -24px;
-		margin-top: -14px;
-	}`
-]
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+function cssRules_generatorFn(context)
+{
+	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const cssRules =
+	[
+		`.${NamespaceName} {
+			box-sizing: border-box;
+			width: 58px;
+			height: 31px;
+		}`,
+		`.${NamespaceName} > a {
+			border-radius: 3px;
+			
+			display: block;
+			box-sizing: border-box;
+			width: 58px;
+			height: 31px;
+			
+			text-decoration: none;
+			text-align: left;
+			text-indent: 8px;
+			line-height: 31px;
+			font-size: 13px;
+			
+			background-image: url(${assetsPath}/Emoji/Resources/popoverDisclosureArrow@2x.png);
+			background-size: 8px 7px;
+			background-position: 42px 13px;
+			background-repeat: no-repeat;
+			
+			transition: background-color 0.1s ease-out, box-shadow 0.1s ease-out;
+			background-color: #383638;
+			box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
+		}`,
+		`.${NamespaceName} > a.active,
+		 .${NamespaceName} > a:hover {
+			 background-color: #494749;
+			 box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #5A585A;
+		}`,
+		`.${NamespaceName} > a .emojione {
+			transform: scale(${17/64});
+			margin-left: -24px;
+			margin-top: -14px;
+		}`
+	]
+	return cssRules
+}
+function __injectCSSRules_ifNecessary(context) {
+	Views__cssRules.InjectCSSRules_ifNecessary(
+		haveCSSRulesBeenInjected_documentKey, 
+		cssRules_generatorFn,
+		context
+	)
+}
 //
 class EmojiPickerControlView extends View
 {
@@ -114,7 +125,7 @@ class EmojiPickerControlView extends View
 		const self = this
 		const layer = self.layer
 		layer.classList.add("EmojiPickerControlView")
-		__injectCSSRules_ifNecessary()
+		__injectCSSRules_ifNecessary(self.context)
 		layer.style.position = "relative" // for pos:abs children
 	}
 	_setup_aLayer()
@@ -158,7 +169,7 @@ class EmojiPickerControlView extends View
 					self.hidePopoverView()
 				})
 			}
-		})
+		}, self.context)
 		view.layer.style.right = "-37px" // to get arrow center aligned with emoji center
 		view.layer.style.top = "12px"
 		self.popoverView = view
