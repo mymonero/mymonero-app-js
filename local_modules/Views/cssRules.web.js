@@ -72,8 +72,15 @@ function InjectCSSFile_ifNecessary(stylesheetHref)
 }
 exports.InjectCSSFile_ifNecessary = InjectCSSFile_ifNecessary
 //
-function InjectCSSFiles_ifNecessary(stylesheetHrefs)
+function InjectCSSFiles_ifNecessary(stylesheetHrefs__orGeneratorFn)
 {
+	var stylesheetHrefs;
+	if (typeof stylesheetHrefs__orGeneratorFn === 'function') {
+		stylesheetHrefs = stylesheetHrefs__orGeneratorFn(context__orNil)
+	} else {
+		stylesheetHrefs = stylesheetHrefs__orGeneratorFn
+	}
+	//
 	const numberOf_stylesheetHrefs = stylesheetHrefs.length
 	for (let i = 0 ; i < numberOf_stylesheetHrefs ; i++) {
 		const stylesheetHref = stylesheetHrefs[i]

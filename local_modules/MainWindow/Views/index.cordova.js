@@ -46,6 +46,8 @@ window.BootApp = function()
 		}
 	}	
 	const isRunningInBrowser = window.cordova.platformId == "browser"
+	cached_metadata.isRunningInBrowser = isRunningInBrowser
+	//
 	if (window.cordova && isRunningInBrowser == false) { // Cordova
 		document.addEventListener(
 			'deviceready', 
@@ -113,6 +115,12 @@ window.BootApp = function()
 				isDebug: cached_metadata.isDebug,
 				crossPlatform_appBundledAssetsRootPath: cached_metadata.crossPlatform_appBundledAssetsRootPath, // in this case, an absolute path.
 			})
+		}
+		if (isRunningInBrowser) { // then we don't have guaranteed native emoji support
+			{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
+				const emoji_web = require('../../Emoji/emoji_web')
+				emoji_web.PreLoadAndSetUpEmojiOne(context)
+			}
 		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM

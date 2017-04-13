@@ -33,23 +33,35 @@ emojione.imageType = "png" // png instead of svg as svg appear too slow to displ
 emojione.sprites = true
 //
 const Views__cssRules = require('../Views/cssRules.web')
-const stylesheetPaths =
-[
-	"../../Emoji/Vendor/emojione.min.css",
-	"../../Emoji/Vendor/emojione.spritesheet.css"
-]
-function __injectCSS_ifNecessary() { Views__cssRules.InjectCSSFiles_ifNecessary(stylesheetPaths) }
+function stylesheetPaths_generatorFn(context)
+{
+	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const stylesheetPaths =
+	[
+		"${assetsPath}/Emoji/Vendor/emojione.min.css",
+		"${assetsPath}/Emoji/Vendor/emojione.spritesheet.css"
+	]
+	return stylesheetPaths
+}
+function __injectCSS_ifNecessary(context) 
+{
+	Views__cssRules.InjectCSSFiles_ifNecessary(
+		stylesheetPaths_generatorFn,
+		context
+	) 
+}
 //
 var cached_spritesheetImage;
-function PreLoad(context) // sadly we need the context so we defer this instead of more rigorously calling it anytime someone requires emoji_web
-{ // preload sprites to prevent delay
+function PreLoadAndSetUpEmojiOne(context)
+{ // ^ be sure to call this in order to inject the stylesheets
+	// preload sprites to prevent delay
 	const image = new Image()
 	image.src = context.crossPlatform_appBundledAssetsRootPath+"/Emoji/Vendor/emojione.sprites.png"
 	cached_spritesheetImage = image
 	//
-	__injectCSS_ifNecessary() // good time to do this
+	__injectCSS_ifNecessary(context) // good time to do this
 }
-exports.PreLoad = PreLoad
+exports.PreLoadAndSetUpEmojiOne = PreLoadAndSetUpEmojiOne
 // 
 function NativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 {
@@ -57,7 +69,6 @@ function NativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 	// if (process.platform === "darwin") { // because MacOS has good support for Emoji; add iOS here too
 	// 	return nativeEmojiText
 	// }
-	__injectCSS_ifNecessary()
 	const text = emojione.unicodeToImage(nativeEmojiText)
 	return text
 }

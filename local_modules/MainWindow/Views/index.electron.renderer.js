@@ -43,9 +43,9 @@ const renderer_context = require('./index_context.electron.renderer').NewHydrate
 	remote__context.menuController, // for UI and app runtime access
 	remote__context.urlOpeningController
 )
-{ // since we're using emoji, now that we have the context, let's call PreLoad
+{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
 	const emoji_web = require('../../Emoji/emoji_web')
-	emoji_web.PreLoad(renderer_context) // to prevent delay before display / perform sprite preload
+	emoji_web.PreLoadAndSetUpEmojiOne(renderer_context)
 }
 const options = {}
 const rootView = new RootView(options, renderer_context)
