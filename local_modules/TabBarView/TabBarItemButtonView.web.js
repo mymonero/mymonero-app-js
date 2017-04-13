@@ -45,6 +45,10 @@ class TabBarItemButtonView extends View
 			self.layer_baseStyleTemplate = options.layer_baseStyleTemplate || {}
 			self.icon_baseStyleTemplate = options.icon_baseStyleTemplate || {}
 			self.icon_selected_baseStyleTemplate = options.icon_selected_baseStyleTemplate || self.icon_baseStyleTemplate // fall back to non-selected
+			self.numberOf_tabs = options.numberOf_tabs
+			if (!self.numberOf_tabs) {
+				throw `${self.constructor.name} requires options.numberOf_tabs`
+			}
 		}
 		self.setup()
 	}
@@ -68,7 +72,7 @@ class TabBarItemButtonView extends View
 			layer.style.webkitAppRegion = "no-drag" // make clickable
 			const stackedThickness = 56
 			if (self.isHorizontalBar) {
-				layer.style.width = `${stackedThickness}px`
+				layer.style.width = `${100/self.numberOf_tabs}%`
 				layer.style.height = `${self.tabBarView_thickness}px`
 			} else {
 				layer.style.width = `${self.tabBarView_thickness}px`

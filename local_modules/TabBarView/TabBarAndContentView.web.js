@@ -174,6 +174,7 @@ class TabBarAndContentView extends View
 		{ // add tab bar item button views, and new tabBarContentViews
 			const isHorizontalBar = self.overridable_isHorizontalBar()
 			const tabBarView_thickness = self.overridable_tabBarView_thickness()
+			const numberOf_tabs = to_tabBarContentViews.length
 			to_tabBarContentViews.forEach(
 				function(to_tabBarContentView, idx)
 				{
@@ -215,7 +216,8 @@ class TabBarAndContentView extends View
 							//
 							layer_baseStyleTemplate: layer_baseStyleTemplate,
 							icon_baseStyleTemplate: icon_baseStyleTemplate,
-							icon_selected_baseStyleTemplate: icon_selected_baseStyleTemplate
+							icon_selected_baseStyleTemplate: icon_selected_baseStyleTemplate,
+							numberOf_tabs: numberOf_tabs
 						}
 						const buttonView = new TabBarItemButtonView(options, context)
 						buttonView.on(
