@@ -71,7 +71,7 @@ class ContactsListCellView extends ListCellView
 		self.__setup_emojiLayer()
 		self.__setup_nameLayer()
 		self.__setup_addressLayer()
-		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer())
+		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context))
 		self.__setup_cellSeparatorLayer()
 	}
 	__setup_emojiLayer()

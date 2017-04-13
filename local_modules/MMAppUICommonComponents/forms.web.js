@@ -65,7 +65,7 @@ const cssRules =
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
-function New_fieldContainerLayer()
+function New_fieldContainerLayer(context)
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")

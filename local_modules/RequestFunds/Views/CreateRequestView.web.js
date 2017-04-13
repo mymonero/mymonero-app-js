@@ -124,7 +124,7 @@ class CreateRequestView extends View
 	_setup_form_walletSelectLayer()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.display = "block"
 		div.style.padding = "0 24px 0 24px"
 		{
@@ -161,7 +161,7 @@ class CreateRequestView extends View
 	_setup_form_memoInputLayer()
 	{ // Memo
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingTop = "31px"
 		div.style.paddingBottom = "0"
 		{
@@ -195,7 +195,7 @@ class CreateRequestView extends View
 	_setup_form_contactPickerLayer()
 	{ // Request funds from sender
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingTop = "9px"
 		div.style.paddingBottom = "0"
 		{
@@ -256,7 +256,7 @@ class CreateRequestView extends View
 	_setup_form_resolvedPaymentID_containerLayer()
 	{ // TODO: factor this into a commonComponent file
 		const self = this
-		const containerLayer = commonComponents_forms.New_fieldContainerLayer()
+		const containerLayer = commonComponents_forms.New_fieldContainerLayer(self.context)
 		containerLayer.style.display = "none" // initial state
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)

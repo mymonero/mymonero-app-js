@@ -106,7 +106,7 @@ class SettingsView extends View
 	_setup_form_field_changePasswordButton()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.padding = "19px 24px 20px 24px"
 		{
 			const view = commonComponents_navigationBarButtons.New_GreyButtonView(self.context)
@@ -130,7 +130,7 @@ class SettingsView extends View
 	_setup_form_field_serverURL()
 	{ // TODO: This hasn't really been implemented. It should have a 'Saving…' activity indicator to-design and should let the user know it will cause the removal of their wallets and they'll have to add them back after changing servers
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SERVER URL", self.context)
 			div.appendChild(labelLayer)
@@ -153,7 +153,7 @@ class SettingsView extends View
 	_setup_form_field_appTimeoutSlider()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingTop = "5px" // special case
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP TIMEOUT", self.context)

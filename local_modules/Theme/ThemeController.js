@@ -33,22 +33,34 @@ const commonComponents_navigationBarButtons = require('../MMAppUICommonComponent
 const Views__cssRules = require('../Views/cssRules.web')
 const NamespaceName = "ThemeController"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	`@font-face {
-		font-family: Native-Regular;
-		src: url("../../Theme/Resources/Native-Regular.otf") format("opentype");
-	}`,
-	`@font-face {
-		font-family: Native-Light;
-		src: url("../../Theme/Resources/Native-Light.otf") format("opentype");
-	}`,
-	`@font-face {
-		font-family: Native-Bold;
-		src: url("../../Theme/Resources/Native-Bold.otf") format("opentype");
-	}`,
-]
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+function cssRules_generatorFn(context)
+{
+	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const cssRules =
+	[
+		`@font-face {
+			font-family: Native-Regular;
+			src: url("../../Theme/Resources/Native-Regular.otf") format("opentype");
+		}`,
+		`@font-face {
+			font-family: Native-Light;
+			src: url("../../Theme/Resources/Native-Light.otf") format("opentype");
+		}`,
+		`@font-face {
+			font-family: Native-Bold;
+			src: url("../../Theme/Resources/Native-Bold.otf") format("opentype");
+		}`,
+	]
+	return cssRules
+}
+function __injectCSSRules_ifNecessary(context) 
+{ 
+	Views__cssRules.InjectCSSRules_ifNecessary(
+		haveCSSRulesBeenInjected_documentKey, 
+		cssRules_generatorFn,
+		context
+	)
+}
 
 //
 class ThemeController
@@ -58,7 +70,7 @@ class ThemeController
 		const self = this
 		self.options = options
 		self.context = context
-		__injectCSSRules_ifNecessary()
+		__injectCSSRules_ifNecessary(context)
 	}
 	//
 	//

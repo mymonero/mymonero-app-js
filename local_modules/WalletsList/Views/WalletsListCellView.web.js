@@ -63,7 +63,7 @@ class WalletsListCellView extends ListCellView
 			layer.style.margin = "0 0 12px 0" // for cell spacing & scroll bottom inset
 			// layer.style.border = "1px solid yellow"
 		}
-		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer())
+		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context))
 	}
 	overridable_layerToObserveForTaps()
 	{

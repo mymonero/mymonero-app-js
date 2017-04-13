@@ -68,7 +68,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	_setup_form_walletMnemonicField()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SECRET MNEMONIC", self.context)
@@ -109,7 +109,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		self.addrAndKeysFieldsContainerLayer = document.createElement("div")
 		self.addrAndKeysFieldsContainerLayer.style.display = "none" // for now
 		{ // wallet address
-			const div = commonComponents_forms.New_fieldContainerLayer()
+			const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 			div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ADDRESS", self.context)
@@ -143,7 +143,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
 		{ // wallet viewKey
-			const div = commonComponents_forms.New_fieldContainerLayer()
+			const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 			div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("VIEW KEY", self.context)
@@ -177,7 +177,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
 		{ // wallet spendKey
-			const div = commonComponents_forms.New_fieldContainerLayer()
+			const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 			div.style.paddingBottom = "0" // instead of 20, here, special case... we will move the 20 to the "Or, use…" layer
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SPEND KEY", self.context)

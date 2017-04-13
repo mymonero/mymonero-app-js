@@ -148,7 +148,7 @@ class TransactionDetailsView extends View
 	__new_tableFieldLayer_simpleValue(value, title, optl_color)
 	{
 		const self = this
-		const div = commonComponents_tables.New_fieldContainerLayer()
+		const div = commonComponents_tables.New_fieldContainerLayer(self.context)
 		div.style.padding = "17px 0"
 		//
 		const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(title, self.context)

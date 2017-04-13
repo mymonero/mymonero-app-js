@@ -87,7 +87,7 @@ class ContactDetailsView extends View
 			{
 				self._setup_field_address()
 				self._setup_field__cached_OAResolved_XMR_address()
-				containerLayer.appendChild(commonComponents_tables.New_separatorLayer())
+				containerLayer.appendChild(commonComponents_tables.New_separatorLayer(self.context))
 				self._setup_field_paymentID()
 			}
 			self.layer.appendChild(containerLayer)

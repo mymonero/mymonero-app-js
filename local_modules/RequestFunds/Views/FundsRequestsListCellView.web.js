@@ -59,7 +59,7 @@ class FundsRequestsListCellView extends ListCellView
 			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
 		{ 
-			const layer = commonComponents_tables.New_tableCell_accessoryChevronLayer()
+			const layer = commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context)
 			layer.style.top = "26px" // instead of halfway down
 			self.layer.appendChild(layer)
 		}

@@ -145,7 +145,7 @@ class ContactFormView extends View
 	_setup_field_fullname()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.padding = "0 0 0 24px"
 		const emojiComponentWidth = 60 + 24 + 24
 		div.style.width = `calc(100% - ${emojiComponentWidth}px - 24px + 2px)` // -24px for right side margin
@@ -188,7 +188,7 @@ class ContactFormView extends View
 		const value = self._overridable_initial_emoji_value()
 		//					
 		const paddingLeft = 24
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.padding = "0 24px 0 24px"
 		div.style.width = "58px"
 		div.style.display = "inline-block"
@@ -209,7 +209,7 @@ class ContactFormView extends View
 	_setup_field_address()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingTop = "9px"
 		div.style.paddingBottom = "0"
 		//
@@ -236,7 +236,7 @@ class ContactFormView extends View
 	_setup_field_paymentID()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingTop = "9px"
 		div.style.paddingBottom = "0"
 		self.paymentIDField_containerLayer = div

@@ -157,7 +157,7 @@ class SendFundsView extends View
 	_setup_form_walletSelectLayer()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
 			div.appendChild(labelLayer)
@@ -213,7 +213,7 @@ class SendFundsView extends View
 	_setup_form_mixinSelectLayer(tr)
 	{ // Mixin
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.width = "95px"
 		div.style.display = "block"
 		{
@@ -248,7 +248,7 @@ class SendFundsView extends View
 	_setup_form_contactOrAddressPickerLayer()
 	{ // Request funds from sender
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
@@ -366,7 +366,7 @@ class SendFundsView extends View
 	_setup_form_manualPaymentIDInputLayer()
 	{
 		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer()
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.display = "none" // initial
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)

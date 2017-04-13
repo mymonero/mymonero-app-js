@@ -115,7 +115,7 @@ class FundsRequestDetailsView extends View
 		const self = this
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		{
-			const div = commonComponents_tables.New_fieldContainerLayer()
+			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
 			div.style.padding = "15px 0 17px 0"
 			{
 				const uri = self.fundsRequest.Lazy_URI()
@@ -159,7 +159,7 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
-		const div = commonComponents_tables.New_fieldContainerLayer()
+		const div = commonComponents_tables.New_fieldContainerLayer(self.context)
 		div.style.padding = "15px 0 5px 0" // 5px instead of 17px cause value layer in this special case has p tags with their own padding/margin
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()

@@ -564,7 +564,7 @@ class WalletDetailsView extends View
 							return false
 						}
 					)
-					listItemLayer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer())
+					listItemLayer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context))
 					//
 					const layer1 = document.createElement("div")
 					layer1.style.width = "100%"
