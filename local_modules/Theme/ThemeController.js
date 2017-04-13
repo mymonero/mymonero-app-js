@@ -78,7 +78,8 @@ class ThemeController
 	//
 	TabBarView_thickness()
 	{
-		return 79
+		const self = this
+		return self.context.TabBarView_thickness
 	}
 	//
 	//

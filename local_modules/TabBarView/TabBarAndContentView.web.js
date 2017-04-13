@@ -50,6 +50,9 @@ class TabBarAndContentView extends View
 		}
 		{
 			const layer = self.layer
+			layer.style.position = "relative"
+			layer.style.left = "0px"
+			layer.style.right = "0px"
 			layer.style.width = "100%"
 			layer.style.height = "100%"
 		}
@@ -76,6 +79,26 @@ class TabBarAndContentView extends View
 				self.addSubview(view)
 			}
 		}
+		{
+			// default behavior is bar on bottom of screen
+			const tabBarView_thickness = self.overridable_tabBarView_thickness()
+			{
+				const layer = self.tabBarView.layer
+				layer.style.position = "absolute"
+				layer.style.top = `calc(100% - ${tabBarView_thickness}px)`
+				layer.style.left = "0px"
+				layer.style.width = "100%"
+				layer.style.height = `${tabBarView_thickness}px`
+			}
+			{
+				const layer = self.contentAreaView.layer
+				layer.style.position = "absolute"
+				layer.style.top = "0px"
+				layer.style.left = "0px"
+				layer.style.width = "100%"
+				layer.style.height = `calc(100% - ${tabBarView_thickness}px)`
+			}
+		}
 	}
 	//
 	//
@@ -91,7 +114,7 @@ class TabBarAndContentView extends View
 	//
 	overridable_tabBarView_thickness()
 	{
-		return 75
+		return 48
 	}
 	overridable_isHorizontalBar()
 	{
@@ -149,6 +172,7 @@ class TabBarAndContentView extends View
 			}
 		}
 		{ // add tab bar item button views, and new tabBarContentViews
+			const isHorizontalBar = self.overridable_isHorizontalBar()
 			const tabBarView_thickness = self.overridable_tabBarView_thickness()
 			to_tabBarContentViews.forEach(
 				function(to_tabBarContentView, idx)
@@ -157,7 +181,7 @@ class TabBarAndContentView extends View
 					{
 						const lookup_fn = to_tabBarContentView.TabBarItem_layer_customStyle
 						if (typeof lookup_fn === 'function') {
-							const style = lookup_fn.apply(to_tabBarContentView)
+							const style = lookup_fn.apply(to_tabBarContentView, [isHorizontalBar])
 							if (style && typeof style !== 'undefined') {
 								layer_baseStyleTemplate = style
 							}
@@ -167,7 +191,7 @@ class TabBarAndContentView extends View
 					{
 						const lookup_fn = to_tabBarContentView.TabBarItem_icon_customStyle
 						if (typeof lookup_fn === 'function') {
-							const style = lookup_fn.apply(to_tabBarContentView)
+							const style = lookup_fn.apply(to_tabBarContentView, [isHorizontalBar])
 							if (style && typeof style !== 'undefined') {
 								icon_baseStyleTemplate = style
 							}
@@ -177,7 +201,7 @@ class TabBarAndContentView extends View
 					{
 						const lookup_fn = to_tabBarContentView.TabBarItem_icon_selected_customStyle
 						if (typeof lookup_fn === 'function') {
-							const style = lookup_fn.apply(to_tabBarContentView)
+							const style = lookup_fn.apply(to_tabBarContentView, [isHorizontalBar])
 							if (style && typeof style !== 'undefined') {
 								icon_selected_baseStyleTemplate = style
 							}
@@ -186,7 +210,7 @@ class TabBarAndContentView extends View
 					{ // buttonView
 						const options = 
 						{
-							isHorizontalBar: self.overridable_isHorizontalBar(),
+							isHorizontalBar: isHorizontalBar,
 							tabBarView_thickness: tabBarView_thickness,
 							//
 							layer_baseStyleTemplate: layer_baseStyleTemplate,

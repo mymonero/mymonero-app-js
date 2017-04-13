@@ -28,51 +28,28 @@
 //
 "use strict"
 //
-const TabBarAndContentView = require('./TabBarAndContentView.web')
+const RootTabBarAndContentView_Base = require('./RootTabBarAndContentView_Base.web')
 //
-class LeftSideTabBarAndContentView extends TabBarAndContentView
+class RootTabBarAndContentView extends RootTabBarAndContentView_Base
 {
 	constructor(options, context)
 	{
 		super(options, context)
 	}
 	setup()
-	{ // ^ called automatically by super, so
+	{
 		const self = this
 		super.setup() // must call this
-		{
-			const layer = self.layer
-			layer.style.position = "relative"
-			layer.style.left = "0px"
-			layer.style.right = "0px"
-			layer.style.width = "100%"
-			layer.style.height = "100%"
-		}
-		const tabBarView_thickness = self.overridable_tabBarView_thickness()
-		{
-			const layer = self.tabBarView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = "0px"
-			layer.style.width = `${tabBarView_thickness}px`
-			layer.style.height = "100%"
-		}
-		{
-			const layer = self.contentAreaView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = `${tabBarView_thickness}px`
-			layer.style.width = `calc(100% - ${tabBarView_thickness}px)`
-			layer.style.height = "100%"
-		}
 	}
-	//
-	//
-	// Overrides
-	//
-	overridable_isHorizontalBar()
+	_setup_views()
 	{
-		return false // a vertical bar
+		const self = this
+		super._setup_views()
+	}
+	_setup_startObserving()
+	{
+		const self = this
+		super._setup_startObserving()
 	}
 }
-module.exports = LeftSideTabBarAndContentView
+module.exports = RootTabBarAndContentView

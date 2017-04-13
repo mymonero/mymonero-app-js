@@ -38,8 +38,8 @@ function stylesheetPaths_generatorFn(context)
 	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
 	const stylesheetPaths =
 	[
-		"${assetsPath}/Emoji/Vendor/emojione.min.css",
-		"${assetsPath}/Emoji/Vendor/emojione.spritesheet.css"
+		`${assetsPath}/Emoji/Vendor/emojione.min.css`,
+		`${assetsPath}/Emoji/Vendor/emojione.spritesheet.css`
 	]
 	return stylesheetPaths
 }

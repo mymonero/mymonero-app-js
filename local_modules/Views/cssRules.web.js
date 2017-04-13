@@ -72,7 +72,10 @@ function InjectCSSFile_ifNecessary(stylesheetHref)
 }
 exports.InjectCSSFile_ifNecessary = InjectCSSFile_ifNecessary
 //
-function InjectCSSFiles_ifNecessary(stylesheetHrefs__orGeneratorFn)
+function InjectCSSFiles_ifNecessary(
+	stylesheetHrefs__orGeneratorFn,
+	context__orNil
+)
 {
 	var stylesheetHrefs;
 	if (typeof stylesheetHrefs__orGeneratorFn === 'function') {

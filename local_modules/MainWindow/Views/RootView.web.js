@@ -71,8 +71,11 @@ class RootView extends View
 	setup_tabBarAndContentView()
 	{
 		const self = this
-		const LeftSideTabBarAndContentView = require('./RootTabBarAndContentView.web')
-		const tabBarViewAndContentView = new LeftSideTabBarAndContentView({}, self.context)
+		const platformSpecific_RootTabBarAndContentView = self.context.platformSpecific_RootTabBarAndContentView // slightly messy way of doing this, but it works
+		if (!platformSpecific_RootTabBarAndContentView) {
+			throw `${self.constructor.name} requires a self.context.platformSpecific_RootTabBarAndContentView`
+		}
+		const tabBarViewAndContentView = new platformSpecific_RootTabBarAndContentView({}, self.context)
 		self.tabBarViewAndContentView = tabBarViewAndContentView
 		self.addSubview(tabBarViewAndContentView)
 	}

@@ -57,13 +57,17 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	//
 	// Runtime - Accessors - Implementation of TabBarItem protocol
 	// custom tab bar item styling
-	TabBarItem_layer_customStyle()
+	TabBarItem_layer_customStyle(isHorizontalBar)
 	{
 		const self = this
-		return {
-			position: "absolute", // we can get away with doing this because the tab bar won't move
-			left: "0",
-			bottom: "5px", // for desktop, anyway
+		if (isHorizontalBar) {
+			return undefined
+		} else {
+			return {
+				position: "absolute", // we can get away with doing this because the tab bar won't move
+				left: "0",
+				bottom: "5px", // for desktop, anyway
+			}
 		}
 	}
 	TabBarItem_icon_customStyle()

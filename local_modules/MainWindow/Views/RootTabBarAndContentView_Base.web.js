@@ -28,9 +28,9 @@
 //
 "use strict"
 //
-const LeftSideTabBarAndContentView = require('../../TabBarView/LeftSideTabBarAndContentView.web')
+const TabBarAndContentView = require('../../TabBarView/TabBarAndContentView.web')
 //
-class RootTabBarAndContentView extends LeftSideTabBarAndContentView
+class RootTabBarAndContentView extends TabBarAndContentView
 {
 	constructor(options, context)
 	{
@@ -48,16 +48,8 @@ class RootTabBarAndContentView extends LeftSideTabBarAndContentView
 		const self = this
 		const context = self.context
 		{
-			const layer = self.layer
-			layer.style.background = "red"
-		}
-		{
 			const layer = self.tabBarView.layer
 			layer.style.background = "#171416"
-			layer.style.borderRight = "1px solid black"
-			const padding_top = 56
-			layer.style.paddingTop = padding_top + "px" // since we're setting a padding top, we have to offset it in the height or cause a root view scroll
-			layer.style.height = "calc(100% - " + padding_top + "px)"
 		}
 		{
 			const layer = self.contentAreaView.layer
