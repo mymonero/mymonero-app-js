@@ -23,5 +23,6 @@
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="KeyboardShrinksView" value="false" />
     <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="Orientation" value="portrait" />
     <engine name="ios" spec="~4.3.1" />
 </widget>
