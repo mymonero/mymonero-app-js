@@ -530,7 +530,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			div.appendChild(labelLayer)
 		}
 		{
-			valueLayer.style.maxWidth = "156px"
+			valueLayer.style.maxWidth = "44%"
 			valueLayer.style.float = "left"
 			valueLayer.style.whiteSpace = "nowrap"
 			valueLayer.style.overflow = "hidden"

@@ -128,6 +128,8 @@ window.BootApp = function()
 		{ // configure native UI elements
 			StatusBar.overlaysWebView(true)
 			// already styled as lightcontent in config.xml
+			//
+			document.addEventListener("touchstart", function(){}, true) // to allow :active styles to work in your CSS on a page in Mobile Safari:
 		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM

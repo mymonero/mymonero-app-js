@@ -1,5 +1,5 @@
 cordova platform add ios; 
 bin/_build_cordova_www; 
-killall Simulator; 
+# killall Simulator; 
 cordova run ios;
 bin/_open_ios_sim_webinspector

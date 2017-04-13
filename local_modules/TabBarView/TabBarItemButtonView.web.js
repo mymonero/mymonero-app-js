@@ -70,6 +70,7 @@ class TabBarItemButtonView extends View
 			layer.style.display = "inline-block"
 			layer.style.position = "relative"
 			layer.style.webkitAppRegion = "no-drag" // make clickable
+			layer.style.webkitTapHighlightColor = "rgba(0,0,0,0)" // disable highlight under Cordova/MobileSafari
 			const stackedThickness = 56
 			if (self.isHorizontalBar) {
 				layer.style.width = `${100/self.numberOf_tabs}%`
