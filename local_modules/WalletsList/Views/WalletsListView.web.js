@@ -99,12 +99,22 @@ class WalletsListView extends ListView
 		}
 		{ // action buttons toolbar
 			const margin_h = margin_side
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = margin_h
+			var margin_fromWindowLeft;
+			var margin_fromWindowRight;
+			var isRelativeVariantNotFixed = false
+			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+				margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+				margin_fromWindowRight = margin_h
+			} else {
+				margin_fromWindowLeft = margin_h
+				margin_fromWindowRight = margin_h
+				isRelativeVariantNotFixed = true
+			}
 			const actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
 				margin_fromWindowLeft, 
 				margin_fromWindowRight, 
-				self.context
+				self.context,
+				isRelativeVariantNotFixed
 			)
 			self.actionButtonsContainerView = actionButtonsContainerView
 			{ // as these access self.actionButtonsContainerView

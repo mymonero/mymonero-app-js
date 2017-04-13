@@ -19,5 +19,9 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="KeyboardShrinksView" value="false" />
+    <preference name="StatusBarStyle" value="lightcontent" />
     <engine name="ios" spec="~4.3.1" />
 </widget>

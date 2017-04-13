@@ -36,22 +36,33 @@ const ActionButton_rightMargin = 9
 //
 const ActionButtonsContainerView_h = ActionButton_h
 const ActionButtonsContainerView_bottomMargin = 8
+const ActionButtonsContainerView_relativeVariant_topMargin = 8
 exports.ActionButtonsContainerView_bottomMargin = ActionButtonsContainerView_bottomMargin
 exports.ActionButtonsContainerView_h = ActionButtonsContainerView_h
 //
 function New_ActionButtonsContainerView(
 	margin_fromWindowLeft,
 	margin_fromWindowRight, 
-	context
+	context,
+	optl_isRelativeNotFixed
 )
 {
+	const addtlMarginBtm = typeof optl_addtlMarginBtm !== 'undefined' ? optl_addtlMarginBtm : 0
+	//
 	const view = new View({}, context)
 	const layer = view.layer
 	{
-		layer.style.position = "fixed"
-		layer.style.top = `calc(100% - ${ActionButtonsContainerView_h}px - ${ActionButtonsContainerView_bottomMargin}px)`
-		layer.style.width = `calc(100% - ${margin_fromWindowLeft}px - ${margin_fromWindowRight}px)`
-		layer.style.height = ActionButtonsContainerView_h + "px"
+		if (optl_isRelativeNotFixed !== true) {
+			layer.style.position = "fixed"
+			layer.style.top = `calc(100% - ${ActionButtonsContainerView_h}px - ${ActionButtonsContainerView_bottomMargin}px - ${addtlMarginBtm}px)`
+			layer.style.width = `calc(100% - ${margin_fromWindowLeft}px - ${margin_fromWindowRight}px)`
+			layer.style.height = ActionButtonsContainerView_h + "px"
+		} else {
+			layer.style.position = "relative"
+			layer.style.marginTop = ActionButtonsContainerView_relativeVariant_topMargin+"px"
+			layer.style.width = `100%`
+			layer.style.height = ActionButtonsContainerView_h+"px"
+		}
 	}	
 	return view
 }
