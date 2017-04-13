@@ -36,38 +36,6 @@ class RootTabBarAndContentView extends RootTabBarAndContentView_Base
 	{
 		super(options, context)
 	}
-
-	setup()
-	{ // ^ called automatically by super, so
-		const self = this
-		super.setup() // must call this
-		// To support left-side layout:
-		const tabBarView_thickness = self.overridable_tabBarView_thickness()
-		{
-			const layer = self.tabBarView.layer
-			layer.style.position = "absolute"
-			layer.style.borderRight = "1px solid black"
-			layer.style.top = "0px"
-			layer.style.left = "0px"
-			layer.style.width = `${tabBarView_thickness}px`
-			const padding_top = 56
-			layer.style.paddingTop = padding_top + "px" // since we're setting a padding top, we have to offset it in the height or cause a root view scroll
-			layer.style.height = "calc(100% - " + padding_top + "px)"
-		}
-		{
-			const layer = self.contentAreaView.layer
-			layer.style.position = "absolute"
-			layer.style.top = "0px"
-			layer.style.left = `${tabBarView_thickness}px`
-			layer.style.width = `calc(100% - ${tabBarView_thickness}px)`
-			layer.style.height = "100%"
-		}
-	}
-	_setup_views()
-	{
-		const self = this
-		super._setup_views()
-	}
 	_setup_startObserving()
 	{
 		const self = this
@@ -152,12 +120,6 @@ class RootTabBarAndContentView extends RootTabBarAndContentView_Base
 				return false
 			}
 		}
-	}
-	//
-	// Overrides
-	overridable_isHorizontalBar()
-	{	// To support left-side layout:
-		return false // a vertical bar
 	}
 }
 module.exports = RootTabBarAndContentView

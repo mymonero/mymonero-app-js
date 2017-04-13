@@ -55,6 +55,29 @@ class RootTabBarAndContentView extends TabBarAndContentView
 			const layer = self.contentAreaView.layer
 			layer.style.background = "#272527"
 		}
+		if (self.overridable_isHorizontalBar() === false) {
+			// To support left-side layout:
+			const tabBarView_thickness = self.overridable_tabBarView_thickness()
+			{
+				const layer = self.tabBarView.layer
+				layer.style.position = "absolute"
+				layer.style.borderRight = "1px solid black"
+				layer.style.top = "0px"
+				layer.style.left = "0px"
+				layer.style.width = `${tabBarView_thickness}px`
+				const padding_top = 56
+				layer.style.paddingTop = padding_top + "px" // since we're setting a padding top, we have to offset it in the height or cause a root view scroll
+				layer.style.height = "calc(100% - " + padding_top + "px)"
+			}
+			{
+				const layer = self.contentAreaView.layer
+				layer.style.position = "absolute"
+				layer.style.top = "0px"
+				layer.style.left = `${tabBarView_thickness}px`
+				layer.style.width = `calc(100% - ${tabBarView_thickness}px)`
+				layer.style.height = "100%"
+			}
+		}
 		{ // add tab bar content views
 			{ // walletsListView
 				const options = {}
@@ -273,6 +296,14 @@ class RootTabBarAndContentView extends TabBarAndContentView
 	//
 	// Accessors - UI - Metrics - Overridable
 	//
+		//
+	// Overrides
+	overridable_isHorizontalBar()
+	{
+		const self = this
+		//
+		return self.context.themeController.TabBarView_isHorizontalBar()
+	}
 	overridable_tabBarView_thickness()
 	{
 		const self = this

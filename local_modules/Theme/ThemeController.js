@@ -81,6 +81,11 @@ class ThemeController
 		const self = this
 		return self.context.TabBarView_thickness
 	}
+	TabBarView_isHorizontalBar()
+	{
+		const self = this
+		return self.context.TabBarView_isHorizontalBar
+	}
 	//
 	//
 	// Accessors - UI - Metrics - Fonts

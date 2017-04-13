@@ -36,16 +36,6 @@ class RootTabBarAndContentView extends RootTabBarAndContentView_Base
 	{
 		super(options, context)
 	}
-	setup()
-	{
-		const self = this
-		super.setup() // must call this
-	}
-	_setup_views()
-	{
-		const self = this
-		super._setup_views()
-	}
 	_setup_startObserving()
 	{
 		const self = this

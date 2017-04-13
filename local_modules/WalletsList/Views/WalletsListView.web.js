@@ -104,7 +104,8 @@ class WalletsListView extends ListView
 			const actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
 				margin_fromWindowLeft, 
 				margin_fromWindowRight, 
-				self.context)
+				self.context
+			)
 			self.actionButtonsContainerView = actionButtonsContainerView
 			{ // as these access self.actionButtonsContainerView
 				self._setup_actionButton_useExistingWallet()

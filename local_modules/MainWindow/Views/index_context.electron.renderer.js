@@ -144,7 +144,8 @@ function NewHydratedContext(
 		isDebug: process.env.NODE_ENV === 'development',
 		crossPlatform_appBundledAssetsRootPath: "../..",
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
-		TabBarView_thickness: 79
+		TabBarView_thickness: 79,
+		TabBarView_isHorizontalBar: false
 	}
 	// required options (which can only be obtained with `app`, etc.)
 	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()

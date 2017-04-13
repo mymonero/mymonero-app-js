@@ -115,7 +115,8 @@ window.BootApp = function()
 				isDebug: cached_metadata.isDebug,
 				crossPlatform_appBundledAssetsRootPath: cached_metadata.crossPlatform_appBundledAssetsRootPath, // in this case, an absolute path.
 				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
-				TabBarView_thickness: 48 
+				TabBarView_thickness: 48,
+				TabBarView_isHorizontalBar: true 
 			})
 		}
 		if (isRunningInBrowser) { // then we don't have guaranteed native emoji support
