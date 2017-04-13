@@ -40,15 +40,15 @@ function cssRules_generatorFn(context)
 	[
 		`@font-face {
 			font-family: Native-Regular;
-			src: url("../../Theme/Resources/Native-Regular.otf") format("opentype");
+			src: url("${assetsPath}/Theme/Resources/Native-Regular.otf") format("opentype");
 		}`,
 		`@font-face {
 			font-family: Native-Light;
-			src: url("../../Theme/Resources/Native-Light.otf") format("opentype");
+			src: url("${assetsPath}/Theme/Resources/Native-Light.otf") format("opentype");
 		}`,
 		`@font-face {
 			font-family: Native-Bold;
-			src: url("../../Theme/Resources/Native-Bold.otf") format("opentype");
+			src: url("${assetsPath}/Theme/Resources/Native-Bold.otf") format("opentype");
 		}`,
 	]
 	return cssRules
