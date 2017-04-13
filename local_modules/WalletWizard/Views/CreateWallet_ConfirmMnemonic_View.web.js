@@ -114,22 +114,34 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			self.layer.appendChild(layer)
 		}
 		{ // action buttons toolbar
-			self.actionBar_margin_h = 16
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + self.actionBar_margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = self.actionBar_margin_h
-			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(
-				margin_fromWindowLeft, 
-				margin_fromWindowRight, 
-				self.context
-			)
-			view.layer.style.paddingLeft = self.actionBar_margin_h + "px"
-			view.layer.style.display = "none" // for now
-			self.actionButtonsContainerView = view
+			const margin_h = 16
+			var actionButtonsContainerView;
+			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+				const margin_fromWindowRight = margin_h
+				actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
+					margin_fromWindowLeft, 
+					margin_fromWindowRight, 
+					self.context
+				)
+				margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+				margin_fromWindowRight = margin_h
+				actionButtonsContainerView.layer.style.paddingLeft = margin_h+"px"
+			} else {
+				actionButtonsContainerView = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+					margin_h, 
+					margin_h, 
+					15,
+					self.context
+				)
+			}
+			actionButtonsContainerView.layer.style.display = "none" // for now
+			self.actionButtonsContainerView = actionButtonsContainerView
 			{
 				self._setup_actionButton_tryAgain()
 				self._setup_actionButton_startOver()
 			}
-			self.addSubview(view)
+			self.addSubview(actionButtonsContainerView)
 		}
 	}
 	_setup_actionButton_tryAgain()

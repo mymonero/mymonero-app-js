@@ -93,10 +93,24 @@ class ContactDetailsView extends View
 			self.layer.appendChild(containerLayer)
 		}
 		{ // action buttons toolbar
-			const actionButtonsContainerView_margin_h = 16
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + actionButtonsContainerView_margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = actionButtonsContainerView_margin_h
-			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
+			var view;
+			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+				const actionButtonsContainerView_margin_h = 16
+				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + actionButtonsContainerView_margin_h // we need this for a position:fixed, width:100% container
+				const margin_fromWindowRight = actionButtonsContainerView_margin_h
+				view = commonComponents_actionButtons.New_ActionButtonsContainerView(
+					margin_fromWindowLeft, 
+					margin_fromWindowRight, 
+					self.context
+				)
+			} else {
+				view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+					0, 
+					0, 
+					15,
+					self.context
+				)
+			}
 			self.actionButtonsContainerView = view
 			{
 				self._setup_actionButton_send()

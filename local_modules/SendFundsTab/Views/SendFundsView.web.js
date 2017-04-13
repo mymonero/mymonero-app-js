@@ -85,10 +85,25 @@ class SendFundsView extends View
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
 		{ // action buttons toolbar
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + 16 // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = 16
-			const view = commonComponents_actionButtons.New_ActionButtonsContainerView(margin_fromWindowLeft, margin_fromWindowRight, self.context)
-			view.layer.style.paddingLeft = "16px"
+			const margin_h = 16
+			var view;
+			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+				const margin_fromWindowRight = margin_h
+				view = commonComponents_actionButtons.New_ActionButtonsContainerView(
+					margin_fromWindowLeft, 
+					margin_fromWindowRight, 
+					self.context
+				)
+				view.layer.style.paddingLeft = "16px"
+			} else {
+				view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+					margin_h, 
+					margin_h, 
+					15,
+					self.context
+				)
+			}
 			self.actionButtonsContainerView = view
 			{
 				// self._setup_actionButton_useCamera()
