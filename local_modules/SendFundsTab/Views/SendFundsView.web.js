@@ -72,6 +72,14 @@ class SendFundsView extends View
 		self.setup_views()
 		self.startObserving()
 	}
+	_isUsingRelativeNotFixedActionButtonsContainer()
+	{
+		const self = this
+		if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+			return false
+		}
+		return true
+	}
 	setup_views()
 	{
 		const self = this
@@ -87,7 +95,7 @@ class SendFundsView extends View
 		{ // action buttons toolbar
 			const margin_h = 16
 			var view;
-			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+			if (self._isUsingRelativeNotFixedActionButtonsContainer() == false) {
 				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
 				const margin_fromWindowRight = margin_h
 				view = commonComponents_actionButtons.New_ActionButtonsContainerView(
@@ -147,9 +155,14 @@ class SendFundsView extends View
 	{
 		const self = this
 		const containerLayer = document.createElement("div")
-		const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h 
+		var paddingBottom;
+		if (self._isUsingRelativeNotFixedActionButtonsContainer() == false) {
+			paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h 
 								+ commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin 
 								+ 10
+		} else {
+			paddingBottom = 0
+		}
 		containerLayer.style.paddingBottom = `${paddingBottom}px`
 		self.form_containerLayer = containerLayer
 		{
