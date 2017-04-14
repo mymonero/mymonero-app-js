@@ -142,7 +142,7 @@ class EmojiPickerControlView extends View
 		self._configureALayerWithEmoji()
 		self.layer.appendChild(layer)
 		//
-		layer.addEventListener("click", function(e) {
+		layer.addEventListener(self._crossPlatform_click_eventName(), function(e) {
 			e.preventDefault()
 			// TODO: this appears to trigger on 'enter' too… should that be detected and used to select hovered/highlighted cell if any?
 			self.togglePopoverViewVisibility(true)
@@ -202,7 +202,7 @@ class EmojiPickerControlView extends View
 				}
 			}
 		}
-		window.addEventListener("click", self._window_click_fn)
+		window.addEventListener(self._crossPlatform_click_eventName(), self._window_click_fn)
 		// user hitting escape
 		self._document_keydown_fn = function(e)
 		{
@@ -212,6 +212,10 @@ class EmojiPickerControlView extends View
 		    }
 		}
 		document.addEventListener("keydown", self._document_keydown_fn)
+	}
+	_crossPlatform_click_eventName()
+	{ // ^-- window 'click' will not fire on mobile; ontouchstart will be null or non-nil rather than undefined on mobile platforms
+		return typeof document.body.ontouchstart === "undefined" ? "click" : "touchstart"
 	}
 	// Lifecycle - Teardown
 	TearDown()
@@ -226,7 +230,7 @@ class EmojiPickerControlView extends View
 		const self = this
 		self.stopObserving_fn(self)
 		// TODO: assert self._window_click_fn != nil
-		window.removeEventListener("click", self._window_click_fn)
+		window.removeEventListener(self._crossPlatform_click_eventName(), self._window_click_fn)
 		// TODO: assert self._document_keydown_fn != nil
 		document.removeEventListener("keydown", self._document_keydown_fn)
 	}

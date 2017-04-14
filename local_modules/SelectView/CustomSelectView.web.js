@@ -183,7 +183,9 @@ class CustomSelectView extends View
 				}
 			}
 		}
-		window.addEventListener("click", self._window_click_fn)
+		//
+		window.addEventListener(self._crossPlatform_click_eventName(), self._window_click_fn)
+		//
 		// user hitting escape
 		self._document_keydown_fn = function(e)
 		{
@@ -193,6 +195,10 @@ class CustomSelectView extends View
 		    }
 		}
 		document.addEventListener("keydown", self._document_keydown_fn)
+	}
+	_crossPlatform_click_eventName()
+	{ // ^-- window 'click' will not fire on mobile; ontouchstart will be null or non-nil rather than undefined on mobile platforms
+		return typeof document.body.ontouchstart === "undefined" ? "click" : "touchstart"
 	}
 	// Lifecycle - Teardown - Overrides
 	TearDown()
@@ -208,7 +214,7 @@ class CustomSelectView extends View
 		const self = this
 		self.stopObserving_fn(self)
 		// TODO: assert self._window_click_fn != nil
-		window.removeEventListener("click", self._window_click_fn)
+		window.removeEventListener(self._crossPlatform_click_eventName(), self._window_click_fn)
 		// TODO: assert self._document_keydown_fn != nil
 		document.removeEventListener("keydown", self._document_keydown_fn)
 	}
@@ -272,7 +278,7 @@ class CustomSelectView extends View
 					// … a dismiss will occur due with window.onclick
 					return false
 				}
-				rowItem_cellView.layer.addEventListener("click", rowItem_cellView._selection_click_fn)
+				rowItem_cellView.layer.addEventListener(self._crossPlatform_click_eventName(), rowItem_cellView._selection_click_fn)
 			}
 			self.overridable_setup_cellView(rowItem_cellView, rowItem)
 			self.options_cellViews_containerView.addSubview(rowItem_cellView)
@@ -336,7 +342,7 @@ class CustomSelectView extends View
 	__deInitialize_cellView(cellView)
 	{
 		const self = this
-		cellView.layer.removeEventListener("click", cellView._selection_click_fn)
+		cellView.layer.removeEventListener(self._crossPlatform_click_eventName(), cellView._selection_click_fn)
 		self.cellView_prepareForReuse_fn(
 			self, 
 			cellView
