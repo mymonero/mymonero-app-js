@@ -725,11 +725,9 @@ class WalletDetailsView extends View
 				progressLabelLayer.style.textAlign = "right"
 				progressLabelLayer.style.right = "19px"
 				progressLabelLayer.style.top = "8px"
-				progressLabelLayer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
-				progressLabelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
-				progressLabelLayer.style.fontSize = "10px" // sketch renders it less heavily than chrome so using 10px to mimick sketch 11px
-				progressLabelLayer.style.letterSpacing = "0.5px"
-				progressLabelLayer.style.fontWeight = "300"
+				//
+				self.context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
+				//
 				progressLabelLayer.style.color = "#9E9C9E"
 				layer.appendChild(progressLabelLayer)
 				//

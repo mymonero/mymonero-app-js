@@ -131,6 +131,18 @@ class ThemeController
 			}
 		}
 	}
+	StyleLayer_FontAsMessageBearingSmallLightMonospace(layer)
+	{
+		const self = this
+		layer.style.fontSize = "11px" // we need this to visually stand out slightly more given how it's used
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontFamily = self.FontFamily_monospaceRegular()
+			layer.style.fontWeight = "lighter"
+		} else {
+			layer.style.fontFamily = self.FontFamily_monospaceLight()
+			layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
+		}
+	}
 	StyleLayer_FontAsSmallLightMonospace(layer)
 	{
 		const self = this

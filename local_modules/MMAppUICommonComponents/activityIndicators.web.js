@@ -92,11 +92,7 @@ function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
 					  +`</div>`
 					  +`&nbsp;`
 					  +`<span>${messageText}</span>`
-	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
-	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	layer.style.fontSize = "10px" // sketch renders it less heavily than chrome so using 10px to mimick sketch 11px
-	layer.style.letterSpacing = "0.5px"
-	layer.style.fontWeight = "300"
+	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
 	layer.style.color = "#F8F7F8"
 	//
 	return layer		

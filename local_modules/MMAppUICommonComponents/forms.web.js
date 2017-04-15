@@ -241,10 +241,8 @@ function New_fieldAccessory_messageLayer(context)
 {
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("p")
-	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
-	layer.style.fontSize = "11px"
+	context.themeController.StyleLayer_FontAsMessageBearingSmallLightMonospace(layer) // name needs improvement
 	layer.style.lineHeight = "15px"
-	layer.style.fontWeight = "100"
 	layer.style.margin = "7px 7px 0 7px"
 	layer.style.color = "#8d8b8d"
 	layer.style.wordBreak = "break-word"
