@@ -73,6 +73,7 @@ class SettingsView extends View
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
+		layer.style.webkitOverflowScrolling = "touch"
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		//

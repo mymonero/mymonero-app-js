@@ -92,6 +92,7 @@ class WalletDetailsView extends View
 		layer.style.width = `100%`
 		layer.style.height = "100%"
 		layer.style.overflowY = "auto"
+		layer.style.webkitOverflowScrolling = "touch"
 		const margin_h = 16
 		layer.style.padding = `0 ${margin_h}px 0px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view

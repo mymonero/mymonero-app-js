@@ -1,8 +1,6 @@
 * {
     margin: 0px;
     padding: 0px;
-    
-    -webkit-overflow-scrolling: touch
 }
 body {
     -webkit-touch-callout: none;
@@ -12,4 +10,8 @@ body {
 html,
 body {
     overflow: hidden;
+}
+input, 
+textarea {
+	-webkit-overflow-scrolling: touch;
 }

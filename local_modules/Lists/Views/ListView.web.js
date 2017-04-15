@@ -202,8 +202,10 @@ class ListView extends View
 			const numberOf_records = records.length
 			if (numberOf_records == 0) { // TODO: expose this so subclassers can override
 				self.layer.style.overflowY = "hidden"
+				self.layer.style.webkitOverflowScrolling = "auto"
 			} else {
 				self.layer.style.overflowY = "auto"
+				self.layer.style.webkitOverflowScrolling = "touch"
 			}
 			records.forEach(
 				function(record, i)

@@ -72,6 +72,7 @@ class EditWalletView extends View
 			layer.style.color = "#c0c0c0" // temporary
 			//
 			layer.style.overflowY = "auto"
+			layer.style.webkitOverflowScrolling = "touch"
 			layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 			//
 			layer.style.wordBreak = "break-all" // to get the text to wrap

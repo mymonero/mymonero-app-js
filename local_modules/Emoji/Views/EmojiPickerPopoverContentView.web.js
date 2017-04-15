@@ -107,6 +107,7 @@ class EmojiPickerPopoverContentView extends View
 		layer.style.borderRadius = "4px"
 		layer.style.overflowX = "hidden"
 		layer.style.overflowY = "auto"
+		// layer.style.webkitOverflowScrolling = "touch" // I would like to enable this, but a strange rendering error occurs
 		layer.classList.add(NamespaceName)
 		//
 		const emojis = emoji_set.Emojis
