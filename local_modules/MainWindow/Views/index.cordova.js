@@ -135,6 +135,14 @@ window.BootApp = function()
 			if (cached_metadata.isRunningInNonMobileBrowser == false) {
 				cordova.plugins.Keyboard.disableScroll(true) // so top of app doesn't scroll out-of-view when keyboard becomes active
 			}
+			//
+			window.addEventListener('native.keyboardshow', function(e)
+			{
+			    setTimeout(function()
+			    { // this is not quite working… TODO
+			        document.activeElement.scrollIntoViewIfNeeded()
+			    }, 100)
+			})
 		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
