@@ -133,7 +133,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		])
 		list.push([
 			"Use pen and paper or back it up", 
-			"If you save it to an insecure location it may be viewable by other apps."
+			"If you save it to an insecure location, it may be viewable by other apps."
 		])
 		return list
 	}
