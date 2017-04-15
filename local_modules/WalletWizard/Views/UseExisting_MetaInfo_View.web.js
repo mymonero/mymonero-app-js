@@ -216,11 +216,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	{
 		const self = this
 		const layer = document.createElement("div")
-		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
-		layer.style.webkitFontSmoothing = "subpixel-antialiased"
-		layer.style.fontSize = "11px" // chrome renders 11px too big compared to sketch
+		self.context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
+		layer.style.fontSize = "11px" // must set 11px so it matches visual weight of other labels
 		layer.style.letterSpacing = "0"
-		layer.style.fontWeight = "200"
 		layer.style.color = "#8d8b8d"
 		layer.style.letterSpacing = "0"
 		layer.style.margin = "9px 0 17px 32px"

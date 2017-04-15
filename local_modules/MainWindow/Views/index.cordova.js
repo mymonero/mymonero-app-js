@@ -45,10 +45,10 @@ window.BootApp = function()
 			throw 'app.getPath(): unrecognized pathType'
 		}
 	}	
-	const isRunningInBrowser = window.cordova.platformId == "browser"
-	cached_metadata.isRunningInBrowser = isRunningInBrowser
+	const isRunningInNonMobileBrowser = window.cordova.platformId == "browser"
+	cached_metadata.isRunningInNonMobileBrowser = isRunningInNonMobileBrowser
 	//
-	if (window.cordova && isRunningInBrowser == false) { // Cordova
+	if (window.cordova && isRunningInNonMobileBrowser == false) { // Cordova
 		document.addEventListener(
 			'deviceready', 
 			function() { _proceedTo_loadCordovaEnvBeforeLoadingCachedMetadata() }, 
@@ -116,10 +116,11 @@ window.BootApp = function()
 				crossPlatform_appBundledAssetsRootPath: cached_metadata.crossPlatform_appBundledAssetsRootPath, // in this case, an absolute path.
 				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 				TabBarView_thickness: 48,
-				TabBarView_isHorizontalBar: true 
+				TabBarView_isHorizontalBar: true,
+				ThemeController_isMobileBrowser: cached_metadata.isRunningInNonMobileBrowser !== true
 			})
 		}
-		if (isRunningInBrowser) { // then we don't have guaranteed native emoji support
+		if (cached_metadata.isRunningInNonMobileBrowser) { // then we don't have guaranteed native emoji support
 			{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
 				const emoji_web = require('../../Emoji/emoji_web')
 				emoji_web.PreLoadAndSetUpEmojiOne(context)
@@ -130,6 +131,10 @@ window.BootApp = function()
 			// already styled as lightcontent in config.xml
 			//
 			document.addEventListener("touchstart", function(){}, true) // to allow :active styles to work in your CSS on a page in Mobile Safari:
+			//
+			if (cached_metadata.isRunningInNonMobileBrowser == false) {
+				cordova.plugins.Keyboard.disableScroll(true) // so top of app doesn't scroll out-of-view when keyboard becomes active
+			}
 		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM

@@ -73,9 +73,7 @@ class ThemeController
 		__injectCSSRules_ifNecessary(context)
 	}
 	//
-	//
 	// Accessors - UI - Metrics - Layout
-	//
 	TabBarView_thickness()
 	{
 		const self = this
@@ -87,9 +85,7 @@ class ThemeController
 		return self.context.TabBarView_isHorizontalBar
 	}
 	//
-	//
 	// Accessors - UI - Metrics - Fonts
-	//
 	FontFamily_sansSerif()
 	{
 		return '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
@@ -107,9 +103,50 @@ class ThemeController
 		return 'Native, input, menlo, monospace'
 	}
 	//
+	// Accessors - Internal
+	_shouldDisableChromeDesktopSpecificTextRendering()
+	{
+		const self = this
+		return 
+	}
+
+	//
+	// Imperatives - Centralizations of element styling (for, e.g. cross-platform support)
+	StyleLayer_FontAsSmallRegularMonospace(layer)
+	{
+		const self = this
+		if (self.context.ThemeController_isMobileBrowser === true) {
+			layer.style.fontFamily = self.FontFamily_monospaceRegular()
+			layer.style.fontSize = "11px"
+			layer.style.fontWeight = "lighter"
+		} else { 
+			layer.style.fontFamily = self.FontFamily_monospaceLight()
+			layer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
+			layer.style.fontSize = "10px"
+			layer.style.letterSpacing = "0.5px"
+			if (process.platform === "linux") {
+				layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
+			} else {
+				layer.style.fontWeight = "300"
+			}
+		}
+	}
+	StyleLayer_FontAsSmallLightMonospace(layer)
+	{
+		const self = this
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontFamily = self.FontFamily_monospaceRegular()
+			layer.style.fontSize = "11px"
+			layer.style.fontWeight = "lighter"
+		} else {
+			layer.style.fontFamily = self.FontFamily_monospaceLight()
+			layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
+			layer.style.letterSpacing = "0.5px"
+			layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
+		}
+	}
 	//
 	// Delegation/Accessors/Protocol - Navigation Bar View - Buttons - Back button
-	//
 	NavigationBarView__New_back_leftBarButtonView(clicked_fn)
 	{
 		const self = this

@@ -84,12 +84,10 @@ function New_fieldTitle_labelLayer(labelText, context)
 	layer.style.display = "block" // own line
 	layer.style.margin = "15px 0 8px 8px"
 	layer.style.textAlign = "left"
-	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	layer.style.fontSize = "10px" // design says 11 but chrome renders too strongly; simulating with 10/0.5/500
-	layer.style.letterSpacing = "0.5px"
-	layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
 	layer.style.color = "#F8F7F8"
-	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
+	//
+	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
+	//
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer

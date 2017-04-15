@@ -145,15 +145,7 @@ function New_clickableLinkButtonView(
 	a.style.color = "#11bbec"
 	a.style.cursor = "pointer"
 	a.style.webkitUserSelect = "none" // disable selection
-	a.style.webkitFontSmoothing = "subpixel-antialiased"
-	a.style.fontFamily = context.themeController.FontFamily_monospaceLight()
-	a.style.fontSize = "10px" // chrome renders 11px too big compared to sketch
-	a.style.letterSpacing = "0.5px"
-	if (process.platform === "linux") {
-		a.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
-	} else {
-		a.style.fontWeight = "300"
-	}
+	context.themeController.StyleLayer_FontAsSmallRegularMonospace(a)
 	a.style.display = "inline-block" // to get margin capability
 	a.style.margin = "8px 0 0 9px"
 	a.addEventListener("mouseenter", function()
@@ -345,14 +337,7 @@ function New_redTextButtonView(text, context)
 	layer.style.marginLeft = "32px"
 	//
 	layer.style.color = "#F97777"
-	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
-	layer.style.fontSize = "10px" // design says 11 but chrome renders too large; simulating…
-	layer.style.letterSpacing = "0.5px"
-	if (process.platform === "linux") {
-		layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
-	} else {
-		layer.style.fontWeight = "300"
-	}
+	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
 	//
 	layer.style.textDecoration = "none"
 	//
