@@ -92,6 +92,9 @@ class ImportTransactionsModalView extends View
 		const self = this
 		const layer = document.createElement("div")
 		layer.style.width = "100%"
+		layer.style.boxSizing = "border-box"
+		layer.style.padding = "0 12%"
+		layer.style.wordBreak = "break-word"
 		layer.style.textAlign = "center"
 		layer.style.marginTop = "18px"
 		layer.style.paddingBottom = "10px" // for spacing
