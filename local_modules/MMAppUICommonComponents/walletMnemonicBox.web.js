@@ -56,9 +56,6 @@ const cssRules =
 		cursor: default;
 		text-decoration: none;
 		text-transform: uppercase;
-		font-size: 10px;
-		letter-spacing: 0.8px;
-		font-weight: 100;
 		background: #383638;
 		padding: 4px 8px;
 		margin: 4px;
@@ -243,7 +240,7 @@ function _new_MnemonicConfirmation_WordView(word, wordUUID, context)
 	const layer = view.layer
 	layer.className = "mnemonic-pill"
 	layer.href = "#" // clickable by default
-	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
+	context.themeController.StyleLayer_FontAsSmallPillLightMonospace(layer)
 	layer.ondragstart = function(e) { e.preventDefault(); return false; } // disable link dragging
 	layer.innerHTML = word.toUpperCase()
 	{ // for retrieval later

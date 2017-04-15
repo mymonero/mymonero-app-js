@@ -121,22 +121,20 @@ function New_ActionButtonView(
 			layer.style.color = "#FCFBFC"
 			layer.style.backgroundColor = "#383638"
 			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-			//
-			layer.style.webkitFontSmoothing = "subpixel-antialiased"
-			layer.style.fontSize = "12px"
-			layer.style.letterSpacing = "0.5px"
-			layer.style.fontWeight = "400"
+			context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+				layer,
+				true // bright content, dark bg
+			)
 			layer.style.lineHeight = (ActionButton_h+2) + "px" // set for smaller font size so layout isn't messed
 		} else if (colorType == "blue") {
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
 			layer.style.color = "#161416"
 			layer.style.backgroundColor = "#00C6FF"
 			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
-			//
-			layer.style.webkitFontSmoothing = "subpixel-antialiased"
-			layer.style.fontSize = "13px"
-			layer.style.letterSpacing = "0"
-			layer.style.fontWeight = "600"
+			context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+				layer,
+				false // dark content, bright bg
+			)
 			layer.style.transform = "none" // reset
 			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else if (colorType === "red") {
@@ -144,11 +142,10 @@ function New_ActionButtonView(
 			layer.style.color = "#161416"
 			layer.style.backgroundColor = "#f97777"
 			layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
-			//
-			layer.style.webkitFontSmoothing = "subpixel-antialiased"
-			layer.style.fontSize = "13px"
-			layer.style.letterSpacing = "0"
-			layer.style.fontWeight = "600"
+			context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+				layer,
+				false // dark content, bright bg
+			)
 			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else {
 			throw "unrecognized colorType " + colorType

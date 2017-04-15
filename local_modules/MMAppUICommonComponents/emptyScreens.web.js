@@ -50,10 +50,7 @@ const cssRules =
 		margin: 0 0 0 0;
 		width: 100%;
 		height: auto;
-		font-size: 13px;
 		line-height: 19px;
-		font-weight: 300;
-		-webkit-font-smoothing: subpixel-antialiased;
 		color: #9e9c9e;
 		text-align: center;
 	}`,
@@ -125,9 +122,10 @@ function New_EmptyStateMessageContainerView(
 	{
 		const layer = document.createElement("div")
 		layer.classList.add("message-label")
+		context.themeController.StyleLayer_FontAsMiddlingNormalSansSerif(layer)
 		message_layer = layer
 		layer.innerHTML = messageText
-		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+
 		contentContainerLayer.appendChild(layer)
 	}
 	view.SetContent = function(to_emoji, to_message)

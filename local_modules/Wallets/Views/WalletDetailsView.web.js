@@ -577,13 +577,15 @@ class WalletDetailsView extends View
 						layer1.appendChild(div)
 						div.style.verticalAlign = "top"
 						div.style.textAlign = "left"
+
 						div.style.fontSize = "12px" // design says 13px but looks too big in actual app
+						div.style.fontWeight = "400"
+						div.style.letterSpacing = "0.5px"
+
 						div.style.float = "left"
 						div.style.height = "34px"
-						div.style.fontWeight = "400"
 						div.style.boxSizing = "border-box"
 						div.style.padding = "21px 0 0 16px"
-						div.style.letterSpacing = "0.5px"
 						div.style.fontFamily = self.context.themeController.FontFamily_monospaceRegular()
 						div.style.color = tx.approx_float_amount < 0 ? "#F97777" : "#FCFBFC"
 						//
@@ -595,13 +597,15 @@ class WalletDetailsView extends View
 						layer1.appendChild(div)
 						div.style.verticalAlign = "top"
 						div.style.float = "right"
+						
 						div.style.fontSize = "12px" // design says 13px but looks too big in actual app
 						div.style.letterSpacing = "0.5px"
+						div.style.fontWeight = "100"
+
 						div.style.height = "34px"
 						div.style.boxSizing = "border-box"
 						div.style.padding = "21px 41px 0 0"
 						div.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
-						div.style.fontWeight = "100"
 						div.style.color = "#FCFBFC"
 						const date = tx.timestamp // TODO: this in UTC?
 						const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
@@ -644,12 +648,14 @@ class WalletDetailsView extends View
 						div.style.display = "inline-block"
 						div.style.textAlign = "right"
 						div.style.verticalAlign = "top"
-						div.style.fontSize = "10px" // design says 11 but next to 13px->12px, looks too big, so, 10
-						div.style.letterSpacing = "0.5px"
-						div.style.boxSizing = "border-box"
-						div.style.padding = "3px 41px 0 0"
+
 						div.style.fontFamily = self.context.themeController.FontFamily_monospaceRegular()
 						div.style.fontWeight = "500"
+						div.style.fontSize = "10px" // design says 11 but next to 13px->12px, looks too big, so, 10
+						div.style.letterSpacing = "0.5px"
+
+						div.style.boxSizing = "border-box"
+						div.style.padding = "3px 41px 0 0"
 						div.style.color = "#6B696B"
 						div.innerHTML = `${ tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED" }`
 					}

@@ -72,14 +72,8 @@ class ConnectivityMessageBarView extends View
 		layer.style.borderRadius = "3px"
 		layer.style.boxSizing = "border-box"
 		layer.style.color = "#F5E67E"
-		layer.style.fontSize = "11px"
-		layer.style.fontWeight = "400"
-		layer.style.letterSpacing = "0.5px"
-		layer.style.webkitFontSmoothing = "subpixel-antialiased"
+		self.context.themeController.StyleLayer_FontAsSmallSemiboldSansSerif(layer)
 		layer.style.wordBreak = "break-word"
-		//
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
-		
 	}
 	startObserving()
 	{

@@ -104,11 +104,8 @@ class NavigationBarView extends View
 			self.defaultNavigationBarTitleColor = "#fcfbfc" // so we can use it at runtime
 			layer.style.color = self.defaultNavigationBarTitleColor
 			layer.style.position = "absolute"
-			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
-			layer.style.fontSize = "12px" // design says 13 but browser renders oddly, simulating with…
-			layer.style.fontWeight = "500"
-			layer.style.letterSpacing = "0.5px"
 			layer.style.top = "-1px"
+			self.context.themeController.StyleLayer_FontAsMiddlingBoldSansSerif(layer)
 			self.titleLayer_marginX_pxComponent = 16
 			self.titleLayer_marginX_pctComponent = .15
 			layer.style.boxSizing = "border-box"

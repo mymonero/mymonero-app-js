@@ -80,12 +80,7 @@ function New_GreyButtonView(context)
 	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
 	layer.style.backgroundColor = "#383638"
 	layer.style.color = "#FCFBFC"
-	
-	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	layer.style.fontSize = "12px"
-	layer.style.letterSpacing = "0.5px"
-	layer.style.fontWeight = "400"
-		
+	context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)		
 	return view
 }
 exports.New_GreyButtonView = New_GreyButtonView
@@ -209,10 +204,14 @@ function New_RightSide_ValueDisplayLabelButtonView(context)
 		layer.style.width = "auto"
 		layer.style.height = "auto"
 		layer.style.textDecoration = "none"
+		
+		
+		
 		layer.style.fontSize = "10px" // design is 11 but chrome renders too big, simulating
 		layer.style.letterSpacing = "0.5px"
 		layer.style.fontWeight = "500"
 		layer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
+
 		layer.style.color = "#9E9C9E"
 		layer.style.lineHeight = "200%" // % extra to get + aligned properly
 		layer.style.textAlign = "center"

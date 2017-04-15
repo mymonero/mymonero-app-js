@@ -195,16 +195,13 @@ function New_fieldTitle_labelLayer(labelText, context)
 	__injectCSSRules_ifNecessary(context)
 	//
 	const layer = document.createElement("span")
-	{
-		layer.innerHTML = labelText
-		layer.style.float = "left"
-		layer.style.textAlign = "left"
-		layer.style.fontSize = "12px" // design says 13 but it's too big..?
-		layer.style.fontWeight = "400" // semibold desired
-		layer.style.color = "#FFFFFF"
-		layer.style.letterSpacing = "0.5px"
-		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
-	}				
+	layer.innerHTML = labelText
+	layer.style.float = "left"
+	layer.style.textAlign = "left"
+	context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)
+	layer.style.color = "#FFFFFF"
+	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+	//
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer

@@ -157,6 +157,99 @@ class ThemeController
 			layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
 		}
 	}
+	StyleLayer_FontAsSmallPillLightMonospace(layer)
+	{
+		const self = this
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontFamily = self.FontFamily_monospaceRegular()
+			layer.style.fontSize = "11px"
+			layer.style.fontWeight = "lighter"
+		} else {
+			layer.style.fontFamily = self.FontFamily_monospaceLight()
+			layer.style.fontSize = "10px"
+			layer.style.letterSpacing = "0.8px"
+			layer.style.fontWeight = "100"
+		}
+	}
+	StyleLayer_FontAsMiddlingBoldSansSerif(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontSize = "13px"
+			layer.style.fontWeight = "bold"
+	} else {
+			layer.style.fontSize = "12px" // design says 13 but chrome/webkit/electron renders oddly, simulating with…
+			layer.style.fontWeight = "500"
+			layer.style.letterSpacing = "0.5px"
+			layer.style.fontWeight = "500"
+		}
+	}
+	StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontSize = "13px"
+			layer.style.fontWeight = "600" // semibold desired but "semibold" doesn't apparently work
+		} else {
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+			layer.style.fontWeight = "400" // semibold desired
+			layer.style.letterSpacing = "0.5px"
+		}
+	}
+	StyleLayer_FontAsSmallSemiboldSansSerif(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontSize = "11px"
+			layer.style.fontWeight = "600" // semibold desired but "semibold" doesn't apparently work
+		} else {
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "11px"
+			layer.style.fontWeight = "400" // semibold desired
+			layer.style.letterSpacing = "0.5px"
+		}
+	}
+	StyleLayer_FontAsMiddlingNormalSansSerif(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.letterSpacing = "0"
+		layer.style.fontSize = "13px"
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontWeight = "normal"
+		} else {
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontWeight = "300"
+		}
+	}
+	StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+		layer, 
+		isContentBrightNotDark
+	)
+	{
+		const self = this
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		if (self.context.ThemeController_isMobileBrowser === true) { 
+			layer.style.fontSize = "13px"
+			layer.style.letterSpacing = "0"
+			layer.style.fontWeight = "600"
+		} else { // chrome/desktop/electron:
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			if (isContentBrightNotDark == true) {
+				layer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
+				layer.style.letterSpacing = "0.5px"
+				layer.style.fontWeight = "400"
+			} else {
+				layer.style.fontSize = "13px" // appears /slightly/ too bug but waygd 
+				layer.style.letterSpacing = "0"
+				layer.style.fontWeight = "600"
+			}
+		}
+	}
 	//
 	// Delegation/Accessors/Protocol - Navigation Bar View - Buttons - Back button
 	NavigationBarView__New_back_leftBarButtonView(clicked_fn)

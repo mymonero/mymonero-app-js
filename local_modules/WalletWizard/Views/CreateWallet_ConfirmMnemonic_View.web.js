@@ -124,8 +124,6 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 					margin_fromWindowRight, 
 					self.context
 				)
-				margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
-				margin_fromWindowRight = margin_h
 				actionButtonsContainerView.layer.style.paddingLeft = margin_h+"px"
 			} else {
 				actionButtonsContainerView = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(

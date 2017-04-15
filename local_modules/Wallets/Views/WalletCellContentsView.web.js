@@ -128,11 +128,7 @@ class WalletCellContentsView extends View
 		layer.style.whiteSpace = "nowrap"
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
-		layer.style.letterSpacing = "0.5px"
-		layer.style.fontSize = "13px"
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
-		layer.style.fontWeight = "400"
-		layer.style.webkitFontSmoothing = "subpixel-antialiased"
+		self.context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)
 		layer.style.color = "#fcfbfc"
 		layer.style.cursor = "default"
 		// layer.style.border = "1px solid red"
