@@ -207,13 +207,13 @@ function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNeces
 function New_TooltipSpawningButtonView(tooltipText, context)
 {
 	__injectCSSRules_ifNecessary()
-	var tooltip;
 	const buttonTitle = "?"
 	const view = commonComponents_tables.New_clickableLinkButtonView(buttonTitle, context)
 	const layer = view.layer
 	layer.style.marginLeft = "7px"
 	layer.style.display = "inline" // same line
-	tooltip = new Opentip(layer, {
+	const tooltip_options = 
+	{
 		target: true, // target trigger (`layer`)
 		tipJoint: "bottom center",
 		containInViewport: true,
@@ -230,7 +230,12 @@ function New_TooltipSpawningButtonView(tooltipText, context)
 		shadowBlur: 38,
 		shadowOffset: [ 0, 19 ],
 		shadowColor: "rgba(0,0,0,0.26)"
-	})
+	}
+	if (context.Tooltips_nonHoveringBehavior == true) {
+		tooltip_options.showOn = "click"
+		tooltip_options.hideOn = "click"
+	}
+	const tooltip = new Opentip(layer, tooltip_options)
 	tooltip.setContent(tooltipText)
 	return view 
 }

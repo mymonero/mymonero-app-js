@@ -110,6 +110,7 @@ window.BootApp = function()
 			})
 		}
 		{ // context
+			const isMobile = cached_metadata.isRunningInNonMobileBrowser !== true
 			context = require('./index_context.cordova').NewHydratedContext({
 				app: app,
 				isDebug: cached_metadata.isDebug,
@@ -117,7 +118,8 @@ window.BootApp = function()
 				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 				TabBarView_thickness: 48,
 				TabBarView_isHorizontalBar: true,
-				ThemeController_isMobileBrowser: cached_metadata.isRunningInNonMobileBrowser !== true
+				ThemeController_isMobileBrowser: isMobile == true,
+				Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
 			})
 		}
 		if (cached_metadata.isRunningInNonMobileBrowser) { // then we don't have guaranteed native emoji support
@@ -134,6 +136,11 @@ window.BootApp = function()
 			//
 			if (cached_metadata.isRunningInNonMobileBrowser == false) {
 				cordova.plugins.Keyboard.disableScroll(true) // so top of app doesn't scroll out-of-view when keyboard becomes active
+			}
+			if (context.Tooltips_nonHoveringBehavior == true) { // then add functlty to hide tooltips on window tap
+				window.addEventListener('touchstart', function(e) {
+				  for(var i = 0; i < Opentip.tips.length; i ++) { Opentip.tips[i].hide(); }
+				})
 			}
 			//
 			window.addEventListener('native.keyboardshow', function(e)
