@@ -55,15 +55,26 @@ var cached_spritesheetImage;
 function PreLoadAndSetUpEmojiOne(context)
 { // ^ be sure to call this in order to inject the stylesheets
 	// preload sprites to prevent delay
-	const image = new Image()
-	image.src = context.crossPlatform_appBundledAssetsRootPath+"/Emoji/Vendor/emojione.sprites.png"
-	cached_spritesheetImage = image
-	//
-	__injectCSS_ifNecessary(context) // good time to do this
+	if (context.Emoji_renderWithNativeEmoji !== true) {
+		const image = new Image()
+		image.src = context.crossPlatform_appBundledAssetsRootPath+"/Emoji/Vendor/emojione.sprites.png"
+		cached_spritesheetImage = image
+		//
+		__injectCSS_ifNecessary(context) // good time to do this
+	}
 }
 exports.PreLoadAndSetUpEmojiOne = PreLoadAndSetUpEmojiOne
 // 
-function NativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
+function NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(context, nativeEmojiText)
+{
+	if (context.Emoji_renderWithNativeEmoji !== true) {
+		return nativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
+	}
+	return nativeEmojiText
+}
+exports.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText 
+	= NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText
+function nativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 {
 	// perhaps uncomment this in the near future, but ensure emoji font size (esp on retina):
 	// if (process.platform === "darwin") { // because MacOS has good support for Emoji; add iOS here too
@@ -72,4 +83,3 @@ function NativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 	const text = emojione.unicodeToImage(nativeEmojiText)
 	return text
 }
-exports.NativeEmojiTextToImageBackedEmojiText = NativeEmojiTextToImageBackedEmojiText

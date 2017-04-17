@@ -32,7 +32,7 @@ const async = require('async')
 const EventEmitter = require('events')
 const CollectionName = "Settings"
 //
-const k_default_appTimeoutAfterS = 60
+const k_default_appTimeoutAfterS = 3 * 60 // 3 minutes
 const k_defaults_record = 
 {
 	serverURL: "",

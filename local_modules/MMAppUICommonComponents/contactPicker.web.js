@@ -54,6 +54,10 @@ const cssRules =
 		left: 48px;
 		width: calc(100% - 48px - 12px)
 	}`,
+	`.${NamespaceName} .autocomplete-results .row .title.withNonNativeEmoji	 {
+		left: 48px;
+		width: calc(100% - 48px - 12px)
+	}`,
 	//
 	// picked contacts
 	`.${NamespaceName} .picked-contact .emojione {
@@ -63,6 +67,9 @@ const cssRules =
 		transform: scale(${17/64});
 	}`,
 	`.${NamespaceName} .picked-contact .title {
+		margin-left: 10px;
+	}`,
+	`.${NamespaceName} .picked-contact .title.withNonNativeEmoji {
 		margin-left: 21px;
 	}`
 ]
@@ -358,8 +365,15 @@ function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 	layer.style.whiteSpace = "nowrap"
 	layer.style.overflow = "hidden"
 	layer.style.textOverflow = "ellipsis"
-	const imageBackedEmojiHTMLString = emoji_web.NativeEmojiTextToImageBackedEmojiText(contact.emoji)		
-	layer.innerHTML = `${imageBackedEmojiHTMLString}&nbsp;<span class="title">${contact.fullname}</span>`
+	const imageBackedEmojiHTMLString = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+		context,
+		contact.emoji
+	)
+	var titleClasses = "title"
+	if (context.Emoji_renderWithNativeEmoji !== true) {
+		titleClasses += " withNonNativeEmoji"
+	}
+	layer.innerHTML = `${imageBackedEmojiHTMLString}&nbsp;<span class="${titleClasses}">${contact.fullname}</span>`
 	{
 		layer.addEventListener("mouseover", function() { this.highlight() })
 		layer.addEventListener("mouseleave", function() { this.unhighlight() }) // will this be enough?
@@ -403,14 +417,25 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 	layer.appendChild(contentLayer)
 	{ // ^-- using a content layer here so we can get width-of-content behavior with inline-block
 		// while getting parent to give us display:block behavior
-		const imageBackedEmojiHTMLString = emoji_web.NativeEmojiTextToImageBackedEmojiText(contact.emoji)		
-		contentLayer.innerHTML = `${imageBackedEmojiHTMLString}&nbsp;<span class="title">${contact.fullname}</span>`
+		const imageBackedEmojiHTMLString = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+			context,
+			contact.emoji
+		)
+		var titleClasses = "title"
+		if (context.Emoji_renderWithNativeEmoji !== true) {
+			titleClasses += " withNonNativeEmoji"
+		}
+		contentLayer.innerHTML = `${imageBackedEmojiHTMLString}&nbsp;<span class="${titleClasses}">${contact.fullname}</span>`
 		contentLayer.style.boxSizing = "border-box"
 		contentLayer.style.position = "relative"
-		contentLayer.style.left = "0"
-		contentLayer.style.padding = `8px ${8 + 30}px 5px 10px`
 		contentLayer.style.maxWidth = "274px"
-		contentLayer.style.height = "31px"
+		if (context.Emoji_renderWithNativeEmoji !== true) {
+			contentLayer.style.left = "0"
+			contentLayer.style.height = "31px"
+			contentLayer.style.padding = `8px ${8 + 30}px 5px 10px`
+		} else {
+			contentLayer.style.padding = `3px ${8 + 30}px 5px 10px`
+		}
 		contentLayer.style.whiteSpace = "nowrap"
 		contentLayer.style.overflow = "hidden"
 		contentLayer.style.textOverflow = "ellipsis"
@@ -419,9 +444,11 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 		contentLayer.style.borderRadius = "3px"
 		contentLayer.style.display = "inline-block"
 		contentLayer.style.cursor = "default"
+
 		contentLayer.style.fontSize = "13px"
 		contentLayer.style.fontWeight = "300"
 		contentLayer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
+
 		contentLayer.style.color = "#FCFBFC"
 		// contentLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 		const xButtonLayer = document.createElement("a")
@@ -429,10 +456,10 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 		{
 			xButtonLayer.style.display = "block" // to get margin and bounds
 			xButtonLayer.style.position = "absolute"
-			xButtonLayer.style.right = "11px"
-			xButtonLayer.style.top = "10px"
-			xButtonLayer.style.width = "13px"
-			xButtonLayer.style.height = "12px"
+			xButtonLayer.style.right = "0px"
+			xButtonLayer.style.top = "0px"
+			xButtonLayer.style.width = "34px"
+			xButtonLayer.style.height = "100%"
 			xButtonLayer.style.backgroundImage = "url("+context.crossPlatform_appBundledAssetsRootPath+"/MMAppUICommonComponents/Resources/contactPicker_xBtnIcn@2x.png)"
 			xButtonLayer.style.backgroundSize = "11px 10px"
 			xButtonLayer.style.backgroundPosition = "center"

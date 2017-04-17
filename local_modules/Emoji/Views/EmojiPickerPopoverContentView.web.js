@@ -46,14 +46,17 @@ const cssRules =
 		width: 34px;
 		height: ${EmojiButtonView_height}px;
 		line-height: ${30 + 4}px;
-		text-indent: -4px;
+		text-indent: 0px; /* native emoji */
 		display: inline-block;
 		text-align: center;
 		vertical-align: middle;
 		font-size: 16px;
 		cursor: pointer;
 		background: rgba(0,0,0,0);
-		transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out;
+		/* transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out; */
+	}`,
+	`.${NamespaceName} > .EmojiButtonView.withNonNativeEmoji {
+		text-indent: -4px;
 	}`,
 	`.${NamespaceName} > .EmojiButtonView.active,
 	 .${NamespaceName} > .EmojiButtonView:hover {
@@ -128,8 +131,14 @@ class EmojiPickerPopoverContentView extends View
 		const layer = view.layer
 		layer.style.position = "relative" // so we can read offsetTop
 		layer.style.display = "inline-block"
-		layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(emoji)
+		layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+			self.context,
+			emoji
+		)
 		layer.classList.add("EmojiButtonView")
+		if (self.context.Emoji_renderWithNativeEmoji !== true) {
+			layer.classList.add("withNonNativeEmoji")
+		}
 		layer.addEventListener(
 			"click",
 			function(e)

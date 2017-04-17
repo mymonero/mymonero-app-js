@@ -193,12 +193,18 @@ class ContactsListCellView extends ListCellView
 			return
 		}
 		if (self.record.didFailToInitialize_flag === true || self.record.didFailToBoot_flag === true) { // unlikely, but possible
-			self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText("❌")
+			self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+				self.context, 
+				"❌"
+			)
 			self.nameLayer.innerHTML = "Error: Please contact support."
 			self.addressLayer.innerHTML = ""
 			return
 		}
-		self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(self.record.emoji)
+		self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+			self.context,
+			self.record.emoji
+		)
 		self.nameLayer.innerHTML = self.record.fullname
 		self.addressLayer.innerHTML = self.record.address
 		// self.DEBUG_BorderAllLayers()

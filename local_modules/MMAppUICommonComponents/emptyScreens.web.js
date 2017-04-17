@@ -114,7 +114,10 @@ function New_EmptyStateMessageContainerView(
 		const layer = document.createElement("div")
 		layer.classList.add("emoji-label")
 		emoji_layer = layer
-		const emoji = emoji_web.NativeEmojiTextToImageBackedEmojiText(nativeEmoji)
+		const emoji = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+			context,
+			nativeEmoji
+		)
 		layer.innerHTML = emoji
 		contentContainerLayer.appendChild(layer)
 	}
@@ -130,7 +133,10 @@ function New_EmptyStateMessageContainerView(
 	}
 	view.SetContent = function(to_emoji, to_message)
 	{
-		emoji_layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(to_emoji)
+		emoji_layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+			context,
+			to_emoji
+		)
 		message_layer.innerHTML = to_message
 	}
 	return view

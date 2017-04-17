@@ -323,7 +323,10 @@ class EmojiPickerControlView extends View
 	_configureALayerWithEmoji()
 	{
 		const self = this
-		self.aLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText(self.value)
+		self.aLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(
+			self.context, 
+			self.value
+		)
 	}
 }
 module.exports = EmojiPickerControlView

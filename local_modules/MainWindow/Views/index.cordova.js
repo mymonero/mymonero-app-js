@@ -86,7 +86,7 @@ window.BootApp = function()
 	function _proceedTo_loadAsyncMetaDataBeforeAppSetup()
 	{ // cordova-specific - need to request various info - and they're mostly async, which sucks
 		// synchronous fetches:
-		cached_metadata.userDataAbsoluteFilepath = cordova.file.applicationStorageDirectory
+		cached_metadata.userDataAbsoluteFilepath = cordova.file.dataDirectory//applicationStorageDirectory
 		cached_metadata.crossPlatform_appBundledAssetsRootPath = cordova.file.applicationDirectory + "www"
 		// asynchronous fetches:
 		cordova.getAppVersion.getVersionNumber(function(versionNumber)
@@ -120,6 +120,7 @@ window.BootApp = function()
 				TabBarView_isHorizontalBar: true,
 				ThemeController_isMobileBrowser: isMobile == true,
 				Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
+				Emoji_renderWithNativeEmoji: true,
 			})
 		}
 		if (cached_metadata.isRunningInNonMobileBrowser) { // then we don't have guaranteed native emoji support

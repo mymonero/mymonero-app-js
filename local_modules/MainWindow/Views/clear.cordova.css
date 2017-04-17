@@ -14,4 +14,5 @@ body {
 input, 
 textarea {
 	-webkit-overflow-scrolling: touch;
+	-webkit-appearance: none;
 }
