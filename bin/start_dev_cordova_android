@@ -1,0 +1,3 @@
+cordova platform add https://github.com/apache/cordova-android; 
+bin/_build_cordova_www; 
+cordova run android

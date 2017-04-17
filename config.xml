@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.mymonero.mymonero-mobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.mymonero.mymoneromobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>MyMonero</name>
     <description>
     </description>
@@ -31,4 +31,5 @@
     <plugin name="cordova-plugin-device" spec="~1.1.5" />
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="com.ozexpert.devicemeta" spec="https://github.com/ozexpert/cordova-plugin-device-meta.git" />
+    <plugin name="cordova-plugin-compat" spec="~1.1.0" />
 </widget>
