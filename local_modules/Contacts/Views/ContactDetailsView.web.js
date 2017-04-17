@@ -72,7 +72,7 @@ class ContactDetailsView extends View
 			layer.style.color = "#c0c0c0" // temporary
 			//
 			layer.style.overflowY = "auto"
-			layer.style.webkitOverflowScrolling = "touch"
+			// layer.style.webkitOverflowScrolling = "touch"
 			//
 			layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 			//

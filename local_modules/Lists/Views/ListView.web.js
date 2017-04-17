@@ -205,7 +205,7 @@ class ListView extends View
 				self.layer.style.webkitOverflowScrolling = "auto"
 			} else {
 				self.layer.style.overflowY = "auto"
-				self.layer.style.webkitOverflowScrolling = "touch"
+				// self.layer.style.webkitOverflowScrolling = "touch"
 			}
 			records.forEach(
 				function(record, i)
