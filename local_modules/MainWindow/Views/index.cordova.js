@@ -137,11 +137,6 @@ window.BootApp = function()
 			if (cached_metadata.isRunningInNonMobileBrowser == false) {
 				cordova.plugins.Keyboard.disableScroll(true) // so top of app doesn't scroll out-of-view when keyboard becomes active
 			}
-			if (context.Tooltips_nonHoveringBehavior == true) { // then add functlty to hide tooltips on window tap
-				window.addEventListener('touchstart', function(e) {
-				  for(var i = 0; i < Opentip.tips.length; i ++) { Opentip.tips[i].hide(); }
-				})
-			}
 			//
 			window.addEventListener('native.keyboardshow', function(e)
 			{
