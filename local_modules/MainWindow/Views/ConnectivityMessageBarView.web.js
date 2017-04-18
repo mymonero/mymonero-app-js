@@ -58,10 +58,14 @@ class ConnectivityMessageBarView extends View
 		const layer = self.layer
 		layer.style.position = "fixed"
 		layer.style.zIndex = 100
-		layer.style.width = "calc(100% - 80px - 16px - 16px)"
+		var leftMargin = 16
+		if (self.context.themeController.TabBarView_isHorizontalBar() !== true) {
+			leftMargin += self.context.themeController.TabBarView_thickness()
+		}
+		layer.style.width = `calc(100% - ${leftMargin}px - 16px)`
 		layer.style.minHeight = "24px"
 		layer.style.padding = "4px 8px"
-		layer.style.left = `${80 + 16}px`
+		layer.style.left = `${leftMargin}px`
 		layer.style.top = "44px"
 		layer.innerHTML = "No Internet Connection Found"
 		//
