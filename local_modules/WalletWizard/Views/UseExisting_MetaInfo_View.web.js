@@ -83,6 +83,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			const view = commonComponents_forms.New_fieldValue_textAreaView({
 				placeholderText: "From your existing wallet"
 			}, self.context)
+			view.layer.autocorrect = "off"
+			view.layer.autocomplete = "off"
+			view.layer.autocapitalize = "none"
+			view.layer.spellcheck = "false"
 			div.appendChild(view.layer)
 			self.mnemonicTextAreaView = view
 			view.layer.addEventListener(
@@ -123,6 +127,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
+				view.layer.autocorrect = "off"
+				view.layer.autocomplete = "off"
+				view.layer.autocapitalize = "none"
+				view.layer.spellcheck = "false"
 				div.appendChild(view.layer)
 				self.addrTextAreaView = view
 				view.layer.addEventListener(
@@ -157,6 +165,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
+				view.layer.autocorrect = "off"
+				view.layer.autocomplete = "off"
+				view.layer.autocapitalize = "none"
+				view.layer.spellcheck = "false"
 				div.appendChild(view.layer)
 				self.viewKeyTextAreaView = view
 				view.layer.addEventListener(
@@ -191,6 +203,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				//
 				const view = commonComponents_forms.New_fieldValue_textAreaView({
 				}, self.context)
+				view.layer.autocorrect = "off"
+				view.layer.autocomplete = "off"
+				view.layer.autocapitalize = "none"
+				view.layer.spellcheck = "false"
 				div.appendChild(view.layer)
 				self.spendKeyTextAreaView = view
 				view.layer.addEventListener(

@@ -320,6 +320,10 @@ class SendFundsView extends View
 				self._didFinishTypingInContactPickerInput(event)
 			}
 		)
+		layer.ContactPicker_inputLayer.autocorrect = "off"
+		layer.ContactPicker_inputLayer.autocomplete = "off"
+		layer.ContactPicker_inputLayer.autocapitalize = "none"
+		layer.ContactPicker_inputLayer.spellcheck = "false"
 		self.contactOrAddressPickerLayer = layer
 		div.appendChild(layer)
 		{ // initial config
@@ -416,6 +420,10 @@ class SendFundsView extends View
 					}
 				}
 			)
+			valueLayer.autocorrect = "off"
+			valueLayer.autocomplete = "off"
+			valueLayer.autocapitalize = "none"
+			valueLayer.spellcheck = "false"
 			div.appendChild(valueLayer)
 		}
 		self.manualPaymentIDInputLayer_containerLayer = div

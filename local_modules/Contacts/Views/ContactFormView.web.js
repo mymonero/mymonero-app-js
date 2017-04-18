@@ -114,7 +114,12 @@ class ContactFormView extends View
 			},
 			self.context
 		)
-		return view.layer // for the moment, only returning the layer
+		const layer = view.layer
+		layer.autocomplete = "off"
+		layer.autocorrect = "off"
+		layer.autocapitalize = "off"
+		layer.spellcheck = "false"
+		return layer // for the moment, only returning the layer
 	}
 	_overridable_new_fieldInputLayer__paymentID()
 	{
@@ -125,7 +130,12 @@ class ContactFormView extends View
 			},
 			self.context
 		)
-		return view.layer // for the moment, only returning the layer
+		const layer = view.layer
+		layer.autocomplete = "off"
+		layer.autocorrect = "off"
+		layer.autocapitalize = "off"
+		layer.spellcheck = "false"
+		return layer // for the moment, only returning the layer
 	}
 	_overridable_initial_inlineMessageString()
 	{
@@ -169,6 +179,10 @@ class ContactFormView extends View
 				}
 			}
 		)
+		layer.autocomplete = "off"
+		layer.autocorrect = "off"
+		layer.spellcheck = "false"
+		// but leaving autocomplete on
 		div.appendChild(valueLayer)
 		self.form_containerLayer.appendChild(div)
 		// after visible… (TODO: improve this by doing on VDA or other trigger)
@@ -218,6 +232,10 @@ class ContactFormView extends View
 		div.appendChild(labelLayer)
 		//
 		const inputLayer = self._overridable_new_fieldInputLayer__address()
+		inputLayer.autocorrect = "off"
+		inputLayer.autocomplete = "off"
+		inputLayer.autocapitalize = "none"
+		inputLayer.spellcheck = "false"
 		self.addressInputLayer = inputLayer
 		inputLayer.addEventListener(
 			"keypress", // press, not up, to be able to control what goes into field
@@ -248,6 +266,10 @@ class ContactFormView extends View
 		}
 		//
 		const inputLayer = self._overridable_new_fieldInputLayer__paymentID()
+		inputLayer.autocorrect = "off"
+		inputLayer.autocomplete = "off"
+		inputLayer.autocapitalize = "none"
+		inputLayer.spellcheck = "false"
 		self.paymentIDInputLayer = inputLayer
 		// NOTE: Actually adding view.layer to div is deferred until a few lines down
 		if (self._overridable_shouldNotDisplayPaymentIDFieldLayer() !== true) { // if we /should/ show
