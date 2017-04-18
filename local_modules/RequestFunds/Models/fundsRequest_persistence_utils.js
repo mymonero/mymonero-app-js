@@ -103,7 +103,7 @@ function SaveToDisk(
 	}
 	const plaintextDocument =
 	{
-		dateCreated: self.dateCreated,
+		dateCreated: self.dateCreated.toString(), // must do toString else we will get exception on encrypting
 		//
 		from_fullname: self.from_fullname || "",
 		to_walletHexColorString: self.to_walletHexColorString || "",

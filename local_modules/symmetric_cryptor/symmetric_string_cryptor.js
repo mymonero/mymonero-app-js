@@ -65,6 +65,12 @@ function EncryptedBase64String__Async(
 	fn
 )
 {
+	if (typeof plaintext_msg === 'undefined') {
+		return undefined
+	}
+	if (plaintext_msg == null) {
+		return null
+	}
 	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
 	//
 	const components = 
