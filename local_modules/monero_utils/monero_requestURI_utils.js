@@ -39,7 +39,7 @@ function New_RequestFunds_URI(
 		throw "missing address"
 		return null
 	}
-    var uri = monero_config.coinUriPrefix + address 
+    var uri = monero_config.coinUriPrefix + "//" + address  // inserting a // so data detectors pick it up… maybe remove if/after not necessary
 	var isAppendingParam0 = true
     function addParam(parameterName, value)
 	{

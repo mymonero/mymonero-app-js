@@ -39,4 +39,5 @@
     <plugin name="cordova-plugin-image-picker" spec="~1.1.1">
         <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="The MyMonero app uses your device's photo roll for downloading and for opening Monero Request QR code files." />
     </plugin>
+    <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
 </widget>

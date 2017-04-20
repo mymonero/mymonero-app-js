@@ -29,14 +29,22 @@
 "use strict"
 //
 const PasteboardInterface = require('./PasteboardInterface')
-const cordova__clipboard = null // TODO
 //
 class Pasteboard extends PasteboardInterface
 {
 	constructor(options, context)
 	{
 		super(options, context)
+		if (!cordova.plugins.clipboard || typeof cordova.plugins.clipboard === 'undefined') {
+			throw `${self.constructor.name} requires cordova.plugins.clipboard`
+		}
 	}
+	//
+	IsHTMLCopyingSupported()
+	{
+		return false
+	}
+	//
 	CopyString(string, contentType_orText)
 	{
 		const self = this
@@ -48,9 +56,9 @@ class Pasteboard extends PasteboardInterface
 			contentType = contentType_orText
 		}
 		if (contentType === contentTypes.Text) {
-			cordova__clipboard.writeText(string)
+			cordova.plugins.clipboard.copy(string)
 		} else if (contentType === contentTypes.HTML) {
-			cordova__clipboard.writeHTML(string)
+			throw `Cordova does not apparently support copying HTML. Disallow HTML variant copying in consumer when on Cordova by checking IsHTMLCopyingSupported().`
 		} else {
 			throw "Unrecognized content type " + contentType
 		}
@@ -58,8 +66,13 @@ class Pasteboard extends PasteboardInterface
 	}
 	CopyValuesByType(valuesByType)
 	{
-		cordova__clipboard.write(valuesByType)
-		console.log(`📋  Copied values of types ${Object.keys(valuesByType)}.`)
+		const self = this
+		const types = Object.keys(valuesByType)
+		for (let i in types) {
+			const type = types[i]
+			const value = valuesByType[type]
+			self.CopyString(value, type)
+		}
 	}
 }
 module.exports = Pasteboard

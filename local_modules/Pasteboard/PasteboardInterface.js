@@ -45,18 +45,19 @@ class Pasteboard
 		}
 	}
 	//
-	//
-	//
-	//
+	// Accessors
 	CopyContentTypes()
 	{
 		return _contentTypes
 	}
-	
-	//
+	IsHTMLCopyingSupported()
+	{
+		const self = this
+		const _cmd = "IsHTMLCopyingSupported()"
+		throw `You must override and implement ${_cmd} in ${self.constructor.name}`
+	}
 	//
 	// Imperatives
-	//
 	CopyString(string, contentType_orText)
 	{
 		const self = this

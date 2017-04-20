@@ -37,6 +37,12 @@ class Pasteboard extends PasteboardInterface
 	{
 		super(options, context)
 	}
+	//
+	IsHTMLCopyingSupported()
+	{
+		return true
+	}
+	//
 	CopyString(string, contentType_orText)
 	{
 		const self = this
