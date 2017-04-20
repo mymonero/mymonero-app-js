@@ -39,39 +39,29 @@ class URLOpeningController extends URLOpeningController_Abstract
 	_override_startObserving()
 	{
 		const self = this
-		console.log("TODO: implement _override_startObserving in URLOpeningController")
-		// TODO:
-		// const app = self.context.app
-		// app.on('will-finish-launching', function()
-		// { // ^ we might not need to do this
-		// 	app.on("open-url", function(event, url)
-		// 	{
-		// 		self.__didReceivePossibleURIToOpen(
-		// 			url,
-		// 			function()
-		// 			{
-		// 				event.preventDefault()
-		// 			}
-		// 		)
-		// 	})
-		// 	app.on('launched-duplicatively', function(argv)
-		// 	{ // main window listens for this too - and brings itself to forefont…
-		// 		// we need to listen for this here for Windows (not MacOS)
-		// 		self._didLaunchOrReOpenWithArgv(argv)
-		// 	})
-		// 	app.setAsDefaultProtocolClient(self.PROTOCOL_PREFIX()) // this seems to be mainly necessary for Windows
-		// })
-		// setTimeout(function()
-		// {
-		// 	self._didLaunchOrReOpenWithArgv(process.argv)
-		// })
+		window.addEventListener(
+			'open-app-url', // this is our custom event emitted in index.cordova.html
+			function(payload)
+			{
+				const url = payload.detail
+				self.__didReceivePossibleURIToOpen(
+					url,
+					function() {} // willConsiderAsURI_fn
+				)
+			}
+		)
 	}
 	//
 	// Delegation - Override implementations
 	_override_didReceiveInvalidURL()
 	{
 		const self = this
-		alert("Sorry, that does not appear to be a valid Monero URL.")
+		navigator.notification.alert(
+			"Sorry, that does not appear to be a valid Monero URL.",
+			_proceedTo_loadAsyncMetaDataBeforeAppSetup,
+			"MyMonero", 
+			"OK"
+		)
 	}
 }
 module.exports = URLOpeningController

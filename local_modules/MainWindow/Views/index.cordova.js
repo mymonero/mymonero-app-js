@@ -27,6 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
+//
 window.BootApp = function()
 { // encased in a function to prevent scope being lost/freed on mobile
 	var rootView;
@@ -126,6 +127,7 @@ window.BootApp = function()
 				Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
 				Emoji_renderWithNativeEmoji: true,
 			})
+			window.MyMonero_context = context
 		}
 		if (cached_metadata.isRunningInNonMobileBrowser) { // then we don't have guaranteed native emoji support
 			{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne

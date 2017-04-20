@@ -45,6 +45,25 @@
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
         <link rel="stylesheet" type="text/css" href="MainWindow/Views/clear.cordova.css">
+
+        <script type="text/javascript">
+			function handleOpenURL(url)
+			{ // function stipulated by cordova-plugin-customurlscheme, must be in head
+				function emitURLWhenContextIsReady()
+				{
+					const doesContextExist = typeof window.MyMonero_context !== 'undefined' && window.MyMonero_context
+					if (doesContextExist) {
+						console.log("💬  Window received and is re-emiting URL: ", url)
+						const event = new CustomEvent('open-app-url', { detail: url })
+						window.dispatchEvent(event, url) // a custom event 
+						return
+					}
+					console.log("⌚  Received url to open but context not yet ready. Deferring.")
+					setTimeout(emitURLWhenContextIsReady, 50)
+				}
+				emitURLWhenContextIsReady()
+			}
+        </script>
     </head>
     <body>
         <script type="text/javascript" src="cordova.js"></script>

@@ -40,4 +40,10 @@
         <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="The MyMonero app uses your device's photo roll for downloading and for opening Monero Request QR code files." />
     </plugin>
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
+    <plugin name="cordova-plugin-customurlscheme" spec="~4.2.0">
+        <variable name="URL_SCHEME" value="monero" />
+        <variable name="ANDROID_SCHEME" value=" " />
+        <variable name="ANDROID_HOST" value=" " />
+        <variable name="ANDROID_PATHPREFIX" value="/" />
+    </plugin>
 </widget>
