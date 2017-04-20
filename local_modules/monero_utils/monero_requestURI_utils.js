@@ -73,6 +73,10 @@ function New_ParsedPayload_FromRequestURIString(uriString)
 		throw "Request URI has non-Monero protocol"
 	}
 	var target_address = url.pathname // var instead of const as have to finalize it
+	// it seems that if the URL has // in it, pathname will be empty, but host will contain the address instead
+	if (target_address === "" || typeof target_address === 'undefined' || !target_address) {
+		target_address = url.host || url.hostname
+	}
 	if (target_address.indexOf("//") == 0) {
 		target_address = target_address.slice(0 + "//".length, target_address.length) // strip prefixing "//" in case URL had protocol:// instead of protocol:
 	}
