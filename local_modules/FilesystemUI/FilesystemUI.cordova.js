@@ -35,8 +35,8 @@ class FilesytemUI extends FilesystemUI_Abstract
 	constructor(options, context)
 	{
 		super(options, context)
-		if (!window.imageSaver || typeof window.imageSaver === 'undefined') {
-			throw `${self.constructor.name} requires a window.imageSaver`
+		if (!cordova.base64ToGallery || typeof cordova.base64ToGallery === 'undefined') {
+			throw `${self.constructor.name} requires a cordova.base64ToGallery`
 		}
 		if (!window.imagePicker || typeof window.imagePicker === 'undefined') {
 			throw `${self.constructor.name} requires a window.imagePicker`
@@ -48,27 +48,27 @@ class FilesytemUI extends FilesystemUI_Abstract
 	// As such, it means the name of the function can probably be improved
 	PresentDialogToSaveBase64ImageStringAsImageFile(
 		imgDataBase64_URIString,
-		title, // unused in mobile impl
+		saveDialogTitle, // unused in mobile impl
 		defaultFilename_sansExt,
 		fn // (err?) -> Void
 	)
 	{
 		const self = this
-		var params = 
-		{
-			data: imgDataBase64_URIString, 
-			prefix: defaultFilename_sansExt, 
-			format: 'JPG', 
-			quality: 100, // might as well be have as little loss as possible - but it probably doesn't matter
-			mediaScanner: true
-		}
-		console.log("params" , params)
-		window.imageSaver.saveBase64Image(
-			params,
+		cordova.base64ToGallery(
+			imgDataBase64_URIString,
+			{
+				prefix: defaultFilename_sansExt, 
+				mediaScanner: true
+			},
 			function(filePath)
 			{
 				console.log('File saved to ' + filePath)
-				alert("Saved to photo roll!")
+				navigator.notification.alert(
+					"Saved to photo roll", 
+					function() {}, // nothing to do 
+					"MyMonero", 
+					"OK"
+				)
 				fn() // no need to pass path back
 			},
 			function(msg)

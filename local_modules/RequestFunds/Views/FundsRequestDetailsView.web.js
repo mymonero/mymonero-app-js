@@ -385,7 +385,6 @@ class FundsRequestDetailsView extends View
 			function(err)
 			{
 				if (err) {
-					throw err
 					__trampolineFor_didFinish()
 					return
 				}

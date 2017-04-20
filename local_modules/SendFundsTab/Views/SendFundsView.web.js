@@ -1581,7 +1581,6 @@ class SendFundsView extends View
 				self._shared_didPickQRCodeAtPath(absoluteFilePath)
 			}
 		)
-
 	}
 	//
 	//

@@ -75,9 +75,13 @@ window.BootApp = function()
 			cached_metadata.isDebug = result.debug
 			cached_metadata.deviceManufacturer = result.manufacturer
 			if (cached_metadata.isDebug === true) {
-				alert("Press OK to load app") // this is to give developer chance to open inspector - remove
-				// after short delay so alert actually done(?)
-				setTimeout(function() { _proceedTo_loadAsyncMetaDataBeforeAppSetup() }, 500)
+				// this is to give developer chance to open inspector - remove
+				navigator.notification.alert(
+					"Press OK to load app", 
+					_proceedTo_loadAsyncMetaDataBeforeAppSetup,
+					"MyMonero", 
+					"OK"
+				)
 			} else {
 				_proceedTo_loadAsyncMetaDataBeforeAppSetup()
 			}
