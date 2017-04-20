@@ -187,9 +187,9 @@ function SaveToDisk(
 		public_keys: self.public_keys,
 		//
 		isLoggedIn: self.isLoggedIn,
-		dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo.toString(), // must convert to string else will get exception on encryption
-		dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions.toString(),  // must convert to string else will get exception on encryption
-		dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally.toString(), // must convert to string else will get exception on encryption
+		dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo ? self.dateThatLast_fetchedAccountInfo.toString() : undefined, // must convert to string else will get exception on encryption
+		dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions ? self.dateThatLast_fetchedAccountTransactions.toString() : undefined,  // must convert to string else will get exception on encryption
+		dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally ? self.dateWalletFirstSavedLocally.toString() : undefined, // must convert to string else will get exception on encryption
 		//
 		isInViewOnlyMode: self.isInViewOnlyMode,
 		shouldDisplayImportAccountOption: self.shouldDisplayImportAccountOption,

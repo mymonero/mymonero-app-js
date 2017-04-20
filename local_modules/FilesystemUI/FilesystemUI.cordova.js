@@ -28,8 +28,6 @@
 //
 "use strict"
 //
-const fs = require('fs')
-//
 const FilesystemUI_Abstract = require('./FilesystemUI_Abstract')
 //
 class FilesytemUI extends FilesystemUI_Abstract
@@ -37,107 +35,81 @@ class FilesytemUI extends FilesystemUI_Abstract
 	constructor(options, context)
 	{
 		super(options, context)
-	}
-	//
-	//
-	// Runtime - Accessors - Lookups - IPC - Main window
-	//
-	
-	//
+		if (!window.imageSaver || typeof window.imageSaver === 'undefined') {
+			throw `${self.constructor.name} requires a window.imageSaver`
+		}
+		if (!window.imagePicker || typeof window.imagePicker === 'undefined') {
+			throw `${self.constructor.name} requires a window.imagePicker`
+		}
+	}	
 	//
 	// Runtime - Imperatives - Dialogs - Save
-	// 
+	// NOTE: In this mobile-specific implementation, no dialog to save is actually presented.
+	// As such, it means the name of the function can probably be improved
 	PresentDialogToSaveBase64ImageStringAsImageFile(
-		imgData_base64String,
-		title,
+		imgDataBase64_URIString,
+		title, // unused in mobile impl
 		defaultFilename_sansExt,
 		fn // (err?) -> Void
 	)
 	{
 		const self = this
-		//
-		var ext = imgData_base64String.split(';')[0].match(/jpeg|png|gif/)[0]
-		var data_base64String = imgData_base64String.replace(/^data:image\/\w+;base64,/, "") // strip off the data: url prefix to get just the base64-encoded bytes
-		var buffer = new Buffer(data_base64String, 'base64')
-		//
-		const extensions = [ ext ]
-		if (ext === 'jpg') {
-			extensions.push('jpeg')
-		}
-		const remote = require('electron').remote
-		const dialog = remote.dialog
-		const electronWindow = remote.getCurrentWindow()
-		const options = 
+		var params = 
 		{
-			title: title || "Save File",
-			defaultPath: `${defaultFilename_sansExt || "image"}.${ext}`,
-			filters: [
-				{ name: 'Images', extensions: [ ext ] },
-			]
+			data: imgDataBase64_URIString, 
+			prefix: defaultFilename_sansExt, 
+			format: 'JPG', 
+			quality: 100, // might as well be have as little loss as possible - but it probably doesn't matter
+			mediaScanner: true
 		}
-		dialog.showSaveDialog(
-			electronWindow,
-			options,
-			function(path)
+		console.log("params" , params)
+		window.imageSaver.saveBase64Image(
+			params,
+			function(filePath)
 			{
-				if (path === undefined){
-					console.log("No path. Canceled?")
-					fn(null)
-					return
-				}
-				console.log("Saving to path", path)
-				fs.writeFile(
-					path,
-					buffer,
-					function(err)
-					{
-						fn(err)
-					}
-				)
+				console.log('File saved to ' + filePath)
+				alert("Saved to photo roll!")
+				fn() // no need to pass path back
+			},
+			function(msg)
+			{
+				console.error(msg)
+				fn(new Error(msg))
 			}
 		)
 	}
 	//
-	//
 	// Runtime - Imperatives - Dialogs - Open
-	//
 	PresentDialogToOpenOneImageFile(
-		title,
+		title, // unused in this impl
 		fn // (err?, absoluteFilePath?) -> Void
 	)
 	{
 		const self = this
-		//
-		const remote = require('electron').remote
-		const dialog = remote.dialog
-		const electronWindow = remote.getCurrentWindow()
-		const options = 
+		const options =
 		{
-			title: title || "Open File",
-			filters: [
-				{ name: 'Images', extensions: [ "png", "jpg", "jpeg" ] },
-			]
+			maximumImagesCount: 1
 		}
-		dialog.showOpenDialog(
-			electronWindow,
-			options,
-			function(path)
-			{
-				if (path === undefined){
-					console.log("No path. Canceled?")
-					fn(null)
+		window.imagePicker.getPictures(
+			function(pictureURIs) {
+				const pictureURIs_length = pictureURIs.length
+				if (pictureURIs_length == 0) {
+					fn() // canceled ?
 					return
 				}
-				if (typeof path !== 'string') {
-					if (Array.isArray(path)) {
-						path = path[0] // select first
-					} else {
-						throw "Unknown `path` return type " + typeof path + " from showOpenDialog"
-					}
+				if (pictureURIs_length > 1) {
+					fn(new Error("Expected only one image to be chosen"))
 				}
-				console.log("Open file at path", path)
-				fn(null, path)
-			}
+				const pictureURI = pictureURIs[0]
+				console.log("pictureURI", pictureURI)
+				fn(null, pictureURI)
+			}, 
+			function (error) 
+			{
+				console.log('Error: ' + error)
+				fn(err)
+			},
+			options
 		)
 	}
 }

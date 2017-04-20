@@ -32,4 +32,8 @@
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="com.ozexpert.devicemeta" spec="https://github.com/ozexpert/cordova-plugin-device-meta.git" />
     <plugin name="cordova-plugin-compat" spec="~1.1.0" />
+    <plugin name="cordova-save-image-gallery" spec="~0.0.26" />
+    <plugin name="cordova-plugin-image-picker" spec="~1.1.1">
+        <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="The MyMonero app lets you open Monero funds-request QR code images from your photo roll." />
+    </plugin>
 </widget>
