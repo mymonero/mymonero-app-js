@@ -179,9 +179,9 @@ class ContactFormView extends View
 				}
 			}
 		)
-		layer.autocomplete = "off"
-		layer.autocorrect = "off"
-		layer.spellcheck = "false"
+		valueLayer.autocomplete = "off"
+		valueLayer.autocorrect = "off"
+		valueLayer.spellcheck = "false"
 		// but leaving autocomplete on
 		div.appendChild(valueLayer)
 		self.form_containerLayer.appendChild(div)
