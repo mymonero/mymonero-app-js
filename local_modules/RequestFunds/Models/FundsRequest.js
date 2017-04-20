@@ -270,24 +270,27 @@ class FundsRequest extends EventEmitter
 		div.style.height = "200px"
 		div.style.display = "none"
 		document.body.appendChild(div)
-		const qrCode = new QRCode(
-			div,
-			{
-				correctLevel: QRCode.CorrectLevel.L
-			}
-		)
-		const uri = self._assumingBootedOrEquivalent__Lazy_URI() // since we're not booted yet but we're only calling this when we know we have all the info
-		qrCode.makeCode(uri)
 		setTimeout(function()
-		{ // must wait until the qr code is made and, i guess, displayed in DOM
-			const img = div.querySelector("img")
-			const imgDataURIString = img.src.slice()
+		{ // must wait a little for div to appear in document under certain browsers/situations (e.g. mobile safari)
+			const qrCode = new QRCode(
+				div,
+				{
+					correctLevel: QRCode.CorrectLevel.L
+				}
+			)
+			const uri = self._assumingBootedOrEquivalent__Lazy_URI() // since we're not booted yet but we're only calling this when we know we have all the info
+			qrCode.makeCode(uri)
 			setTimeout(function()
-			{ // now we've got that we can dispose of the div
-				div.parentNode.removeChild(div)
+			{ // must wait until the qr code is made and, i guess, displayed in DOM
+				const img = div.querySelector("img")
+				const imgDataURIString = img.src.slice()
+				setTimeout(function()
+				{ // now we've got that we can dispose of the div
+					div.parentNode.removeChild(div)
+				})
+				fn(imgDataURIString)
 			})
-			fn(imgDataURIString)
-		})
+		}, 40)
 	}
 
 
