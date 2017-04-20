@@ -37,9 +37,7 @@ class WindowDialogs extends WindowDialogs_Abstract
 		super(options, context)
 	}
 	//
-	//
 	// Runtime - Imperatives - Dialogs
-	//
 	PresentQuestionAlertDialogWith(
 		title,
 		message,
@@ -48,21 +46,16 @@ class WindowDialogs extends WindowDialogs_Abstract
 	)
 	{
 		const self = this
-		const remote = require('electron').remote
-		const dialog = remote.dialog
-		const electronWindow = remote.getCurrentWindow()
-		const options = 
-        {
-            type: 'question',
-            buttons: buttons,
-            title: title,
-            message: message
-        }
-	    var choice = dialog.showMessageBox(
-            electronWindow,
-            options
+		navigator.notification.confirm(
+			message,
+			function(buttonNumber) // not index, because it's 1-based
+			{
+				const buttonIndex = buttonNumber - 1
+				fn(null, buttonIndex)
+			},
+			title,
+			buttons
 		)
-		fn(null, choice)
 	}
 }
 module.exports = WindowDialogs
