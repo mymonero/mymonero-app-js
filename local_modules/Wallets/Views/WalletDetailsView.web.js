@@ -669,10 +669,19 @@ class WalletDetailsView extends View
 		const self = this
 		const wallet = self.wallet
 		const transactionsListLayerContainerLayer = self.transactionsListLayerContainerLayer
-		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true
+		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true 
+		{ // to finalize
+			if (wallet.HasEverFetched_transactions() !== false) {
+				const stateCachedTransactions = wallet.New_StateCachedTransactions()
+				if (stateCachedTransactions.length > 0) {
+					shouldShow_importTxsBtn = false
+				}
+			}
+		}
 		var shouldShow_catchingUpProgressAndActivityIndicator = wallet.IsScannerCatchingUp()
 		if (shouldShow_importTxsBtn) {
 			if (!self.importTransactionsButtonView || typeof self.importTransactionsButtonView === 'undefined') {
+
 				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
 					"IMPORT TRANSACTIONS",
 					self.context, 
