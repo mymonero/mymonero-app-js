@@ -10,3 +10,5 @@ test_products
 electron_child_crashReport_tmp
 
 stats.json
+
+cordova_res/build/*

@@ -13,10 +13,38 @@
     <allow-intent href="monero:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+        <!---->
+        <splash src="cordova_res/build/android/default.png" />
+        <!---->
+        <icon src="cordova_res/build/android/icon.png" />
     </platform>
+    <preference name="SplashScreenDelay" value="100" />
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
+        <!---->
+        <splash src="cordova_res/build/ios/Default@2x~universal~anyany.png" />
+        <!---->
+        <icon src="cordova_res/build/ios/icon-40.png" width="40" height="40" />
+        <icon src="cordova_res/build/ios/icon-40@2x.png" width="80" height="80" />
+        <icon src="cordova_res/build/ios/icon-50.png" width="50" height="50" />
+        <icon src="cordova_res/build/ios/icon-50@2x.png" width="100" height="100" />
+        <icon src="cordova_res/build/ios/icon-60@2x.png" width="120" height="120" />
+        <icon src="cordova_res/build/ios/icon-60@3x.png" width="180" height="180" />
+        <icon src="cordova_res/build/ios/icon-72.png" width="72" height="72" />
+        <icon src="cordova_res/build/ios/icon-72@2x.png" width="144" height="144" />
+        <icon src="cordova_res/build/ios/icon-76.png" width="76" height="76" />
+        <icon src="cordova_res/build/ios/icon-76@2x.png" width="152" height="152" />
+        <icon src="cordova_res/build/ios/icon-83.5@2x.png" width="167" height="167" />
+        <icon src="cordova_res/build/ios/icon-small.png" width="29" height="29" />
+        <icon src="cordova_res/build/ios/icon-small@2x.png" width="58" height="58" />
+        <icon src="cordova_res/build/ios/icon-small@3x.png" width="87" height="87" />
+        <icon src="cordova_res/build/ios/icon.png" width="57" height="57" />
+        <icon src="cordova_res/build/ios/icon@2x.png" width="114" height="114" />
+    </platform>
+    <platform name="browser">
+        <preference name="SplashScreen" value="MainWindow/Resources/cordova/Default@2x~universal~anyany.png" />
+        <splash src="local_modules/MainWindow/Resources/cordova/Default@2x~universal~anyany.png" />
     </platform>
     <preference name="DisallowOverscroll" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
@@ -47,4 +75,5 @@
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
     <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0" />
+    <plugin name="cordova-plugin-splashscreen" spec="https://github.com/apache/cordova-plugin-splashscreen.git" />
 </widget>

@@ -1,0 +1,5 @@
+cordova platform remove ios --verbose;
+cordova platform remove android --verbose;
+cordova_res/bin/assemble_build; # to assemble resources
+cordova platform add ios --verbose;
+cordova platform add android --verbose;
