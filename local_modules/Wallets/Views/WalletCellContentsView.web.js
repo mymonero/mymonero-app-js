@@ -251,7 +251,7 @@ class WalletCellContentsView extends View
 			} else {
 				var htmlString = `${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}`
 				if (wallet.HasLockedFunds() === true) {
-					htmlString += ` (${wallet.LockedBalance_FormattedString()} ${wallet.HumanReadable_walletCurrency()} 🔒)`
+					htmlString += ` (${wallet.LockedBalance_FormattedString()} 🔒)`
 				}
 				self.descriptionLayer.innerHTML = htmlString
 			}
