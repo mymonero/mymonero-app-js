@@ -54,7 +54,7 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 
 ## Downloads
 
-Download the latest version from our website at [mymonero.com/desktop](https://www.mymonero.com/desktop) or from the Releases tab. *(Coming soon)* 
+Download the latest version from our website at [mymonero.com/app](https://www.mymonero.com/app) or from the Releases tab. *(Coming soon)* 
 
 To get set up with the source code, please see **Getting the Source Code** below.
 

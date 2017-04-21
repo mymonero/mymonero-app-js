@@ -25,37 +25,42 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../../Theme/ThemeController",
-		instance_key: "themeController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../URLBrowser/URLBrowser.electron",
-		instance_key: "urlBrowser",
-		options: {}
-	}
-]
-function NewHydratedContext(
-	app, 
-	menuController
-)
+const RootView = require('./RootView.web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+//
+class ModalStandaloneAboutView extends RootView
 {
-	var initialContext =
+	constructor(options, context)
 	{
-		app: app,
-		menuController: menuController,
-		isDebug: process.env.NODE_ENV === 'development',
-		crossPlatform_appBundledAssetsRootPath: "../..",
-		appDownloadLink_domainAndPath: "mymonero.com/app"
+		super(options, context)
+	}	
+	//
+	// Runtime - Accessors - Navigation
+	Navigation_Title()
+	{
+		return "About MyMonero"
 	}
-
-	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const layer = view.layer
+		layer.innerHTML = "Close"
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				{ // v--- self.navigationController because self is presented packaged in a StackNavigationView
+					self.navigationController.modalParentView.DismissTopModalView(true)
+				}
+				return false
+			}
+		)
+		return view
+	}
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports = ModalStandaloneAboutView

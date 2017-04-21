@@ -25,37 +25,22 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+//
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../../Theme/ThemeController",
-		instance_key: "themeController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../../URLBrowser/URLBrowser.electron",
-		instance_key: "urlBrowser",
-		options: {}
-	}
-]
-function NewHydratedContext(
-	app, 
-	menuController
-)
+const URLBrowser_Abstract = require('./URLBrowser_Abstract')
+const shell = require('electron').shell
+//
+class URLBrowser extends URLBrowser_Abstract
 {
-	var initialContext =
+	constructor(options, context)
 	{
-		app: app,
-		menuController: menuController,
-		isDebug: process.env.NODE_ENV === 'development',
-		crossPlatform_appBundledAssetsRootPath: "../..",
-		appDownloadLink_domainAndPath: "mymonero.com/app"
+		super(options, context)
 	}
-
-	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	OpenURLInSystemBrowser(urlString)
+	{
+		const self = this
+		shell.openExternal(urlString)
+	}
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports = URLBrowser

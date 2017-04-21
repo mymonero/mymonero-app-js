@@ -97,12 +97,38 @@ class SettingsView extends View
 		const containerLayer = document.createElement("div")
 		self.form_containerLayer = containerLayer
 		{
+			if (self.context.Settings_shouldDisplayAboutAppButton === true) {
+				self._setup_aboutAppButton()
+			}
 			self._setup_form_field_changePasswordButton()
 			// self._setup_form_field_serverURL() // TODO: to implement
 			self._setup_form_field_appTimeoutSlider()
 			self._setup_deleteEverythingButton()
 		}
 		self.layer.appendChild(containerLayer)
+	}
+	_setup_aboutAppButton()
+	{
+		const self = this
+		const buttonView = commonComponents_tables.New_clickableLinkButtonView(
+			"ABOUT MYMONERO",
+			self.context,
+			function()
+			{
+				const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
+				console.log("StackAndModalNavigationView", StackAndModalNavigationView)
+				const ModalStandaloneAboutView = require('../../AboutWindow/Views/ModalStandaloneAboutView.web')
+				console.log("ModalStandaloneAboutView", ModalStandaloneAboutView)
+				const options = {}
+				const view = new ModalStandaloneAboutView(options, self.context)
+				self.current_ModalStandaloneAboutView = view
+				const navigationView = new StackAndModalNavigationView({}, self.context)
+				navigationView.SetStackViews([ view ])
+				self.navigationController.PresentView(navigationView, true)
+			}
+		)
+		buttonView.layer.style.padding = "12px 0 0 24px"
+		self.form_containerLayer.appendChild(buttonView.layer)
 	}
 	_setup_form_field_changePasswordButton()
 	{
@@ -276,6 +302,15 @@ class SettingsView extends View
 		super.TearDown()
 		//
 		self.appTimeoutRangeInputView.TearDown() // must call this manually
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	tearDownAnySpawnedReferencedPresentedViews()
+	{
+		const self = this
+		if (typeof self.current_ModalStandaloneAboutView !== 'undefined' && self.current_ModalStandaloneAboutView) {
+			self.current_ModalStandaloneAboutView.TearDown()
+			self.current_ModalStandaloneAboutView = null
+		}
 	}
 	stopObserving()
 	{
@@ -345,6 +380,24 @@ class SettingsView extends View
 				self.appTimeoutRangeInputView.SetValue(self.context.settingsController.appTimeoutAfterS)
 			}
 		}
+	}
+	// Runtime - Protocol / Delegation - Stack & modal navigation 
+	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
+	navigationView_didDismissModalToRevealView()
+	{
+		const self = this
+		if (super.navigationView_didDismissModalToRevealView) {
+			super.navigationView_didDismissModalToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	navigationView_didPopToRevealView()
+	{
+		const self = this
+		if (super.navigationView_didPopToRevealView) {
+			super.navigationView_didPopToRevealView() // in case it exists
+		}
+		self.tearDownAnySpawnedReferencedPresentedViews()
 	}
 }
 module.exports = SettingsView

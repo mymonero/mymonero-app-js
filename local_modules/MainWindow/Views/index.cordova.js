@@ -126,6 +126,8 @@ window.BootApp = function()
 				ThemeController_isMobileBrowser: isMobile == true,
 				Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
 				Emoji_renderWithNativeEmoji: true,
+				appDownloadLink_domainAndPath: "mymonero.com/app",
+				Settings_shouldDisplayAboutAppButton: true // special case - since we don't have a system menu to place it in
 			})
 			window.MyMonero_context = context
 		}

@@ -29,7 +29,6 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-var shell = require('electron').shell
 //
 class RootView extends View
 {
@@ -61,16 +60,27 @@ class RootView extends View
 			layer.style.cursor = "default"
 		}
 		{
-			const layer = document.createElement("div")
+			const layer = document.createElement("a")
 			const w = 50
 			const h = 50
 			layer.style.width = 50+"px"
 			layer.style.height = 50+"px"
+			layer.style.display = "block"
+			layer.style.outline = "none"
 			layer.style.backgroundSize = `${w}px ${h}px`
 			layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/AboutWindow/Resources/logo_solid_light@2x.png)"
 			layer.style.backgroundPosition = "center"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.margin = "66px auto 14px auto"
+			layer.style.cursor = "pointer"
+			layer.href = "https://" + self.context.appDownloadLink_domainAndPath
+			layer.addEventListener("click", function(e)
+			{
+				e.preventDefault()
+				self.context.urlBrowser.OpenURLInSystemBrowser(this.href)
+				return false
+			})
+
 			self.layer.appendChild(layer)
 		}
 		{
@@ -111,7 +121,7 @@ class RootView extends View
 			layer.addEventListener("click", function(e)
 			{
 				e.preventDefault()
-				shell.openExternal(this.href)
+				self.context.urlBrowser.OpenURLInSystemBrowser(this.href)
 				return false
 			})
 			self.layer.appendChild(layer)

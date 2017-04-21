@@ -46,8 +46,13 @@ function NewHydratedContext(initialContext)
 			instance_key: "urlOpeningController",
 			options: {}
 		},
+		{
+			module: require("../../URLBrowser/URLBrowser.cordova"),
+			instance_key: "urlBrowser",
+			options: {}
+		},
 		{ // ios etc don't have menus, so this is just a stub so the root tab bar can include menuController observations
-			module: require("../../Menus/MenuController_Stub.cordova.js"),
+			module: require("../../Menus/MenuController_Stub.cordova"),
 			instance_key: "menuController",
 			options: {}
 		},
