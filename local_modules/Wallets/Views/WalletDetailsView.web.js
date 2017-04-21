@@ -701,7 +701,9 @@ class WalletDetailsView extends View
 			}
 		} else {
 			if (self.importTransactionsButtonView) {
-				self.importTransactionsButtonView.layer.parentNode.removeChild(self.importTransactionsButtonView.layer)
+				if (self.importTransactionsButtonView.layer.parentNode) {
+					self.importTransactionsButtonView.layer.parentNode.removeChild(self.importTransactionsButtonView.layer)
+				}
 			}
 		}
 		if (shouldShow_catchingUpProgressAndActivityIndicator) {
