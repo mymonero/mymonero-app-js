@@ -164,7 +164,7 @@ function New_DecryptedDocument__Async(
 			const potentiallyEncryptedValue = encryptedDocument[documentKey]
 			if (typeof documentCryptScheme_forKey !== 'undefined') {
 				const keyValue_plaintextType = documentCryptScheme_forKey.type
-				if (potentiallyEncryptedValue === null || potentiallyEncryptedValue === "") {
+				if (potentiallyEncryptedValue === null || potentiallyEncryptedValue === "" || typeof potentiallyEncryptedValue === 'undefined') {
 					async.setImmediate(
 						function()
 						{ // ^ so as not to blow the stack

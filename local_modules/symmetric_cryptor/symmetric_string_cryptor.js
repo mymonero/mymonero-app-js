@@ -141,6 +141,10 @@ function DecryptedPlaintextString__Async(
 	fn
 )
 {
+	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
+		console.warn("DecryptedPlaintextString__Async passed nil encrypted_msg_base64_string")
+		return fn(null, encrypted_msg_base64_string)
+	}
 	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
 	_is_hmac_valid__async(
 		unpacked_base64_components, 

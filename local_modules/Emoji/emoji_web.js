@@ -76,6 +76,9 @@ exports.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText
 	= NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText
 function nativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 {
+	if (typeof nativeEmojiText !== "string") { // to protect against numbers and such
+		nativeEmojiText = "" + nativeEmojiText
+	}
 	// perhaps uncomment this in the near future, but ensure emoji font size (esp on retina):
 	// if (process.platform === "darwin") { // because MacOS has good support for Emoji; add iOS here too
 	// 	return nativeEmojiText

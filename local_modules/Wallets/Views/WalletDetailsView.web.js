@@ -212,6 +212,10 @@ class WalletDetailsView extends View
 		{
 			fieldContainerLayer.Component_SetValue(value)
 		}
+		fieldView.SetWordBreakMode = function(wordBreakMode)
+		{
+			fieldContainerLayer.Component_SetWordBreakMode(wordBreakMode)
+		}
 		return fieldView
 	}	
 	_setup_account_InfoDisclosingView()
@@ -239,6 +243,7 @@ class WalletDetailsView extends View
 			//
 			const mnemonicSeed_fieldView = self._new_fieldBaseView("Secret Mnemonic")
 			self.mnemonicSeed_fieldView = mnemonicSeed_fieldView
+			mnemonicSeed_fieldView.SetWordBreakMode("break-word")
 			disclosedView.addSubview(mnemonicSeed_fieldView)
 		}
 		const infoDisclosingView = new InfoDisclosingView({

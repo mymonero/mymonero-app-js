@@ -119,6 +119,7 @@ window.BootApp = function()
 			context = require('./index_context.cordova').NewHydratedContext({
 				app: app,
 				isDebug: cached_metadata.isDebug,
+				Cordova_isMobile: isMobile,
 				crossPlatform_appBundledAssetsRootPath: cached_metadata.crossPlatform_appBundledAssetsRootPath, // in this case, an absolute path.
 				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 				TabBarView_thickness: 48,
@@ -127,7 +128,8 @@ window.BootApp = function()
 				Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
 				Emoji_renderWithNativeEmoji: true,
 				appDownloadLink_domainAndPath: "mymonero.com/app",
-				Settings_shouldDisplayAboutAppButton: true // special case - since we don't have a system menu to place it in
+				Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
+				HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false 
 			})
 			window.MyMonero_context = context
 		}

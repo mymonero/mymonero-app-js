@@ -105,6 +105,15 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 		// TODO: (?) check if we really /are/ going to generate a payment id for them and show ?
 		return true // do not show this layer 
 	}
+	setup_self_layer()
+	{
+		super.setup_self_layer() // very important we call on super
+		const self = this
+		const layer = self.layer
+		// now, since the contents of the AddContactFromSendTabView have that form_containerLayer with a border, we're going to add extra side padding here
+		layer.style.paddingLeft = "8px"
+		layer.style.paddingRight = "8px"
+	}
 	setup_views()
 	{
 		super.setup_views()
@@ -113,7 +122,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 			const layer = self.form_containerLayer
 			layer.style.margin = "8px 6px"
 			layer.style.boxSizing = "border-box"
-			layer.style.padding = "8px 8px 16px 8px"
+			layer.style.padding = "8px 0px 16px 0px"
 			layer.style.border = "0.5px solid #494749"
 			layer.style.borderRadius = "5px"
 			layer.style.minHeight = "84%"

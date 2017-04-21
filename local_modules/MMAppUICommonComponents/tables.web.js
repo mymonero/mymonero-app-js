@@ -533,6 +533,10 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 		copy_buttonLayer.Component_SetValue(to_value)
 	}
 	div.Component_GetLabelLayer = function() { return labelLayer } // kinda gross… TODO: make this into a View component
+	div.Component_SetWordBreakMode = function(wordBreakMode)
+	{
+		valueLayer.style.wordBreak = wordBreakMode
+	}
 	return div
 }
 exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_copyable_longStringValueField_component_fieldContainerLayer

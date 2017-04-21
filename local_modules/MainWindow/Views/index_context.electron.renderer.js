@@ -151,7 +151,8 @@ function NewHydratedContext(
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 		TabBarView_thickness: 79,
 		TabBarView_isHorizontalBar: false,
-		appDownloadLink_domainAndPath: "mymonero.com/desktop"
+		appDownloadLink_domainAndPath: "mymonero.com/desktop",
+		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false
 	}
 	// required options (which can only be obtained with `app`, etc.)
 	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()

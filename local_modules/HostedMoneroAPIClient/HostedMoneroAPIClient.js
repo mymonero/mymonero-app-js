@@ -40,10 +40,11 @@ class HostedMoneroAPIClient
 {
 	//
 	// Lifecycle - Initialization
-	constructor(options)
+	constructor(options, context)
 	{
 		var self = this
-		self.options = options 
+		self.options = options
+		self.context = context
 		//
 		self.responseParser = options.responseParser
 		if (!self.responseParser) {
@@ -549,7 +550,17 @@ class HostedMoneroAPIClient
 	)
 	{
 		const self = this
-		//
+		// just a debug feature:
+		if (self.context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess === true) {
+			if (self.context.isDebug === true) {
+				console.warn("⚠️  WARNING: Mocking that SubmitSerializedSignedTransaction returned a success response w/o having hit the server.")
+				fn(null)
+				return
+			} else {
+				throw `[${self.constructor.name}/SubmitSerializedSignedTransaction]: context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess was true despite isDebug not being true. Set back to false for production build.`
+			}
+		}
+		// actual implementation:
 		const endpointPath = 'submit_raw_tx'
 		const parameters =
 		{
