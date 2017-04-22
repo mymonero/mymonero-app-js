@@ -127,7 +127,8 @@ class SettingsView extends View
 				self.navigationController.PresentView(navigationView, true)
 			}
 		)
-		buttonView.layer.style.padding = "12px 0 0 24px"
+		buttonView.layer.style.display = "block"
+		buttonView.layer.style.margin = "12px 0 0 33px"
 		self.form_containerLayer.appendChild(buttonView.layer)
 	}
 	_setup_form_field_changePasswordButton()
