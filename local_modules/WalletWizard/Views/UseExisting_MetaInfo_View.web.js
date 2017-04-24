@@ -393,22 +393,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	lookup__mnemonicSeed()
 	{
 		const self = this
-		return self.mnemonicTextAreaView.layer.value
+		return (self.mnemonicTextAreaView.layer.value || "").trim()
 	}
 	lookup__addr()
 	{
 		const self = this
-		return self.addrTextAreaView.layer.value
+		return (self.addrTextAreaView.layer.value || "").trim()
 	}
 	lookup__viewKey()
 	{
 		const self = this
-		return self.viewKeyTextAreaView.layer.value
+		return (self.viewKeyTextAreaView.layer.value || "").trim()
 	}
 	lookup__spendKey()
 	{
 		const self = this
-		return self.spendKeyTextAreaView.layer.value
+		return (self.spendKeyTextAreaView.layer.value || "").trim()
 	}
 	//
 	//
