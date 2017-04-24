@@ -111,6 +111,6 @@ async.each(
 		if (err) {
 			throw err
 		}
-		console.log("Done")
+		console.log("✅  Assembled ./cordova_res/build.")
 	}
 )

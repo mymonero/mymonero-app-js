@@ -129,7 +129,8 @@ window.BootApp = function()
 				Emoji_renderWithNativeEmoji: true,
 				appDownloadLink_domainAndPath: "mymonero.com/app",
 				Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
-				HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false 
+				HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false,
+				Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true
 			})
 			window.MyMonero_context = context
 		}
@@ -149,10 +150,11 @@ window.BootApp = function()
 				cordova.plugins.Keyboard.disableScroll(true) // so top of app doesn't scroll out-of-view when keyboard becomes active
 			}
 			//
+			// TODO: this is not quite working…
 			window.addEventListener('native.keyboardshow', function(e)
 			{
 			    setTimeout(function()
-			    { // this is not quite working… TODO
+			    { 
 			        document.activeElement.scrollIntoViewIfNeeded()
 			    }, 100)
 			})

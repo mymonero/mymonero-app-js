@@ -236,8 +236,10 @@ class StackNavigationView extends View
 				stackView_layer.style.zIndex = "2" // 2 because we'll want to insert a semi-trans curtain view under the stackView_layer above the old_topStackView
 				stackView_layer.style.left = `${self.stackViewStageView.layer.offsetWidth}px` // we use the stackViewStageView because it's already in the DOM and sized
 				//
-				const to_boxShadow = "0px 0px 12px 2px rgba(0,0,0,0.3)"
-				stackView_layer.style.boxShadow = to_boxShadow
+				if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+					const to_boxShadow = "0px 0px 12px 2px rgba(0,0,0,0.3)"
+					stackView_layer.style.boxShadow = to_boxShadow
+				}
 			}
 			self.stackViewStageView.addSubview(stackView)
 			if (isAnimated === false) { // no need to animate anything - straight to end state
@@ -258,7 +260,9 @@ class StackNavigationView extends View
 								complete: function()
 								{
 									stackView_layer.style.zIndex = "0"
-									stackView_layer.style.boxShadow = preExisting_boxShadow // restore pre-existing, in case consumer had put one on
+									if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) { // since we didn't change it if this is not the case
+										stackView_layer.style.boxShadow = preExisting_boxShadow // restore pre-existing, in case consumer had put one on
+									}
 									_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 									__trampolineFor_transitionEnded() // must unlock fn
 								}
