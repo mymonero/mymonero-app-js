@@ -772,6 +772,7 @@ class WalletDetailsView extends View
 				if (parentNode) { // just in case - i.e. during special debug case
 					parentNode.removeChild(layer)
 				}
+				self.catchingUpProgressAndActivityIndicatorView = null
 				self.progressLabelLayer = null // can assume we only need to nil this here
 			}
 		}
