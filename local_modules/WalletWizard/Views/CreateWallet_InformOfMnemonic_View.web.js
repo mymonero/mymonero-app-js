@@ -78,7 +78,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.style.wordBreak = "break-word"
 			layer.style.color = "#F5E67E"
-			const text = "NOTE: This is the only way to access your wallet if you switch computers, use another Monero wallet app, or lose your&nbsp;data."
+			const text = "NOTE: This is the only way to access your wallet if you switch devices, use another Monero wallet app, or lose your&nbsp;data."
 			layer.innerHTML = text
 			self.layer.appendChild(layer)
 		}

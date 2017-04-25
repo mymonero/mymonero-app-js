@@ -111,7 +111,7 @@ class EnterNewPasswordView extends View
 			div.appendChild(layer)
 			//
 			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
-			messageLayer.innerHTML = "This will be used to encrypt your data on your computer. Don't forget it!"
+			messageLayer.innerHTML = "This will be used to encrypt your data on your device. Don't forget it!"
 			div.appendChild(messageLayer)
 		}
 		self.form_containerLayer.appendChild(div)
