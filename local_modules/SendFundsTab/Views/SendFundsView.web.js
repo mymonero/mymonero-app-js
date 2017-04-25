@@ -133,6 +133,18 @@ class SendFundsView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		if (self.context.Cordova_isMobile === true) {
+			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
+			// layer.style.webkitOverflowScrolling = "touch"
+			// disabling this cause it conflicts with touchup/end of contacts picker
+			// layer.addEventListener("touchmove", function()
+			// { // blur currently text input field on user scroll
+			// 	const activeElement = document.activeElement
+			// 	if (activeElement) {
+			// 		activeElement.blur()
+			// 	}
+			// }, false)
+		}
 		layer.style.overflowY = "auto"
 		// layer.style.webkitOverflowScrolling = "touch"
 		//
