@@ -186,7 +186,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 			view.Component_ConfigureWithChecked = function()
 			{
 				if (view.isChecked) { // img path relative to window location
-					checkboxIconLayer.style.background = "#1d1b1d url("+self.context.crossPlatform_appBundledAssetsRootPath+"/WalletWizard/Resources/checkbox_check@2x.png) 3px 4px no-repeat"
+					checkboxIconLayer.style.background = "#1d1b1d url("+self.context.crossPlatform_appBundledAssetsRootPath+"/WalletWizard/Resources/checkbox_check@3x.png) 3px 4px no-repeat"
 					checkboxIconLayer.style.backgroundSize = "10px 9px"
 				} else {
 					checkboxIconLayer.style.background = "#1d1b1d"

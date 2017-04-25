@@ -85,7 +85,7 @@ function cssRules_generatorFn(context)
 			left: 0;
 		}`,
 		`.inlineMessageDialogLayer > a.close-btn {
-			background-image: url(${assetsPath}/MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@2x.png);
+			background-image: url(${assetsPath}/MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@3x.png);
 			background-size: 8px 8px;
 			background-repeat: no-repeat;
 			background-position: center;
@@ -545,7 +545,7 @@ function New_tableCell_accessoryChevronLayer(context)
 {
 	__injectCSSRules_ifNecessary(context)
 	//
-	const image_filename = "list_rightside_chevron@2x.png"
+	const image_filename = "list_rightside_chevron@3x.png"
 	const layer = document.createElement("img")
 	layer.src = context.crossPlatform_appBundledAssetsRootPath+"/MMAppUICommonComponents/Resources/" + image_filename
 	layer.style.position = "absolute"

@@ -316,7 +316,7 @@ exports.New_IconAndMessageLayer = New_IconAndMessageLayer
 function New_Detected_IconAndMessageLayer(context)
 {
 	const layer = New_IconAndMessageLayer( // will call `__inject…`
-		context.crossPlatform_appBundledAssetsRootPath+"/MMAppUICommonComponents/Resources/detectedCheckmark@2x.png",
+		context.crossPlatform_appBundledAssetsRootPath+"/MMAppUICommonComponents/Resources/detectedCheckmark@3x.png",
 		"Detected",
 		context,
 		"9px",

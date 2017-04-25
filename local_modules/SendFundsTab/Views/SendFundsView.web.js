@@ -436,7 +436,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__useCamera@2x.png", 
+			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
 			false,
 			function(layer, e)
 			{
@@ -455,7 +455,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__chooseFile@2x.png", 
+			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
 			true,
 			function(layer, e)
 			{
@@ -512,7 +512,7 @@ class SendFundsView extends View
 			div.style.width = "100%" // cause centering in css is……
 			div.style.height = side+"px"
 			div.style.backgroundSize = side+"px " + side+"px"
-			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/qrDropzoneIcon@2x.png)"
+			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/qrDropzoneIcon@3x.png)"
 			div.style.backgroundPosition = "center"
 			div.style.backgroundRepeat = "no-repeat"
 			div.style.backgroundSize = "48px 48px"
