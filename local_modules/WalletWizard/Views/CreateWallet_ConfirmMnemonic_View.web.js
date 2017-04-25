@@ -32,6 +32,7 @@ const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web'
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
+const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 //
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
@@ -42,6 +43,14 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		super._setup_views()
 		//
+		{ // validation message
+			const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
+			layer.style.width = "calc(100% - 48px)"
+			layer.style.marginLeft = "24px"
+			layer.ClearAndHideMessage()
+			self.validationMessageLayer = layer
+			self.layer.appendChild(layer)				
+		}		//
 		const walletInstance = self.wizardController.walletInstance
 		const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
 		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
@@ -316,6 +325,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	{
 		const self = this 
 		if (self._hasUserEnteredCorrectlyOrderedMnemonic() == false) {
+			self.validationMessageLayer.ClearAndHideMessage()
 			self.mnemonicConfirmation_selectedWordsView.layer.classList.add("errored")
 			self.mnemonicConfirmation_validationErrorLabelLayer.style.display = "block"
 			self.disable_submitButton()
@@ -352,6 +362,8 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 				window.plugins.insomnia.keepAwake() // disable screen dim/off
 			}
 			//
+			self.validationMessageLayer.ClearAndHideMessage()
+			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
 			//
@@ -365,8 +377,8 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			function(err, walletInstance)
 			{
 				if (err) {
+					self.validationMessageLayer.SetValidationError(err)
 					___reEnableFormFromSubmissionDisable()
-					throw err
 					return
 				}
 				self.wizardController.ProceedToNextStep() // this should lead to a dismiss of the wizard
@@ -380,6 +392,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	__didSelect_actionButton__tryAgain()
 	{
 		const self = this
+		self.validationMessageLayer.ClearAndHideMessage()
 		self.mnemonicConfirmation_selectedWordsView.layer.classList.remove("errored")
 		self.mnemonicConfirmation_validationErrorLabelLayer.style.display = "none"
 		self.enable_submitButton()
