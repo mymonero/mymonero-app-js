@@ -228,6 +228,7 @@ function New_contactPickerLayer(
 	{
 		inputLayer.value = ""
 		inputLayer.style.display = "none"
+		inputLayer.blur() // just in case mobile keyboard is up
 	}
 	function _redisplayInputLayer()
 	{
