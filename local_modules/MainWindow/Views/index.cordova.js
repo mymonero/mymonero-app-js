@@ -158,6 +158,12 @@ window.BootApp = function()
 			        document.activeElement.scrollIntoViewIfNeeded()
 			    }, 100)
 			})
+			//
+			// disable tap -> click delay on mobile browsers
+			if (cached_metadata.isRunningInNonMobileBrowser == false) {
+				var attachFastClick = require('fastclick')
+				attachFastClick.attach(document.body)
+			}
 		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
