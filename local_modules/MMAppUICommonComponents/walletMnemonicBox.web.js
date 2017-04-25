@@ -35,60 +35,69 @@ const Views__cssRules = require('../Views/cssRules.web')
 //
 const NamespaceName = "walletMnemonicBox"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	`.mnemonic-container {
-		background: #1D1B1D;
-		border: 1px solid rgba(0,0,0,0); /* invisible border for validation highlight layout */
-		box-shadow: inset 0 0px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5); /* design stipulates 0.5px box shadow instead of 0px but since we need to use invisible border it creates a similar effect already */
-		border-radius: 5px;
-		margin: 0 16px 7px 16px;
-	}`,
-	`.mnemonic-container.errored {
-		border: 1px solid #f97777;
-	`,
-	`.mnemonic-container a {
-		cursor: default;
-	}`,
-	`.mnemonic-pill,
-	 .mnemonic-pill--selectedPlaceholder {
-		color: white;
-		cursor: default;
-		text-decoration: none;
-		text-transform: uppercase;
-		background: #383638;
-		padding: 4px 8px;
-		margin: 4px;
-		border-radius: 3px;
-		box-shadow: inset 0 0.5px 0 0 #494749, 0 0.5px 1px 0 #161416;
-		transition: all 0.1s ease-out;
-		display: inline-block;
-	}`,
-	`.mnemonic-pill:not(.disabled):hover,
-	 .mnemonic-pill--selectedPlaceholder:not(.disabled):hover {
-		background: #494749;
-		box-shadow: inset 0 0.5px 0 0 #5A585A, 0 0.5px 1px 0 #161416;
-		transition: all 0.1s ease-out;
-	}`,
-	`.mnemonic-pill--selectedPlaceholder {
-		color: #1D1B1D;
-		background: #1D1B1D;
-		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
-	}`,
-	`.mnemonic-pill--selectedPlaceholder:not(.disabled):hover {
-		color: #1D1B1D;
-		background: #1D1B1D;
-		box-shadow: inset 0 1px 0 0 #161416, 0 0.5px 0 0 rgba(56, 54, 56, 0.5);
-	}`
-]
-function __injectCSSRules_ifNecessary()
+function cssRules_generatorFn(context)
 {
-	Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules)
+	const useMobRendOpts = context.Views_selectivelyEnableMobileRenderingOptimizations === true
+	const cssRules =
+	[
+		`.mnemonic-container {
+			background: #1D1B1D;
+			border: 1px solid rgba(0,0,0,0); /* invisible border for validation highlight layout */
+			box-shadow: inset 0 0px 0 0 #161416${useMobRendOpts?"":", 0 0.5px 0 0 rgba(56, 54, 56, 0.5)"}; /* design stipulates 0.5px box shadow instead of 0px but since we need to use invisible border it creates a similar effect already */
+			border-radius: 5px;
+			margin: 0 16px 7px 16px;
+		}`,
+		`.mnemonic-container.errored {
+			border: 1px solid #f97777;
+		`,
+		`.mnemonic-container a {
+			cursor: default;
+		}`,
+		`.mnemonic-pill,
+		 .mnemonic-pill--selectedPlaceholder {
+			color: white;
+			cursor: default;
+			text-decoration: none;
+			text-transform: uppercase;
+			background: #383638;
+			padding: 4px 8px;
+			margin: 4px;
+			border-radius: 3px;
+			box-shadow: inset 0 0.5px 0 0 #494749${useMobRendOpts?"":", 0 0.5px 1px 0 #161416"};
+			transition: all 0.1s ease-out;
+			display: inline-block;
+		}`,
+		`.mnemonic-pill:not(.disabled):hover,
+		 .mnemonic-pill--selectedPlaceholder:not(.disabled):hover {
+			background: #494749;
+			box-shadow: inset 0 0.5px 0 0 #5A585A${useMobRendOpts?"":", 0 0.5px 1px 0 #161416"};
+			transition: all 0.1s ease-out;
+		}`,
+		`.mnemonic-pill--selectedPlaceholder {
+			color: #1D1B1D;
+			background: #1D1B1D;
+			box-shadow: inset 0 1px 0 0 #161416${useMobRendOpts?"":", 0 0.5px 0 0 rgba(56, 54, 56, 0.5)"};
+		}`,
+		`.mnemonic-pill--selectedPlaceholder:not(.disabled):hover {
+			color: #1D1B1D;
+			background: #1D1B1D;
+			box-shadow: inset 0 1px 0 0 #161416${useMobRendOpts?"":", 0 0.5px 0 0 rgba(56, 54, 56, 0.5)"};
+		}`
+	]
+	return cssRules
+}
+function __injectCSSRules_ifNecessary(context)
+{
+	Views__cssRules.InjectCSSRules_ifNecessary(
+		haveCSSRulesBeenInjected_documentKey, 
+		cssRules_generatorFn,
+		context
+	)
 }
 //
 function New_MnemonicTextDisplayView(mnemonicString, context)
 {
-	__injectCSSRules_ifNecessary()
+	__injectCSSRules_ifNecessary(context)
 	//
 	const view = new View({}, context)
 	const layer = view.layer
@@ -112,7 +121,7 @@ exports.New_MnemonicTextDisplayView = New_MnemonicTextDisplayView
 //
 function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, didSelectWord_fn, didDeselectWord_fn)
 {
-	__injectCSSRules_ifNecessary()
+	__injectCSSRules_ifNecessary(context)
 	//
 	didSelectWord_fn = didSelectWord_fn || function(wordUUID) {}
 	didDeselectWord_fn = didDeselectWord_fn || function(wordUUID) {}
@@ -256,7 +265,7 @@ function New_MnemonicConfirmation_SelectableWordsView(
 	context
 )
 {
-	__injectCSSRules_ifNecessary()
+	__injectCSSRules_ifNecessary(context)
 	//
 	const view = new View({}, context)
 	{

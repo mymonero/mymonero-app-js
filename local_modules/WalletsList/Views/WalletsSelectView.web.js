@@ -107,7 +107,11 @@ class WalletsSelectView extends ListCustomSelectView
 		{
 			const layer = self.selectionDisplayCellView.layer
 			layer.style.backgroundColor = "none"
-			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			} else { // avoiding shadow
+				layer.style.boxShadow = "inset 0 0.5px 0 0 #494749"
+			}
 		}
 		{
 			const layer = document.createElement("div")

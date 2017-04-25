@@ -77,7 +77,11 @@ function New_GreyButtonView(context)
 	)
 	const layer = view.layer
 	layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
-	layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
+	if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
+	} else { // avoiding shadow
+		layer.style.boxShadow = "inset 0 0.5px 0 0 #494749"
+	}
 	layer.style.backgroundColor = "#383638"
 	layer.style.color = "#FCFBFC"
 	context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)		
@@ -94,7 +98,11 @@ function New_BlueButtonView(context)
 			const layer = thisView.layer
 			if (thisView.isEnabled) {
 				layer.style.backgroundColor = "#00c6ff"
-				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
+				if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+					layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
+				} else { // avoiding shadow
+					layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"	
+				}
 				layer.style.color = "#161416"
 				//
 				layer.style.fontWeight = "600"	

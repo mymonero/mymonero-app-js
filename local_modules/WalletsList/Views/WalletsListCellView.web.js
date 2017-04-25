@@ -57,7 +57,11 @@ class WalletsListCellView extends ListCellView
 			layer.style.width = `calc(100% - ${2 * margin_h}px)`
 			layer.style.height = "80px"
 			layer.style.background = "#383638"
-			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			} else { // avoiding shadow
+				layer.style.boxShadow = "inset 0 0.5px 0 0 #494749"
+			}
 			layer.style.borderRadius = "5px"
 			layer.style.overflow = "hidden" // clip bg in contents escaping corners
 			layer.style.margin = "0 0 12px 0" // for cell spacing & scroll bottom inset

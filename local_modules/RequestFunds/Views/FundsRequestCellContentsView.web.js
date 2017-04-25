@@ -72,7 +72,11 @@ class FundsRequestCellContentsView extends View
 			div.style.borderRadius = "3px"
 			div.style.position = "absolute"
 			div.style.backgroundColor = "#F8F7F8"
-			div.style.boxShadow = "0 1px 2px 0 rgba(0,0,0,0.20), 0 1px 3px 0 rgba(0,0,0,0.10), inset 0 0 0 0 #FFFFFF"			
+			if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+				div.style.boxShadow = "0 1px 2px 0 rgba(0,0,0,0.20), 0 1px 3px 0 rgba(0,0,0,0.10), inset 0 0 0 0 #FFFFFF"
+			} else { // avoiding shadow - maybe turn this into image?
+				div.style.boxShadow = "inset 0 0 0 0 #FFFFFF"
+			}
 			self.qrCodeContainerLayer = div
 			self.layer.appendChild(div)
 			const qrCode_side = 20 // for later usage… 

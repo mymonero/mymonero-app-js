@@ -138,7 +138,11 @@ function New_fieldValue_textInputLayer(context, params)
 	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.outline = "none" // no focus ring
 	// editable:true
-	layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+	if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+		layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+	} else { // avoiding shadow
+		layer.style.boxShadow = "inset 0 0.5px 0 0 #161416"
+	}
 	layer.style.color = "#dfdedf"
 	layer.style.backgroundColor = "#1d1b1d"
 	layer.disabled = false
@@ -167,7 +171,6 @@ function New_fieldValue_textAreaView(params, context)
 	layer.style.width = `calc(100% - ${2 * padding_h}px)` // no border so no -2*brdr_w
 	layer.style.borderRadius = "3px"
 	layer.style.border = "none"
-	layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
 	layer.style.textAlign = "left"
 	layer.style.fontSize = "13px"
 	layer.style.fontWeight = "100"
@@ -180,7 +183,11 @@ function New_fieldValue_textAreaView(params, context)
 	view.SetEnabled = function(isEnabled)
 	{
 		if (isEnabled) {
-			layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+			if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+				layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+			} else { // avoiding shadow
+				layer.style.boxShadow = "inset 0 0.5px 0 0 #161416"
+			}
 			//
 			layer.style.color = "#dfdedf"
 			layer.style.backgroundColor = "#1d1b1d"

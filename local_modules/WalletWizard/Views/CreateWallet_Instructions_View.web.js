@@ -160,11 +160,14 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 				layer.style.width = "85px"
 			}
 			layer.style.height = `${32 - 10 * 2 }px`
-			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
-			layer.style.fontSize = "11px"
+			self.context.themeController.StyleLayer_FontAsMessageBearingSmallLightMonospace(layer)
 			layer.style.color = "#f8f7f8"
 			layer.style.background = "#383638"
-			layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+			} else { // avoiding shadow
+				layer.style.boxShadow = "inset 0 0.5px 0 0 #494749"
+			}
 			layer.style.borderRadius = "3px"
 		}
 		var checkboxIconLayer;
@@ -176,7 +179,11 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 			layer.style.left = "9px"
 			layer.style.top = "9px"
 			layer.style.background = "#1d1b1d"
-			layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+			if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
+				layer.style.boxShadow = "0 0.5px 0 0 rgba(56,54,56,0.50), inset 0 0.5px 0 0 #161416"
+			} else { // avoiding shadow
+				layer.style.boxShadow = "inset 0 0.5px 0 0 #161416"
+			}
 			layer.style.borderRadius = "3px"
 			layer.style.width = "16px"
 			layer.style.height = "16px"
