@@ -345,6 +345,8 @@ function New_AmountInputFieldPKG(
 	const valueLayer = New_fieldValue_textInputLayer(context, {
 		placeholderText: "00.00"
 	})
+	// not going to set `pattern` attribute because it can't support periods
+	// not going to set type="number" because it inserts commas, etc
 	valueLayer.style.textAlign = "right"
 	valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
 	valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
