@@ -378,7 +378,12 @@ function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 		layer.addEventListener("mouseover", function() { this.highlight() })
 		layer.addEventListener("mouseleave", function() { this.unhighlight() }) // will this be enough?
 		layer.addEventListener("drag", function(e) { e.preventDefault(); e.stopPropagation(); return false; }) // prevent accidental drag from interfering with user's expectation of a successful click
-		layer.addEventListener("mousedown", function(e)
+		//
+		const clickLike_eventName = 
+			typeof document.body.ontouchstart === "undefined" 
+			? "mousedown"
+			: "touchstart"
+		layer.addEventListener(clickLike_eventName, function(e)
 		{ // not click, because of race conditions w/ the input focus and drags etc; plus it's snappier
 			e.preventDefault()
 			e.stopPropagation()
