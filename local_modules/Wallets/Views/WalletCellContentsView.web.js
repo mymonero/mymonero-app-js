@@ -62,7 +62,10 @@ class WalletCellContentsView extends View
 			layer.style.top = "0"
 		}
 		{ // icon
-			const div = commonComponents_walletIcons.New_WalletIconLayer(self.icon_sizeClass) 
+			const div = commonComponents_walletIcons.New_WalletIconLayer(
+				self.context,
+				self.icon_sizeClass
+			)
 			div.style.position = "absolute"
 			div.style.left = self._lookup_walletIconLayer_left() + "px"
 			div.style.top = "16px"

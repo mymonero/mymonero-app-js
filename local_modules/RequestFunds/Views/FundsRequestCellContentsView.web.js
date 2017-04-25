@@ -54,6 +54,7 @@ class FundsRequestCellContentsView extends View
 		self.layer.style.padding = "19px 0 7px 0"
 		{
 			const div = commonComponents_walletIcons.New_WalletIconLayer(
+				self.context,
 				commonComponents_walletIcons.SizeClasses.Large43 // note: 43
 			) 
 			div.style.left = "16px"
