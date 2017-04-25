@@ -305,7 +305,7 @@ class EnterExistingPasswordView extends View
 		{ // let's wait til we're all presented or we might cause scroll weirdness
 			// and we'll do this in VDA instead of setup so it focuses selects every time we pop back to it too
 			self.passwordInputLayer.focus()
-		}, 200)
+		}, 440)
 	}
 }
 module.exports = EnterExistingPasswordView
