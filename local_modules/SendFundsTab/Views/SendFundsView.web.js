@@ -790,6 +790,10 @@ class SendFundsView extends View
 		{ // disable form elements
 			self.disable_submitButton()
 			self.isFormDisabled = true
+			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.keepAwake() // disable screen dim/off
+			}
 			//
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Disable()
@@ -807,6 +811,10 @@ class SendFundsView extends View
 		function _reEnableFormElements()
 		{
 			self.isFormDisabled = false
+			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 			//
 			self.enable_submitButton() 
 			self.amountInputLayer.disabled = false

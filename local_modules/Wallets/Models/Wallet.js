@@ -847,6 +847,9 @@ class Wallet extends EventEmitter
 		//
 		// now that we've done that, we can ask the user idle controller to disable user idle until we're done with this - cause it's not something we want to have interrupted by the user idle controller tearing everything down!!
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+		if (self.context.Cordova_isMobile === true) {
+			window.plugins.insomnia.keepAwake() // disable screen dim/off
+		}
 		//
 		// some callback trampoline function declarations…
 		// these are important for resetting self's state,
@@ -891,6 +894,9 @@ class Wallet extends EventEmitter
 			self.isSendingFunds = false
 			//
 			self.context.userIdleInWindowController.ReEnable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 		}
 		//
 		monero_sendingFunds_utils.SendFunds(

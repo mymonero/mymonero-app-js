@@ -466,6 +466,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		const self = this
 		{
 			self.isDisabledFromSubmission = true
+			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.keepAwake() // disable screen dim/off
+			}
 			//
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
@@ -485,6 +489,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		function ___reEnableFormFromSubmissionDisable()
 		{
 			self.isDisabledFromSubmission = false
+			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 			//
 			self.rightBarButtonView.layer.innerHTML = "Next"
 			self.enable_submitButton()

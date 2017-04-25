@@ -332,6 +332,10 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		function ___reEnableFormFromSubmissionDisable()
 		{
 			self.isDisabledFromSubmission = false
+			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
@@ -343,6 +347,10 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const swatch = self.wizardController.walletMeta_colorHexString
 		{ // disable form
 			self.isDisabledFromSubmission = true
+			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.keepAwake() // disable screen dim/off
+			}
 			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
