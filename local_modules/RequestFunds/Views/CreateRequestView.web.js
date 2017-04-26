@@ -438,6 +438,7 @@ class CreateRequestView extends View
 			console.warn("Submit button currently disabled with isSubmitButtonDisabled",self.isSubmitButtonDisabled)
 			return
 		}
+		self.validationMessageLayer.ClearAndHideMessage()
 		//
 		const wallet = self.walletSelectView.CurrentlySelectedRowItem
 		{
@@ -507,6 +508,7 @@ class CreateRequestView extends View
 		const message = params.message
 		//
 		const self = this
+		self.disable_submitButton() // for slow frameworks like Cordova (or maybe slow computers)
 		self.context.fundsRequestsListController.WhenBooted_AddFundsRequest(
 			optl__from_fullname,
 			optl__to_walletHexColorString,
@@ -518,13 +520,14 @@ class CreateRequestView extends View
 			function(err, record)
 			{
 				if (err) {
+					self.enable_submitButton()
 					console.error("Error while creating funds request", err)
 					// TODO: show "validation" error here
 					return
 				}
-				{
-					self.validationMessageLayer.ClearAndHideMessage()
-				}
+				//
+				// no need to re-enable form here cause we're about to dismiss self
+				//
 				_proceedTo_pushViewForRecord(record)
 			}
 		)
