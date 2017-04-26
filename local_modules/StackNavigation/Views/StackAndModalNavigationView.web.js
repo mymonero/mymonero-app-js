@@ -102,7 +102,17 @@ class StackAndModalNavigationView extends StackNavigationView
 			throw self.constructor.name + " PresentView currently expects there to be an old_topStackView"
 		}
 		if (self.isCurrentlyTransitioningAManagedView__Modal === true) {
-			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal.")
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal. Deferring execution.")
+			setTimeout(
+				function()
+				{ // NOTE/TODO: There's probably a better way to do this (via a stack) which will not only prevent possibility of infinite loops
+				  // but retain call order. Not sure whether it's a big enough problem to merit that yet though
+					self.PresentView(
+						modalView,
+						isAnimated_orTrue
+					)
+				}, self._animation_modalPresent_duration_ms() // just a guess
+			)
 			return
 		}
 		{
@@ -236,7 +246,18 @@ class StackAndModalNavigationView extends StackNavigationView
 			return // just bailing
 		}
 		if (self.isCurrentlyTransitioningAManagedView__Modal === true) {
-			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal.")
+			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal. Deferring execution.")
+			setTimeout(
+				function()
+				{ // NOTE/TODO: There's probably a better way to do this (via a stack) which will not only prevent possibility of infinite loops
+				  // but retain call order. Not sure whether it's a big enough problem to merit that yet though
+					self.DismissModalViewsToView(
+						to_modalView_orNullForTopStackView,
+						isAnimated_orTrue,
+						fn
+					)
+				}, self._animation_modalDismiss_duration_ms() // just a guess
+			)
 			return
 		}
 		{
