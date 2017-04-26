@@ -40,7 +40,7 @@ const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromOtherTabView.web')
 //
-class CreateRequestView extends View
+class CreateRequestFormView extends View
 {
 	constructor(options, context)
 	{
@@ -660,4 +660,4 @@ class CreateRequestView extends View
 		)
 	}
 }
-module.exports = CreateRequestView
+module.exports = CreateRequestFormView

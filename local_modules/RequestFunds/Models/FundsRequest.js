@@ -34,7 +34,7 @@ const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const fundsRequest_persistence_utils = require('./fundsRequest_persistence_utils')
 //
 const monero_requestURI_utils = require('../../monero_utils/monero_requestURI_utils')
-const QRCode = require('../Vendor/qrcode.min')
+const QRCode = require('qrcode')
 //
 class FundsRequest extends EventEmitter
 {
@@ -265,32 +265,16 @@ class FundsRequest extends EventEmitter
 	_new_qrCode_imgDataURIString(fn)
 	{
 		const self = this
-		const div = document.createElement("div")
-		div.style.width = "200px"
-		div.style.height = "200px"
-		div.style.display = "none"
-		document.body.appendChild(div)
-		setTimeout(function()
-		{ // must wait a little for div to appear in document under certain browsers/situations (e.g. mobile safari)
-			const qrCode = new QRCode(
-				div,
-				{
-					correctLevel: QRCode.CorrectLevel.L
-				}
-			)
-			const uri = self._assumingBootedOrEquivalent__Lazy_URI() // since we're not booted yet but we're only calling this when we know we have all the info
-			qrCode.makeCode(uri)
-			setTimeout(function()
-			{ // must wait until the qr code is made and, i guess, displayed in DOM
-				const img = div.querySelector("img")
-				const imgDataURIString = img.src.slice()
-				setTimeout(function()
-				{ // now we've got that we can dispose of the div
-					div.parentNode.removeChild(div)
-				})
+		const fundsRequestURI = self._assumingBootedOrEquivalent__Lazy_URI() 
+		// ^- since we're not booted yet but we're only calling this when we know we have all the info
+		QRCode.toDataURL(
+			fundsRequestURI, 
+			{ errorCorrectionLevel: 'L' },
+			function(err, imgDataURIString)
+			{
 				fn(imgDataURIString)
-			})
-		}, 40)
+			}
+		)
 	}
 
 

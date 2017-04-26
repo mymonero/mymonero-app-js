@@ -36,7 +36,7 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const FundsRequestsListCellView = require('./FundsRequestsListCellView.web')
 const FundsRequestDetailsView = require('./FundsRequestDetailsView.web')
 //
-const CreateRequestView = require('./CreateRequestView.web')
+const CreateRequestFormView = require('./CreateRequestFormView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
 class FundsRequestsListView extends ListView
@@ -50,7 +50,7 @@ class FundsRequestsListView extends ListView
 	_setup_views()
 	{
 		const self = this
-		self.currentlyPresented_CreateRequestView = null // zeroing for comparison
+		self.currentlyPresented_CreateRequestFormView = null // zeroing for comparison
 		super._setup_views()
 		self._setup_emptyStateContainerView()
 	}
@@ -108,7 +108,7 @@ class FundsRequestsListView extends ListView
 						true, // animated
 						function(err)
 						{
-							self.presentCreateRequestView_withContact(contact)
+							self.presentCreateRequestFormView_withContact(contact)
 						}
 					)
 				}
@@ -124,14 +124,14 @@ class FundsRequestsListView extends ListView
 	{ // overridden - called for us
 		const self = this
 		super.tearDownAnySpawnedReferencedPresentedViews()
-		self._teardown_currentlyPresented_CreateRequestView()
+		self._teardown_currentlyPresented_CreateRequestFormView()
 	}
-	_teardown_currentlyPresented_CreateRequestView()
+	_teardown_currentlyPresented_CreateRequestFormView()
 	{
 		const self = this
-		if (self.currentlyPresented_CreateRequestView !== null) {
-			self.currentlyPresented_CreateRequestView.TearDown() // might not be necessary but method guards itself
-			self.currentlyPresented_CreateRequestView = null // must zero again and should free
+		if (self.currentlyPresented_CreateRequestFormView !== null) {
+			self.currentlyPresented_CreateRequestFormView.TearDown() // might not be necessary but method guards itself
+			self.currentlyPresented_CreateRequestFormView = null // must zero again and should free
 		}
 	}
 	overridable_listCellViewClass()
@@ -163,7 +163,7 @@ class FundsRequestsListView extends ListView
 			function(e)
 			{
 				e.preventDefault()
-				self.presentCreateRequestView_withoutValues()
+				self.presentCreateRequestFormView_withoutValues()
 				return false
 			}
 		)
@@ -173,27 +173,27 @@ class FundsRequestsListView extends ListView
 	//
 	// Runtime - Imperatives - Modal view presentation
 	//
-	presentCreateRequestView_withoutValues()
+	presentCreateRequestFormView_withoutValues()
 	{
 		const self = this
-		self._presentCreateRequestView_withOptions()
+		self._presentCreateRequestFormView_withOptions()
 	}
-	presentCreateRequestView_withContact(contact)
+	presentCreateRequestFormView_withContact(contact)
 	{
 		const self = this
-		self._presentCreateRequestView_withOptions({
+		self._presentCreateRequestFormView_withOptions({
 			fromContact: contact
 		})
 	}
-	_presentCreateRequestView_withOptions(options_orNilForDefault)
+	_presentCreateRequestFormView_withOptions(options_orNilForDefault)
 	{
 		const self = this
 		const options = options_orNilForDefault || {}
-		if (typeof self.currentlyPresented_CreateRequestView === 'undefined' || !self.currentlyPresented_CreateRequestView) {
+		if (typeof self.currentlyPresented_CreateRequestFormView === 'undefined' || !self.currentlyPresented_CreateRequestFormView) {
 			self.navigationController.PopToRootView(false) // not animated (since we're coming from another tab)
 			//
-			const view = new CreateRequestView(options, self.context)
-			self.currentlyPresented_CreateRequestView = view
+			const view = new CreateRequestFormView(options, self.context)
+			self.currentlyPresented_CreateRequestFormView = view
 			const navigationView = new StackAndModalNavigationView({}, self.context)
 			navigationView.SetStackViews([ view ])
 			self.navigationController.PresentView(navigationView, true)
@@ -202,7 +202,7 @@ class FundsRequestsListView extends ListView
 		}
 		const fromContact = options.fromContact
 		if (fromContact && typeof fromContact !== 'undefined') {
-			self.currentlyPresented_CreateRequestView.AtRuntime_reconfigureWith_fromContact(fromContact)
+			self.currentlyPresented_CreateRequestFormView.AtRuntime_reconfigureWith_fromContact(fromContact)
 		}
 	}
 	//
