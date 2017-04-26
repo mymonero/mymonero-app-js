@@ -946,7 +946,13 @@ class PasswordController extends EventEmitter
 	InitiateDeleteEverything(fn)
 	{ // this is used as a central initiation/sync point for delete everything like user idle
 	  // maybe it should be moved, maybe not.
+	  // And note we're assuming here the PW has been entered already.
 		const self = this
+		if (self.HasUserEnteredValidPasswordYet() === false) {
+			const errStr = "InitiateDeleteEverything called but HasUserEnteredValidPasswordYet === false. This should be disallowed in the UI"
+			throw errStr
+			return
+		}
 		self._deconstructBootedStateAndClearPassword(
 			true, // yes, is for a 'delete everything'
 			function(cb)
@@ -1013,6 +1019,18 @@ class PasswordController extends EventEmitter
 		// console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
 		self.deleteEverythingRegistrants.push(registrant)
 	}
+	LockDownAppAndRequirePassword()
+	{ // just a public interface for this - special-case-usage only! (so far. see index.cordova.js.)
+		const self = this
+		if (self.HasUserEnteredValidPasswordYet() === false) { // this is fine, but should be used to bail
+			console.warn("⚠️  Asked to LockDownAppAndRequirePassword but no password entered yet.")
+			return
+		}
+		console.log("💬  Will LockDownAppAndRequirePassword")
+		self._deconstructBootedStateAndClearPassword(
+			false // not for a 'delete everything'
+		)
+	}
 	_deconstructBootedStateAndClearPassword(
 		optl_isForADeleteEverything,
 		hasFiredWill_fn, // (cb) -> Void; cb: (err?) -> Void
@@ -1062,7 +1080,7 @@ class PasswordController extends EventEmitter
 		self._deconstructBootedStateAndClearPassword(
 			false // not for a 'delete everything'
 		)
-	}	
+	}
 	//
 	//
 	// Runtime - Delegation - Post-instantiation hook

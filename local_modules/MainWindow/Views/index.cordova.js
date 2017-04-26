@@ -165,6 +165,13 @@ window.BootApp = function()
 				attachFastClick.attach(document.body)
 			}
 		}
+		{ // when app backgrounded, let's lock down the app
+			document.addEventListener("pause", function()
+			{
+				console.log("📱  App backgrounded.")
+				context.passwordController.LockDownAppAndRequirePassword()
+			}, false)
+		}
 		{ // root view
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
 			rootView = new RootView({}, context) // hang onto reference
