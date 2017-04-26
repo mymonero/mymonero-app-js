@@ -179,6 +179,18 @@ class EditContactFromContactsTabView extends ContactFormView
 			self.validationMessageLayer.SetValidationError("Please enter an address for this contact.")
 			return
 		}
+
+		function __disableForm()
+		{
+			// TODO: disable / re-enable form elements plus cancel button as well (for Cordova slowness)
+			self.disable_submitButton()
+		}
+		function __reEnableForm()
+		{
+			self.enable_submitButton()
+		}
+		self.validationMessageLayer.ClearAndHideMessage()
+		__disableForm()
 		//
 		self.cancelAny_requestHandle_for_oaResolution() // jic
 		//
@@ -188,6 +200,7 @@ class EditContactFromContactsTabView extends ContactFormView
 			try {
 				address__decode_result = monero_utils.decode_address(address)
 			} catch (e) {
+				__reEnableForm()
 				self.validationMessageLayer.SetValidationError("Please enter a valid Monero address") // not using the error here cause it can be pretty unhelpful to the lay user
 				return
 			}
@@ -205,10 +218,8 @@ class EditContactFromContactsTabView extends ContactFormView
 			}
 			_proceedTo_saveContact_paymentID(paymentID, undefined)
 		} else {
-			{
-				self.resolving_activityIndicatorLayer.style.display = "block"
-				self.disable_submitButton()
-			}
+			self.resolving_activityIndicatorLayer.style.display = "block"
+			//
 			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 				address,
 				function(
@@ -224,9 +235,9 @@ class EditContactFromContactsTabView extends ContactFormView
 				)
 				{
 					self.resolving_activityIndicatorLayer.style.display = "none"
-					self.enable_submitButton()
 					//
 					if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
+						__reEnableForm()
 						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
 						return
 					}
@@ -237,10 +248,13 @@ class EditContactFromContactsTabView extends ContactFormView
 						return
 					}
 					if (err) {
+						__reEnableForm()
 						self.validationMessageLayer.SetValidationError(err.toString())
 						return
 					}
 					self.paymentIDInputLayer.value = returned__payment_id || ""
+					//
+					// not going to re-enable the form yet
 					//
 					const payment_id__toSave = returned__payment_id || ""
 					const cached_OAResolved_XMR_address = moneroReady_address
@@ -257,6 +271,7 @@ class EditContactFromContactsTabView extends ContactFormView
 			const paymentID_exists = paymentID__toSave && typeof paymentID__toSave !== 'undefined'
 			const paymentID_existsAndIsNotValid = paymentID_exists && monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(paymentID__toSave) === false
 			if (paymentID_existsAndIsNotValid === true) {
+				__reEnableForm()
 				self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
 				return
 			}
@@ -271,11 +286,13 @@ class EditContactFromContactsTabView extends ContactFormView
 				function(err)
 				{
 					if (err) {
+						__reEnableForm()
 						console.error("Error while saving contact", err)
 						self.validationMessageLayer.SetValidationError(err.message)
 						return
 					}
-					self.validationMessageLayer.ClearAndHideMessage()
+					//
+					// still not going to re-enable form because now that we've succeeded, we will just dismiss		
 					//
 					self._didSaveContact()
 				}

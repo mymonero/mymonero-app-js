@@ -111,14 +111,26 @@ class AddContactView extends ContactFormView
 			return
 		}
 		//
-		self.cancelAny_requestHandle_for_oaResolution() // jic
+		function __disableForm()
+		{
+			// TODO: disable / re-enable form elements plus cancel button as well (for Cordova slowness)
+			self.disable_submitButton()
+		}
+		function __reEnableForm()
+		{
+			self.enable_submitButton()
+		}
+		self.validationMessageLayer.ClearAndHideMessage()
+		__disableForm()
 		//
+		self.cancelAny_requestHandle_for_oaResolution() // jic
 		const openAliasResolver = self.context.openAliasResolver
 		if (openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) {
 		    var address__decode_result; 
 			try {
 				address__decode_result = monero_utils.decode_address(address)
 			} catch (e) {
+				__reEnableForm()
 				self.validationMessageLayer.SetValidationError("Please enter a valid Monero address") // not using the error here cause it can be pretty unhelpful to the lay user
 				return
 			}
@@ -137,10 +149,8 @@ class AddContactView extends ContactFormView
 			//
 			_proceedTo_addContact_paymentID(paymentID)
 		} else {
-			{
-				self.resolving_activityIndicatorLayer.style.display = "block"
-				self.disable_submitButton()
-			}
+			self.resolving_activityIndicatorLayer.style.display = "block"
+			//
 			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 				address,
 				function(
@@ -156,9 +166,9 @@ class AddContactView extends ContactFormView
 				)
 				{
 					self.resolving_activityIndicatorLayer.style.display = "none"
-					self.enable_submitButton()
 					//
 					if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
+						__reEnableForm()
 						console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
 						return
 					}
@@ -169,10 +179,13 @@ class AddContactView extends ContactFormView
 						return
 					}
 					if (err) {
+						__reEnableForm()
 						self.validationMessageLayer.SetValidationError(err.toString())
 						return
 					}
 					self.paymentIDInputLayer.value = returned__payment_id || ""
+					//
+					// still not going to re-enable the button (although on non-Cordova it wouldn't matter)
 					//
 					const payment_id__toSave = returned__payment_id || ""
 					const cached_OAResolved_XMR_address = moneroReady_address
@@ -189,6 +202,7 @@ class AddContactView extends ContactFormView
 			const paymentID_exists = paymentID__toSave && typeof paymentID__toSave !== 'undefined'
 			const paymentID_existsAndIsNotValid = paymentID_exists && monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(paymentID__toSave) === false
 			if (paymentID_existsAndIsNotValid === true) {
+				__reEnableForm()
 				self.validationMessageLayer.SetValidationError("Please enter a valid payment ID.")
 				return
 			}
@@ -206,13 +220,12 @@ class AddContactView extends ContactFormView
 				function(err, contact)
 				{
 					if (err) {
+						__reEnableForm()
 						console.error("Error while creating contact", err)
-						// TODO: show "validation" error here
+						self.validationMessageLayer.SetValidationError(err)
 						return
 					}
-					self.validationMessageLayer.ClearAndHideMessage()
-					self.enable_submitButton()
-					//
+					// there's no need to re-enable the form because we're about to dismiss
 					self._didSaveNewContact(contact)
 				}
 			)
