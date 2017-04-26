@@ -198,7 +198,7 @@ class EnterExistingPasswordView extends View
 	{
 		const self = this
 		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
-		return "Enter " + passwordType_humanReadableString
+		return "Enter "+passwordType_humanReadableString
 	}
 	Navigation_New_LeftBarButtonView()
 	{
@@ -225,19 +225,17 @@ class EnterExistingPasswordView extends View
 		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
 		view.layer.innerHTML = "Next"
 		const layer = view.layer
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					if (view.isEnabled === true) {
-						self._tryToSubmitForm()
-					}
-					return false
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled === true) {
+					self._tryToSubmitForm()
 				}
-			)
-		}
+				return false
+			}
+		)
 		const passwordInputValue = self.passwordInputLayer.value
 		var canEnable = true
 		if (typeof passwordInputValue === 'undefined' || passwordInputValue === null || passwordInputValue === "") {
