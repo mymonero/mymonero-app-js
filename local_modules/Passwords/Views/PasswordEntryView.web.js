@@ -216,7 +216,13 @@ class PasswordEntryView extends StackAndModalNavigationView
 	//
 	//
 	// Runtime - Imperatives - Interface - Intra-task configuration
-	//	
+	//
+	ReEnableSubmittingForm()
+	{
+		const self = this
+		// TODO: would be nice to have a more rigorous way to address the current pw entry form view than 'topStackView'
+		self.topStackView.ReEnableSubmittingForm()
+	}	
 	ShowValidationErrorMessageToUser(err, orFallbackString)
 	{
 		const self = this
@@ -377,6 +383,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 	_setValidationMessage(validationMessageString)
 	{
 		const self = this
+		// TODO: would be nice to have a more rigorous way to address the current pw entry form view than 'topStackView'
 		self.topStackView.SetValidationMessage(validationMessageString)
 	}
 	_clearValidationMessage()
@@ -397,7 +404,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 		// handles validation:
 		const passwordType = self.passwordTypeChosenWithPasswordIfNewPassword_orUndefined(password)
 		self._passwordController_callBack_trampoline(
-			false, // didCancel
+			false, // didCancel?
 			password,
 			passwordType
 		)

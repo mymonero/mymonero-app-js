@@ -96,6 +96,7 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ErroredWhileSettingNewPassword(),
 			function(err)
 			{
+				self.view.ReEnableSubmittingForm()
 				if ((typeof err === "string" && err == "") || !err) {
 					self.view.ClearValidationErrorMessage()
 				} else {
@@ -107,6 +108,7 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_ErroredWhileGettingExistingPassword(),
 			function(err)
 			{
+				self.view.ReEnableSubmittingForm()
 				if ((typeof err === "string" && err == "") || !err) {
 					self.view.ClearValidationErrorMessage()
 				} else {
@@ -118,6 +120,7 @@ class PasswordEntryViewController extends EventEmitter
 			controller.EventName_errorWhileChangingPassword(),
 			function(err)
 			{				
+				self.view.ReEnableSubmittingForm()
 				if ((typeof err === "string" && err == "") || !err) {
 					self.view.ClearValidationErrorMessage()
 				} else {

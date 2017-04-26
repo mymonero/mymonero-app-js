@@ -385,7 +385,6 @@ class CreateRequestView extends View
 		const self = this
 		if (self.isSubmitButtonDisabled !== true) {
 			self.isSubmitButtonDisabled = true
-			const buttonLayer = self.rightBarButtonView.layer
 			self.rightBarButtonView.SetEnabled(false)
 		}
 	}

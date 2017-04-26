@@ -119,6 +119,7 @@ class EnterExistingPasswordView extends View
 					self._pushForgotPasswordView()
 				}
 			)
+			self.forgotPassword_buttonView = view
 			const layer = view.layer
 			layer.style.margin = "0 9px 0 0" 
 			
@@ -230,10 +231,8 @@ class EnterExistingPasswordView extends View
 				function(e)
 				{
 					e.preventDefault()
-					{
-						if (view.isEnabled === true) {
-							self._tryToSubmitForm()
-						}
+					if (view.isEnabled === true) {
+						self._tryToSubmitForm()
 					}
 					return false
 				}
@@ -244,6 +243,7 @@ class EnterExistingPasswordView extends View
 		if (typeof passwordInputValue === 'undefined' || passwordInputValue === null || passwordInputValue === "") {
 			canEnable = false // need to enter PW first
 		}
+		self.rightBarButtonView = view
 		view.SetEnabled(canEnable) 
 		return view
 	}
@@ -251,6 +251,11 @@ class EnterExistingPasswordView extends View
 	//
 	// Runtime - Imperatives - Interface - Configuration 
 	//
+	ReEnableSubmittingForm()
+	{
+		const self = this
+		self.__reEnableForm()
+	}
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
@@ -268,12 +273,47 @@ class EnterExistingPasswordView extends View
 		self.validationMessageLayer.innerHTML = ""
 	}
 	//
+	// Runtime - Imperatives - Submit button enabled state
+	disable_submitButton()
+	{
+		const self = this
+		if (self.isSubmitButtonDisabled !== true) {
+			self.isSubmitButtonDisabled = true
+			self.rightBarButtonView.SetEnabled(false)
+		}
+	}
+	enable_submitButton()
+	{
+		const self = this
+		if (self.isSubmitButtonDisabled !== false) {
+			self.isSubmitButtonDisabled = false
+			self.rightBarButtonView.SetEnabled(true)
+		}
+	}
+	//
 	//
 	// Runtime - Imperatives - Internal
+	//
+	__disableForm()
+	{
+		const self = this
+		self.disable_submitButton()
+		self.passwordInputLayer.disabled = true
+		self.forgotPassword_buttonView.SetEnabled(false)
+	}
+	__reEnableForm()
+	{
+		const self = this
+		self.enable_submitButton()
+		self.passwordInputLayer.disabled = undefined
+		self.passwordInputLayer.focus() // since disable would have de-focused
+		self.forgotPassword_buttonView.SetEnabled(true)	
+	}
 	//
 	_tryToSubmitForm()
 	{
 		const self = this
+		self.__disableForm()
 		// we can assume pw is not "" here
 		self.__yield_nonZeroPassword(self.Password())
 	}

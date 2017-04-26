@@ -232,6 +232,7 @@ class EnterNewPasswordView extends View
 				return false
 			}
 		)
+		self.rightBarButtonView = view
 		view.SetEnabled(false) // need to enter PW first
 		return view
 	}
@@ -239,6 +240,11 @@ class EnterNewPasswordView extends View
 	//
 	// Runtime - Imperatives - Interface - Configuration 
 	//
+	ReEnableSubmittingForm()
+	{
+		const self = this
+		self.__reEnableForm()
+	}
 	SetValidationMessage(validationMessageString)
 	{
 		const self = this
@@ -261,6 +267,22 @@ class EnterNewPasswordView extends View
 	//
 	// Runtime - Imperatives - Internal
 	//
+	__disableForm()
+	{
+		const self = this
+		self.passwordInputLayer.disabled = true
+		self.confirmPasswordInputLayer.disabled = true
+		self.disable_submitButton()
+	}
+	__reEnableForm()
+	{
+		const self = this
+		self.passwordInputLayer.disabled = undefined
+		self.confirmPasswordInputLayer.disabled = undefined
+		self.passwordInputLayer.focus() // since disable would have de-focused (picking one)
+		self.enable_submitButton()
+	}
+	//
 	_tryToSubmitForm()
 	{
 		const self = this
@@ -275,6 +297,7 @@ class EnterNewPasswordView extends View
 			return
 		}
 		self.ClearValidationMessage()
+		self.__disableForm() // for slow platforms
 		self._yield_nonZeroPasswordAndPasswordType()
 	}
 	_yield_nonZeroPasswordAndPasswordType()
@@ -284,6 +307,24 @@ class EnterNewPasswordView extends View
 			self.EventName_UserSubmittedNonZeroPassword(),
 			self.Password()
 		)
+	}
+	//
+	// Runtime - Imperatives - Submit button enabled state
+	disable_submitButton()
+	{
+		const self = this
+		if (self.isSubmitButtonDisabled !== true) {
+			self.isSubmitButtonDisabled = true
+			self.rightBarButtonView.SetEnabled(false)
+		}
+	}
+	enable_submitButton()
+	{
+		const self = this
+		if (self.isSubmitButtonDisabled !== false) {
+			self.isSubmitButtonDisabled = false
+			self.rightBarButtonView.SetEnabled(true)
+		}
 	}
 	//
 	//
