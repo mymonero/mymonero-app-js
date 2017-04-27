@@ -387,6 +387,17 @@ class FundsRequestDetailsView extends View
 			function(err)
 			{
 				if (err) {
+					const errString = err.message 
+						? err.message 
+						: err.toString() 
+							? err.toString() 
+							: ""+err
+					navigator.notification.alert(
+						errString, 
+						function() {}, // nothing to do 
+						"Error", 
+						"OK"
+					)
 					__trampolineFor_didFinish()
 					return
 				}

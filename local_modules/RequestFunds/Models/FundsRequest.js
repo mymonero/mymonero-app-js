@@ -114,9 +114,12 @@ class FundsRequest extends EventEmitter
 			self.message = self.options.message
 			self.description = self.options.description
 			//
-			self.qrCode_imgDataURIString = self._new_qrCode_imgDataURIString(
-				function(qrCode_imgDataURIString)
+			self._new_qrCode_imgDataURIString(
+				function(err, qrCode_imgDataURIString)
 				{
+					if (err) {
+						throw err
+					}
 					self.qrCode_imgDataURIString = qrCode_imgDataURIString
 					__proceedTo_save()
 				}
@@ -267,12 +270,16 @@ class FundsRequest extends EventEmitter
 		const self = this
 		const fundsRequestURI = self._assumingBootedOrEquivalent__Lazy_URI() 
 		// ^- since we're not booted yet but we're only calling this when we know we have all the info
+		const options = { errorCorrectionLevel: 'L' }
 		QRCode.toDataURL(
 			fundsRequestURI, 
-			{ errorCorrectionLevel: 'L' },
+			options,
 			function(err, imgDataURIString)
 			{
-				fn(imgDataURIString)
+				if (err) {
+					console.error("Error generating QR code:", err)
+				}
+				fn(err, imgDataURIString)
 			}
 		)
 	}
