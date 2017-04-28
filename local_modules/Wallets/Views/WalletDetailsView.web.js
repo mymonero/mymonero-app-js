@@ -734,15 +734,19 @@ class WalletDetailsView extends View
 				layer.style.position = "relative"
 				layer.style.left = "0"
 				layer.style.top = "0"
-				layer.style.marginTop = "5px"
+				layer.style.marginTop = "8px"
 				layer.style.boxSizing = "border-box"
 				layer.style.width = "100%"
 				layer.style.height = "18px"
 				layer.style.padding = "0 14px 0 19px"
 				self.catchingUpProgressAndActivityIndicatorView = view
 				//
+				const scanningHeadlineLabelText = 
+					self.context.Cordova_isMobile === true 
+					? "SCANNING…"  // just a quick solution for now
+					: "SCANNING BLOCKCHAIN…"
 				const activityIndicatorLayer = commonComponents_activityIndicators.New_GraphicAndLabel_ActivityIndicatorLayer(
-					"SCANNING BLOCKCHAIN…",
+					scanningHeadlineLabelText,
 					self.context
 				)
 				activityIndicatorLayer.style.paddingLeft = "0" // overriding
