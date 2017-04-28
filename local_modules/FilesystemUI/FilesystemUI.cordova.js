@@ -97,8 +97,13 @@ class FilesytemUI extends FilesystemUI_Abstract
 					fn() // canceled ?
 					return
 				}
+				// Since this iOS image picker plugin lets you pick more than one image,
+				// we must check for this and simply let the user know. Cause it may not make
+				// sense to try to pick the 0th img on the assumption ordering is retained 
+				// and have it fail confusingly.
 				if (pictureURIs_length > 1) {
-					fn(new Error("Expected only one image to be chosen"))
+					fn(new Error("Please select only one image."))
+					return
 				}
 				const pictureURI = pictureURIs[0]
 				console.log("pictureURI", pictureURI)

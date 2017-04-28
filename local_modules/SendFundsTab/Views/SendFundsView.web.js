@@ -1601,7 +1601,7 @@ class SendFundsView extends View
 					self.context.Cordova_disallowLockDownOnAppPause -= 1 // place lock so Android app doesn't tear down UI and mess up flow
 				}
 				if (err) {
-					self.validationMessageLayer.SetValidationError("Error while picking QR code from file.")
+					self.validationMessageLayer.SetValidationError(err.toString() || "Error while picking QR code from file.")
 					return
 				}
 				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
