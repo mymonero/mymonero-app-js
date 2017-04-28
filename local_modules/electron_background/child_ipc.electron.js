@@ -31,31 +31,31 @@
 // Public - Setup - Entrypoints:
 function InitWithTasks_AndStartListening(tasksByName, reporting_processName, reporting_appVersion)
 { // Call this to set up the child
-	if (process.env.NODE_ENV !== 'development') {
-		{ // start crash reporting
-			const options_template = require('../reporting/crashReporterOptions.electron')
-			const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
-			options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes; TODO: does this really work in prod?
-			options.extra.process = reporting_processName
-			process.crashReporter.start(options) // and child processes must access process.crashReporter
-		}
-		{ // start exception reporting
-			const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
-			const options = require('../reporting/exceptionReporterOptions.electron')(
-				reporting_appVersion, 
-				reporting_processName
-			)
-			const sentry_dsn = options.sentry_dsn
-			const raven_params = 
-			{
-				autoBreadcrumbs: options.autoBreadcrumbs,
-				release: options.release,
-				environment: options.environment,
-				extra: options.extra
-			}
-			Raven.config(sentry_dsn, raven_params).install()
-		}
-	}
+	// if (process.env.NODE_ENV !== 'development') {
+	// 	{ // start crash reporting
+	// 		const options_template = require('../reporting/crashReporterOptions.electron')
+	// 		const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
+	// 		options.crashesDirectory = "electron_child_crashReport_tmp" // this must be supplied for child processes; TODO: does this really work in prod?
+	// 		options.extra.process = reporting_processName
+	// 		process.crashReporter.start(options) // and child processes must access process.crashReporter
+	// 	}
+	// 	{ // start exception reporting
+	// 		const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
+	// 		const options = require('../reporting/exceptionReporterOptions.electron')(
+	// 			reporting_appVersion, 
+	// 			reporting_processName
+	// 		)
+	// 		const sentry_dsn = options.sentry_dsn
+	// 		const raven_params = 
+	// 		{
+	// 			autoBreadcrumbs: options.autoBreadcrumbs,
+	// 			release: options.release,
+	// 			environment: options.environment,
+	// 			extra: options.extra
+	// 		}
+	// 		Raven.config(sentry_dsn, raven_params).install()
+	// 	}
+	// }
 	//
 	{ // start observing incoming messages
 		process.on('message', function(m)

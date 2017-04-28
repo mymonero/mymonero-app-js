@@ -35,16 +35,16 @@ module.exports = function(params)
 	params = params || {}
 	//
 	if (process.env.NODE_ENV !== 'development') {
-		startCrashReporting(params.reporting_processName) // do we really need crash reporting in renderer proc? is that for Chrome crashes?
-		//
-		const remote__electron = require('electron').remote
-		const remote__app = remote__electron.app
-		const appVersion = remote__app.getVersion()
-		renderer_setup_utils.StartExceptionReporting(
-			require("../reporting/exceptionReporterOptions.electron"),
-			appVersion, 
-			params.reporting_processName
-		)
+		// startCrashReporting(params.reporting_processName) // do we really need crash reporting in renderer proc? would it be for Chrome process crashes?
+		// //
+		// const remote__electron = require('electron').remote
+		// const remote__app = remote__electron.app
+		// const appVersion = remote__app.getVersion()
+		// renderer_setup_utils.StartExceptionReporting(
+		// 	require("../reporting/exceptionReporterOptions.electron"),
+		// 	appVersion, 
+		// 	params.reporting_processName
+		// )
 		renderer_setup_utils.StartAlertingExceptions()
 	}
 	renderer_setup_utils.HardenRuntime()
@@ -54,11 +54,12 @@ module.exports = function(params)
 //
 function startCrashReporting(reporting_processName)
 {
-	const {crashReporter} = require('electron')
-	const options_template = require('../reporting/crashReporterOptions.electron')
-	const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
-	options.extra.process = reporting_processName
-	crashReporter.start(options)
+	// NOTE: Calls to startCrashReporting should also be commented. We deemed the risk of an info leak too great.
+	// const {crashReporter} = require('electron')
+	// const options_template = require('../reporting/crashReporterOptions.electron')
+	// const options = JSON.parse(JSON.stringify(options_template)) // quick n dirty copy
+	// options.extra.process = reporting_processName
+	// crashReporter.start(options)
 }
 function ensureEnv()
 {

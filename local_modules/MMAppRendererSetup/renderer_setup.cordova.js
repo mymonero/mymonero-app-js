@@ -35,11 +35,11 @@ module.exports = function(params)
 	params = params || {}
 	//
 	if (process.env.NODE_ENV !== 'development') {
-		renderer_setup_utils.StartExceptionReporting(
-			require("../reporting/exceptionReporterOptions.cordova"),
-			params.appVersion, 
-			params.reporting_processName
-		)
+		// renderer_setup_utils.StartExceptionReporting(
+		// 	require("../reporting/exceptionReporterOptions.cordova"),
+		// 	params.appVersion, 
+		// 	params.reporting_processName
+		// )
 		renderer_setup_utils.StartAlertingExceptions()
 	}
 	renderer_setup_utils.HardenRuntime()

@@ -50,12 +50,8 @@ const renderer_context = require('./index_context.electron.renderer').NewHydrate
 const options = {}
 const rootView = new RootView(options, renderer_context)
 rootView.superview = null // just to be explicit; however we will set a .superlayer
-
-
-{ // manually attach the rootView to the DOM and specify view's usual managed reference(s)
+{ // now manually attach the rootView to the DOM and specify view's usual managed reference(s)
 	const superlayer = document.body
 	rootView.superlayer = superlayer
 	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
 }
-//
-// Accessors - Factories

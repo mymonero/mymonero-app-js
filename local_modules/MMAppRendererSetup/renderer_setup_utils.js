@@ -34,17 +34,18 @@ function StartExceptionReporting(
 	exceptionReporting_processName
 )
 {
-	const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
-	const options = exceptionReporterOptions_requiredModule(appVersion, exceptionReporting_processName)
-	const sentry_dsn = options.sentry_dsn
-	const raven_params = 
-	{
-		autoBreadcrumbs: options.autoBreadcrumbs,
-		release: options.release,
-		environment: options.environment,
-		extra: options.extra
-	}
-	Raven.config(sentry_dsn, raven_params).install()
+	// NOTE: Calls to StartExceptionReporting should also be commented (we deemed the risk of an info leak too great.)
+	// const Raven = require('raven') // we're using the Node.JS raven package here for now because of https://github.com/getsentry/raven-js/issues/812 … any downsides?
+	// const options = exceptionReporterOptions_requiredModule(appVersion, exceptionReporting_processName)
+	// const sentry_dsn = options.sentry_dsn
+	// const raven_params = 
+	// {
+	// 	autoBreadcrumbs: options.autoBreadcrumbs,
+	// 	release: options.release,
+	// 	environment: options.environment,
+	// 	extra: options.extra
+	// }
+	// Raven.config(sentry_dsn, raven_params).install()
 }
 exports.StartExceptionReporting = StartExceptionReporting
 //

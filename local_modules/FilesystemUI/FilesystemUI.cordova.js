@@ -106,7 +106,6 @@ class FilesytemUI extends FilesystemUI_Abstract
 					return
 				}
 				const pictureURI = pictureURIs[0]
-				console.log("pictureURI", pictureURI)
 				fn(null, pictureURI)
 			}, 
 			function (error) 
