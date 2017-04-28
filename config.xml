@@ -44,9 +44,15 @@
     </platform>
     <preference name="DisallowOverscroll" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="KeyboardShrinksView" value="true" />
+    <preference name="KeyboardShrinksView" value="false" />
     <preference name="StatusBarStyle" value="lightcontent" />
     <preference name="Orientation" value="portrait" />
+
+    <preference name="android-windowSoftInputMode" value="adjustResize|stateAlwaysHidden" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="android-fullscreen" value="false" />
+
+
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-plugin-file" spec="~4.3.2" />
     <plugin name="cordova-plugin-globalization" spec="~1.0.6" />
@@ -55,14 +61,10 @@
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="com.ozexpert.devicemeta" spec="https://github.com/ozexpert/cordova-plugin-device-meta.git" />
     <plugin name="cordova-plugin-compat" spec="~1.1.0" />
-    <plugin name="cordova-save-image-gallery" spec="~0.0.26" />
     <engine name="ios" spec="~4.3.0" />
-    <engine name="android" spec="https://github.com/apache/cordova-android" />
+    <engine name="android" spec="~6.3.0-dev" />
     <engine name="browser" spec="~4.1.0" />
     <plugin name="cordova-base64-to-gallery" spec="https://github.com/medi-y-sato/cordova-base64-to-gallery" />
-    <plugin name="cordova-plugin-image-picker" spec="~1.1.1">
-        <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="The MyMonero app uses your device's photo roll for downloading and for opening Monero Request QR code files." />
-    </plugin>
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
     <plugin name="cordova-plugin-customurlscheme" spec="~4.2.0">
         <variable name="URL_SCHEME" value="monero" />
@@ -73,4 +75,7 @@
     <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0" />
     <plugin name="cordova-plugin-splashscreen" spec="https://github.com/apache/cordova-plugin-splashscreen.git" />
     <plugin name="cordova-plugin-insomnia" spec="https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git" />
+    <plugin name="com.synconset.imagepicker" spec="https://github.com/Telerik-Verified-Plugins/ImagePicker.git">
+        <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="The MyMonero app uses your device's photo roll for downloading and for opening Monero Request QR code files." />
+    </plugin>
 </widget>

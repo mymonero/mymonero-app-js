@@ -1588,12 +1588,18 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+		if (typeof self.context.Cordova_disallowLockDownOnAppPause !== 'undefined') {
+			self.context.Cordova_disallowLockDownOnAppPause += 1 // place lock so Android app doesn't tear down UI and mess up flow
+		}
 		// ^ so we don't get torn down while dialog open
 		self.context.filesystemUI.PresentDialogToOpenOneImageFile(
 			"Open Monero Request",
 			function(err, absoluteFilePath)
 			{
 				self.context.userIdleInWindowController.ReEnable_userIdle()					
+				if (typeof self.context.Cordova_disallowLockDownOnAppPause !== 'undefined') {
+					self.context.Cordova_disallowLockDownOnAppPause -= 1 // place lock so Android app doesn't tear down UI and mess up flow
+				}
 				if (err) {
 					self.validationMessageLayer.SetValidationError("Error while picking QR code from file.")
 					return

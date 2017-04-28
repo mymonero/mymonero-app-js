@@ -159,7 +159,7 @@ window.BootApp = function()
 			// when window resized on mobile (i.e. possibly when device rotated - 
 			// though we don't support that yet
 			if (isMobile === true) {
-				// if(/Android [4-6]/.test(navigator.appVersion)) {
+				// if(/Android/.test(navigator.appVersion)) {
 				const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 				window.addEventListener("resize", function()
 				{
@@ -170,8 +170,15 @@ window.BootApp = function()
 			}
 		}
 		{ // when app backgrounded, let's lock down the app
+			context.Cordova_disallowLockDownOnAppPause = 0 // initialize for usage
+			// ^-- increment and decrement this from the application in order to put a lock on not locking-down.
+			// e.g. on filesystem UI operations
 			document.addEventListener("pause", function()
 			{
+				if (context.Cordova_disallowLockDownOnAppPause > 0) {
+					console.log("📱  App backgrounded but not going to lock down app as Cordova_disallowLockDownOnAppPause > 0.")
+					return
+				}
 				console.log("📱  App backgrounded.")
 				context.passwordController.LockDownAppAndRequirePassword()
 			}, false)

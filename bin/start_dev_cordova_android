@@ -1,3 +1,0 @@
-# cordova platform add https://github.com/apache/cordova-android --save;
-bin/_build_cordova_www; 
-cordova run android
