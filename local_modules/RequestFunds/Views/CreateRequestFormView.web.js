@@ -84,6 +84,9 @@ class CreateRequestFormView extends View
 			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
 		}
 		layer.style.overflowY = "auto"
+		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
+			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
+		)
 		// layer.style.webkitOverflowScrolling = "touch"
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view

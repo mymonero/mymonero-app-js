@@ -107,6 +107,7 @@ window.BootApp = function()
 	// Implementations - Setup - Cordova and Browser/serve
 	function _proceedTo_createContextAndRootView()
 	{
+		const isMobile = cached_metadata.isRunningInNonMobileBrowser !== true
 		{
 			const setup_utils = require('../../MMAppRendererSetup/renderer_setup.cordova')
 			setup_utils({
@@ -115,7 +116,6 @@ window.BootApp = function()
 			})
 		}
 		{ // context
-			const isMobile = cached_metadata.isRunningInNonMobileBrowser !== true
 			context = require('./index_context.cordova').NewHydratedContext({
 				app: app,
 				isDebug: cached_metadata.isDebug,
@@ -130,7 +130,8 @@ window.BootApp = function()
 				appDownloadLink_domainAndPath: "mymonero.com/app",
 				Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
 				HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false,
-				Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true
+				Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true,
+				CommonComponents_Forms_scrollToInputOnFocus: isMobile === true
 			})
 			window.MyMonero_context = context
 		}
@@ -150,19 +151,22 @@ window.BootApp = function()
 				cordova.plugins.Keyboard.disableScroll(true) // so top of app doesn't scroll out-of-view when keyboard becomes active
 			}
 			//
-			// TODO: this is not quite working…
-			window.addEventListener('native.keyboardshow', function(e)
-			{
-			    setTimeout(function()
-			    { 
-			        document.activeElement.scrollIntoViewIfNeeded()
-			    }, 100)
-			})
-			//
 			// disable tap -> click delay on mobile browsers
 			if (cached_metadata.isRunningInNonMobileBrowser == false) {
 				var attachFastClick = require('fastclick')
 				attachFastClick.attach(document.body)
+			}
+			// when window resized on mobile (i.e. possibly when device rotated - 
+			// though we don't support that yet
+			if (isMobile === true) {
+				// if(/Android [4-6]/.test(navigator.appVersion)) {
+				const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+				window.addEventListener("resize", function()
+				{
+					console.log("💬  Window resized")
+					forms.ScrollCurrentFormElementIntoView()
+				})
+				// }
 			}
 		}
 		{ // when app backgrounded, let's lock down the app

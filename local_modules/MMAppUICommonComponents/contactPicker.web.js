@@ -123,8 +123,17 @@ function New_contactPickerLayer(
 				isFocused = true
 				// always search, even if no query, as long as focused
 				_searchForAndDisplaySearchResults()
+				//
+				if (context.CommonComponents_Forms_scrollToInputOnFocus == true) {
+					inputLayer.Component_ScrollIntoViewInFormContainerParent()
+				}
 			}
 		)
+		inputLayer.Component_ScrollIntoViewInFormContainerParent = function()
+		{ // this could also be called on window resize
+			const this_layer = this
+			commonComponents_forms._shared_scrollConformingElementIntoView(this_layer)
+		}
 		var typingDebounceTimeout = null
 		inputLayer.addEventListener(
 			"keyup",

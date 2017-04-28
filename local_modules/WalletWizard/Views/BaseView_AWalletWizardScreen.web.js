@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 //
 class AddWallet_LandingScreenView extends View
 {
@@ -68,6 +69,9 @@ class AddWallet_LandingScreenView extends View
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
+		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
+			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
+		)
 		// layer.style.webkitOverflowScrolling = "touch"
 		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view

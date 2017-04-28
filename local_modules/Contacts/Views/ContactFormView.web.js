@@ -68,6 +68,9 @@ class ContactFormView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		layer.style.overflowY = "auto"
+		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
+			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
+		)
 		// layer.style.webkitOverflowScrolling = "touch"
 		layer.style.overflowX = "hidden" // cause the Emoji picker likes to protrude
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller

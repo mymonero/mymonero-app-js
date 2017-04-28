@@ -105,6 +105,65 @@ function New_fieldTitle_rightSide_accessoryLayer(labelText, context)
 }
 exports.New_fieldTitle_rightSide_accessoryLayer = New_fieldTitle_rightSide_accessoryLayer
 //
+function ClassNameForScrollingAncestorOfScrollToAbleElement()
+{
+	return "ClassNameForScrollingAncestorOfScrollToAbleElement"
+}
+exports.ClassNameForScrollingAncestorOfScrollToAbleElement = ClassNameForScrollingAncestorOfScrollToAbleElement
+function ScrollCurrentFormElementIntoView()
+{ // not a factory but a convenience function for call, e.g.. on window resize
+	const activeElement = document.activeElement
+	if (activeElement) {
+		const tagName = activeElement.tagName
+		if (tagName == "INPUT" || tagName == "TEXTAREA") {
+			const scrollToView_fn = activeElement.Component_ScrollIntoViewInFormContainerParent
+			// does it conform to informal 'protocol'?
+			// doing it this way instead of just calling _shared_scrollElementIntoView…
+			// so that elements can declare if they want to conform
+			if (scrollToView_fn && typeof scrollToView_fn === "function") {
+				scrollToView_fn.apply(activeElement)
+			}
+		}
+	}
+}
+exports.ScrollCurrentFormElementIntoView = ScrollCurrentFormElementIntoView
+
+var LocalVendor_ScrollPositionEndFixed_Animate = null 
+function _shared_scrollConformingElementIntoView(inputLayer)
+{
+	const selector = `.${ClassNameForScrollingAncestorOfScrollToAbleElement()}`
+	const scrollingAncestor = inputLayer.closest(selector)
+	if (!scrollingAncestor || typeof scrollingAncestor === 'undefined') {
+		console.warn("⚠️  Asked to _shared_scrollConformingElementIntoView but no scrollingAncestor found")
+		return
+	}
+	// NOTE: velocity 1.5.0 is waiting on v2 to introduce a fix for 
+	// bug in scrolling to element who is wrapped in a relative parent
+	// before its scrollable ancestor (showing bug on e.g. Contact picker);
+	// so patch was manually applied. See local vendored velocity.js header 
+	// for note with github issues.
+	{ // lazy require to avoid usage in e.g. electron; hopefully the perf hit will not be noticed
+		if (LocalVendor_ScrollPositionEndFixed_Animate == null) {
+			LocalVendor_ScrollPositionEndFixed_Animate = require('../Animation/Vendor/velocity')
+			// ^-- hopefully it will not cause problems to have multiple velocity modules connected to the same DOM
+		}
+	}
+	LocalVendor_ScrollPositionEndFixed_Animate(inputLayer, "stop")
+	LocalVendor_ScrollPositionEndFixed_Animate(scrollingAncestor, "stop")
+	const navBarHeight = 44 // janky/fragile
+	const topMargin = 20 // to clear the form title labels - would be nice to source these from shared constants/metrics
+	LocalVendor_ScrollPositionEndFixed_Animate(
+		inputLayer,
+		"scroll",
+		{
+			container: scrollingAncestor, 
+			duration: 500, 
+			offset:-1 * (topMargin + navBarHeight)
+		}
+	)
+}
+exports._shared_scrollConformingElementIntoView = _shared_scrollConformingElementIntoView
+//
 function New_fieldValue_textInputLayer(context, params)
 {
 	__injectCSSRules_ifNecessary()
@@ -146,6 +205,20 @@ function New_fieldValue_textInputLayer(context, params)
 	layer.style.color = "#dfdedf"
 	layer.style.backgroundColor = "#1d1b1d"
 	layer.disabled = false
+	layer.Component_ScrollIntoViewInFormContainerParent = function()
+	{ // this could also be called on window resize
+		const this_layer = this
+		_shared_scrollConformingElementIntoView(this_layer)
+	}
+	if (context.CommonComponents_Forms_scrollToInputOnFocus == true) {
+		layer.addEventListener(
+			"focus",
+			function()
+			{
+				layer.Component_ScrollIntoViewInFormContainerParent()
+			}
+		)
+	}
 	return layer
 }
 exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
@@ -202,6 +275,23 @@ function New_fieldValue_textAreaView(params, context)
 		view.isEnabled = isEnabled // this going to cause a retain cycle ? 
 	}
 	view.SetEnabled(true) // to get initial styling, any state, et al.
+	//
+	// putting this on layer instead of view for now to conform to informal 'protocol' of ScrollCurrentFormElementIntoView
+	layer.Component_ScrollIntoViewInFormContainerParent = function()
+	{
+		const this_layer = this
+		_shared_scrollConformingElementIntoView(this_layer)
+	}
+	if (context.CommonComponents_Forms_scrollToInputOnFocus == true) {
+		layer.addEventListener(
+			"focus",
+			function()
+			{
+				// TODO: retain cycle?
+				layer.Component_ScrollIntoViewInFormContainerParent()
+			}
+		)
+	}
 	//
 	return view
 }
@@ -366,6 +456,20 @@ function New_AmountInputFieldPKG(
 		}
 	})
 	div.appendChild(valueLayer)
+	valueLayer.Component_ScrollIntoViewInFormContainerParent = function()
+	{ // this could also be called on window resize
+		const this_layer = this
+		_shared_scrollConformingElementIntoView(this_layer)
+	}
+	if (context.CommonComponents_Forms_scrollToInputOnFocus == true) {
+		valueLayer.addEventListener(
+			"focus",
+			function()
+			{
+				valueLayer.Component_ScrollIntoViewInFormContainerParent()
+			}
+		)
+	}
 	//
 	const currencyLabel = New_fieldTitle_labelLayer(humanReadable_currencyAbbrv, context)
 	currencyLabel.style.display = "inline-block"
