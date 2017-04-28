@@ -110,15 +110,15 @@ class SettingsView extends View
 	_setup_aboutAppButton()
 	{
 		const self = this
+		const div = document.createElement("div")
+		div.style.padding = "12px 0 12px 33px"
 		const buttonView = commonComponents_tables.New_clickableLinkButtonView(
 			"ABOUT MYMONERO",
 			self.context,
 			function()
 			{
 				const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-				console.log("StackAndModalNavigationView", StackAndModalNavigationView)
 				const ModalStandaloneAboutView = require('../../AboutWindow/Views/ModalStandaloneAboutView.web')
-				console.log("ModalStandaloneAboutView", ModalStandaloneAboutView)
 				const options = {}
 				const view = new ModalStandaloneAboutView(options, self.context)
 				self.current_ModalStandaloneAboutView = view
@@ -127,9 +127,9 @@ class SettingsView extends View
 				self.navigationController.PresentView(navigationView, true)
 			}
 		)
-		buttonView.layer.style.display = "block"
-		buttonView.layer.style.margin = "12px 0 0 33px"
-		self.form_containerLayer.appendChild(buttonView.layer)
+		buttonView.layer.style.margin = "0"
+		div.appendChild(buttonView.layer)
+		self.form_containerLayer.appendChild(div)
 	}
 	_setup_form_field_changePasswordButton()
 	{

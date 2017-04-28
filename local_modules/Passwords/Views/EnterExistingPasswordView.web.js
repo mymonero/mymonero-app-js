@@ -125,6 +125,7 @@ class EnterExistingPasswordView extends View
 			
 			layer.style.display = "inline-block"
 			layer.style.float = "right"
+			layer.style.clear = "none"
 			containerLayer.appendChild(layer)
 		}
 		{

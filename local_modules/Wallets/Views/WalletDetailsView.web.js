@@ -710,6 +710,8 @@ class WalletDetailsView extends View
 				layer.style.top = "5px"
 				layer.style.width = "150px"
 				layer.style.height = "13px"
+				layer.style.float = "none"
+				layer.style.clear = "none" // doesn't matter tho
 				transactionsListLayerContainerLayer.appendChild(layer)
 			}
 		} else {

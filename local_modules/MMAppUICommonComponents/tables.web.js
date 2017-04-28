@@ -146,7 +146,13 @@ function New_clickableLinkButtonView(
 	a.style.cursor = "pointer"
 	a.style.webkitUserSelect = "none" // disable selection
 	context.themeController.StyleLayer_FontAsSmallRegularMonospace(a)
-	a.style.display = "inline-block" // to get margin capability
+
+	a.style.width = "auto"
+	a.style.display = "block"
+	a.style.clear = "both"
+
+	a.style.webkitTapHighlightColor = "rgba(0,0,0,0)" 
+
 	a.style.margin = "8px 0 0 9px"
 	a.addEventListener("mouseenter", function()
 	{

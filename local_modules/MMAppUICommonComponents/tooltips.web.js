@@ -228,6 +228,8 @@ function New_TooltipSpawningButtonView(tooltipText, context)
 	const layer = view.layer
 	layer.style.marginLeft = "7px"
 	layer.style.display = "inline" // same line
+	layer.style.float = "none"
+	layer.style.clear = "none" // must unset
 	const tooltip_options = 
 	{
 		target: true, // target trigger (`layer`)

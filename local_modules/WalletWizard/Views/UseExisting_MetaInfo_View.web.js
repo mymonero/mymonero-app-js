@@ -270,6 +270,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			a.style.fontSize = "11px" // chrome renders 11px too big compared to sketch
 			a.style.letterSpacing = "0"
 			a.style.fontWeight = "200"
+			a.style.display = "inline" // special case, line text - else it's block
+			a.style.float = "none"
+			a.style.clear = "none"
 			view.ConfigureWithLoginMode = function()
 			{
 				a.innerHTML = _new_titleFor_loginModeButton()

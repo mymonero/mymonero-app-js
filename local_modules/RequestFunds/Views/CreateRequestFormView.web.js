@@ -123,8 +123,9 @@ class CreateRequestFormView extends View
 			self._setup_form_memoInputLayer()
 			self._setup_form_contactPickerLayer()
 			self._setup_form_resolving_activityIndicatorLayer()
-			self._setup_form_resolvedPaymentID_containerLayer()
 			self._setup_form_createNewRecordNamedButtonView()
+			self._setup_form_addPaymentIDButtonView()
+			self._setup_form_manualPaymentIDInputLayer()
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -228,7 +229,11 @@ class CreateRequestFormView extends View
 					self.cancelAny_requestHandle_for_oaResolution()
 					//
 					self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
-					self._hideResolvedPaymentID()
+
+					self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+					self.manualPaymentIDInputLayer.value = ""
+
 					if (clearedContact && clearedContact.HasOpenAliasAddress() === true) {
 						self.memoInputLayer.value = "" // we're doing this here to avoid stale state and because implementing proper detection of which memo the user intends to leave in there for this particular request is quite complicated. see note in _didPickContact… but hopefully checking having /come from/ an OA contact is good enough
 					}
@@ -260,25 +265,6 @@ class CreateRequestFormView extends View
 		self.resolving_activityIndicatorLayer = layer
 		self.form_containerLayer.appendChild(layer)
 	}
-	_setup_form_resolvedPaymentID_containerLayer()
-	{ // TODO: factor this into a commonComponent file
-		const self = this
-		const containerLayer = commonComponents_forms.New_fieldContainerLayer(self.context)
-		containerLayer.style.display = "none" // initial state
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
-			containerLayer.appendChild(labelLayer)
-			//
-			const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
-			self.resolvedPaymentID_valueLayer = valueLayer
-			containerLayer.appendChild(valueLayer)
-			//
-			const detectedMessage = commonComponents_forms.New_Detected_IconAndMessageLayer(self.context)
-			containerLayer.appendChild(detectedMessage)
-		}
-		self.resolvedPaymentID_containerLayer = containerLayer
-		self.form_containerLayer.appendChild(containerLayer)
-	}
 	_setup_form_createNewRecordNamedButtonView()
 	{
 		const self = this
@@ -298,10 +284,63 @@ class CreateRequestFormView extends View
 				self.navigationController.PresentView(navigationView, true)
 			}
 		)
-		view.layer.style.paddingTop = "16px"
-		view.layer.style.paddingLeft = "24px"
+		view.layer.style.marginTop = "16px"
+		view.layer.style.marginLeft = "32px"
 		self.createNewRecordNamedButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
+	}
+	_setup_form_addPaymentIDButtonView()
+	{
+		const self = this		
+		const view = commonComponents_tables.New_clickableLinkButtonView(
+			"+ ADD PAYMENT ID", 
+			self.context, 
+			function()
+			{
+				if (self.isFormDisabled !== true) {
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "block"
+					self.addPaymentIDButtonView.layer.style.display = "none"
+				}
+			}
+		)
+		view.layer.style.marginTop = "16px"
+		view.layer.style.marginLeft = "32px"
+		self.addPaymentIDButtonView = view
+		self.form_containerLayer.appendChild(view.layer)
+	}
+	_setup_form_manualPaymentIDInputLayer()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		div.style.display = "none" // initial
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
+			labelLayer.style.marginTop = "16px"
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
+				placeholderText: "A specific payment ID"
+			})
+			self.manualPaymentIDInputLayer = valueLayer
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					if (event.keyCode === 13) { // return key
+						self._tryToGenerateSend()
+						return
+					}
+				}
+			)
+			valueLayer.autocorrect = "off"
+			valueLayer.autocomplete = "off"
+			valueLayer.autocapitalize = "none"
+			valueLayer.spellcheck = "false"
+			div.appendChild(valueLayer)
+		}
+		self.manualPaymentIDInputLayer_containerLayer = div
+		//
+		self.form_containerLayer.appendChild(div)
 	}
 	//
 	//
@@ -400,29 +439,6 @@ class CreateRequestFormView extends View
 		}
 	}
 	//
-	//
-	// Runtime - Imperatives - Element visibility
-	//
-	_displayResolvedPaymentID(payment_id)
-	{
-		const self = this
-		if (!payment_id) {
-			throw "nil payment_id passed to _displayResolvedPaymentID"
-		}
-		if (typeof self.resolvedPaymentID_containerLayer === 'undefined' || !self.resolvedPaymentID_containerLayer) {
-			throw "_displayResolvedPaymentID expects a non-nil self.resolvedPaymentID_containerLayer"
-		}
-		self.resolvedPaymentID_valueLayer.innerHTML = payment_id
-		self.resolvedPaymentID_containerLayer.style.display = "block"
-	}
-	_hideResolvedPaymentID()
-	{
-		const self = this
-		if (typeof self.resolvedPaymentID_containerLayer !== 'undefined' && self.resolvedPaymentID_containerLayer) {
-			self.resolvedPaymentID_containerLayer.style.display = "none"
-		}
-	}
-	//
 	_dismissValidationMessageLayer()
 	{
 		const self = this
@@ -478,16 +494,8 @@ class CreateRequestFormView extends View
 			}
 		}
 		var payment_id = null
-		if (hasPickedAContact === true) { // we have already re-resolved the payment_id
-			if (self.pickedContact.HasIntegratedAddress() === true) {
-				payment_id = null // we don't want to use this because it's a compact payment_id which isn't appropriate for a request... TODO?
-				console.warn("⚠️  Ignoring Contact's integrated address payment ID.", self.pickedContact)
-			} else {
-				payment_id = self.pickedContact.payment_id
-				if (!payment_id || typeof payment_id === 'undefined') {
-					// not throwing
-				}
-			}
+		if (self.manualPaymentIDInputLayer_containerLayer.style.display == "block") {
+			payment_id = self.manualPaymentIDInputLayer.value
 		}
 		self.__generateRequestWith({
 			optl__from_fullname: hasPickedAContact ? self.pickedContact.fullname : null,// from_fullname
@@ -591,16 +599,27 @@ class CreateRequestFormView extends View
 		{ // payment id - if we already have one
 			if (self.pickedContact.HasOpenAliasAddress() === false) {
 				const payment_id = contact.payment_id
+
+				// NOTE: This may seem unusual not to show as a 'detected' payment ID
+				// here but unlike on the Send page, Requests (I think) must be able to be created
+				// with an empty / nil payment ID field even though the user picked a contact.
+
 				if (payment_id && typeof payment_id !== 'undefined') {
-					self._displayResolvedPaymentID(payment_id)
+					self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
+					self.manualPaymentIDInputLayer.value = payment_id
 				} else {
-					self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
+					self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+					self.manualPaymentIDInputLayer.value = "" 
 				}
 				// and exit early
 				//
 				return // no need to re-resolve what is not an OA addr
 			} else { // they're using an OA addr, so we still need to check if they still have one
-				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
+				self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+				self.manualPaymentIDInputLayer.value = "" 
 			}
 		}
 		// look up the payment ID again 
@@ -654,9 +673,14 @@ class CreateRequestFormView extends View
 				}
 				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
 					if (typeof payment_id !== 'undefined' && payment_id) {
-						self._displayResolvedPaymentID(payment_id)
+						self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
+						self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
+						self.manualPaymentIDInputLayer.value = payment_id
 					} else {
-						// we already hid it above
+						// we already hid it above… but jic
+						self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+						self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+						self.manualPaymentIDInputLayer.value = "" 
 					}
 				}
 			}

@@ -391,7 +391,7 @@ class SendFundsView extends View
 			}
 		}
 		self.form_containerLayer.appendChild(div)
-	}	
+	}
 	_setup_form_addPaymentIDButtonView()
 	{
 		const self = this		
@@ -898,6 +898,10 @@ class SendFundsView extends View
 			&& !resolvedPaymentID_fieldIsVisible // but not if we have a resolved one!
 		if (canUseManualPaymentID && hasPickedAContact) {
 			throw "canUseManualPaymentID shouldn't be true at same time as hasPickedAContact"
+			// NOTE: This will also be true even if we are using the payment ID from a
+			// Funds Request QR code / URI because we set the request URI as a 'resolved' /
+			// "detected" payment id. So the `hasPickedAContact` usage above yields slightly
+			// ambiguity in code and could be improved to encompass request uri pid "forcing"
 		}
 		if (hasPickedAContact) { // we have already re-resolved the payment_id
 			if (self.pickedContact.HasOpenAliasAddress() === true) {
@@ -1530,6 +1534,9 @@ class SendFundsView extends View
 						 * we show it as 'detected', and set its value to that of ReceiveFrom-With from the request
 						 * if they hit send. This way users won't have to send each other their pids.
 						
+						 * Currently, this is made to work below by not looking at the contact itself for payment
+						 * ID match, but just using the payment ID on the request itself, if any.
+
 						if (payment_id_orNull) { // request has pid
 							if (contact.payment_id && typeof contact.payment_id !== 'undefined') { // contact has pid
 								if (contact.payment_id !== payment_id_orNull) {
@@ -1557,9 +1564,10 @@ class SendFundsView extends View
 				}
 				if (foundContact) {
 					self.contactOrAddressPickerLayer.ContactPicker_pickContact(foundContact)
+					// but we're not going to show the PID stored on the contact!
 				} else { // we have an addr but no contact
 					{
-						if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
+						if (self.pickedContact && typeof self.pickedContact !== 'undefined') { // unset
 							self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
 								true // true, do not focus input
 							)
@@ -1567,16 +1575,19 @@ class SendFundsView extends View
 						}
 						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
 					}
-					if (payment_id_orNull !== null) {
-						self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
-						self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
-						self.manualPaymentIDInputLayer.value = payment_id_orNull 
-					}
 				}
-			} else if (payment_id_orNull !== null) {
+			}
+			// and no matter what , display payment id, if present
+			if (payment_id_orNull !== null) { // but display it as a 'detected' pid
 				self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
-				self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
-				self.manualPaymentIDInputLayer.value = payment_id_orNull 
+				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+				self.manualPaymentIDInputLayer.value = "" 
+				self._displayResolvedPaymentID(payment_id_orNull)
+			} else {
+				self._hideResolvedPaymentID() // jic
+				self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+				self.manualPaymentIDInputLayer.value = "" 
 			}
 		}
 	}
