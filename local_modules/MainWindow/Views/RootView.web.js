@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const commonComponents_assetPreloader = require('../../MMAppUICommonComponents/assetPreloader')
 //
 class RootView extends View
 {
@@ -42,6 +43,8 @@ class RootView extends View
 	setup()
 	{
 		const self = this
+		// figure this is a better place to do this than index.js and themeController
+		commonComponents_assetPreloader.PreLoadImages(self.context)
 		self.setup_views()
 	}
 	setup_views()
