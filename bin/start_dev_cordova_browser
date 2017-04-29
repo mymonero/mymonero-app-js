@@ -1,3 +1,2 @@
-cordova platform add browser --save;
 bin/_build_cordova_www &&
 cordova run browser

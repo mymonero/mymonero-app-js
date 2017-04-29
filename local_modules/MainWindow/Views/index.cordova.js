@@ -78,7 +78,7 @@ window.BootApp = function()
 			if (cached_metadata.isDebug === true) {
 				// this is to give developer chance to open inspector - remove
 				navigator.notification.alert(
-					"Press OK to load app", 
+					"DEBUG MODE: Press OK to load app", 
 					_proceedTo_loadAsyncMetaDataBeforeAppSetup,
 					"MyMonero", 
 					"OK"

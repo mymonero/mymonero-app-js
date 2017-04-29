@@ -1,6 +1,4 @@
-cordova platform add ios@4.3.0 --save; 
 bin/_build_cordova_www; 
 cordova_res/bin/assemble_build;
-# killall Simulator; 
 cordova run ios --emulator --debug;
 bin/_open_ios_sim_webinspector
