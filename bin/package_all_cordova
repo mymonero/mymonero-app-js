@@ -1,4 +1,2 @@
-bin/_build_cordova_www; 
-cordova_res/bin/assemble_build;
-cordova build android --device --release --buildConfig ./cordova.ios.build.json;
-open platforms/android;
+bin/package_only_android &&
+bin/package_only_ios

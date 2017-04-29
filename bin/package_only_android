@@ -1,4 +1,4 @@
 bin/_build_cordova_www; 
 cordova_res/bin/assemble_build;
-cordova build android --device --release --buildConfig ./cordova.ios.build.json;
+cordova build android --device --release --buildConfig ./cordova.android.build.json;
 open platforms/android;
