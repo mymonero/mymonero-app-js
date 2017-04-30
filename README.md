@@ -46,9 +46,6 @@ MyMonero is currently available
 
 ![Desktop Screenshot: Welcome to MyMonero! Let's get started.](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/ss_1.png "Welcome to MyMonero! Let's get started.")
 
-![Mobile Screenshot: Welcome to MyMonero! Let's get started.](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/ss_2.png "Welcome to MyMonero! Let's get started.")
-
-
 ## Features
 
 * Multiple wallets at a time
