@@ -93,7 +93,6 @@ If you're reporting a bug, be sure to include all information which we would nee
 
 For customer support, you can also [contact](https://mymonero.com/support) us directly.
 
-=============
 
 # Contributing & Testing
 
