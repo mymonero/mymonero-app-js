@@ -97,9 +97,9 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 # Contributing & Testing
 
 
-## Setting up Your Repository
+## Getting the Source Code
 
-### General
+### Download & Install
 
 1. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
 
