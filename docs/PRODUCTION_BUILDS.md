@@ -2,7 +2,7 @@
 
 ![Logo](./assets/logo.png "Logo")
 
-## Building the App for Production
+## Building the Desktop App for Production
 
 ### Pre-requisites
 
@@ -22,3 +22,7 @@ In order to actually perform the production build for desktop, execute `bin/pack
 This command relies upon resources present in `build`, and will output your build products in the directory `dist`.
 
 Please note that MyMonero for Windows is packaged as an NSIS installer, rather than only an .exe (in order to support custom URL scheme registration/opening), and it incorporates a custom installer script fragment, `build/installer.sh`. 
+
+## Building the Mobile App for Production
+
+*WIP / Coming Soon*

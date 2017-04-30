@@ -20,4 +20,4 @@ The native apps were conceived of in order to:
  
 * provide a solid foundation on which to build out and iterate upon a much more featureful experience, and to
 
-* open MyMonero up as a lightweight wallet project for the community to use as a reference implementation, and to contribute back to to have their own contributions shipped in the official version and used by thousands of people.
+* open MyMonero up as a lightweight wallet project for the community to use as a reference implementation, and to contribute back to, in order to have their own contributions shipped in the official version for users of MyMonero.

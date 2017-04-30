@@ -59,11 +59,13 @@ In an Electron app, there is the main process, and then one process for each bro
 
 #### Password-Protection
 
-**(Seeking community audit.)** In order to accomplish password-protection, we developed a symmetric key encryption library for strings and JSON documents, which is currently based on the Node.JS crypto library and [RNCryptor](http://rncryptor.github.io)/[JSCryptor](https://github.com/chesstrian/JSCryptor) [3]. 
+**(SEEKING COMMUNITY AUDIT)** In order to accomplish password-protection, we developed a symmetric key encryption library for strings and JSON documents, which is currently based on the Node.JS crypto library and [RNCryptor](http://rncryptor.github.io)/[JSCryptor](https://github.com/chesstrian/JSCryptor) [3]. 
+
+**Note** that under Cordova (mobile JS app), which has been implemented to prepare `./www` via [webpack](http://webpack.js.org) (see [Cordova Installation Notes](./docs/CORDOVA_INSTALL.md)), the `crypto` lib is automatically shimmed to another browser-friendly implementation. [4]
 
 Encrypting at database (de)serialization-time was investigated but revealed to be a non-starter for a various reasons. Instead, the database doesn't know about the encryption, and consumers are also responsible for responding to and handling events such as password changes.
 
-On idle timeout, the in-memory decrypted data / runtime is torn down, primarily as a security feature. Once the user enters their password, the runtime is reconstructed [4]. 
+On idle timeout, the in-memory decrypted data / runtime is torn down, primarily as a security feature. Once the user enters their password, the runtime is reconstructed [5]. 
 
 1. `local_modules/DocumentPersister`
 
@@ -71,7 +73,9 @@ On idle timeout, the in-memory decrypted data / runtime is torn down, primarily 
 
 3. `local_modules/symmetric_cryptor`
 
-4. `local_modules/Passwords`, `local_modules/UserIdle`, `local_modules/WalletsList`, `local_modules/Contacts`, `local_modules/RequestFunds`
+4. https://mixmax.com/blog/requiring-node-builtins-with-webpack
+
+5. `local_modules/Passwords`, `local_modules/UserIdle`, `local_modules/WalletsList`, `local_modules/Contacts`, `local_modules/RequestFunds`
 
 ### "Kept local data up-to-date"
 
@@ -94,11 +98,11 @@ Aiming for a fully native codebase was definitely considered, but would have tak
 
 #### React vs Angular vs … vs Vanilla JS
 
-To end up with a fully native UI on mobile, we carefully considered React and React Native, but reluctantly were not able to choose them. Initially, we knew Electron needed web output, rather than the native UI we wanted for mobile. However, React and React Native template code is not the same. So out of the gate, it was no longer a single-write solution - but actually a higher level language. To use a single codebase, in theory, it was discovered we could write the UI in React Native code first, and then use a library called [React Native for Web](https://github.com/necolas/react-native-web) to compile it to web output for Electron. Unfortunately, as of late last year when this was being evaluated, that project was not official, didn't have proper support for lists and navigation views, may have been subject to change, and would have required expanding it (and therefore maintaining it) in order to implement various custom behaviors, and complicated the codebase. As the investigation into using React itself proceeded, there were various other architectural, packaging, and maintenance caveats discovered. These caveats together made us unable to choose to base all UI code on React at the outset of the project, despite the possibility of having a native mobile UI available very quickly. We will re-evaluate React and React Native in the near future. 
+To end up with a fully native UI on mobile, we carefully considered React and React Native, but reluctantly were not able to choose them. Initially, we knew Electron needed web output, rather than the native UI we wanted for mobile. However, React and React Native template code is not the same. So out of the gate, it was no longer a single-write solution - but actually a higher level language. To use a single codebase, in theory, it was discovered we could write the UI in React Native code first, and then use a library called [React Native for Web](https://github.com/necolas/react-native-web) to compile it to web output for Electron. Unfortunately, as of late last year when this was being evaluated, that project was not official, didn't have proper support for lists and navigation views, may have been subject to change, and would have required expanding it (and therefore maintaining it) in order to implement various custom behaviors, and complicated the codebase. As the investigation into using React itself proceeded, there were various other architectural, packaging, and maintenance caveats discovered. These caveats together made us unable to choose to base all UI code on React at the outset of the project, despite the possibility of having a native mobile UI available very quickly. We have re-evaluated React and React Native at the time of last updating these notes but have decided to go straight to native.
 
-React *does* solve one of the main drawbacks of browser-side development – the fragmentation of templating, styling, and executable code, by providing the options to integrate styling and element markup within executable code. (This is, in fact, how UI building is generally done on platforms other than the web.)
+React definitely *does* solve what has been one of the main drawbacks of browser-side development – the fragmentation of templating (HTML), styling & layout (CSS), and executable code (JS), by providing the options to integrate styling and element markup within executable code. (This is, in fact, how UI building is generally done on platforms other than the web, e.g. UIKit.)
 
-To accomplish the same benefit, the developer opted instead for the approach found in native UI development and wrote a very lightweight view class in JS [1] to mimick how UIs are built in Apple's UIKit. The main difference in API is that iOS Views are backed by CALayers, whereas these are simply backed by DOM elements, referred to as their `layer`s. This approach had numerous benefits, and was used to quickly reproduce the workhorse components used throughout the app, such as the navigation, tab bar, lists (tables) & cells, etc. [2]. One important difference to remember is that these DOM Views are styled by CSS, which means they do not have a `layoutSubviews` function, as exists on iOS. (It might be great to find a way to implement one, though, if it were low-enough level.) 
+To accomplish the same benefit, Paul opted instead for the approach found in native UI development and wrote a very lightweight view class in JS [1] to mimick how UIs are built in Apple's UIKit. The main difference in API is that iOS Views are backed by CALayers, whereas these are simply backed by DOM elements, referred to as their `layer`s. This approach had numerous benefits, and was used to quickly reproduce the workhorse components used throughout the app, such as the navigation, tab bar, lists (tables) & cells, etc. [2]. One important difference to remember is that these DOM Views are styled by CSS, which means they do not have a `layoutSubviews` function, as exists on iOS. (It might be great to find a way to implement one, though, if it were low-enough level.) 
 
 In many cases while building reusable components for the MyMonero wallet app UI, it wasn't justified to create a standlone `local_modules/` module or a standalone View-class-exporting file. In which cases, such components were either left in their instantiators' code (if their functions were specific to their instantiators' domains) or, if reusable, factored out into a factory function in a file in the "Common Components" module [3].
 
@@ -114,22 +118,40 @@ In order to facilitate and encourage keeping styles bundled within executable Ja
 
 #### Transitioning to Native
 
-There are many options for the transition to an all-native mobile UI which are currently under consideration. The plan is to first release a native wrapper version of the app using the existing web-based UI implementation. At that point, the UI may either be moved to native piecemeal based on high value targets, or all in one go.
+Aside from React Native, there were many options for the transition to an all-native mobile UI which were under consideration. 
+
+For more technical, strategy, and timing notes of our move to native mobile apps, please see the [Technology Roadmap](./ROADMAP.md).
 
 #### Platform-agnosticism & Portability
 
-The same web UI code which is to be run on mobile must, when run under Electron, eventually talk to code objects which interface with Electron-specific services.
+The same web UI code which is to be run under Cordova must, when run under Electron, eventually talk to code objects which interface with Electron-implemented services. Similarly, when run under Cordova, the same code must be able to talk to Cordova-implemented services.
 
-To solve this, in certain locations, platform-agnostic "interface" style base classes have been established, which must be "concretely" implementated per platform (so that platform does not need to be known by consumers). Examples include the system dialog and filesystem UI modules [1]. 
+To solve this, in certain locations, platform-agnostic "interface" style base classes have been established, which must be "concretely" implementated per platform (so that platform does not need to be known by consumers). Examples include the system dialog and filesystem UI modules [1]. It is also necessary for code for different platforms or for different Electron processes (yet which are within the same architecture domain) to cohabitate within a given module. 
 
-It is also necessary for code for different platforms or for different Electron processes (yet which are within the same domain) to cohabitate within a given module. For example, if concurrency under Electron weren't an issue, the MainWindow context would simply instantiate `DocumentPersister.NeDB.js` instead of `BackgroundDocumentPersister.NeDB.electron.js` (the latter has exactly the same interface, meaning consumers don't have to know they're on Electron to get Electron-compatible concurrency).
+For example, if concurrency under Electron weren't an issue, the MainWindow context would simply instantiate `DocumentPersister.NeDB.js` instead of `BackgroundDocumentPersister.NeDB.electron.js` (the latter has exactly the same interface, meaning consumers don't have to know they're on Electron to get Electron-compatible concurrency).
 
-Similarly, DOM-only View and  components are given a `.web.js` suffix. This is so that in the future we can implement, for example, an iOS only version of that specific view. (This is another convention borrowed from React Native.)
+Similarly, DOM-only View and web component files are given a `.web.js` suffix. 
 
-All of these conventions taken together have enabled the code to remain modular and flexible.
+All of these conventions taken together, in addition to concrete and precise code name semantics, contribute to enable the code to remain modular and flexible.
 
 1. `local_modules/WindowDialogs`, `local_modules/FilesystemUI`
 
+#### Poor Performance Under Cordova
+
+As of the time of writing, performance under Cordova is less than ideal.
+
+A few days have been put into instrumenting and then optimizing performance, and a handful of remaining performance improvement tasks and suggested directions have been placed into the [Issues](https://github.com/mymonero/monero-app-js/issues) tracker.
+
+One high value target is the proper implementation of Web Workers under Cordova to place various computationally expensive tasks (such as request parsing, symmetric key encryption, persistence) on non-main threads. This was embarked upon but abandoned due to unexplained crashing, etc., and the higher priority of publishing the code.
+
+Also of value is the investigation into any GPU-rendering-activation by way of specialized CSS rules. However one source says this is probably a legacy technique by now. 
+
+
+#### Cordova build directory structure & intermediate products
+
+The `www` folder is reserved for Cordova, and it is said to be very stubborn about moved to a different location. So some scripts in `bin` scripts are called during the build sequence which assemble that directory.
+
+Another script exists in `cordova_res` for preparing all the icon and launch image variations.  
 
 
 ## Tests
