@@ -1,6 +1,6 @@
 # MyMonero JS Desktop & Cordova Apps
 
-![Logo](./docs/assets/logo.png "Logo")
+![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
 ### General Info
 
@@ -44,7 +44,7 @@ MyMonero is currently available
 * for desktop on Mac, Windows, and Linux; and
 * for mobile on iOS and Android.
 
-![Welcome to MyMonero! Let's get started.](./docs/assets/ss_1.png_ "Welcome to MyMonero! Let's get started.")
+![Desktop Screenshot: Welcome to MyMonero! Let's get started.](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/ss_1.png "Welcome to MyMonero! Let's get started.")
 
 
 ## Features
@@ -64,8 +64,6 @@ MyMonero is currently available
 * Strong (AES256) encryption to password protect all sensitive user data 
 
 * Improved UX, including informative tooltips
-
-* Auto-update (coming soon via Github Releases)
 
 
 ## Requirements
