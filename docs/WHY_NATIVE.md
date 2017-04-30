@@ -1,6 +1,6 @@
 # MyMonero Desktop & Mobile Apps
 
-![Logo](./assets/logo.png "Logo")
+![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
 ## Why We Built the Native Apps
 
