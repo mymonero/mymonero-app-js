@@ -26,7 +26,7 @@ There are, however, a number of interesting features we are planning to introduc
 
 * Automatic association of incoming transactions with Contacts (Issues [#55](https://github.com/mymonero/mymonero-app-js/issues/55), [#54](https://github.com/mymonero/mymonero-app-js/issues/54), et al.)
 
-* Automated tests - help wanted - see [Technology Notes - Testing](./docs/TECHNOLOGY.md)
+* Automated tests - help wanted - see [Technology Notes - Testing](./TECHNOLOGY.md)
 
 * (Possibly) [Automated Electron builds via Travis & Appveyor, etc. server](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build)
 

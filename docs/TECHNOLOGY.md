@@ -61,7 +61,7 @@ In an Electron app, there is the main process, and then one process for each bro
 
 **(SEEKING COMMUNITY AUDIT)** In order to accomplish password-protection, we developed a symmetric key encryption library for strings and JSON documents, which is currently based on the Node.JS crypto library and [RNCryptor](http://rncryptor.github.io)/[JSCryptor](https://github.com/chesstrian/JSCryptor) [3]. 
 
-**Note** that under Cordova (mobile JS app), which has been implemented to prepare `./www` via [webpack](http://webpack.js.org) (see [Cordova Installation Notes](./docs/CORDOVA_INSTALL.md)), the `crypto` lib is automatically shimmed to another browser-friendly implementation. [4]
+**Note** that under Cordova (mobile JS app), which has been implemented to prepare `./www` via [webpack](http://webpack.js.org) (see [Cordova Installation Notes](./CORDOVA_INSTALL.md)), the `crypto` lib is automatically shimmed to another browser-friendly implementation. [4]
 
 Encrypting at database (de)serialization-time was investigated but revealed to be a non-starter for a various reasons. Instead, the database doesn't know about the encryption, and consumers are also responsible for responding to and handling events such as password changes.
 
