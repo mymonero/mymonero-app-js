@@ -166,7 +166,9 @@ See [Building the App for Production](./docs/PRODUCTION_BUILDS.md) for informati
 
 #### Android - Device
 
-*Coming soon*
+*Needs more testing*
+
+`bin/start_dev_cordova_android_device`
 
 
 #### Browser
