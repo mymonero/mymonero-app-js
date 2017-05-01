@@ -79,7 +79,7 @@ function NewHydratedContext(initialContext)
 			options: {}
 		},
 		{ // is not actually background, at the moment
-			module: require("../../symmetric_cryptor/BackgroundDocumentCryptor.cordova"),
+			module: require("../../symmetric_cryptor/BackgroundDocumentCryptor.cordova.main"),
 			instance_key: "document_cryptor__background",
 			options: {}
 		},

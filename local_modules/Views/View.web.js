@@ -101,7 +101,7 @@ class View extends EventEmitter
 			console.warn("TearDown called on " + self.constructor.name + " after having already been torn down!")
 			return
 		}
-		console.log("♻️  Tearing down ", self.Description())
+		// console.log("♻️  Tearing down ", self.Description())
 		self.isTornDown = true
 		// self.layer = null // so… this is commented because it turns out to race with consumers' usage of it after TearDown is called… really wish we had ARC or dealloc call so TearDown would be rigorously callable! #jssux
 	}

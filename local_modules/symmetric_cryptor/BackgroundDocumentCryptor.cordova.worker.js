@@ -29,52 +29,50 @@
 "use strict"
 //
 const document_cryptor = require('./document_cryptor')
+const worker_ipc = require('../Concurrency/ipc.worker')
 //
-class BackgroundDocumentCryptor
+// Declaring tasks:
+const tasksByName =
 {
-	constructor(options, context)
-	{
-		const self = this
-		self.options = options || {}
-		self.context = context
-	}
-	//
-	// Runtime - Accessors - Interface
-	New_EncryptedDocument__Async(
+	New_EncryptedDocument__Async: function(
+		taskUUID,
 		plaintextDocument, 
 		documentCryptScheme, 
-		password, 
-		fn // fn: (err?, encryptedDocument) -> Void
+		password
 	)
 	{
-		const self = this
+		// console.time("encrypting " + taskUUID)
 		document_cryptor.New_EncryptedDocument__Async(
 			plaintextDocument, 
 			documentCryptScheme, 
 			password,
 			function(err, encryptedDocument)
 			{
-				fn(err, encryptedDocument)
+				// console.timeEnd("encrypting " + taskUUID)
+				worker_ipc.CallBack(taskUUID, err, encryptedDocument)
 			}
 		)
-	}
-	New_DecryptedDocument__Async(
-		encryptedDocument,
-		documentCryptScheme,
-		password,
-		fn // fn: (err?, decryptedDocument) -> Void
+	},
+	New_DecryptedDocument__Async: function(
+		taskUUID,
+		encryptedDocument, 
+		documentCryptScheme, 
+		password
 	)
 	{
-		const self = this
+		// console.time("decrypting " + taskUUID)
 		document_cryptor.New_DecryptedDocument__Async(
 			encryptedDocument,
 			documentCryptScheme,
 			password,
 			function(err, plaintextDocument)
 			{
-				fn(err, plaintextDocument)
+				// console.timeEnd("decrypting " + taskUUID)
+				worker_ipc.CallBack(taskUUID, null, plaintextDocument)
 			}
 		)
 	}
 }
-module.exports = BackgroundDocumentCryptor
+//
+// Kicking off runtime:
+worker_ipc.InitWithTasks_AndStartListening(tasksByName)

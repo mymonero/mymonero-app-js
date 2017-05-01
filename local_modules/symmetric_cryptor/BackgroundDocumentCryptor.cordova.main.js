@@ -28,26 +28,22 @@
 //
 "use strict"
 //
-const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.electron')
+const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.cordova')
 //
 class BackgroundDocumentCryptor extends BackgroundTaskExecutor
 {
 	constructor(options, context)
 	{
-		options = options || {}
-		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentCryptor.electron.child.js'
-		//
-		const electron = require('electron')
-		const app = electron.app || electron.remote.app
-		const forReporting_appVersion = app.getVersion()
-		options.argsForChild = [ forReporting_appVersion ]
-		//
 		super(options, context)
 	}
-	//
+	setup_worker()
+	{ // must be implemented
+		const self = this
+		const WorkerScript = require("worker-loader?inline&fallback=false!./BackgroundDocumentCryptor.cordova.worker.js");
+		self.worker = new WorkerScript()
+	}
 	//
 	// Runtime - Accessors - Interface
-	//
 	New_EncryptedDocument__Async(
 		plaintextDocument, 
 		documentCryptScheme, 
