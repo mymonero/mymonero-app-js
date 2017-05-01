@@ -1,2 +1,2 @@
-bin/_build_cordova_www &&
-cordova run browser
+bin/_build_cordova_www;
+cordova run browser --verbose

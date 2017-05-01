@@ -28,21 +28,21 @@
 //
 "use strict"
 //
-const uuidV1 = require('uuid/v1')
+const BackgroundTaskExecutor_Interface = require('./BackgroundTaskExecutor_Interface')
 //
 const child_process = require('child_process')
 const fork = child_process.fork	
 //
-class BackgroundTaskExecutor
+class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 {
 	constructor(options, context)
 	{
+		super(options, context)
+	}
+	setup()
+	{
 		const self = this
-		{
-			self.options = options
-			self.context = context
-		}
-		{
+		{ // before calling on super - which will call setup_worker
 			self.absolutePathToChildProcessSourceFile = self.options.absolutePathToChildProcessSourceFile
 			if (typeof self.absolutePathToChildProcessSourceFile === 'undefined' || !self.absolutePathToChildProcessSourceFile) {
 				throw `absolutePathToChildProcessSourceFile required in ${self.constructor.name}`
@@ -50,142 +50,51 @@ class BackgroundTaskExecutor
 			//
 			self.argsForChild = self.options.argsForChild || []
 		}
-		{
-			self.hasBooted = false
-			self.callbacksByUUID = {}
-		}		
-		//
+		super.setup()
+	}
+	setup_worker()
+	{
+		const self = this
 		const child = fork( // fork will set up electron properly in the child process for us (e.g. env)
 			self.absolutePathToChildProcessSourceFile,
 			self.argsForChild,
 			{ stdio: 'ipc' }
 		)
-		self.child = child
-		var timeout_waitingForBoot = setTimeout(
-			function()
-			{ // Wait for child to come up or error
-				timeout_waitingForBoot = null
-				//
-				if (self.hasBooted !== true) {
-					throw "Couldn't bring background process up."
-				} else if (self.hasBooted === true) {
-					throw "Code fault: timeout_waitingForBoot fired after successful boot."
-				}
-			},
-			5000
-		)
-		child.on(
-			'message', 
-			function(message)
-			{
-				if (message === "child is up") {
-					{
-						if (timeout_waitingForBoot === null) {
-							throw "Got message back from child after timeout"
-							return
-						}
-						clearTimeout(timeout_waitingForBoot)
-						timeout_waitingForBoot = null
-					}
-					{
-						// console.log("👶  " + self.constructor.name + " background process up")
-						self.hasBooted = true
-					}
-				} else {
-					var payload = null
-					if (typeof message === 'string') {
-						try {
-							payload = JSON.parse(message)
-						} catch (e) {
-							console.error("JSON couldn't be parsed in " + self.constructor.name, e)
-							throw e
-							return
-						}
-					} else if (typeof message === 'object') {
-						payload = message
-					} else {
-						throw "unrecognized typeof message received from child"
-					}
-					self._receivedPayloadFromChild(payload)
-				}
-			}
-		)
+		self.worker = child // so that super is satisfied with existence of self.worker - we will translate internally
 	}
-	//
-	startObserving_workers()
+	startObserving_worker()
 	{
 		const self = this
-	}
-	//
-	//
-	// Runtime - Imperatives - Internal
-	//
-	ExecuteWhenBooted(fn)
-	{ // ^ capitalizing this as
-	  // (a) it could theoretically be callable by self consumers
-	  // (b) it's the same code as used in other places so maintains regularity
-		const self = this
-		if (self.hasBooted === true) {
-			fn()
-			return
-		}
-		setTimeout(
-			function()
-			{
-				self.ExecuteWhenBooted(fn)
-			},
-			10 // ms
-		)
-	}
-	executeBackgroundTaskNamed(
-		taskName,
-		fn,
-		args
-	)
-	{
-		const self = this
-		const taskUUID = uuidV1()
-		{ // we need to generate taskUUID now to construct arguments so we might as well also hang onto it here instead of putting that within the call to ExecuteWhenBooted
-			self.callbacksByUUID[taskUUID] = fn
-		}
-		self.ExecuteWhenBooted(function()
-		{ // wait til window/threads set up
-			const payload = 
-			{
-				taskName: taskName,
-				taskUUID: taskUUID,
-				args: args || []
-			}
-			// console.log("sending ", payload)
-			self.child.send(payload)
-		})
-	}	
-	//
-	//
-	// Runtime - Delegation
-	//
-	_receivedPayloadFromChild(payload)
-	{
-		const self = this
-		// console.log("_receivedPayloadFromChild", payload)
-		const eventName = payload.eventName
-		if (eventName !== 'FinishedTask') {
-			throw "child sent eventName !== 'FinishedTask'"
-		} 
-		const taskUUID = payload.taskUUID
-		const err = 
-			payload.err && typeof payload.err !== 'undefined'
-			 ? typeof payload.err === 'string' ? new Error(payload.err) : payload.err
-			 : null
-		const returnValue = payload.returnValue
+		super.startObserving_worker() // to get the boot timeout going
+		const child = self.worker // semantics translation
+		child.on('message', function(message)
 		{
-			const callback = self.callbacksByUUID[taskUUID]
-			if (typeof callback === 'undefined') {
-				console.warn("Task callback undefined:", taskUUID)
+			if (message === "child is up") {
+				self._receivedBootAckFromWorker()
 				return
 			}
-			callback(err, returnValue)
-		}
+			var payload = null
+			if (typeof message === 'string') {
+				try {
+					payload = JSON.parse(message)
+				} catch (e) {
+					console.error("JSON couldn't be parsed in " + self.constructor.name, e)
+					throw e
+					return
+				}
+			} else if (typeof message === 'object') {
+				payload = message
+			} else {
+				throw "unrecognized typeof message received from child"
+			}
+			self._receivedPayloadFromWorker(payload)
+		})
+	}
+	_concrete_sendPayloadToWorker(payload)
+	{
+		const self = this
+		const child = self.worker // semantics translation
+		child.send(payload)
 	}
 }
 module.exports = BackgroundTaskExecutor

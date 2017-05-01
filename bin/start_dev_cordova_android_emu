@@ -1,2 +1,2 @@
 bin/_build_cordova_www; 
-cordova run android --debug --emulator
+cordova run android --debug --emulator --verbose

@@ -27,6 +27,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
+//
+const shared_bg_ipc = require('./shared_bg_ipc')
 //	
 // Public - Setup - Entrypoints:
 function InitWithTasks_AndStartListening(tasksByName, reporting_processName, reporting_appVersion)
@@ -77,7 +79,7 @@ function InitWithTasks_AndStartListening(tasksByName, reporting_processName, rep
 				process.exit(1)
 			}
 			//
-			_didReceiveIPCPayload(
+			shared_bg_ipc._didReceiveIPCPayload(
 				tasksByName, // exposed dependency to avoid having to nest fns
 				payload
 			)
@@ -89,37 +91,17 @@ function InitWithTasks_AndStartListening(tasksByName, reporting_processName, rep
 }
 exports.InitWithTasks_AndStartListening = InitWithTasks_AndStartListening
 //
-//
 // Public - Imperatives - Yielding task products
-//
 function CallBack(taskUUID, err, returnValue)
 {
-	const payload =
-	{
-		eventName: 'FinishedTask', 
-		taskUUID: taskUUID, 
-		err: err, 
-		returnValue: returnValue
-	}
-	process.send(payload)
+	shared_bg_ipc.CallBack(
+		taskUUID,
+		err,
+		returnValue,
+		function(payload)
+		{
+			process.send(payload)
+		}
+	)
 }	
 exports.CallBack = CallBack
-//
-//
-// Internal - Delegation
-//
-function _didReceiveIPCPayload(tasksByName, payload)
-{
-	const taskName = payload.taskName
-	const taskUUID = payload.taskUUID
-	const payload_args = payload.args
-	const argsToCallWith = payload_args.slice() // copy
-	{ // finalize:
-		argsToCallWith.unshift(taskUUID) // prepend with taskUUID
-	}
-	const taskFn = tasksByName[taskName]
-	taskFn.apply(
-		this, // this might need to be exposed as an arg later
-		argsToCallWith
-	)
-}
