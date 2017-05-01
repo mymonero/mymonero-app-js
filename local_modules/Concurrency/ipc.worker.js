@@ -27,72 +27,64 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-const response_parser_utils = require('./response_parser_utils')
-//
-class APIResponseParser
-{
-	constructor(options, context)
-	{
-		const self = this
-		self.options = options || {}
-		self.context = context
+//	
+// Public - Setup - Entrypoints:
+function InitWithTasks_AndStartListening(tasksByName)
+{ // Call this to set up the worker
+	{ // start observing incoming messages
+		self.addEventListener('message', function(event)
+		{
+			if (typeof event === 'undefined' || !event || !(typeof event)) {
+				console.warn("Received 'message' with nil event")
+				return
+			}
+			const data = event.data
+			if (!data || typeof data === 'undefined') {
+				throw "Received nil event.data"
+			}
+			_didReceiveIPCPayload(
+				tasksByName, // exposed dependency to avoid having to nest fns
+				data
+			)
+		})
 	}
-	//
-	// Runtime - Imperatives - Public
-	Parsed_AddressInfo(
-		data, 
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		fn
-	)
-	{
-		response_parser_utils.Parsed_AddressInfo(
-			data, 
-			address,
-			view_key__private,
-			spend_key__public,
-			spend_key__private,
-			fn
-		)
-	}
-	Parsed_AddressTransactions(
-		data, 
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		fn
-	)
-	{
-		response_parser_utils.Parsed_AddressTransactions(
-			data, 
-			address,
-			view_key__private,
-			spend_key__public,
-			spend_key__private,
-			fn
-		)
-	}
-	Parsed_UnspentOuts(
-		data, 
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		fn
-	)
-	{
-		response_parser_utils.Parsed_UnspentOuts(
-			data, 
-			address,
-			view_key__private,
-			spend_key__public,
-			spend_key__private,
-			fn
-		)
+	{ // ack boot
+		self.postMessage({ message: "worker is up" })
 	}
 }
-module.exports = APIResponseParser
+exports.InitWithTasks_AndStartListening = InitWithTasks_AndStartListening
+//
+//
+// Public - Imperatives - Yielding task products
+//
+function CallBack(taskUUID, err, returnValue)
+{
+	const payload =
+	{
+		eventName: 'FinishedTask', 
+		taskUUID: taskUUID, 
+		err: err, 
+		returnValue: returnValue
+	}
+	self.postMessage(payload)
+}	
+exports.CallBack = CallBack
+//
+//
+// Internal - Delegation
+//
+function _didReceiveIPCPayload(tasksByName, payload)
+{
+	const taskName = payload.taskName
+	const taskUUID = payload.taskUUID
+	const payload_args = payload.args
+	const argsToCallWith = payload_args.slice() // copy
+	{ // finalize:
+		argsToCallWith.unshift(taskUUID) // prepend with taskUUID
+	}
+	const taskFn = tasksByName[taskName]
+	taskFn.apply(
+		this, // this might need to be exposed as an arg later
+		argsToCallWith
+	)
+}

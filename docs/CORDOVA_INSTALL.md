@@ -31,7 +31,6 @@ For running the app in Debug mode on your device:
 
 * You may need to open the Xcode `.xcworkspace` file and select your development team in the Project.
 
-
 * If you get the error "Unable to mount developer disk image", it may be related to [issue #221 on `phonegap/ios-deploy`](https://github.com/phonegap/ios-deploy/issues/221) or, possibly more likely, that your device is locked, and that it must be unlocked while `ios-deploy` is trying to deploy the app to it.
 
 * You may need to approve your team or certificate on your testing device in Settings.app -> General -> Profiles

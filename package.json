@@ -76,6 +76,7 @@
     "mocha": "^3.2.0",
     "request": "^2.79.0",
     "spectron": "^3.6.1",
-    "webpack": "^2.3.3"
+    "webpack": "^2.3.3",
+    "worker-loader": "^0.8.0"
   }
 }

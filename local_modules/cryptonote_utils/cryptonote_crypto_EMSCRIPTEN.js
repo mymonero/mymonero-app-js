@@ -31,8 +31,8 @@ var Module;if(!Module)Module=(typeof Module!=="undefined"?Module:null)||{};var m
 
 var ENVIRONMENT_IS_WEB=typeof window==="object";
 var ENVIRONMENT_IS_WEB__CORDOVA = ENVIRONMENT_IS_WEB && window.cordova ? true : false
-var ENVIRONMENT_IS_NODE=typeof process==="object"&&typeof require==="function" && ENVIRONMENT_IS_WEB__CORDOVA == false; // we want this to be true for Electron but not for Cordova
 var ENVIRONMENT_IS_WORKER=typeof importScripts==="function";
+var ENVIRONMENT_IS_NODE=typeof process==="object"&&typeof require==="function" && ENVIRONMENT_IS_WEB__CORDOVA == false && ENVIRONMENT_IS_WORKER == false; // we want this to be true for Electron but not for Cordova
 var ENVIRONMENT_IS_SHELL=!ENVIRONMENT_IS_WEB&&!ENVIRONMENT_IS_NODE&&!ENVIRONMENT_IS_WORKER;
 
 if(typeof module!=="undefined"){ // lifted this out of the ENVIRONMENT_IS_NODE check because we want to export Module for Cordova as well (webpack)

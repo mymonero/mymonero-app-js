@@ -28,103 +28,80 @@
 //
 "use strict"
 //
-const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.electron')
+const worker_ipc = require('../Concurrency/ipc.worker')
 //
-class BackgroundAPIResponseParser extends BackgroundTaskExecutor
+const response_parser_utils = require('./response_parser_utils')
+//
+// Declaring tasks:
+//
+const tasksByName =
 {
-	constructor(options, context)
-	{
-		options = options || {}
-		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundAPIResponseParser.child.js'
-		//
-		const electron = require('electron')
-		const app = electron.app || electron.remote.app
-		const forReporting_appVersion = app.getVersion()
-		options.argsForChild = [ forReporting_appVersion ]
-		//
-		super(options, context)
-	}
-	
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public
-
-	Parsed_AddressInfo(
-		data, 
+	Parsed_AddressInfo: function(
+		taskUUID, // worker_ipc inserts the task UUID so we have it
+		data,
 		address,
 		view_key__private,
 		spend_key__public,
-		spend_key__private,
-		fn
+		spend_key__private
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parsed_AddressInfo',
-			function(err, returnValuesByKey) // fn goes as second arg
+		response_parser_utils.Parsed_AddressInfo(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			function(err, returnValuesByKey)
 			{
-				fn(err, returnValuesByKey)
-			},
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private				
-			]
+				worker_ipc.CallBack(taskUUID, err, returnValuesByKey)
+			}
 		)
-	}
-
-	Parsed_AddressTransactions(
-		data, 
+	},
+	Parsed_AddressTransactions: function(
+		taskUUID, // worker_ipc inserts the task UUID so we have it
+		data,
 		address,
 		view_key__private,
 		spend_key__public,
-		spend_key__private,
-		fn
+		spend_key__private
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parsed_AddressTransactions',
-			function(err, returnValuesByKey) // fn goes as second arg
+		response_parser_utils.Parsed_AddressTransactions(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			function(err, returnValuesByKey)
 			{
-				fn(err, returnValuesByKey)
-			},
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private				
-			]
+				worker_ipc.CallBack(taskUUID, err, returnValuesByKey)
+			}
 		)
-	}
-
-	Parsed_UnspentOuts(
-		data, 
+	},
+	Parsed_UnspentOuts: function(
+		taskUUID, // worker_ipc inserts the task UUID so we have it
+		data,
 		address,
 		view_key__private,
 		spend_key__public,
-		spend_key__private,
-		fn
+		spend_key__private
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parsed_UnspentOuts',
-			function(err, returnValuesByKey) // fn goes as second arg
+		response_parser_utils.Parsed_UnspentOuts(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			function(err, returnValuesByKey)
 			{
-				fn(err, returnValuesByKey)
-			},
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private				
-			]
+				worker_ipc.CallBack(taskUUID, err, returnValuesByKey)
+			}
 		)
 	}
 }
-module.exports = BackgroundAPIResponseParser
+//
+//
+// Kicking off runtime:
+//
+worker_ipc.InitWithTasks_AndStartListening(tasksByName)

@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const BackgroundTaskExecutor = require('../electron_background/BackgroundTaskExecutor.electron')
+const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.electron')
 //
 class BackgroundDocumentCryptor extends BackgroundTaskExecutor
 {

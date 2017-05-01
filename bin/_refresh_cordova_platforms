@@ -1,7 +1,12 @@
+rm -rf platforms/ios;
+rm -rf platforms/android;
+rm -rf platforms/browser;
 cordova platform remove ios --verbose;
 cordova platform remove android --verbose;
 cordova platform remove browser --verbose;
+
 cordova_res/bin/assemble_build; # to assemble resources
+
 cordova platform add ios@latest --verbose;
-cordova platform add android@latest --verbose;
+cordova platform add https://github.com/apache/cordova-android --verbose;
 cordova platform add browser@latest --verbose;

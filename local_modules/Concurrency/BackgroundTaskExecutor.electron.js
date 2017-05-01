@@ -33,15 +33,15 @@ const uuidV1 = require('uuid/v1')
 const child_process = require('child_process')
 const fork = child_process.fork	
 //
-const BackgroundTaskExecutor_Interface = require('./BackgroundTaskExecutor_Interface')
-//
-class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
+class BackgroundTaskExecutor
 {
 	constructor(options, context)
 	{
-		super(options, context) // must call super before we can access `this` and this.options
-		//
 		const self = this
+		{
+			self.options = options
+			self.context = context
+		}
 		{
 			self.absolutePathToChildProcessSourceFile = self.options.absolutePathToChildProcessSourceFile
 			if (typeof self.absolutePathToChildProcessSourceFile === 'undefined' || !self.absolutePathToChildProcessSourceFile) {

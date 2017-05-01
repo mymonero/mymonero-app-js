@@ -17,6 +17,7 @@
         <icon src="cordova_res/build/android/icon.png" />
     </platform>
     <preference name="SplashScreenDelay" value="100" />
+    <preference name="BackupWebStorage" value="local" />
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />

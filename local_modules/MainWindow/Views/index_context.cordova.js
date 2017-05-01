@@ -36,7 +36,7 @@ function NewHydratedContext(initialContext)
 		throw "app required"
 	}
 	//
-	const APIResponseParser = require('../../HostedMoneroAPIClient/APIResponseParser.cordova')
+	const APIResponseParser = require('../../HostedMoneroAPIClient/APIResponseParser.cordova.main')
 	// placing context_object_instantiation_descriptions in here so we can get the console opened in time to catch any errors (sigh)
 	var context_object_instantiation_descriptions =
 	[

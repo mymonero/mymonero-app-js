@@ -28,28 +28,96 @@
 //
 "use strict"
 //
-class BackgroundTaskExecutor_Interface 
+const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.cordova')
+//
+class BackgroundAPIResponseParser extends BackgroundTaskExecutor
 {
 	constructor(options, context)
 	{
+		super(options, context)
+	}
+	setup_worker()
+	{ // must be implemented
 		const self = this
-		{
-			self.options = options
-			self.context = context
-		}
+		const WorkerScript = require("worker-loader?inline&fallback=false!./APIResponseParser.cordova.worker.js");
+		self.worker = new WorkerScript()
 	}
 	//
-	//
-	// Runtime - Imperatives - Interface
-	//
-	executeBackgroundTaskNamed(
-		taskName,
-		fn,
-		args
+	// Runtime - Imperatives - Public
+	Parsed_AddressInfo(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
 	)
 	{
 		const self = this
-		throw `You must override / implement executeBackgroundTaskNamed in ${self.constructor.name}`
+		self.executeBackgroundTaskNamed(
+			'Parsed_AddressInfo',
+			function(err, returnValuesByKey) // fn goes as second arg
+			{
+				fn(err, returnValuesByKey)
+			},
+			[
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private				
+			]
+		)
+	}
+	Parsed_AddressTransactions(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
+	{
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'Parsed_AddressTransactions',
+			function(err, returnValuesByKey) // fn goes as second arg
+			{
+				fn(err, returnValuesByKey)
+			},
+			[
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private				
+			]
+		)
+	}
+	Parsed_UnspentOuts(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
+	{
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'Parsed_UnspentOuts',
+			function(err, returnValuesByKey) // fn goes as second arg
+			{
+				fn(err, returnValuesByKey)
+			},
+			[
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private				
+			]
+		)
 	}
 }
-module.exports = BackgroundTaskExecutor_Interface
+module.exports = BackgroundAPIResponseParser

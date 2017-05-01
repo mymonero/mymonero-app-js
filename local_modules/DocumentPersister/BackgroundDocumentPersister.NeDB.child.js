@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const child_ipc = require('../electron_background/child_ipc.electron')
+const child_ipc = require('../Concurrency/ipc.electron.child')
 //
 const databaseFileParentDirectory = process.argv[2]
 if (typeof databaseFileParentDirectory === 'undefined' || !databaseFileParentDirectory) {

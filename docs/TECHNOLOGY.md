@@ -69,7 +69,7 @@ On idle timeout, the in-memory decrypted data / runtime is torn down, primarily 
 
 1. `local_modules/DocumentPersister`
 
-2. `local_modules/electron_background`, `local_modules/BackgroundDocumentPersister.NeDB.(child, electron).js`
+2. `local_modules/Concurrency`, `local_modules/BackgroundDocumentPersister.NeDB.(child, electron).js`
 
 3. `local_modules/symmetric_cryptor`
 
