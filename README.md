@@ -2,14 +2,17 @@
 
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
+
 ### General Info
 
 1. What's in This Repo?
-2. What is MyMonero?
-3. Features
-4. Requirements
-5. Downloads
-6. Reporting Bugs & Making Feature Requests
+2. Related Documents
+3. What is MyMonero?
+4. Features
+5. Requirements
+6. Downloads
+7. Reporting Bugs & Making Feature Requests
+
 
 ### Contributing and Testing
 
@@ -21,28 +24,34 @@
 6. MyMonero Core Contributors
 7. License and Copyrights
 
+
 ## What's in This Repo?
 
 This repository holds the source code, resources, and build scripts for the official [MyMonero](https://www.mymonero.com) downloadable desktop and Cordova-based mobile apps, which are built in Javascript.
 
+
+## Related Documents
+
+* [Why We Built the Native Apps](./docs/WHY_NATIVE.md)
+
+* [Technology Notes](./docs/TECHNOLOGY.md)
+
+* Unofficial [Technology Roadmap](./docs/ROADMAP.md)
+
+* [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md)
+
+
 ## What is MyMonero?
 
-MyMonero is a simple and featureful way to use the next-generation private digital currency called [Monero](http://www.getmonero.org). 
+MyMonero is a simple and featureful way to use the next-generation private digital currency called [Monero](http://www.getmonero.org). The MyMonero app lets you manage your Monero wallets, address book, and transactions by storing your information locally and keeping it encrypted. 
 
-The MyMonero app lets you manage your Monero wallets, address book, and transactions by storing your information locally and keeping it encrypted. 
+MyMonero is currently available for:
 
-The main reasons people have used MyMonero is its high degree of convenience and featurefulness. 
+* desktop on Mac, Windows, and Linux; and
+* mobile on iOS and Android.
 
-To accomplish this convenience and other features of MyMonero, there's the privacy trade-off of sharing your private Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions on your behalf. 
 
-But it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "private spend key" and "private wallet mnemonic/seed" are never sent to our server. 
-
-So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end, which anybody can run as their own server at home.
-
-MyMonero is currently available 
-
-* for desktop on Mac, Windows, and Linux; and
-* for mobile on iOS and Android.
+The main reasons people have used MyMonero is its high degree of convenience and featurefulness. To accomplish this convenience and other features of MyMonero, there's the privacy trade-off of sharing your private Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions on your behalf. But it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "private spend key" and "private wallet mnemonic/seed" are never sent to our server. So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end, which anybody can run as their own server at home.
 
 ![Desktop Screenshot: Welcome to MyMonero! Let's get started.](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/ss_1.png "Welcome to MyMonero! Let's get started.")
 
@@ -75,6 +84,7 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 
 The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and can be packaged for iOS and Android. 
 
+
 ## Downloads
 
 Download the latest version from our website at [mymonero.com/app](https://www.mymonero.com/app) or from the Releases tab. *(Coming soon)* 
@@ -93,6 +103,7 @@ If you're reporting a bug, be sure to include all information which we would nee
 For customer support, you can also [contact](https://mymonero.com/support) us directly.
 
 
+
 # Contributing & Testing
 
 
@@ -105,6 +116,10 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 2. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
 
 3. Install all dependencies by executing `npm install`.
+
+#### On Debian
+
+It has been reported that Debian now calls the `node` binary `nodejs`. This can be worked around by symlinking /usr/bin/nodejs to /usr/bin/node, either manually, or by installing the "nodejs-legacy" package which does it for you.
 
 ### Cordova
 
@@ -128,13 +143,15 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 * This readme is located at `README.md`, and the license is located at `LICENSE.txt`.
 
+
 ## Building for Production
 
 Unless you are a MyMonero pre-release tester, you will not need to produce a production build of MyMonero, especially because you want to be using a verified build of MyMonero for daily usage. 
 
 If you're testing a pre-release version of this app, you may want to build a production-ready version of the app rather than only running it in dev mode to verify its behavior in production mode.
 
-See [Building the App for Production](./docs/PRODUCTION_BUILDS.md) for information.
+See [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md) for information.
+
 
 ## Running in Development Mode
 

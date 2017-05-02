@@ -2,7 +2,7 @@
 
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
-## Building the Desktop App for Production
+## Packaging the Desktop App for Production Mode
 
 ### Pre-requisites
 
@@ -23,6 +23,18 @@ This command relies upon resources present in `build`, and will output your buil
 
 Please note that MyMonero for Windows is packaged as an NSIS installer, rather than only an .exe (in order to support custom URL scheme registration/opening), and it incorporates a custom installer script fragment, `build/installer.sh`. 
 
-## Building the Mobile App for Production
+## Building & Packaging the Mobile Apps for Production Mode
 
-*WIP / Coming Soon*
+The following instructions assume you have already run `setup_repo_for_cordova`.
+
+### iOS
+
+Specify your signing information in `cordova.ios.build.json`.
+
+Then run `bin/package_only_ios`.
+
+### Android
+
+Specify your keystore information in `./cordova.android.build.json`, such as its path. If necessary, move your keystore file to the specified path.
+
+Then run `bin/package_only_android`.
