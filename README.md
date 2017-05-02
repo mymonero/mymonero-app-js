@@ -8,8 +8,8 @@
 1. What's in This Repo?
 2. What is MyMonero?
 3. Features
-4. Requirements
-5. Downloads
+4. Downloads
+5. Requirements & Install Locations
 6. Reporting Bugs & Making Feature Requests
 7. Related Documents
 
@@ -38,7 +38,6 @@ MyMonero is currently available for:
 * desktop on Mac, Windows, and Linux; and
 * mobile on iOS and Android.
 
-
 The main reasons people have used MyMonero is its high degree of convenience and featurefulness. To accomplish this convenience and other features of MyMonero, there's the privacy trade-off of sharing your private Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions on your behalf. But it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "private spend key" and "private wallet mnemonic/seed" are never sent to our server. So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end, which anybody can run as their own server at home.
 
 ![Desktop Screenshot: Welcome to MyMonero! Let's get started.](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/ss_1.png "Welcome to MyMonero! Let's get started.")
@@ -62,16 +61,6 @@ The main reasons people have used MyMonero is its high degree of convenience and
 * Improved UX, including informative tooltips
 
 
-## Requirements
-
-The desktop app is built on [Electron](https://electron.atom.io) and can be packaged to run on modern versions of:
-
-* MacOS (.app)
-* Windows (installer .exe)
-* Linux (.appimage)
-
-The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and can be packaged for iOS and Android. 
-
 
 ## Downloads
 
@@ -82,6 +71,24 @@ Developers and pre-release testers who would like to use and work on the app can
 To get set up with the source code, please see **Getting the Source Code** below.
 
 
+## Requirements & Install Locations
+
+The desktop app is built on [Electron](https://electron.atom.io) and can be packaged to run on modern versions of:
+
+* MacOS (.app)
+* Windows (installer .exe)
+* Linux (.appimage)
+
+The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and can be packaged for iOS and Android. 
+
+### User Data Locations
+
+* Mac / Windows / Linux: via Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
+
+* Android / iOS: via [`cordova.file.dataDirectory`](https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-file/)
+
+
+
 ## Reporting Bugs & Making Feature Requests
 
 If you would like to report an issue or share a feature request, please create a Github [Issue](https://github.com/mymonero/monero-app-js/issues) on this project.
@@ -89,6 +96,8 @@ If you would like to report an issue or share a feature request, please create a
 If you're reporting a bug, be sure to include all information which we would need to reproduce the issue, such as the operating system and app version on which you saw the bug, and the steps you took, if you can tell. 
 
 For customer support, you can also [contact](https://mymonero.com/support) us directly.
+
+
 
 
 ## Related Documents
@@ -128,6 +137,7 @@ It has been reported that Debian now calls the `node` binary `nodejs`. This can 
 
 2. Run `bin/setup_repo_for_cordova`.
  
+
 
 ## Repository Contents
 * Executable scripts for common tasks are located in `bin/`
