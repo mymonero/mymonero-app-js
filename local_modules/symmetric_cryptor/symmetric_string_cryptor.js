@@ -142,7 +142,7 @@ function DecryptedPlaintextString__Async(
 )
 {
 	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
-		console.warn("DecryptedPlaintextString__Async passed nil encrypted_msg_base64_string")
+		console.warn("DecryptedPlaintextString__Async was passed nil encrypted_msg_base64_string")
 		return fn(null, encrypted_msg_base64_string)
 	}
 	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
@@ -187,6 +187,10 @@ module.exports.DecryptedPlaintextString__Async = DecryptedPlaintextString__Async
 //
 function _new_encrypted_base64_unpacked_components_object(b64str) 
 {
+	if (!b64str || typeof b64str === 'undefined') { // prevent toString() exception
+		throw "_new_encrypted_base64_unpacked_components_object was passed nil b64str"
+		return undefined
+	}
 	var binary_data = new Buffer(b64str, 'base64').toString('binary')
 	var components = 
 	{
