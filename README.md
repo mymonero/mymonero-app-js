@@ -6,13 +6,12 @@
 ### General Info
 
 1. What's in This Repo?
-2. Related Documents
-3. What is MyMonero?
-4. Features
-5. Requirements
-6. Downloads
-7. Reporting Bugs & Making Feature Requests
-
+2. What is MyMonero?
+3. Features
+4. Requirements
+5. Downloads
+6. Reporting Bugs & Making Feature Requests
+7. Related Documents
 
 ### Contributing and Testing
 
@@ -28,17 +27,6 @@
 ## What's in This Repo?
 
 This repository holds the source code, resources, and build scripts for the official [MyMonero](https://www.mymonero.com) downloadable desktop and Cordova-based mobile apps, which are built in Javascript.
-
-
-## Related Documents
-
-* [Why We Built the Native Apps](./docs/WHY_NATIVE.md)
-
-* [Technology Notes](./docs/TECHNOLOGY.md)
-
-* Unofficial [Technology Roadmap](./docs/ROADMAP.md)
-
-* [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md)
 
 
 ## What is MyMonero?
@@ -101,6 +89,17 @@ If you would like to report an issue or share a feature request, please create a
 If you're reporting a bug, be sure to include all information which we would need to reproduce the issue, such as the operating system and app version on which you saw the bug, and the steps you took, if you can tell. 
 
 For customer support, you can also [contact](https://mymonero.com/support) us directly.
+
+
+## Related Documents
+
+* [Why We Built the Native Apps](./docs/WHY_NATIVE.md)
+
+* [Technology Notes](./docs/TECHNOLOGY.md)
+
+* Unofficial [Technology Roadmap](./docs/ROADMAP.md)
+
+* [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md)
 
 
 
