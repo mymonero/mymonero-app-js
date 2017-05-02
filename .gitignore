@@ -13,3 +13,5 @@ stats.json
 
 cordova_res/build/*
 cordova.ios.build.json
+cordova.android.build.json
+android_release.jks

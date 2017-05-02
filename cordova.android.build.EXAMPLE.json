@@ -1,0 +1,13 @@
+{
+     "android": {
+         "debug": {
+         },
+         "release": {
+             "keystore": "./android_release.jks",
+             "storePassword": "",
+             "alias": "key0",
+             "password" : "",
+             "keystoreType": "jks"
+         }
+     }
+ }
