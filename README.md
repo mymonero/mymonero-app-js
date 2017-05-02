@@ -148,7 +148,7 @@ See [Building the App for Production](./docs/PRODUCTION_BUILDS.md) for informati
 
 #### iOS - Simulator
 
-*Causes the Safari Web Inspector to be shown and attached to the Simulator app's WebView*
+*Causes the Safari Web Inspector to be shown and attached to the Simulator app's WebView (Update: inspector auto-open now commented due to conflict with web workers, see #63)*
 
 `bin/start_dev_cordova_ios_sim`
 
@@ -201,7 +201,7 @@ You may also like to read the unofficial [Technology Roadmap](./docs/ROADMAP.md)
 
 There's also an icebox of ideas, features, improvements, known issues, and other todos waiting to be knocked out which are kept in the [Issues](https://github.com/mymonero/monero-app-js/issues) tracker.
 
-**At the moment, the performance of the iOS and Android apps is pretty terrible, and is blocking the release of the mobile apps. Contributions welcome. Information can be found on issue [#63](https://github.com/mymonero/mymonero-app-js/issues/63).**
+**At the moment, the performance of the Cordova apps needs improvement and further testing. Contributions welcome. Information can be found on issue [#63](https://github.com/mymonero/mymonero-app-js/issues/63).**
 
 
 ## MyMonero Core Contributors
