@@ -489,13 +489,17 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.spendKeyTextAreaView.layer.disabled = true
 			self.addrAndKeysFieldsContainerLayer.disabled = true
 		}
-		function ___reEnableFormFromSubmissionDisable()
-		{
-			self.isDisabledFromSubmission = false
+		function ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
+		{ // factored because we would like to call this on successful submission too!
 			self.context.userIdleInWindowController.ReEnable_userIdle()					
 			if (self.context.Cordova_isMobile === true) {
 				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
 			}
+		}
+		function ___reEnableFormFromSubmissionDisable()
+		{
+			self.isDisabledFromSubmission = false
+			____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
 			//
 			self.rightBarButtonView.layer.innerHTML = "Next"
 			self.enable_submitButton()
@@ -518,6 +522,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		}
 		function __trampolineFor_didAddWallet()
 		{
+			____reEnable_userIdleAndScreenSleepFromSubmissionDisable() // we must call this manually as we are not re-enabling the form (or it will break user idle!!)
 			self.wizardController.ProceedToNextStep() // will dismiss
 		}
 		//

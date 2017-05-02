@@ -339,13 +339,17 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		if (!walletInstance) {
 			throw "Missing expected walletInstance"
 		}
-		function ___reEnableFormFromSubmissionDisable()
-		{
-			self.isDisabledFromSubmission = false
+		function ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
+		{ // factored because we would like to call this on successful submission too!
 			self.context.userIdleInWindowController.ReEnable_userIdle()					
 			if (self.context.Cordova_isMobile === true) {
 				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
 			}
+		}
+		function ___reEnableFormFromSubmissionDisable()
+		{
+			self.isDisabledFromSubmission = false
+			____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
 			//
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(true) // re-enable
@@ -381,6 +385,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 					___reEnableFormFromSubmissionDisable()
 					return
 				}
+				____reEnable_userIdleAndScreenSleepFromSubmissionDisable() // must call this manually, since we're not re-enabling the form
 				self.wizardController.ProceedToNextStep() // this should lead to a dismiss of the wizard
 			},
 			function()

@@ -893,6 +893,7 @@ class Wallet extends EventEmitter
 			// Note: This function is to be called before you call fn() anywhere - so we can do critical things like unlocking this method and re-enabling user idle
 			self.isSendingFunds = false
 			//
+			// critical to do on every exit from this method
 			self.context.userIdleInWindowController.ReEnable_userIdle()
 			if (self.context.Cordova_isMobile === true) {
 				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
