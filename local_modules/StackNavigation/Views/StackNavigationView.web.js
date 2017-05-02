@@ -127,6 +127,10 @@ class StackNavigationView extends View
 	{
 		return "easeOutCubic"
 	}
+	_styleLeftForUnderlyingViewAnimation()
+	{
+		return "-24%"
+	}
 	//
 	//
 	// Runtime - Imperatives 
@@ -248,7 +252,20 @@ class StackNavigationView extends View
 			} else {
 				setTimeout(
 					function()
-					{ // wait til not blocked or animation is choppy
+					{ // wait til not blocked or animation can be choppy
+						// I. Going to kick off animating old (btm) view out.
+						// We don't particularly mind if the completion of I. and II. aren't synchronized
+						Animate(
+							old_topStackView.layer,
+							{
+								left: self._styleLeftForUnderlyingViewAnimation()
+							},
+							{
+								duration: self._animation_navigationPush_duration_ms(),
+								easing: self._animation_navigationPush_easing()
+							}
+						)
+						// II. Now animate the new (top) view in.
 						Animate(
 							stackView_layer,
 							{
@@ -274,10 +291,11 @@ class StackNavigationView extends View
 		}		
 		function _afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 		{
-			{ // before we remove the old_topStackView, let's record its styling which would be lost on removal like scroll offset 
-				if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) { // as in stack views were set before this push was done
-					old_topStackView.removeFromSuperview()
+			if (typeof old_topStackView !== 'undefined' && old_topStackView !== null) { // as in stack views were set before this push was done
+				if (isAnimated === true) {
+					Animate(old_topStackView.layer, "stop", true) // jic the other animation finished first
 				}
+				old_topStackView.removeFromSuperview()
 			}
 		}
 	}
@@ -418,9 +436,23 @@ class StackNavigationView extends View
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 				__trampolineFor_transitionEnded() // must unlock this function; called 'fn' for us
 			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
+				//
+				to_stackView.layer.style.left = self._styleLeftForUnderlyingViewAnimation() // in preparation for the animation
+				//
 				setTimeout(
 					function()
 					{ // wait til not blocked or we get choppiness
+						// I. Kick off animating underlying (to/new) view back onto screen
+						Animate(
+							to_stackView.layer,
+							{
+								left: "0px"
+							},
+							{
+								duration: self._animation_navigationPush_duration_ms(),
+								easing: self._animation_navigationPush_easing()
+							}
+						)
 						Animate(
 							old_topStackView.layer,
 							{
