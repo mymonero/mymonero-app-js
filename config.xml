@@ -76,4 +76,11 @@
     <plugin name="com.synconset.imagepicker" spec="https://github.com/Telerik-Verified-Plugins/ImagePicker.git">
         <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="The MyMonero app uses your device's photo roll for downloading and for opening Monero Request QR code files." />
     </plugin>
+    <plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0">
+        <variable name="XWALK_VERSION" value="23+" />
+        <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" />
+        <variable name="XWALK_COMMANDLINE" value="--disable-pull-to-refresh-effect" />
+        <variable name="XWALK_MODE" value="embedded" />
+        <variable name="XWALK_MULTIPLEAPK" value="true" />
+    </plugin>
 </widget>
