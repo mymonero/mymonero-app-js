@@ -168,6 +168,8 @@ See [Building the App for Production](./docs/PRODUCTION_BUILDS.md) for informati
 
 *Needs more testing*
 
+*Ensure that the USB Debugging is enabled and that the session is accepted on your Android device if you get `device.js` error. Also try removing the USB cable and replacing it. Navigate to "chrome://inspect" to monitor debug status. Also may help to run `adb logcat` while installing.*
+
 `bin/start_dev_cordova_android_device`
 
 
