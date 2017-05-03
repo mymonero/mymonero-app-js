@@ -28,7 +28,7 @@ In brief review, the general requirements for the first release of the desktop a
 
 In order to avoid rewriting the same app (and its UI) across Mac, Windows, and Linux, we opted to use Electron. Electron is basically a Node.JS runtime, plus libraries to expose native system services, plus Chrome browser windows for custom UI.
 
-While providing many upside, this had the obvious downside that we had to build all of our UI components from scratch – or at least out of existing web components. Electron also meant building the app in Javascript.
+While providing many upsides, this had the obvious downside that we had to build all of our UI components from scratch – or at least out of existing web components. Electron also meant building the app in Javascript.
 
 React and React Native were considered in depth, and are discussed below.
 
