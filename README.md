@@ -125,9 +125,12 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 3. Install all dependencies by executing `npm install`.
 
-#### On Debian
+#### On Debian/Ubuntu/Linux
 
-It has been reported that Debian now calls the `node` binary `nodejs`. This can be worked around by symlinking /usr/bin/nodejs to /usr/bin/node, either manually, or by installing the "nodejs-legacy" package which does it for you.
+* Debian/Ubuntu now calls the `node` binary `nodejs`. Workaround is to symlink /usr/bin/nodejs to /usr/bin/node, either manually, or by installing the "nodejs-legacy" package.
+
+* libgconf is now a requirement for running Electron under Linux, and can be installed with `apt install libgconf-2-4` (https://github.com/electron/electron/issues/1518)
+
 
 ### Cordova
 
