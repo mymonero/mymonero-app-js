@@ -31,3 +31,5 @@ There are, however, a number of interesting features we are planning to introduc
 * (Possibly) [Automated Electron builds via Travis & Appveyor, etc. server](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build)
 
 * Ledger integration (Issue [#60](https://github.com/mymonero/mymonero-app-js/issues/60))
+
+* [Kovri](https://github.com/monero-project/kovri) integration
