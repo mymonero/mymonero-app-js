@@ -67,6 +67,7 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 			filename: pathTo_dataFile,
 			autoload: true
 		})
+		dbHandle.persistence.setAutocompactionInterval(1000 * 60) // autocompact every 60 seconds - to prevent https://github.com/mymonero/mymonero-app-js/issues/79
 		//
 		return dbHandle
 	}
