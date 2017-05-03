@@ -40,10 +40,19 @@ For running the app in Debug mode on your device:
 
 ### Android Notes
 
-[Cordova: Android - Installing the Requirements](https://cordova.apache.org/docs/en/latest/guide/platforms/android/#installing-the-requirements)
+[Cordova: Android - 'dev' - Installing the Requirements](https://cordova.apache.org/docs/en/dev/guide/platforms/android/index.html#installing-the-requirements)
 
+* **Note that this link goes to 'dev', not 'latest', as the 'latest' version appears to point to out-dated documentation.**
 
 Cordova requires you to make various locations available via your PATH variable.
+
+* Your shell configuration file, e.g. `.bash_profile` on MacOS, might be amended like so:
+
+	```
+	export JAVA_HOME="$(/usr/libexec/java_home)"
+	export ANDROID_HOME="$HOME/Library/Android/sdk"
+	export PATH="$PATH:$JAVA_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools"
+	```
  
 * How to find `android_path`: 
 	* http://stackoverflow.com/questions/34532063/finding-android-sdk-on-mac-and-adding-to-path
