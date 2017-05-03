@@ -144,7 +144,7 @@ A few days have been put into instrumenting and then optimizing performance, and
 
 Of note was the disabling or (in the case of wallet icons) replacement of `box-shadow` / gradient-heavy DOM elements, controlled by special flags on the `context` object.
 
-Additional information about progress and remaining targets in the ongoing Cordova app optimization effort can be found on issue #76.
+Additional information about progress and remaining targets in the ongoing Cordova app optimization effort can be found on issues [#63](https://github.com/mymonero/mymonero-app-js/issues/63), [#76](https://github.com/mymonero/mymonero-app-js/issues/76).
 
 #### Cordova build directory structure & intermediate products
 
