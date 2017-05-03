@@ -92,7 +92,7 @@ All API calls (such as submitting a constructed transaction for a send-funds ope
 
 #### Language considerations
 
-Being able to have single codebase for all platforms is the obvious ideal, but such a system doesn't appear to exist yet… at least not in any sufficiently supported manner. 
+Being able to have a single codebase for all platforms is the obvious ideal, but such a system doesn't appear to exist yet… at least not in any sufficiently supported manner. 
 
 Aiming for a fully native codebase was definitely considered, but would have taken too long as a first step. 
 
@@ -142,10 +142,9 @@ As of the time of writing, performance under Cordova is less than ideal.
 
 A few days have been put into instrumenting and then optimizing performance, and a handful of remaining performance improvement tasks and suggested directions have been placed into the [Issues](https://github.com/mymonero/monero-app-js/issues) tracker.
 
-One high value target is the proper implementation of Web Workers under Cordova to place various computationally expensive tasks (such as request parsing, symmetric key encryption, persistence) on non-main threads. This was embarked upon but abandoned due to unexplained crashing, etc., and the higher priority of publishing the code.
+Of note was the disabling or (in the case of wallet icons) replacement of `box-shadow` / gradient-heavy DOM elements, controlled by special flags on the `context` object.
 
-Also of value is the investigation into any GPU-rendering-activation by way of specialized CSS rules. However one source says this is probably a legacy technique by now. 
-
+Additional information about progress and remaining targets in the ongoing Cordova app optimization effort can be found on issue #76.
 
 #### Cordova build directory structure & intermediate products
 
