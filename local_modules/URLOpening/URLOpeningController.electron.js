@@ -69,10 +69,18 @@ class URLOpeningController extends URLOpeningController_Abstract
 	_override_didReceiveInvalidURL()
 	{
 		const self = this
-		const {dialog} = require('electron')
-		dialog.showMessageBox({
-			"message": "Sorry, that does not appear to be a valid Monero URL."
-		})
+		function do_dialog()
+		{
+			const {dialog} = require('electron')
+			dialog.showMessageBox({
+				"message": "Sorry, that does not appear to be a valid Monero URL."
+			})
+		}
+		if (self.context.app.isReady()) {
+			do_dialog()
+		} else {
+			self.context.app.on("ready", function() { do_dialog() })
+		}
 	}
 	//
 	// Delegation - Electron-specific
@@ -83,10 +91,13 @@ class URLOpeningController extends URLOpeningController_Abstract
 		if (isMacOS == true) { // as we handle this with open-url
 			return
 		}
-		if (argv.length <= 1) { // simply launched, no args
+		const numberOfArgsIfNoPossibleURIPassed = process.env.NODE_ENV === 'development' ? 2 : 1
+		// ^-- we need to check if prod because in dev, the app is run by executing electron with the app entrypoint as the first arg
+		if (argv.length <= numberOfArgsIfNoPossibleURIPassed) { // simply launched, no args
 			return
 		}
-		const possibleURI = argv[1]
+		const indexOf_possibleURI = numberOfArgsIfNoPossibleURIPassed - 0 // the last one
+		const possibleURI = argv[indexOf_possibleURI]
 		self.__didReceivePossibleURIToOpen(possibleURI) // patch to URI reception handler, which happens to be on super
 	}
 }
