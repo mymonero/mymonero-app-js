@@ -1,5 +1,5 @@
 {
     "ios": "latest",
-    "browser": "latest",
-    "android": "https://github.com/apache/cordova-android"
+    "android": "https://github.com/apache/cordova-android#ad01d28351c13390aff4549258a0f06882df59f5",
+    "browser": "latest"
 }
