@@ -217,8 +217,6 @@ Contributions by way of [pull request](https://help.github.com/articles/about-pu
 
 If you would like to contribute, please scan the [technology notes](./docs/TECHNOLOGY.md) in order to find information on libraries used, the reasons behind various architectural choices, and how to write tests. 
 
-Feel free to create a Github issue if you want to report bugs, discuss improvements, submit feature ideas, or ask development & QA-specific questions. 
-
 For background on this project, see [Why We Built the Native Apps](./docs/WHY_NATIVE.md).
 
 There is no specific code styleguide yet (with the exception of the preference of tab-indentation) but we ask that code contributions:
@@ -234,6 +232,11 @@ There's also an icebox of ideas, features, improvements, known issues, and other
 
 **At the moment, the performance of the Cordova apps needs improvement and further testing. Contributions welcome. Information can be found on issue [#63](https://github.com/mymonero/mymonero-app-js/issues/63).**
 
+### Getting Help with Testing or Contributing
+
+Feel free to create a Github issue if you want to report bugs, discuss improvements, submit feature ideas, or ask development & QA-specific questions. 
+
+MyMonero testers and contributors have also been rumored to hang out on IRC in [#mymonero on freenode](http://webchat.freenode.net/?channels=%23mymonero&prompt=1&uio=d4).
 
 ## MyMonero Core Contributors
 
