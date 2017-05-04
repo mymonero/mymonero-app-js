@@ -119,15 +119,17 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 ### Download & Install
 
-1. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
+1. First, ensure that you have recent versions of `node` and `npm` installed.
 
-2. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
+2. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
 
-3. Install all dependencies by executing `npm install`.
+3. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
+
+4. Install all dependencies by executing `npm install`.
 
 #### On Debian/Ubuntu/Linux
 
-* Debian/Ubuntu now calls the `node` binary `nodejs`. Workaround is to symlink /usr/bin/nodejs to /usr/bin/node, either manually, or by installing the "nodejs-legacy" package.
+* It has been reported that Debian/Ubuntu now calls the `node` binary `nodejs`. One workaround is to create a symlink from /usr/bin/nodejs to /usr/bin/node.
 
 * libgconf is now a requirement for running Electron under Linux, and can be installed with `apt install libgconf-2-4` (https://github.com/electron/electron/issues/1518)
 
