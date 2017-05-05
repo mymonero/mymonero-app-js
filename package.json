@@ -4,7 +4,7 @@
   "description": "The simplest way to use Monero",
   "version": "1.0.0",
   "license": "SEE LICENSE IN LICENSE.txt",
-  "repository": "",
+  "repository": "https://github.com/mymonero/mymonero-app-js",
   "private": false,
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
