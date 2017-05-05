@@ -122,7 +122,9 @@ class HostedMoneroAPIClient
 				"Content-Type": "application/json",
 				"Accept": "application/json"
 			},
-			json: parameters
+			json: parameters,
+			useXDR: true, // CORS
+			withCredentials: true // CORS
 		}
 		const request_handlerFn = function(err_orProgressEvent, res, body)
 		{
