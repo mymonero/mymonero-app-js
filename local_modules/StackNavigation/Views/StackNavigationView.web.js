@@ -433,11 +433,12 @@ class StackNavigationView extends View
 				indexOf_old_topStackView_inSubviews
 			)
 			if (isAnimated === false) { // no need to animate anything - straight to end state
+				to_stackView.layer.style.left = "0" // and we must reset this in case it was self._styleLeftForUnderlyingViewAnimation()
 				_afterHavingFullyPresentedNewTopView_removeOldTopStackView()
 				__trampolineFor_transitionEnded() // must unlock this function; called 'fn' for us
 			} else { // else not return because we need to continue executing parent fn to get to btm, e.g. for model update and nav bar update
 				//
-				to_stackView.layer.style.left = self._styleLeftForUnderlyingViewAnimation() // in preparation for the animation
+				to_stackView.layer.style.left = self._styleLeftForUnderlyingViewAnimation() // in preparation for the animation - jic it wasn't set 
 				//
 				setTimeout(
 					function()
