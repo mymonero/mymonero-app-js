@@ -99,7 +99,11 @@ class MainWindowController
 			//
 			backgroundColor: "#272527",
 			titleBarStyle: "hidden-inset",
-			webPreferences: { // these are all currently the default values but stating them here to be explicit…
+			webPreferences: {
+				backgroundThrottling: false, // disable powersaving/throttling so that app lock-down 
+				// can actually occur when app is in the background or is minimized
+
+				// the following are currently the default values but stating them here to be explicit…
 				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true
 				allowDisplayingInsecureContent: false, // https content only
 				allowRunningInsecureContent: false // html/js/css from https only

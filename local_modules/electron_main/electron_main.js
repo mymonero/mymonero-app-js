@@ -28,7 +28,7 @@
 //
 "use strict"
 //	
-const {/*crashReporter, */app} = require('electron')
+const {/*crashReporter, */powerSaveBlocker, app} = require('electron')
 // if (process.env.NODE_ENV !== 'development') {
 // 	{ // Crash reporting
 // 		const options_template = require('../reporting/crashReporterOptions.electron')
@@ -54,6 +54,9 @@ const {/*crashReporter, */app} = require('electron')
 { // `app` configuration
 	const appId = "com.mymonero.mymonero" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
 	app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
+	//
+	const prevent_app_suspension__blockerID = powerSaveBlocker.start('prevent-app-suspension')
+
 }
 { // Application
 	const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
