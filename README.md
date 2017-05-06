@@ -20,8 +20,7 @@
 3. Building for Production
 4. Running in Development Mode
 5. Contributing
-6. MyMonero Core Contributors
-7. License and Copyrights
+6. License and Copyrights
 
 
 ## What's in This Repo?
@@ -210,7 +209,6 @@ See [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md) for inf
 
 `bin/start_dev_cordova_browser`
 
-
 ## Contributing
 
 Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are very welcome, and you will be credited in the release notes if your PR is merged.
@@ -219,18 +217,9 @@ If you would like to contribute, please scan the [technology notes](./docs/TECHN
 
 For background on this project, see [Why We Built the Native Apps](./docs/WHY_NATIVE.md).
 
-There is no specific code styleguide yet (with the exception of the preference of tab-indentation) but we ask that code contributions:
-
-* are kept modular or well factored, either platform-agnostic or with platform specified (see [Technology Notes](./docs/TECHNOLOGY.md)),
-* are written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
-* employ best practices, and 
-* are well tested and don't break anything, especially security.
-
 You may also like to read the unofficial [Technology Roadmap](./docs/ROADMAP.md) to get a peek at what we're thinking about for the future.
 
 There's also an icebox of ideas, features, improvements, known issues, and other todos waiting to be knocked out which are kept in the [Issues](https://github.com/mymonero/monero-app-js/issues) tracker.
-
-**At the moment, the performance of the Cordova apps needs improvement and further testing. Contributions welcome. Information can be found on issue [#63](https://github.com/mymonero/mymonero-app-js/issues/63).**
 
 ### Getting Help with Testing or Contributing
 
@@ -238,11 +227,26 @@ Feel free to create a Github issue if you want to report bugs, discuss improveme
 
 MyMonero testers and contributors have also been rumored to hang out on IRC in [#mymonero on freenode](http://webchat.freenode.net/?channels=%23mymonero&prompt=1&uio=d4).
 
-## MyMonero Core Contributors
+### Code Style Guidelines
+
+There is no specific code styleguide yet (with the exception of the preference of tab-indentation) but we ask that code contributions generally:
+
+* are kept modular or well factored, either platform-agnostic or with platform specified (see [Technology Notes](./docs/TECHNOLOGY.md)),
+* are written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
+* employ best practices, and 
+* are well tested and don't break anything, especially security.
+
+### Conditions on Merging PRs
+
+* Pull Requests which ask us to merge integration with any third-party services will require discussion and agreement.  
+
+* We reserve the right to refuse to merge any PRs, such as those which introduce breaking changes.
+
+### MyMonero Core Contributors
 
 Contributors to each release are credited in release notes.
 
-The MyMonero core contributors listed below either work full-time on MyMonero or have made ongoing and/or critical contributions.
+The MyMonero core contributors listed below either work full-time on MyMonero or have made ongoing and/or 'critical' contributions.
 
 * 🏂 [Paul Shapiro](https://github.com/paulshapiro) `endogenic` – Project maintainer; Lead client app developer; Partner
 
@@ -253,6 +257,8 @@ The MyMonero core contributors listed below either work full-time on MyMonero or
 * 🔥 [Matt D Smith](http://mds.is) `mds` – v1/MVP app designer
 
 * 🍄 [luigi1111](https://github.com/luigi1111) `luigi1112` – Monero tech advisor; Built client-side RingCT support
+
+* ✈️ [tfi_charmers](https://github.com/tficharmers) `tficharmers` – Built launch website
 
 * 🌠 Your name here?
 
