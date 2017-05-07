@@ -246,7 +246,7 @@ There is no specific code styleguide yet (with the exception of the preference o
 
 Contributors to each release are credited in release notes.
 
-The MyMonero "core contributors" listed below either work on MyMonero full-time, have made essential contributions, and/or are committed to long-term involvement.
+The MyMonero "core contributors" listed below either work on MyMonero full-time, have made essential contributions, and/or have had long-term involvement.
 
 * 🏂 [Paul Shapiro](https://github.com/paulshapiro) `endogenic` – Project maintainer; Lead client app developer; Partner
 
