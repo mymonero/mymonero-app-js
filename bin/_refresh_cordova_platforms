@@ -1,3 +1,5 @@
+mkdir -p www; # or else cordova will complain
+
 rm -rf platforms/ios;
 rm -rf platforms/android;
 rm -rf platforms/browser;
