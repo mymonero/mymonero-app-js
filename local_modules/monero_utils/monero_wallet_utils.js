@@ -137,8 +137,8 @@ function MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
 }
 exports.MnemonicStringFromSeed = MnemonicStringFromSeed
 //
-function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn)
-{ // fn: (err?, seed?, keys?)
+function SeedAndKeysFromMnemonic_sync(mnemonicString, mnemonic_wordsetName)
+{ // -> {err?, seed?, keys?}
 	mnemonicString = mnemonicString.toLowerCase() || ""
 	try {
 		var seed = null
@@ -161,19 +161,27 @@ function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn)
 				break
 		}
 		if (seed === null) {
-			fn(new Error("Unable to derive seed"), null, null)
-			return
+			return { err: new Error("Unable to derive seed"), seed: null, keys: null }
 		}
 		keys = monero_utils.create_address(seed)
 		if (keys === null) {
-			fn(new Error("Unable to derive keys from seed"), seed, null)
-			return
+			return { err: new Error("Unable to derive keys from seed"), seed: seed, keys: null }
 		}
-		fn(null, seed, keys)
+		return { err: null, seed: seed, keys: keys }
 	} catch (e) {
 		console.error("Invalid mnemonic!")
-		fn(e, null, null)
+		return { err: e, seed: null, keys: null }
 	}
+}
+exports.SeedAndKeysFromMnemonic_sync = SeedAndKeysFromMnemonic_sync
+
+function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn) // made available via callback not because it's async but for convenience
+{ // fn: (err?, seed?, keys?)
+	const payload = SeedAndKeysFromMnemonic_sync(mnemonicString, mnemonic_wordsetName)
+	const err = payload.err
+	const seed = payload.seed
+	const keys = payload.keys
+	fn(err, seed, keys) 
 }
 exports.SeedAndKeysFromMnemonic = SeedAndKeysFromMnemonic
 //
