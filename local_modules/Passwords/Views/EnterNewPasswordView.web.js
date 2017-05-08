@@ -111,7 +111,7 @@ class EnterNewPasswordView extends View
 			div.appendChild(layer)
 			//
 			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
-			messageLayer.innerHTML = "Six character minimum. This will be used to encrypt your data on your device. Don't forget it!"
+			messageLayer.innerHTML = "This app-wide password (or PIN) will be used to encrypt your data on your device, and to lock your app when you are idle. Don't forget it!<br/>Six character minimum."
 			div.appendChild(messageLayer)
 		}
 		self.form_containerLayer.appendChild(div)
