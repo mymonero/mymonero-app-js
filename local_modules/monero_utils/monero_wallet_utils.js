@@ -249,12 +249,6 @@ function VerifiedComponentsForLogIn_sync(
 		private_keys: private_keys,
 		isInViewOnlyMode: isInViewOnlyMode
 	}
-	console.log("payload", payload)
-	console.log("typeof address", typeof address)
-	console.log("typeof account_seed", typeof account_seed)
-	console.log("typeof public_keys", typeof public_keys)
-	console.log("typeof private_keys", typeof private_keys)
-	console.log("typeof isInViewOnlyMode", typeof isInViewOnlyMode)
 	return payload
 }
 exports.VerifiedComponentsForLogIn_sync = VerifiedComponentsForLogIn_sync
