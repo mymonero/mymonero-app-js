@@ -57,16 +57,31 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 	
-	_new_dbHandle_forCollectionNamed(collectionName)
+	_new_dbHandle_forCollectionNamed(collectionName, optl_timesRetried, optl_lastTimeException)
 	{
 		var self = this
+		if (typeof optl_timesRetried !== 'undefined' && optl_timesRetried > 4) {
+			throw optl_lastTimeException || new Error(`Unable to load the '${collectionName}' database after ${optl_timesRetried} tries.`)
+			return undefined
+		}
 		var options = self.options
 		var userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
 		var pathTo_dataFile = path.join(userDataAbsoluteFilepath, '/' + collectionName + '.nedb_datafile')
-		var dbHandle = new Datastore({ 
-			filename: pathTo_dataFile,
-			autoload: true
-		})
+		var dbHandle;
+		try {
+			dbHandle = new Datastore({ 
+				filename: pathTo_dataFile,
+				autoload: true
+			})
+		} catch (e) {
+			console.warn(`Unable to load the '${collectionName}' database. Retrying.`)
+			return self._new_dbHandle_forCollectionNamed(
+				collectionName,
+				typeof optl_timesRetried === 'undefined' ? 0 : optl_timesRetried + 1,
+				e
+			)
+		}
+		// if we succeeded in loading, set up autocompaction so that idle apps don't build huge DB files
 		const autocompactionInterval_s = 1 // setting autocompaction interval from 60s to more like 1s to prevent #91 (https://github.com/mymonero/mymonero-app-js/issues/91)
 		const autocompactionInterval_ms = 1000 * autocompactionInterval_s
 		dbHandle.persistence.setAutocompactionInterval(autocompactionInterval_ms) // autocompact every N s to prevent #79 (https://github.com/mymonero/mymonero-app-js/issues/79)
