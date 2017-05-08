@@ -585,7 +585,6 @@ class PasswordController extends EventEmitter
 					// do not emit here
 				} else {
 					// user did not cancel… let's check if we need to send back a pre-emptive validation err (such as because they're trying too much)
-					
 					if (isCurrentlyLockedOut == false) {
 						if (numberOfTriesDuringThisTimePeriod == 0) {
 							dateOf_firstPWTryDuringThisTimePeriod = new Date()
@@ -615,12 +614,7 @@ class PasswordController extends EventEmitter
 						validationErr_orNil = new Error("As a security precaution, please wait a few moments before trying again.")
 						// setup or extend unlock timer - NOTE: this is pretty strict - we don't strictly need to extend the timer each time to prevent spam unlocks
 						__cancelAnyAndRebuild_unlock_timeout()
-					}
-					
-					
-					
-					// TODO: check if we're currently locked out. if we are locked out, exit. wait for lockout to resolve. if not locked out, check if we've done too many requests in the last X mins. if so, lock out and set up lockout resolve timer
-					
+					}					
 				}
 				// regardless of whether canceled, we 
 				fn(didCancel_orNil, validationErr_orNil, obtainedPasswordString)
