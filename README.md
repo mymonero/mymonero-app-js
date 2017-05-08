@@ -80,6 +80,8 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 
 The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and can be packaged for iOS and Android. 
 
+** Note about Cordova version** Apache has recently released Cordova 7.0.0. It was tested, but because it now places plugins into package.json, npm cannot `update`, as a handful of those plugins do not have package.json files, and npm and yarn (based on current info) cannot install them as deps. So **6.5.0** is the Cordova version that MyMonero currently supports for mobile builds, and it can be selected for use with `[sudo] npm install -g cordova@6.5.0`.
+
 ### User Data Locations
 
 * Mac / Windows / Linux: via Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
