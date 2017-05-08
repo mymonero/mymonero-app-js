@@ -185,39 +185,32 @@ function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn) // ma
 }
 exports.SeedAndKeysFromMnemonic = SeedAndKeysFromMnemonic
 //
-function VerifiedComponentsForLogIn(
+function VerifiedComponentsForLogIn_sync(
 	address, 
 	view_key, 
 	spend_key_orUndefinedForViewOnly, 
 	seed_orUndefined, 
-	wasAGeneratedWallet,
-	fn
+	wasAGeneratedWallet
 )
-{ // fn: (err?, address, account_seed, public_keys, private_keys, isInViewOnlyMode) -> Void
+{
 	var spend_key
 	if (typeof spend_key_orUndefinedForViewOnly === 'undefined' && (typeof seed_orUndefined === 'undefined' || seed_orUndefined === '') && wasAGeneratedWallet === false) {
 		spend_key = ''
 	} else {
 		spend_key = spend_key_orUndefinedForViewOnly
 	}
-	
-	const isInViewOnlyMode = (spend_key === '')
-	
-	
+	const isInViewOnlyMode = (spend_key === '')	
 	if (!view_key || view_key.length !== 64 || (isInViewOnlyMode ? false : spend_key.length !== 64)) {
-		fn(new Error("invalid secret key length"))
-		return
+		return { err: new Error("invalid secret key length") }
 	}
 	if (!monero_utils.valid_hex(view_key) || (isInViewOnlyMode ? false : !monero_utils.valid_hex(spend_key))) {
-		fn(new Error("invalid hex formatting"))
-		return
+		return { err: new Error("invalid hex formatting") }
 	}
 	var public_keys
 	try {
 		public_keys = monero_utils.decode_address(address)
 	} catch (e) {
-		fn(new Error("invalid address"))
-		return
+		return { err: new Error("invalid address") }
 	}
 	var expected_view_pub = monero_utils.sec_key_to_pub(view_key)
 	var expected_spend_pub
@@ -225,12 +218,10 @@ function VerifiedComponentsForLogIn(
 		expected_spend_pub = monero_utils.sec_key_to_pub(spend_key)
 	}
 	if (public_keys.view !== expected_view_pub) {
-		fn(new Error("invalid view key"))
-		return
+		return { err: new Error("invalid view key") }
 	}
 	if (!isInViewOnlyMode && (public_keys.spend !== expected_spend_pub)) {
-		fn(new Error("invalid spend key"))
-		return
+		return { err: new Error("invalid spend key") }
 	}
 	const private_keys =
 	{
@@ -243,20 +234,54 @@ function VerifiedComponentsForLogIn(
 		if (expected_account.view.sec !== view_key ||
 			expected_account.spend.sec !== spend_key ||
 			expected_account.public_addr !== address) {
-			fn(new Error("invalid seed"))
+			return { err: new Error("invalid seed") }
 		}
 		account_seed = seed_orUndefined
 	} else {
 		account_seed = ''
 	}
+	const payload =
+	{
+		err: null, // err
+		address: address,
+		account_seed: account_seed,
+		public_keys: public_keys,
+		private_keys: private_keys,
+		isInViewOnlyMode: isInViewOnlyMode
+	}
+	console.log("payload", payload)
+	console.log("typeof address", typeof address)
+	console.log("typeof account_seed", typeof account_seed)
+	console.log("typeof public_keys", typeof public_keys)
+	console.log("typeof private_keys", typeof private_keys)
+	console.log("typeof isInViewOnlyMode", typeof isInViewOnlyMode)
+	return payload
+}
+exports.VerifiedComponentsForLogIn_sync = VerifiedComponentsForLogIn_sync
+//
+function VerifiedComponentsForLogIn(
+	address, 
+	view_key, 
+	spend_key_orUndefinedForViewOnly, 
+	seed_orUndefined, 
+	wasAGeneratedWallet,
+	fn
+)
+{ // fn: (err?, address, account_seed, public_keys, private_keys, isInViewOnlyMode) -> Void
+	const payload = VerifiedComponentsForLogIn_sync(
+		address, 
+		view_key, 
+		spend_key_orUndefinedForViewOnly, 
+		seed_orUndefined, 
+		wasAGeneratedWallet
+	)
 	fn(
-		null, // err
-		address,
-		account_seed,
-		public_keys,
-		private_keys,
-		isInViewOnlyMode
+		payload.err,
+		payload.address,
+		payload.account_seed,
+		payload.public_keys,
+		payload.private_keys,
+		payload.isInViewOnlyMode
 	)
 }
 exports.VerifiedComponentsForLogIn = VerifiedComponentsForLogIn
-
