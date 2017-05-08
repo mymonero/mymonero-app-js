@@ -1,153 +1,100 @@
 {
-    "name": "MyMonero",
-    "author": "MyMonero",
-    "description": "The simplest way to use Monero",
-    "version": "1.0.0",
-    "license": "SEE LICENSE IN LICENSE.txt",
-    "repository": "https://github.com/mymonero/mymonero-app-js",
-    "private": false,
-    "main": "./local_modules/electron_main/electron_main.js",
-    "scripts": {
-        "start": "electron ./local_modules/electron_main/electron_main.js",
-        "start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
-        "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Mac Developer\" build --dir -mwl",
-        "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Mac Distribution\" build -mwl",
-        "postinstall": "install-app-deps"
+  "name": "MyMonero",
+  "author": "MyMonero",
+  "description": "The simplest way to use Monero",
+  "version": "1.0.0",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "repository": "https://github.com/mymonero/mymonero-app-js",
+  "private": false,
+  "main": "./local_modules/electron_main/electron_main.js",
+  "scripts": {
+    "start": "electron ./local_modules/electron_main/electron_main.js",
+    "start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
+    "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Mac Developer\" build --dir -mwl",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Mac Distribution\" build -mwl",
+    "postinstall": "install-app-deps"
+  },
+  "build": {
+    "appId": "com.mymonero.mymonero",
+    "copyright": "Copyright © 2014-2017 MyMonero/",
+    "asar": true,
+    "forceCodeSigning": false,
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests,powered-test,example,examples,*.d.ts}",
+      "!**/node_modules/.bin",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc}",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}",
+      "!dist",
+      "!docs",
+      "!plugins",
+      "!platforms",
+      "!docs",
+      "!www",
+      "!cordova_res",
+      "!bin",
+      "!**/*.cordova.*"
+    ],
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": [
+        "dir"
+      ],
+      "icon": "build/icon.icns"
     },
-    "build": {
-        "appId": "com.mymonero.mymonero",
-        "copyright": "Copyright © 2014-2017 MyMonero/",
-        "asar": true,
-        "forceCodeSigning": false,
-        "files": [
-            "**/*",
-            "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests,powered-test,example,examples,*.d.ts}",
-            "!**/node_modules/.bin",
-            "!**/*.{o,hprof,orig,pyc,pyo,rbc}",
-            "!**/._*",
-            "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}",
-            "!dist",
-            "!docs",
-            "!plugins",
-            "!platforms",
-            "!docs",
-            "!www",
-            "!cordova_res",
-            "!bin",
-            "!**/*.cordova.*"
-        ],
-        "mac": {
-            "category": "public.app-category.finance",
-            "target": [
-                "dir"
-            ],
-            "icon": "build/icon.icns"
-        },
-        "win": {
-            "target": [
-                "nsis"
-            ],
-            "legalTrademarks": "Copyright © 2014-2017 MyMonero.",
-            "publisherName": "MyMonero"
-        },
-        "nsis": {
-            "perMachine": true
-        },
-        "linux": {
-            "target": [
-                "AppImage"
-            ]
-        },
-        "protocols": [
-            {
-                "name": "Monero Funds Request URL",
-                "schemes": [
-                    "monero"
-                ]
-            }
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "legalTrademarks": "Copyright © 2014-2017 MyMonero.",
+      "publisherName": "MyMonero"
+    },
+    "nsis": {
+      "perMachine": true
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
+    "protocols": [
+      {
+        "name": "Monero Funds Request URL",
+        "schemes": [
+          "monero"
         ]
-    },
-    "engines": {
-        "node": "7.4.0"
-    },
-    "dependencies": {
-        "async": "^2.1.2",
-        "com.ozexpert.devicemeta": "https://github.com/ozexpert/cordova-plugin-device-meta.git",
-        "com.synconset.imagepicker": "https://github.com/Telerik-Verified-Plugins/ImagePicker.git",
-        "com.verso.cordova.clipboard": "https://github.com/VersoSolutions/CordovaClipboard",
-        "cordova-android": "git+https://github.com/apache/cordova-android.git#ad01d28351c13390aff4549258a0f06882df59f5",
-        "cordova-base64-to-gallery": "https://github.com/medi-y-sato/cordova-base64-to-gallery",
-        "cordova-browser": "^4.1.0",
-        "cordova-ios": "^4.4.0",
-        "cordova-plugin-app-version": "~0.1.9",
-        "cordova-plugin-compat": "~1.1.0",
-        "cordova-plugin-customurlscheme": "~4.2.0",
-        "cordova-plugin-device": "~1.1.5",
-        "cordova-plugin-dialogs": "~1.3.2",
-        "cordova-plugin-file": "~4.3.2",
-        "cordova-plugin-globalization": "~1.0.6",
-        "cordova-plugin-inappbrowser": "~1.7.0",
-        "cordova-plugin-insomnia": "https://github.com/EddyVerbruggen/Insomnia-PhoneGap-Plugin.git",
-        "cordova-plugin-splashscreen": "https://github.com/apache/cordova-plugin-splashscreen.git",
-        "cordova-plugin-statusbar": "~2.2.2",
-        "cordova-plugin-whitelist": "~1.3.2",
-        "fastclick": "^1.0.6",
-        "html5-fs": "^0.1.1",
-        "ionic-plugin-keyboard": "~2.2.1",
-        "jsqr": "^0.2.1",
-        "mixpanel": "^0.4.0",
-        "nedb": "^1.8.0",
-        "node-notifier": "^4.6.1",
-        "qrcode": "^0.8.1",
-        "underscore": "^1.8.3",
-        "uuid": "^3.0.1",
-        "velocity-animate": "^1.4.0",
-        "xhr": "^2.3.1"
-    },
-    "devDependencies": {
-        "babel-core": "^6.24.1",
-        "babel-loader": "^6.4.1",
-        "electron": "^1.6.5",
-        "electron-builder": "^16.0.1",
-        "electron-packager": "^8.1.0",
-        "mocha": "^3.2.0",
-        "request": "^2.79.0",
-        "sharp": "^0.17.3",
-        "spectron": "^3.6.1",
-        "webpack": "^2.3.3",
-        "worker-loader": "^0.8.0"
-    },
-    "cordova": {
-        "plugins": {
-            "com.ozexpert.devicemeta": {},
-            "com.synconset.imagepicker": {
-                "PHOTO_LIBRARY_USAGE_DESCRIPTION": "The MyMonero app uses your device's photo roll for downloading and for opening Monero Request QR code files."
-            },
-            "com.verso.cordova.clipboard": {},
-            "cordova-base64-to-gallery": {},
-            "cordova-plugin-app-version": {},
-            "cordova-plugin-compat": {},
-            "cordova-plugin-customurlscheme": {
-                "URL_SCHEME": "monero",
-                "ANDROID_SCHEME": " ",
-                "ANDROID_HOST": " ",
-                "ANDROID_PATHPREFIX": "/"
-            },
-            "cordova-plugin-device": {},
-            "cordova-plugin-dialogs": {},
-            "cordova-plugin-file": {},
-            "cordova-plugin-globalization": {},
-            "cordova-plugin-inappbrowser": {},
-            "cordova-plugin-insomnia": {},
-            "cordova-plugin-splashscreen": {},
-            "cordova-plugin-statusbar": {},
-            "cordova-plugin-whitelist": {},
-            "ionic-plugin-keyboard": {}
-        },
-        "platforms": [
-            "android",
-            "browser",
-            "ios"
-        ]
-    }
+      }
+    ]
+  },
+  "engines": {
+    "node": "7.4.0"
+  },
+  "dependencies": {
+    "async": "^2.1.2",
+    "fastclick": "^1.0.6",
+    "html5-fs": "^0.1.1",
+    "jsqr": "^0.2.1",
+    "mixpanel": "^0.4.0",
+    "nedb": "^1.8.0",
+    "node-notifier": "^4.6.1",
+    "qrcode": "^0.8.1",
+    "underscore": "^1.8.3",
+    "uuid": "^3.0.1",
+    "velocity-animate": "^1.4.0",
+    "xhr": "^2.3.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
+    "electron": "^1.6.5",
+    "electron-builder": "^16.0.1",
+    "electron-packager": "^8.1.0",
+    "mocha": "^3.2.0",
+    "request": "^2.79.0",
+    "sharp": "^0.17.3",
+    "spectron": "^3.6.1",
+    "webpack": "^2.3.3",
+    "worker-loader": "^0.8.0"
+  }
 }
