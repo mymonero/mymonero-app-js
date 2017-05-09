@@ -206,16 +206,25 @@ function VerifiedComponentsForLogIn_sync(
 	if (!monero_utils.valid_hex(view_key) || (isInViewOnlyMode ? false : !monero_utils.valid_hex(spend_key))) {
 		return { err_str: "invalid hex formatting" }
 	}
-	var public_keys
+	var public_keys;
 	try {
 		public_keys = monero_utils.decode_address(address)
 	} catch (e) {
 		return { err_str: "invalid address" }
 	}
-	var expected_view_pub = monero_utils.sec_key_to_pub(view_key)
+	var expected_view_pub;
+	try {
+		expected_view_pub = monero_utils.sec_key_to_pub(view_key)
+	} catch (e) {
+		return { err_str: "invalid view key" }
+	}
 	var expected_spend_pub
 	if (spend_key.length === 64) {
-		expected_spend_pub = monero_utils.sec_key_to_pub(spend_key)
+		try {
+			expected_spend_pub = monero_utils.sec_key_to_pub(spend_key)
+		} catch (e) {
+			return { err_str: "invalid spend key" }
+		}
 	}
 	if (public_keys.view !== expected_view_pub) {
 		return { err_str: "invalid view key" }
@@ -230,7 +239,12 @@ function VerifiedComponentsForLogIn_sync(
 	}
 	var account_seed
 	if (!!seed_orUndefined) { // not keen on this "!!"
-		var expected_account = monero_utils.create_address(seed_orUndefined)
+		var expected_account;
+		try {
+			expected_account = monero_utils.create_address(seed_orUndefined)
+		} catch (e) {
+			return { err_str: "invalid seed" }
+		}
 		if (expected_account.view.sec !== view_key ||
 			expected_account.spend.sec !== spend_key ||
 			expected_account.public_addr !== address) {
