@@ -138,7 +138,7 @@ function MnemonicStringFromSeed(account_seed, mnemonic_wordsetName)
 exports.MnemonicStringFromSeed = MnemonicStringFromSeed
 //
 function SeedAndKeysFromMnemonic_sync(mnemonicString, mnemonic_wordsetName)
-{ // -> {err?, seed?, keys?}
+{ // -> {err_str?, seed?, keys?}
 	mnemonicString = mnemonicString.toLowerCase() || ""
 	try {
 		var seed = null
@@ -152,7 +152,7 @@ function SeedAndKeysFromMnemonic_sync(mnemonicString, mnemonic_wordsetName)
 					try {
 						seed = mnemonic.mn_decode(mnemonicString, "electrum")
 					} catch (ee) {
-						throw e
+						throw e 
 					}
 				}
 				break
@@ -161,16 +161,16 @@ function SeedAndKeysFromMnemonic_sync(mnemonicString, mnemonic_wordsetName)
 				break
 		}
 		if (seed === null) {
-			return { err: new Error("Unable to derive seed"), seed: null, keys: null }
+			return { err_str: "Unable to derive seed", seed: null, keys: null }
 		}
 		keys = monero_utils.create_address(seed)
 		if (keys === null) {
-			return { err: new Error("Unable to derive keys from seed"), seed: seed, keys: null }
+			return { err_str: "Unable to derive keys from seed", seed: seed, keys: null }
 		}
-		return { err: null, seed: seed, keys: keys }
+		return { err_str: null, seed: seed, keys: keys }
 	} catch (e) {
 		console.error("Invalid mnemonic!")
-		return { err: e, seed: null, keys: null }
+		return { err_str: typeof e === 'string' ? e : ""+e, seed: null, keys: null }
 	}
 }
 exports.SeedAndKeysFromMnemonic_sync = SeedAndKeysFromMnemonic_sync
@@ -178,7 +178,7 @@ exports.SeedAndKeysFromMnemonic_sync = SeedAndKeysFromMnemonic_sync
 function SeedAndKeysFromMnemonic(mnemonicString, mnemonic_wordsetName, fn) // made available via callback not because it's async but for convenience
 { // fn: (err?, seed?, keys?)
 	const payload = SeedAndKeysFromMnemonic_sync(mnemonicString, mnemonic_wordsetName)
-	const err = payload.err
+	const err = payload.err_str ? new Error(payload.err_str) : null
 	const seed = payload.seed
 	const keys = payload.keys
 	fn(err, seed, keys) 
@@ -201,16 +201,16 @@ function VerifiedComponentsForLogIn_sync(
 	}
 	const isInViewOnlyMode = (spend_key === '')	
 	if (!view_key || view_key.length !== 64 || (isInViewOnlyMode ? false : spend_key.length !== 64)) {
-		return { err: new Error("invalid secret key length") }
+		return { err_str: "invalid secret key length" }
 	}
 	if (!monero_utils.valid_hex(view_key) || (isInViewOnlyMode ? false : !monero_utils.valid_hex(spend_key))) {
-		return { err: new Error("invalid hex formatting") }
+		return { err_str: "invalid hex formatting" }
 	}
 	var public_keys
 	try {
 		public_keys = monero_utils.decode_address(address)
 	} catch (e) {
-		return { err: new Error("invalid address") }
+		return { err_str: "invalid address" }
 	}
 	var expected_view_pub = monero_utils.sec_key_to_pub(view_key)
 	var expected_spend_pub
@@ -218,10 +218,10 @@ function VerifiedComponentsForLogIn_sync(
 		expected_spend_pub = monero_utils.sec_key_to_pub(spend_key)
 	}
 	if (public_keys.view !== expected_view_pub) {
-		return { err: new Error("invalid view key") }
+		return { err_str: "invalid view key" }
 	}
 	if (!isInViewOnlyMode && (public_keys.spend !== expected_spend_pub)) {
-		return { err: new Error("invalid spend key") }
+		return { err_str: "invalid spend key" }
 	}
 	const private_keys =
 	{
@@ -234,7 +234,7 @@ function VerifiedComponentsForLogIn_sync(
 		if (expected_account.view.sec !== view_key ||
 			expected_account.spend.sec !== spend_key ||
 			expected_account.public_addr !== address) {
-			return { err: new Error("invalid seed") }
+			return { err_str: "invalid seed" }
 		}
 		account_seed = seed_orUndefined
 	} else {
@@ -242,7 +242,7 @@ function VerifiedComponentsForLogIn_sync(
 	}
 	const payload =
 	{
-		err: null, // err
+		err_str: null, // err
 		address: address,
 		account_seed: account_seed,
 		public_keys: public_keys,
@@ -270,7 +270,7 @@ function VerifiedComponentsForLogIn(
 		wasAGeneratedWallet
 	)
 	fn(
-		payload.err,
+		payload.err_str ? new Error(payload.err_str) : null,
 		payload.address,
 		payload.account_seed,
 		payload.public_keys,
