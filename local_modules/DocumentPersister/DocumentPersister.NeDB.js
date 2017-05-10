@@ -89,15 +89,14 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 					return
 				}
 				console.log("💬  Loaded database collection named " + collectionName)
+				// if we succeeded in loading, set up autocompaction so that idle apps don't build huge DB files
+				const autocompactionInterval_s = 1 // setting autocompaction interval from 60s to more like 1s to prevent #91 (https://github.com/mymonero/mymonero-app-js/issues/91)
+				const autocompactionInterval_ms = 1000 * autocompactionInterval_s
+				dbHandle.persistence.setAutocompactionInterval(autocompactionInterval_ms) // autocompact every N s to prevent #79 (https://github.com/mymonero/mymonero-app-js/issues/79)
+				//
+				fn(null, dbHandle)
 			}
 		})
-		// if we succeeded in loading, set up autocompaction so that idle apps don't build huge DB files
-		const autocompactionInterval_s = 1 // setting autocompaction interval from 60s to more like 1s to prevent #91 (https://github.com/mymonero/mymonero-app-js/issues/91)
-		const autocompactionInterval_ms = 1000 * autocompactionInterval_s
-		dbHandle.persistence.setAutocompactionInterval(autocompactionInterval_ms) // autocompact every N s to prevent #79 (https://github.com/mymonero/mymonero-app-js/issues/79)
-		//
-		fn(null, dbHandle)
-		return
 	}
 
 
