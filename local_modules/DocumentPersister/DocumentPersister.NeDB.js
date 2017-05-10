@@ -57,52 +57,76 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 	
-	_new_dbHandle_forCollectionNamed(collectionName, optl_timesRetried, optl_lastTimeException)
+	_new_dbHandle_forCollectionNamed(
+		collectionName, 
+		fn, // (err?, dbHandle?)
+		optl_timesRetried, 
+		optl_lastTimeException
+	)
 	{
 		var self = this
 		if (typeof optl_timesRetried !== 'undefined' && optl_timesRetried > 4) {
-			throw optl_lastTimeException || new Error(`Unable to load the '${collectionName}' database after ${optl_timesRetried} tries.`)
-			return undefined
+			const err = optl_lastTimeException || new Error(`Unable to load the '${collectionName}' database after ${optl_timesRetried} tries.`)
+			fn(err, undefined)
+			return 
 		}
 		var options = self.options
 		var userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
 		var pathTo_dataFile = path.join(userDataAbsoluteFilepath, '/' + collectionName + '.nedb_datafile')
-		var dbHandle;
-		try {
-			dbHandle = new Datastore({ 
-				filename: pathTo_dataFile,
-				autoload: true
-			})
-		} catch (e) {
-			console.warn(`Unable to load the '${collectionName}' database. Retrying.`)
-			return self._new_dbHandle_forCollectionNamed(
-				collectionName,
-				typeof optl_timesRetried === 'undefined' ? 0 : optl_timesRetried + 1,
-				e
-			)
-		}
+		var dbHandle = new Datastore({ 
+			filename: pathTo_dataFile,
+			autoload: true,
+			onload: function(err)
+			{
+				if (err) {
+					console.warn(`⚠️  Unable to load the '${collectionName}' database. Retrying.`)
+					self._new_dbHandle_forCollectionNamed(
+						collectionName,
+						fn,
+						typeof optl_timesRetried === 'undefined' ? 0 : optl_timesRetried + 1,
+						e
+					)
+					return
+				}
+				console.log("💬  Loaded database collection named " + collectionName)
+			}
+		})
 		// if we succeeded in loading, set up autocompaction so that idle apps don't build huge DB files
 		const autocompactionInterval_s = 1 // setting autocompaction interval from 60s to more like 1s to prevent #91 (https://github.com/mymonero/mymonero-app-js/issues/91)
 		const autocompactionInterval_ms = 1000 * autocompactionInterval_s
 		dbHandle.persistence.setAutocompactionInterval(autocompactionInterval_ms) // autocompact every N s to prevent #79 (https://github.com/mymonero/mymonero-app-js/issues/79)
 		//
-		return dbHandle
+		fn(null, dbHandle)
+		return
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private - Lazy Accessors
 	
-	_dbHandle_forCollectionNamed(collectionName)
+	_dbHandle_forCollectionNamed(collectionName, fn)
 	{
 		var self = this
 		var dbHandle_forCollection = self.dbHandles[collectionName]
 		if (dbHandle_forCollection === null || typeof dbHandle_forCollection === 'undefined') {
-			dbHandle_forCollection = self._new_dbHandle_forCollectionNamed(collectionName)
-			self.dbHandles[collectionName] = dbHandle_forCollection
+			self._new_dbHandle_forCollectionNamed(
+				collectionName,
+				function(err, dbHandle_forCollection)
+				{
+					if (err) {
+						fn(err, null)
+						return
+					}
+					self.dbHandles[collectionName] = dbHandle_forCollection
+					fn(null, dbHandle_forCollection)
+					return
+				}
+			)
+			return
 		}
 		//
-		return dbHandle_forCollection
+		fn(null, dbHandle_forCollection)
+		return
 	}
 
 
@@ -112,23 +136,29 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 	__documentsWithQuery(collectionName, query, options, fn)
 	{
 		const self = this
-		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		const operation = dbHandle_forCollection.find(query)
-		//
-		options = options || {}
-		if (typeof options.sort !== 'undefined' && options.sort !== null) {
-			operation.sort(options.sort)
-		}
-		if (typeof options.skip !== 'undefined' && options.skip !== null) {
-			operation.skip(options.skip)
-		}
-		if (typeof options.limit !== 'undefined' && options.limit !== null) {
-			operation.limit(options.limit)
-		}
-		//
-		operation.exec(function(err, docs)
+		self._dbHandle_forCollectionNamed(collectionName, function(err, dbHandle_forCollection)
 		{
-			fn(err, docs)
+			if (err) {
+				fn(err)
+				return
+			}		
+			const operation = dbHandle_forCollection.find(query)
+			//
+			options = options || {}
+			if (typeof options.sort !== 'undefined' && options.sort !== null) {
+				operation.sort(options.sort)
+			}
+			if (typeof options.skip !== 'undefined' && options.skip !== null) {
+				operation.skip(options.skip)
+			}
+			if (typeof options.limit !== 'undefined' && options.limit !== null) {
+				operation.limit(options.limit)
+			}
+			//
+			operation.exec(function(err, docs)
+			{
+				fn(err, docs)
+			})
 		})
 	}
 
@@ -139,30 +169,48 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 	__insertDocuments(collectionName, savableDocument, fn)
 	{
 		const self = this
-		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		dbHandle_forCollection.insert(savableDocument, function(err, newDocument)
+		self._dbHandle_forCollectionNamed(collectionName, function(err, dbHandle_forCollection)
 		{
-			fn(err, newDocument)
+			if (err) {
+				fn(err)
+				return
+			}		
+			dbHandle_forCollection.insert(savableDocument, function(err, newDocument)
+			{
+				fn(err, newDocument)
+			})
 		})
 	}
 	__updateDocuments(collectionName, query, update, options, fn)
 	{
 		const self = this
-		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		dbHandle_forCollection.update(query, update, options, function(err, numAffected, affectedDocuments, upsert)
+		self._dbHandle_forCollectionNamed(collectionName, function(err, dbHandle_forCollection)
 		{
-			fn(err, numAffected, affectedDocuments, upsert)	
+			if (err) {
+				fn(err)
+				return
+			}		
+			dbHandle_forCollection.update(query, update, options, function(err, numAffected, affectedDocuments, upsert)
+			{
+				fn(err, numAffected, affectedDocuments, upsert)	
+			})
 		})
 	}
 	__removeDocuments(collectionName, query, options, fn)
 	{ 
 		const self = this
-		const dbHandle_forCollection = self._dbHandle_forCollectionNamed(collectionName)
-		options = options || {}
-		dbHandle_forCollection.remove(query, options, function(err, numRemoved)
+		self._dbHandle_forCollectionNamed(collectionName, function(err, dbHandle_forCollection)
 		{
-			fn(err, numRemoved)
-		})	
+			if (err) {
+				fn(err)
+				return
+			}		
+			options = options || {}
+			dbHandle_forCollection.remove(query, options, function(err, numRemoved)
+			{
+				fn(err, numRemoved)
+			})
+		})
 	}	
 
 
