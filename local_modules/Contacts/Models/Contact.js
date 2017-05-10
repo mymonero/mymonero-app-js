@@ -139,10 +139,9 @@ class Contact extends EventEmitter
 	{
 		const self = this
 		//
-		self.context.persister.DocumentsWithQuery(
+		self.context.persister.DocumentsWithIds(
 			contact_persistence_utils.CollectionName,
-			{ _id: self._id }, // cause we're saying we have an _id passed in…
-			{},
+			[ self._id ], // cause we're saying we have an _id passed in…
 			function(err, docs)
 			{
 				if (err) {

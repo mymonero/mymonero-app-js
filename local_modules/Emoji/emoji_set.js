@@ -29,7 +29,6 @@
 "use strict"
 //
 // Load emojis
-var fs = require('fs');
 var emojiDescriptionsByKey = require("./Vendor/emoji_strategy.json")
 // Generate array
 const emojiChars = []

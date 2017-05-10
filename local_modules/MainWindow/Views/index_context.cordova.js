@@ -84,10 +84,11 @@ function NewHydratedContext(initialContext)
 			options: {}
 		},
 		{
-			module: require("../../DocumentPersister/DocumentPersister.NeDB"),
+			module: require("../../DocumentPersister/DocumentPersister.Files"),
 			instance_key: "persister",
 			options: {
-				userDataAbsoluteFilepath: app.getPath('userData')
+				userDataAbsoluteFilepath: app.getPath('userData'),
+				fs: require('../../DocumentPersister/fs_shim.cordova.js')
 			}
 		},
 		{

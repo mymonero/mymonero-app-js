@@ -1,4 +1,0 @@
-bin/_build_cordova_www; 
-cordova_res/bin/assemble_build;
-cordova run ios --emulator --debug --verbose;
-# bin/_open_ios_sim_webinspector # this may be commented since it causes WebCor to crash due to Webworkers

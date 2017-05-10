@@ -52,7 +52,7 @@ Note that the wallet mnemonic generation in the desktop version is now implement
 
 #### Database Choice
 
-SQLite was considered as an embedded database but we opted for [NeDB](https://github.com/louischatriot/nedb) instead as it is JS-only and has a familiar document-based interface, a natural match for Javascript [1]. LMDB was not known of initially but may be very interesting later.
+SQLite was considered as an embedded database but we opted for [NeDB](https://github.com/louischatriot/nedb) instead as it is JS-only and has a familiar document-based interface, a natural match for Javascript [1]. But during Developer Preview testing, NeDB presented data corruption issues, leading us to implement a file-based data persistence solution. 
 
 #### Concurrency
 In an Electron app, there is the main process, and then one process for each browser window you spawn. IPC is the method to communicate between them. If any long-running work is performed on a thread, it will block the associated UI. For example, blocking the main thread blocks the entire app. Blocking a browser process blocks the entire window, including its web contents. It was discovered that database operations blocked the process upon which they were run. For that reason concurrency was implemented by way of an abstraction over spawning a child process and performing IPC with it [2].
@@ -69,7 +69,7 @@ On idle timeout, the in-memory decrypted data / runtime is torn down, primarily 
 
 1. `local_modules/DocumentPersister`
 
-2. `local_modules/Concurrency`, `local_modules/BackgroundDocumentPersister.NeDB.(child, electron).js`
+2. `local_modules/Concurrency`, `local_modules/BackgroundDocumentPersister.Files.(child, electron).js`
 
 3. `local_modules/symmetric_cryptor`
 
@@ -128,7 +128,7 @@ The same web UI code which is to be run under Cordova must, when run under Elect
 
 To solve this, in certain locations, platform-agnostic "interface" style base classes have been established, which must be "concretely" implementated per platform (so that platform does not need to be known by consumers). Examples include the system dialog and filesystem UI modules [1]. It is also necessary for code for different platforms or for different Electron processes (yet which are within the same architecture domain) to cohabitate within a given module. 
 
-For example, if concurrency under Electron weren't an issue, the MainWindow context would simply instantiate `DocumentPersister.NeDB.js` instead of `BackgroundDocumentPersister.NeDB.electron.js` (the latter has exactly the same interface, meaning consumers don't have to know they're on Electron to get Electron-compatible concurrency).
+For example, if concurrency under Electron weren't an issue, the MainWindow context would simply instantiate `DocumentPersister.Files.js` instead of `BackgroundDocumentPersister.Files.electron.js` (the latter has exactly the same interface, meaning consumers don't have to know they're on Electron to get Electron-compatible concurrency).
 
 Similarly, DOM-only View and web component files are given a `.web.js` suffix. 
 

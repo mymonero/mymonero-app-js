@@ -78,10 +78,8 @@ class PasswordController extends EventEmitter
 		const self = this
 		//
 		// first, check if any password model has been stored
-		self.context.persister.DocumentsWithQuery(
+		self.context.persister.AllDocuments(
 			CollectionName,
-			{}, // all objects - tho we're expecting 0 or 1
-			{}, // opts
 			function(err, docs)
 			{
 				if (err) {
@@ -412,7 +410,7 @@ class PasswordController extends EventEmitter
 				}
 				{ // guard
 					if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
-						console.warn("⚠️  isAlreadyGettingExistingOrNewPWFromUser=true. Exiting instead of re-initiating.")
+						// console.warn("⚠️  isAlreadyGettingExistingOrNewPWFromUser=true. Exiting instead of re-initiating.")
 						return // only need to wait for it to be obtained
 					}
 					self.isAlreadyGettingExistingOrNewPWFromUser = true
@@ -795,6 +793,7 @@ class PasswordController extends EventEmitter
 				self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
 				const persistableDocument =
 				{
+					_id: self.id, // critical for update
 					userSelectedTypeOfPassword: self.userSelectedTypeOfPassword,
 					encryptedMessageForUnlockChallenge: self.encryptedMessageForUnlockChallenge
 				}
@@ -826,69 +825,34 @@ class PasswordController extends EventEmitter
 				function(err, newDocument)
 				{
 					if (err) {
-						console.error("Error while saving password model:", err)
+						console.error("Error while saving password record:", err)
 						fn(err)
 						return
 					}
 					if (newDocument._id === null) { // not that this would happen…
-						fn(new Error("Inserted password model but _id after saving was null"))
+						fn(new Error("Inserted password record but _id after saving was null"))
 						return // bail
 					}
 					self._id = newDocument._id // so we have it in runtime memory now…
-					console.log("✅  Saved newly inserted password model with _id " + self._id + ".")
+					console.log("✅  Saved newly inserted password record with _id " + self._id + ".")
 					fn()
 				}
 			)
 		}
 		function _proceedTo_updateExistingDocument(persistableDocument)
 		{
-			var query =
-			{
-				_id: self._id // we want to update the existing one
-			}
-			var update = persistableDocument
-			var options =
-			{
-				multi: false,
-				upsert: false, // we are only using .update because we know the document exists
-				returnUpdatedDocs: true
-			}
-			self.context.persister.UpdateDocuments(
+			self.context.persister.UpdateDocumentWithId(
 				CollectionName,
-				query,
-				update,
-				options,
-				function(
-					err,
-					numAffected,
-					affectedDocuments,
-					upsert
-				)
+				self._id,
+				persistableDocument,
+				function(err)
 				{
 					if (err) {
-						console.error("Error while saving password model:", err)
+						console.error("Error while saving update to password record:", err)
 						fn(err)
 						return
 					}
-					var affectedDocument
-					if (Array.isArray(affectedDocuments)) {
-						affectedDocument = affectedDocuments[0]
-					} else {
-						affectedDocument = affectedDocuments
-					}
-					if (affectedDocument._id === null) { // not that this would happen…
-						fn(new Error("Updated password model but _id after saving was null"))
-						return // bail
-					}
-					if (affectedDocument._id !== self._id) {
-						fn(new Error("Updated password model but _id after saving was not equal to non-null _id before saving"))
-						return // bail
-					}
-					if (numAffected === 0) {
-						fn(new Error("Number of documents affected by _id'd update was 0"))
-						return // bail
-					}
-					// console.log("✅  Saved update to password model with _id " + self._id + ".")
+					console.log("✅  Saved update to password record with _id " + self._id + ".")
 					fn()
 				}
 			)
@@ -960,11 +924,9 @@ class PasswordController extends EventEmitter
 				self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = undefined
 				//
 				// delete pw record
-				self.context.persister.RemoveDocuments(
+				self.context.persister.RemoveAllDocuments(
 					CollectionName, 
-					{}, 
-					{ multi: true }, 
-					function(err, numRemoved)
+					function(err)
 					{ // now have others delete everything else
 						if (err) {
 							cb(err)

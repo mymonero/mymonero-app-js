@@ -1,2 +1,0 @@
-bin/package_only_android &&
-bin/package_only_ios

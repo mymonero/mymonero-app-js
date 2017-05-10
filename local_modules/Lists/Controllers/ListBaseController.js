@@ -92,8 +92,6 @@ class ListBaseController extends EventEmitter
 			function(err, ids)
 			{
 				if (err) {
-					const errStr = "Error fetching persisted record ids: " + err.message
-					const err = new Error(errStr)
 					self._setup_didFailToBootWithError(err)
 					return
 				}
@@ -358,22 +356,15 @@ class ListBaseController extends EventEmitter
 	)
 	{
 		const self = this
-		self.context.persister.DocumentsWithQuery(
+		self.context.persister.IdsOfAllDocuments(
 			self.override_CollectionName(),
-			{}, // blank query - find all
-			{},
-			function(err, docs)
+			function(err, ids)
 			{
 				if (err) {
-					console.error(err.message)
+					console.error(err)
 					fn(err)
 					return
 				}
-				const ids = []
-				docs.forEach(function(el, idx)
-				{
-					ids.push(el._id)
-				})
 				fn(null, ids)
 			}
 		)
@@ -564,11 +555,9 @@ class ListBaseController extends EventEmitter
 	{
 		const self = this
 		const collectionName = self.override_CollectionName()
-		self.context.persister.RemoveDocuments(
+		self.context.persister.RemoveAllDocuments(
 			collectionName, 
-			{}, 
-			{ multi: true }, 
-			function(err, numRemoved)
+			function(err)
 			{
 				if (err) {
 					fn(err) // must call back!

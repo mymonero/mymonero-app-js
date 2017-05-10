@@ -103,6 +103,9 @@ class BackgroundTaskExecutor
 		const self = this
 		const taskUUID = uuidV1()
 		{ // we need to generate taskUUID now to construct arguments so we might as well also hang onto it here instead of putting that within the call to ExecuteWhenBooted
+			if (!fn || typeof fn !== 'function') {
+				throw `executeBackgroundTaskNamed for ${taskName} given non fn as arg 2`
+			}
 			self.callbacksByUUID[taskUUID] = fn
 		}
 		self.ExecuteWhenBooted(function()
@@ -150,10 +153,10 @@ class BackgroundTaskExecutor
 			throw "child sent eventName !== 'FinishedTask'"
 		} 
 		const taskUUID = payload.taskUUID
-		const err = 
-			payload.err && typeof payload.err !== 'undefined'
-			 ? typeof payload.err === 'string' ? new Error(payload.err) : payload.err
-			 : null
+		const err_str = payload.err_str && typeof payload.err_str !== 'undefined'
+			? payload.err_str
+			: null
+		const err = err_str && err_str != null ? new Error(err_str) : null // reconstruct 
 		const returnValue = payload.returnValue
 		{
 			const callback = self.callbacksByUUID[taskUUID]

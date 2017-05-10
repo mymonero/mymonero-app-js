@@ -1,14 +1,9 @@
 mkdir -p www; # or else cordova will complain
 
-rm -rf platforms/ios;
 rm -rf platforms/android;
-rm -rf platforms/browser;
-cordova platform remove ios --verbose;
 cordova platform remove android --verbose;
-cordova platform remove browser --verbose;
 
 cordova_res/bin/assemble_build; # to assemble resources
 
-cordova platform add ios@latest --verbose;
-cordova platform add https://github.com/apache/cordova-android#ad01d28351c13390aff4549258a0f06882df59f5 --verbose;
-cordova platform add browser@latest --verbose;
+cordova platform add android@latest --verbose;
+# cordova platform add https://github.com/apache/cordova-android#ad01d28351c13390aff4549258a0f06882df59f5 --verbose;

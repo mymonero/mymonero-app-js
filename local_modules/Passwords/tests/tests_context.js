@@ -31,7 +31,7 @@
 var context_object_instantiation_descriptions = 
 [ 
 	{
-		module_path: __dirname + "/../../DocumentPersister/DocumentPersister.NeDB",
+		module_path: __dirname + "/../../DocumentPersister/DocumentPersister.Files",
 		instance_key: "persister",
 		options: {
 			userDataAbsoluteFilepath: "./test_products"

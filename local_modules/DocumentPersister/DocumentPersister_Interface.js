@@ -42,87 +42,92 @@ class DocumentPersister_Interface
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 	
-	DocumentsWithQuery(collectionName, query, options, fn)
+	DocumentsWithIds(collectionName, ids, fn)
 	{
 		var self = this
-		//
-		self.__documentsWithQuery(collectionName, query, options, fn)
+		self.__documentsWithIds(collectionName, ids, fn)
+	}
+	IdsOfAllDocuments(collectionName, fn)
+	{
+		const self = this
+		self.__idsOfAllDocuments(collectionName, fn)
+	}
+	AllDocuments(collectionName, fn)
+	{
+		const self = this
+		self.__allDocuments(collectionName, fn)
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
 
-	InsertDocument(collectionName, savableDocument, fn)
+	InsertDocument(collectionName, documentToInsert, fn)
 	{
 		const self = this
 		//
-		self.__insertDocuments(collectionName, savableDocument, fn)
+		self.__insertDocument(collectionName, documentToInsert, fn)
 	}
-	UpdateDocuments(collectionName, query, update, options, fn)
+	UpdateDocumentWithId(collectionName, id, update, fn)
 	{
 		const self = this
-		//
-		self.__updateDocuments(collectionName, query, update, options, fn)
+		self.__updateDocumentWithId(collectionName, id, update, fn)
 	}
-	RemoveDocuments(collectionName, query, options, fn)
+	RemoveDocumentsWithIds(collectionName, ids, fn)
 	{
 		const self = this
-		//
-		self.__removeDocuments(collectionName, query, options, fn)
+		self.__removeDocumentsWithIds(collectionName, ids, fn)
 	}
-
+	RemoveAllDocuments(collectionName, fn)
+	{
+		const self = this
+		self.__removeAllDocuments(collectionName, fn)
+	}
+	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 	
-	__documentsWithQuery(collectionName, query, options, fn)
+	__documentsWithIds(collectionName, ids, fn)
 	{ // fn: (err, docs) -> Void
 		const self = this
 		//
-		console.log("Error: You must override __documentsWithQuery in ", self)
-		console.log(
-			"options:\n{"
-			+ "\n\tsort: (-1,1) or QueryDict"
-			+ "\n\tskip: UInteger "
-			+ "\n\tlimit: UInteger"
-			+ "\n}"
-		)
+		console.log("Error: You must override __documentsWithIds in ", self)
+	}
+	__idsOfAllDocuments(collectionName, fn)
+	{
+		const self = this
+		console.log("Error: You must override __idsOfAllDocuments in ", self)
+	}
+	__allDocuments(collectionName, fn)
+	{
+		const self = this
+		console.log("Error: You must override __allDocuments in ", self)
 	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
-	__insertDocuments(collectionName, savableDocument, fn)
+	__insertDocument(collectionName, documentToInsert, fn)
 	{ // fn: (err, newDocument) -> Void
 		const self = this
-		//
-		console.log("Error: You must override __insertDocuments in", self)
+		console.log("Error: You must override __insertDocument in", self)
 	}
-	__updateDocuments(collectionName, query, update, options, fn)
-	{ // fn: (err, numAffected, affectedDocuments, upsert) -> Void
+	__updateDocumentWithId(collectionName, id, update, fn)
+	{ // fn: (err) -> Void
 		const self = this
-		//
-		console.log("Error: You must override __updateDocuments in", self)
-		console.log(
-			"options:\n{"
-			+ "\n\tupsert: Boolean(false)"
-			+ "\n\tmulti: Boolean(false)"
-			+ "\n\treturnUpdatedDocs: Boolean(false)"
-			+ "\n}"
-		)
+		console.log("Error: You must override __updateDocumentWithId in", self)
 	}
-	__removeDocuments(collectionName, query, options, fn)
+	__removeDocumentsWithIds(collectionName, ids, fn)
 	{ // fn: (err, numRemoved) -> Void
 		const self = this
-		//
-		console.log("Error: You must override __removeDocuments in", self)
-		console.log(
-			"options:\n{"
-			+ "\n\tmulti: Boolean(false)"
-			+ "\n}"
-		)
+		console.log("Error: You must override __removeDocumentsWithIds in", self)
+	}
+	__removeAllDocuments(collectionName, fn)
+	{
+		const self = this
+		console.log("Error: You must override __removeAllDocuments in", self)
 	}
 
 

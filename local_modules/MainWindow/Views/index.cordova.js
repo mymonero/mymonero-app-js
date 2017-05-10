@@ -59,7 +59,7 @@ window.BootApp = function()
 		// mock cached_metadata values for browser-/non-cordova env… probably can be improved
 		cached_metadata.isDebug = true
 		cached_metadata.deviceManufacturer = "Debug"
-		cached_metadata.userDataAbsoluteFilepath = "./Debug"
+		cached_metadata.userDataAbsoluteFilepath = "Debug"
 		cached_metadata.app_version = "0.0.1"
 		cached_metadata.app_name = "MyMonero"
 		cached_metadata.crossPlatform_appBundledAssetsRootPath = "../.." // cause can't access via browser at abs path for some reason
@@ -164,7 +164,7 @@ window.BootApp = function()
 				window.addEventListener("resize", function()
 				{
 					console.log("💬  Window resized")
-					forms.ScrollCurrentFormElementIntoView()
+					commonComponents_forms.ScrollCurrentFormElementIntoView()
 				})
 				// }
 			}

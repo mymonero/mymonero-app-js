@@ -1,4 +1,0 @@
-bin/_build_cordova_www; 
-cordova_res/bin/assemble_build;
-cordova build ios --device --release --buildConfig ./cordova.ios.build.json;
-open platforms/ios/build/device;

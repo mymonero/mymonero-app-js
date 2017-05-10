@@ -161,54 +161,19 @@ function SaveToDisk(
 	}
 	function _proceedTo_updateExistingDocument(encryptedDocument)
 	{
-		var query =
-		{
-			_id: self._id // we want to update the existing one
-		}
 		var update = encryptedDocument
-		var options =
-		{
-			multi: false,
-			upsert: false, // we are only using .update because we know the document exists
-			returnUpdatedDocs: true
-		}
-		self.context.persister.UpdateDocuments(
+		self.context.persister.UpdateDocumentWithId(
 			CollectionName,
-			query,
+			self._id,
 			update,
-			options,
-			function(
-				err,
-				numAffected,
-				affectedDocuments,
-				upsert
-			)
+			function(err)
 			{
-
 				if (err) {
-					console.error("Error while saving fundsRequest:", err)
+					console.error("Error while saving record:", err)
 					fn(err)
 					return
 				}
-				var affectedDocument
-				if (Array.isArray(affectedDocuments)) {
-					affectedDocument = affectedDocuments[0]
-				} else {
-					affectedDocument = affectedDocuments
-				}
-				if (affectedDocument._id === null) { // not that this would happen…
-					fn(new Error("❌  Updated fundsRequest but _id after saving was null"))
-					return // bail
-				}
-				if (affectedDocument._id !== self._id) {
-					fn(new Error("❌  Updated fundsRequest but _id after saving was not equal to non-null _id before saving"))
-					return // bail
-				}
-				if (numAffected === 0) {
-					fn(new Error("❌  Number of documents affected by _id'd update was 0"))
-					return // bail
-				}
-				console.log("✅  Saved update to fundsRequest with _id " + self._id + ".")
+				console.log("✅  Saved update to record with _id " + self._id + ".")
 				fn()
 			}
 		)
@@ -223,15 +188,9 @@ function DeleteFromDisk(
 {
 	const self = instance
 	console.log("📝  Deleting fundsRequest ", self.Description())
-	const query =
-	{
-		_id: self._id
-	}
-	const options = {}
-	self.context.persister.RemoveDocuments(
+	self.context.persister.RemoveDocumentsWithIds(
 		CollectionName,
-		query,
-		options,
+		[ self._id ],
 		function(
 			err,
 			numRemoved

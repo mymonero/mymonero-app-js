@@ -1,4 +1,0 @@
-bin/_build_cordova_www; 
-cordova_res/bin/assemble_build;
-cordova run ios --device --debug --verbose; #TODO?  --buildConfig ./cordova.ios.build.json
-# bin/_open_ios_device_webinspector

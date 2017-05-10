@@ -1,4 +1,4 @@
-# MyMonero JS Desktop & Cordova Apps
+# MyMonero JS - Desktop (Electron) & Android (Cordova) Apps
 
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
@@ -35,7 +35,7 @@ MyMonero is a simple and featureful way to use the next-generation private digit
 MyMonero is currently available for:
 
 * desktop on Mac, Windows, and Linux; and
-* mobile on iOS and Android.
+* mobile on Android.
 
 The main reasons people use MyMonero are its convenience and featurefulness. To accomplish this convenience and other features of MyMonero, there's the privacy trade-off of sharing your private Monero "view key" with the MyMonero server, so that it can scan the network for your wallets' transactions on your behalf. But it's impossible for MyMonero to spend any of your funds or otherwise access your metadata, because your "private spend key" and "private wallet mnemonic/seed" are never sent to our server. So MyMonero is often described as a 'non-custodial' service. In fact, in the near future, even the above trade-off will be eliminated as we're presently working to open-source a version of the back-end, which anybody can run as their own server at home.
 
@@ -78,7 +78,7 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 * Windows (installer .exe)
 * Linux (.appimage)
 
-The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and can be packaged for iOS and Android. 
+The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and can be packaged for Android. 
 
 ** Note about Cordova version** Apache has recently released Cordova 7.0.0. It was tested, but because it now places plugins into package.json, npm cannot `update`, as a handful of those plugins do not have package.json files, and npm and yarn (based on current info) cannot install them as deps. So **6.5.0** is the Cordova version that MyMonero currently supports for mobile builds, and it can be selected for use with `[sudo] npm install -g cordova@6.5.0`.
 
@@ -86,7 +86,7 @@ The mobile apps are built on [Apache Cordova](https://cordova.apache.org) and ca
 
 * Mac / Windows / Linux: via Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
 
-* Android / iOS: via [`cordova.file.dataDirectory`](https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-file/)
+* Android: via [`cordova.file.dataDirectory`](https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-file/)
 
 
 
@@ -139,7 +139,7 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 *If you are going to run the app under any of the Cordova / mobile platforms*
 
-1. Install all Cordova development dependencies for iOS and Android. See [Cordova Installation Notes](./docs/CORDOVA_INSTALL.md) for details.
+1. Install all Cordova development dependencies for Android. See [Cordova Installation Notes](./docs/CORDOVA_INSTALL.md) for details.
 
 2. Run `bin/setup_repo_for_cordova`.
  
@@ -178,18 +178,6 @@ See [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md) for inf
 
 ### Cordova
 
-#### iOS - Simulator
-
-*Causes the Safari Web Inspector to be shown and attached to the Simulator app's WebView (Update: inspector auto-open now commented due to conflict with web workers, see #63)*
-
-`bin/start_dev_cordova_ios_sim`
-
-#### iOS - Device
-
-*Requires you to specify your signing info, e.g. development team in the Xcode project*
-
-`bin/start_dev_cordova_ios_device`
-
 #### Android - Emulator
 
 *Debugging is possible through Chrome; navigate to "chrome://inspect"*
@@ -198,18 +186,10 @@ See [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md) for inf
 
 #### Android - Device
 
-*Needs more testing*
-
 *Ensure that the USB Debugging is enabled and that the session is accepted on your Android device if you get `device.js` error. Also try removing the USB cable and replacing it. Navigate to "chrome://inspect" to monitor debug status. Also may help to run `adb logcat` while installing.*
 
 `bin/start_dev_cordova_android_device`
 
-
-#### Browser
-
-*Used for Cordova debug only - not distributed*
-
-`bin/start_dev_cordova_browser`
 
 ## Contributing
 

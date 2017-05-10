@@ -240,8 +240,10 @@ class ContactDetailsView extends View
 					self.navigationController.PopView(true) // animated
 				}, 500) // because we want to wait until whatever UI deleted it settles down or we will get a refusal to pop while dismissing a modal
 			} else { // or, we're not on top, so let's just remove self from the list of views
-				throw "A contact details view expected to be on top of navigatino stack when its contact was deleted."
-				// which means the following line should be uncommented and the method ImmediatelyExtractStackView needs to be implemented (which will w/o animation snatch self out of the stack)
+				const warnStr = "A contact details view expected to be on top of navigation stack when its contact was deleted. Did this View not get torn down?"
+				console.warn(warnStr)
+				// throw warnStr
+				// which means the following line may need to be uncommented and the method ImmediatelyExtractStackView needs to be implemented (which will w/o animation snatch self out of the stack)
 				// self.navigationController.ImmediatelyExtractStackView(self)
 			}
 		}

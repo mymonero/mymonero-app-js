@@ -65,10 +65,8 @@ class SettingsController extends EventEmitter
 		const self = this
 		//
 		// first, check if any password model has been stored
-		self.context.persister.DocumentsWithQuery(
+		self.context.persister.AllDocuments(
 			CollectionName,
-			{}, // all objects - tho we're expecting 0 or 1
-			{}, // opts
 			function(err, docs)
 			{
 				if (err) {
@@ -220,6 +218,7 @@ class SettingsController extends EventEmitter
 				// console.log("📝  Saving " + CollectionName + " to disk.")
 				const persistableDocument =
 				{
+					_id: self._id, // important to set for updates
 					serverURL: self.serverURL,
 					appTimeoutAfterS: self.appTimeoutAfterS,
 					notifyMeWhen: self.notifyMeWhen,
@@ -257,53 +256,18 @@ class SettingsController extends EventEmitter
 				}
 				function _proceedTo_updateExistingDocument(persistableDocument)
 				{
-					var query =
-					{
-						_id: self._id // we want to update the existing one
-					}
-					var update = persistableDocument
-					var options =
-					{
-						multi: false,
-						upsert: false, // we are only using .update because we know the document exists
-						returnUpdatedDocs: true
-					}
-					self.context.persister.UpdateDocuments(
+					self.context.persister.UpdateDocumentWithId(
 						CollectionName,
-						query,
-						update,
-						options,
-						function(
-							err,
-							numAffected,
-							affectedDocuments,
-							upsert
-						)
+						self._id,
+						persistableDocument,
+						function(err)
 						{
 							if (err) {
-								console.error("Error while saving " + CollectionName + ":", err)
+								console.error("Error while saving update to Settings record:", err)
 								fn(err)
 								return
 							}
-							var affectedDocument
-							if (Array.isArray(affectedDocuments)) {
-								affectedDocument = affectedDocuments[0]
-							} else {
-								affectedDocument = affectedDocuments
-							}
-							if (affectedDocument._id === null) { // not that this would happen…
-								fn(new Error("Updated " + CollectionName + " but _id after saving was null"))
-								return // bail
-							}
-							if (affectedDocument._id !== self._id) {
-								fn(new Error("Updated " + CollectionName + " but _id after saving was not equal to non-null _id before saving"))
-								return // bail
-							}
-							if (numAffected === 0) {
-								fn(new Error("Number of documents affected by _id'd update was 0"))
-								return // bail
-							}
-							// console.log("✅  Saved update to " + CollectionName + " with _id " + self._id + ".")
+							console.log("✅  Saved update to Settings record with _id " + self._id + ".")
 							fn()
 						}
 					)

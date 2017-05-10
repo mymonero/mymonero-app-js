@@ -35,7 +35,7 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 	constructor(options, context)
 	{
 		options = options || {}
-		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentPersister.NeDB.child.js'
+		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentPersister.Files.child.js'
 		//
 		const databaseFileParentDirectory = context.userDataAbsoluteFilepath
 		if (!databaseFileParentDirectory) {
@@ -53,16 +53,37 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public
 	
-	DocumentsWithQuery(collectionName, query, options, fn)
+	DocumentsWithIds(collectionName, ids, fn)
 	{
 		var self = this
 		self.executeBackgroundTaskNamed(
-			'DocumentsWithQuery',
+			'DocumentsWithIds',
 			fn, // fn goes as second arg
 			[
 				collectionName, 
-				query, 
-				options
+				ids
+			]
+		)
+	}
+	IdsOfAllDocuments(collectionName, fn)
+	{
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'IdsOfAllDocuments',
+			fn, // fn goes as second arg
+			[
+				collectionName
+			]
+		)
+	}
+	AllDocuments(collectionName, fn)
+	{
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'AllDocuments',
+			fn, // fn goes as second arg
+			[
+				collectionName
 			]
 		)
 	}
@@ -86,11 +107,11 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 			]
 		)
 	}
-	UpdateDocuments(collectionName, query, update, options, fn)
+	UpdateDocumentWithId(collectionName, id, update, fn)
 	{
 		const self = this
 		self.executeBackgroundTaskNamed(
-			'UpdateDocuments',
+			'UpdateDocumentWithId',
 			function(err, returnValuesByKey) // fn goes as second arg
 			{
 				if (err) {
@@ -105,27 +126,39 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 			},
 			[
 				collectionName, 
-				query, 
-				update,
-				options
+				id, 
+				update
 			]
 		)
 	}
-	RemoveDocuments(collectionName, query, options, fn)
+	RemoveDocumentsWithIds(collectionName, ids, fn)
 	{
 		const self = this
 		self.executeBackgroundTaskNamed(
-			'RemoveDocuments',
+			'RemoveDocumentsWithIds',
 			function(err, numRemoved) // fn goes as second arg
 			{
 				fn(err, numRemoved)
 			},
 			[
 				collectionName, 
-				query, 
-				options
+				ids
 			]
 		)
-	}	
+	}
+	RemoveAllDocuments(collectionName, fn)
+	{
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'RemoveAllDocuments',
+			function(err, numRemoved) // fn goes as second arg
+			{
+				fn(err, numRemoved)
+			},
+			[
+				collectionName
+			]
+		)
+	}
 }
 module.exports = BackgroundDocumentPersister

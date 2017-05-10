@@ -241,7 +241,7 @@ class StackAndModalNavigationView extends StackNavigationView
 		const old_topModalView = self.topModalView
 		if (typeof old_topModalView === 'undefined' || old_topModalView == null) {
 			// throw self.constructor.name + " DismissModalViewsToView requires there to be a modal view"
-			console.warn("⚠️  DismissModalViewsToView called but already at root. (Probably fine.)")
+			// console.warn("⚠️  DismissModalViewsToView called but already at root. (Probably fine.)")
 			fn()
 			return // just bailing
 		}

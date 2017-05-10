@@ -18,31 +18,6 @@
     </platform>
     <preference name="SplashScreenDelay" value="100" />
     <preference name="BackupWebStorage" value="local" />
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-        <splash src="cordova_res/build/ios/Default@2x~universal~anyany.png" />
-        <icon height="40" src="cordova_res/build/ios/icon-40.png" width="40" />
-        <icon height="80" src="cordova_res/build/ios/icon-40@2x.png" width="80" />
-        <icon height="50" src="cordova_res/build/ios/icon-50.png" width="50" />
-        <icon height="100" src="cordova_res/build/ios/icon-50@2x.png" width="100" />
-        <icon height="120" src="cordova_res/build/ios/icon-60@2x.png" width="120" />
-        <icon height="180" src="cordova_res/build/ios/icon-60@3x.png" width="180" />
-        <icon height="72" src="cordova_res/build/ios/icon-72.png" width="72" />
-        <icon height="144" src="cordova_res/build/ios/icon-72@2x.png" width="144" />
-        <icon height="76" src="cordova_res/build/ios/icon-76.png" width="76" />
-        <icon height="152" src="cordova_res/build/ios/icon-76@2x.png" width="152" />
-        <icon height="167" src="cordova_res/build/ios/icon-83.5@2x.png" width="167" />
-        <icon height="29" src="cordova_res/build/ios/icon-small.png" width="29" />
-        <icon height="58" src="cordova_res/build/ios/icon-small@2x.png" width="58" />
-        <icon height="87" src="cordova_res/build/ios/icon-small@3x.png" width="87" />
-        <icon height="57" src="cordova_res/build/ios/icon.png" width="57" />
-        <icon height="114" src="cordova_res/build/ios/icon@2x.png" width="114" />
-    </platform>
-    <platform name="browser">
-        <preference name="SplashScreen" value="MainWindow/Resources/cordova/Default@2x~universal~anyany.png" />
-        <splash src="local_modules/MainWindow/Resources/cordova/Default@2x~universal~anyany.png" />
-    </platform>
     <preference name="DisallowOverscroll" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="KeyboardShrinksView" value="false" />
@@ -51,6 +26,7 @@
     <preference name="android-windowSoftInputMode" value="adjustResize|stateAlwaysHidden" />
     <preference name="Fullscreen" value="false" />
     <preference name="android-fullscreen" value="false" />
+    <preference name="AndroidPersistentFileLocation" value="Internal" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-plugin-file" spec="~4.3.2" />
     <plugin name="cordova-plugin-globalization" spec="~1.0.6" />
@@ -59,8 +35,6 @@
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="com.ozexpert.devicemeta" spec="https://github.com/ozexpert/cordova-plugin-device-meta.git" />
     <plugin name="cordova-plugin-compat" spec="~1.1.0" />
-    <engine name="ios" spec="~4.3.0" />
-    <engine name="browser" spec="~4.1.0" />
     <plugin name="cordova-base64-to-gallery" spec="https://github.com/medi-y-sato/cordova-base64-to-gallery" />
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
     <plugin name="cordova-plugin-customurlscheme" spec="~4.2.0">

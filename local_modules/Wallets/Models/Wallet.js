@@ -126,10 +126,9 @@ class Wallet extends EventEmitter
 	__setup_fetchExistingDoc_andAwaitBoot()
 	{
 		const self = this
-		self.context.persister.DocumentsWithQuery(
+		self.context.persister.DocumentsWithIds(
 			wallet_persistence_utils.CollectionName,
-			{ _id: self._id }, // cause we're saying we have an _id passed in…
-			{},
+			[ self._id ], // cause we're saying we have an _id passed in…
 			function(err, docs)
 			{
 				if (err) {

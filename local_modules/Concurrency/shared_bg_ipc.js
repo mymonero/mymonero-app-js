@@ -40,7 +40,7 @@ function CallBack(
 	{
 		eventName: 'FinishedTask', 
 		taskUUID: taskUUID, 
-		err: err, 
+		err_str: err && typeof err !== 'string' ? ""+err : err, 
 		returnValue: returnValue
 	}
 	backgroundToFore_postingImplFn(payload)

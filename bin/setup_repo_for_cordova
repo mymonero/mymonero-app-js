@@ -1,10 +1,6 @@
 echo "💬   bin/_refresh_cordova_platforms";
 bin/_refresh_cordova_platforms;
 
-echo "💬   cp cordova.ios.build.EXAMPLE.json cordova.ios.build.json";
-cp cordova.ios.build.EXAMPLE.json cordova.ios.build.json && 
-echo "💡  (For iOS device builds) Be sure to edit ./cordova.ios.build.json and add your iOS dev & prod signing info.";
-
 echo "💬   cp cordova.android.build.EXAMPLE.json cordova.android.build.json";
-cp cordova.ios.build.EXAMPLE.json cordova.android.build.json && 
+cp cordova.android.build.EXAMPLE.json cordova.android.build.json && 
 echo "💡  (For Android release builds) Be sure to edit ./cordova.android.build.json and add your Android keystore signing info.";

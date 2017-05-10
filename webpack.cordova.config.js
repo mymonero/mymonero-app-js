@@ -41,7 +41,7 @@ module.exports =
 	},
     resolve: {
         alias: {
-            fs: "html5-fs"
+        	"fs": "html5-fs"
         }
     },
     externals: {

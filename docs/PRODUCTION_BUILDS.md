@@ -23,15 +23,9 @@ This command relies upon resources present in `build`, and will output your buil
 
 Please note that MyMonero for Windows is packaged as an NSIS installer, rather than only an .exe (in order to support custom URL scheme registration/opening), and it incorporates a custom installer script fragment, `build/installer.sh`. 
 
-## Building & Packaging the Mobile Apps for Production Mode
+## Building & Packaging the Android Cordova App for Production Mode
 
 The following instructions assume you have already run `setup_repo_for_cordova`.
-
-### iOS
-
-Specify your signing information in `cordova.ios.build.json`.
-
-Then run `bin/package_only_ios`.
 
 ### Android
 
