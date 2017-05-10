@@ -84,7 +84,7 @@ class NeDB_DocumentPersister extends DocumentPersister_Interface
 						collectionName,
 						fn,
 						typeof optl_timesRetried === 'undefined' ? 0 : optl_timesRetried + 1,
-						e
+						err
 					)
 					return
 				}
