@@ -188,7 +188,6 @@ class SendFundsView extends View
 				table.style.width = "100%"
 				const tr_1 = document.createElement("tr")
 				self._setup_form_amountInputLayer(tr_1)
-				self._setup_form_mixinSelectLayer(tr_1)
 				table.appendChild(tr_1)
 				self.form_containerLayer.appendChild(table)
 			}
@@ -227,6 +226,12 @@ class SendFundsView extends View
 		const div = pkg.containerLayer
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
+		{
+			const tooltipText = `Monero makes transactions with your<br/>"available outputs", so part of your<br/>balance will be briefly locked and<br/>then returned as change.<br/><br/>Monero ring size value set to ${self._mixin_int()}.`
+			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+			const layer = view.layer
+			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+		}
 		labelLayer.style.marginTop = "0"
 		self.amountInputLayer = pkg.valueLayer
 		//
@@ -254,41 +259,6 @@ class SendFundsView extends View
 		td.appendChild(div)
 		tr.appendChild(td)
 	}
-	_setup_form_mixinSelectLayer(tr)
-	{ // Mixin
-		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
-		div.style.width = "95px"
-		div.style.display = "block"
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MIXIN", self.context)
-			div.appendChild(labelLayer)
-			//
-			const valueLayer = commonComponents_forms.New_fieldValue_selectLayer({
-				values: [
-					"3",
-					"6",
-					"9"
-				]
-			})
-			valueLayer.style.width = "63px"
-			self.mixinSelectLayer = valueLayer
-			valueLayer.addEventListener(
-				"change",
-				function(event)
-				{
-					self.refresh_feeEstimateLayer()
-				}
-			)
-			div.appendChild(valueLayer)
-		}
-		const td = document.createElement("td")
-		td.style.verticalAlign = "top"
-		td.appendChild(div)
-		// we are explicitly NOT going to add it to the DOM because
-		// we don't want to show this to the user at this point in time. UX decision.
-		// tr.appendChild(td)
-	}
 	_setup_form_contactOrAddressPickerLayer()
 	{ // Request funds from sender
 		const self = this
@@ -297,7 +267,7 @@ class SendFundsView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
 		{
-			const tooltipText = "Please double-check the accuracy of<br/>your recipient information as Monero<br/>transactions are irreversible.<br/><br/>Monero 'mixin' value set automatically."
+			const tooltipText = `Please double-check the accuracy of<br/>your recipient information as Monero<br/>transactions are irreversible.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -685,19 +655,21 @@ class SendFundsView extends View
 	}
 	//
 	//
+	// Accessors - Lookups - Mixin
+	//
+	_mixin_int()
+	{
+		return 9 // hard-coded, for now at least. in future, get from libmonero/wallet
+	}
+	//
+	//
 	// Accessors - Factories - Values
 	//
 	_new_estimatedTransactionFee_displayString()
 	{
 		const self = this
 		/*
-		var mixin_str;
-		if (typeof self.mixinSelectLayer === 'undefined' || !self.mixinSelectLayer) {
-			mixin_str = "12"
-		} else {
-			mixin_str = self.mixinSelectLayer.value
-		}
-		var mixin_int = parseInt(mixin_str)
+		var mixin_int = self._mixin_int()
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_ringCT_networkFee(
 			mixin_int
 		)
@@ -877,7 +849,6 @@ class SendFundsView extends View
 		const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ""
 		const enteredAddressValue_exists = enteredAddressValue !== ""
 		const notPickedContactBut_enteredAddressValue = !hasPickedAContact && enteredAddressValue_exists ? true : false
-		const mixin_int = parseInt(self.mixinSelectLayer.value)
 		//
 		var target_address = null // to derive…
 		const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ""
@@ -994,15 +965,13 @@ class SendFundsView extends View
 			wallet, // FROM wallet
 			target_address, // TO address
 			payment_id,
-			amount_Number,
-			mixin_int
+			amount_Number
 		)
 		function __proceedTo_generateSendTransactionWith(
 			sendFrom_wallet,
 			target_address,
 			payment_id,
-			amount_Number,
-			mixin_int
+			amount_Number
 		)
 		{
 			const sendFrom_address = sendFrom_wallet.public_address
@@ -1010,7 +979,7 @@ class SendFundsView extends View
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
-				mixin_int,
+				self._mixin_int(),
 				payment_id,
 				function(
 					err,
