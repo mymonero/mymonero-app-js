@@ -71,8 +71,8 @@ module.exports =
 				options: {
 					cacheDirectory: false,
                     presets: ["es2015"],
-                    plugins: ["add-module-exports"],
 				},
+				include: path.join(__dirname, 'www'),
 				exclude: path.join(__dirname, 'node_modules')
 			},
 
