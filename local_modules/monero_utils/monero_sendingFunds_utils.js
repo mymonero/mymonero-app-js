@@ -215,7 +215,7 @@ function SendFunds(
 				return
 			}
 			const moneroReady_targetDescription = moneroReady_targetDescriptions[0]
-			if (typeof moneroReady_targetDescription === null || typeof moneroReady_targetDescription === 'undefined') {
+			if (moneroReady_targetDescription === null || typeof moneroReady_targetDescription === 'undefined') {
 				__trampolineFor_err_withStr(invalidOrZeroDestination_errStr)
 				return
 			}

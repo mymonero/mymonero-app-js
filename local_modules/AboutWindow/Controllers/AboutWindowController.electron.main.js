@@ -51,7 +51,6 @@ class AboutWindowController
 	// Accessors - Window
 	_new_window()
 	{
-		const self = this
 		const options = 
 		{
 			fullscreenable: false,
