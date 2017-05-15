@@ -976,10 +976,11 @@ class SendFundsView extends View
 		{
 			const sendFrom_address = sendFrom_wallet.public_address
 			//
+			const mixin_int = self._mixin_int()
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
-				self._mixin_int(),
+				mixin_int,
 				payment_id,
 				function(
 					err,
@@ -1064,9 +1065,6 @@ class SendFundsView extends View
 								self._dismissValidationMessageLayer()
 								{
 									self.amountInputLayer.value = ""
-								}
-								{ // not that we need do to this cause mixin is hidden…
-									self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
 								}
 								{
 									if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
