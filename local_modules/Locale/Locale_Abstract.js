@@ -40,7 +40,6 @@ class Locale_Abstract
 	{
 		const self = this
 		throw "Override Locale in " + self.constructor.name
-		fn(null, null)
 	}
 }
 module.exports = Locale_Abstract

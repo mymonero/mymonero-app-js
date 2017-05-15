@@ -122,7 +122,7 @@ function writeFile(filepath, stringContents, options, callback)
 					}
 					fileWriter.onerror = function(err)
 					{
-						console.log(`Failed file write to ${filename}: ${e.toString()}`)
+						console.log(`Failed file write to ${filename}: ${err.toString()}`)
 						callback(err)
 					}
 					const dataObj = new Blob(

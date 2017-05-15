@@ -80,7 +80,6 @@ class EditContactFromContactsTabView extends ContactFormView
 				{
 					if (err) {
 						throw err
-						return
 					}
 					self._thisRecordWasDeleted()
 				}
@@ -104,7 +103,6 @@ class EditContactFromContactsTabView extends ContactFormView
 						{
 							if (err) {
 								throw err
-								return
 							}
 							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {

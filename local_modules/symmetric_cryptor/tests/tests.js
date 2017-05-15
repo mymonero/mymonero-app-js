@@ -196,7 +196,7 @@ function _proceedTo_test_documentCryptor(fn)
 				}
 				if (JSON.stringify(decryptedDocument) !== JSON.stringify(plaintextDocument)) {
 					var errStr = "Error: Test failed. Decrypted document did not match original plaintext document."
-					var err = new Error(errStr)
+					err = new Error(errStr)
 					console.log(errStr)
 					fn(err)
 					return

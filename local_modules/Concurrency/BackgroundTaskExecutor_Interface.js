@@ -78,9 +78,9 @@ class BackgroundTaskExecutor
 	//
 	// Runtime - Imperatives - Internal
 	ExecuteWhenBooted(fn)
-	{ // ^ capitalizing this as
-	  // (a) it could theoretically be callable by self consumers
-	  // (b) it's the same code as used in other places so maintains regularity
+	{	// ^ capitalizing this as
+		// (a) it could theoretically be callable by self consumers
+		// (b) it's the same code as used in other places so maintains regularity
 		const self = this
 		if (self.hasBooted === true) {
 			fn()
@@ -133,7 +133,6 @@ class BackgroundTaskExecutor
 		{
 			if (self.timeout_waitingForBoot === null) {
 				throw "Got message back from worker after timeout"
-				return
 			}
 			clearTimeout(self.timeout_waitingForBoot)
 			self.timeout_waitingForBoot = null

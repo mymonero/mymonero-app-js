@@ -118,13 +118,9 @@ class PasswordEntryView extends StackAndModalNavigationView
 
 			case passwordEntryTaskModes.None:
 				throw "passwordTypeChosenWithPasswordIfNewPassword_orUndefined called when self.passwordEntryTaskMode .None"
-				break
 			default:
 				throw "This switch ought to have been exhaustive"
-				break
 		}
-		//
-		return undefined
 	}
 	//
 	//
@@ -154,7 +150,6 @@ class PasswordEntryView extends StackAndModalNavigationView
 		{ // check legality
 			if (self.passwordEntryTaskMode !== passwordEntryTaskModes.None) {
 				throw "GetUserToEnterExistingPasswordWithCB called but self.passwordEntryTaskMode not .None"
-				return
 			}
 		}
 		{ // we need to hang onto the callback for when the form is submitted
@@ -189,7 +184,6 @@ class PasswordEntryView extends StackAndModalNavigationView
 			if (self.passwordEntryTaskMode !== passwordEntryTaskModes.None) {
 				if (self.passwordEntryTaskMode !== passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType) {
 					throw "GetUserToEnterNewPasswordAndTypeWithCB called but self.passwordEntryTaskMode not .None and not .ForChangingPassword_ExistingPasswordGivenType"
-					return
 				}
 			}
 		}
@@ -316,6 +310,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 			switch (self.passwordEntryTaskMode) {
 				case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 				case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
+				{
 					const EnterExistingPasswordView = require('./EnterExistingPasswordView.web')
 					const enterExistingPasswordView = new EnterExistingPasswordView({
 						isForChangingPassword: isForChangingPassword
@@ -338,9 +333,10 @@ class PasswordEntryView extends StackAndModalNavigationView
 					}
 					self.SetStackViews([enterExistingPasswordView]) // i don't know of any cases where this should be true - and there are reasons we don't want it to be - there's no 'old_topStackView'
 					break
-				//	
+				}
 				case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 				case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
+				{
 					const EnterNewPasswordView = require('./EnterNewPasswordView.web')
 					const enterNewPasswordView = new EnterNewPasswordView({
 						isForChangingPassword: isForChangingPassword
@@ -368,14 +364,15 @@ class PasswordEntryView extends StackAndModalNavigationView
 						self.PushView(enterNewPasswordView, shouldAnimate)
 					}
 					break
-				//
+				}
 				case passwordEntryTaskModes.None:
+				{
 					throw "_configureWithMode called when self.passwordEntryTaskMode .None"
-					break
-				//	
+				}
 				default:
+				{
 					throw "This switch ought to have been exhaustive"
-					break
+				}
 			}
 		}
 
@@ -441,10 +438,10 @@ class PasswordEntryView extends StackAndModalNavigationView
 		switch (self.passwordEntryTaskMode) {
 			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
+			{
 				{ // validate cb state
 					if (typeof self.enterPassword_cb === 'undefined' || self.enterPassword_cb === null) {
 						throw "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPassword_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
-						return
 					}					
 				}
 				self.enterPassword_cb(
@@ -453,13 +450,13 @@ class PasswordEntryView extends StackAndModalNavigationView
 				)
 				// we don't want to free/zero the cb here - user may get pw wrong and try again
 				break
-			//
+			}
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
 			case passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType:
+			{
 				{ // validate cb state
 					if (typeof self.enterPasswordAndType_cb === 'undefined' || self.enterPasswordAndType_cb === null) {
 						throw "PasswordEntryView/_passwordController_callBack_trampoline: missing enterPasswordAndType_cb for passwordEntryTaskMode: " + self.passwordEntryTaskMode
-						return
 					}					
 				}
 				self.enterPasswordAndType_cb(
@@ -469,16 +466,12 @@ class PasswordEntryView extends StackAndModalNavigationView
 				)
 				// we don't want to free/zero the cb here - might trigger validation err & need to be called again
 				break
-			//
+			}
 			case passwordEntryTaskModes.None:
 				throw "_passwordController_callBack_trampoline called when self.passwordEntryTaskMode .None"
-				return
-				break
 			//
 			default:
 				throw "This switch ought to have been exhaustive"
-				return
-				break
 		}
 	}
 }

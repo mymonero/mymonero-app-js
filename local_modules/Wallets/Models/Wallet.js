@@ -178,9 +178,8 @@ class Wallet extends EventEmitter
 		{
 			if (err) {
 				console.error("Error obtaining locale.")
-				throw err
 				self.failedToInitialize_cb(err)
-				return
+				throw err
 			}
 			self.mnemonic_wordsetName = monero_wallet_locale.MnemonicWordsetNameWithLocale(currentLocale) // will default to english if no match
 			//
@@ -240,20 +239,19 @@ class Wallet extends EventEmitter
 	)
 	{ // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
 		// confirmation_cb: (userConfirmed_mnemonicString) -> Void
-	  // fn: (err?) -> Void
-	  //
-	  // To use this function, you must supply a informingAndVerifyingMnemonic_cb.
-	  // Your supplied cb will be called with the generated mnemonicString and another
-	  // _cb, which you must call after you get the user to confirm their mnemonicString.
-	  // This function will proceed to verify the confirmation mnemonic string and
-	  // then log into the hosted node server to create an account
-	  //
+		// fn: (err?) -> Void
+		//
+		// To use this function, you must supply a informingAndVerifyingMnemonic_cb.
+		// Your supplied cb will be called with the generated mnemonicString and another
+		// _cb, which you must call after you get the user to confirm their mnemonicString.
+		// This function will proceed to verify the confirmation mnemonic string and
+		// then log into the hosted node server to create an account
+		//
 		const self = this
 		//		
 		self.persistencePassword = persistencePassword || null
 		if (self.persistencePassword === null) {
 			throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
-			return
 		}
 		self.walletLabel = walletLabel || ""
 		self.swatch = swatch || ""
@@ -291,7 +289,6 @@ class Wallet extends EventEmitter
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
 			throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
-			return
 		}
 		//
 		self.walletLabel = walletLabel || ""
@@ -349,7 +346,6 @@ class Wallet extends EventEmitter
 			self.persistencePassword = persistencePassword || null
 			if (persistencePassword === null) {
 				throw "You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
-				return
 			}
 		}
 		{
@@ -372,7 +368,7 @@ class Wallet extends EventEmitter
 	
 
 	////////////////////////////////////////////////////////////////////////////////
- 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
+	// Runtime - Imperatives - Public - Booting - Reading saved wallets
 
 	Boot_decryptingExistingInitDoc(
 		persistencePassword,
@@ -671,7 +667,7 @@ class Wallet extends EventEmitter
 			return true
 		} else if (nBlocksBehind < 0) {
 			throw "nBlocksBehind < 0" // maybe replace with warn log
-			return false 
+			// return false 
 		}
 		return false
 	}
@@ -694,10 +690,10 @@ class Wallet extends EventEmitter
 		const self = this
 		if (self.account_scanned_height == 0 || typeof self.account_scanned_height === 'undefined' || self.account_scanned_height === null) {
 			throw "CatchingUpPercentageFloat() requested but self.account_scanned_height still 0" // maybe replace with warn log
-			return 0
+			// return 0
 		} else if (self.transaction_height == 0 || typeof self.transaction_height === 'undefined' || self.transaction_height === null) {
 			throw "CatchingUpPercentageFloat() requested but self.transaction_height still 0" // maybe replace with warn log
-			return 0
+			// return 0
 		}
 		const pctFloat = self.account_scanned_height / self.transaction_height
 		console.log(`CatchingUpPercentageFloat ${self.account_scanned_height}/${self.transaction_height}=${pctFloat.toFixed(2)}%`)
@@ -727,9 +723,9 @@ class Wallet extends EventEmitter
 	}
 	//
 	New_StateCachedTransactions()
-	{ // this function is preferred for public access
-	  // as it caches the derivations of the above accessors.
-	  // these things could maybe be derived on reception from API instead of on each access
+	{	// this function is preferred for public access
+		// as it caches the derivations of the above accessors.
+		// these things could maybe be derived on reception from API instead of on each access
 		const self = this
 		const transactions = self.transactions || []
 		const stateCachedTransactions = [] // to finalize

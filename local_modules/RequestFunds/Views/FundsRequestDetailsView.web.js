@@ -43,7 +43,6 @@ class FundsRequestDetailsView extends View
 			self.fundsRequest = self.options.record // calling this `record` for now to standardize interface
 			if (typeof self.fundsRequest === 'undefined' || !self.fundsRequest) {
 				throw self.constructor.name + " requires a self.options.fundsRequest"
-				return
 			}
 		}
 		self.setup()
@@ -229,7 +228,6 @@ class FundsRequestDetailsView extends View
 				{
 					if (err) {
 						throw err
-						return
 					}
 					self._thisRecordWasDeleted()
 				}
@@ -253,7 +251,6 @@ class FundsRequestDetailsView extends View
 						{
 							if (err) {
 								throw err
-								return
 							}
 							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {

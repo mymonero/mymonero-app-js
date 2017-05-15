@@ -172,7 +172,7 @@ class EnterNewPasswordView extends View
 		const layer = self.passwordInputLayer
 		if (typeof layer === 'undefined' || layer === null) {
 			throw "layer undefined or null in Password()"
-			return ""
+			// return ""
 		}
 		//
 		return layer.value
@@ -183,7 +183,7 @@ class EnterNewPasswordView extends View
 		const layer = self.confirmPasswordInputLayer
 		if (typeof layer === 'undefined' || layer === null) {
 			throw "layer undefined or null in Password()"
-			return ""
+			// return ""
 		}
 		//
 		return layer.value

@@ -85,13 +85,14 @@ function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
 	const layer = document.createElement("div")
 	layer.classList.add("graphicAndLabel")
 	layer.classList.add(NamespaceName)
-	layer.innerHTML = `<div class="loader">`
-						+`<div class="block block1"></div>`
-						+`<div class="block block2"></div>`
-						+`<div class="block block3"></div>`
-					  +`</div>`
-					  +`&nbsp;`
-					  +`<span>${messageText}</span>`
+	layer.innerHTML = 
+		`<div class="loader">`
+			+`<div class="block block1"></div>`
+			+`<div class="block block2"></div>`
+			+`<div class="block block3"></div>`
+		+`</div>`
+		+`&nbsp;`
+		+`<span>${messageText}</span>`
 	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
 	layer.style.color = "#F8F7F8"
 	//

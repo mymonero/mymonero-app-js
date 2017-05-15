@@ -223,11 +223,9 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		// ^- going to assuming float is a good medium for numerical comparison - supposing JS doesn't screw it up
 		if (isNaN(float_inputValue)) {
 			throw "Range input value cannot be parsed as float for comparison"
-			return
 		}
 		if (isNaN(float_max)) {
 			throw "Range input max cannot be parsed as float for comparison"
-			return
 		}
 		if (float_inputValue === float_max) {
 			if (isMaxInfinity) {
@@ -243,7 +241,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		labelLayer.innerHTML = view.__finalized_labelText_fn(layer.value)
 		//
 		const offsetWidth = layer.offsetWidth
-		const knob_next_x_pct = (layer.value - min) / range
+		var knob_next_x_pct = (layer.value - min) / range
 		if (knob_next_x_pct < 0) {
 			knob_next_x_pct = 0
 		} else if (knob_next_x_pct > 1) {

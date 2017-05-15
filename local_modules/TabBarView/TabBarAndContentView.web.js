@@ -227,7 +227,6 @@ class TabBarAndContentView extends View
 								const index = self._tabBarItemButtonViews.indexOf(tabBarItemButtonView)
 								if (index === -1) {
 									throw "heard tab bar item outside of list clicked"
-									return
 								}
 								self.SelectTabBarItemAtIndex(index)
 							}

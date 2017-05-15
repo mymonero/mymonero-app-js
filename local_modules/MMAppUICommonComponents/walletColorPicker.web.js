@@ -198,7 +198,7 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 			}
 		}
 		throw "Didn't find a selected wallet swatch color."
-		return undefined
+		// return undefined
 	}
 	view.SetEnabled = function(isEnabled)
 	{

@@ -42,7 +42,7 @@ class URLBrowser extends URLBrowser_Abstract
 		const device_platform_toUpperCase = device.platform.toUpperCase()
 		if (device_platform_toUpperCase === 'ANDROID') {
 			navigator.app.loadUrl(
-				url, 
+				urlString, 
 				{
 					openExternal: true
 				}

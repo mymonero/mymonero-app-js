@@ -127,8 +127,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	//
-	{ // Silly as it sounds, this class exists to integrate the main process menuController with event 
-  	  // emissions from the renderer side so that integratees can remain able to operate independently.
+	{ // Silly as it sounds, this class exists to integrate the main process menuController with event emissions from the renderer side so that integratees can remain able to operate independently.
 		module_path: __dirname + "/../../Menus/MenuControllerController.renderer",
 		instance_key: "menuControllerController", // we/you probably won't need to access this ever though
 		options: {}

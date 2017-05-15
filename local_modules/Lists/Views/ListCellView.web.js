@@ -130,7 +130,6 @@ class ListCellView extends View
 		const self = this
 		if (typeof self.record === 'undefined' || self.record === null) {
 			throw "nil record in start observing"
-			return
 		}
 	}
 	overridable_stopObserving_record()
@@ -138,7 +137,6 @@ class ListCellView extends View
 		const self = this
 		if (typeof self.record === 'undefined' || self.record === null) {
 			throw "nil record in stop observing"
-			return
 		}
 	}
 	//

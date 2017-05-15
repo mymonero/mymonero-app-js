@@ -429,7 +429,7 @@ function New_AmountInputFieldPKG(
 	humanReadable_currencyAbbrv, // e.g. "XMR"
 	optl__enterPressed_fn
 )
-{ // -> {} // Experimental 'pkg' style return… maybe refactor into View later
+{ // -> {} // Experimental 'pkg' style return… maybe refactor into View later
 	const enterPressed_fn = optl__enterPressed_fn ? optl__enterPressed_fn : function() {}
 	//
 	const div = New_fieldContainerLayer()

@@ -189,7 +189,7 @@ function _new_encrypted_base64_unpacked_components_object(b64str)
 {
 	if (!b64str || typeof b64str === 'undefined') { // prevent toString() exception
 		throw "_new_encrypted_base64_unpacked_components_object was passed nil b64str"
-		return undefined
+		// return undefined
 	}
 	var binary_data = new Buffer(b64str, 'base64').toString('binary')
 	var components = 
@@ -239,9 +239,8 @@ function _new_parsed_headers_object(bin_data)
 function validate_schema_version(version)
 {
 	if (version !== currentVersionCryptorFormatVersion) {
-		var err = "Unsupported schema version " + version;
-		
-		throw err;
+		var err = "Unsupported schema version " + version
+		throw err
 	}
 }
 function _is_hmac_valid__async(

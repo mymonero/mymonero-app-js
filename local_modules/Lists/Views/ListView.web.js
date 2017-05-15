@@ -252,13 +252,11 @@ class ListView extends View
 		{ // check record
 			if (typeof record === 'undefined' || record === null) {
 				throw self.constructor.name + " requires record to pushRecordDetailsView"
-				return
 			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {
 			throw self.constructor.name + " requires navigationController to pushRecordDetailsView"
-			return
 		}
 		{
 			const options = 

@@ -152,7 +152,6 @@ class ForgotPasswordView extends View
 					{
 						if (err) {
 							throw err
-							return
 						}
 						const didChooseYes = selectedButtonIdx === 0
 						if (didChooseYes) {

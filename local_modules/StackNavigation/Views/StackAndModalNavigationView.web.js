@@ -88,12 +88,11 @@ class StackAndModalNavigationView extends StackNavigationView
 		const self = this
 		if (modalView === null || typeof modalView === 'undefined') {
 			throw "StackNavigationView asked to PresentView nil modalView"
-			return
 		}
 		const isAnimated =
 			isAnimated_orTrue === true
-			 || typeof isAnimated_orTrue === 'undefined'
-			 || isAnimated_orTrue == null
+				|| typeof isAnimated_orTrue === 'undefined'
+				|| isAnimated_orTrue == null
 			? true /* default true */
 			: false
 		//
@@ -105,8 +104,8 @@ class StackAndModalNavigationView extends StackNavigationView
 			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal. Deferring execution.")
 			setTimeout(
 				function()
-				{ // NOTE/TODO: There's probably a better way to do this (via a stack) which will not only prevent possibility of infinite loops
-				  // but retain call order. Not sure whether it's a big enough problem to merit that yet though
+				{	// NOTE/TODO: There's probably a better way to do this (via a stack) which will not only prevent possibility of infinite loops
+					// but retain call order. Not sure whether it's a big enough problem to merit that yet though
 					self.PresentView(
 						modalView,
 						isAnimated_orTrue
@@ -202,7 +201,6 @@ class StackAndModalNavigationView extends StackNavigationView
 		const numberOf_modalViews = self.modalViews.length
 		if (numberOf_modalViews == 0) {
 			throw "DismissTopModalView called with 0 self.modalViews"
-			return
 		}
 		if (numberOf_modalViews == 1) { // then pop all modals
 			self.DismissModalViewsToView(
@@ -230,8 +228,8 @@ class StackAndModalNavigationView extends StackNavigationView
 		fn = fn || function() {}
 		const isAnimated =
 			isAnimated_orTrue === true
-			 || typeof isAnimated_orTrue === 'undefined'
-			 || isAnimated_orTrue == null
+				|| typeof isAnimated_orTrue === 'undefined'
+				|| isAnimated_orTrue == null
 			? true /* default true */
 			: false
 		const topStackView = self.topStackView
@@ -249,8 +247,8 @@ class StackAndModalNavigationView extends StackNavigationView
 			console.warn("⚠️  Asked to " + self.constructor.name + "/PresentView but already self.isCurrentlyTransitioningAManagedView__Modal. Deferring execution.")
 			setTimeout(
 				function()
-				{ // NOTE/TODO: There's probably a better way to do this (via a stack) which will not only prevent possibility of infinite loops
-				  // but retain call order. Not sure whether it's a big enough problem to merit that yet though
+				{	// NOTE/TODO: There's probably a better way to do this (via a stack) which will not only prevent possibility of infinite loops
+					// but retain call order. Not sure whether it's a big enough problem to merit that yet though
 					self.DismissModalViewsToView(
 						to_modalView_orNullForTopStackView,
 						isAnimated_orTrue,
@@ -338,9 +336,8 @@ class StackAndModalNavigationView extends StackNavigationView
 			}
 		}
 		if (indexOf_to_modalView === -1) {
-			throw "to_modalView not found in self.modalViews"
 			__trampolineFor_transitionEnded()
-			return
+			throw "to_modalView not found in self.modalViews"
 		}
 		function __afterHavingFullyDismissedToModalView_cleanUpAndCallBack()
 		{
@@ -363,9 +360,8 @@ class StackAndModalNavigationView extends StackNavigationView
 			const subviewUUIDs = self.subviews.map(function(v) { return v.View_UUID() })
 			const indexOf_old_topModalView_inSubviews = subviewUUIDs.indexOf(old_topModalView.View_UUID())
 			if (indexOf_old_topModalView_inSubviews === -1) {
-				throw `Asked to DismissModalViewsToView ${to_modalView.View_UUID()} but old_topModalView UUID not found in UUIDs of ${self.Description()} subviews.`
 				__trampolineFor_transitionEnded()
-				return
+				throw `Asked to DismissModalViewsToView ${to_modalView.View_UUID()} but old_topModalView UUID not found in UUIDs of ${self.Description()} subviews.`
 			}
 			if (isAnimated === true) { // prepare for animation
 				old_topModalView.layer.style.position = "absolute"
@@ -407,16 +403,15 @@ class StackAndModalNavigationView extends StackNavigationView
 		}
 		{ // pop all views in model
 			const numberOf_modalViews = self.modalViews.length
-			for (var i = indexOf_to_modalView + 1 ; i < numberOf_modalViews ; i++) { // over the modalViews which will be popped
+			for (let i = indexOf_to_modalView + 1 ; i < numberOf_modalViews ; i++) { // over the modalViews which will be popped
 				const modalView = self.modalViews[i]
 				modalView.modalParentView = null // un-set modalParentView on this modalView which will be popped
 			}
 			const modalViews_afterPop = self.modalViews.slice(0, indexOf_to_modalView + 1) // +1 as end is end idx not included in slice
 			self.modalViews = modalViews_afterPop
 			if (to_modalView.IsEqualTo(self.modalViews[self.modalViews.length - 1]) === false) {
-				throw `Popped to to_modalView ${to_modalView.Description()} at idx ${indexOf_to_modalView} but it was not the last of self.modalViews after pop all views until that idx.`
 				// we don't need to call __trampolineFor_transitionEnded here since we would have already triggered it in above two isAnimated == false check branches
-				return
+				throw `Popped to to_modalView ${to_modalView.Description()} at idx ${indexOf_to_modalView} but it was not the last of self.modalViews after pop all views until that idx.`				
 			}
 		}
 	}

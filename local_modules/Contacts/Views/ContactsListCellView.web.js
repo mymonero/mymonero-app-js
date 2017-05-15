@@ -139,7 +139,6 @@ class ContactsListCellView extends ListCellView
 		//
 		if (typeof self.record === 'undefined' || self.contact === null) {
 			throw "self.record undefined in start observing"
-			return
 		}
 		// here, we're going to store a bunch of functions as instance properties
 		// because if we need to stopObserving we need to have access to the listener fns

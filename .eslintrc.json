@@ -5,6 +5,11 @@
         "es6": true,
         "node": true
     },
+    "globals": {
+        "LocalFileSystem": false,
+        "cordova": false,
+        "device": false
+    },
     "extends": "eslint:recommended",
     "rules": {
         "indent": [
@@ -26,6 +31,10 @@
         "no-console": [
             "warn",
             { "allow": [ "warn", "error" ] }
-        ]
+        ],
+        "no-extra-semi": [ "warn" ],
+        "no-redeclare": [ "warn" ],
+        // "no-unreachable": [ "warn" ],
+        "no-inner-declarations": [ "warn" ]
     }
 }

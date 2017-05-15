@@ -501,7 +501,7 @@ function SendFunds(
 			var tx_hash;
 			if (signedTx.version === 1) {
 				serialized_signedTx = monero_utils.serialize_tx(signedTx)
-				tx_hash = monero_utils.cn_fast_hash(raw_tx)
+				tx_hash = monero_utils.cn_fast_hash(serialized_signedTx)
 			} else {
 				const raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
 				serialized_signedTx = raw_tx_and_hash.raw

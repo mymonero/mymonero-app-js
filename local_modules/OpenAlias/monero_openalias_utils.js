@@ -62,7 +62,6 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 {
 	if (IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) === false) {
 		throw "Asked to resolve non-OpenAlias address." // throw as code fault
-		return
 	}
 	var openAlias_domain = openAliasAddress.replace(/@/g, ".");
 	const requestHandle = hostedMoneroAPIClient.TXTRecords(

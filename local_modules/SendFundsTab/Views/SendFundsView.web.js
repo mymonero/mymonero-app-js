@@ -936,7 +936,6 @@ class SendFundsView extends View
 				if (canUseManualPaymentID) {
 					if (resolvedPaymentID_fieldIsVisible) {
 						throw "canUseManualPaymentID but resolvedPaymentID_fieldIsVisible"
-						return
 					}
 					payment_id = manuallyEnteredPaymentID
 					if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
@@ -1137,17 +1136,14 @@ class SendFundsView extends View
 		{ // validate wallet and tx
 			if (typeof sentFrom_wallet === 'undefined' || sentFrom_wallet === null) {
 				throw self.constructor.name + " requires self.wallet to " + _cmd
-				return
 			}
 			if (typeof transaction === 'undefined' || transaction === null) {
 				throw self.constructor.name + " requires transaction to " + _cmd
-				return
 			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {
 			throw self.constructor.name + " requires navigationController to " + _cmd
-			return
 		}
 		{
 			const options = 

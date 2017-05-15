@@ -43,7 +43,6 @@ class ContactDetailsView extends View
 			self.contact = self.options.record // just going to call this contact internally for now unless we factor a RecordDetailsView (does not seem likely)
 			if (typeof self.contact === 'undefined' || !self.contact) {
 				throw self.constructor.name + " requires a self.options.record"
-				return
 			}
 		}
 		self.setup()

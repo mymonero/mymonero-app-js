@@ -45,14 +45,12 @@ class PasswordEntryViewController extends EventEmitter
 		if (typeof root_tabBarViewAndContentView === 'undefined' || root_tabBarViewAndContentView === null) {
 			const errStr = "root_tabBarViewAndContentView must not be nil in new PasswordEntryViewController()"
 			throw errStr
-			return
 		}
 		self.root_tabBarViewAndContentView = root_tabBarViewAndContentView
 		self.context = self.root_tabBarViewAndContentView.context
 		if (typeof self.context === 'undefined' || self.context === null) {
 			const errStr = "self.context of root_tabBarViewAndContentView must not be nil in new PasswordEntryViewController()"
 			throw errStr
-			return
 		}
 		self.passwordController = passwordController
 		//
@@ -136,8 +134,8 @@ class PasswordEntryViewController extends EventEmitter
 			{
 				const existingPasswordType = self.passwordController.userSelectedTypeOfPassword 
 				if (typeof existingPasswordType === 'undefined' || existingPasswordType === null || existingPasswordType.length == 0) {
-					throw "existingPasswordType was missing when passwordController asked us to have the user enter their existing password (and asserting it exists)"
-					existingPasswordType = self.passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW // graceful fallback..? since freeform str is superset of numer. pin
+					// existingPasswordType = self.passwordController.AvailableUserSelectableTypesOfPassword().FreeformStringPW // graceful fallback..? since freeform str is superset of numer. pin
+					throw "existingPasswordType was missing when passwordController asked us to have the user enter their existing password (and asserting it exists)"					
 				}
 				if (self.view === null || typeof self.view === 'undefined') {
 					self.view = self._new_passwordEntryView()

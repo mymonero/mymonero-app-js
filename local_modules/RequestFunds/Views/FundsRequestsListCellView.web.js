@@ -70,7 +70,7 @@ class FundsRequestsListCellView extends ListCellView
 		const self = this
 		if (!self.cellContentsView || typeof self.cellContentsView === 'undefined') {
 			throw "self.cellContentsView was nil in " + self.constructor.name + " overridable_layerToObserveForTaps"
-			return self.layer
+			// return self.layer
 		}
 		return self.cellContentsView.layer
 	}

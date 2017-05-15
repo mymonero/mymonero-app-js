@@ -677,7 +677,7 @@ class CreateRequestFormView extends View
 						self.manualPaymentIDInputLayer_containerLayer.style.display = "block" // show if hidden
 						self.manualPaymentIDInputLayer.value = payment_id
 					} else {
-						// we already hid it above… but jic
+						// we already hid it above… but jic
 						self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
 						self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
 						self.manualPaymentIDInputLayer.value = "" 
