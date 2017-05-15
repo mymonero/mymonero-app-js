@@ -59,5 +59,7 @@ rootView.superview = null // just to be explicit; however we will set a .superla
 //setup the context menu
 require('electron-context-menu')({
 
+	shouldShowMenu: (event, params) => params.isEditable,
+
 	showInspectElement: false
 });
