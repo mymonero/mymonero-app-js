@@ -227,7 +227,7 @@ There is no specific code styleguide yet (with the exception of the preference o
 
 Contributors to each release are credited in release notes.
 
-The MyMonero "core contributors" listed below either work on MyMonero full-time, have made essential contributions, and/or have had long-term involvement.
+The MyMonero "core contributors" listed below either work on MyMonero full-time, or have made essential contributions, and will have long-term involvement.
 
 * 🏂 [Paul Shapiro](https://github.com/paulshapiro) `endogenic` – Project maintainer; Lead client app developer; Partner
 
@@ -235,11 +235,13 @@ The MyMonero "core contributors" listed below either work on MyMonero full-time,
 
 * 😎 [Lee Clagett](https://github.com/vtnerd) `vtnerd` – Lead back-end developer
 
-* 🔥 [Matt D Smith](http://mds.is) `mds` – v1/MVP app designer
+* 🔥 [Matt D Smith](http://mds.is) `mds` – v1/MVP app and website designer
 
 * 🍄 [luigi1111](https://github.com/luigi1111) `luigi1112` – Monero tech advisor; Built client-side RingCT support
 
-* ✈️ [tfi_charmers](https://github.com/tficharmers) `tficharmers` – MyMonero website/front-end developer
+* ✈️ [tfi_charmers](https://github.com/tficharmers) `tficharmers` – MyMonero app website developer & advisory
+
+* 🤖 [Daniel Ternyak](https://github.com/dternyak) `dternyak` – QA/features advisory
 
 * 🌠 Your name here?
 
