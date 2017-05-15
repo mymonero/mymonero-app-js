@@ -115,4 +115,23 @@ class RootView extends View
 		self.addSubview(view)
 	}
 }
+
+
+//setup the context menu
+const {app} = require('electron');
+require('electron-context-menu')({
+
+	/*prepend: (params, browserWindow) => [{
+		label: 'Extra Monero Label'
+	}]*/
+
+	/*labels: { //configure labels here
+	copy: 'Copy Address',
+	paste: 'Paste Address'
+},*/
+
+	showInspectElement: false
+});
+
+
 module.exports = RootView
