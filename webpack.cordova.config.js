@@ -70,6 +70,8 @@ module.exports =
 				loader: 'babel-loader',
 				options: {
 					cacheDirectory: false,
+                    presets: ["es2015"],
+                    plugins: ["add-module-exports"],
 				},
 				exclude: path.join(__dirname, 'node_modules')
 			},
