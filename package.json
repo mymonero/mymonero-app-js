@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "async": "^2.1.2",
+    "electron-context-menu": "^0.9.0",
     "fastclick": "^1.0.6",
     "html5-fs": "^0.1.1",
     "jsqr": "^0.2.1",
