@@ -81,7 +81,7 @@ function EstimatedTransaction_networkFee(
 		estimated_txSize = EstimatedTransaction_preRingCT_txSize(numberOf_inputs, nonZero_mixin_int)
 	}
 	const fee_multiplier = 1 // TODO: expose this
-    const estimated_fee = calculate_fee(fee_per_kb_JSBigInt, estimated_txSize, fee_multiplier)
+	const estimated_fee = calculate_fee(fee_per_kb_JSBigInt, estimated_txSize, fee_multiplier)
 	//
 	return estimated_fee
 }
@@ -92,8 +92,8 @@ function EstimatedTransaction_preRingCT_txSize(
 	nonZero_mixin_int
 )
 {
-    const numberOf_fakeOuts = nonZero_mixin_int
-    const size = numberOf_inputs * (numberOf_fakeOuts + 1) * APPROXIMATE_INPUT_BYTES //
+	const numberOf_fakeOuts = nonZero_mixin_int
+	const size = numberOf_inputs * (numberOf_fakeOuts + 1) * APPROXIMATE_INPUT_BYTES //
 	//
 	return size
 }
@@ -215,7 +215,7 @@ function SendFunds(
 				return
 			}
 			const moneroReady_targetDescription = moneroReady_targetDescriptions[0]
-			if (typeof moneroReady_targetDescription === null || typeof moneroReady_targetDescription === 'undefined') {
+			if (moneroReady_targetDescription === null || typeof moneroReady_targetDescription === 'undefined') {
 				__trampolineFor_err_withStr(invalidOrZeroDestination_errStr)
 				return
 			}
@@ -227,40 +227,40 @@ function SendFunds(
 		var moneroReady_targetDescription_address = moneroReady_targetDescription.address
 		var moneroReady_targetDescription_amount = moneroReady_targetDescription.amount
 		//
-        var totalAmountWithoutFee_JSBigInt = (new JSBigInt(0)).add(moneroReady_targetDescription_amount)
-        console.log("💬  Total to send, before fee: " + monero_utils.formatMoney(totalAmountWithoutFee_JSBigInt));
-        if (totalAmountWithoutFee_JSBigInt.compare(0) <= 0) {
+		var totalAmountWithoutFee_JSBigInt = (new JSBigInt(0)).add(moneroReady_targetDescription_amount)
+		console.log("💬  Total to send, before fee: " + monero_utils.formatMoney(totalAmountWithoutFee_JSBigInt));
+		if (totalAmountWithoutFee_JSBigInt.compare(0) <= 0) {
 			const errStr = "The amount you've entered is too low"
 			__trampolineFor_err_withStr(errStr)
-            return
+			return
 		}
 		//
 		// Derive/finalize some values…
 		var final__payment_id = payment_id
-        var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one
-        var address__decode_result; 
+		var final__pid_encrypt = false // we don't want to encrypt payment ID unless we find an integrated one
+		var address__decode_result; 
 		try {
 			address__decode_result = monero_utils.decode_address(moneroReady_targetDescription_address)
 		} catch (e) {
 			__trampolineFor_err_withStr(typeof e === 'string' ? e : e.toString())
 			return
 		}
-        if (address__decode_result.intPaymentId && payment_id) {
+		if (address__decode_result.intPaymentId && payment_id) {
 			const errStr = "Payment ID field must be blank when using an Integrated Address"
 			__trampolineFor_err_withStr(errStr)
-            return
-        }
+			return
+		}
 		if (address__decode_result.intPaymentId) {
-            final__payment_id = address__decode_result.intPaymentId
-            final__pid_encrypt = true // we do want to encrypt if using an integrated address
-        }
+			final__payment_id = address__decode_result.intPaymentId
+			final__pid_encrypt = true // we do want to encrypt if using an integrated address
+		}
 		//
 		// Validation
-        if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
+		if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
 			const errStr = "The payment ID you've entered is not valid"
 			__trampolineFor_err_withStr(errStr)
-            return
-        }
+			return
+		}
 		//
 		_proceedTo_getUnspentOutsUsableForMixin(
 			moneroReady_targetDescription_address,
@@ -302,13 +302,13 @@ function SendFunds(
 			}
 		)
 	}
-    function _proceedTo_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin(
+	function _proceedTo_constructFundTransferListAndSendFundsByUsingUnusedUnspentOutsForMixin(
 		moneroReady_targetDescription_address,
 		totalAmountWithoutFee_JSBigInt,
 		final__payment_id,
 		final__pid_encrypt,
 		unusedOuts
-    ) 
+	) 
 	{
 		// status: constructing transaction…
 		const feePerKB_JSBigInt = monero_config.feePerKB_JSBigInt
@@ -325,19 +325,19 @@ function SendFunds(
 			network_minimumFee
 		)
 	}		
-    function __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
+	function __reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 		moneroReady_targetDescription_address,
 		totalAmountWithoutFee_JSBigInt,
 		final__payment_id,
 		final__pid_encrypt,
 		unusedOuts,
 		passedIn_attemptAt_network_minimumFee
-    ) 
+	) 
 	{ // Now we need to establish some values for balance validation and to construct the transaction
 		console.log("Entered re-enterable tx building codepath…", unusedOuts)
 		var attemptAt_network_minimumFee = passedIn_attemptAt_network_minimumFee // we may change this if isRingCT
 		// const hostingService_chargeAmount = hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(attemptAt_network_minimumFee)
-        var totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(attemptAt_network_minimumFee)/*.add(hostingService_chargeAmount) NOTE service fee removed for now */
+		var totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(attemptAt_network_minimumFee)/*.add(hostingService_chargeAmount) NOTE service fee removed for now */
 		const usableOutputsAndAmounts = _outputsAndAmountToUseForMixin(
 			totalAmountIncludingFees,
 			unusedOuts,
@@ -349,27 +349,27 @@ function SendFunds(
 		var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts // this is a copy of the pre-mutation usingOuts
 		if (isRingCT) { 
 			if (usingOuts.length > 1) {
-			    var newNeededFee = new JSBigInt(Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(monero_config.feePerKB_JSBigInt)
-			    totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
-			    // add outputs 1 at a time till we either have them all or can meet the fee
-			    while (usingOutsAmount.compare(totalAmountIncludingFees) < 0 && remaining_unusedOuts.length > 0) {
+				var newNeededFee = new JSBigInt(Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(monero_config.feePerKB_JSBigInt)
+				totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
+				// add outputs 1 at a time till we either have them all or can meet the fee
+				while (usingOutsAmount.compare(totalAmountIncludingFees) < 0 && remaining_unusedOuts.length > 0) {
 					const out = _popAndReturnRandomElementFromList(remaining_unusedOuts)
-			        usingOuts.push(out)
-			        usingOutsAmount = usingOutsAmount.add(out.amount)
-			        console.log("Using output: " + monero_utils.formatMoney(out.amount) + " - " + JSON.stringify(out))
-			        newNeededFee = new JSBigInt(
+					usingOuts.push(out)
+					usingOutsAmount = usingOutsAmount.add(out.amount)
+					console.log("Using output: " + monero_utils.formatMoney(out.amount) + " - " + JSON.stringify(out))
+					newNeededFee = new JSBigInt(
 						Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)
 					).multiply(monero_config.feePerKB_JSBigInt)
-			        totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
-			    }
-			    console.log("New fee: " + monero_utils.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs")
-			    attemptAt_network_minimumFee = newNeededFee
+					totalAmountIncludingFees = totalAmountWithoutFee_JSBigInt.add(newNeededFee)
+				}
+				console.log("New fee: " + monero_utils.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs")
+				attemptAt_network_minimumFee = newNeededFee
 			}
 		}
-        console.log("~ Balance required: " + monero_utils.formatMoneySymbol(totalAmountIncludingFees))
-        // Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
+		console.log("~ Balance required: " + monero_utils.formatMoneySymbol(totalAmountIncludingFees))
+		// Now we can validate available balance with usingOutsAmount (TODO? maybe this check can be done before selecting outputs?)
 		const usingOutsAmount_comparedTo_totalAmount = usingOutsAmount.compare(totalAmountIncludingFees)
-        if (usingOutsAmount_comparedTo_totalAmount < 0) {
+		if (usingOutsAmount_comparedTo_totalAmount < 0) {
 			__trampolineFor_err_withStr(
 				"Not enough spendable outputs / balance too low (have: " 
 				+ monero_utils.formatMoneyFull(usingOutsAmount) 
@@ -377,8 +377,8 @@ function SendFunds(
 				+ monero_utils.formatMoneyFull(totalAmountIncludingFees) 
 				+ ")"
 			)
-            return
-        }
+			return
+		}
 		// Now we can put together the list of fund transfers we need to perform
 		const fundTransferDescriptions = [] // to build…
 		// I. the actual transaction the user is asking to do
@@ -389,53 +389,53 @@ function SendFunds(
 		// II. the fee that the hosting provider charges
 		// NOTE: The fee has been removed for RCT until a later date
 		// fundTransferDescriptions.push({
-		//             address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
-		//             amount: hostingService_chargeAmount
+		//			 address: hostedMoneroAPIClient.HostingServiceFeeDepositAddress(),
+		//			 amount: hostingService_chargeAmount
 		// })
 		// III. some amount of the total outputs will likely need to be returned to the user as "change":			
 		if (usingOutsAmount_comparedTo_totalAmount > 0) {
-            var changeAmount = usingOutsAmount.subtract(totalAmountIncludingFees)
+			var changeAmount = usingOutsAmount.subtract(totalAmountIncludingFees)
 			console.log("changeAmount" , changeAmount)
 			if (isRingCT) { // for RCT we don't presently care about dustiness so add entire change amount
-                console.log("Sending change of " + monero_utils.formatMoneySymbol(changeAmount) + " to " + wallet__public_address)
-                fundTransferDescriptions.push({
-                    address: wallet__public_address,
-                    amount: changeAmount
-                })
+				console.log("Sending change of " + monero_utils.formatMoneySymbol(changeAmount) + " to " + wallet__public_address)
+				fundTransferDescriptions.push({
+					address: wallet__public_address,
+					amount: changeAmount
+				})
 			} else { // pre-ringct
-	            // do not give ourselves change < dust threshold
-	            var changeAmountDivRem = changeAmount.divRem(monero_config.dustThreshold)
+				// do not give ourselves change < dust threshold
+				var changeAmountDivRem = changeAmount.divRem(monero_config.dustThreshold)
 				console.log("💬  changeAmountDivRem", changeAmountDivRem)
-	            if (changeAmountDivRem[1].toString() !== "0") {
-	                // miners will add dusty change to fee
-	                console.log("💬  Miners will add change of " + monero_utils.formatMoneyFullSymbol(changeAmountDivRem[1]) + " to transaction fee (below dust threshold)")
-	            }
-	            if (changeAmountDivRem[0].toString() !== "0") {
-	                // send non-dusty change to our address
-	                var usableChange = changeAmountDivRem[0].multiply(monero_config.dustThreshold)
-	                console.log("💬  Sending change of " + monero_utils.formatMoneySymbol(usableChange) + " to " + wallet__public_address)
-	                fundTransferDescriptions.push({
-	                    address: wallet__public_address,
-	                    amount: usableChange
-	                })
+				if (changeAmountDivRem[1].toString() !== "0") {
+					// miners will add dusty change to fee
+					console.log("💬  Miners will add change of " + monero_utils.formatMoneyFullSymbol(changeAmountDivRem[1]) + " to transaction fee (below dust threshold)")
+				}
+				if (changeAmountDivRem[0].toString() !== "0") {
+					// send non-dusty change to our address
+					var usableChange = changeAmountDivRem[0].multiply(monero_config.dustThreshold)
+					console.log("💬  Sending change of " + monero_utils.formatMoneySymbol(usableChange) + " to " + wallet__public_address)
+					fundTransferDescriptions.push({
+						address: wallet__public_address,
+						amount: usableChange
+					})
 				}
 			}
-        } else if (usingOutsAmount_comparedTo_totalAmount == 0) {
-        	if (isRingCT) { // then create random destination to keep 2 outputs always in case of 0 change
+		} else if (usingOutsAmount_comparedTo_totalAmount == 0) {
+			if (isRingCT) { // then create random destination to keep 2 outputs always in case of 0 change
 				var fakeAddress = monero_utils.create_address(monero_utils.random_scalar()).public_addr
 				console.log("Sending 0 XMR to a fake address to keep tx uniform (no change exists): " + fakeAddress)
 				fundTransferDescriptions.push({
 					address: fakeAddress,
 					amount: 0
 				})
-        	}
-        }
+			}
+		}
 		console.log("fundTransferDescriptions so far", fundTransferDescriptions)
 		if (mixin < 0 || isNaN(mixin)) {
-            __trampolineFor_err_withStr("Invalid mixin")
-            return
-        }
-        if (mixin > 0) { // first, grab RandomOuts, then enter __createTx 
+			__trampolineFor_err_withStr("Invalid mixin")
+			return
+		}
+		if (mixin > 0) { // first, grab RandomOuts, then enter __createTx 
 			hostedMoneroAPIClient.RandomOuts(
 				usingOuts,
 				mixin,
@@ -449,29 +449,29 @@ function SendFunds(
 				}
 			)
 			return
-        } else { // mixin === 0: -- PSNOTE: is that even allowed? 
-            __createTxAndAttemptToSend()
+		} else { // mixin === 0: -- PSNOTE: is that even allowed? 
+			__createTxAndAttemptToSend()
 		}
 		function __createTxAndAttemptToSend(mix_outs)
 		{
-            var signedTx;
-            try {
-                console.log('Destinations: ')
-                monero_utils.printDsts(fundTransferDescriptions)
+			var signedTx;
+			try {
+				console.log('Destinations: ')
+				monero_utils.printDsts(fundTransferDescriptions)
 				//
 				var realDestViewKey // need to get viewkey for encrypting here, because of splitting and sorting
-                if (final__pid_encrypt) {
-                    realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
+				if (final__pid_encrypt) {
+					realDestViewKey = monero_utils.decode_address(moneroReady_targetDescription_address).view
 					console.log("got realDestViewKey" , realDestViewKey)
-                }
-                var splitDestinations = monero_utils.decompose_tx_destinations(
+				}
+				var splitDestinations = monero_utils.decompose_tx_destinations(
 					fundTransferDescriptions, 
 					isRingCT
 				)
-                console.log('Decomposed destinations:')
-                monero_utils.printDsts(splitDestinations)
+				console.log('Decomposed destinations:')
+				monero_utils.printDsts(splitDestinations)
 				//
-                signedTx = monero_utils.create_transaction(
+				signedTx = monero_utils.create_transaction(
 					wallet__public_keys, 
 					wallet__private_keys, 
 					splitDestinations, 
@@ -485,42 +485,42 @@ function SendFunds(
 					0,
 					isRingCT
 				)
-            } catch (e) {
+			} catch (e) {
 				var errStr;
 				if (e) {
 					errStr = typeof e == "string" ? e : e.toString()
 				} else {
 					errStr = "Failed to create transaction with unknown error."
 				}
-                __trampolineFor_err_withStr(errStr)
-                return
-            }
-            console.log("signed tx: ", JSON.stringify(signedTx))
+				__trampolineFor_err_withStr(errStr)
+				return
+			}
+			console.log("signed tx: ", JSON.stringify(signedTx))
 			//
 			var serialized_signedTx;
 			var tx_hash;
-            if (signedTx.version === 1) {
-                serialized_signedTx = monero_utils.serialize_tx(signedTx)
-                tx_hash = monero_utils.cn_fast_hash(raw_tx)
-            } else {
-                const raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
+			if (signedTx.version === 1) {
+				serialized_signedTx = monero_utils.serialize_tx(signedTx)
+				tx_hash = monero_utils.cn_fast_hash(serialized_signedTx)
+			} else {
+				const raw_tx_and_hash = monero_utils.serialize_rct_tx_with_hash(signedTx)
 				serialized_signedTx = raw_tx_and_hash.raw
 				tx_hash = raw_tx_and_hash.hash
-            }
-            console.log("tx serialized: " + serialized_signedTx)
-	        console.log("Tx hash: " + tx_hash)
+			}
+			console.log("tx serialized: " + serialized_signedTx)
+			console.log("Tx hash: " + tx_hash)
 			//
-            // work out per-kb fee for transaction and verify that it's enough
-            var txBlobBytes = serialized_signedTx.length / 2
-            var numKB = Math.floor(txBlobBytes / 1024)
-            if (txBlobBytes % 1024) {
-                numKB++
-            }
-            console.log(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + ")")
-            const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
-            // if we need a higher fee
-            if (feeActuallyNeededByNetwork.compare(attemptAt_network_minimumFee) > 0) {
-                console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
+			// work out per-kb fee for transaction and verify that it's enough
+			var txBlobBytes = serialized_signedTx.length / 2
+			var numKB = Math.floor(txBlobBytes / 1024)
+			if (txBlobBytes % 1024) {
+				numKB++
+			}
+			console.log(txBlobBytes + " bytes <= " + numKB + " KB (current fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + ")")
+			const feeActuallyNeededByNetwork = monero_config.feePerKB_JSBigInt.multiply(numKB)
+			// if we need a higher fee
+			if (feeActuallyNeededByNetwork.compare(attemptAt_network_minimumFee) > 0) {
+				console.log("💬  Need to reconstruct the tx with enough of a network fee. Previous fee: " + monero_utils.formatMoneyFull(attemptAt_network_minimumFee) + " New fee: " + monero_utils.formatMoneyFull(feeActuallyNeededByNetwork))
 				__reenterable_constructFundTransferListAndSendFunds_findingLowestNetworkFee(
 					moneroReady_targetDescription_address,
 					totalAmountWithoutFee_JSBigInt,
@@ -530,10 +530,10 @@ function SendFunds(
 					feeActuallyNeededByNetwork // we are re-entering this codepath after changing this feeActuallyNeededByNetwork
 				)
 				//
-                return
-            }
+				return
+			}
 			//
-            // generated with correct per-kb fee
+			// generated with correct per-kb fee
 			const final_networkFee = attemptAt_network_minimumFee // just to make things clear
 			console.log("💬  Successful tx generation, submitting tx. Going with final_networkFee of ", monero_utils.formatMoney(final_networkFee))
 			// status: submitting…
@@ -558,7 +558,7 @@ function SendFunds(
 				}
 			)
 		}
-    }
+	}
 }
 exports.SendFunds = SendFunds
 //
@@ -572,41 +572,41 @@ function new_moneroReadyTargetDescriptions_fromTargetDescriptions(
 		targetDescriptions,
 		function(targetDescription, cb)
 		{
-            if (!targetDescription.address && !targetDescription.amount) { // PSNote: is this check rigorous enough?
+			if (!targetDescription.address && !targetDescription.amount) { // PSNote: is this check rigorous enough?
 				const errStr = "Please supply a target address and a target amount."
 				const err = new Error(errStr)
 				cb(err)
 				return
-            }
+			}
 			const targetDescription_address = targetDescription.address
 			const targetDescription_amount = "" + targetDescription.amount // we are converting it to a string here because parseMoney expects a string
 			// now verify/parse address and amount
-            if (monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(targetDescription_address) == true) {
+			if (monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(targetDescription_address) == true) {
 				throw "You must resolve this OA address to a Monero address before calling SendFunds"
-            }
+			}
 			// otherwise this should be a normal, single Monero public address
-	        try {
-	            monero_utils.decode_address(targetDescription_address) // verify that the address is valid
-	        } catch (e) {
-	            const errStr = "Couldn't decode address " + targetDescription_address + ": " + e
+			try {
+				monero_utils.decode_address(targetDescription_address) // verify that the address is valid
+			} catch (e) {
+				const errStr = "Couldn't decode address " + targetDescription_address + ": " + e
 				const err = new Error(errStr)
 				cb(err)
-	            return
-	        }
+				return
+			}
 			// amount:
-            var moneroReady_amountToSend; // possibly need this ; here for the JS parser
-            try {
-                moneroReady_amountToSend = monero_utils.parseMoney(targetDescription_amount)
-            } catch (e) {
-                const errStr = "Couldn't parse amount " + targetDescription_amount + ": " + e
+			var moneroReady_amountToSend; // possibly need this ; here for the JS parser
+			try {
+				moneroReady_amountToSend = monero_utils.parseMoney(targetDescription_amount)
+			} catch (e) {
+				const errStr = "Couldn't parse amount " + targetDescription_amount + ": " + e
 				const err = new Error(errStr)
 				cb(err)
-                return
-            }
-	        cb(null, { 
-	            address: targetDescription_address,
-	            amount: moneroReady_amountToSend
-	        })
+				return
+			}
+			cb(null, { 
+				address: targetDescription_address,
+				amount: moneroReady_amountToSend
+			})
 		},
 		function(err, moneroReady_targetDescriptions)
 		{

@@ -58,7 +58,6 @@ class Pasteboard extends PasteboardInterface
 		if (contentType === contentTypes.Text) {
 			if (self.context.Cordova_isMobile !== true) {
 				throw `cordova.plugins.clipboard doesn't support non-mobile`
-				return
 			}
 			cordova.plugins.clipboard.copy(string)
 		} else if (contentType === contentTypes.HTML) {

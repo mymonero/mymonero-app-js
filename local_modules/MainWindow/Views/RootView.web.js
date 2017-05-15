@@ -115,4 +115,5 @@ class RootView extends View
 		self.addSubview(view)
 	}
 }
+
 module.exports = RootView

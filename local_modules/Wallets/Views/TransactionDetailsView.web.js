@@ -44,13 +44,11 @@ class TransactionDetailsView extends View
 			self.transaction = options.transaction
 			if (self.transaction === null || typeof self.transaction === 'undefined') {
 				throw "options.transaction nil but required for " + self.constructor.name
-				return
 			}
 			//
 			self.wallet = options.wallet
 			if (self.wallet === null || typeof self.wallet === 'undefined') {
 				throw "options.wallet nil but required for " + self.constructor.name
-				return
 			}
 		}
 		self.setup()
@@ -254,7 +252,6 @@ class TransactionDetailsView extends View
 		const self = this
 		if (typeof self.wallet === 'undefined' || self.wallet === null) {
 			throw "nil self.wallet undefined in " + self.constructor.name + "/" + "_setup_startObserving_wallet`"
-			return
 		}
 		// here, we're going to store the listener functions as instance properties
 		// because when we need to stopObserving we need to have access to the listener fns
@@ -359,7 +356,6 @@ class TransactionDetailsView extends View
 		const wallet = self.wallet
 		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
 			throw self.constructor.name + " opened while wallet failed to init or boot."
-			return
 		}
 		const transaction = self.transaction
 		if (transaction.isUnlocked !== true) {

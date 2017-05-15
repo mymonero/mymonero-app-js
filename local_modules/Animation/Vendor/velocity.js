@@ -3183,7 +3183,7 @@
 
 
 							//
-                            // BEGIN MyMonero MODIFICATION
+							// BEGIN MyMonero MODIFICATION
 
 
 								 // NOTE: Commented this
@@ -3193,13 +3193,13 @@
 								// scrollPositionEnd = (scrollPositionCurrent + $(element).position()[scrollDirection.toLowerCase()]) + scrollOffset; /* GET */
 
 
-                            /* using offsets to calculate the element's position values relative to the container's currently viewable area (without taking into account the 
-                               container's true dimensions -- say, for example, if the container was not overflowing). Thus, the scroll end value is the sum of the 
-                               child element's position *and* the scroll container's current scroll position. */
-                            scrollPositionEnd = (scrollPositionCurrent + $(element).offset()[scrollDirection.toLowerCase()] - $(opts.container).offset()[scrollDirection.toLowerCase()]) + scrollOffset; /* GET */
+							/* using offsets to calculate the element's position values relative to the container's currently viewable area (without taking into account the 
+							   container's true dimensions -- say, for example, if the container was not overflowing). Thus, the scroll end value is the sum of the 
+							   child element's position *and* the scroll container's current scroll position. */
+							scrollPositionEnd = (scrollPositionCurrent + $(element).offset()[scrollDirection.toLowerCase()] - $(opts.container).offset()[scrollDirection.toLowerCase()]) + scrollOffset; /* GET */
 
-                            // END MyMonero MODIFICATION
-                            //
+							// END MyMonero MODIFICATION
+							//
 
 
 								/* If a value other than a jQuery object or a raw DOM element was passed in, default to null so that this option is ignored. */

@@ -60,8 +60,8 @@ class SettingsController extends EventEmitter
 		self._tryToBoot()
 	}
 	_tryToBoot()
-	{ // we can afford to do this w/o any callback saying "success" because we defer execution of
-	  // things which would rely on boot-time info till we've booted
+	{	// we can afford to do this w/o any callback saying "success" because we defer execution of
+		// things which would rely on boot-time info till we've booted
 		const self = this
 		//
 		// first, check if any password model has been stored
@@ -72,7 +72,6 @@ class SettingsController extends EventEmitter
 				if (err) {
 					console.error("Error while fetching existing", CollectionName, err)
 					throw err
-					return
 				}
 				const docs_length = docs.length
 				if (docs_length === 0) { //

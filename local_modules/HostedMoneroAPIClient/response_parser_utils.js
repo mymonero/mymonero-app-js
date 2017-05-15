@@ -140,7 +140,7 @@ function Parsed_AddressTransactions(
 	// prepare transactions to be serialized
 	for (let transaction of transactions) {
 		transaction.amount = transaction.amount.toString() // JSBigInt -> String
-		if (typeof total_sent !== 'undefined' && total_sent !== null) {
+		if (typeof transaction.total_sent !== 'undefined' && transaction.total_sent !== null) {
 			transaction.total_sent = transaction.total_sent.toString()
 		}
 	}

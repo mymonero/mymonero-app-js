@@ -936,10 +936,9 @@ class SendFundsView extends View
 				if (canUseManualPaymentID) {
 					if (resolvedPaymentID_fieldIsVisible) {
 						throw "canUseManualPaymentID but resolvedPaymentID_fieldIsVisible"
-						return
 					}
 					payment_id = manuallyEnteredPaymentID
-			        if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
+					if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
 						// TODO: set validation err on payment ID field (clear that err when we clear the payment ID field)
 						_trampolineToReturnWithValidationErrorString("Please enter a valid payment ID.")
 						return
@@ -976,10 +975,11 @@ class SendFundsView extends View
 		{
 			const sendFrom_address = sendFrom_wallet.public_address
 			//
+			const mixin_int = self._mixin_int()
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
-				self._mixin_int(),
+				mixin_int,
 				payment_id,
 				function(
 					err,
@@ -1006,24 +1006,24 @@ class SendFundsView extends View
 					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
 						mockedTransaction =
 						{
-						    hash: tx_hash,
-						    mixin: "" + mixin_int,
-						    coinbase: false,
+							hash: tx_hash,
+							mixin: "" + mixin_int,
+							coinbase: false,
 							//
-						    isConfirmed: false, // important
+							isConfirmed: false, // important
 							isJustSentTransaction: true, // this is only used here
-						    timestamp: "" + (new Date()), // faking
+							timestamp: "" + (new Date()), // faking
 							//
-						    isUnlocked: true, // TODO: not sure if this is correct
-						    unlock_time: 0,
-						    lockedReason: "Transaction is unlocked",
-						    // height: 1228823,
+							isUnlocked: true, // TODO: not sure if this is correct
+							unlock_time: 0,
+							lockedReason: "Transaction is unlocked",
+							// height: 1228823,
 							//
-						    total_sent: "" + (sentAmount * Math.pow(10, monero_config.coinUnitPlaces)), // TODO: is this correct? and do we need to mock this?
-						    total_received: "0",
+							total_sent: "" + (sentAmount * Math.pow(10, monero_config.coinUnitPlaces)), // TODO: is this correct? and do we need to mock this?
+							total_received: "0",
 							//
-						    approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
-						    // amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
+							approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
+							// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
 							tx_fee: tx_fee,
 							//
 							payment_id: payment_id,
@@ -1064,9 +1064,6 @@ class SendFundsView extends View
 								self._dismissValidationMessageLayer()
 								{
 									self.amountInputLayer.value = ""
-								}
-								{ // not that we need do to this cause mixin is hidden…
-									self.mixinSelectLayer.value = self.mixinSelectLayer.firstChild.value // set to first
 								}
 								{
 									if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
@@ -1139,17 +1136,14 @@ class SendFundsView extends View
 		{ // validate wallet and tx
 			if (typeof sentFrom_wallet === 'undefined' || sentFrom_wallet === null) {
 				throw self.constructor.name + " requires self.wallet to " + _cmd
-				return
 			}
 			if (typeof transaction === 'undefined' || transaction === null) {
 				throw self.constructor.name + " requires transaction to " + _cmd
-				return
 			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {
 			throw self.constructor.name + " requires navigationController to " + _cmd
-			return
 		}
 		{
 			const options = 
@@ -1331,9 +1325,9 @@ class SendFundsView extends View
 				self.addPaymentIDButtonView.layer.style.display = "none"
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 				self.manualPaymentIDInputLayer.value = ""
-	        } else {
+			} else {
 				self._hideResolvedPaymentID() // not that it would be showing
-	        }
+			}
 			self.enable_submitButton()
 			return
 		}
@@ -1425,21 +1419,21 @@ class SendFundsView extends View
 		const width = 256
 		const height = 256 // TODO: can we / do we need to read these from the image itself?
 		//
-	    const canvas = document.createElement("canvas")
-	    const context = canvas.getContext("2d")
-	    canvas.width = width
-	    canvas.height = height 
+		const canvas = document.createElement("canvas")
+		const context = canvas.getContext("2d")
+		canvas.width = width
+		canvas.height = height 
 		//
 		const img = document.createElement("img")
 		img.addEventListener(
 			"load",
 			function()
 			{
-		        context.drawImage(img, 0, 0, width, height)
+				context.drawImage(img, 0, 0, width, height)
 				//
-		        const imageData = context.getImageData(0, 0, width, height)
-		        const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
-		        if (!decodeResults || typeof decodeResults === 'undefined') {
+				const imageData = context.getImageData(0, 0, width, height)
+				const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
+				if (!decodeResults || typeof decodeResults === 'undefined') {
 					console.log("No decodeResults from QR. Couldn't decode?")
 					self.validationMessageLayer.SetValidationError("Unable to decode that QR code.")
 					return
@@ -1634,7 +1628,7 @@ class SendFundsView extends View
 			)
 		}
 	}
-    _proxied_ondragleave()
+	_proxied_ondragleave()
 	{
 		const self = this
 		setTimeout(
@@ -1644,7 +1638,7 @@ class SendFundsView extends View
 			},
 			10
 		)
-    }
+	}
 	_proxied_ondrop(e)
 	{
 		const self = this

@@ -182,7 +182,7 @@ function New_DecryptedDocument__Async(
 						if (err) {
 							console.error("Error while decrypting document:", err)
 							cb(err)
-							returh
+							return
 						}
 						var finalizedValue;
 						// TODO: assert type not nil here?

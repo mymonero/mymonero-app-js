@@ -55,6 +55,6 @@ function PreLoadImages(context)
 		const image = new Image()
 		image.src = imageURL
 		cached_preloadedImages.push(image)
-    }
+	}
 }
 exports.PreLoadImages = PreLoadImages

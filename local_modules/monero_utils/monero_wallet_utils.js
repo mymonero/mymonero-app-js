@@ -53,7 +53,6 @@ function WordsetNameAccordingToMnemonicString(mnemonicString) // throws
 	const mnemonicString_words = mnemonicString.split(' ')
 	if (mnemonicString_words.length == 0) {
 		throw "Invalid mnemonic"
-		return
 	}
 	var wholeMnemonicSuspectedAsWordsetNamed = null // to derive
 	for (let mnemonicString_word of mnemonicString_words) {
@@ -71,20 +70,17 @@ function WordsetNameAccordingToMnemonicString(mnemonicString) // throws
 		}
 		if (thisWordIsInWordsetNamed === null) { // didn't find this word in any of the mnemonic wordsets
 			throw "Unrecognized mnemonic language"
-			return
 		}
 		if (wholeMnemonicSuspectedAsWordsetNamed === null) { // haven't found it yet
 			wholeMnemonicSuspectedAsWordsetNamed = thisWordIsInWordsetNamed 
 		} else if (thisWordIsInWordsetNamed !== wholeMnemonicSuspectedAsWordsetNamed) {
 			throw "Ambiguous mnemonic language" // multiple wordset names detected
-			return
 		} else {
 			// nothing to do but keep verifying the rest of the words that it's the same suspsected wordset
 		}
 	}
 	if (wholeMnemonicSuspectedAsWordsetNamed === null) { // this might be redundant, but for logical rigor……
 		throw "Unrecognized mnemonic language"
-		return
 	}
 	//
 	return wholeMnemonicSuspectedAsWordsetNamed
@@ -238,7 +234,7 @@ function VerifiedComponentsForLogIn_sync(
 		spend: spend_key
 	}
 	var account_seed
-	if (!!seed_orUndefined) { // not keen on this "!!"
+	if (typeof seed_orUndefined !== 'undefined' && seed_orUndefined && seed_orUndefined.length != 0) {
 		var expected_account;
 		try {
 			expected_account = monero_utils.create_address(seed_orUndefined)

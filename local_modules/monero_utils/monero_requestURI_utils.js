@@ -37,28 +37,28 @@ function New_RequestFunds_URI(
 	const address = args.address
 	if (!address) {
 		throw "missing address"
-		return null
+		// return null
 	}
-    var uri = monero_config.coinUriPrefix + "//" + address  // inserting a // so data detectors pick it up… maybe remove if/after not necessary
+	var uri = monero_config.coinUriPrefix + "//" + address  // inserting a // so data detectors pick it up… maybe remove if/after not necessary
 	var isAppendingParam0 = true
-    function addParam(parameterName, value)
+	function addParam(parameterName, value)
 	{
-        if (!value || typeof value === 'undefined') {
-            return
-        }
+		if (!value || typeof value === 'undefined') {
+			return
+		}
 		var conjunctionStr = "&"
-        if (isAppendingParam0 === true) {
-            isAppendingParam0 = false
+		if (isAppendingParam0 === true) {
+			isAppendingParam0 = false
 			conjunctionStr = "?"
-        }
+		}
 		uri += conjunctionStr
-        uri += parameterName + '=' + encodeURIComponent(value)
-    }
+		uri += parameterName + '=' + encodeURIComponent(value)
+	}
 	{
-	    addParam('tx_amount', args.amount)
-	    addParam('tx_description', args.description)
-	    addParam('tx_payment_id', args.payment_id)
-	    addParam('tx_message', args.message)
+		addParam('tx_amount', args.amount)
+		addParam('tx_description', args.description)
+		addParam('tx_payment_id', args.payment_id)
+		addParam('tx_message', args.message)
 	}
 	return uri
 }

@@ -70,7 +70,7 @@ function ensureEnv()
 		const remote__process = remote__electron.process
 		const remote__env = remote__process.env
 		const _ = require('underscore')
-	    var newEnv = _.extend({}, process.env, remote__env);
-	    process.env = newEnv;
+		var newEnv = _.extend({}, process.env, remote__env);
+		process.env = newEnv;
 	}
 }

@@ -154,7 +154,6 @@ class View extends EventEmitter
 		const self = this
 		if (!view || typeof view === 'undefined') {
 			throw self.constructor.name + " asked to `addSubview` but passed nil `view`."
-			return
 		}
 		const toLayer = self.layer
 		self.addSubview_appendingToLayer(view, toLayer)
@@ -164,7 +163,6 @@ class View extends EventEmitter
 		const self = this
 		if (!view || typeof view === 'undefined') {
 			throw self.constructor.name + " asked to `addSubview` but passed nil `view`."
-			return
 		}
 		view.viewWillAppear()
 		{ // state:
@@ -208,7 +206,6 @@ class View extends EventEmitter
 				// console.log("layerOf_subviewAbove" , layerOf_subviewAbove)
 				if (layerOf_subviewAbove.parentNode !== superlayer) {
 					throw "View hierarchy error - layerOf_subviewAbove.parentNode !== superlayer"
-					return
 				}
 				superlayer.insertBefore(
 					view.layer,
@@ -227,11 +224,9 @@ class View extends EventEmitter
 		const self = this
 		if (typeof self.superview === 'undefined' || self.superview === null) {
 			throw "no superview"
-			return
 		}
 		if (typeof self.superlayer === 'undefined' || self.superlayer === null) {
 			throw "no superlayer"
-			return
 		}
 		//
 		self.viewWillDisappear()
@@ -275,7 +270,7 @@ class View extends EventEmitter
 		const layer = self.layer
 		var firstChild = layer.firstChild
 		while (firstChild !== null) {
-		    layer.removeChild(firstChild)
+			layer.removeChild(firstChild)
 			firstChild = layer.firstChild
 		}
 	}

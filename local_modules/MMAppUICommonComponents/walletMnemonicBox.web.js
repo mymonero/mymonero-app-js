@@ -336,7 +336,7 @@ function New_MnemonicConfirmation_SelectableWordsView(
 				const word = wordsByWordUUID[wordUUID]
 				if (typeof word === 'undefined' || !word) {
 					throw "Word not found for UUID"
-					return
+					// return
 				}
 				words.push(word)
 			}

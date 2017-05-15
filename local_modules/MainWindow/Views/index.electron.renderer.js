@@ -39,7 +39,7 @@ const remote__context = remote__electron.getGlobal("context")
 //
 const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
 const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-	remote__app, 
+	remote__app,
 	remote__context.menuController, // for UI and app runtime access
 	remote__context.urlOpeningController
 )
@@ -55,3 +55,9 @@ rootView.superview = null // just to be explicit; however we will set a .superla
 	rootView.superlayer = superlayer
 	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
 }
+//
+// setup the context menu
+require('electron-context-menu')({
+	shouldShowMenu: (event, params) => params.isEditable,
+	showInspectElement: false
+});

@@ -116,7 +116,7 @@ class ContactsListView extends ListView
 	_teardown_currentlyPresented_AddContactView()
 	{
 		const self = this
-		// … is this sufficient? might need/want to tear down the stack nav too?
+		// … is this sufficient? might need/want to tear down the stack nav too?
 		if (self.currentlyPresented_AddContactView !== null && typeof self.currentlyPresented_AddContactView !== 'undefined') {
 			self.currentlyPresented_AddContactView.TearDown() // might not be necessary but method guards itself
 			self.currentlyPresented_AddContactView = null // must zero again and should free

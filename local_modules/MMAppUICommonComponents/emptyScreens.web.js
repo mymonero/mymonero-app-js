@@ -104,7 +104,7 @@ function New_EmptyStateMessageContainerView(
 		layer.style.display = "table-cell"
 		layer.style.verticalAlign = "middle"
 		const translateY_px = typeof optl_contentTranslateYPX == 'undefined' ? -16 : optl_contentTranslateYPX
-	    layer.style.transform = "translateY(" + translateY_px + "px)" // pull everything up per design
+		layer.style.transform = "translateY(" + translateY_px + "px)" // pull everything up per design
 		
 		contentContainerLayer = layer
 		view.layer.appendChild(layer)

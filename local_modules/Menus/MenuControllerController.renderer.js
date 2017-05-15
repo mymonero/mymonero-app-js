@@ -31,8 +31,7 @@
 const {ipcRenderer} = require('electron')
 //
 class MenuControllerController
-{ // Silly as it sounds, this class exists to integrate the main process menuController with event
-  // emissions from the renderer side so that integratees can remain able to operate independently
+{	// Silly as it sounds, this class exists to integrate the main process menuController with event emissions from the renderer side so that integratees can remain able to operate independently
 	
 
 	////////////////////////////////////////////////////////////////////////////////

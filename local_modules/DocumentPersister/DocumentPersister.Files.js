@@ -42,7 +42,7 @@ class DocumentPersister extends DocumentPersister_Interface
 		//
 		const self = this
 		{
-			var options = self.options
+			options = self.options
 			const options_userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
 			if (!options_userDataAbsoluteFilepath || typeof options_userDataAbsoluteFilepath === 'undefined') {
 				throw "options.userDataAbsoluteFilepath required"
@@ -378,8 +378,8 @@ class DocumentPersister extends DocumentPersister_Interface
 						})
 					},
 					function(err, results)
-					{ // but we're actually going to disregard `results` here
-					  // cause we filtered out directories above
+					{	// but we're actually going to disregard `results` here
+						// cause we filtered out directories above
 						fn(err, fileDescriptions)
 					}
 				)

@@ -27,6 +27,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
+/*global cordova */
+/*eslint no-undef: "error"*/
 //
 const FilesystemUI_Abstract = require('./FilesystemUI_Abstract')
 //
@@ -111,7 +113,7 @@ class FilesytemUI extends FilesystemUI_Abstract
 			function (error) 
 			{
 				console.log('Error: ' + error)
-				fn(err)
+				fn(error)
 			},
 			options
 		)

@@ -55,7 +55,6 @@ class WalletDetailsView extends View
 			self.wallet = options.record // will keep it `record` in the interface
 			if (self.wallet === null || typeof self.wallet === 'undefined') {
 				throw "options.wallet nil but required for " + self.constructor.name
-				return
 			}
 		}
 		self.setup()
@@ -187,8 +186,8 @@ class WalletDetailsView extends View
 					}
 				} else {
 					throw "Couldn't parse formatted balance string."
-					finalized_main_string = raw_balanceString
-					finalized_paddingZeros_string = ""
+					// finalized_main_string = raw_balanceString
+					// finalized_paddingZeros_string = ""
 				}
 			}
 			mainLabelSpan.innerHTML = finalized_main_string
@@ -293,7 +292,6 @@ class WalletDetailsView extends View
 		const self = this
 		if (typeof self.wallet === 'undefined' || self.wallet === null) {
 			throw "wallet undefined in start observing"
-			return
 		}
 		//
 		// label
@@ -386,7 +384,7 @@ class WalletDetailsView extends View
 			self.current_EditWalletView.TearDown()
 			self.current_EditWalletView = null
 		}
-		// … is this sufficient? might need/want to tear down the stack nav too?
+		// … is this sufficient? might need/want to tear down the stack nav too?
 		if (self.currentlyPresented_ImportTransactionsModalView !== null && typeof self.currentlyPresented_ImportTransactionsModalView !== 'undefined') {
 			self.currentlyPresented_ImportTransactionsModalView.TearDown() // might not be necessary but method guards itself
 			self.currentlyPresented_ImportTransactionsModalView = null // must zero again and should free
@@ -506,11 +504,10 @@ class WalletDetailsView extends View
 		const wallet = self.wallet
 		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
 			throw "WalletDetailsView opened while wallet failed to init or boot."
-			return
 		}
 		const layer_transactions = self.layer_transactions
 		while (layer_transactions.firstChild) {
-		    layer_transactions.removeChild(layer_transactions.firstChild)
+			layer_transactions.removeChild(layer_transactions.firstChild)
 		}
 		self.transactions_listContainerLayer = null
 		self.noTransactions_emptyStateView = null
@@ -553,7 +550,7 @@ class WalletDetailsView extends View
 			stateCachedTransactions.forEach(
 				function(tx, i)
 				{
-					// console.log("tx", JSON.stringify(tx, null, '    '))
+					// console.log("tx", JSON.stringify(tx, null, '	'))
 					const listItemLayer = document.createElement("div")
 					listContainerLayer.appendChild(listItemLayer)
 					{
@@ -816,17 +813,14 @@ class WalletDetailsView extends View
 		{ // validate wallet and tx
 			if (typeof self.wallet === 'undefined' || self.wallet === null) {
 				throw self.constructor.name + " requires self.wallet to " + _cmd
-				return
 			}
 			if (typeof transaction === 'undefined' || transaction === null) {
 				throw self.constructor.name + " requires transaction to " + _cmd
-				return
 			}
 		}
 		const navigationController = self.navigationController
 		if (typeof navigationController === 'undefined' || navigationController === null) {
 			throw self.constructor.name + " requires navigationController to " + _cmd
-			return
 		}
 		{
 			const options = 

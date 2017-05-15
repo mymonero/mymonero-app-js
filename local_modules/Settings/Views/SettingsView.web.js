@@ -261,7 +261,6 @@ class SettingsView extends View
 					{
 						if (err) {
 							throw err
-							return
 						}
 						const didChooseYes = selectedButtonIdx === 0
 						if (didChooseYes) {
@@ -350,24 +349,24 @@ class SettingsView extends View
 			}
 		}
 		{
-           if (passwordController.hasUserSavedAPassword !== true) {
-               self.changePasswordButtonView.SetEnabled(false) // can't change til entered
-               // self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
-               self.appTimeoutRangeInputView.SetEnabled(true)
-			   self.deleteEverything_buttonView.SetEnabled(false)
-           } else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
-			   // however, user should never be able to see the settings view in this state
-               self.changePasswordButtonView.SetEnabled(false)
-               // self.serverURLInputLayer.disabled = true
-               self.appTimeoutRangeInputView.SetEnabled(false)
-			   self.deleteEverything_buttonView.SetEnabled(false)
-           } else { // has entered PW - unlock
-               self.changePasswordButtonView.SetEnabled(true)
-               // self.serverURLInputLayer.disabled = false
-               self.appTimeoutRangeInputView.SetEnabled(true)
-			   self.deleteEverything_buttonView.SetEnabled(true)
-           }
-	   }
+			if (passwordController.hasUserSavedAPassword !== true) {
+				self.changePasswordButtonView.SetEnabled(false) // can't change til entered
+				// self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
+				self.appTimeoutRangeInputView.SetEnabled(true)
+				self.deleteEverything_buttonView.SetEnabled(false)
+			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
+				// however, user should never be able to see the settings view in this state
+				self.changePasswordButtonView.SetEnabled(false)
+				// self.serverURLInputLayer.disabled = true
+				self.appTimeoutRangeInputView.SetEnabled(false)
+				self.deleteEverything_buttonView.SetEnabled(false)
+			} else { // has entered PW - unlock
+				self.changePasswordButtonView.SetEnabled(true)
+				// self.serverURLInputLayer.disabled = false
+				self.appTimeoutRangeInputView.SetEnabled(true)
+				self.deleteEverything_buttonView.SetEnabled(true)
+			}
+		}
 	}
 	viewDidAppear()
 	{

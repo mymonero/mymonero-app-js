@@ -62,7 +62,6 @@ class NavigationBarView extends View
 			self.navigationController = options.navigationController
 			if (typeof self.navigationController === 'undefined' || self.navigationController === null) {
 				throw "NavigationBarView self.navigationController nil"
-				return
 			}
 		}
 		self.setup()
@@ -81,7 +80,7 @@ class NavigationBarView extends View
 			layer.style.width = "100%"
 			layer.style.height = `${self.NavigationBarHeight()}px`
 			layer.style.backgroundColor = "#272527"
-		    layer.style.transition = "box-shadow 0.06 ease-in-out"
+			layer.style.transition = "box-shadow 0.06 ease-in-out"
 			//
 			layer.style.webkitAppRegion = "drag" // make draggable
 			layer.style.webkitUserSelect = "none"
@@ -195,32 +194,17 @@ class NavigationBarView extends View
 			self.emit(self.EventName_backButtonTapped()) // animated
 		}
 		const themeController = self.context.themeController
-		if (typeof themeController !== 'undefined' && themeController !== null) {
-			const _new_back_leftBarButtonView__fn = themeController.NavigationBarView__New_back_leftBarButtonView
-			if (typeof _new_back_leftBarButtonView__fn === 'function') {
-				const view = _new_back_leftBarButtonView__fn.apply(themeController, [ clicked_fn ])
-				if (view !== null && typeof view !== 'undefined') {
-					return view
-				} else {
-					throw "Got nil leftBarButtonView from themeController"
-				}
-			} else {
-				throw "themeController didn't implement NavigationBarView__New_back_leftBarButtonView"
-			}
-		} else {
+		if (typeof themeController === 'undefined' || !themeController) {
 			throw self.constructor.name + " didn't find a context.themeController"
 		}
-		const view = new BarButtonBaseView({}, self.context)
-		view.SetEnabled(true)
-		const layer = view.layer
-		layer.innerHTML = "&lt;"
-		layer.addEventListener("click", function(e) {
-			e.preventDefault()
-			if (view.isEnabled !== false) {
-				clicked_fn()
-			}
-			return false
-		})
+		const _new_back_leftBarButtonView__fn = themeController.NavigationBarView__New_back_leftBarButtonView
+		if (typeof _new_back_leftBarButtonView__fn !== 'function' || !_new_back_leftBarButtonView__fn) {
+			throw "themeController didn't implement NavigationBarView__New_back_leftBarButtonView"
+		}
+		const view = _new_back_leftBarButtonView__fn.apply(themeController, [ clicked_fn ])
+		if (view == null || typeof view === 'undefined') {
+			throw "Got nil leftBarButtonView from themeController"
+		}
 		return view
 	}
 	//
@@ -404,7 +388,7 @@ class NavigationBarView extends View
 		}
 		if (idxOfThisStackView === -1) {
 			throw "stackView is not currently in navigation stack."
-			return false
+			// return false
 		}
 		var mocked__old_topStackView = null
 		if (idxOfThisStackView === 0) {
@@ -412,7 +396,7 @@ class NavigationBarView extends View
 		} else { 
 			if (numberOf_stackViews <= 1) {
 				throw "expected more than one stack view here. code fault?"
-				return false
+				// return false
 			}
 			mocked__old_topStackView = stackViews[idxOfThisStackView - 1]
 		}

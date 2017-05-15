@@ -44,9 +44,9 @@ for (let i = 0 ; i < numberOf_keys ; i++) {
 	const numberOf_codes = codes.length
 	for (let j = 0 ; j < numberOf_codes ; j++) {
 		const code = codes[j]
-       	// Handle invalid unicode char for C99
-       	// http://c0x.coding-guidelines.com/6.4.3.html
-			thisEmojiStr += String.fromCodePoint(parseInt(code, 16)) // what it takes to convert to unicode char
+		// handle invalid unicode char for C99
+		// http://c0x.coding-guidelines.com/6.4.3.html
+		thisEmojiStr += String.fromCodePoint(parseInt(code, 16)) // what it takes to convert to unicode char
 	}
 	emojiChars.push(thisEmojiStr)
 }

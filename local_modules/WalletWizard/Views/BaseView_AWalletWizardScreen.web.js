@@ -103,7 +103,7 @@ class AddWallet_LandingScreenView extends View
 	{
 		const self = this
 		throw "override Navigation_Title in " + self.constructor.name
-		return ""
+		// return ""
 	}
 	//
 	//

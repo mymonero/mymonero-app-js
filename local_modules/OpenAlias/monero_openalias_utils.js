@@ -36,7 +36,7 @@ const currency_openAliasPrefix = monero_config.openAliasPrefix
 //
 function IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
 {
-    if (address.indexOf('.') !== -1) { 
+	if (address.indexOf('.') !== -1) { 
 		// assumed to be an OA address asXMR addresses do not have periods and OA addrs must
 		return true
 	}
@@ -60,11 +60,10 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 	// ) -> HostedMoneroAPIClient_RequestHandle
 )
 {
-    if (IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) === false) {
+	if (IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) === false) {
 		throw "Asked to resolve non-OpenAlias address." // throw as code fault
-		return
-    }
-    var openAlias_domain = openAliasAddress.replace(/@/g, ".");
+	}
+	var openAlias_domain = openAliasAddress.replace(/@/g, ".");
 	const requestHandle = hostedMoneroAPIClient.TXTRecords(
 		openAlias_domain,
 		function(err, records, dnssec_used, secured, dnssec_fail_reason)
@@ -76,7 +75,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 				fn(returnableErr)
 				return
 			}
-            // console.log(openAlias_domain + ": ", records);
+			// console.log(openAlias_domain + ": ", records);
 			var oaRecords;
 			try {
 				oaRecords = openalias_utils.ValidatedOARecordsFromTXTRecordsWithOpenAliasPrefix(
@@ -90,18 +89,18 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 			} catch (e) {
 				const err = new Error(e)
 				fn(err)
-		        return
+				return
 			}
 			const sampled_oaRecord = oaRecords[0] // going to assume we only have one, or that the first one is sufficient
 			// console.log("OpenAlias record: ", sampled_oaRecord)
 			var oaRecord_address = sampled_oaRecord.address
 			try { // verify address is decodable for currency
-			    monero_utils.decode_address(oaRecord_address)
+				monero_utils.decode_address(oaRecord_address)
 			} catch (e) {
-		        const errStr = "Address received by parsing OpenAlias address " + oaRecord_address + " was not a valid Monero address: " + e 
+				const errStr = "Address received by parsing OpenAlias address " + oaRecord_address + " was not a valid Monero address: " + e 
 				const error = new Error(errStr) // apparently if this is named err, JS will complain. no-semicolon parsing issue?
 				fn(error)
-			    return
+				return
 			}
 			const moneroReady_address = oaRecord_address // now considered valid
 			const payment_id = sampled_oaRecord.tx_payment_id
@@ -109,19 +108,19 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 			//
 			const oaRecords_0_name = sampled_oaRecord.name 
 			const oaRecords_0_description = sampled_oaRecord.description
-		    const dnssec_used_and_secured = dnssec_used && secured
+			const dnssec_used_and_secured = dnssec_used && secured
 			//
 			fn(
 				null,
 				//
-	            moneroReady_address,
+				moneroReady_address,
 				payment_id,
 				tx_description,
 				//
-	            openAlias_domain,
+				openAlias_domain,
 				oaRecords_0_name, 
 				oaRecords_0_description, 
-	            dnssec_used_and_secured
+				dnssec_used_and_secured
 			)
 		}
 	)

@@ -87,7 +87,7 @@ class WalletCellContentsView extends View
 				return 16
 		}
 		throw "Unhandled sef.icon_sizeClass in _lookup_walletIconLayer_left"
-		return 15
+		// return 15
 	}
 	_lookup_labelsPaddingLeft()
 	{
@@ -101,7 +101,7 @@ class WalletCellContentsView extends View
 				return 66
 		}
 		throw "Unhandled sef.icon_sizeClass in _lookup_labelsPaddingLeft"
-		return 80
+		// return 80
 	}
 	_lookup_titlelabelPaddingTop()
 	{
@@ -115,7 +115,7 @@ class WalletCellContentsView extends View
 				return 15
 		}
 		throw "Unhandled sef.icon_sizeClass in _lookup_titlelabelPaddingTop"
-		return 20
+		// return 20
 	}
 	__setup_titleLayer()
 	{
@@ -302,7 +302,6 @@ class WalletCellContentsView extends View
 		}
 		if (typeof self.wallet === 'undefined' || self.wallet === null) {
 			throw "wallet undefined in start observing"
-			return
 		}
 		// here, we're going to store a bunch of functions as instance properties
 		// because if we need to stopObserving we need to have access to the listener fns

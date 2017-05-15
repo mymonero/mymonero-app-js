@@ -80,7 +80,6 @@ class EditContactFromContactsTabView extends ContactFormView
 				{
 					if (err) {
 						throw err
-						return
 					}
 					self._thisRecordWasDeleted()
 				}
@@ -104,7 +103,6 @@ class EditContactFromContactsTabView extends ContactFormView
 						{
 							if (err) {
 								throw err
-								return
 							}
 							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {
@@ -196,7 +194,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		//
 		const openAliasResolver = self.context.openAliasResolver
 		if (openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) {
-	        var address__decode_result; 
+			var address__decode_result; 
 			try {
 				address__decode_result = monero_utils.decode_address(address)
 			} catch (e) {

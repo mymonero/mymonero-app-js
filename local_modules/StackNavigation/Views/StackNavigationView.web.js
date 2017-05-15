@@ -193,12 +193,11 @@ class StackNavigationView extends View
 		const self = this
 		if (stackView === null || typeof stackView === 'undefined') {
 			throw "StackNavigationView asked to PushView nil stackView"
-			return
 		}
 		const isAnimated = 
 			isAnimated_orTrue === true
-			 || typeof isAnimated_orTrue === 'undefined' 
-			 || isAnimated_orTrue == null 
+				|| typeof isAnimated_orTrue === 'undefined' 
+				|| isAnimated_orTrue == null 
 			? true /* default true */ 
 			: false
 		if (self.isCurrentlyTransitioningAManagedView__Stack === true) {
@@ -309,9 +308,8 @@ class StackNavigationView extends View
 		if (self.stackViews.length == 0) {
 			const errStr = "PopView called with 0 self.stackViews"
 			const err = new Error(errStr)
-			throw errStr
 			fn(err)
-			return
+			throw errStr
 		}
 		const root_stackView = self.stackViews[0]
 		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
@@ -341,9 +339,8 @@ class StackNavigationView extends View
 		if (self.stackViews.length == 0) {
 			const errStr = "PopView called with 0 self.stackViews"
 			const err = new Error(errStr)
-			throw errStr
 			fn(err)
-			return
+			throw errStr
 		}
 		const root_stackView = self.stackViews[0]
 		if (self.topStackView.IsEqualTo(root_stackView) === true || self.stackViews.length === 1) {
@@ -370,16 +367,15 @@ class StackNavigationView extends View
 		const self = this
 		const isAnimated = 
 			isAnimated_orTrue === true
-			 || typeof isAnimated_orTrue === 'undefined' 
-			 || isAnimated_orTrue == null 
+				|| typeof isAnimated_orTrue === 'undefined' 
+				|| isAnimated_orTrue == null 
 			? true /* default true */ 
 			: false
 		if (to_stackView === null || typeof to_stackView === 'undefined') {
 			const errStr = "StackNavigationView asked to PopToView nil to_stackView"
 			const err = new Error(errStr)
-			throw errStr
 			fn(err)
-			return
+			throw errStr
 		}
 		if (self.isCurrentlyTransitioningAManagedView__Stack === true) {
 			console.warn("⚠️  Asked to " + self.constructor.name + "/PopToView but already self.isCurrentlyTransitioningAManagedView__Stack.")
@@ -400,9 +396,8 @@ class StackNavigationView extends View
 		// console.log("subviewUUIDs", subviewUUIDs)
 		const indexOf_old_topStackView_inSubviews = subviewUUIDs.indexOf(old_topStackView.View_UUID())
 		if (indexOf_old_topStackView_inSubviews === -1) {
-			throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
 			__trampolineFor_transitionEnded() // must unlock this function; calls 'fn' for us
-			return
+			throw `Asked to PopToView ${to_stackView.View_UUID()} but old_topStackView UUID not found in UUIDs of ${self.stackViewStageView.Description()} subviews.`
 		}
 		{ // make to_stackView the new top view
 			to_stackView.navigationController = self
@@ -493,9 +488,8 @@ class StackNavigationView extends View
 			// console.log("stackViews_afterPop", stackViews_afterPop)
 			self.stackViews = stackViews_afterPop
 			if (to_stackView.IsEqualTo(self.stackViews[self.stackViews.length - 1]) === false) {
-				throw `Popped to to_stackView ${to_stackView.Description()} at idx ${indexOf_to_stackView} but it was not the last of self.stackViews after pop all views until that idx.`
 				// we don't need to call __trampolineFor_transitionEnded here since we would have already triggered it in above isAnimated == false check branch
-				return 
+				throw `Popped to to_stackView ${to_stackView.Description()} at idx ${indexOf_to_stackView} but it was not the last of self.stackViews after pop all views until that idx.`
 			}
 		}
 	}

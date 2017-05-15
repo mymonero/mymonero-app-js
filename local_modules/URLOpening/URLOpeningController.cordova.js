@@ -58,7 +58,7 @@ class URLOpeningController extends URLOpeningController_Abstract
 		const self = this
 		navigator.notification.alert(
 			"Sorry, that does not appear to be a valid Monero URL.",
-			_proceedTo_loadAsyncMetaDataBeforeAppSetup,
+			function() {}, // nothing to do
 			"MyMonero", 
 			"OK"
 		)

@@ -246,7 +246,6 @@ class FundsRequest extends EventEmitter
 		const self = this
 		if (self.hasBooted !== true) {
 			throw "Lazy_URI() called while FundsRequest instance not booted"
-			return
 		}
 		return self._assumingBootedOrEquivalent__Lazy_URI()
 	}

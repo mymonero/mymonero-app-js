@@ -164,7 +164,6 @@ class EditWalletView extends View
 				{
 					if (err) {
 						throw err
-						return
 					}
 					self._thisRecordWasDeleted()
 				}
@@ -188,7 +187,6 @@ class EditWalletView extends View
 						{
 							if (err) {
 								throw err
-								return
 							}
 							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {

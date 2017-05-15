@@ -69,14 +69,13 @@ function InitWithTasks_AndStartListening(tasksByName, reporting_processName, rep
 				} catch (e) {
 					console.error("Child couldn't parse incoming message with error" , e, "\n\nmessage:", m)
 					throw e
-					process.exit(1)
 				}
 			} else if (typeof m === 'object') {
 				payload = m
 			} else {
-				console.error("Child couldn't parse unrecognized typeof incoming message:", m)
-				throw e
-				process.exit(1)
+				const errStr = "Child couldn't parse unrecognized typeof incoming message:" + m
+				console.error(errStr)
+				throw errStr
 			}
 			//
 			shared_bg_ipc._didReceiveIPCPayload(

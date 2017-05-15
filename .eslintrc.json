@@ -1,0 +1,40 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "globals": {
+        "LocalFileSystem": false,
+        "cordova": false,
+        "device": false
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "indent": [
+            "off",
+            "tab"
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "no-unused-vars": [
+            "off",
+            { 
+                "vars": "all", 
+                "args": "after-used", 
+                "ignoreRestSiblings": false
+            }
+        ],
+        "no-console": [
+            "warn",
+            { "allow": [ "warn", "error" ] }
+        ],
+        "no-extra-semi": [ "warn" ],
+        "no-redeclare": [ "warn" ],
+        // "no-unreachable": [ "warn" ],
+        "no-inner-declarations": [ "warn" ]
+    }
+}

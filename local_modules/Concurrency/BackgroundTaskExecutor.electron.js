@@ -80,7 +80,6 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 				} catch (e) {
 					console.error("JSON couldn't be parsed in " + self.constructor.name, e)
 					throw e
-					return
 				}
 			} else if (typeof message === 'object') {
 				payload = message

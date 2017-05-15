@@ -55,14 +55,14 @@ const cssRules =
   	}`,
 	`@keyframes block-animate {
 		0%, 20%, 60%, 100% {
-	    	transform: translateY(2px);
-	    	background-color: #383638;
+			transform: translateY(2px);
+			background-color: #383638;
 		}
 		40% {
 			transform: translateY(0);
 			background-color: #494749;
 		} 
-    }`,
+	}`,
 	//
 	// .graphicAndLabel
 	`.${NamespaceName}.graphicAndLabel {
@@ -85,13 +85,14 @@ function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
 	const layer = document.createElement("div")
 	layer.classList.add("graphicAndLabel")
 	layer.classList.add(NamespaceName)
-	layer.innerHTML = `<div class="loader">`
-						+`<div class="block block1"></div>`
-						+`<div class="block block2"></div>`
-						+`<div class="block block3"></div>`
-					  +`</div>`
-					  +`&nbsp;`
-					  +`<span>${messageText}</span>`
+	layer.innerHTML = 
+		`<div class="loader">`
+			+`<div class="block block1"></div>`
+			+`<div class="block block2"></div>`
+			+`<div class="block block3"></div>`
+		+`</div>`
+		+`&nbsp;`
+		+`<span>${messageText}</span>`
 	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
 	layer.style.color = "#F8F7F8"
 	//

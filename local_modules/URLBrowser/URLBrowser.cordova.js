@@ -42,16 +42,16 @@ class URLBrowser extends URLBrowser_Abstract
 		const device_platform_toUpperCase = device.platform.toUpperCase()
 		if (device_platform_toUpperCase === 'ANDROID') {
 			navigator.app.loadUrl(
-				url, 
+				urlString, 
 				{
 					openExternal: true
 				}
 			)
-	    } else if (device_platform_toUpperCase === 'IOS') {
-            window.open(urlString, '_system')
-	    } else {
-	    	throw `Unrecognized platform ${device_platform_toUpperCase} in OpenURLInSystemBrowser()`
-	    }
+		} else if (device_platform_toUpperCase === 'IOS') {
+			window.open(urlString, '_system')
+		} else {
+			throw `Unrecognized platform ${device_platform_toUpperCase} in OpenURLInSystemBrowser()`
+		}
 	}
 }
 module.exports = URLBrowser

@@ -253,7 +253,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					return "Secret Mnemonic"
 				} else {
 					throw "unrecognized self.mode_loginWith"
-					return undefined
+					// return undefined
 				}
 			}
 			const view = commonComponents_tables.New_clickableLinkButtonView(
@@ -374,7 +374,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			}
 		} else {
 			throw "unrecognized self.mode_loginWith"
-			return false
+			// return false
 		}
 		
 		return true
@@ -452,8 +452,8 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	// Runtime - Delegation - Navigation View special methods
 	//
 	navigationView_viewIsBeingPoppedFrom()
-	{ // this will only get popped from when it's not the first in the nav stack, i.e. not adding first wallet,
-	  // so we'll need to get back into Mode_PickCreateOrUseExisting
+	{	// this will only get popped from when it's not the first in the nav stack, i.e. not adding first wallet,
+		// so we'll need to get back into Mode_PickCreateOrUseExisting
 		const self = this
 		self.wizardController.PatchToDifferentWizardTaskMode_withoutPushingScreen( // to maintain the correct state
 			self.wizardController.WizardTask_Mode_PickCreateOrUseExisting(), 

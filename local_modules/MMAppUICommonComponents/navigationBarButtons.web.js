@@ -70,9 +70,9 @@ function New_GreyButtonView(context)
 		context, 
 		function(thisView)
 		{ // config from interactivity
-			if (thisView.isEnabled) {
-			} else {
-			}
+			// if (thisView.isEnabled) {
+			// } else {
+			// }
 		}
 	)
 	const layer = view.layer

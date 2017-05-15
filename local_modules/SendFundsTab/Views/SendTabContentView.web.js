@@ -123,11 +123,11 @@ class SendTabContentView extends StackAndModalNavigationView
 		) 
 		self.sendFundsView._proxied_ondragenter(e)
 	}
-    _proxied_ondragleave(e)
+	_proxied_ondragleave(e)
 	{
 		const self = this
 		self.sendFundsView._proxied_ondragleave(e)
-    }
+	}
 	_proxied_ondrop(e)
 	{
 		const self = this

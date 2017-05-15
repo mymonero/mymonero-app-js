@@ -1,0 +1,6 @@
+node_modules/*
+
+local_modules/cryptonote_utils/**
+local_modules/Animation/Vendor/velocity.js
+local_modules/Emoji/Vendor/emojione.min.js
+local_modules/MMAppUICommonComponents/Vendor/opentip-native.min.js

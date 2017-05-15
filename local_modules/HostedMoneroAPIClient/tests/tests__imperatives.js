@@ -53,9 +53,9 @@ async.series(
 )
 //
 // TODO
-function __proceedTo_test_…(fn)
-{
-	console.log("▶️  test_…")
+// function __proceedTo_test_…(fn)
+// {
+// 	console.log("▶️  test_…")
 	// context.hostedMoneroAPIClient.…(
 	// 	tests_config.testWallet_address,
 	// 	tests_config.testWallet_view_key,
@@ -90,4 +90,4 @@ function __proceedTo_test_…(fn)
 	// 		fn(err)
 	// 	}
 	// )
-}
+// }

@@ -73,10 +73,10 @@ class MainWindowController
 		app.on('launched-duplicatively', function(argv)
 		{ // bring window to forefront however necessary
 			if (self.window !== null) {
-			    if (self.window.isMinimized()) {
+				if (self.window.isMinimized()) {
 					self.window.restore()
 				}
-			    self.window.focus()
+				self.window.focus()
 			}
 		})
 	}

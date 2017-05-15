@@ -51,20 +51,20 @@ function exists(path, callback)
 	{
 		// window.resolveLocalFileSystemURL(path, exists, doesntExist) // possible alternative
 		const filename = lastPathComponent(path)
-        fs.root.getFile( // does this work for directories as well ..?
-        	filename, // just the filename, here - cause we're not going to concern ourselves with directories 
-        	{ create: false }, 
-        	function(fileEntry)
-        	{
-        		// console.log(`path ${path} does exist… `, fileEntry)
-        		callback(true)
-        	}, 
-        	function()
-        	{
-        		console.warn(`path ${path} does not exist`)
-        		callback(false)
-        	}
-        )
+		fs.root.getFile( // does this work for directories as well ..?
+			filename, // just the filename, here - cause we're not going to concern ourselves with directories 
+			{ create: false }, 
+			function(fileEntry)
+			{
+				// console.log(`path ${path} does exist… `, fileEntry)
+				callback(true)
+			}, 
+			function()
+			{
+				console.warn(`path ${path} does not exist`)
+				callback(false)
+			}
+		)
 	})
 }
 function readdir(filepath, callback)
@@ -122,7 +122,7 @@ function writeFile(filepath, stringContents, options, callback)
 					}
 					fileWriter.onerror = function(err)
 					{
-						console.log(`Failed file write to ${filename}: ${e.toString()}`)
+						console.log(`Failed file write to ${filename}: ${err.toString()}`)
 						callback(err)
 					}
 					const dataObj = new Blob(
@@ -132,10 +132,10 @@ function writeFile(filepath, stringContents, options, callback)
 					fileWriter.write(dataObj)
 				})
 
-		    }, function(err)
-		    {
-		    	callback(err)
-		    }
+			}, function(err)
+			{
+				callback(err)
+			}
 		)
 	})
 }

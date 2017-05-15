@@ -321,7 +321,7 @@ class HostedMoneroAPIClient
 					const transactions = returnValuesByKey.serialized_transactions
 					for (let transaction of transactions) {
 						transaction.amount = new JSBigInt(transaction.amount)
-						if (typeof total_sent !== 'undefined' && total_sent !== null) {
+						if (typeof transaction.total_sent !== 'undefined' && transaction.total_sent !== null) {
 							transaction.total_sent = new JSBigInt(transaction.total_sent)
 						}
 						transaction.timestamp = new Date(transaction.timestamp)

@@ -26,6 +26,8 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
+/* global StatusBar, device */
+//
 "use strict"
 //
 window.BootApp = function()
@@ -191,7 +193,7 @@ window.BootApp = function()
 			if (device.platform === 'iOS' && parseFloat(device.version) >= 7.0) {
 				rootView.layer.style.paddingTop = "20px"
 				rootView.layer.style.height = "calc(100% - 20px)"
-		    }
+			}
 			// manually attach the rootView to the DOM and specify view's usual managed reference(s)
 			const superlayer = document.body
 			rootView.superlayer = superlayer

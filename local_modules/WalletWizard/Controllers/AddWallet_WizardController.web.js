@@ -176,8 +176,7 @@ class AddWallet_WizardController
 		// now we access the module not by dynamic inclusion but statically (see webpack)
 		const viewConstructor = StaticCacheForBundling_WizardTaskStepScreenViewModules_byViewFilename[viewModuleFilename]
 		if (!viewConstructor || typeof viewConstructor === 'undefined') {
-			throw "Unable to find the file at " + viewModule_absoluteFilepath
-			return
+			throw "Unable to find the file at " + viewModuleFilename
 		}
 		const options =
 		{
@@ -233,7 +232,7 @@ class AddWallet_WizardController
 		const self = this
 		if (self.initial_wizardTaskModeName === null) {
 			throw "Asked to PatchToDifferentWizardTaskMode_byPushingScreen but wizard not yet in a task mode."
-			return
+			// return
 		}
 		self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
 		if (self.current_wizardTaskMode_stepName === null) { // is at end
@@ -251,7 +250,7 @@ class AddWallet_WizardController
 		const self = this
 		if (self.initial_wizardTaskModeName === null) {
 			throw "Asked to PatchToDifferentWizardTaskMode_withoutPushingScreen but wizard not yet in a task mode."
-			return
+			// return
 		}
 		self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
 	}
@@ -284,8 +283,9 @@ class AddWallet_WizardController
 			function()
 			{
 				if (opts.userCancelled === true) {
+					return
 				} else if (opts.taskFinished === true) {
-					
+					return
 				} else {
 					throw "[" + self.constructor.name + "/DismissWizardModal]: unrecognized opts flag configuration: " + JSON.stringify(opts)
 				}

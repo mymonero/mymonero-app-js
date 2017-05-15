@@ -74,7 +74,7 @@ class WalletsListCellView extends ListCellView
 		const self = this
 		if (!self.cellContentsView || typeof self.cellContentsView === 'undefined') {
 			throw "self.cellContentsView was nil in " + self.constructor.name + " overridable_layerToObserveForTaps"
-			return self.layer
+			// return self.layer
 		}
 		return self.cellContentsView.layer
 	}
@@ -112,7 +112,7 @@ class WalletsListCellView extends ListCellView
 		//
 		if (typeof self.record === 'undefined' || self.contact === null) {
 			throw "self.record undefined in start observing"
-			return
+			// return
 		}
 		// TODO? so far, updates on the list lvl
 	}

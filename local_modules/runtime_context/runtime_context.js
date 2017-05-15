@@ -43,13 +43,12 @@
 //		 options: {}
 //	 }
 // ]
-
-
+//
 // Hydrate context
 function NewHydratedContext(context_object_instantiation_descriptions, initialContext_orNilForNew)
 {
 	var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {}
-	for (var i in context_object_instantiation_descriptions) {
+	for (let i in context_object_instantiation_descriptions) {
 		var description = context_object_instantiation_descriptions[i]
 		var module = description.module || require("" + description.module_path)
 		if (typeof module === 'undefined' || module === null) {
@@ -57,7 +56,7 @@ function NewHydratedContext(context_object_instantiation_descriptions, initialCo
 			
 			continue
 		}
-		var instance = new module(description.options, context)
+		let instance = new module(description.options, context)
 		if (typeof instance === 'undefined' || instance === null) {
 			console.log("Error: Unable to create an instance of " + description.module_path + ". Skipping.")
 			
@@ -72,9 +71,9 @@ function NewHydratedContext(context_object_instantiation_descriptions, initialCo
 		}
 	}
 	var context_keys = Object.keys(context)
-	for (var i in context_keys) {
+	for (let i in context_keys) {
 		var context_key = context_keys[i]
-		var instance = context[context_key]
+		let instance = context[context_key]
 		// This calls an optional function that classes can implement to get control after the whole context is set up
 		var postWholeContextInit_setup__fn = instance.RuntimeContext_postWholeContextInit_setup
 		if (typeof postWholeContextInit_setup__fn !== 'undefined') {

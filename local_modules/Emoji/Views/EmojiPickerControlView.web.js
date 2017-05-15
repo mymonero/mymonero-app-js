@@ -183,9 +183,9 @@ class EmojiPickerControlView extends View
 		const self = this
 		// dismiss if not clicked on self
 		self._window_click_fn = function(e)
-		{ // Now we must check if we can trigger a 'hide' of the options container layer.
-		  // We do so by checking if the target of the click is the 'show opens container layer' spawn element or one of its children. If it isn't, we can hide the options.
-		  // If we don't check, we end up stepping on a the 'show' request on the self click
+		{	// Now we must check if we can trigger a 'hide' of the options container layer.
+			// We do so by checking if the target of the click is the 'show opens container layer' spawn element or one of its children. If it isn't, we can hide the options.
+			// If we don't check, we end up stepping on a the 'show' request on the self click
 			const e__target = e.target
 			const self__layer = self.layer
 			if (e__target !== self__layer) { // so, not clicking the self__layer itself…
@@ -208,10 +208,10 @@ class EmojiPickerControlView extends View
 		// user hitting escape
 		self._document_keydown_fn = function(e)
 		{
-		    e = e || window.event
+			e = e || window.event
 			if (e.key === "Escape" || e.key === "Esc" || e.keyCode == 27) {
 				self.hidePopoverView(true) // if necessary
-		    }
+			}
 		}
 		document.addEventListener("keydown", self._document_keydown_fn)
 	}
