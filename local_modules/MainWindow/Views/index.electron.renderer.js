@@ -59,15 +59,5 @@ rootView.superview = null // just to be explicit; however we will set a .superla
 //setup the context menu
 require('electron-context-menu')({
 
-
-	/*prepend: (params) => [{
-		label: 'Extra Monero Label'
-	}],
-
-	labels: { //configure labels here
-	copy: 'Copy Address',
-	paste: 'Paste Address'
-},*/
-
 	showInspectElement: false
 });
