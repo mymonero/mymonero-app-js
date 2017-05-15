@@ -346,7 +346,7 @@ function SendFunds(
 		// v-- now if RingCT compute fee as closely as possible before hand
 		var usingOuts = usableOutputsAndAmounts.usingOuts
 		var usingOutsAmount = usableOutputsAndAmounts.usingOutsAmount
-		var remaining_unusedOuts = usingOutsAmount.remaining_unusedOuts
+		var remaining_unusedOuts = usableOutputsAndAmounts.remaining_unusedOuts // this is a copy of the pre-mutation usingOuts
 		if (isRingCT) { 
 			if (usingOuts.length > 1) {
 			    var newNeededFee = new JSBigInt(Math.ceil(monero_utils.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(monero_config.feePerKB_JSBigInt)
