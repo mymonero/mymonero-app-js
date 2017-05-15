@@ -43,15 +43,15 @@ class Locale extends Locale_Abstract
 	{
 		const self = this
 		navigator.globalization.getLocaleName(
-		    function (locale)
-		    {
-		    	const currentLocale = locale.value
-		    	fn(null, currentLocale)
-		    },
-		    function ()
-		    {
-		    	fn(new Error("Unknown Error Obtaining Locale"), null)
-		    }
+			function (locale)
+			{
+				const currentLocale = locale.value
+				fn(null, currentLocale)
+			},
+			function ()
+			{
+				fn(new Error("Unknown Error Obtaining Locale"), null)
+			}
 		)
 	}
 }

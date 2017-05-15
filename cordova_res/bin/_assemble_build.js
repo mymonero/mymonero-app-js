@@ -35,10 +35,10 @@ const sharp = require('sharp')
 const async = require('async')
 function copyFile(fromPath, toPath)
 {
-    fs.writeFileSync(
-        toPath,
-        fs.readFileSync(fromPath)
-    )
+	fs.writeFileSync(
+		toPath,
+		fs.readFileSync(fromPath)
+	)
 }
 //
 const pathTo_sources = path.join(__dirname, "..", "sources")
@@ -76,17 +76,17 @@ mkdirp.sync(pathTo_build_ios)
 mkdirp.sync(pathTo_build_android)
 //
 copyFile(
-    pathTo_sources_default,
-    pathTo_build_ios_default
+	pathTo_sources_default,
+	pathTo_build_ios_default
 )
 copyFile(
-    pathTo_sources_default,
-    pathTo_build_android_default
+	pathTo_sources_default,
+	pathTo_build_android_default
 )
 //
 copyFile(
-    pathTo_sources_icon,
-    pathTo_build_android_icon
+	pathTo_sources_icon,
+	pathTo_build_android_icon
 )
 //
 async.each(

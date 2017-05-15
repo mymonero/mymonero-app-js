@@ -81,7 +81,7 @@ class NavigationBarView extends View
 			layer.style.width = "100%"
 			layer.style.height = `${self.NavigationBarHeight()}px`
 			layer.style.backgroundColor = "#272527"
-		    layer.style.transition = "box-shadow 0.06 ease-in-out"
+			layer.style.transition = "box-shadow 0.06 ease-in-out"
 			//
 			layer.style.webkitAppRegion = "drag" // make draggable
 			layer.style.webkitUserSelect = "none"

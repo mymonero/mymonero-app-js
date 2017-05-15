@@ -47,18 +47,18 @@ const cssRules =
 		opacity: 0.5;
 	}`,
 	`.labeledRangeInput-container input[type=range] {
-    	-webkit-appearance: none;
+		-webkit-appearance: none;
 		background: none;
 		position: relative;
 		z-index: 100; /* above custom track */
 	}`,
 	`.labeledRangeInput-container input[type=range]:focus {
-    	-webkit-appearance: none;
-	    outline: none;
+		-webkit-appearance: none;
+		outline: none;
 	}`,
 	`.labeledRangeInput-container input[type=range]::-webkit-slider-thumb {
-	    -webkit-appearance: none;
-	    appearance: none;
+		-webkit-appearance: none;
+		appearance: none;
 		
 		height: ${k_knobWidth}px;
 		width: ${k_knobWidth}px;
@@ -75,7 +75,7 @@ const cssRules =
 		box-shadow:0 1px 1px 0 rgba(0,0,0,0.50), 0 0.5px 0.5px 0 #161416, inset 0 0.5px 0 0 #505050;
 	}`,
 	`.labeledRangeInput-container input[type=range]::-webkit-slider-runnable-track {
-	    -webkit-appearance: none;
+		-webkit-appearance: none;
 		cursor: pointer;
 		
 		width:100%;

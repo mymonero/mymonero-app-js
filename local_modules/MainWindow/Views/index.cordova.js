@@ -191,7 +191,7 @@ window.BootApp = function()
 			if (device.platform === 'iOS' && parseFloat(device.version) >= 7.0) {
 				rootView.layer.style.paddingTop = "20px"
 				rootView.layer.style.height = "calc(100% - 20px)"
-		    }
+			}
 			// manually attach the rootView to the DOM and specify view's usual managed reference(s)
 			const superlayer = document.body
 			rootView.superlayer = superlayer

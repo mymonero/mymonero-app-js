@@ -55,14 +55,14 @@ const cssRules =
   	}`,
 	`@keyframes block-animate {
 		0%, 20%, 60%, 100% {
-	    	transform: translateY(2px);
-	    	background-color: #383638;
+			transform: translateY(2px);
+			background-color: #383638;
 		}
 		40% {
 			transform: translateY(0);
 			background-color: #494749;
 		} 
-    }`,
+	}`,
 	//
 	// .graphicAndLabel
 	`.${NamespaceName}.graphicAndLabel {

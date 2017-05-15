@@ -47,11 +47,11 @@ class URLBrowser extends URLBrowser_Abstract
 					openExternal: true
 				}
 			)
-	    } else if (device_platform_toUpperCase === 'IOS') {
-            window.open(urlString, '_system')
-	    } else {
-	    	throw `Unrecognized platform ${device_platform_toUpperCase} in OpenURLInSystemBrowser()`
-	    }
+		} else if (device_platform_toUpperCase === 'IOS') {
+			window.open(urlString, '_system')
+		} else {
+			throw `Unrecognized platform ${device_platform_toUpperCase} in OpenURLInSystemBrowser()`
+		}
 	}
 }
 module.exports = URLBrowser

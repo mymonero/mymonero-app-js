@@ -275,7 +275,7 @@ class View extends EventEmitter
 		const layer = self.layer
 		var firstChild = layer.firstChild
 		while (firstChild !== null) {
-		    layer.removeChild(firstChild)
+			layer.removeChild(firstChild)
 			firstChild = layer.firstChild
 		}
 	}

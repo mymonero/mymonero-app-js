@@ -139,7 +139,7 @@ class TabBarItemButtonView extends View
 			const image = new Image()
 			image.src = imageURL
 			self.preloadedImages.push(image)
-	    }
+		}
 	}
 	// Runtime - Accessors - Events
 	EventName_clicked()

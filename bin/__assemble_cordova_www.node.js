@@ -49,7 +49,7 @@ const pathTo_assembled_www = path.join(__dirname, "..", "www")
 // (in case www doesn't exist…)
 if (fs.existsSync(pathTo_assembled_www) == false) {
 	// console.log(`📁  Creating ${pathTo_assembled_www}`)
-    fs.mkdirSync(pathTo_assembled_www)
+	fs.mkdirSync(pathTo_assembled_www)
 }
 //
 // I.
@@ -72,11 +72,11 @@ function deleteAll_assembled_www_contents_exceptGitIgnore()
 }
 function rmDirContents_recursively(path, isRootLvl, alsoDeleteDir)
 {
-    if (!fs.existsSync(path)) {
+	if (!fs.existsSync(path)) {
 		throw `${path} does not exist`
 	}
 	const filenames = fs.readdirSync(path)
-    filenames.forEach(
+	filenames.forEach(
 		function(file, index)
 		{
 			if (isRootLvl) {
@@ -85,20 +85,20 @@ function rmDirContents_recursively(path, isRootLvl, alsoDeleteDir)
 					return
 				}
 			}
-            var filepath = `${path}/${file}`
-            if (fs.lstatSync(filepath).isDirectory()) { // recursely delete contents
+			var filepath = `${path}/${file}`
+			if (fs.lstatSync(filepath).isDirectory()) { // recursely delete contents
 				// console.log(`📂  Entering ${file}`)
-                rmDirContents_recursively(
+				rmDirContents_recursively(
 					filepath, 
 					false,
 					true // no longer root-lvl so remove dir too
 				)
 				return
-            }
+			}
 			// otherwise, simply delete file
 			// console.log(`🗑  Deleting ${file}`)
-            fs.unlinkSync(filepath)
-        }
+			fs.unlinkSync(filepath)
+		}
 	)
 	// have to wait until all contents are deleted before removing the directory
 	if (alsoDeleteDir) {

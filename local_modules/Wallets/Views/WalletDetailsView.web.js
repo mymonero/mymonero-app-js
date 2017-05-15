@@ -510,7 +510,7 @@ class WalletDetailsView extends View
 		}
 		const layer_transactions = self.layer_transactions
 		while (layer_transactions.firstChild) {
-		    layer_transactions.removeChild(layer_transactions.firstChild)
+			layer_transactions.removeChild(layer_transactions.firstChild)
 		}
 		self.transactions_listContainerLayer = null
 		self.noTransactions_emptyStateView = null
@@ -553,7 +553,7 @@ class WalletDetailsView extends View
 			stateCachedTransactions.forEach(
 				function(tx, i)
 				{
-					// console.log("tx", JSON.stringify(tx, null, '    '))
+					// console.log("tx", JSON.stringify(tx, null, '	'))
 					const listItemLayer = document.createElement("div")
 					listContainerLayer.appendChild(listItemLayer)
 					{

@@ -309,7 +309,7 @@ class Contact extends EventEmitter
 			return false
 		}
 		// TODO: how to cache this? would need to invalidate every time .address is touched
-        const address__decode_result = monero_utils.decode_address(address) // just letting it throw
+		const address__decode_result = monero_utils.decode_address(address) // just letting it throw
 		const integratedAddress_paymentId = address__decode_result.intPaymentId
 		const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
 		//

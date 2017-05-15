@@ -126,7 +126,7 @@ class AddContactView extends ContactFormView
 		self.cancelAny_requestHandle_for_oaResolution() // jic
 		const openAliasResolver = self.context.openAliasResolver
 		if (openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) {
-		    var address__decode_result; 
+			var address__decode_result; 
 			try {
 				address__decode_result = monero_utils.decode_address(address)
 			} catch (e) {

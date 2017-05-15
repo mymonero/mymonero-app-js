@@ -239,7 +239,7 @@ class RootTabBarAndContentView extends TabBarAndContentView
 			{
 				e.preventDefault()
 				e.stopPropagation()
-		        numberOfDragsActive++
+				numberOfDragsActive++
 				//
 				if (numberOfDragsActive == 1) { // first time since started drag that entered self.layer - becomes 0 on real dragleave
 					if (_isAllowedToPerformDropOps()) {
@@ -264,7 +264,7 @@ class RootTabBarAndContentView extends TabBarAndContentView
 					}
 				}
 			}
-	        self.layer.ondragleave = self.layer.ondragend = function(e)
+			self.layer.ondragleave = self.layer.ondragend = function(e)
 			{
 				e.preventDefault()
 				e.stopPropagation()
@@ -278,10 +278,10 @@ class RootTabBarAndContentView extends TabBarAndContentView
 					}
 				}
 				return false
-	        }
+			}
 			self.layer.ondrop = function(e)
 			{
-	            e.preventDefault()
+				e.preventDefault()
 				e.stopPropagation()
 				numberOfDragsActive = 0 // reset just in case ondragleave wasn't properly fired due to some DOM manipulation or on drop. can happen.
 				const indexOf_sendTabContentView = self.IndexOfTabBarContentView(self.sendTabContentView)

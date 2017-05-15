@@ -335,7 +335,7 @@ function New_redTextButtonView(text, context)
 	layer.innerHTML = text
 	//
 	layer.style.display = "block" // own line
-    layer.style.float = "left" // but do not let it have 100% width
+	layer.style.float = "left" // but do not let it have 100% width
 	layer.style.clear = "left" // but do not let it have 100% width 
 	layer.style.marginLeft = "32px"
 	//

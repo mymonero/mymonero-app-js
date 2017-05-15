@@ -52,15 +52,15 @@ class WindowDialogs extends WindowDialogs_Abstract
 		const dialog = remote.dialog
 		const electronWindow = remote.getCurrentWindow()
 		const options = 
-        {
-            type: 'question',
-            buttons: buttons,
-            title: title,
-            message: message
-        }
-	    var choice = dialog.showMessageBox(
-            electronWindow,
-            options
+		{
+			type: 'question',
+			buttons: buttons,
+			title: title,
+			message: message
+		}
+		var choice = dialog.showMessageBox(
+			electronWindow,
+			options
 		)
 		fn(null, choice)
 	}

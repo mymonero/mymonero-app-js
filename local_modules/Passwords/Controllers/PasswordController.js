@@ -259,7 +259,7 @@ class PasswordController extends EventEmitter
 			return str.charAt(0).toUpperCase() + str.slice(1)
 		}
 		//
-	    return __capitalizedString(humanReadable_passwordType)
+		return __capitalizedString(humanReadable_passwordType)
 	}
 	//
 	HasUserEnteredValidPasswordYet()

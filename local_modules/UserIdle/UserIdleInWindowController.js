@@ -136,7 +136,7 @@ class UserIdleInWindowController extends EventEmitter
 		if (!self._userIdle_intervalTimer_fn || typeof self._userIdle_intervalTimer_fn === 'undefined') {
 			self._userIdle_intervalTimer_fn = function()
 			{
-			    self._numberOfSecondsSinceLastUserInteraction += 1 // count the second
+				self._numberOfSecondsSinceLastUserInteraction += 1 // count the second
 				var appTimeoutAfterS = self.context.settingsController.appTimeoutAfterS
 				if (typeof appTimeoutAfterS === 'undefined') {
 					appTimeoutAfterS = 20 // on no pw entered / no settings info yet
@@ -144,11 +144,11 @@ class UserIdleInWindowController extends EventEmitter
 				if (appTimeoutAfterS == -1) { // then idle timer is disabled
 					return // do nothing
 				}
-			    if (self._numberOfSecondsSinceLastUserInteraction >= appTimeoutAfterS) {
+				if (self._numberOfSecondsSinceLastUserInteraction >= appTimeoutAfterS) {
 					if (self.isUserIdle !== true) { // not already idle (else redundant)
 						self._userDidBecomeIdle()
 					}
-			    }
+				}
 			}
 			
 		}

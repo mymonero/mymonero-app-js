@@ -208,10 +208,10 @@ class EmojiPickerControlView extends View
 		// user hitting escape
 		self._document_keydown_fn = function(e)
 		{
-		    e = e || window.event
+			e = e || window.event
 			if (e.key === "Escape" || e.key === "Esc" || e.keyCode == 27) {
 				self.hidePopoverView(true) // if necessary
-		    }
+			}
 		}
 		document.addEventListener("keydown", self._document_keydown_fn)
 	}

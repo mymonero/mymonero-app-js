@@ -1574,7 +1574,7 @@ BigInteger.prototype.toJSValue = function() {
 	Author: Lucas Jones
 */
 BigInteger.prototype.lowVal = function () {
-    return this._d[0] || 0;
+	return this._d[0] || 0;
 };
 
 

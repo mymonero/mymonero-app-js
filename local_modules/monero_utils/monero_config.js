@@ -61,9 +61,9 @@ module.exports =
 	// 10^10 used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 	dustThreshold: new JSBigInt('10000000000'),
 	
-    // Maximum block number, used for tx unlock time
-    maxBlockNumber: 500000000,
+	// Maximum block number, used for tx unlock time
+	maxBlockNumber: 500000000,
 
-    // Average block time in seconds, used for unlock time estimation
-    avgBlockTime: 60
+	// Average block time in seconds, used for unlock time estimation
+	avgBlockTime: 60
 }
