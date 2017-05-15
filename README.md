@@ -141,7 +141,7 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 1. Install all Cordova development dependencies for Android. See [Cordova Installation Notes](./docs/CORDOVA_INSTALL.md) for details.
 
-2. Run `bin/setup_repo_for_cordova`.
+2. Run `bin/init_repo_for_cordova`.
 
 
 ## Repository Contents
