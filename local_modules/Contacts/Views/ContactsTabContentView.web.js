@@ -86,7 +86,7 @@ class ContactsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		const passwordController = self.context.passwordController
-		if (passwordController.hasUserEverEnteredPasswordDuringThisBoot !== true) {
+		if (passwordController.hasUserSavedAPassword !== true) {
 			return true // no existing data - do disable
 		}
 		if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app

@@ -113,11 +113,11 @@ class PasswordController extends EventEmitter
 			}
 		)
 		function _proceedTo_loadStateFromModel(
-			hasUserEverEnteredPasswordDuringThisBoot,
+			hasUserSavedAPassword,
 			passwordModel_doc
 		)
 		{
-			self.hasUserEverEnteredPasswordDuringThisBoot = hasUserEverEnteredPasswordDuringThisBoot
+			self.hasUserSavedAPassword = hasUserSavedAPassword
 			//
 			self._id = passwordModel_doc._id || undefined
 			self.userSelectedTypeOfPassword = passwordModel_doc.userSelectedTypeOfPassword
@@ -157,7 +157,7 @@ class PasswordController extends EventEmitter
 			controller.EventName_userDidBecomeIdle(),
 			function()
 			{
-				if (self.hasUserEverEnteredPasswordDuringThisBoot !== true) {
+				if (self.hasUserSavedAPassword !== true) {
 					// nothing to do here because the app is not unlocked and/or has no data which would be locked
 					console.log("💬  User became idle but no password has ever been entered/no saved data should exist.")
 					return
@@ -878,9 +878,9 @@ class PasswordController extends EventEmitter
 		fn = fn || function(err){} 
 		//
 		const self = this
-		const existing_hasUserEverEnteredPasswordDuringThisBoot = self.hasUserEverEnteredPasswordDuringThisBoot
+		const existing_hasUserSavedAPassword = self.hasUserSavedAPassword
 		self.password = password
-		self.hasUserEverEnteredPasswordDuringThisBoot = true // we can now flip this to true
+		self.hasUserSavedAPassword = true // we can now flip this to true
 		//
 		const waiting_passwordModel_doc = self._initial_waitingForFirstPWEntryDecode_passwordModel_doc
 		if (typeof waiting_passwordModel_doc !== 'undefined' && waiting_passwordModel_doc !== null) {
@@ -906,8 +906,8 @@ class PasswordController extends EventEmitter
 	  // maybe it should be moved, maybe not.
 	  // And note we're assuming here the PW has been entered already.
 		const self = this
-		if (self.HasUserEnteredValidPasswordYet() === false) {
-			const errStr = "InitiateDeleteEverything called but HasUserEnteredValidPasswordYet === false. This should be disallowed in the UI"
+		if (self.hasUserSavedAPassword !== true) {
+			const errStr = "InitiateDeleteEverything called but hasUserSavedAPassword !== true. This should be disallowed in the UI"
 			throw errStr
 			return
 		}
@@ -918,7 +918,7 @@ class PasswordController extends EventEmitter
 				// reset state cause we're going all the way back to pre-boot 
 				self.hasBooted = false // require this pw controller to boot
 				self.password = undefined // this is redundant but is here for clarity
-				self.hasUserEverEnteredPasswordDuringThisBoot = false
+				self.hasUserSavedAPassword = false
 				self._id = undefined
 				self.encryptedMessageForUnlockChallenge = undefined
 				self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = undefined

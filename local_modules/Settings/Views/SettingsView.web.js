@@ -350,7 +350,7 @@ class SettingsView extends View
 			}
 		}
 		{
-           if (passwordController.hasUserEverEnteredPasswordDuringThisBoot !== true) {
+           if (passwordController.hasUserSavedAPassword !== true) {
                self.changePasswordButtonView.SetEnabled(false) // can't change til entered
                // self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
                self.appTimeoutRangeInputView.SetEnabled(true)
