@@ -55,11 +55,9 @@ rootView.superview = null // just to be explicit; however we will set a .superla
 	rootView.superlayer = superlayer
 	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
 }
-
-//setup the context menu
+//
+// setup the context menu
 require('electron-context-menu')({
-
 	shouldShowMenu: (event, params) => params.isEditable,
-
 	showInspectElement: false
 });
