@@ -436,11 +436,12 @@ var cnUtil = function(currencyConfig)
 
 	this.create_address = function(seed) {
 		var keys = {};
+		// updated by Luigi and PS to support reduced and non-reduced seeds
 		var first;
 		if (seed.length !== 64) {
 			first = this.cn_fast_hash(seed);
 		} else {
-			first = seed; //only input reduced seeds or this will not give you the result you want
+			first = this.sc_reduce32(seed);
 		}
 		keys.spend = this.generate_keys(first);
 		var second = this.cn_fast_hash(first);
