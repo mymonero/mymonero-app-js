@@ -16,6 +16,8 @@
         <splash src="cordova_res/build/android/default.png" />
         <icon src="cordova_res/build/android/icon.png" />
         <preference name="Fullscreen" value="false" />
+        <preference name="FullScreen" value="false" />
+        <preference name="fullscreen" value="false" />
     </platform>
     <preference name="SplashScreenDelay" value="100" />
     <preference name="BackupWebStorage" value="local" />
