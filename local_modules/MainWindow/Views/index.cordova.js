@@ -144,9 +144,6 @@ window.BootApp = function()
 			}
 		}
 		{ // configure native UI elements
-			StatusBar.overlaysWebView(true)
-			// already styled as lightcontent in config.xml
-			//
 			document.addEventListener("touchstart", function(){}, true) // to allow :active styles to work in your CSS on a page in Mobile Safari:
 			//
 			if (cached_metadata.isRunningInNonMobileBrowser == false) {
@@ -189,11 +186,6 @@ window.BootApp = function()
 			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
 			rootView = new RootView({}, context) // hang onto reference
 			rootView.superview = null // just to be explicit; however we will set a .superlayer
-			// specially accounting for status bar height here…
-			if (device.platform === 'iOS' && parseFloat(device.version) >= 7.0) {
-				rootView.layer.style.paddingTop = "20px"
-				rootView.layer.style.height = "calc(100% - 20px)"
-			}
 			// manually attach the rootView to the DOM and specify view's usual managed reference(s)
 			const superlayer = document.body
 			rootView.superlayer = superlayer
