@@ -15,6 +15,7 @@
         <allow-intent href="market:*" />
         <splash src="cordova_res/build/android/default.png" />
         <icon src="cordova_res/build/android/icon.png" />
+        <preference name="Fullscreen" value="false" />
     </platform>
     <preference name="SplashScreenDelay" value="100" />
     <preference name="BackupWebStorage" value="local" />
@@ -24,7 +25,6 @@
     <preference name="StatusBarStyle" value="lightcontent" />
     <preference name="Orientation" value="portrait" />
     <preference name="android-windowSoftInputMode" value="adjustResize|stateAlwaysHidden" />
-    <preference name="Fullscreen" value="false" />
     <preference name="android-fullscreen" value="false" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
