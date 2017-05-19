@@ -239,10 +239,6 @@ The MyMonero "core contributors" listed below either work on MyMonero full-time,
 
 * 🍄 [luigi1111](https://github.com/luigi1111) `luigi1112` – Monero tech advisor; Built client-side RingCT support
 
-* ✈️ [tfi_charmers](https://github.com/tficharmers) `tficharmers` – MyMonero app website developer & advisory
-
-* 🤖 [Daniel Ternyak](https://github.com/dternyak) `dternyak` – QA/features advisory
-
 * 🌠 Your name here?
 
 ## License and Copyrights
