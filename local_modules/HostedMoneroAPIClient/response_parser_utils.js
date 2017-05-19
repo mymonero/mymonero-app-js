@@ -32,17 +32,14 @@ const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger
 const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
 const monero_keyImage_cache_utils = require('../monero_utils/monero_keyImage_cache_utils')
 //
-function Parsed_AddressInfo(
+function Parsed_AddressInfo__sync(
 	data,
 	address,
 	view_key__private,
 	spend_key__public,
-	spend_key__private,
-	fn // (err?, returnValuesByKey) -> Void
-)
+	spend_key__private
+) // -> returnValuesByKey
 {
-	const err = null
-	//
 	const total_received = new JSBigInt(data.total_received || 0);
 	const locked_balance = new JSBigInt(data.locked_funds || 0);
 	var total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
@@ -81,9 +78,28 @@ function Parsed_AddressInfo(
 		transaction_height: transaction_height,
 		blockchain_height: blockchain_height
 	}
-	fn(err, returnValuesByKey)
+	return returnValuesByKey
+}
+function Parsed_AddressInfo(
+	data,
+	address,
+	view_key__private,
+	spend_key__public,
+	spend_key__private,
+	fn // (err?, returnValuesByKey) -> Void
+)
+{
+	const returnValuesByKey = Parsed_AddressInfo__sync(
+		data,
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private
+	)
+	fn(null, returnValuesByKey)
 }
 exports.Parsed_AddressInfo = Parsed_AddressInfo
+exports.Parsed_AddressInfo__sync = Parsed_AddressInfo__sync
 //
 function Parsed_AddressTransactions(
 	data,
@@ -94,8 +110,23 @@ function Parsed_AddressTransactions(
 	fn // (err?, returnValuesByKey) -> Void
 )
 {
-	const err = null
-	//
+	const returnValuesByKey = Parsed_AddressTransactions__sync(
+		data,
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private
+	)
+	fn(null, returnValuesByKey)
+}
+function Parsed_AddressTransactions__sync(
+	data,
+	address,
+	view_key__private,
+	spend_key__public,
+	spend_key__private
+)
+{
 	const account_scanned_height = data.scanned_height || 0
 	const account_scanned_block_height = data.scanned_block_height || 0
 	const account_scan_start_height = data.start_height || 0
@@ -154,9 +185,10 @@ function Parsed_AddressTransactions(
 		blockchain_height: blockchain_height,
 		serialized_transactions: transactions
 	}
-	fn(err, returnValuesByKey)
+	return returnValuesByKey
 }
 exports.Parsed_AddressTransactions = Parsed_AddressTransactions
+exports.Parsed_AddressTransactions__sync = Parsed_AddressTransactions__sync
 //
 function Parsed_UnspentOuts(
 	data,
@@ -167,14 +199,28 @@ function Parsed_UnspentOuts(
 	fn // (err?, returnValuesByKey)
 )
 {
-	const err = null
-	//
+	const returnValuesByKey = Parsed_UnspentOuts__sync(
+		data,
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private
+	)
+	fn(null, returnValuesByKey)
+}
+function Parsed_UnspentOuts__sync(
+	data,
+	address,
+	view_key__private,
+	spend_key__public,
+	spend_key__private
+)
+{
 	const data_outputs = data.outputs
 	const finalized_unspentOutputs = data.outputs || [] // to finalize:
 	for (var i = 0; i < finalized_unspentOutputs.length; i++) {
 		const unspent_output = finalized_unspentOutputs[i]
-		if (
-			unspent_output === null 
+		if (unspent_output === null 
 			|| typeof unspent_output === 'undefined' 
 			|| !unspent_output // just preserving what was in the original code
 		) {
@@ -225,6 +271,7 @@ function Parsed_UnspentOuts(
 		unspentOutputs: finalized_unspentOutputs,
 		unusedOuts: unusedOuts
 	}
-	fn(err, returnValuesByKey)
+	return returnValuesByKey
 }
 exports.Parsed_UnspentOuts = Parsed_UnspentOuts
+exports.Parsed_UnspentOuts__sync = Parsed_UnspentOuts__sync
