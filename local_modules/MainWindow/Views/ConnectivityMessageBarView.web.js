@@ -69,7 +69,7 @@ class ConnectivityMessageBarView extends View
 		layer.style.top = "44px"
 		layer.innerHTML = "No Internet Connection Found"
 		//
-		layer.style.background = "rgba(245,230,125,0.40)"
+		layer.style.background = "rgba(49,47,43,1)"
 		layer.style.border = "0.5px solid rgba(245,230,125,0.30)"
 		layer.style.textShadow = "0 1px 0 rgba(0, 0, 0, 0.6)"
 		layer.style.boxShadow = "0 1px 4px 0 rgba(0,0,0,0.40)"
