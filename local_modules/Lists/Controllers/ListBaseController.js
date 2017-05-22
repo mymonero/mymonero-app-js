@@ -113,7 +113,7 @@ class ListBaseController extends EventEmitter
 			)
 		}
 		function __proceedTo_loadAndBootAllExtantRecordsWithPassword(persistencePassword)
-		{ // we want to load the ids again after we have the password - or we'll have stale ids on having deleted all data in the app and subsequently subsequently adding a record!
+		{ // we want to load the ids again after we have the password - or we'll have stale ids on having deleted all data in the app and subsequently adding a record!
 			self._new_idsOfPersistedRecords(
 				function(err, ids)
 				{
