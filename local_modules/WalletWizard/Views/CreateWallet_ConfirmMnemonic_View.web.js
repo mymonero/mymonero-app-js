@@ -33,6 +33,7 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 //
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
@@ -371,8 +372,9 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			self.mnemonicConfirmation_selectedWordsView.Component_SetEnabled(false) // so they can't deselect while adding
 			//
-			self.rightBarButtonView.layer.innerHTML = "Loading…"
+			self.rightBarButtonView.layer.innerHTML = commonComponents_activityIndicators.New_Graphic_ActivityIndicatorLayer_htmlString({"margin-top": "3px"})
 			self.disable_submitButton()
+			self.rightBarButtonView.layer.style.backgroundColor = "rgba(0,0,0,0)" // special case / slightly fragile
 		}
 		self.context.walletsListController.WhenBooted_ObtainPW_AddNewlyGeneratedWallet(
 			walletInstance,

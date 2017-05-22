@@ -79,6 +79,46 @@ const cssRules =
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
+const loader_innerHTML = 
+`<div class="loader">`
+	+`<div class="block block1"></div>`
+	+`<div class="block block2"></div>`
+	+`<div class="block block3"></div>`
++`</div>`
+//
+function New_Graphic_ActivityIndicatorLayer()
+{
+	__injectCSSRules_ifNecessary()
+	const layer = document.createElement("div")
+	layer.classList.add("graphicOnly")
+	layer.classList.add(NamespaceName)
+	layer.innerHTML = loader_innerHTML
+		
+	//
+	return layer		
+}
+exports.New_Graphic_ActivityIndicatorLayer = New_Graphic_ActivityIndicatorLayer
+//
+function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey)
+{
+	__injectCSSRules_ifNecessary()
+	var style_str = ``
+	customCSSByKey = customCSSByKey || {}
+	const customCSSKeys = Object.keys(customCSSByKey)
+	const customCSSKeys_length = customCSSKeys.length
+	for (var i = 0 ; i < customCSSKeys_length ; i++) {
+		const cssKey = customCSSKeys[i]
+		const cssValue = customCSSByKey[cssKey]
+		style_str += `${cssKey}: ${cssValue}; `
+	}
+	const htmlString = `<div class="graphicOnly ${NamespaceName}" style="${style_str}">`
+		+ loader_innerHTML
+		+ `</div>`
+	//
+	return htmlString
+}
+exports.New_Graphic_ActivityIndicatorLayer_htmlString = New_Graphic_ActivityIndicatorLayer_htmlString
+//
 function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
 {
 	__injectCSSRules_ifNecessary()
@@ -86,11 +126,7 @@ function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
 	layer.classList.add("graphicAndLabel")
 	layer.classList.add(NamespaceName)
 	layer.innerHTML = 
-		`<div class="loader">`
-			+`<div class="block block1"></div>`
-			+`<div class="block block2"></div>`
-			+`<div class="block block3"></div>`
-		+`</div>`
+		loader_innerHTML
 		+`&nbsp;`
 		+`<span>${messageText}</span>`
 	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)

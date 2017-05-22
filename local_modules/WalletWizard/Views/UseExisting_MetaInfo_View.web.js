@@ -33,6 +33,7 @@ const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web'
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 //
 const BaseView_Wallet_MetaInfo = require('./BaseView_Wallet_MetaInfo.web')
 //
@@ -476,8 +477,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			//
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
-			self.rightBarButtonView.layer.innerHTML = "Loading…"
+			self.rightBarButtonView.layer.innerHTML = commonComponents_activityIndicators.New_Graphic_ActivityIndicatorLayer_htmlString({"margin-top": "3px"})
 			self.disable_submitButton()
+			self.rightBarButtonView.layer.style.backgroundColor = "rgba(0,0,0,0)" // special case / slightly fragile
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(false)
