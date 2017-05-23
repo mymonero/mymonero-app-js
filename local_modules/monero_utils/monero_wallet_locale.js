@@ -43,6 +43,5 @@ function MnemonicWordsetNameWithLocale(currentLocale) // e.g. 'en'
 		return mnemonicWordsetNamesByAppLocaleNames.Japanese
 	}
 	return monero_wallet_utils.DefaultWalletMnemonicWordsetName // which would be .English
-	
 }
 exports.MnemonicWordsetNameWithLocale = MnemonicWordsetNameWithLocale
