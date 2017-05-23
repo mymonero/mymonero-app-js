@@ -464,6 +464,37 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Booting
 
+	_trampolineFor_successfullyBooted(
+		fn
+	)
+	{ // fn: (err?) -> Void
+		const self = this
+		{
+			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
+				console.warn("⚠️  Wallet initialized without an account_seed.")
+				self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
+			} else {
+				self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
+			}
+		}
+		// console.info("✅  Successfully instantiated", self.Description())
+		{
+			self.isBooted = true
+		}
+		{ // ensure we call the callback
+			fn() 
+		}
+		{
+			self._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
+		}
+	}
+	_atRuntime_setup_hostPollingController()
+	{ 
+		const self = this
+		let options = { wallet: self }
+		let context = self.context
+		self.hostPollingController = new WalletHostPollingController(options, context)
+	}
 	__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 	{
 		const self = this
@@ -473,7 +504,6 @@ class Wallet extends EventEmitter
 		}
 		fn(err)
 	}
-
 	_boot_byLoggingIn(
 		address,
 		view_key,
@@ -1018,42 +1048,6 @@ class Wallet extends EventEmitter
 				fn(err)
 			}
 		)
-	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private - Booting
-
-	_trampolineFor_successfullyBooted(
-		fn
-	)
-	{ // fn: (err?) -> Void
-		const self = this
-		{
-			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed.length < 1) {
-				console.warn("⚠️  Wallet initialized without an account_seed.")
-				self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
-			} else {
-				self.mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
-			}
-		}
-		// console.info("✅  Successfully instantiated", self.Description())
-		{
-			self.isBooted = true
-		}
-		{ // ensure we call the callback
-			fn() 
-		}
-		{
-			self._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
-		}
-	}
-	_atRuntime_setup_hostPollingController()
-	{ 
-		const self = this
-		let options = { wallet: self }
-		let context = self.context
-		self.hostPollingController = new WalletHostPollingController(options, context)
 	}
 
 
