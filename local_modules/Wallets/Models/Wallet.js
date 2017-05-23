@@ -237,16 +237,7 @@ class Wallet extends EventEmitter
 		swatch,
 		fn
 	)
-	{ // informingAndVerifyingMnemonic_cb: (mnemonicString, confirmation_cb) -> Void
-		// confirmation_cb: (userConfirmed_mnemonicString) -> Void
-		// fn: (err?) -> Void
-		//
-		// To use this function, you must supply a informingAndVerifyingMnemonic_cb.
-		// Your supplied cb will be called with the generated mnemonicString and another
-		// _cb, which you must call after you get the user to confirm their mnemonicString.
-		// This function will proceed to verify the confirmation mnemonic string and
-		// then log into the hosted node server to create an account
-		//
+	{
 		const self = this
 		//		
 		self.persistencePassword = persistencePassword || null
