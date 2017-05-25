@@ -545,7 +545,13 @@ class SendFundsView extends View
 									// TODO: mayyybe alert tx in progress
 									return
 								}
-								self.contactOrAddressPickerLayer.ContactPicker_pickContact(contact)
+								{ // figure that since this method is called when user is trying to initiate a new request we should clear the form
+									self._clearForm()
+								}
+								{
+									self.fromContact = contact
+									self.contactOrAddressPickerLayer.ContactPicker_pickContact(contact) // simulate user picking the contact
+								}
 							}
 						)
 					}
@@ -694,6 +700,33 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.feeEstimateLayer.innerHTML = self._new_estimatedTransactionFee_displayString()
+	}
+	_clearForm()
+	{
+		const self = this
+		self._dismissValidationMessageLayer()
+		{
+			self.amountInputLayer.value = ""
+		}
+		{
+			if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
+				self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+					true // true, do not focus input
+				)
+				self.pickedContact = null // jic
+			}
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = ""
+		}
+		{
+			self._hideResolvedAddress()
+			self._hideResolvedPaymentID()
+		}
+		{
+			self.manualPaymentIDInputLayer.value = ""
+			self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+			//
+			self.addPaymentIDButtonView.layer.style.display = "block"
+		}
 	}
 	//
 	//
@@ -1060,30 +1093,8 @@ class SendFundsView extends View
 					{ // finally, clean up form
 						setTimeout(
 							function()
-							{ // TODO: factor this ?
-								self._dismissValidationMessageLayer()
-								{
-									self.amountInputLayer.value = ""
-								}
-								{
-									if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
-										self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
-											true // true, do not focus input
-										)
-										self.pickedContact = null // jic
-									}
-									self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = ""
-								}
-								{
-									self._hideResolvedAddress()
-									self._hideResolvedPaymentID()
-								}
-								{
-									self.manualPaymentIDInputLayer.value = ""
-									self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
-									//
-									self.addPaymentIDButtonView.layer.style.display = "block"
-								}
+							{
+								self._clearForm()
 								// and lastly, importantly, re-enable everything
 								_reEnableFormElements()
 							},
@@ -1100,21 +1111,6 @@ class SendFundsView extends View
 					}
 				}
 			)
-		}
-	}
-	//
-	//
-	// Runtime - Imperatives - Public - Using a new fromContact when a self had already been presented
-	//
-	AtRuntime_reconfigureWith_fromContact(fromContact)
-	{
-		const self = this
-		{ // figure that since this method is called when user is trying to initiate a new request we should clear the amount
-			self.amountInputLayer.value = ""
-		}
-		{
-			self.fromContact = fromContact
-			self.contactOrAddressPickerLayer.ContactPicker_pickContact(fromContact) // simulate user picking the contact
 		}
 	}
 	//
@@ -1415,31 +1411,51 @@ class SendFundsView extends View
 		if (self.isFormDisabled === true) {
 			console.warn("Disallowing QR code pick form disabled.")
 			return
-		}		
+		}
+		self.validationMessageLayer.ClearAndHideMessage()  // in case there was a parsing err etc displaying
+		self._clearForm()
+		//
 		const width = 256
-		const height = 256 // TODO: can we / do we need to read these from the image itself?
+		const height = 256
 		//
 		const canvas = document.createElement("canvas")
 		const context = canvas.getContext("2d")
 		canvas.width = width
-		canvas.height = height 
+		canvas.height = height
 		//
-		const img = document.createElement("img")
+		const img = new Image()
 		img.addEventListener(
 			"load",
 			function()
 			{
 				context.drawImage(img, 0, 0, width, height)
-				//
 				const imageData = context.getImageData(0, 0, width, height)
-				const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
+				//
+				const binarizedImage = jsQR.binarizeImage(imageData.data, imageData.width, imageData.height)
+				const qrCodeLocation = jsQR.locateQRInBinaryImage(binarizedImage)
+				if (!qrCodeLocation) {
+					self.validationMessageLayer.SetValidationError("MyMonero was unable to find a QR code in that image.")
+					return
+				}
+				const rawQR = jsQR.extractQRFromBinaryImage(binarizedImage, qrCodeLocation)
+				if (!rawQR) {
+					self.validationMessageLayer.SetValidationError("MyMonero was unable to extract the QR code from that image.")
+					return
+				}
+				const decodeResults = jsQR.decodeQR(rawQR)
+				console.log("decodeResults" , decodeResults)
+				// console.log("imageData.data", imageData.data)
+				// const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
+				// console.log("imageData.width", imageData.width)
+				// console.log("imageData.height", imageData.height)
+				// console.log("decodeResults", decodeResults)
 				if (!decodeResults || typeof decodeResults === 'undefined') {
-					console.log("No decodeResults from QR. Couldn't decode?")
-					self.validationMessageLayer.SetValidationError("Unable to decode that QR code.")
+					console.error("No decodeResults from QR. Couldn't decode?")
+					self.validationMessageLayer.SetValidationError("MyMonero was unable to decode that QR code.")
 					return
 				}
 				if (typeof decodeResults !== 'string') {
-					self.validationMessageLayer.SetValidationError("Was able to decode that QR code but unrecognized result.")
+					self.validationMessageLayer.SetValidationError("MyMonero was able to decode QR code but got unrecognized result.")
 					return
 				}
 				const requestURIString = decodeResults
@@ -1451,6 +1467,9 @@ class SendFundsView extends View
 	_shared_didPickRequestURIStringForAutofill(requestURIString)
 	{
 		const self = this
+		//
+		self.validationMessageLayer.ClearAndHideMessage()  // in case there was a parsing err etc displaying
+		self._clearForm()
 		//
 		self.cancelAny_requestHandle_for_oaResolution()
 		//
@@ -1548,7 +1567,7 @@ class SendFundsView extends View
 				self._displayResolvedPaymentID(payment_id_orNull)
 			} else {
 				self._hideResolvedPaymentID() // jic
-				self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
+				self.addPaymentIDButtonView.layer.style.display = "block" // show if hiding
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
 				self.manualPaymentIDInputLayer.value = "" 
 			}

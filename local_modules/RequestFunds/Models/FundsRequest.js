@@ -268,7 +268,7 @@ class FundsRequest extends EventEmitter
 		const self = this
 		const fundsRequestURI = self._assumingBootedOrEquivalent__Lazy_URI() 
 		// ^- since we're not booted yet but we're only calling this when we know we have all the info
-		const options = { errorCorrectionLevel: 'L' }
+		const options = { errorCorrectionLevel: 'Q' } // Q: quartile: 25%
 		QRCode.toDataURL(
 			fundsRequestURI, 
 			options,
