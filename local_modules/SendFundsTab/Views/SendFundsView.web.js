@@ -69,6 +69,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.isSubmitButtonDisabled = false
+		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		self.setup_views()
 		self.startObserving()
 	}
@@ -1689,6 +1690,19 @@ class SendFundsView extends View
 			},
 			10
 		)
+	}
+	//
+	//
+	// Delegation - Delete everything
+	//
+	passwordController_DeleteEverything(
+		fn // this MUST be called
+	)
+	{
+		const self = this
+		console.log(self.constructor.name + " passwordController_DeleteEverything")
+		self._clearForm()
+		fn()
 	}
 }
 module.exports = SendFundsView
