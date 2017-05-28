@@ -72,7 +72,7 @@ function NewHydratedContext(initialContext)
 			options: {}
 		},
 		{
-			module: require("../../QRScanningUI/qrScanningUI.cordova"),
+			module: require("../../QRScanningUI/QRScanningUI.cordova"),
 			instance_key: "qrScanningUI",
 			options: {}
 		},
