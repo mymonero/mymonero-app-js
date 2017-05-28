@@ -71,6 +71,11 @@ function NewHydratedContext(initialContext)
 			instance_key: "windowDialogs",
 			options: {}
 		},
+		{
+			module: require("../../QRScanningUI/qrScanningUI.cordova"),
+			instance_key: "qrScanningUI",
+			options: {}
+		},
 		//
 		// services
 		{

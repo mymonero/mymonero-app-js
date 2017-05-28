@@ -115,7 +115,9 @@ class SendFundsView extends View
 			}
 			self.actionButtonsContainerView = view
 			{
-				// self._setup_actionButton_useCamera()
+				if (self.context.Cordova_isMobile === true) { // til we have Electron support
+					self._setup_actionButton_useCamera()
+				}
 				self._setup_actionButton_chooseFile()
 			}
 			self.addSubview(view)
@@ -422,7 +424,7 @@ class SendFundsView extends View
 			false,
 			function(layer, e)
 			{
-				console.log("TODO: use camera to get QR code")
+				self.__didSelect_actionButton_useCamera()
 			},
 			self.context,
 			9, // px from top of btn - due to shorter icon
@@ -1649,6 +1651,24 @@ class SendFundsView extends View
 					return // nothing picked / canceled
 				}
 				self._shared_didPickQRCodeAtPath(absoluteFilePath)
+			}
+		)
+	}
+	__didSelect_actionButton_useCamera()
+	{
+		const self = this
+		self.context.qrScanningUI.PresentUIToScanOneQRCodeString(
+			function(err, uriString)
+			{
+				if (err) {
+					self.validationMessageLayer.SetValidationError(""+err)
+					return
+				}
+				if (!uriString) {
+					self.validationMessageLayer.SetValidationError("No scanned QR code content found.")
+					return
+				}
+				self._shared_didPickRequestURIStringForAutofill(uriString)
 			}
 		)
 	}
