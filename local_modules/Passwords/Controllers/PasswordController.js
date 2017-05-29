@@ -760,23 +760,13 @@ class PasswordController extends EventEmitter
 					userSelectedTypeOfPassword: self.userSelectedTypeOfPassword,
 					encryptedMessageForUnlockChallenge: self.encryptedMessageForUnlockChallenge
 				}
-				self._overridable_finalized_persistableDocument(
-					persistableDocument, 
-					function(err, finalized_persistableDocument)
-					{
-						if (err) {
-							fn(err)
-							throw err
-						}
-						// console.log("modelObject" , modelObject)
-						// insert & update fn declarations for imminent usage…
-						if (self._id === null || typeof self._id === 'undefined') {
-							_proceedTo_insertNewDocument(finalized_persistableDocument)
-						} else {
-							_proceedTo_updateExistingDocument(finalized_persistableDocument)
-						}
-					}
-				)
+				// console.log("modelObject" , modelObject)
+				// insert & update fn declarations for imminent usage…
+				if (self._id === null || typeof self._id === 'undefined') {
+					_proceedTo_insertNewDocument(persistableDocument)
+				} else {
+					_proceedTo_updateExistingDocument(persistableDocument)
+				}
 			}
 		)
 		function _proceedTo_insertNewDocument(persistableDocument)
@@ -819,14 +809,6 @@ class PasswordController extends EventEmitter
 				}
 			)
 		}
-	}
-	_overridable_finalized_persistableDocument(
-		persistableDocument_in,
-		fn // (err?, finalized_persistableDocument?) -> Void
-	)
-	{
-		const finalized_persistableDocument = persistableDocument_in
-		fn(null, finalized_persistableDocument) // no err
 	}
 	//
 	//
