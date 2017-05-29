@@ -416,7 +416,7 @@ class PasswordController extends EventEmitter
 					if (typeof self.encryptedMessageForUnlockChallenge === 'undefined' && !self.encryptedMessageForUnlockChallenge) {
 						const errStr = "Code fault: Existing document but no encryptedMessageForUnlockChallenge"
 						console.error(errStr)
-						self.unguard_getExistingPassword()
+						self.unguard_getNewOrExistingPassword()
 						throw errStr
 					}	
 					self._getUserToEnterTheirExistingPassword(
@@ -670,9 +670,7 @@ class PasswordController extends EventEmitter
 						} else if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
 							err = new Error("Please enter a fresh PIN.")
 						} else { 
-							self.unguard_getNewOrExistingPassword()
-							const err = new Error("Unrecognized password type")
-							self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
+							err = new Error("Unrecognized password type")
 							throw err
 						}
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
