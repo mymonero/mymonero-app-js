@@ -43,9 +43,7 @@ var cryptor_settings =
 	iv_length: 16,
 	pbkdf2: 
 	{
-		iterations: 157, // 10k iterations is rather slow; srcs say you want well below 10k https://coolaj86.com/articles/symmetric-cryptography-aes-with-webcrypto-and-node-js/
-		// This specific number was picked out of the air
-		//
+		iterations: 10000,
 		key_length: 32
 	},
 	hmac: 
