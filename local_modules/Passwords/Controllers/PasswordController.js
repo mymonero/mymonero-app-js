@@ -902,6 +902,10 @@ class PasswordController extends EventEmitter
 		// console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
 		self.deleteEverythingRegistrants.push(registrant)
 	}
+	//
+	//
+	// Runtime - Imperatives - App lock down interface (special case usage only)
+	//
 	LockDownAppAndRequirePassword()
 	{ // just a public interface for this - special-case-usage only! (so far. see index.cordova.js.)
 		const self = this
@@ -913,7 +917,11 @@ class PasswordController extends EventEmitter
 		self._deconstructBootedStateAndClearPassword(
 			false // not for a 'delete everything'
 		)
-	}
+	}	
+	//
+	//
+	// Runtime - Imperatives - Boot-state deconstruction/teardown
+	//
 	_deconstructBootedStateAndClearPassword(
 		optl_isForADeleteEverything,
 		hasFiredWill_fn, // (cb) -> Void; cb: (err?) -> Void
