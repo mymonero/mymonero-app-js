@@ -246,3 +246,22 @@ The MyMonero "core contributors" listed below either work on MyMonero full-time,
 See `LICENSE.txt` for license.
 
 All app source code and assets copyright © 2014-2017 by MyMonero. All rights reserved.
+
+
+# Supporting MyMonero
+
+Despite MyMonero being a fundamentally for-profit company, we open source all of the code that we can. This includes:
+
+* the entirety of the client applications (web wallet, desktop, Android, and native iOS), and 
+
+* a clean and performant MyMonero-API-compatible server, which will soon be introduced into the official Monero project codebase so anyone can run their own server from home.
+
+However, in order to make the above possible for the community, we have been operating at a severe loss since opening the site by paying out-of-pocket for hosting, development, and design costs. A comparably tiny amount was made on MyMonero transaction and import fees, and the transaction service fee has even been disabled since RingCT. 
+
+So that we can continue to bring delightful and featureful Monero lightwallet apps and technology to the Monero community, please consider making a donation.
+
+MyMonero Donation Address (XMR): 48yi8KBxh7fdZzwnX2kFCGALRcN1sNjwBHDfd5i9WLAWKs7G9rVbXNnbJTqZhhZCiudVtaMJKrXxmBeBR9kggBXr8X7PxPT
+
+MyMonero Donation URL: monero://48yi8KBxh7fdZzwnX2kFCGALRcN1sNjwBHDfd5i9WLAWKs7G9rVbXNnbJTqZhhZCiudVtaMJKrXxmBeBR9kggBXr8X7PxPT&tx_payment_id=aa42e4fd5d0eac9af2533a022734f2ce41bc4e9b43a6cfc5d2a4e5cecae5d643&tx_message=MyMonero%20donation
+
+Thank you very much for your support! 
