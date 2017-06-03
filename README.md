@@ -262,6 +262,6 @@ Please consider making a donation, so that we can continue to bring highly usabl
 
 MyMonero Donation Address (XMR): 48yi8KBxh7fdZzwnX2kFCGALRcN1sNjwBHDfd5i9WLAWKs7G9rVbXNnbJTqZhhZCiudVtaMJKrXxmBeBR9kggBXr8X7PxPT
 
-Your donation will be used to fund development on the MyMonero back-end, with the remainder going towards client app research and development, and server/site hosting costs.
+Your donation will be used to fund development on the MyMonero back-end, with the remainder going towards client (desktop & mobile) app research and development, and server/site hosting costs.
 
 We may consider a vacancy for sponsorship, as well as opportunities for featured merchants to be listed in the app.
