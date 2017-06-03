@@ -258,10 +258,12 @@ Despite MyMonero being a fundamentally for-profit company, we open source all of
 
 However, in order to make the above possible, we have been operating at a severe loss since opening the site by paying out-of-pocket for hosting, development, and design costs. A comparably tiny amount was made on MyMonero transaction and import fees, and the transaction service fee has even been disabled since RingCT. 
 
-Please consider making a donation, so that we can continue to bring highly usable and featureful Monero lightwallet apps and supporting technology to the community.
+For this reason, if you are interested in the MyMonero apps but are not able to contribute as a developer or QA engineer, please consider making a donation so that we may continue to bring highly usable and featureful Monero lightwallet apps and supporting technology to the Monero community.
+
+Your donation will be used to fund development on the MyMonero back-end, with the remainder going towards client (desktop & mobile) app research and development, and server/site hosting costs.
 
 MyMonero Donation Address (XMR): 48yi8KBxh7fdZzwnX2kFCGALRcN1sNjwBHDfd5i9WLAWKs7G9rVbXNnbJTqZhhZCiudVtaMJKrXxmBeBR9kggBXr8X7PxPT
 
-Your donation will be used to fund development on the MyMonero back-end, with the remainder going towards client (desktop & mobile) app research and development, and server/site hosting costs.
+## Sponsorship
 
 We may consider a vacancy for sponsorship, as well as opportunities for featured merchants to be listed in the app.
