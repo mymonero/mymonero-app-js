@@ -256,9 +256,9 @@ Despite MyMonero being a fundamentally for-profit company, we open source all of
 
 * a clean and performant MyMonero-API-compatible server, which will soon be introduced into the official Monero project codebase so anyone can run their own server from home.
 
-However, in order to make the above possible, we have been operating at a severe loss since opening the site by paying out-of-pocket for hosting, development, and design costs. A comparably tiny amount was made on MyMonero transaction and import fees, and the transaction service fee has even been disabled since RingCT. 
+However, in order to make the above possible, we have been operating at a severe loss since opening the site by paying out-of-pocket for hosting, development, and design costs. A comparably small amount was made on MyMonero transaction and import fees, and the transaction service fee has even been disabled since RingCT. 
 
-For this reason, if you are interested in the MyMonero apps but are not able to contribute as a developer or QA engineer, please consider making a donation so that we may continue to bring highly usable and featureful Monero lightwallet apps and supporting technology to the Monero community.
+For this reason, if you are interested in the MyMonero apps, but are not able to contribute as a developer or QA engineer, please consider making a donation so that we may continue to bring highly usable and featureful Monero lightwallet apps and supporting technology to the community.
 
 Your donation will be used to fund development on the MyMonero back-end, with the remainder going towards client (desktop & mobile) app research and development, and server/site hosting costs.
 
