@@ -331,7 +331,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 							}
 						)
 					}
-					self.SetStackViews([enterExistingPasswordView]) // i don't know of any cases where this should be true - and there are reasons we don't want it to be - there's no 'old_topStackView'
+					self.SetStackViews([enterExistingPasswordView]) // i don't know of any cases where `animated` should be true - and there are reasons we don't want it to be - there's no 'old_topStackView'
 					break
 				}
 				case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
