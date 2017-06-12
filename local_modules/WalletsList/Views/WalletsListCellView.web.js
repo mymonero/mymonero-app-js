@@ -31,7 +31,6 @@
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
-const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
 //
 class WalletsListCellView extends ListCellView
 {

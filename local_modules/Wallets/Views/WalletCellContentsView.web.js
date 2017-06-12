@@ -272,28 +272,7 @@ class WalletCellContentsView extends View
 		self.walletIconLayer.ConfigureWithHexColorString(colorHexString)
 	}
 	//
-	//
-	// Internal - Runtime - Imperatives - Wallet operations
-	deleteWallet()
-	{
-		const self = this
-		self.context.walletsListController.WhenBooted_DeleteRecordWithId(
-			self.wallet._id,
-			function(err)
-			{
-				if (err) {
-					console.error("Failed to delete wallet")
-					return
-				}
-				// this change will be picked up by the list change listener
-			}
-		)
-	}
-	//
-	//
-	//
 	// Internal - Runtime - Imperatives - Observation
-	//
 	startObserving_wallet()
 	{
 		const self = this

@@ -29,13 +29,6 @@
 "use strict"
 //
 const Views__cssRules = require('../Views/cssRules.web')
-// 
-function ColorClassFor_NeutralBG() { return "neutralBG" }
-function ColorClassFor_DarkBG() { return "darkBG" }
-function ColorClassFor_LightBG() { return "lightBG" }
-exports.ColorClassFor_NeutralBG = ColorClassFor_NeutralBG
-exports.ColorClassFor_DarkBG = ColorClassFor_DarkBG
-exports.ColorClassFor_LightBG = ColorClassFor_LightBG
 //
 const SizeClasses =
 {
