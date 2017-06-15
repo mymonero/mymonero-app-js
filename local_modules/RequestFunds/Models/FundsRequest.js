@@ -329,15 +329,5 @@ class FundsRequest extends EventEmitter
 			}
 		)
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private
-
-	_atRuntime_fundsRequestInfoUpdated()
-	{
-		const self = this
-		self.emit(self.EventName_fundsRequestInfoUpdated())
-	}
 }
 module.exports = FundsRequest
