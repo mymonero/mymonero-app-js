@@ -98,7 +98,6 @@ class AddWallet_WizardController
 	{
 		const self = this
 		{
-			self.isPerformingTask = false
 			self.current_wizardTaskModeName = null
 			self.initial_wizardTaskModeName = null
 		}
