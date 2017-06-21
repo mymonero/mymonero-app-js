@@ -246,20 +246,20 @@ class SettingsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NOTIFY ME WHEN", self.context)
 			div.appendChild(labelLayer)
 
-			const notifyFundsComeIn = commonComponents_switchToggles.New_fieldValue_switchToggle({
+			const switch_notifyFundsComeIn = commonComponents_switchToggles.New_fieldValue_switchToggle({
 				name: "notify_when_funds_come_in",
 				note: "Funds come in",
 				border: true,
 			}, self.context)  
-			div.appendChild(notifyFundsComeIn.layer)
+			div.appendChild(switch_notifyFundsComeIn.layer)
 
-			const notifyConfirmedOutgoing = commonComponents_switchToggles.New_fieldValue_switchToggle({
+			const switch_notifyConfirmedOutgoing = commonComponents_switchToggles.New_fieldValue_switchToggle({
 				name: "notify_when_outgoing_tx_confirmed",
 				note: "Outgoing transactions are confirmed",
 				border: false,
 			}, self.context)
 
-			div.appendChild(notifyConfirmedOutgoing.layer)
+			div.appendChild(switch_notifyConfirmedOutgoing.layer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}
