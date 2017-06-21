@@ -31,14 +31,14 @@
 const View = require('../Views/View.web')
 const Views__cssRules = require('../Views/cssRules.web')
 //
-const k_transitionTime = 0.2
-const k_height = 15 
-const k_width  = k_height * 2 
-const k_knobHeight = k_height - 4 
-const k_knobWidth  = k_height - 4 
+const k_transitionTime         = 0.2
+const k_height                 = 15 
+const k_width                  = k_height * 2 
+const k_knobHeight             = k_height - 4 
+const k_knobWidth              = k_height - 4 
 const k_backgroundColor        = "rgb(23, 20, 22)"
 const k_backgroundColorChecked = "#f45b5d"
-const k_knobColor			   = "rgba(153, 153, 153, 0.5)"
+const k_knobColor              = "rgba(153, 153, 153, 0.5)"
 const k_knobColorChecked       = "#f9f9f9"
 //
 // CSS rules
