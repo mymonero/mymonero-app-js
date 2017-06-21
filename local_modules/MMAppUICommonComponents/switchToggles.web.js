@@ -49,7 +49,8 @@ const cssRules =
 	`.switch {
 		display: flex;
 		justify-content: space-between;
-		margin: 0px 0px 8px 8px;
+		margin-left: 8px;
+		padding: 10px 0px 10px 0px;
 	}`,
 	`.switch.border {
 		border-bottom: 1px solid #8d8d8d;
