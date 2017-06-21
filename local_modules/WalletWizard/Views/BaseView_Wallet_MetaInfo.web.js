@@ -85,7 +85,7 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "For your reference only"
+				placeholderText: "For your reference"
 			})
 			self.walletNameInputLayer = valueLayer
 			valueLayer.addEventListener(

@@ -110,7 +110,7 @@ class EditWalletView extends View
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "For your reference only"
+				placeholderText: "For your reference"
 			})
 			valueLayer.value = self.wallet.walletLabel
 			self.walletNameInputLayer = valueLayer
