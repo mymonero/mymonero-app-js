@@ -32,14 +32,14 @@ const View = require('../Views/View.web')
 const Views__cssRules = require('../Views/cssRules.web')
 //
 const k_transitionTime         = 0.2
-const k_height                 = 15 
+const k_height                 = 12 
 const k_width                  = k_height * 2 
 const k_knobHeight             = k_height - 4 
 const k_knobWidth              = k_height - 4 
-const k_backgroundColor        = "rgb(23, 20, 22)"
-const k_backgroundColorChecked = "#f45b5d"
-const k_knobColor              = "rgba(153, 153, 153, 0.5)"
-const k_knobColorChecked       = "#f9f9f9"
+const k_backgroundColor        = "#1D1B1D"
+const k_backgroundColorChecked = "#1D1B1D"
+const k_knobColor              = "#333638"
+const k_knobColorChecked       = "#00C6FF"
 //
 // CSS rules
 const NamespaceName = "switchToggles"
@@ -53,11 +53,12 @@ const cssRules =
 		padding: 10px 0px 10px 0px;
 	}`,
 	`.switch.border {
-		border-bottom: 1px solid #8d8d8d;
+		border-bottom: 1px solid #383638;
 	}`,
 	`.switch .note {
 		align-self: flex-start;
-		font-size: 13px;
+		font-size: 11px;
+		color: #8D8B8D;
 	}`,
 	`.switch .toggle {
 		visibility: hidden;
@@ -70,7 +71,8 @@ const cssRules =
 		height: ${k_height}px;
 		width:  ${k_width}px;
 		background-color: ${k_backgroundColor};
-		border-radius: 25px;
+		box-shadow: 0 0.5px 0 0 rgba(56,54,56,0.5), inset 0 0.5px 0 0 #161416;
+		border-radius: 100px;
 		transition: background ${k_transitionTime}s;
 		display: block;
 		position: relative;
@@ -79,7 +81,6 @@ const cssRules =
 	}`,
 	`.switch input.toggle:checked+label {
 		background-color: ${k_backgroundColorChecked};
-		box-shadow: inset 0 1px 2px 0 rgba(0,0,0,0.2);
 	}`,
 	`.switch input.toggle+label:before {
 		top: 2px;
@@ -87,7 +88,7 @@ const cssRules =
 		bottom: 2px;
 		right: 2px;
 		background-color: ${k_backgroundColor};
-		border-radius: 25px;
+		border-radius: 100px;
 		transition: background ${k_transitionTime}s;
 	}`,
 	`.switch input.toggle:checked+label:before {
@@ -100,14 +101,14 @@ const cssRules =
 		height: ${k_knobHeight}px;
 		width:  ${k_knobWidth}px;
 		background-color: ${k_knobColor}; 
+		box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
 		border-radius: 21px;
 		transition: transform ${k_transitionTime}s, background ${k_transitionTime}s;
 	}`,
 	`.switch input.toggle:checked+label:after {
 		transform: translateX(${k_width - k_height}px);
 		background-color: ${k_knobColorChecked};
-		box-shadow: 0 10px 20px rgba(0,0,0,0.19), 
-					0 6px 6px rgba(0,0,0,0.23);
+		box-shadow: inset 0 0 0 0 rgba(255,255,255,0.2); 
 		transition: transform ${k_transitionTime}s, background ${k_transitionTime}s;
 	}`,
 	`.switch input.toggle+label:before, .switch input.toggle+label:after {
@@ -136,7 +137,7 @@ function New_fieldValue_switchToggle(params, context)
 
 	const noteDiv = document.createElement("span")
 	noteDiv.className = "note"
-	noteDiv.style.fontFamily = context.themeController.FontFamily_monospaceLight()
+	noteDiv.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
 	noteDiv.innerHTML = note 
 	container.appendChild(noteDiv)
 
