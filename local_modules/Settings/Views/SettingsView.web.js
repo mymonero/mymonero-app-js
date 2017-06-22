@@ -256,7 +256,7 @@ class SettingsView extends View
 			const switch_notifyConfirmedOutgoing = commonComponents_switchToggles.New_fieldValue_switchToggle({
 				name: "notify_when_outgoing_tx_confirmed",
 				note: "Outgoing transactions are confirmed",
-				border: false,
+				border: true,
 			}, self.context)
 
 			div.appendChild(switch_notifyConfirmedOutgoing.layer)
