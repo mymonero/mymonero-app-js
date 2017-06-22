@@ -57,7 +57,6 @@ const cssRules =
 	}`,
 	`.switch .note {
 		align-self: flex-start;
-		font-size: 11px;
 		color: #8D8B8D;
 	}`,
 	`.switch .toggle {
@@ -137,7 +136,7 @@ function New_fieldValue_switchToggle(params, context)
 
 	const noteDiv = document.createElement("span")
 	noteDiv.className = "note"
-	noteDiv.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
+	context.themeController.StyleLayer_FontAsMessageBearingSmallLightMonospace(noteDiv)
 	noteDiv.innerHTML = note 
 	container.appendChild(noteDiv)
 
