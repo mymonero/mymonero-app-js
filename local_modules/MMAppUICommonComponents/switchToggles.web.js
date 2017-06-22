@@ -51,6 +51,7 @@ const cssRules =
 		justify-content: space-between;
 		margin-left: 8px;
 		padding: 10px 0px 10px 0px;
+		cursor: pointer;
 	}`,
 	`.switch.border {
 		border-bottom: 1px solid #383638;
@@ -75,7 +76,6 @@ const cssRules =
 		transition: background ${k_transitionTime}s;
 		display: block;
 		position: relative;
-		cursor: pointer;
 		outline: none;
 	}`,
 	`.switch input.toggle:checked+label {
@@ -150,7 +150,7 @@ function New_fieldValue_switchToggle(params, context)
 	const label = document.createElement("label")
 	label.for = input.id
 
-	label.onclick = function()
+	container.onclick = function()
 	{
 		input.click() 
 	}
