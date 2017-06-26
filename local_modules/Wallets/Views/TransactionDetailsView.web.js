@@ -199,7 +199,7 @@ class TransactionDetailsView extends View
 	_addTableFieldLayer_mixin()
 	{
 		const self = this
-		const title = "Mixin"
+		const title = "Ringsize"
 		const div = self.__new_tableFieldLayer_simpleValue(
 			"", // for now
 			title			
