@@ -50,7 +50,7 @@ const cssRules =
 		display: flex;
 		justify-content: space-between;
 		margin-left: 8px;
-		padding: 10px 0px 10px 0px;
+		padding: 13px 0px 13px 0px;
 		cursor: pointer;
 	}`,
 	`.switch.border {
@@ -67,7 +67,6 @@ const cssRules =
 	}`,
 	`.switch input.toggle+label {
 		align-self: flex-end;
-		padding: 2px;
 		height: ${k_height}px;
 		width:  ${k_width}px;
 		background-color: ${k_backgroundColor};
@@ -82,10 +81,8 @@ const cssRules =
 		background-color: ${k_backgroundColorChecked};
 	}`,
 	`.switch input.toggle+label:before {
-		top: 2px;
-		left: 2px;
-		bottom: 2px;
-		right: 2px;
+		height: ${k_height}px;
+		width: ${k_width}px;
 		background-color: ${k_backgroundColor};
 		border-radius: 100px;
 		transition: background ${k_transitionTime}s;
@@ -94,9 +91,9 @@ const cssRules =
 		background-color: ${k_backgroundColorChecked};
 	}`,
 	`.switch input.toggle+label:after {
-		top: 4px;
-		left: 4px;
-		bottom: 4px;
+		top: 2px;
+		left: 2px;
+		bottom: 2px;
 		height: ${k_knobHeight}px;
 		width:  ${k_knobWidth}px;
 		background-color: ${k_knobColor}; 
