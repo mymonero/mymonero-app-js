@@ -104,7 +104,7 @@ class SettingsView extends View
 			self._setup_form_field_changePasswordButton()
 			// self._setup_form_field_serverURL() // TODO: to implement
 			self._setup_form_field_appTimeoutSlider()
-			self._setup_form_field_notifyOptions()
+			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
 			self._setup_deleteEverythingButton()
 		}
 		self.layer.appendChild(containerLayer)
