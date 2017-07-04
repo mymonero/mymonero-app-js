@@ -116,7 +116,7 @@ class ContactFormView extends View
 		const self = this
 		const view = commonComponents_forms.New_fieldValue_textAreaView(
 			{
-				placeholderText: "Enter integrated address or OpenAlias"
+				placeholderText: "Enter normal, integrated, or OpenAlias address"
 			},
 			self.context
 		)

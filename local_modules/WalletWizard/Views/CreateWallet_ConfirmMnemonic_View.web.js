@@ -43,7 +43,6 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	{
 		const self = this
 		super._setup_views()
-		//
 		{ // validation message
 			const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
 			layer.style.width = "calc(100% - 48px)"
@@ -51,7 +50,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.ClearAndHideMessage()
 			self.validationMessageLayer = layer
 			self.layer.appendChild(layer)				
-		}		//
+		}
 		const walletInstance = self.wizardController.walletInstance
 		const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
 		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
