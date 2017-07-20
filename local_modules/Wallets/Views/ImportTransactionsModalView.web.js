@@ -491,6 +491,10 @@ class ImportTransactionsModalView extends View
 		const self = this
 		super.viewDidAppear()
 		//
+		if (self.hasDoneRequest == true) {
+			return
+		}
+		self.hasDoneRequest = true
 		if (self.requestHandle_for_importRequestInfoAndStatus == null || typeof self.requestHandle_for_importRequestInfoAndStatus === 'undefined') {
 			const requestHandle = self.context.hostedMoneroAPIClient.ImportRequestInfoAndStatus(
 				self.wallet.public_address,
