@@ -463,7 +463,7 @@ class ImportTransactionsModalView extends View
 							// Now dismiss
 							self.dismissView()
 						},
-						500 // after the navigation transition just above has taken place
+						500
 					)
 					// and fire off a request to have the wallet get the latest (real) tx records
 					setTimeout(
