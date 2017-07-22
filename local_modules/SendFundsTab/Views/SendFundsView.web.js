@@ -281,10 +281,6 @@ class SendFundsView extends View
 			self.context.contactsListController,
 			function(contact)
 			{ // did pick
-				self.addPaymentIDButtonView.layer.style.display = "none"
-				self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
-				self.manualPaymentIDInputLayer.value = ""
-				//
 				self._didPickContact(contact)
 			},
 			function(clearedContact)
@@ -1202,10 +1198,14 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.pickedContact = contact
+		{ // UI config regardless of input values
+			self.addPaymentIDButtonView.layer.style.display = "none"
+			self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
+			self.manualPaymentIDInputLayer.value = ""
+			self._hideResolvedAddress() // no possible need to show this
+		}
 		{ // payment id - if we already have one
 			if (self.pickedContact.HasOpenAliasAddress() === false) {
-				self._hideResolvedAddress() // no possible need to show this
-				//
 				const payment_id = contact.payment_id
 				if (payment_id && typeof payment_id !== 'undefined') {
 					self._displayResolvedPaymentID(payment_id)
@@ -1216,7 +1216,6 @@ class SendFundsView extends View
 				// and exit early
 				return // no need to re-resolve what is not an OA addr
 			} else { // they're using an OA addr, so we still need to check if they still have one
-				self._hideResolvedAddress() // no possible need to show this
 				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
 			}
 		}
