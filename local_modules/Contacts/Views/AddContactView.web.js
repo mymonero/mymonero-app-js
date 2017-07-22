@@ -149,7 +149,7 @@ class AddContactView extends ContactFormView
 			//
 			_proceedTo_addContact_paymentID(paymentID)
 		} else {
-			self.resolving_activityIndicatorLayer.style.display = "block"
+			self.resolving_activityIndicatorLayer.style.display = "block" // AFTER any cancelAny_requestHandle…
 			//
 			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 				address,

@@ -613,6 +613,9 @@ class SendFundsView extends View
 			req.abort()
 		}
 		self.requestHandle_for_oaResolution = null
+		if (typeof self.resolving_activityIndicatorLayer !== 'undefined' && self.resolving_activityIndicatorLayer != null) {
+			self.resolving_activityIndicatorLayer.style.display = "none"
+		}
 	}
 	stopObserving()
 	{
@@ -1219,15 +1222,15 @@ class SendFundsView extends View
 				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
 			}
 		}
+		{
+			self.cancelAny_requestHandle_for_oaResolution()
+		}
 		// look up the payment ID again 
 		{ // (and show the "resolving UI")
 			self.resolving_activityIndicatorLayer.style.display = "block"
 			self.disable_submitButton()
 			//
 			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
-		}
-		{
-			self.cancelAny_requestHandle_for_oaResolution()
 		}
 		self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 			contact.address,
@@ -1293,6 +1296,7 @@ class SendFundsView extends View
 		// 
 		//
 		self.cancelAny_requestHandle_for_oaResolution()
+		//
 		self._hideResolvedAddress()
 		self._hideResolvedPaymentID()
 		self._dismissValidationMessageLayer()

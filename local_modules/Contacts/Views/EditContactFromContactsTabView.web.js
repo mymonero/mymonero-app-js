@@ -216,7 +216,7 @@ class EditContactFromContactsTabView extends ContactFormView
 			}
 			_proceedTo_saveContact_paymentID(paymentID, undefined)
 		} else {
-			self.resolving_activityIndicatorLayer.style.display = "block"
+			self.resolving_activityIndicatorLayer.style.display = "block" // AFTER any cancelAny_requestHandle…
 			//
 			self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 				address,

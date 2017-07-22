@@ -326,6 +326,9 @@ class ContactFormView extends View
 			req.abort()
 		}
 		self.requestHandle_for_oaResolution = null
+		if (typeof self.resolving_activityIndicatorLayer !== 'undefined' && self.resolving_activityIndicatorLayer != null) {
+			self.resolving_activityIndicatorLayer.style.display = "none"
+		}
 	}
 	//
 	//

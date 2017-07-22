@@ -369,6 +369,7 @@ class CreateRequestFormView extends View
 			req.abort()
 		}
 		self.requestHandle_for_oaResolution = null
+		self.resolving_activityIndicatorLayer.style.display = "none"
 	}
 	//
 	//
@@ -623,14 +624,14 @@ class CreateRequestFormView extends View
 			}
 		}
 		// look up the payment ID again 
+		{
+			self.cancelAny_requestHandle_for_oaResolution() 
+		}
 		{ // (and show the "resolving UI")
-			self.resolving_activityIndicatorLayer.style.display = "block"
+			self.resolving_activityIndicatorLayer.style.display = "block" // AFTER any cancelAny_requestHandle…
 			self.disable_submitButton()
 			//
 			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
-		}
-		{
-			self.cancelAny_requestHandle_for_oaResolution()
 		}
 		self.requestHandle_for_oaResolution = self.context.openAliasResolver.ResolveOpenAliasAddress(
 			contact.address,
