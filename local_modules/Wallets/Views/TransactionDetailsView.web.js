@@ -110,7 +110,7 @@ class TransactionDetailsView extends View
 		{
 			self._addTableFieldLayer_date()
 			self._addTableFieldLayer_amountsFeesAndTotals()
-			self._addTableFieldLayer_mixin()
+			self._addTableFieldLayer_ringsize()
 			self._addTableFieldLayer_transactionHash()
 			self._addTableFieldLayer_paymentID()
 		}
@@ -196,7 +196,7 @@ class TransactionDetailsView extends View
 		self.tableFieldLayer__amountsFeesAndTotals = div
 		self.tableSection_containerLayer.appendChild(div)
 	}
-	_addTableFieldLayer_mixin()
+	_addTableFieldLayer_ringsize()
 	{
 		const self = this
 		const title = "Ringsize"
@@ -204,7 +204,7 @@ class TransactionDetailsView extends View
 			"", // for now
 			title			
 		)
-		self.tableFieldLayer__mixin = div
+		self.tableFieldLayer__ringsize = div
 		self.tableSection_containerLayer.appendChild(div)
 	}
 	_addTableFieldLayer_transactionHash()
@@ -405,9 +405,9 @@ class TransactionDetailsView extends View
 			self.tableFieldLayer__amountsFeesAndTotals.Component_SetValue(value)
 			self.tableFieldLayer__amountsFeesAndTotals.Component_SetColor(color)
 		}
-		{ // Mixin
-			const value = self.transaction.mixin 
-			self.tableFieldLayer__mixin.Component_SetValue(value)
+		{ // Ringsize
+			const value = parseInt(self.transaction.mixin) + 1 // b/c ringsize = mixin + 1
+			self.tableFieldLayer__ringsize.Component_SetValue(value)
 		}
 		{ // TX hash
 			const value = self.transaction.hash
