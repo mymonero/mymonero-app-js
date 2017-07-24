@@ -60,11 +60,11 @@ class OpenAliasResolver extends EventEmitter
 	// 
 	// Runtime - Accessors - Transforms
 	//
-	IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
+	DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address)
 	{
 		const self = this
 		//
-		return monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
+		return monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address)
 	}
 	//
 	//

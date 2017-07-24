@@ -296,7 +296,7 @@ class Contact extends EventEmitter
 		const self = this
 		const address = self.address
 		//
-		return self.context.openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
+		return self.context.openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address)
 	}
 	HasIntegratedAddress()
 	{ // throws
@@ -401,7 +401,7 @@ class Contact extends EventEmitter
 					}
 				} else if (valueKey === "address") {
 					const address = value
-					if (self.context.openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) { // if new one is not OA addr, clear cached OA-resolved info
+					if (self.context.openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) { // if new one is not OA addr, clear cached OA-resolved info
 						self.cached_OAResolved_XMR_address = null
 					}
 				}

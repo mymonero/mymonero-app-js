@@ -934,7 +934,7 @@ class SendFundsView extends View
 				return
 			}
 			// address
-			const is_enteredAddressValue_OAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(enteredAddressValue)
+			const is_enteredAddressValue_OAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredAddressValue)
 			var isIntegratedAddress;
 			if (is_enteredAddressValue_OAAddress !== true) {
 				// then it's an XMR addr
@@ -1310,7 +1310,7 @@ class SendFundsView extends View
 		//
 		self.disable_submitButton()
 		//
-		const isOAAddress = monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(enteredPossibleAddress)
+		const isOAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredPossibleAddress)
 		if (isOAAddress !== true) {
 			var address__decode_result; 
 			try {

@@ -193,7 +193,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		self.cancelAny_requestHandle_for_oaResolution() // jic
 		//
 		const openAliasResolver = self.context.openAliasResolver
-		if (openAliasResolver.IsAddressNotMoneroAddressAndThusProbablyOAAddress(address) === false) {
+		if (openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) {
 			var address__decode_result; 
 			try {
 				address__decode_result = monero_utils.decode_address(address)

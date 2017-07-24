@@ -34,7 +34,7 @@ const openalias_utils = require('./openalias_utils')
 //
 const currency_openAliasPrefix = monero_config.openAliasPrefix
 //
-function IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
+function DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address)
 {
 	if (address.indexOf('.') !== -1) { 
 		// assumed to be an OA address asXMR addresses do not have periods and OA addrs must
@@ -42,7 +42,7 @@ function IsAddressNotMoneroAddressAndThusProbablyOAAddress(address)
 	}
 	return false
 }
-exports.IsAddressNotMoneroAddressAndThusProbablyOAAddress = IsAddressNotMoneroAddressAndThusProbablyOAAddress
+exports.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress = DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress
 //
 function ResolvedMoneroAddressInfoFromOpenAliasAddress( 
 	openAliasAddress,
@@ -60,7 +60,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 	// ) -> HostedMoneroAPIClient_RequestHandle
 )
 {
-	if (IsAddressNotMoneroAddressAndThusProbablyOAAddress(openAliasAddress) === false) {
+	if (DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(openAliasAddress) === false) {
 		throw "Asked to resolve non-OpenAlias address." // throw as code fault
 	}
 	var openAlias_domain = openAliasAddress.replace(/@/g, ".");

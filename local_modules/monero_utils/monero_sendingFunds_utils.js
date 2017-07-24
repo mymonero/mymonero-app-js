@@ -581,7 +581,7 @@ function new_moneroReadyTargetDescriptions_fromTargetDescriptions(
 			const targetDescription_address = targetDescription.address
 			const targetDescription_amount = "" + targetDescription.amount // we are converting it to a string here because parseMoney expects a string
 			// now verify/parse address and amount
-			if (monero_openalias_utils.IsAddressNotMoneroAddressAndThusProbablyOAAddress(targetDescription_address) == true) {
+			if (monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(targetDescription_address) == true) {
 				throw "You must resolve this OA address to a Monero address before calling SendFunds"
 			}
 			// otherwise this should be a normal, single Monero public address
