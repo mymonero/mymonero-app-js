@@ -277,7 +277,7 @@ class SendFundsView extends View
 		//
 		const layer = commonComponents_contactPicker.New_contactPickerLayer(
 			self.context,
-			"Contact name, or OpenAlias / integrated address",
+			"Contact name, or address/domain",
 			self.context.contactsListController,
 			function(contact)
 			{ // did pick
