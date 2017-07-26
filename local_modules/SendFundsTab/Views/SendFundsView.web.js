@@ -947,7 +947,6 @@ class SendFundsView extends View
 					self.enable_submitButton()
 					return // just return silently
 				}
-				// we don't care whether it's an integrated address or not here since we're not going to use its payment id
 				target_address = enteredAddressValue // then this look like a valid XMR addr
 				if (address__decode_result.intPaymentId) {
 					isIntegratedAddress = true

@@ -253,10 +253,7 @@ function SendFunds(
 		if (address__decode_result.intPaymentId) {
 			final__payment_id = address__decode_result.intPaymentId
 			final__pid_encrypt = true // we do want to encrypt if using an integrated address
-		}
-		//
-		// Validation
-		if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
+		} else if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(final__payment_id) === false) {
 			const errStr = "The payment ID you've entered is not valid"
 			__trampolineFor_err_withStr(errStr)
 			return
