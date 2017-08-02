@@ -528,8 +528,8 @@ class SendFundsView extends View
 			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact = function(contact)
 			{
 				self.navigationController.DismissModalViewsToView( // whether we should force-dismiss these (create new contact) is debatable… 
-					null, 
-					true, // null -> to top stack view
+					null, // null -> to top stack view
+					true, 
 					function() 
 					{ // must wait til done or 'currently transitioning' will race 
 						self.navigationController.PopToRootView( // now pop pushed stack views - essential for the case they're viewing a transaction
@@ -565,6 +565,12 @@ class SendFundsView extends View
 				controller.EventName_ReceivedURLToOpen_FundsRequest(),
 				function(url)
 				{
+					self.DismissModalViewsToView( // dismissing these b/c of checks in __shared_isAllowedToPerformDropOrURLOpeningOps
+						null, // null -> to top stack view
+						false // not animated
+					)
+					self.PopToRootView(false) // in case they're not on root
+					//
 					if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() != true) {
 						console.warn("Not allowed to perform URL opening ops yet.")
 						return false
