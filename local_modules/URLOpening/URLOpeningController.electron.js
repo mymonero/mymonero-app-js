@@ -44,6 +44,7 @@ class URLOpeningController extends URLOpeningController_Abstract
 		{ // ^ we might not need to do this
 			app.on("open-url", function(event, url)
 			{
+				event.preventDefault() // "should call this" since we want to handle it
 				self.__didReceivePossibleURIToOpen(
 					url,
 					function()
