@@ -1620,7 +1620,7 @@ class SendFundsView extends View
 		if (self.context.passwordController.IsUserChangingPassword() === true) {
 			return false
 		}
-		if (!self.context.walletsListController.records || self.context.walletsListController.records == 0) {
+		if (!self.context.walletsListController.records || self.context.walletsListController.records.length == 0) {
 			return false
 		}
 		if (self.isFormDisabled === true) {
