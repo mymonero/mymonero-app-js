@@ -1589,7 +1589,7 @@ class SendFundsView extends View
 	__didSelect_actionButton_chooseFile()
 	{
 		const self = this
-		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+		self.context.userIdleInWindowController.TemporarilyDisable_userIdle() // TODO: this is actually probably a bad idea - remove this and ensure that file picker canceled on app teardown
 		if (typeof self.context.Cordova_disallowLockDownOnAppPause !== 'undefined') {
 			self.context.Cordova_disallowLockDownOnAppPause += 1 // place lock so Android app doesn't tear down UI and mess up flow
 		}
