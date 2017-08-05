@@ -160,7 +160,7 @@ class SettingsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SERVER URL", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SERVER ADDRESS", self.context)
 			div.appendChild(labelLayer)
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
