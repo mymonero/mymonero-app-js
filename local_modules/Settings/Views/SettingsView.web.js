@@ -33,6 +33,7 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_labeledRangeInputs = require('../../MMAppUICommonComponents/labeledRangeInputs.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const commonComponents_switchToggles = require('../../MMAppUICommonComponents/switchToggles.web')
 //
 class SettingsView extends View
 {
@@ -103,6 +104,7 @@ class SettingsView extends View
 			self._setup_form_field_changePasswordButton()
 			// self._setup_form_field_serverURL() // TODO: to implement
 			self._setup_form_field_appTimeoutSlider()
+			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
 			self._setup_deleteEverythingButton()
 		}
 		self.layer.appendChild(containerLayer)
@@ -233,6 +235,31 @@ class SettingsView extends View
 			messageLayer.style.wordBreak = "break-word"
 			self.appTimeoutSlider_messageLayer = messageLayer
 			div.appendChild(messageLayer)
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_field_notifyOptions()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NOTIFY ME WHEN", self.context)
+			div.appendChild(labelLayer)
+
+			const switch_notifyFundsComeIn = commonComponents_switchToggles.New_fieldValue_switchToggle({
+				name: "notify_when_funds_come_in",
+				note: "Funds come in",
+				border: true,
+			}, self.context)  
+			div.appendChild(switch_notifyFundsComeIn.layer)
+
+			const switch_notifyConfirmedOutgoing = commonComponents_switchToggles.New_fieldValue_switchToggle({
+				name: "notify_when_outgoing_tx_confirmed",
+				note: "Outgoing transactions are confirmed",
+				border: true,
+			}, self.context)
+
+			div.appendChild(switch_notifyConfirmedOutgoing.layer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}
