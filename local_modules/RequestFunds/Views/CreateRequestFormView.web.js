@@ -136,7 +136,7 @@ class CreateRequestFormView extends View
 		div.style.display = "block"
 		div.style.padding = "0 24px 0 24px"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("RECEIVE MONERO AT", self.context)
 			div.appendChild(labelLayer)
 			//
 			const view = new WalletsSelectView({}, self.context)
@@ -207,7 +207,7 @@ class CreateRequestFormView extends View
 		div.style.paddingTop = "9px"
 		div.style.paddingBottom = "0"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("REQUEST FROM", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("REQUEST MONERO FROM", self.context)
 			labelLayer.style.float = "left"
 			div.appendChild(labelLayer)
 			//
