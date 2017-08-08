@@ -276,10 +276,10 @@ function New_MnemonicConfirmation_SelectableWordsView(
 		layer.style.textAlign = "center"
 		layer.style.marginTop = "10px"
 	}
-	const shuffled_mnemonicWords = new_shuffledArray(mnemonicString.split(" "))
+	const alphabetized_mnemonicWords = mnemonicString.split(" ").sort()
 	const wordsByWordUUID = {} // because words are not unique in a mnemonic
 	const wordViews_byWordUUID = {}
-	shuffled_mnemonicWords.forEach(
+	alphabetized_mnemonicWords.forEach(
 		function(word, i)
 		{
 			const wordUUID = _new_UUID()
@@ -358,20 +358,4 @@ exports.New_MnemonicConfirmation_SelectableWordsView = New_MnemonicConfirmation_
 function _new_UUID()
 {
 	return uuidV1()
-}
-//
-function new_shuffledArray(array)
-{
-	var currentIndex = array.length
-	var temporaryValue
-	var randomIndex
-	while (0 !== currentIndex) {
-		randomIndex = Math.floor(Math.random() * currentIndex)
-		currentIndex -= 1
-		//
-		temporaryValue = array[currentIndex]
-		array[currentIndex] = array[randomIndex]
-		array[randomIndex] = temporaryValue
-	}
-	return array
 }
