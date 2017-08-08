@@ -228,7 +228,7 @@ class SendFundsView extends View
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
 		{
-			const tooltipText = `Monero makes transactions with your<br/>"available outputs", so part of your<br/>balance will be briefly locked and<br/>then returned as change.<br/><br/>Monero ring size value set to ${self._mixin_int()}.`
+			const tooltipText = `Monero makes transactions with your<br/>"available outputs", so part of your<br/>balance will be briefly locked and<br/>then returned as change.<br/><br/>Monero ringsize value set to ${self._mixin_int()+1}.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
