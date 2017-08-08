@@ -46,7 +46,7 @@ class CreateRequestFormView extends View
 	{
 		super(options, context) // call super before `this`
 		//
-		const self = this 
+		const self = this
 		{
 			self.fromContact = options.fromContact || null
 		}
@@ -59,7 +59,7 @@ class CreateRequestFormView extends View
 			self.isSubmitButtonDisabled = false
 		}
 		self.setup_views()
-		
+
 	}
 	setup_views()
 	{
@@ -103,7 +103,7 @@ class CreateRequestFormView extends View
 		layer.style.marginLeft = "24px"
 		layer.ClearAndHideMessage()
 		self.validationMessageLayer = layer
-		self.layer.appendChild(layer)				
+		self.layer.appendChild(layer)
 	}
 	_setup_form_containerLayer()
 	{
@@ -136,7 +136,7 @@ class CreateRequestFormView extends View
 		div.style.display = "block"
 		div.style.padding = "0 24px 0 24px"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("RECEIVE MONERO AT", self.context)
 			div.appendChild(labelLayer)
 			//
 			const view = new WalletsSelectView({}, self.context)
@@ -156,7 +156,7 @@ class CreateRequestFormView extends View
 			{ // enter btn pressed
 				self._tryToGenerateRequest()
 			}
-		)		
+		)
 		const div = pkg.containerLayer
 		self.amountInputLayer = pkg.valueLayer
 		//
@@ -207,7 +207,7 @@ class CreateRequestFormView extends View
 		div.style.paddingTop = "9px"
 		div.style.paddingBottom = "0"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("REQUEST FROM", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("REQUEST MONERO FROM", self.context)
 			labelLayer.style.float = "left"
 			div.appendChild(labelLayer)
 			//
@@ -245,7 +245,7 @@ class CreateRequestFormView extends View
 			div.appendChild(layer)
 			{ // initial config
 				if (self.fromContact !== null) {
-					setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
+					setTimeout( // must do this on the next tick so that we are already set on the navigation controller
 						function()
 						{
 							self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
@@ -256,7 +256,7 @@ class CreateRequestFormView extends View
 			}
 		}
 		self.form_containerLayer.appendChild(div)
-	}	
+	}
 	_setup_form_resolving_activityIndicatorLayer()
 	{
 		const self = this
@@ -269,8 +269,8 @@ class CreateRequestFormView extends View
 	{
 		const self = this
 		const view = commonComponents_tables.New_createNewRecordNamedButtonView(
-			"CONTACT", 
-			self.context, 
+			"CONTACT",
+			self.context,
 			function()
 			{
 				const view = new AddContactFromOtherTabView({
@@ -291,10 +291,10 @@ class CreateRequestFormView extends View
 	}
 	_setup_form_addPaymentIDButtonView()
 	{
-		const self = this		
+		const self = this
 		const view = commonComponents_tables.New_clickableLinkButtonView(
-			"+ ADD PAYMENT ID", 
-			self.context, 
+			"+ ADD PAYMENT ID",
+			self.context,
 			function()
 			{
 				if (self.isFormDisabled !== true) {
@@ -400,7 +400,7 @@ class CreateRequestFormView extends View
 		return view
 	}
 	Navigation_New_RightBarButtonView()
-	{		
+	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
 		self.rightBarButtonView = view
@@ -443,9 +443,9 @@ class CreateRequestFormView extends View
 	_dismissValidationMessageLayer()
 	{
 		const self = this
-		self.validationMessageLayer.SetValidationError("") 
+		self.validationMessageLayer.SetValidationError("")
 		self.validationMessageLayer.style.display = "none"
-	}	
+	}
 	//
 	//
 	// Runtime - Imperatives - Request generation
@@ -485,9 +485,9 @@ class CreateRequestFormView extends View
 		}
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
 		{
-			if (self.contactPickerLayer.ContactPicker_inputLayer.value !== "" 
+			if (self.contactPickerLayer.ContactPicker_inputLayer.value !== ""
 				// ^-- they have entered something but not picked a contact
-				&& hasPickedAContact == false 
+				&& hasPickedAContact == false
 				// ^-- not strictly necessary to check hasPickedAContact, but for clarity and safety
 			) {
 				self.validationMessageLayer.SetValidationError("Please select a contact or clear the contact field below to generate this request.")
@@ -505,7 +505,7 @@ class CreateRequestFormView extends View
 			payment_id: payment_id,
 			amount_String: "" + amount_Number,
 			memo: self.memoInputLayer.value, // request description, AKA memo or label
-			message: undefined // "message"; no support yet 
+			message: undefined // "message"; no support yet
 		})
 	}
 	__generateRequestWith(params)
@@ -545,7 +545,7 @@ class CreateRequestFormView extends View
 		function _proceedTo_pushViewForRecord(record)
 		{
 			const FundsRequestDetailsView = require('./FundsRequestDetailsView.web')
-			const options = 
+			const options =
 			{
 				record: record // the fundsRequest
 			}
@@ -612,7 +612,7 @@ class CreateRequestFormView extends View
 				} else {
 					self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
-					self.manualPaymentIDInputLayer.value = "" 
+					self.manualPaymentIDInputLayer.value = ""
 				}
 				// and exit early
 				//
@@ -620,12 +620,12 @@ class CreateRequestFormView extends View
 			} else { // they're using an OA addr, so we still need to check if they still have one
 				self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
-				self.manualPaymentIDInputLayer.value = "" 
+				self.manualPaymentIDInputLayer.value = ""
 			}
 		}
-		// look up the payment ID again 
+		// look up the payment ID again
 		{
-			self.cancelAny_requestHandle_for_oaResolution() 
+			self.cancelAny_requestHandle_for_oaResolution()
 		}
 		{ // (and show the "resolving UI")
 			self.resolving_activityIndicatorLayer.style.display = "block" // AFTER any cancelAny_requestHandle…
@@ -669,8 +669,8 @@ class CreateRequestFormView extends View
 					return
 				}
 				{ // memo field
-					tx_description = tx_description || "" // to facilitate clearing the memo field 
-					self.memoInputLayer.value = tx_description // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.				
+					tx_description = tx_description || "" // to facilitate clearing the memo field
+					self.memoInputLayer.value = tx_description // even if one was already entered; this is tbh an approximation of the behavior we want; ideally we'd try to detect and track whether the user intended to use/type their own custom memo – but that is surprisingly involved to do well enough! at least for now.
 				}
 				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
 					if (typeof payment_id !== 'undefined' && payment_id) {
@@ -681,7 +681,7 @@ class CreateRequestFormView extends View
 						// we already hid it above… but jic
 						self.addPaymentIDButtonView.layer.style.display = "block" // hide if showing
 						self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
-						self.manualPaymentIDInputLayer.value = "" 
+						self.manualPaymentIDInputLayer.value = ""
 					}
 				}
 			}
