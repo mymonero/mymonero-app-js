@@ -209,11 +209,11 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	}
 	layer.oninput = function()
 	{
-		view._updatedAndLayoutLabel()
+		view._updateAndLayoutLabel()
 	}
 	view._window_resize_fn = function()
 	{
-		view._updatedAndLayoutLabel()
+		view._updateAndLayoutLabel()
 	}
 	window.addEventListener('resize', view._window_resize_fn)
 	view.__finalized_labelText_fn = function(inputValue)
@@ -236,7 +236,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		return finalized_labelText_fn(float_inputValue)
 	}
 	//
-	view._updatedAndLayoutLabel = function()
+	view._updateAndLayoutLabel = function()
 	{
 		labelLayer.innerHTML = view.__finalized_labelText_fn(layer.value)
 		//
@@ -251,7 +251,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 		const next_x_px = knob_x_px - (labelLayer_width/2) - k_knobWidth*(knob_next_x_pct-0.5) // this -knobWidth*pct-.5 is to offset the label in relation to the knob's displacement from the center as knob ends never move past track ends
 		labelLayer.style.left = next_x_px + "px"
 	}
-	view._updatedAndLayoutLabel() // initial
+	view._updateAndLayoutLabel() // initial
 	//
 	view.TearDown = function()
 	{ // NOTE: you must call this!
@@ -262,12 +262,12 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	view.SetValueMax = function()
 	{
 		layer.value = max
-		view._updatedAndLayoutLabel()
+		view._updateAndLayoutLabel()
 	}
 	view.SetValue = function(value)
 	{
 		layer.value = value
-		view._updatedAndLayoutLabel()
+		view._updateAndLayoutLabel()
 	}
 	view.SetEnabled = function(isEnabled)
 	{
