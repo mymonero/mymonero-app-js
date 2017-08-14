@@ -372,7 +372,7 @@ class SettingsView extends View
 			if (typeof passwordType_humanReadableString !== 'undefined') {
 				const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
 				layer.innerHTML = "Change " + capitalized_passwordType
-				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of time before your " + passwordType_humanReadableString + " is required again"
+				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before your " + passwordType_humanReadableString + " is required again"
 			}
 		}
 		{
