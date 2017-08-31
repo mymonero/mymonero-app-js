@@ -183,7 +183,7 @@ class CreateRequestFormView extends View
 			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "A description for this Monero request"
+				placeholderText: "Note about the transaction"
 			})
 			self.memoInputLayer = valueLayer
 			valueLayer.addEventListener(
