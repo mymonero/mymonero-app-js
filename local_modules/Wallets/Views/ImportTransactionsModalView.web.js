@@ -534,7 +534,10 @@ class ImportTransactionsModalView extends View
 						if (amountStr.indexOf(".") == -1) {
 							amountStr += '.00'
 						}
-						amountStr = '0' + amountStr
+						const firstChar_String = amountStr.substr(0, 1)
+						if (firstChar_String != "0") {
+							amountStr = '0' + amountStr
+						}
 						self.amountInputLayer.value = amountStr
 					}
 					{
