@@ -3,15 +3,16 @@
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
 
-### General Info
+### Info
 
-1. What's in This Repo?
-2. What is MyMonero?
-3. Features
-4. Downloads
-5. Requirements & Install Locations
-6. Reporting Bugs & Making Feature Requests
-7. Related Documents
+1. License and Copyrights
+2. What's in This Repo?
+3. What is MyMonero?
+4. Features
+5. Downloads
+6. Requirements & Install Locations
+7. Reporting Bugs & Making Feature Requests
+8. Related Documents
 
 ### Contributing and Testing
 
@@ -20,7 +21,14 @@
 3. Building for Production
 4. Running in Development Mode
 5. Contributing
-6. License and Copyrights
+6. Main Contributors
+
+
+## License and Copyrights
+
+See `LICENSE.txt` for license.
+
+All app source code and assets copyright © 2014-2017 by MyMonero. All rights reserved.
 
 
 ## What's in This Repo?
@@ -192,9 +200,24 @@ See [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md) for inf
 
 ## Contributing
 
-Contributions by way of [pull request](https://help.github.com/articles/about-pull-requests/) are very welcome, and you will be credited in the release notes if your PR is merged.
+### Testing
 
-If you would like to contribute, please scan the [technology notes](./docs/TECHNOLOGY.md) in order to find information on libraries used, the reasons behind various architectural choices, and how to write tests. 
+Please submit any bugs as Issues unless they have already been reported.
+
+Suggestions and feedback are very welcome!
+
+
+### Developing
+
+If you have an improvement to the MyMonero downloadable JS app and would like to have your code considered for usage in the production MyMonero app, we'll be happy to review [pull requests](https://help.github.com/articles/about-pull-requests/). Contributors of merged PRs will be credited in the app's release notes.
+
+Before contributing, please spend a few moments scanning the [technology notes](./docs/TECHNOLOGY.md) to learn about libraries used, reasons behind some architectural choices, and more.
+
+* Merging PRs which involve integrating with any third-party services will require discussion and agreement.  
+
+* We reserve the right to refuse to merge any PRs, such as those which introduce breaking changes.
+
+The maintainer enjoys collaborating with volunteer contributors to the MyMonero apps over IRC private message and the #mymonero room on freenode.net (Come say hello!), so PR'd submissions do not have to be at all complete or perfect on their first submission. (To submit a draft PR for review, simply mark it as '[DO NOT MERGE]')
 
 For background on this project, see [Why We Built the Native Apps](./docs/WHY_NATIVE.md).
 
@@ -202,68 +225,28 @@ You may also like to read the unofficial [Technology Roadmap](./docs/ROADMAP.md)
 
 There's also an icebox of ideas, features, improvements, known issues, and other todos waiting to be knocked out which are kept in the [Issues](https://github.com/mymonero/monero-app-js/issues) tracker.
 
-### Getting Help with Testing or Contributing
 
-Feel free to create a Github issue if you want to report bugs, discuss improvements, submit feature ideas, or ask development & QA-specific questions. 
-
-MyMonero testers and contributors have also been rumored to hang out on IRC in [#mymonero on freenode](http://webchat.freenode.net/?channels=%23mymonero&prompt=1&uio=d4).
-
-### Code Style Guidelines
-
-There is no specific code styleguide yet (with the exception of the preference of tab-indentation) but we ask that code contributions generally:
-
-* are kept modular or well factored, either platform-agnostic or with platform specified (see [Technology Notes](./docs/TECHNOLOGY.md)),
-* are written in a clear, understandable, [simple](https://www.infoq.com/presentations/Simple-Made-Easy), and maintainable manner, 
-* employ best practices, and 
-* are well tested and don't break anything, especially security.
-
-### Conditions on Merging PRs
-
-* Pull Requests which ask us to merge integration with any third-party services will require discussion and agreement.  
-
-* We reserve the right to refuse to merge any PRs, such as those which introduce breaking changes.
-
-### MyMonero Core Contributors
-
-Contributors to each release are credited in release notes.
-
-The MyMonero "core contributors" listed below either work on MyMonero full-time, or have made essential contributions, and have long-term involvement.
-
-* 🏂 [Paul Shapiro](https://github.com/paulshapiro) `endogenic` – Project maintainer; Lead client app developer; Partner
-
-* 🦄 [Riccardo Spagni](https://github.com/fluffypony) `fluffyponyza` – Advisor; Partner; [Monero](http://www.getmonero.org) project core member
-
-* 😎 [Lee Clagett](https://github.com/vtnerd) `vtnerd` – Lead back-end developer
-
-* 🔥 [Matt D Smith](http://mds.is) `mds` – v1/MVP app and website designer
-
-* 🍄 [luigi1111](https://github.com/luigi1111) `luigi1112` – Monero tech advisor; Built client-side RingCT support
-
-* 🌠 Your name here?
-
-## License and Copyrights
-
-See `LICENSE.txt` for license.
-
-All app source code and assets copyright © 2014-2017 by MyMonero. All rights reserved.
-
-
-# Supporting MyMonero
-
-Despite MyMonero being a fundamentally for-profit company, we open source all of the code that we can. This includes:
-
-* the entirety of the client applications (web wallet, desktop, Android, and native iOS), and 
-
-* a clean and performant MyMonero-API-compatible server, which will soon be introduced into the official Monero project codebase so anyone can run their own server from home.
-
-However, in order to make the above possible, we have been operating at a severe loss since opening the site by paying out-of-pocket for hosting, development, and design costs. A comparably small amount was made on MyMonero transaction and import fees, and the transaction service fee has even been disabled since RingCT. 
-
-For this reason, if you are interested in the MyMonero apps, but are not able to contribute as a developer or QA engineer, please consider making a donation so that we may continue to bring highly usable and featureful Monero lightwallet apps and supporting technology to the community.
-
-Your donation will be used to fund development on the MyMonero back-end, with the remainder going towards client (desktop & mobile) app research and development, and server/site hosting costs.
+### Donating
 
 MyMonero Donation Address (XMR): 48yi8KBxh7fdZzwnX2kFCGALRcN1sNjwBHDfd5i9WLAWKs7G9rVbXNnbJTqZhhZCiudVtaMJKrXxmBeBR9kggBXr8X7PxPT
 
-## Sponsorship
+Proceeds from donations are used to fund development on the MyMonero back-end server (a performant version of which we soon™ plan to open-source for anyone to run their own server at home). Any remaining funds will go towards product (app UI) R&D, and hosting costs.
 
-We may consider a vacancy for sponsorship, as well as opportunities for featured merchants to be listed in the app.
+
+## Main Contributors
+
+Contributors to each release are credited in release notes.
+
+### Core
+
+* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Repo maintainer; Lead app developer; MyMonero partner
+
+* 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero partner; Monero core team member
+
+* 😎 `vtnerd` ([Lee Clagett](https://github.com/vtnerd)) Lead back-end developer
+
+* 🍄 `luigi` Monero tech advisor; Main MyMonero JS core crypto contributor
+
+* 🔥 `mds` ([Matt Smith](http://mds.is)) MVP designer
+
+* 🌠 Your name here?
