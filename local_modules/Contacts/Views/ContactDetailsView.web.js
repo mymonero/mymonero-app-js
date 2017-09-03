@@ -82,7 +82,7 @@ class ContactDetailsView extends View
 			containerLayer.style.border = "0.5px solid #494749"
 			containerLayer.style.borderRadius = "5px"
 			containerLayer.style.margin = `16px 0 0px 0`
-			containerLayer.style.padding = "0 0 0 15px"
+			containerLayer.style.padding = "0 0 0 15px" // to get separator inset
 			//
 			self.tableSection_containerLayer = containerLayer
 			{

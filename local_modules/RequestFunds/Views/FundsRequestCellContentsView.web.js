@@ -39,6 +39,7 @@ class FundsRequestCellContentsView extends View
 		super(options, context)
 		const self = this
 		{
+			self.doNotDisplayQRCode = self.options.doNotDisplayQRCode == true ? true : false // default false
 			self.margin_right = typeof self.options.margin_right == 'undefined' ? 38 : self.options.margin_right
 		}
 		self.setup()
@@ -63,7 +64,7 @@ class FundsRequestCellContentsView extends View
 			self.walletIconLayer = div
 			self.layer.appendChild(div)
 		}
-		{ 
+		if (self.doNotDisplayQRCode != true) {
 			const div = document.createElement("div")
 			div.style.left = "36px"
 			div.style.top = "36px"
@@ -203,7 +204,9 @@ class FundsRequestCellContentsView extends View
 		const self = this
 		function __clearAllLayers()
 		{
-			self.qrCode_img.src = ""
+			if (self.doNotDisplayQRCode != true) {
+				self.qrCode_img.src = ""
+			}
 			self.amountLayer.innerHTML = ""
 			self.memoLayer.innerHTML = ""
 			self.senderLayer.innerHTML = ""
@@ -222,7 +225,9 @@ class FundsRequestCellContentsView extends View
 			self.amountLayer.innerHTML = "❌ Error: Contact support"
 			return
 		}
-		self.qrCode_img.src = fundsRequest.qrCode_imgDataURIString
+		if (self.doNotDisplayQRCode != true) {
+			self.qrCode_img.src = fundsRequest.qrCode_imgDataURIString
+		}
 		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
 		self.amountLayer.innerHTML = fundsRequest.amount ? parseFloat("" + fundsRequest.amount) + " XMR" : "Any amount"
 		var memoString = fundsRequest.message

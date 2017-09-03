@@ -234,6 +234,23 @@ function New_fieldValue_labelLayer(labelText, context)
 }
 exports.New_fieldValue_labelLayer = New_fieldValue_labelLayer
 //
+function New_fieldValue_base64DataImageLayer(imageData_base64String, context)
+{
+	__injectCSSRules_ifNecessary(context)
+	//
+	const layer = document.createElement("img")
+	layer.className = "field_value"
+	layer.style.backgroundColor = "black" // not strictly necessary… mostly for debug
+	layer.Component_SetValue = function(to__imageData_base64String)
+	{
+		layer.src = to__imageData_base64String
+	}
+	layer.Component_SetValue(imageData_base64String)
+	//
+	return layer
+}
+exports.New_fieldValue_base64DataImageLayer = New_fieldValue_base64DataImageLayer
+//
 function New_separatorLayer(context)
 {
 	__injectCSSRules_ifNecessary(context)
@@ -247,12 +264,12 @@ function New_separatorLayer(context)
 }
 exports.New_separatorLayer = New_separatorLayer
 //
-function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_orTrue, pasteboard)
-{ // defaults to 'text' content type
+function New_customButton_aLayer(context, buttonTitleText, enabled_orTrue, clicked_fn)
+{
 	__injectCSSRules_ifNecessary(context)
 	const layer = document.createElement("a")
 	{ // setup
-		layer.innerHTML = "COPY"
+		layer.innerHTML = buttonTitleText
 		layer.style.marginTop = "1px" // per design
 		layer.style.float = "right"
 		layer.style.textAlign = "right"
@@ -275,8 +292,6 @@ function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_or
 			layer.style.textDecoration = "none"
 		})
 	}
-	// state var declarations
-	var runtime_valueToCopy = value__orValuesByContentType
 	// component fns
 	layer.Component_SetEnabled = function(enabled)
 	{
@@ -293,15 +308,6 @@ function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_or
 			layer.style.color = "#CCCCCC"
 		}
 	}
-	layer.Component_SetValue = function(to_value__orValuesByContentType)
-	{ // defaults to 'text' type
-		runtime_valueToCopy = to_value__orValuesByContentType
-		if (to_value__orValuesByContentType === "" || typeof to_value__orValuesByContentType === 'undefined' || !to_value__orValuesByContentType) {
-			layer.Component_SetEnabled(false)
-		} else {
-			layer.Component_SetEnabled(true)
-		}
-	}
 	// initial config
 	layer.Component_SetEnabled(enabled_orTrue)
 	// start observing
@@ -311,17 +317,44 @@ function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_or
 		{
 			e.preventDefault()
 			if (layer.Component_IsEnabled !== false) {
-				if (typeof runtime_valueToCopy === "string") {
-					pasteboard.CopyString(runtime_valueToCopy)
-				} else if (typeof runtime_valueToCopy === 'object') {
-					pasteboard.CopyValuesByType(runtime_valueToCopy)
-				} else {
-					throw `unrecognized typeof value to copy ${typeof runtime_valueToCopy} in New_copyButton_aLayer`
-				}
+				clicked_fn() // just going to assume it exists or code fault
 			}
 			return false
 		}
 	)
+	return layer
+}
+exports.New_customButton_aLayer = New_customButton_aLayer
+//
+function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_orTrue, pasteboard)
+{ // defaults to 'text' content type
+	// state var declarations - hopefully this won't go out of scope? 
+	var runtime_valueToCopy = value__orValuesByContentType
+	//
+	const layer = New_customButton_aLayer(
+		context, 
+		"COPY",
+		enabled_orTrue,
+		function()
+		{
+			if (typeof runtime_valueToCopy === "string") {
+				pasteboard.CopyString(runtime_valueToCopy)
+			} else if (typeof runtime_valueToCopy === 'object') {
+				pasteboard.CopyValuesByType(runtime_valueToCopy)
+			} else {
+				throw `unrecognized typeof value to copy ${typeof runtime_valueToCopy} in New_copyButton_aLayer`
+			}
+		}
+	);
+	layer.Component_SetValue = function(to_value__orValuesByContentType)
+	{ // defaults to 'text' type
+		runtime_valueToCopy = to_value__orValuesByContentType
+		if (to_value__orValuesByContentType === "" || typeof to_value__orValuesByContentType === 'undefined' || !to_value__orValuesByContentType) {
+			layer.Component_SetEnabled(false)
+		} else {
+			layer.Component_SetEnabled(true)
+		}
+	}
 	return layer
 }
 exports.New_copyButton_aLayer = New_copyButton_aLayer
