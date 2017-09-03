@@ -48,7 +48,8 @@ class CreateRequestFormView extends View
 		//
 		const self = this 
 		{
-			self.fromContact = options.fromContact || null
+			self.initializing__fromContact = options.fromContact || null
+			self.initializing__atWallet = options.atWallet || null
 		}
 		self.setup()
 	}
@@ -145,6 +146,17 @@ class CreateRequestFormView extends View
 			div.appendChild(valueLayer)
 		}
 		self.form_containerLayer.appendChild(div)
+		{ // initial config
+			if (self.initializing__atWallet !== null) { 
+				setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
+					function()
+					{
+						self.walletSelectView.pick(self.initializing__atWallet)
+					},
+					1
+				)
+			}
+		}
 	}
 	_setup_form_amountInputLayer(tr)
 	{ // Request funds amount from sender
@@ -244,11 +256,11 @@ class CreateRequestFormView extends View
 			self.contactPickerLayer = layer
 			div.appendChild(layer)
 			{ // initial config
-				if (self.fromContact !== null) {
+				if (self.initializing__fromContact !== null) {
 					setTimeout( // must do this on the next tick so that we are already set on the navigation controller 
 						function()
 						{
-							self.contactPickerLayer.ContactPicker_pickContact(self.fromContact) // simulate user picking the contact
+							self.contactPickerLayer.ContactPicker_pickContact(self.initializing__fromContact)
 						},
 						1
 					)
@@ -276,7 +288,7 @@ class CreateRequestFormView extends View
 				const view = new AddContactFromOtherTabView({
 					emitNewlySavedContact_fn: function(contact)
 					{
-						self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
+						self.contactPickerLayer.ContactPicker_pickContact(contact) // not going to call AtRuntime_reconfigureWith_initializing__fromContact because that's for user actions like Request where they're expecting the contact to be the initial state of self instead of this, which is initiated by their action from a modal that is nested within self
 					}
 				}, self.context)
 				const navigationView = new StackAndModalNavigationView({}, self.context)
@@ -561,17 +573,28 @@ class CreateRequestFormView extends View
 	}
 	//
 	//
-	// Runtime - Imperatives - Public - Using a new fromContact when a self had already been presented
+	// Runtime - Imperatives - Public - Using a new initializing__fromContact when a self had already been presented
 	//
-	AtRuntime_reconfigureWith_fromContact(fromContact)
+	AtRuntime_reconfigureWith_fromContact(contact)
 	{
 		const self = this
 		{ // figure that since this method is called when user is trying to initiate a new request we should clear the amount
 			self.amountInputLayer.value = ""
 		}
 		{
-			self.fromContact = fromContact
-			self.contactPickerLayer.ContactPicker_pickContact(fromContact) // simulate user picking the contact
+			self.contactPickerLayer.ContactPicker_pickContact(contact) // simulate user picking the contact
+		}
+	}
+	AtRuntime_reconfigureWith_atWallet(wallet)
+	{
+		const self = this
+		{ // figure that since this method is called when user is trying to initiate a new request we should clear the amount
+			self.amountInputLayer.value = ""
+			// and since this is for setting the wallet, we can just clear the picked contact
+			self.contactPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput()
+		}
+		{
+			self.walletSelectView.pick(wallet) // simulate user picking the wallet
 		}
 	}
 	//

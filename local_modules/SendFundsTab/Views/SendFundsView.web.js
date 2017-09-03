@@ -558,6 +558,39 @@ class SendFundsView extends View
 				emitter.EventName_didTrigger_sendFundsToContact(), // observe 'did' so we're guaranteed to already be on right tab
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
 			)
+			//
+			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet = function(wallet)
+			{
+				self.navigationController.DismissModalViewsToView( // whether we should force-dismiss these (create new contact) is debatable… 
+					null, // null -> to top stack view
+					true, 
+					function() 
+					{ // must wait til done or 'currently transitioning' will race 
+						self.navigationController.PopToRootView( // now pop pushed stack views - essential for the case they're viewing a transaction
+							true, // animated
+							function(err)
+							{
+								if (self.isSubmitButtonDisabled == true) {
+									console.warn("Triggered send funds from wallet while submit btn disabled. Beep.")
+									// TODO: create system service for playing beep, an electron (shell.beep) implementation, and call it to beep
+									// TODO: mayyybe alert tx in progress
+									return
+								}
+								{ // figure that since this method is called when user is trying to initiate a new request we should clear the form
+									self._clearForm()
+								}
+								{
+									self.walletSelectView.pick(wallet) // simulate user picking the contact
+								}
+							}
+						)
+					}
+				)
+			}
+			emitter.on(
+				emitter.EventName_didTrigger_sendFundsFromWallet(), // observe 'did' so we're guaranteed to already be on right tab
+				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet
+			)
 		}
 		{ // urlOpeningController
 			const controller = self.context.urlOpeningController
@@ -633,6 +666,12 @@ class SendFundsView extends View
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact
 			)
 			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact = null
+			//
+			emitter.removeListener(
+				emitter.EventName_didTrigger_sendFundsFromWallet(),
+				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet
+			)
+			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet = null
 		}
 	}
 	//

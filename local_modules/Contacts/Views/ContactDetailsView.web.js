@@ -178,7 +178,7 @@ class ContactDetailsView extends View
 	{
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Send", 
+			"Send To", 
 			self.context.crossPlatform_appBundledAssetsRootPath+"/Contacts/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
 			false,
 			function(layer, e)
@@ -196,7 +196,7 @@ class ContactDetailsView extends View
 	{
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Request", 
+			"Request From", 
 			self.context.crossPlatform_appBundledAssetsRootPath+"/Contacts/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
 			true,
 			function(layer, e)

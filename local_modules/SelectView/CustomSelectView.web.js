@@ -218,6 +218,23 @@ class CustomSelectView extends View
 		// TODO: assert self._document_keydown_fn != nil
 		document.removeEventListener("keydown", self._document_keydown_fn)
 	}
+	//
+	// Internal - Accessors 	
+	_doesRowItemWithUIDStillExist(uid, rowItems)
+	{
+		const self = this
+		let uidLookup_fn = self.lookup_uidFromRowItemForRow_fn
+		let numberOf_rowItems = rowItems.length
+		for (let i = 0 ; i < numberOf_rowItems ; i++) {
+			const rowItem = rowItems[i]
+			const rowItem_uid = uidLookup_fn(rowItem)
+			if (rowItem_uid === uid) {
+				return true
+			}
+		}
+		return false
+	}
+	//
 	// Interface (Public) - Imperatives - Interactivity
 	SetEnabled(isEnabled)
 	{
@@ -238,6 +255,7 @@ class CustomSelectView extends View
 		// for now, flush/flash whole UI:
 		self.hide__options_containerView()
 		self._removeAllOptionLayers() // (and stop observing)
+		//
 		// reconstruct UI:
 		const numberOf_rowItems = rowItems.length
 		var heightOfCellsSoFar = 0
@@ -300,16 +318,11 @@ class CustomSelectView extends View
 		// reconstitute selection if any:
 		if (numberOf_rowItems > 0) {
 			if (self.CurrentlySelectedRowItem !== null) {
-				var doesCurrentlySelectedRowItemStillExist = false // to finalize…
 				const currentSelectedRowItem_uid = self.lookup_uidFromRowItemForRow_fn(self.CurrentlySelectedRowItem)
-				for (let i = 0 ; i < numberOf_rowItems ; i++) {
-					const rowItem = rowItems[i]
-					const rowItem_uid = self.lookup_uidFromRowItemForRow_fn(rowItem)
-					if (rowItem_uid === currentSelectedRowItem_uid) {
-						doesCurrentlySelectedRowItemStillExist = true
-						break
-					}
-				}
+				var doesCurrentlySelectedRowItemStillExist = self._doesRowItemWithUIDStillExist(
+					currentSelectedRowItem_uid,
+					rowItems
+				)
 				if (doesCurrentlySelectedRowItemStillExist !== true) {
 					self.CurrentlySelectedRowItem = null // clear so we sample new one just below
 				}
@@ -359,6 +372,15 @@ class CustomSelectView extends View
 			self.CurrentlySelectedRowItem
 		)
 	}
+	//
+	// Interface - Setting selection
+	pick(rowObject) // -> returns false on error
+	{
+		const self = this
+		self.CurrentlySelectedRowItem = rowObject
+		self._configureSelectionUIWithSelectedRowItem()
+	}
+	//
 	// Internal - Imperatives - UI state - Options visibility
 	show__options_containerView()
 	{

@@ -35,6 +35,7 @@ const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
@@ -80,6 +81,7 @@ class WalletDetailsView extends View
 		self._setup_self_layer()
 		self._setup_balanceLabelView()
 		self._setup_account_InfoDisclosingView()
+		self._setup_sendReceive_actionButtons()
 		self._setup_layers_transactionsListLayerContainerLayer()
 	}
 	_setup_self_layer()
@@ -266,6 +268,59 @@ class WalletDetailsView extends View
 		}
 		self.account_InfoDisclosingView = infoDisclosingView
 		self.addSubview(infoDisclosingView)
+	}
+	_setup_sendReceive_actionButtons()
+	{
+		var self = this;
+		var view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+			0, 
+			0, 
+			15,
+			self.context
+		)
+		self.actionButtonsContainerView = view
+		{
+			self._setup_actionButton_receive()
+			self._setup_actionButton_send()
+		}
+		self.addSubview(view)
+	}
+	_setup_actionButton_receive()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Receive At", 
+			self.context.crossPlatform_appBundledAssetsRootPath+"/Contacts/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
+			// TODO?: borrowing another module's asset. sort of bad
+			false,
+			function(layer, e)
+			{
+				self.context.walletAppCoordinator.Trigger_receiveFundsAtWallet(self.wallet)
+			},
+			self.context,
+			undefined,
+			undefined,
+			"16px 16px"
+		)
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
+	_setup_actionButton_send()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Send From", 
+			self.context.crossPlatform_appBundledAssetsRootPath+"/Contacts/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
+			true,
+			function(layer, e)
+			{
+				self.context.walletAppCoordinator.Trigger_sendFundsFromWallet(self.wallet)
+			},
+			self.context,
+			undefined,
+			undefined,
+			"16px 16px"
+		)
+		self.actionButtonsContainerView.addSubview(buttonView)
 	}
 	_setup_layers_transactionsListLayerContainerLayer()
 	{

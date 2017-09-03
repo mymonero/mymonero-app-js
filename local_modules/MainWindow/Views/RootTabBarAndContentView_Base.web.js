@@ -188,6 +188,20 @@ class RootTabBarAndContentView extends TabBarAndContentView
 					self.selectTab_requestFunds()
 				}
 			)
+			emitter.on(
+				emitter.EventName_willTrigger_receiveFundsAtWallet(),
+				function()
+				{
+					self.selectTab_requestFunds()
+				}
+			)
+			emitter.on(
+				emitter.EventName_willTrigger_sendFundsFromWallet(),
+				function()
+				{
+					self.selectTab_sendFunds()
+				}
+			)
 		}
 		{ // urlOpeningController
 			const controller = self.context.urlOpeningController

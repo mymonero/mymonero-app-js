@@ -113,12 +113,26 @@ class FundsRequestsListView extends ListView
 					)
 				}
 			)
+			emitter.on(
+				emitter.EventName_didTrigger_receiveFundsAtWallet(), // observe 'did' so we're guaranteed to already be on right tab
+				function(wallet)
+				{
+					self.navigationController.PopToRootView( // essential for the case they're viewing a request…
+						true, // animated
+						function(err)
+						{
+							self.presentCreateRequestFormView_withWallet(wallet)
+						}
+					)
+				}
+			)
 		}
 	}
 	TearDown()
 	{
 		const self = this
 		super.TearDown()
+		// TODO: technically, should stopObserving too
 	}
 	tearDownAnySpawnedReferencedPresentedViews()
 	{ // overridden - called for us
@@ -185,6 +199,13 @@ class FundsRequestsListView extends ListView
 			fromContact: contact
 		})
 	}
+	presentCreateRequestFormView_withWallet(wallet)
+	{
+		const self = this
+		self._presentCreateRequestFormView_withOptions({
+			atWallet: wallet
+		})
+	}
 	_presentCreateRequestFormView_withOptions(options_orNilForDefault)
 	{
 		const self = this
@@ -203,6 +224,10 @@ class FundsRequestsListView extends ListView
 		const fromContact = options.fromContact
 		if (fromContact && typeof fromContact !== 'undefined') {
 			self.currentlyPresented_CreateRequestFormView.AtRuntime_reconfigureWith_fromContact(fromContact)
+		}
+		const atWallet = options.atWallet
+		if (atWallet && typeof atWallet !== 'undefined') {
+			self.currentlyPresented_CreateRequestFormView.AtRuntime_reconfigureWith_atWallet(atWallet)
 		}
 	}
 	//
