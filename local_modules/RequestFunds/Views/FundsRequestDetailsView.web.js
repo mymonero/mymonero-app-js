@@ -275,7 +275,7 @@ class FundsRequestDetailsView extends View
 		value += "Someone wants some Monero."
 		value += "\r\n---------------------------"
 		{
-			value += `\r\n${self.fundsRequest.amount} XMR`
+			value += `\r\n${ self.fundsRequest.amount ? self.fundsRequest.amount + " XMR" : "Any amount" }`
 			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
 				value += `\r\n${self.fundsRequest.message}`
 			}
@@ -298,7 +298,7 @@ class FundsRequestDetailsView extends View
 		var value = ""
 		value += "<p>Someone wants some Monero.</p>"
 		value += "<p>---------------------------</p>"
-		value += `<p>${self.fundsRequest.amount} XMR`
+		value += `<p>${ self.fundsRequest.amount ? self.fundsRequest.amount + " XMR" : "Any amount" }`
 		{ // within same p tag to get visual grouping/line-height
 			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
 				value += `</br>${self.fundsRequest.message}`

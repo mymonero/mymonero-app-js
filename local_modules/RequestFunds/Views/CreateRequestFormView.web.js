@@ -481,18 +481,16 @@ class CreateRequestFormView extends View
 		const raw_amount_String = self.amountInputLayer.value
 		var amount_Number = null;
 		{
-			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
-				self.validationMessageLayer.SetValidationError("Please enter an amount to request.")
-				return
-			}
-			amount_Number = +raw_amount_String // turns into Number, apparently
-			if (isNaN(amount_Number)) {
-				self.validationMessageLayer.SetValidationError("Please enter a valid amount of Monero.")
-				return
-			}
-			if (amount_Number <= 0) {
-				self.validationMessageLayer.SetValidationError("Please enter an amount greater than zero.")
-				return
+			if (typeof raw_amount_String !== 'undefined' && raw_amount_String) {
+				amount_Number = +raw_amount_String // turns into Number, apparently
+				if (isNaN(amount_Number)) {
+					self.validationMessageLayer.SetValidationError("Please enter a valid amount of Monero.")
+					return
+				}
+				if (amount_Number <= 0) {
+					self.validationMessageLayer.SetValidationError("Please enter an amount greater than zero.")
+					return
+				}
 			}
 		}
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
@@ -515,7 +513,7 @@ class CreateRequestFormView extends View
 			optl__to_walletHexColorString: wallet.swatch,
 			receiveTo_address: wallet.public_address,
 			payment_id: payment_id,
-			amount_String: "" + amount_Number,
+			amount_StringOrNil: amount_Number == null ? amount_Number : "" + amount_Number, // back into a string if non nils
 			memo: self.memoInputLayer.value, // request description, AKA memo or label
 			message: undefined // "message"; no support yet 
 		})
@@ -526,7 +524,7 @@ class CreateRequestFormView extends View
 		const optl__to_walletHexColorString = params.optl__to_walletHexColorString
 		const receiveTo_address = params.receiveTo_address
 		const payment_id = params.payment_id
-		const amount_String = params.amount_String
+		const amount_StringOrNil = params.amount_StringOrNil
 		const memo = params.memo
 		const message = params.message
 		//
@@ -537,7 +535,7 @@ class CreateRequestFormView extends View
 			optl__to_walletHexColorString,
 			receiveTo_address,
 			payment_id,
-			amount_String,
+			amount_StringOrNil,
 			memo, // description, AKA memo or label
 			message,
 			function(err, record)

@@ -43,7 +43,7 @@ function New_RequestFunds_URI(
 	var isAppendingParam0 = true
 	function addParam(parameterName, value)
 	{
-		if (!value || typeof value === 'undefined') {
+		if (value == null || value == ""/*important*/ || typeof value === 'undefined') {
 			return
 		}
 		var conjunctionStr = "&"

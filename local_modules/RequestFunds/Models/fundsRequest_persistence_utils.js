@@ -109,7 +109,7 @@ function SaveToDisk(
 		to_walletHexColorString: self.to_walletHexColorString || "",
 		to_address: self.to_address,
 		payment_id: self.payment_id,
-		amount: "" + self.amount, // we're storing this as a string
+		amount: self.amount != null && self.amount != "" ? "" + self.amount : self.amount, // storing this as an optional String
 		message: self.message || "",
 		description: self.description || "",
 		qrCode_imgDataURIString: self.qrCode_imgDataURIString || ""

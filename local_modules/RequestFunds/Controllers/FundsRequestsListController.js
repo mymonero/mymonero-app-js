@@ -94,7 +94,7 @@ class FundsRequestsListController extends ListBaseController
 		optl__to_walletHexColorString,
 		to_address,
 		payment_id,
-		amount,
+		amount_StringOrNil,
 		message,
 		description,
 		fn // fn: (err: Error?, instance: FundsRequest?) -> Void
@@ -115,7 +115,7 @@ class FundsRequestsListController extends ListBaseController
 							to_walletHexColorString: optl__to_walletHexColorString || "",
 							to_address: to_address,
 							payment_id: payment_id,
-							amount: amount,
+							amount_StringOrNil: amount_StringOrNil,
 							message: message,
 							description: description
 						}
