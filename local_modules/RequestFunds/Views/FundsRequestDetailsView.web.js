@@ -31,7 +31,9 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
+const FundsRequestQRDisplayModalView = require('./FundsRequestQRDisplayModalView.web')
 //
 class FundsRequestDetailsView extends View
 {
@@ -160,8 +162,9 @@ class FundsRequestDetailsView extends View
 					}
 					div.appendChild(qrContainer_div)
 					//
+					let imgDataURIString = self.fundsRequest.qrCode_imgDataURIString
 					const valueLayer = commonComponents_tables.New_fieldValue_base64DataImageLayer(
-						self.fundsRequest.qrCode_imgDataURIString, 
+						imgDataURIString, 
 						self.context
 					)
 					{
@@ -173,6 +176,19 @@ class FundsRequestDetailsView extends View
 						layer.style.left = "0"
 						layer.style.top = "0"
 					}
+					valueLayer.addEventListener("click", function(e)
+					{
+						e.preventDefault()
+						{
+							const view = new FundsRequestQRDisplayModalView({
+								fundsRequest: self.fundsRequest
+							}, self.context)
+							const navigationView = new StackAndModalNavigationView({}, self.context)
+							navigationView.SetStackViews([ view ])
+							self.navigationController.PresentView(navigationView, true)
+						}
+						return false
+					})
 					qrContainer_div.appendChild(valueLayer)
 				}
 			}
