@@ -236,8 +236,13 @@ class QRScanningUI extends QRScanningUI_Abstract
 	_teardownScannerAndCameraUIAndReShowDOM(finished_fn)
 	{
 		const self = this
-
-		{ // TODO: stop observing PW controller
+		{ // stop observing
+			const emitter = self.context.passwordController
+			emitter.removeListener(
+				emitter.EventName_didDeconstructBootedStateAndClearPassword(),
+				self.didDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self.didDeconstructBootedStateAndClearPassword_listenerFn = null
 		}
 		{ // show elements before destroy to prevent flash
 			const numberOfHiddenChildren = self.elementsHiddenForScanning.length
@@ -252,14 +257,6 @@ class QRScanningUI extends QRScanningUI_Abstract
 			self.navigationBarView.layer.parentNode.removeChild(self.navigationBarView.layer)
 			self.navigationBarView = null
 			self.cameraUIMockView = null
-		}
-		{ // stop observing
-			const emitter = self.context.passwordController
-			emitter.removeListener(
-				emitter.EventName_didDeconstructBootedStateAndClearPassword(),
-				self.didDeconstructBootedStateAndClearPassword_listenerFn
-			)
-			self.didDeconstructBootedStateAndClearPassword_listenerFn = null
 		}
 		{ // tear down QR scanner
 			QRScanner.pausePreview()
