@@ -1641,13 +1641,15 @@ class SendFundsView extends View
 			{
 				self.context.userIdleInWindowController.ReEnable_userIdle()					
 				if (typeof self.context.Cordova_disallowLockDownOnAppPause !== 'undefined') {
-					self.context.Cordova_disallowLockDownOnAppPause -= 1 // place lock so Android app doesn't tear down UI and mess up flow
+					self.context.Cordova_disallowLockDownOnAppPause -= 1 // remove lock
 				}
+				//
 				if (err) {
 					self.validationMessageLayer.SetValidationError(err.toString() || "Error while picking QR code from file.")
 					return
 				}
 				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
+					self.validationMessageLayer.ClearAndHideMessage() // clear to resolve ambiguity in case existing error is displaying
 					return // nothing picked / canceled
 				}
 				self._shared_didPickQRCodeAtPath(absoluteFilePath)
@@ -1657,6 +1659,7 @@ class SendFundsView extends View
 	__didSelect_actionButton_useCamera()
 	{
 		const self = this
+		// Cordova_disallowLockDownOnAppPause is handled within qrScanningUI
 		self.context.qrScanningUI.PresentUIToScanOneQRCodeString(
 			function(err, uriString)
 			{
@@ -1664,7 +1667,11 @@ class SendFundsView extends View
 					self.validationMessageLayer.SetValidationError(""+err)
 					return
 				}
-				if (!uriString) {
+				if (uriString == null) { // err and uriString are null - treat as a cancellation
+					self.validationMessageLayer.ClearAndHideMessage() // clear to resolve ambiguity in case existing error is displaying
+					return
+				}
+				if (!uriString) { // if not explicitly null but "" or undefined…
 					self.validationMessageLayer.SetValidationError("No scanned QR code content found.")
 					return
 				}

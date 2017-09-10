@@ -31,6 +31,9 @@
 /*eslint no-undef: "error"*/
 //
 const QRScanningUI_Abstract = require('./QRScanningUI_Abstract')
+const QRScanningCameraUIMockView = require('./QRScanningCameraUIMockView.web')
+const commonComponents_navigationBarButtons = require('../MMAppUICommonComponents/navigationBarButtons.web')
+const NavigationBarView = require('../StackNavigation/Views/NavigationBarView.web')
 //
 class QRScanningUI extends QRScanningUI_Abstract
 {
@@ -42,58 +45,46 @@ class QRScanningUI extends QRScanningUI_Abstract
 		}
 	}
 	//
-	// Runtime - Internal - Imperatives - Scanner presentation
-	_hideDOMAndDisplayCameraUI()
-	{
-		const self = this
-		// TODO: probably show camera UI as well here (nav bar) for cancel btn - which means don't hide whole body, but app root container
-		document.body.style.visibility = "hidden"
-	}
-	_teardownScannerAndReShowDOM(fn)
-	{
-		const self = this
-		self.__reShowDOM() // show this (a) before destroy to prevent flash and (b) in all error cb cases
-		//
-		QRScanner.pausePreview()
-		QRScanner.destroy(
-			function(status)
-			{
-				QRScanner.hide( // "Configures the native webview to be opaque with a white background, covering the video preview."
-					function(status)
-					{
-						fn()
-					}
-				)
-			}
-		)
-	}
-	__reShowDOM()
-	{
-		const self = this
-		// TODO: probably show camera UI as well here (nav bar) for cancel btn - which means don't re-show whole body, but app root container
-		document.body.style.visibility = "visible"
-	}
-	//
-	// Runtime - Interface - Imperatives - Scanning
+	// Imperatives - Interface - Scanning
 	PresentUIToScanOneQRCodeString(
-		fn // (err?, string) -> Void
+		consumerInterface_fn // (err?, string) -> Void
 	)
 	{
 		const self = this
+		{ // some state validations
+			if (typeof self.didDeconstructBootedStateAndClearPassword_listenerFn !== "undefined" && self.didDeconstructBootedStateAndClearPassword_listenerFn !== null) {
+				throw "Expected self.didDeconstructBootedStateAndClearPassword_listenerFn to be null"
+			}
+			if (typeof self.navigationBarView !== "undefined" && self.navigationBarView !== null) {
+				throw "Expected self.navigationBarView to be null"
+			}
+			if (typeof self.cameraUIMockView !== "undefined" && self.cameraUIMockView !== null) {
+				throw "Expected self.cameraUIMockView to be null"
+			}
+		}
+		{
+			if (typeof self.context.Cordova_disallowLockDownOnAppPause !== 'undefined') {
+				self.context.Cordova_disallowLockDownOnAppPause += 1 // place lock so Android app doesn't tear down UI and mess up flow
+			}
+		}
 		QRScanner.prepare( // show the prompt (if necessary(?))
 			function(err, status)
 			{
+				if (typeof self.context.Cordova_disallowLockDownOnAppPause !== 'undefined') {
+					self.context.Cordova_disallowLockDownOnAppPause -= 1 // remove lock
+				}
+				//
 				if (err) { // here we can handle errors and clean up any loose ends.
-					fn(err)
+					consumerInterface_fn(err)
 					return // must exit
 				}
 				if (status.denied != false) {
-					fn(new Error("QR scanning requires camera access. Please enable MyMonero in your system Settings."))
+					consumerInterface_fn(new Error("QR scanning requires camera access. Please enable MyMonero in your system Settings."))
 					// TODO: ? give use the option to open up settings with some sort of prompt in the validation msg? may be possible via `QRScanner.openSettings()`
 					return
 				}
 				if (status.authorized != true) {
-					fn(new Error("Couldn't gain camera access for QR scanning. Please try again."))
+					consumerInterface_fn(new Error("Couldn't gain camera access for QR scanning. Please try again."))
 					return
 				}
 				//
@@ -103,18 +94,18 @@ class QRScanningUI extends QRScanningUI_Abstract
 				// has to hit "Use  Camera" again after unlocking. So, a nice TODO….
 				let passwordController = self.context.passwordController
 				if (passwordController.hasUserSavedAPassword !== true) {
-					throw "No password entered. Unexpected." // would be very odd
+					throw "No password ever entered. Unexpected." // would be very odd
 				}
 				if (passwordController.IsUserChangingPassword()) {
 					throw "User changing password. Unexpected." // would be very odd
 				}
 				// so a password has been entered… is app unlocked?
-				if (passwordController.HasUserEnteredValidPasswordYet() !== true) { 
+				if (passwordController.HasUserEnteredValidPasswordYet() !== true) {
 					// the app must have been backgrounded while camera permissions were being
 					// requested… and the app needs to be unlocked before they can use it, so going
 					// to treat this as a cancellation (silent reply) for now…. user has to try
 					// again
-					fn(null, null) 
+					consumerInterface_fn(null, null) 
 					return
 				}
 				// app is still unlocked, so we can proceed…
@@ -126,39 +117,163 @@ class QRScanningUI extends QRScanningUI_Abstract
 			QRScanner.show(function(status) // "Configures the native webview to have a transparent background, then sets the background of the <body> and <html> DOM elements to transparent, allowing the webview to re-render with the transparent background."
 			{
 				if (status.prepared != true) {
-					fn("Camera unexpectedly not prepared. Please try again.", null)
+					consumerInterface_fn("Camera unexpectedly not prepared. Please try again.", null)
 					return
 				}
 				if (status.showing != true) {
-					fn("Camera unexpectedly not showing. Please try again.", null)
+					consumerInterface_fn("Camera unexpectedly not showing. Please try again.", null)
 					return
 				}
 				//
 				// Now, since the QR scanner UI is not a DOM element, but
 				// actually a layer behind the whole app, we must hide all DOM
 				// elements while the camera is showing
-				self._hideDOMAndDisplayCameraUI()
+				self._hideDOMAndDisplayCameraUI(
+					function()
+					{ // cancelButtonTapped_fn
+						self._teardownScannerAndCameraUIAndReShowDOM( // if they hit cancel
+							function()
+							{
+								consumerInterface_fn(null, null) // ensure this gets called
+							}
+						)
+					},
+					function()
+					{ // didDeconstructBootedStateAndClearPassword_fn
+						self._teardownScannerAndCameraUIAndReShowDOM(
+							function()
+							{
+								consumerInterface_fn(null, null) // ensure this gets called
+							}
+						)
+					}
+				)
 				//
 				QRScanner.scan(function(err, text)
 				{
-					self._teardownScannerAndReShowDOM( // regardless of whether err exists
+					self._teardownScannerAndCameraUIAndReShowDOM( // regardless of whether err exists
 						function()
 						{
 							if (err) {
 								console.error("err", err)
 								if(err.name === 'SCAN_CANCELED') {
 									console.error('The scan was canceled before a QR code was found.')
-									fn(null, null) // return empty but no err -> canceled
+									consumerInterface_fn(null, null) // return empty but no err -> canceled
 									return
 								}
-								fn(err)
+								consumerInterface_fn(err)
 								return
 							}
-							fn(null, text) 
+							consumerInterface_fn(null, text) 
 						}
 					)
 				})
 			})
+		}
+	}
+	//
+	// Imperatives - Internal - Scanner UI presentation and scanner teardown
+	_hideDOMAndDisplayCameraUI(
+		cancelButtonTapped_fn,
+		didDeconstructBootedStateAndClearPassword_fn
+	)
+	{
+		const self = this
+		{ // before inserting the camera UI…
+			self.elementsHiddenForScanning = document.body.children // hang onto these for re-show
+			self.hiddenChildrenStyleDisplayByIndex = {} // initialize for recording
+			const numberOfHiddenChildren = self.elementsHiddenForScanning.length
+			for (var i = 0 ; i < numberOfHiddenChildren ; i++) {
+				const child = self.elementsHiddenForScanning[i]
+				self.hiddenChildrenStyleDisplayByIndex[i] = child.style.display // record for re-display
+				child.style.display = "none"
+			}
+		}
+		{ // show camera UI here for cancel btn
+			{ // navigationBarView
+				const view = new NavigationBarView(
+					{
+						navigationController: {}
+						// NOTE: ^-- this is a mock object… which is slightly janky, but ok in this case, b/c
+						// the nav bar only needs the navigationController option for stuff like animations etc
+					}, 
+					self.context
+				)
+				document.body.appendChild(view.layer)
+				self.navigationBarView = view
+			}
+			{ // need to create a mocked view to pass to the navigationBar for it to query for nav bar title and cancel button
+				self.cameraUIMockView = new QRScanningCameraUIMockView(
+					{
+						cancelButtonTapped_fn: function()
+						{
+							cancelButtonTapped_fn()
+						}
+					}, 
+					self.context
+				)
+				self.navigationBarView.SetTopStackView(
+					self.cameraUIMockView, 
+					null, // old_topStackView
+					false, // isAnimated 
+					undefined, // ifAnimated_isFromRightNotLeft
+					false // trueIfPoppingToRoot
+				)
+			}
+		}
+		{ // observe password controller for lockdown and treat as cancellation
+			const emitter = self.context.passwordController
+			self.didDeconstructBootedStateAndClearPassword_listenerFn = function()
+			{
+				didDeconstructBootedStateAndClearPassword_fn()
+			}
+			emitter.on(
+				emitter.EventName_didDeconstructBootedStateAndClearPassword(),
+				self.didDeconstructBootedStateAndClearPassword_listenerFn
+			)
+		}
+	}
+	_teardownScannerAndCameraUIAndReShowDOM(finished_fn)
+	{
+		const self = this
+
+		{ // TODO: stop observing PW controller
+		}
+		{ // show elements before destroy to prevent flash
+			const numberOfHiddenChildren = self.elementsHiddenForScanning.length
+			for (var i = 0 ; i < numberOfHiddenChildren ; i++) {
+				const child = self.elementsHiddenForScanning[i]
+				child.style.display = self.hiddenChildrenStyleDisplayByIndex[i] // original value
+			}
+			self.elementsHiddenForScanning = null // zero
+			self.hiddenChildrenStyleDisplayByIndex = null // zero
+		}
+		{ // remove camera UI
+			self.navigationBarView.layer.parentNode.removeChild(self.navigationBarView.layer)
+			self.navigationBarView = null
+			self.cameraUIMockView = null
+		}
+		{ // stop observing
+			const emitter = self.context.passwordController
+			emitter.removeListener(
+				emitter.EventName_didDeconstructBootedStateAndClearPassword(),
+				self.didDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self.didDeconstructBootedStateAndClearPassword_listenerFn = null
+		}
+		{ // tear down QR scanner
+			QRScanner.pausePreview()
+			QRScanner.destroy(
+				function(status)
+				{
+					QRScanner.hide( // "Configures the native webview to be opaque with a white background, covering the video preview."
+						function(status)
+						{
+							finished_fn()
+						}
+					)
+				}
+			)
 		}
 	}
 }
