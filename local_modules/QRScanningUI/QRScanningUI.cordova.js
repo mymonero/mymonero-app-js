@@ -43,14 +43,34 @@ class QRScanningUI extends QRScanningUI_Abstract
 	}
 	//
 	// Runtime - Internal - Imperatives - Scanner presentation
-	_hideDOM()
+	_hideDOMAndDisplayCameraUI()
 	{
 		const self = this
+		// TODO: probably show camera UI as well here (nav bar) for cancel btn - which means don't hide whole body, but app root container
 		document.body.style.visibility = "hidden"
 	}
-	_reShowDOM()
+	_teardownScannerAndReShowDOM(fn)
 	{
 		const self = this
+		self.__reShowDOM() // show this (a) before destroy to prevent flash and (b) in all error cb cases
+		//
+		QRScanner.pausePreview()
+		QRScanner.destroy(
+			function(status)
+			{
+				QRScanner.hide( // "Configures the native webview to be opaque with a white background, covering the video preview."
+					function(status)
+					{
+						fn()
+					}
+				)
+			}
+		)
+	}
+	__reShowDOM()
+	{
+		const self = this
+		// TODO: probably show camera UI as well here (nav bar) for cancel btn - which means don't re-show whole body, but app root container
 		document.body.style.visibility = "visible"
 	}
 	//
@@ -60,7 +80,6 @@ class QRScanningUI extends QRScanningUI_Abstract
 	)
 	{
 		const self = this
-		console.log("~~~~~~~~~~~> pick qr code with ", QRScanner)
 		QRScanner.prepare( // show the prompt (if necessary(?))
 			function(err, status)
 			{
@@ -68,19 +87,20 @@ class QRScanningUI extends QRScanningUI_Abstract
 					fn(err)
 					return // must exit
 				}
-				if (status.denied) {
+				if (status.denied != false) {
 					fn(new Error("QR scanning requires camera access. Please enable MyMonero in your system Settings."))
 					// TODO: ? give use the option to open up settings with some sort of prompt in the validation msg? may be possible via `QRScanner.openSettings()`
 					return
 				}
-				if (!status.authorized) {
+				if (status.authorized != true) {
 					fn(new Error("Couldn't gain camera access for QR scanning. Please try again."))
 					return
 				}
-				//  Now we must check if the app is still unlocked. If it is not,  do not show the
-				//QR code scanner here -- b/c the system  (Android) must have either killed or
-				//backgrounded the app  while requesting permissions. Until we fix this, the user
-				//has  to hit "Use  Camera" again after unlocking. So, a nice TODO….
+				//
+				// Now we must check if the app is still unlocked. If it is not, do not show the
+				// QR code scanner here -- b/c the system  (Android) must have either killed or
+				// backgrounded the app while requesting permissions. Until we fix this, the user
+				// has to hit "Use  Camera" again after unlocking. So, a nice TODO….
 				let passwordController = self.context.passwordController
 				if (passwordController.hasUserSavedAPassword !== true) {
 					throw "No password entered. Unexpected." // would be very odd
@@ -103,23 +123,8 @@ class QRScanningUI extends QRScanningUI_Abstract
 		)		
 		function __qrScanner_wasAuthorizedAndAppUnlocked()
 		{
-			// let mainDiv = document.body.childNodes[5]
-			// let oldStyle = JSON.parse(JSON.stringify(mainDiv.style));
-
-			// mainDiv.style = {}
-
-			console.log("~~~~~~~~~~~> was authorized")
-
 			QRScanner.show(function(status) // "Configures the native webview to have a transparent background, then sets the background of the <body> and <html> DOM elements to transparent, allowing the webview to re-render with the transparent background."
 			{
-				if (status.denied != false) {
-					fn("QR scan requires MyMonero to have camera permissions.", null)
-					return
-				}
-				if (status.authorized != true) {
-					fn("QR scan requires MyMonero to have authorized camera permissions.", null)
-					return
-				}
 				if (status.prepared != true) {
 					fn("Camera unexpectedly not prepared. Please try again.", null)
 					return
@@ -132,38 +137,24 @@ class QRScanningUI extends QRScanningUI_Abstract
 				// Now, since the QR scanner UI is not a DOM element, but
 				// actually a layer behind the whole app, we must hide all DOM
 				// elements while the camera is showing
-
-				// TODO: imperatives for show/hide DOM - and call hide here
-				self._hideDOM()
-				// TODO: maybe show camera UI as well here (nav bar) for cancel btn
+				self._hideDOMAndDisplayCameraUI()
 				//
-				QRScanner.scan(function (err, text)
+				QRScanner.scan(function(err, text)
 				{
-					self._reShowDOM() // show this (a) before destroy to prevent flash and (b) in all error cb cases
-					//
-					// TODO: hide camera UI here
-					//
-					if (err) {
-						console.error("err.name", err.name)
-						if(err.name === 'SCAN_CANCELED') {
-							console.error('The scan was canceled before a QR code was found.')
-							fn(null, null) // return empty but no err -> canceled
-							return
-						}
-						console.error(err._message)
-						fn(err)
-						return
-					}
-					//
-					QRScanner.destroy(
-						function(status)
+					self._teardownScannerAndReShowDOM( // regardless of whether err exists
+						function()
 						{
-							QRScanner.hide( // "Configures the native webview to be opaque with a white background, covering the video preview."
-								function(status)
-								{
-									fn(null, text) 
+							if (err) {
+								console.error("err", err)
+								if(err.name === 'SCAN_CANCELED') {
+									console.error('The scan was canceled before a QR code was found.')
+									fn(null, null) // return empty but no err -> canceled
+									return
 								}
-							)
+								fn(err)
+								return
+							}
+							fn(null, text) 
 						}
 					)
 				})
