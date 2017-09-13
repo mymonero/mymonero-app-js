@@ -61,10 +61,6 @@ class HostedMoneroAPIClient
 	{
 		var self = this
 		{ // options
-			self.scheme = config__MyMonero.API__protocolScheme
-			self.host = config__MyMonero.API__hostDomainPlusPortPlusSlash // to be exposed via app Preferences
-			self.baseURL = self.scheme + "://" + self.host
-			//
 			self.appUserAgent_product = self.options.appUserAgent_product
 			if (!self.appUserAgent_product) {
 				throw `${self.constructor.name} requires options.appUserAgent_product`
@@ -93,6 +89,18 @@ class HostedMoneroAPIClient
 	}
 	//
 	// Runtime - Accessors - Private - Requests
+	_new_apiAddress_authority()
+	{
+		// TODO: lookup and return settings value if exists
+		return config__MyMonero.API__authority
+	}
+	_new_apiAddress_baseURL()
+	{
+		const self = this
+		const scheme = "https"
+		//
+		return scheme + "://" + self._new_apiAddress_authority() + "/"
+	}
 	_new_parameters_forWalletRequest(address, view_key__private)
 	{
 		return {
@@ -111,7 +119,7 @@ class HostedMoneroAPIClient
 		parameters.app_name = self.appUserAgent_product 
 		parameters.app_version = self.appUserAgent_version
 		//
-		const completeURL = self.baseURL + endpointPath
+		const completeURL = self._new_apiAddress_baseURL() + endpointPath
 		console.log("📡  " + completeURL)
 		//
 		const request_options =
