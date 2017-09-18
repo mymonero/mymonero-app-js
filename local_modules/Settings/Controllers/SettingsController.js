@@ -36,9 +36,7 @@ const k_default_appTimeoutAfterS = 3 * 60 // 3 minutes
 const k_defaults_record = 
 {
 	specificAPIAddressURLAuthority: "",
-	appTimeoutAfterS: k_default_appTimeoutAfterS,
-	notifyMeWhen: {},
-	syncWithServer: {}
+	appTimeoutAfterS: k_default_appTimeoutAfterS
 }
 //
 class SettingsController extends EventEmitter
@@ -95,8 +93,6 @@ class SettingsController extends EventEmitter
 			//
 			self.specificAPIAddressURLAuthority = record_doc.specificAPIAddressURLAuthority
 			self.appTimeoutAfterS = record_doc.appTimeoutAfterS
-			self.notifyMeWhen = record_doc.notifyMeWhen
-			self.syncWithServer = record_doc.syncWithServer
 			//
 			self.hasBooted = true // all done!
 		}
@@ -112,14 +108,6 @@ class SettingsController extends EventEmitter
 	EventName_settingsChanged_appTimeoutAfterS()
 	{
 		return "EventName_settingsChanged_appTimeoutAfterS"
-	}
-	EventName_settingsChanged_notifyMeWhen()
-	{
-		return "EventName_settingsChanged_notifyMeWhen"
-	}
-	EventName_settingsChanged_syncWithServer()
-	{
-		return "EventName_settingsChanged_syncWithServer"
 	}
 	//
 	AppTimeoutNeverValue()
@@ -142,8 +130,6 @@ class SettingsController extends EventEmitter
 				const valueKeys = Object.keys(valuesByKey)
 				var didUpdate_specificAPIAddressURLAuthority = false
 				var didUpdate_appTimeoutAfterS = false
-				var didUpdate_notifyMeWhen = false
-				var didUpdate_syncWithServer = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
@@ -151,10 +137,6 @@ class SettingsController extends EventEmitter
 							didUpdate_specificAPIAddressURLAuthority = true
 						} else if (valueKey === "appTimeoutAfterS") {
 							didUpdate_appTimeoutAfterS = true
-						} else if (valueKey === "notifyMeWhen") {
-							didUpdate_notifyMeWhen = true
-						} else if (valueKey === "syncWithServer") {
-							didUpdate_syncWithServer = true
 						}
 					}
 					{ // set
@@ -173,12 +155,6 @@ class SettingsController extends EventEmitter
 							}
 							if (didUpdate_appTimeoutAfterS) {
 								self.emit(self.EventName_settingsChanged_appTimeoutAfterS(), self.appTimeoutAfterS)
-							}
-							if (didUpdate_notifyMeWhen) {
-								self.emit(self.EventName_settingsChanged_notifyMeWhen(), self.notifyMeWhen)
-							}
-							if (didUpdate_syncWithServer) {
-								self.emit(self.EventName_settingsChanged_syncWithServer(), self.syncWithServer)
 							}
 						}
 						fn(err)
@@ -219,9 +195,7 @@ class SettingsController extends EventEmitter
 				{
 					_id: self._id, // important to set for updates
 					specificAPIAddressURLAuthority: self.specificAPIAddressURLAuthority,
-					appTimeoutAfterS: self.appTimeoutAfterS,
-					notifyMeWhen: self.notifyMeWhen,
-					syncWithServer: self.syncWithServer
+					appTimeoutAfterS: self.appTimeoutAfterS
 				}
 				if (self._id === null || typeof self._id === 'undefined') {
 					_proceedTo_insertNewDocument(persistableDocument)
