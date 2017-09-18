@@ -35,7 +35,7 @@ const CollectionName = "Settings"
 const k_default_appTimeoutAfterS = 3 * 60 // 3 minutes
 const k_defaults_record = 
 {
-	serverURL: "",
+	specificAPIAddressURLAuthority: "",
 	appTimeoutAfterS: k_default_appTimeoutAfterS,
 	notifyMeWhen: {},
 	syncWithServer: {}
@@ -93,7 +93,7 @@ class SettingsController extends EventEmitter
 		{
 			self._id = record_doc._id || undefined
 			//
-			self.serverURL = record_doc.serverURL
+			self.specificAPIAddressURLAuthority = record_doc.specificAPIAddressURLAuthority
 			self.appTimeoutAfterS = record_doc.appTimeoutAfterS
 			self.notifyMeWhen = record_doc.notifyMeWhen
 			self.syncWithServer = record_doc.syncWithServer
@@ -105,9 +105,9 @@ class SettingsController extends EventEmitter
 	//
 	// Runtime - Accessors
 	//
-	EventName_settingsChanged_serverURL()
+	EventName_settingsChanged_specificAPIAddressURLAuthority()
 	{
-		return "EventName_settingsChanged_serverURL"
+		return "EventName_settingsChanged_specificAPIAddressURLAuthority"
 	}
 	EventName_settingsChanged_appTimeoutAfterS()
 	{
@@ -140,15 +140,15 @@ class SettingsController extends EventEmitter
 			function()
 			{
 				const valueKeys = Object.keys(valuesByKey)
-				var didUpdate_serverURL = false
+				var didUpdate_specificAPIAddressURLAuthority = false
 				var didUpdate_appTimeoutAfterS = false
 				var didUpdate_notifyMeWhen = false
 				var didUpdate_syncWithServer = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
-						if (valueKey === "serverURL") {
-							didUpdate_serverURL = true
+						if (valueKey === "specificAPIAddressURLAuthority") {
+							didUpdate_specificAPIAddressURLAuthority = true
 						} else if (valueKey === "appTimeoutAfterS") {
 							didUpdate_appTimeoutAfterS = true
 						} else if (valueKey === "notifyMeWhen") {
@@ -168,8 +168,8 @@ class SettingsController extends EventEmitter
 							console.error("Failed to save new valuesByKey", err)
 						} else {
 							console.log("📝  Successfully saved " + self.constructor.name + " update ", JSON.stringify(valuesByKey))
-							if (didUpdate_serverURL) {
-								self.emit(self.EventName_settingsChanged_serverURL(), self.serverURL)
+							if (didUpdate_specificAPIAddressURLAuthority) {
+								self.emit(self.EventName_settingsChanged_specificAPIAddressURLAuthority(), self.specificAPIAddressURLAuthority)
 							}
 							if (didUpdate_appTimeoutAfterS) {
 								self.emit(self.EventName_settingsChanged_appTimeoutAfterS(), self.appTimeoutAfterS)
@@ -218,7 +218,7 @@ class SettingsController extends EventEmitter
 				const persistableDocument =
 				{
 					_id: self._id, // important to set for updates
-					serverURL: self.serverURL,
+					specificAPIAddressURLAuthority: self.specificAPIAddressURLAuthority,
 					appTimeoutAfterS: self.appTimeoutAfterS,
 					notifyMeWhen: self.notifyMeWhen,
 					syncWithServer: self.syncWithServer

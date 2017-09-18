@@ -89,9 +89,18 @@ class HostedMoneroAPIClient
 	}
 	//
 	// Runtime - Accessors - Private - Requests
-	_new_apiAddress_authority()
+	_new_apiAddress_authority() // authority means [subdomain.]host.…[:…]
 	{
-		// TODO: lookup and return settings value if exists
+		const self = this
+		const settingsController = self.context.settingsController
+		if (settingsController.hasBooted != true) {
+			throw "Expected SettingsController to have been booted"
+		}
+		const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority || ""
+		if (specificAPIAddressURLAuthority != "") {
+			return specificAPIAddressURLAuthority
+		}
+		//
 		return config__MyMonero.API__authority
 	}
 	_new_apiAddress_baseURL()

@@ -34,6 +34,8 @@ const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web'
 const commonComponents_labeledRangeInputs = require('../../MMAppUICommonComponents/labeledRangeInputs.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_switchToggles = require('../../MMAppUICommonComponents/switchToggles.web')
+const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
+const config__MyMonero = require('../../HostedMoneroAPIClient/config__MyMonero')
 //
 class SettingsView extends View
 {
@@ -57,7 +59,6 @@ class SettingsView extends View
 			self.margin_h = 0
 		}
 		self._setup_self_layer()
-		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
 		// self.DEBUG_BorderChildLayers()
 	}
@@ -82,16 +83,6 @@ class SettingsView extends View
 		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
-	_setup_validationMessageLayer()
-	{ // validation message
-		const self = this
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, "")
-		layer.style.width = "calc(100% - 12px)"
-		layer.style.marginLeft = "6px"
-		layer.ClearAndHideMessage()
-		self.validationMessageLayer = layer
-		self.layer.appendChild(layer)				
-	}
 	_setup_form_containerLayer()
 	{
 		const self = this
@@ -102,9 +93,9 @@ class SettingsView extends View
 				self._setup_aboutAppButton()
 			}
 			self._setup_form_field_changePasswordButton()
-			// self._setup_form_field_serverURL() // TODO: to implement
 			self._setup_form_field_appTimeoutSlider()
 			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
+			self._setup_form_field_serverURL()
 			self._setup_deleteEverythingButton()
 		}
 		self.layer.appendChild(containerLayer)
@@ -154,29 +145,6 @@ class SettingsView extends View
 			})
 			// this will set its title on VWA
 			div.appendChild(view.layer)
-		}
-		self.form_containerLayer.appendChild(div)
-	}
-	_setup_form_field_serverURL()
-	{ // TODO: This hasn't really been implemented. It should have a 'Saving…' activity indicator to-design and should let the user know it will cause the removal of their wallets and they'll have to add them back after changing servers
-		const self = this
-		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
-		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SERVER ADDRESS", self.context)
-			div.appendChild(labelLayer)
-			//
-			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
-				placeholderText: "Leave blank to use mymonero.com"
-			})
-			self.serverURLInputLayer = valueLayer
-			valueLayer.addEventListener(
-				"keyup",
-				function(event)
-				{
-					console.log("Save server URL")
-				}
-			)
-			div.appendChild(valueLayer)
 		}
 		self.form_containerLayer.appendChild(div)
 	}
@@ -263,6 +231,49 @@ class SettingsView extends View
 		}
 		self.form_containerLayer.appendChild(div)
 	}
+	_setup_form_field_serverURL()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SERVER ADDRESS", self.context)
+			div.appendChild(labelLayer)
+			//
+			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
+				placeholderText: "Leave blank to use mymonero.com"
+			})
+			valueLayer.autocomplete = "off"
+			valueLayer.autocorrect = "off"
+			valueLayer.autocapitalize = "off"
+			valueLayer.spellcheck = "false"
+			self.serverURLInputLayer = valueLayer
+			valueLayer.addEventListener(
+				"keyup",
+				function(event)
+				{
+					self._serverURLInputLayer_did_keyUp()
+				}
+			)
+			div.appendChild(valueLayer)
+		}
+		{
+			const validationMessageLayer = commonComponents_forms.New_fieldAccessory_validationMessageLayer(self.context)
+			validationMessageLayer.style.display = "none"
+			self.serverURL_validationMessageLayer = validationMessageLayer
+			div.appendChild(validationMessageLayer)
+		}
+		{
+			const layer = commonComponents_activityIndicators.New_GraphicAndLabel_ActivityIndicatorLayer( // will call `__inject…`
+				"CONNECTING…",
+				self.context
+			)
+			layer.style.display = "none" // initial state
+			layer.style.paddingLeft = "7px"
+			self.serverURL_connecting_activityIndicatorLayer = layer
+			div.appendChild(layer)
+		}
+		self.form_containerLayer.appendChild(div)
+	}
 	_setup_deleteEverythingButton()
 	{
 		const self = this
@@ -319,9 +330,7 @@ class SettingsView extends View
 		const self = this
 	}
 	//
-	//
 	// Lifecycle - Teardown - Overrides
-	//
 	TearDown()
 	{
 		const self = this
@@ -344,17 +353,60 @@ class SettingsView extends View
 		const self = this
 	}
 	//
-	//
 	// Runtime - Accessors - Navigation
-	//
 	Navigation_Title()
 	{
 		return "Preferences"
 	}
 	//
+	// Runtime - Imperatives - UI config
+	_updateValidationErrorForAddressInputView(fn_orNil)
+	{
+		const self = this
+		//
+		const fn = fn_orNil || function(didError, savableValue) {}
+		const value = (self.serverURLInputLayer.value || "").replace(/^\s+|\s+$/g, '') // whitespace-stripped
+		//
+		var preSubmission_validationError = null;
+		{
+			if (value != "") {
+				if (value.indexOf(".") == -1 && value.indexOf(":") == -1 && value.indexOf("localhost") == -1) {
+					preSubmission_validationError = `Please enter a valid URL authority, e.g. ${config__MyMonero.API__authority}.`
+				}
+			}
+		}
+		if (preSubmission_validationError != null) {
+			self.serverURL_setValidationMessage(preSubmission_validationError)
+			self.serverURL_connecting_activityIndicatorLayer.style.display = "none" // hide
+			// BUT we're also going to save the value so that the validation error here is displayed to the user
+			//
+			fn(true, null)
+			return
+		}
+		fn(false, value) // no error, save value
+	}
+	//
+	// Runtime - Imperatives - UI config - Validation messages - Server URL
+	serverURL_setValidationMessage(validationMessageString)
+	{
+		const self = this
+		if (validationMessageString === "" || !validationMessageString) {
+			self.ClearValidationMessage()
+			return
+		}
+		self.serverURLInputLayer.style.border = "1px solid #f97777"
+		self.serverURL_validationMessageLayer.style.display = "block"
+		self.serverURL_validationMessageLayer.innerHTML = validationMessageString
+	}
+	serverURL_clearValidationMessage()
+	{
+		const self = this
+		self.serverURLInputLayer.style.border = "1px solid rgba(0,0,0,0)"//todo: factor this into method on component
+		self.serverURL_validationMessageLayer.style.display = "none"
+		self.serverURL_validationMessageLayer.innerHTML = ""
+	}
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
-	//
 	viewWillAppear()
 	{
 		const self = this
@@ -378,21 +430,26 @@ class SettingsView extends View
 		{
 			if (passwordController.hasUserSavedAPassword !== true) {
 				self.changePasswordButtonView.SetEnabled(false) // can't change til entered
-				// self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
+				self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
 				self.changePasswordButtonView.SetEnabled(false)
-				// self.serverURLInputLayer.disabled = true
+				self.serverURLInputLayer.disabled = true
 				self.appTimeoutRangeInputView.SetEnabled(false)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else { // has entered PW - unlock
 				self.changePasswordButtonView.SetEnabled(true)
-				// self.serverURLInputLayer.disabled = false
+				self.serverURLInputLayer.disabled = false
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(true)
 			}
+		}
+		{
+			self.serverURLInputLayer.value = self.context.settingsController.specificAPIAddressURLAuthority || ""
+			// and now that the value is set…
+			self._updateValidationErrorForAddressInputView() // so we get validation error from persisted but incorrect value, if necessary for user feedback
 		}
 	}
 	viewDidAppear()
@@ -408,6 +465,7 @@ class SettingsView extends View
 			}
 		}
 	}
+	//
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
 	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
 	navigationView_didDismissModalToRevealView()
@@ -425,6 +483,67 @@ class SettingsView extends View
 			super.navigationView_didPopToRevealView() // in case it exists
 		}
 		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	//
+	// Delegation - Interactions
+	_serverURLInputLayer_did_keyUp()
+	{
+		const self = this
+		function __teardown_timeout_toSave_serverURL()
+		{
+			if (self.timeout_toSave_serverURL != null && typeof self.timeout_toSave_serverURL !== 'undefined') {
+				clearTimeout(self.timeout_toSave_serverURL)
+				self.timeout_toSave_serverURL = null
+			}
+		}
+		__teardown_timeout_toSave_serverURL()
+		self.serverURL_clearValidationMessage()
+		{
+			const entered_serverURL_value = self.serverURLInputLayer.value || ""
+			if (entered_serverURL_value == "") {
+				self.serverURL_connecting_activityIndicatorLayer.style.display = "none" // no need to show 'connecting…'
+			} else {
+				self.serverURL_connecting_activityIndicatorLayer.style.display = "block" // show
+			}
+		}
+		// now wait until user is really done typing…
+		self.timeout_toSave_serverURL = setTimeout(
+			function()
+			{
+				__teardown_timeout_toSave_serverURL() // zero timer pointer
+				//
+				self._updateValidationErrorForAddressInputView( // also called on init so we get validation error on load
+					function(didError, savableValue)
+					{
+						if (didError) {
+							return // not proceeding to save
+						}
+						const currentValue = self.context.settingsController.specificAPIAddressURLAuthority || ""
+						if (savableValue == currentValue) {
+							// do not clear/re-log-in on wallets if we're, e.g., resetting the password programmatically after the user has canceled deleting all wallets
+							self.serverURL_connecting_activityIndicatorLayer.style.display = "none" // hide
+							return
+						}
+						self.context.settingsController.Set_settings_valuesByKey(
+							{
+								specificAPIAddressURLAuthority: savableValue
+							},
+							function(err)
+							{
+								if (err) { // write failed
+									self.serverURL_setValidationMessage("" + err)
+									// so, importantly, revert the input contents, b/c the write failed
+									self.serverURLInputLayer.value = self.context.settingsController.specificAPIAddressURLAuthority
+									// but don't exit before hiding the 'connecting…' indicator
+								}
+								self.serverURL_connecting_activityIndicatorLayer.style.display = "none" // hide
+							}
+						)
+					}
+				)
+			},
+			600
+		)
 	}
 }
 module.exports = SettingsView

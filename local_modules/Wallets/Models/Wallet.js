@@ -1320,7 +1320,7 @@ class Wallet extends EventEmitter
 	___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, oldTransactions)
 	{
 		const self = this
-		console.log("💬  Got an update to txs list")
+		// console.log("💬  Got an update to txs list")
 		self.emit(self.EventName_transactionsChanged(), self, oldTransactions)
 		if (numberOfTransactionsAdded > 0) {
 			console.log(`💬  ${numberOfTransactionsAdded} new transaction(s) added`)
