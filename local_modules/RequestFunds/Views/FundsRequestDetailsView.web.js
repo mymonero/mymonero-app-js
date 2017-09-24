@@ -175,6 +175,7 @@ class FundsRequestDetailsView extends View
 						layer.style.position = "absolute"
 						layer.style.left = "0"
 						layer.style.top = "0"
+						layer.style.cursor = "pointer"
 					}
 					valueLayer.addEventListener("click", function(e)
 					{
