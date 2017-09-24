@@ -88,7 +88,7 @@ function HydrateInstance_withDecryptedValues(
 	//
 	// console.log("plaintextDocument", plaintextDocument)
 	self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
-	self.account_seed = plaintextDocument.account_seed
+	self.account_seed = plaintextDocument.account_seed !== "" ? plaintextDocument.account_seed : null // do not ever want to have empty string 
 	self.private_keys = plaintextDocument.private_keys
 	self.public_address = plaintextDocument.public_address
 	self.public_keys = plaintextDocument.public_keys

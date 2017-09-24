@@ -518,7 +518,6 @@ class WalletsListController extends ListBaseController
 				walletsToDelete,
 				function(wallet, cb)
 				{
-					console.log("wallet to grab reconstitution description from…", wallet)
 					const reconstitutionDescription = wallet.New_reconstitutionDescriptionForReLogIn()
 					reconstitutionDescriptions.push(reconstitutionDescription)
 					//

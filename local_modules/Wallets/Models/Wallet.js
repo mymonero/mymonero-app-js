@@ -372,9 +372,10 @@ class Wallet extends EventEmitter
 	)
 	{
 		const self = this
-		function _proceedTo_login(mnemonicString)
+		function _proceedTo_login(mnemonicString_orNil)
 		{
-			if (mnemonicString != null && typeof mnemonicString != 'undefined') {
+			if (mnemonicString_orNil != null && typeof mnemonicString_orNil != 'undefined') {
+				const mnemonicString = mnemonicString_orNil
 				self.Boot_byLoggingIn_existingWallet_withMnemonic(
 					persistencePassword,
 					reconstitutionDescription.walletLabel,
@@ -384,11 +385,8 @@ class Wallet extends EventEmitter
 					fn
 				)
 			} else {
-				if (!self.account_seed || typeof self.account_seed == "undefined") {
+				if (self.account_seed != null && typeof self.account_seed != "undefined") {
 					throw "expected nil self.account_seed"
-				}
-				if (self.account_seed == "") {
-					throw "expected empty string self.account_seed"
 				}
 				if (!reconstitutionDescription.private_keys.view || typeof reconstitutionDescription.private_keys.view == "undefined") {
 					throw "expected nil reconstitutionDescription.private_keys.view"
@@ -412,8 +410,11 @@ class Wallet extends EventEmitter
 		const hasAccountSeed = reconstitutionDescription.account_seed != null && typeof reconstitutionDescription.account_seed != 'undefined'
 		if (hasMnemonicString == false) {
 			if (hasAccountSeed == true) {
+				if (reconstitutionDescription.account_seed == "") {
+					throw "Found empty string at reconstitutionDescription.account_seed"
+				}
 				if (reconstitutionDescription.mnemonic_wordsetName == null || typeof reconstitutionDescription.mnemonic_wordsetName == 'undefined') {
-					throw "missing mnemonic_wordsetName"
+					throw "missing mnemonic_wordsetName" // not expecting this as we set a default 
 				}
 				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
 				console.log("Rederiving mnemonic seed from account seed as mnemonic was not persisted - this probably occurred after app relaunched but wallet needed to be reconstituted")
@@ -695,6 +696,9 @@ class Wallet extends EventEmitter
 			// record these properties regardless of whether we are about to error on login
 			self.public_address = address
 			self.account_seed = account_seed
+			if (self.account_seed === "") {
+				throw "__proceedTo_loginViaHostedAPI was passed empty string for account_seed"
+			}
 			self.public_keys = public_keys
 			self.private_keys = private_keys
 			self.isInViewOnlyMode = isInViewOnlyMode

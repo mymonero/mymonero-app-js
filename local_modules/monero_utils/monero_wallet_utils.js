@@ -233,7 +233,7 @@ function VerifiedComponentsForLogIn_sync(
 		view: view_key,
 		spend: spend_key
 	}
-	var account_seed
+	var account_seed = null; // default
 	if (typeof seed_orUndefined !== 'undefined' && seed_orUndefined && seed_orUndefined.length != 0) {
 		var expected_account;
 		try {
@@ -247,14 +247,12 @@ function VerifiedComponentsForLogIn_sync(
 			return { err_str: "invalid seed" }
 		}
 		account_seed = seed_orUndefined
-	} else {
-		account_seed = ''
 	}
 	const payload =
 	{
 		err_str: null, // err
 		address: address,
-		account_seed: account_seed,
+		account_seed: account_seed !== "" ? account_seed : null,
 		public_keys: public_keys,
 		private_keys: private_keys,
 		isInViewOnlyMode: isInViewOnlyMode
