@@ -136,7 +136,7 @@ class ContactsListController extends ListBaseController
 						}
 						options.successfullyInitialized_cb = function(contactInstance)
 						{
-							self._atRuntime__record_wasSuccessfullySetUp(contactInstance)
+							self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(contactInstance)
 							fn(null, contactInstance)
 						}
 						const instance = new Contact(options, context)

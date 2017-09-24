@@ -127,7 +127,7 @@ class FundsRequestsListController extends ListBaseController
 						}
 						options.successfullyInitialized_cb = function(returnedInstance)
 						{
-							self._atRuntime__record_wasSuccessfullySetUp(returnedInstance)
+							self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(returnedInstance)
 							fn(null, returnedInstance)
 						}
 						const instance = new FundsRequest(options, self.context)

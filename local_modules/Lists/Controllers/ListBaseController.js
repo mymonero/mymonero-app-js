@@ -372,23 +372,17 @@ class ListBaseController extends EventEmitter
 	__recordInstanceAndIndexWithId(_id)
 	{
 		const self = this
-		//
 		const records_length = self.records.length
-		var targetRecord_index = null
-		var targetRecord_instance = null
 		for (let i = 0 ; i < records_length ; i++) {
 			const record = self.records[i]
 			if (record._id === _id) {
-				targetRecord_index = i
-				targetRecord_instance = record
-				break
+				return {
+					index: i,
+					instance: record
+				}
 			}
 		}
-		//
-		return {
-			index: targetRecord_index,
-			instance: targetRecord_instance
-		}
+		throw "Record unexpectedly not found"
 	}
 	//
 	//
@@ -444,25 +438,46 @@ class ListBaseController extends EventEmitter
 					fn(new Error("Record not found"))
 					return
 				}
-				//
-				recordInstance.TearDown() // stop polling, etc -- important.
-				//
-				self.overridable_stopObserving_record(recordInstance) // important
-				self.records.splice(indexOfRecord, 1) // pre-emptively remove the record from the list
-				self.emit(self.EventName_deletedRecordWithId(), recordInstance._id)
-				self.__listUpdated_records() // ensure delegate notified
-				//
-				recordInstance.Delete(
-					function(err)
-					{
-						if (err) {
-							fn(err)
-							return
-						}
-						recordInstance = null
-						fn()
-					}
+				self.givenBooted_DeleteRecordAtIndex(
+					recordInstance,
+					indexOfRecord,
+					fn
 				)
+			}
+		)
+	}
+	givenBooted_DeleteRecord(
+		recordInstance,
+		fn
+	)
+	{
+		const self = this
+		const indexOfRecord = self.__recordInstanceAndIndexWithId(recordInstance._id)
+		self.givenBooted_DeleteRecordAtIndex(
+			recordInstance,
+			indexOfRecord,
+			fn
+		)
+	}
+	givenBooted_DeleteRecordAtIndex(
+		recordInstance,
+		indexOfRecord,
+		fn
+	)
+	{
+		const self = this
+		//
+		recordInstance.TearDown() // stop polling, etc -- important.
+		//
+		self.overridable_stopObserving_record(recordInstance) // important
+		self.records.splice(indexOfRecord, 1) // pre-emptively remove the record from the list
+		self.emit(self.EventName_deletedRecordWithId(), recordInstance._id)
+		self.__listUpdated_records() // ensure delegate notified
+		//
+		recordInstance.Delete(
+			function(err)
+			{
+				fn(err)
 			}
 		)
 	}
@@ -488,7 +503,7 @@ class ListBaseController extends EventEmitter
 	//
 	// Runtime/Boot - Delegation - Private - List updating/instance management
 	//
-	_atRuntime__record_wasSuccessfullySetUp(recordInstance)
+	_atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(recordInstance)
 	{
 		const self = this
 		self.records.unshift(recordInstance) // so we add it to the top

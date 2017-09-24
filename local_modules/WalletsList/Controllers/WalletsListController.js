@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const async = require('async')
+//
 const ListBaseController = require('../../Lists/Controllers/ListBaseController')
 //
 const Wallet = require('../../Wallets/Models/Wallet')
@@ -52,8 +54,25 @@ class WalletsListController extends ListBaseController
 		super(options, context)
 	}
 	//
+	// Runtime - Delegation - Post-instantiation hook
+	RuntimeContext_postWholeContextInit_setup()
+	{
+		super.RuntimeContext_postWholeContextInit_setup()
+		const self = this
+		{
+			const emitter = self.context.settingsController
+			emitter.on(
+				emitter.EventName_settingsChanged_specificAPIAddressURLAuthority(),
+				function()
+				{
+					self.settingsChanged_specificAPIAddressURLAuthority()
+				}
+			)
+		}
+	}
 	//
-	// Overrides
+	//
+	// Overrides - ListBaseController
 	//
 	override_CollectionName()
 	{
@@ -79,7 +98,7 @@ class WalletsListController extends ListBaseController
 		}
 		optionsBase.successfullyInitialized_cb = function(returnedInstance)
 		{
-			returnedInstance.Boot_decryptingExistingInitDoc(
+			returnedInstance.Boot_decryptingExistingInitDoc( // this will also handle recovering wallets which failed to log in (such as on change to faulty server/URL)
 				persistencePassword,
 				function(err)
 				{
@@ -232,7 +251,7 @@ class WalletsListController extends ListBaseController
 								fn(err)
 								return
 							}
-							self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
+							self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(walletInstance)
 							//
 							fn(null, walletInstance)
 						}
@@ -292,12 +311,13 @@ class WalletsListController extends ListBaseController
 								walletLabel,
 								swatch,
 								mnemonicString,
+								false, // not forServerChange
 								function(err) {
 									if (err) {
 										fn(err)
 										return
 									}
-									self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
+									self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(walletInstance)
 									//
 									fn(null, walletInstance, false) // wasWalletAlreadyInserted: false
 								}
@@ -371,13 +391,14 @@ class WalletsListController extends ListBaseController
 								address,
 								view_key__private,
 								spend_key__private,
+								false, // not forServerChange
 								function(err)
 								{
 									if (err) {
 										fn(err)
 										return
 									}
-									self._atRuntime__record_wasSuccessfullySetUp(walletInstance)
+									self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(walletInstance)
 									//
 									fn(null)
 								}
@@ -397,13 +418,15 @@ class WalletsListController extends ListBaseController
 		)
 	}
 	//
-	//
 	// Runtime - Imperatives - Private - Event observation - Wallets
-	//
 	overridable_startObserving_record(record)
 	{
 		super.overridable_startObserving_record(record)
 		const wallet = record
+		const record_initTimeInstanceUUID = record.initTimeInstanceUUID
+		if (record_initTimeInstanceUUID == null || typeof record_initTimeInstanceUUID == 'undefined' || record_initTimeInstanceUUID == '') {
+			throw "Expected non-zero record_initTimeInstanceUUID"
+		}
 		const self = this
 		// we need to be able to stop observing a wallet when the user deletes it (as we free the wallet),
 		// so we have to hang onto the listener function
@@ -415,7 +438,7 @@ class WalletsListController extends ListBaseController
 			{
 				self.emit(self.EventName_aWallet_balanceChanged(), emittingWallet, old_total_received, old_total_sent, old_locked_balance)
 			}
-			self.wallet_listenerFnsByWalletId_balanceChanged[wallet._id] = fn
+			self.wallet_listenerFnsByWalletId_balanceChanged[record_initTimeInstanceUUID] = fn
 			wallet.on(wallet.EventName_balanceChanged(), fn)
 		}
 		{ // transactionsAdded
@@ -426,7 +449,7 @@ class WalletsListController extends ListBaseController
 			{
 				self.emit(self.EventName_aWallet_transactionsAdded(), emittingWallet, numberOfTransactionsAdded, newTransactions)
 			}
-			self.wallet_listenerFnsByWalletId_transactionsAdded[wallet._id] = fn
+			self.wallet_listenerFnsByWalletId_transactionsAdded[record_initTimeInstanceUUID] = fn
 			wallet.on(wallet.EventName_transactionsAdded(), fn)
 		}
 	}
@@ -434,20 +457,139 @@ class WalletsListController extends ListBaseController
 	{
 		super.overridable_stopObserving_record(record)
 		const wallet = record
+		const record_initTimeInstanceUUID = record.initTimeInstanceUUID
+		if (record_initTimeInstanceUUID == null || typeof record_initTimeInstanceUUID == 'undefined' || record_initTimeInstanceUUID == '') {
+			throw "Expected non-zero record_initTimeInstanceUUID"
+		}
 		const self = this
 		{ // balanceChanged
-			const fn = self.wallet_listenerFnsByWalletId_balanceChanged[wallet._id]
+			const fn = self.wallet_listenerFnsByWalletId_balanceChanged[record_initTimeInstanceUUID]
 			if (typeof fn === 'undefined') {
 				throw "listener shouldn't have been undefined"
 			}
 			wallet.removeListener(wallet.EventName_balanceChanged(), fn)
 		}
 		{ // transactionsAdded
-			const fn = self.wallet_listenerFnsByWalletId_transactionsAdded[wallet._id]
+			const fn = self.wallet_listenerFnsByWalletId_transactionsAdded[record_initTimeInstanceUUID]
 			if (typeof fn === 'undefined') {
 				throw "listener shouldn't have been undefined"
 			}
 			wallet.removeListener(wallet.EventName_transactionsAdded(), fn)
+		}
+	}
+	//
+	// Runtime - Imperatives - Rebooting
+	reboot(
+		persistencePassword,
+		walletInstance,
+		specific_reconstitutionDescription // may be nil
+	)
+	{
+		const self = this
+		walletInstance.Reboot(
+			persistencePassword,
+			specific_reconstitutionDescription
+		)
+	}
+	//
+	// Delegation - Events
+	settingsChanged_specificAPIAddressURLAuthority()
+	{
+		const self = this
+		// 'log out' all wallets by grabbing their keys (info to reconstitute them), deleting them, then reconstituting and booting them
+		// I opted to do this here rather than within the wallet itself b/c if a wallet is currently logging in then it has to manage cancelling that, etc. - was easier and possibly simpler to just use List CRUD apis instead.
+		const wallets_length = self.records.length
+		if (self.hasBooted == false) {
+			if (wallets_length != 0) {
+				throw "Expected there to be no records while controller not booted" // this is probably overkill
+			}
+			return // nothing to do
+		}
+		if (wallets_length == 0) {
+			return // nothing to do
+		}
+		if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
+			throw "App expected password to exist as wallets exist"
+		}
+		const reconstitutionDescriptions = []
+		{
+			const walletsToDelete = self.records
+			async.each(
+				walletsToDelete,
+				function(wallet, cb)
+				{
+					console.log("wallet to grab reconstitution description from…", wallet)
+					const reconstitutionDescription = wallet.New_reconstitutionDescriptionForReLogIn()
+					reconstitutionDescriptions.push(reconstitutionDescription)
+					//
+					self.givenBooted_DeleteRecord(
+						wallet,
+						function(err)
+						{
+							cb(err)
+						}
+					)
+				},
+				function(err)
+				{
+					if (err) {
+						throw err  // at least it will be removed from the list for now. if it appears when the app boots again, at least it will attempt to log in. maybe dedupe wallets on launch? probably not a good idea.
+					}
+					_proceed_havingDeletedWallets()
+				}
+			)
+		}
+		function _proceed_havingDeletedWallets()
+		{
+			self.records = [] // free old wallets, now that we have deleted them after obtaining their reconstitutionDescriptions
+			//
+			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+				function(obtainedPasswordString, userSelectedTypeOfPassword)
+				{
+					async.each(
+						reconstitutionDescriptions,
+						function(reconstitutionDescription, cb)
+						{
+							const options =
+							{
+								failedToInitialize_cb: function(err, walletInstance)
+								{
+									cb(err)
+								},
+								successfullyInitialized_cb: function(walletInstance)
+								{
+									self.records.push(walletInstance) // preserves ordering
+									self.overridable_startObserving_record(walletInstance)
+									// ^- appending immediately so we don't have to wait for success before updating
+									//
+									// now boot (aka login)
+									self.reboot(
+										obtainedPasswordString,
+										walletInstance,
+										reconstitutionDescription // important to pass this, b/c the wallet instance has no information on it right now!
+									)
+									//
+									cb() // must call
+								}
+							}
+							const wallet = new Wallet(options, self.context)
+						},
+						function(err)
+						{
+							if (err) {
+								throw err
+							}
+							self.overridable_sortRecords(
+								function()
+								{
+									self.__listUpdated_records()
+									// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
+								}
+							)
+						}
+					)
+				}
+			)
 		}
 	}
 }
