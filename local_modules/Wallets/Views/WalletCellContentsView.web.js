@@ -195,6 +195,18 @@ class WalletCellContentsView extends View
 			}
 			return false
 		}
+		if (doesListenerFunctionExist(self.wallet_EventName_booted_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_booted(),
+				self.wallet_EventName_booted_listenerFunction
+			)
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_errorWhileBooting_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_errorWhileBooting(),
+				self.wallet_EventName_errorWhileBooting_listenerFunction
+			)
+		}
 		if (doesListenerFunctionExist(self.wallet_EventName_walletLabelChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_walletLabelChanged(),
@@ -232,10 +244,10 @@ class WalletCellContentsView extends View
 	_configureUIWithWallet()
 	{
 		const self = this
-		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__labels()
 		self._configureUIWithWallet__color()
 	}
-	_configureUIWithWallet__accountInfo()
+	_configureUIWithWallet__labels()
 	{
 		const self = this
 		const wallet = self.wallet
@@ -244,21 +256,25 @@ class WalletCellContentsView extends View
 			self.descriptionLayer.innerHTML = ""
 			return
 		}
-		if (wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true) { // unlikely but possible
-			self.titleLayer.innerHTML = "Error: Couldn't unlock wallet. Please contact support."
-			self.descriptionLayer.innerHTML = ""
-		} else {
-			self.titleLayer.innerHTML = wallet.walletLabel
-			if (wallet.HasEverFetched_accountInfo() === false) {
-				self.descriptionLayer.innerHTML = "Loading…"
+		self.titleLayer.innerHTML = wallet.walletLabel
+		var descriptionLayer_innerHTML;
+		{
+			if (wallet.isLoggingIn) {
+				descriptionLayer_innerHTML = "Logging in…"
+			} else if (wallet.didFailToInitialize_flag) { // unlikely but possible
+				descriptionLayer_innerHTML = "Load error"
+			} else if (wallet.didFailToBoot_flag) { // possible when server incorrect
+				descriptionLayer_innerHTML = "Login error"
+			} else if (wallet.HasEverFetched_accountInfo() === false) {
+				descriptionLayer_innerHTML = "Loading…"
 			} else {
-				var htmlString = `${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}`
+				descriptionLayer_innerHTML = `${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}`
 				if (wallet.HasLockedFunds() === true) {
-					htmlString += ` (${wallet.LockedBalance_FormattedString()} 🔒)`
+					descriptionLayer_innerHTML += ` (${wallet.LockedBalance_FormattedString()} 🔒)`
 				}
-				self.descriptionLayer.innerHTML = htmlString
 			}
-		}		
+		}
+		self.descriptionLayer.innerHTML = descriptionLayer_innerHTML
 	}
 	_configureUIWithWallet__color()
 	{
@@ -285,10 +301,29 @@ class WalletCellContentsView extends View
 		// here, we're going to store a bunch of functions as instance properties
 		// because if we need to stopObserving we need to have access to the listener fns
 		//
+		// login success/fail
+		self.wallet_EventName_booted_listenerFunction = function()
+		{
+			self._configureUIWithWallet__labels()
+		}
+		self.wallet.on(
+			self.wallet.EventName_booted(),
+			self.wallet_EventName_booted_listenerFunction
+		)
+		//
+		self.wallet_EventName_errorWhileBooting_listenerFunction = function(err)
+		{
+			self._configureUIWithWallet__labels()
+		}
+		self.wallet.on(
+			self.wallet.EventName_errorWhileBooting(),
+			self.wallet_EventName_errorWhileBooting_listenerFunction
+		)
+		//
 		// wallet label
 		self.wallet_EventName_walletLabelChanged_listenerFunction = function()
 		{
-			self._configureUIWithWallet__accountInfo()
+			self._configureUIWithWallet__labels()
 		}
 		self.wallet.on(
 			self.wallet.EventName_walletLabelChanged(),
@@ -306,7 +341,7 @@ class WalletCellContentsView extends View
 		// balance
 		self.wallet_EventName_balanceChanged_listenerFunction = function()
 		{
-			self._configureUIWithWallet__accountInfo()
+			self._configureUIWithWallet__labels()
 		}
 		self.wallet.on(
 			self.wallet.EventName_balanceChanged(),

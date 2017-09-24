@@ -349,6 +349,25 @@ class WalletDetailsView extends View
 			throw "wallet undefined in start observing"
 		}
 		//
+		// login events
+		self.wallet_EventName_booted_listenerFunction = function()
+		{
+			self._wallet_loggedIn()
+		}
+		self.wallet.on(
+			self.wallet.EventName_booted(),
+			self.wallet_EventName_booted_listenerFunction
+		)
+		//
+		self.wallet_EventName_errorWhileBooting_listenerFunction = function()
+		{
+			self._wallet_failedToLogIn()
+		}
+		self.wallet.on(
+			self.wallet.EventName_errorWhileBooting(),
+			self.wallet_EventName_errorWhileBooting_listenerFunction
+		)
+		//
 		// label
 		self.wallet_EventName_walletLabelChanged_listenerFunction = function()
 		{
@@ -449,6 +468,15 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		self.wallet.removeListener(
+			self.wallet.EventName_booted(),
+			self.wallet_EventName_booted_listenerFunction
+		)
+		self.wallet.removeListener(
+			self.wallet.EventName_errorWhileBooting(),
+			self.wallet_EventName_errorWhileBooting_listenerFunction
+		)
+		//
+		self.wallet.removeListener(
 			self.wallet.EventName_walletLabelChanged(),
 			self.wallet_EventName_walletLabelChanged_listenerFunction
 		)
@@ -523,13 +551,16 @@ class WalletDetailsView extends View
 		const mnemonic = wallet.mnemonicString
 		const viewKey = wallet.private_keys.view
 		const spendKey = wallet.private_keys.spend
-		if (wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true) { // failed to initialize
+		if (wallet.didFailToInitialize_flag) { // failed to initialize
 			self.preview__address_fieldView.SetValue(null)
 			self.disclosed__address_fieldView.SetValue(null)
 			self.viewKey_fieldView.SetValue(null)
 			self.spendKey_fieldView.SetValue(null)
 			self.mnemonicSeed_fieldView.SetValue(null)
 			return
+		}
+		if (wallet.didFailToBoot_flag == true) {
+			// in this state, we should still have enough info to display			
 		}
 		self.preview__address_fieldView.SetValue(addr)
 		self.disclosed__address_fieldView.SetValue(addr)
@@ -541,13 +572,14 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		self.balanceLabelView.SetWalletThemeColor(wallet.swatch)
-		if (wallet.didFailToInitialize_flag == true 
-			|| wallet.didFailToBoot_flag == true) { // failed to initialize
-			self.balanceLabelView.SetPlainString("ERROR LOADING")
-			return
+		{
+			self.balanceLabelView.SetWalletThemeColor(wallet.swatch)
 		}
-		if (wallet.HasEverFetched_accountInfo() === false) {
+		if (wallet.didFailToInitialize_flag) {
+			self.balanceLabelView.SetPlainString("LOAD ERROR")
+		} else if (wallet.didFailToBoot_flag) {
+			self.balanceLabelView.SetPlainString("LOGIN ERROR")
+		} else if (wallet.HasEverFetched_accountInfo() === false) {
 			self.balanceLabelView.SetPlainString("LOADING…")
 		} else {
 			self.balanceLabelView.SetBalanceWithWallet(wallet)
@@ -557,15 +589,16 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const wallet = self.wallet
-		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
-			throw "WalletDetailsView opened while wallet failed to init or boot."
-		}
+		const wallet_bootFailed = wallet.didFailToInitialize_flag || wallet.didFailToBoot_flag
 		const layer_transactions = self.layer_transactions
 		while (layer_transactions.firstChild) {
 			layer_transactions.removeChild(layer_transactions.firstChild)
 		}
 		self.transactions_listContainerLayer = null
 		self.noTransactions_emptyStateView = null
+		if (wallet_bootFailed) {
+			return // wait for login/load before showing empty or not
+		}
 		if (wallet.HasEverFetched_transactions() === false) {
 			// const p = document.createElement("p")
 			// p.innerHTML = "Loading…"
@@ -734,7 +767,8 @@ class WalletDetailsView extends View
 		const self = this
 		const wallet = self.wallet
 		const transactionsListLayerContainerLayer = self.transactionsListLayerContainerLayer
-		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true 
+		const wallet_bootFailed = wallet.didFailToInitialize_flag || wallet.didFailToBoot_flag
+		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true && wallet_bootFailed == false
 		{ // to finalize
 			if (wallet.HasEverFetched_transactions() !== false) {
 				const stateCachedTransactions = wallet.New_StateCachedTransactions()
@@ -743,10 +777,9 @@ class WalletDetailsView extends View
 				}
 			}
 		}
-		var shouldShow_catchingUpProgressAndActivityIndicator = wallet.IsScannerCatchingUp()
+		var shouldShow_catchingUpProgressAndActivityIndicator = wallet.IsScannerCatchingUp() && wallet_bootFailed == false
 		if (shouldShow_importTxsBtn) {
 			if (!self.importTransactionsButtonView || typeof self.importTransactionsButtonView === 'undefined') {
-
 				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
 					"IMPORT TRANSACTIONS",
 					self.context, 
@@ -939,6 +972,23 @@ class WalletDetailsView extends View
 	//
 	//
 	// Runtime - Delegation - Event handlers - Wallet
+	//
+	_wallet_loggedIn()
+	{
+		const self = this
+		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__balance()
+		self._configureUIWithWallet__transactions()
+		self._configureUIWithWallet__heightsAndImportState()
+	}
+	_wallet_failedToLogIn()
+	{
+		const self = this
+		self._configureUIWithWallet__accountInfo()
+		self._configureUIWithWallet__balance()
+		self._configureUIWithWallet__transactions()
+		self._configureUIWithWallet__heightsAndImportState()
+	}
 	//
 	wallet_EventName_walletLabelChanged()
 	{

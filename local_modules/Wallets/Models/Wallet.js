@@ -617,7 +617,7 @@ class Wallet extends EventEmitter
 			fn() 
 		}
 		{ // notify listeners
-			// TODO: emit PersistableObject.NotificationNames.booted.notificationName
+			self.emit(self.EventName_booted())
 		}
 		{
 			self._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
@@ -637,9 +637,9 @@ class Wallet extends EventEmitter
 			self.didFailToBoot_flag = true
 			self.didFailToBoot_errOrNil = err
 		}
-		// TODO: 
-		// have self emit PersistableObject.NotificationNames.failedToBoot.notificationName
 		fn(err)
+		//
+		self.emit(self.EventName_errorWhileBooting(), err)
 	}
 	_boot_byLoggingIn(
 		address,
@@ -735,7 +735,7 @@ class Wallet extends EventEmitter
 								self.__trampolineFor_failedToBootWith_fnAndErr(fn, save__err)
 								return
 							}
-							if (shouldExitOnLoginError == true && login__err) {
+							if (shouldExitOnLoginError == false && login__err) {
 								// if we are attempting to re-boot the wallet, but login failed
 								self.__trampolineFor_failedToBootWith_fnAndErr(fn, login__err)  // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
 								return

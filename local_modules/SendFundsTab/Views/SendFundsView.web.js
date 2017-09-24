@@ -906,6 +906,14 @@ class SendFundsView extends View
 				_trampolineToReturnWithValidationErrorString("Please create a wallet to send Monero.")
 				return
 			}
+			if (wallet.didFailToInitialize_flag) {
+				_trampolineToReturnWithValidationErrorString("Unable to load that wallet.")
+				return
+			}
+			if (wallet.didFailToBoot_flag) {
+				_trampolineToReturnWithValidationErrorString("Unable to log into that wallet.")
+				return
+			}
 		}
 		const raw_amount_String = self.amountInputLayer.value
 		var amount_Number = null;

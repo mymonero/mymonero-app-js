@@ -477,6 +477,14 @@ class CreateRequestFormView extends View
 				self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
 				return
 			}
+			if (wallet.didFailToInitialize_flag) {
+				self.validationMessageLayer.SetValidationError("Unable to load that wallet.")
+				return
+			}
+			if (wallet.didFailToBoot_flag) {
+				self.validationMessageLayer.SetValidationError("Unable to log into that wallet.")
+				return
+			}
 		}
 		const raw_amount_String = self.amountInputLayer.value
 		var amount_Number = null;
