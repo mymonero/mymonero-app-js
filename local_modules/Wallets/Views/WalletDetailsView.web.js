@@ -575,9 +575,9 @@ class WalletDetailsView extends View
 		{
 			self.balanceLabelView.SetWalletThemeColor(wallet.swatch)
 		}
-		if (wallet.didFailToInitialize_flag) {
+		if (wallet.didFailToInitialize_flag == true) {
 			self.balanceLabelView.SetPlainString("LOAD ERROR")
-		} else if (wallet.didFailToBoot_flag) {
+		} else if (wallet.didFailToBoot_flag == true) {
 			self.balanceLabelView.SetPlainString("LOGIN ERROR")
 		} else if (wallet.HasEverFetched_accountInfo() === false) {
 			self.balanceLabelView.SetPlainString("LOADING…")
@@ -767,7 +767,7 @@ class WalletDetailsView extends View
 		const self = this
 		const wallet = self.wallet
 		const transactionsListLayerContainerLayer = self.transactionsListLayerContainerLayer
-		const wallet_bootFailed = wallet.didFailToInitialize_flag || wallet.didFailToBoot_flag
+		const wallet_bootFailed = wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true
 		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true && wallet_bootFailed == false
 		{ // to finalize
 			if (wallet.HasEverFetched_transactions() !== false) {

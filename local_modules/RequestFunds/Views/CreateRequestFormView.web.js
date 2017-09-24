@@ -477,11 +477,11 @@ class CreateRequestFormView extends View
 				self.validationMessageLayer.SetValidationError("Please create a wallet to create a request.")
 				return
 			}
-			if (wallet.didFailToInitialize_flag) {
+			if (wallet.didFailToInitialize_flag == true) {
 				self.validationMessageLayer.SetValidationError("Unable to load that wallet.")
 				return
 			}
-			if (wallet.didFailToBoot_flag) {
+			if (wallet.didFailToBoot_flag == true) {
 				self.validationMessageLayer.SetValidationError("Unable to log into that wallet.")
 				return
 			}

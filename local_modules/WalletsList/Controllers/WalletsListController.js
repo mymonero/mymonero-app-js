@@ -511,16 +511,23 @@ class WalletsListController extends ListBaseController
 		if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
 			throw "App expected password to exist as wallets exist"
 		}
+		const walletsToDelete = [] // will construct another copy so that we can mutate records while enumerating
 		const reconstitutionDescriptions = []
 		{
-			const walletsToDelete = self.records
+			const numberOf_walletsToDelete = self.records.length
+			for (var i = 0 ; i < numberOf_walletsToDelete ; i++) {
+				const wallet = self.records[i]
+				walletsToDelete.push(wallet)
+				//
+				const reconstitutionDescription = wallet.New_reconstitutionDescriptionForReLogIn()
+				reconstitutionDescriptions.push(reconstitutionDescription)
+			}
+		}
+		{
 			async.each(
-				walletsToDelete,
+				walletsToDelete, // the constructed copy of self.records
 				function(wallet, cb)
 				{
-					const reconstitutionDescription = wallet.New_reconstitutionDescriptionForReLogIn()
-					reconstitutionDescriptions.push(reconstitutionDescription)
-					//
 					self.givenBooted_DeleteRecord(
 						wallet,
 						function(err)

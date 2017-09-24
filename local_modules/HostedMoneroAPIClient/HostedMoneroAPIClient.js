@@ -87,6 +87,11 @@ class HostedMoneroAPIClient
 	{ // -> String
 		return config__MyMonero.HostingServiceFee_depositAddress
 	}
+	HostingService_importFeeSubmissionTarget_openAliasAddress()
+	{
+		return "import.mymonero.com" // possibly exists a better home for this
+	}
+
 	//
 	// Runtime - Accessors - Private - Requests
 	_new_apiAddress_authority() // authority means [subdomain.]host.…[:…]

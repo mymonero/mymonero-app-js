@@ -55,6 +55,11 @@ class ImportTransactionsModalView extends View
 	{
 		const self = this
 		self.isSubmitButtonDisabled = false
+		const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority
+		self.approximate_importOAAddress = specificAPIAddressURLAuthority != null && specificAPIAddressURLAuthority != "" && typeof specificAPIAddressURLAuthority !== 'undefined'
+			? `import.${specificAPIAddressURLAuthority}` // this is obvs 'approximate' and only meant to be used as an example…… if specificAPIAddressURLAuthority contains a port or a subdomain then this will appear to be obviously wrong but still server its purpose as an example to the power user who is entering a custom server address
+			: self.context.hostedMoneroAPIClient.HostingService_importFeeSubmissionTarget_openAliasAddress()
+		//
 		self.setup_views()
 		self.startObserving()
 	}
@@ -221,7 +226,7 @@ class ImportTransactionsModalView extends View
 		const layer = commonComponents_forms.New_fieldValue_textInputLayer(
 			self.context,
 			{
-				placeholderText: "import.mymonero.com"
+				placeholderText: self.approximate_importOAAddress
 			}
 		)
 		self.addressInputLayer = layer
@@ -518,7 +523,7 @@ class ImportTransactionsModalView extends View
 					{
 						self.informationalHeaderLayer.innerHTML = `This requires a one-time import fee of ${raw_formattedMoney} XMR`
 						//
-						const tooltipText = "Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to import.mymonero.com."
+						const tooltipText = `Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process is very server-intensive, to prevent spam, import is triggered by sending a fee with the specific payment ID below to the server at e.g. ${self.approximate_importOAAddress}.`
 						const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 						const layer = view.layer
 						self.informationalHeaderLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this

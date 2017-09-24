@@ -259,11 +259,11 @@ class WalletCellContentsView extends View
 		self.titleLayer.innerHTML = wallet.walletLabel
 		var descriptionLayer_innerHTML;
 		{
-			if (wallet.isLoggingIn) {
+			if (wallet.isLoggingIn == true) {
 				descriptionLayer_innerHTML = "Logging in…"
-			} else if (wallet.didFailToInitialize_flag) { // unlikely but possible
+			} else if (wallet.didFailToInitialize_flag == true) { // unlikely but possible
 				descriptionLayer_innerHTML = "Load error"
-			} else if (wallet.didFailToBoot_flag) { // possible when server incorrect
+			} else if (wallet.didFailToBoot_flag == true) { // possible when server incorrect
 				descriptionLayer_innerHTML = "Login error"
 			} else if (wallet.HasEverFetched_accountInfo() === false) {
 				descriptionLayer_innerHTML = "Loading…"
