@@ -30,7 +30,7 @@
 //
 const worker_ipc = require('../Concurrency/ipc.worker')
 //
-const response_parser_utils = require('./response_parser_utils')
+const response_parser_utils = require('../monero_utils/mymonero_response_parser_utils')
 //
 // Declaring tasks:
 //
