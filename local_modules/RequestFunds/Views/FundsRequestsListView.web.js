@@ -260,7 +260,7 @@ class FundsRequestsListView extends ListView
 				}
 				layer.style.borderRadius = "5px"
 				layer.style.overflow = "hidden" // to cut off hover style at borders
-				layer.style.display = "block"
+				layer.style.clipPath = "inset(0 0 0 0 round 5px)" // cause chrome to properly mask children on hover
 			}
 		}
 	}
