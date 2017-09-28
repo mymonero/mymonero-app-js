@@ -33,7 +33,7 @@ const EventEmitter = require('events')
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const fundsRequest_persistence_utils = require('./fundsRequest_persistence_utils')
 //
-const monero_requestURI_utils = require('../../monero_utils/monero_requestURI_utils')
+const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
 const QRCode = require('qrcode')
 //
 class FundsRequest extends EventEmitter

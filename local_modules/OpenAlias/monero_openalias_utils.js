@@ -28,8 +28,8 @@
 //
 "use strict"
 //
-const monero_config = require('../monero_utils/monero_config')
-const monero_utils = require('../monero_utils/monero_cryptonote_utils_instance')
+const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
+const monero_utils = require('../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const openalias_utils = require('./openalias_utils')
 //
 const currency_openAliasPrefix = monero_config.openAliasPrefix

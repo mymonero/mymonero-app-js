@@ -29,8 +29,8 @@
 "use strict"
 //
 const ContactFormView = require('./ContactFormView.web')
-const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
-const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_utils')
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 //
 class AddContactView extends ContactFormView

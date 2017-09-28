@@ -2,7 +2,7 @@
 
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
-const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
+const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 //
 //
 const documentCryptScheme =

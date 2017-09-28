@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const monero_config = require('../../monero_utils/monero_config')
+const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
 //
 const View = require('../../Views/View.web')
 //

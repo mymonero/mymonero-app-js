@@ -134,7 +134,11 @@ For customer support, you can also [contact](https://mymonero.com/support) us di
 
 3. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
 
-4. Install all dependencies by executing `npm install`.
+4. **NEW** Be sure to set up and download all required Git submodules with `bin/setup_submodules`. 
+
+	* NOTE: If you ever need to pull the latest updates to the submodules, you can run `bin/update_submodules`.
+
+5. Install all dependencies by executing `npm install`.
 
 #### On Debian/Ubuntu/Linux
 

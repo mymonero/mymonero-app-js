@@ -33,12 +33,13 @@ const EventEmitter = require('events')
 const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
 //
-const monero_wallet_utils = require('../../monero_utils/monero_wallet_utils')
-const monero_txParsing_utils = require('../../monero_utils/monero_txParsing_utils')
-const monero_sendingFunds_utils = require('../../monero_utils/monero_sendingFunds_utils')
-const monero_wallet_locale = require('../../monero_utils/monero_wallet_locale')
-const JSBigInt = require('../../cryptonote_utils/biginteger').BigInteger
-const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
+const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
+const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/monero_txParsing_utils')
+const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
+const monero_wallet_locale = require('../../mymonero_core_js/monero_utils/monero_wallet_locale')
+const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 //
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const wallet_persistence_utils = require('./wallet_persistence_utils')
@@ -1099,6 +1100,7 @@ class Wallet extends EventEmitter
 			self.private_keys,
 			self.public_keys,
 			self.context.hostedMoneroAPIClient,
+			monero_openalias_utils,
 			mixin,
 			payment_id,
 			__trampolineFor_success,

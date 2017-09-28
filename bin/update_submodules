@@ -1,0 +1,2 @@
+echo "💬   Pulling latest in each submodule…";
+git submodule foreach git pull;

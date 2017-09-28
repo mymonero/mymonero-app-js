@@ -30,9 +30,9 @@
 //
 const async = require('async')
 //
-const JSBigInt = require('../cryptonote_utils/biginteger').BigInteger // important: grab defined export
-const monero_config = require('../monero_utils/monero_config')
-const monero_keyImage_cache_utils = require('../monero_utils/monero_keyImage_cache_utils')
+const JSBigInt = require('../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
+const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
+const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
 //
 const config__MyMonero = require('./config__MyMonero')
 //

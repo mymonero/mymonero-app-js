@@ -32,8 +32,8 @@ const AddContactFromOtherTabView = require('../../Contacts/Views/AddContactFromO
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 //
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
-const monero_paymentID_utils = require('../../monero_utils/monero_paymentID_utils')
-const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
+const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 //
 class AddContactFromSendTabView extends AddContactFromOtherTabView
 {

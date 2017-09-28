@@ -35,7 +35,7 @@ const Emojis = require('../../Emoji/emoji_set').Emojis
 const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const contact_persistence_utils = require('./contact_persistence_utils')
 //
-const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 //
 class Contact extends EventEmitter
 {

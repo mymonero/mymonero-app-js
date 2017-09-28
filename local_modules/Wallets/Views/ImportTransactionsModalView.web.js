@@ -36,7 +36,7 @@ const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltip
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
-const monero_utils = require('../../monero_utils/monero_cryptonote_utils_instance')
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 //
 class ImportTransactionsModalView extends View
 {
