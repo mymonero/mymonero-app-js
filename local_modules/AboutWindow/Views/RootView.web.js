@@ -108,7 +108,7 @@ class RootView extends View
 			layer.style.color = "#8D8B8D"
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.style.cursor = "pointer"
-			layer.innerHTML = "View on Github"
+			layer.innerHTML = "View on GitHub"
 			layer.href = "https://www.github.com/mymonero/mymonero-app"
 			layer.addEventListener("mouseenter", function(e) 
 			{
