@@ -217,6 +217,9 @@ class WalletsListView extends ListView
 		if (!self.listController.records || !self.listController.records.length) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return "MyMonero"
 		}
+		if (self.context.isLiteApp) {
+			return "MyMonero"
+		}
 		return "My Monero Wallets"
 	}
 	Navigation_New_RightBarButtonView()
