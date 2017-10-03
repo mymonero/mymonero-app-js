@@ -52,7 +52,8 @@ window.BootApp = function()
 		}
 	}	
 	//
-	const isMobile = true // for now… TODO: detect mobile browser
+	var isTouchDevice = ('ontouchstart' in document.documentElement);
+	const isMobile = isTouchDevice // an approximation for 'mobile'
 	//
 	const setup_utils = require('../../MMAppRendererSetup/renderer_setup.browser')
 	setup_utils({
@@ -72,10 +73,12 @@ window.BootApp = function()
 		crossPlatform_appBundledModuleRelativeAssetsRootPath: "../..", // b/c font is relative to the JS from which it's running, apparently
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 		TabBarView_thickness: 48,
-		TabBarView_isHorizontalBar: true,
+		TabBarView_isHorizontalBar: isMobile,
 		ThemeController_isMobileBrowser: isMobile == true,
 		Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
-		Emoji_renderWithNativeEmoji: false, // b/c this is a browser, not a mobile platform
+		Emoji_renderWithNativeEmoji: isMobile == false, // b/c this is a browser, we could be on desktop, i.e. w/o guaranteed native emoji support
+		// TODO: detect if Mac … if so, render w/o native emoji
+		//
 		appDownloadLink_domainAndPath: "mymonero.com",
 		Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
 		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false,
