@@ -159,7 +159,11 @@ class DocumentPersister extends DocumentPersister_Interface
 	__removeAllDocuments(collectionName, fn)
 	{
 		const self = this
+		const numberOfDocuments = Object.keys(self.store[collectionName] || {}).length
 		self.store[collectionName] = {}
+		setTimeout(function() {
+			fn(null, numberOfDocuments)
+		})
 	}
 }
 module.exports = DocumentPersister

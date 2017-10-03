@@ -41,8 +41,9 @@ class WindowDialogs extends WindowDialogs_Abstract
 	PresentQuestionAlertDialogWith(
 		title,
 		message,
-		buttons,
-		fn // (err?, selectedButtonIdx?) -> Void
+		okButtonTitle,
+		cancelButtonTitle,
+		fn // (err?, didChooseYes?) -> Void
 	)
 	{
 		const self = this
@@ -51,10 +52,11 @@ class WindowDialogs extends WindowDialogs_Abstract
 			function(buttonNumber) // not index, because it's 1-based
 			{
 				const buttonIndex = buttonNumber - 1
-				fn(null, buttonIndex)
+				const didChooseYes = buttonIndex === 0
+				fn(null, didChooseYes)
 			},
 			title,
-			buttons
+			[ okButtonTitle, cancelButtonTitle ]
 		)
 	}
 }

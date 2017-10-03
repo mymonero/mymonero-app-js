@@ -45,8 +45,9 @@ class WindowDialogs_Abstract
 	PresentQuestionAlertDialogWith(
 		title,
 		message,
-		buttons,
-		fn // (err?, selectedButtonIdx?) -> Void
+		okButtonTitle,
+		cancelButtonTitle,
+		fn // (err?, didChooseYes?) -> Void
 	)
 	{
 		const self = this

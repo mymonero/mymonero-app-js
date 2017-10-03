@@ -62,6 +62,7 @@ window.BootApp = function()
 	})
 	//
 	// context
+	var isHorizontalBar = isMobile
 	const context = require('./index_context.browser').NewHydratedContext({
 		app: app,
 		isDebug: isDebug,
@@ -72,8 +73,8 @@ window.BootApp = function()
 		crossPlatform_appBundledIndexRelativeAssetsRootPath: ".",
 		crossPlatform_appBundledModuleRelativeAssetsRootPath: "../..", // b/c font is relative to the JS from which it's running, apparently
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this (thanks to Cordova port) but it works
-		TabBarView_thickness: 48,
-		TabBarView_isHorizontalBar: isMobile,
+		TabBarView_thickness: isHorizontalBar ? 48 : 79,
+		TabBarView_isHorizontalBar: isHorizontalBar,
 		ThemeController_isMobileBrowser: isMobile == true,
 		Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
 		Emoji_renderWithNativeEmoji: isMobile == false, // b/c this is a browser, we could be on desktop, i.e. w/o guaranteed native emoji support

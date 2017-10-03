@@ -41,15 +41,14 @@ class WindowDialogs extends WindowDialogs_Abstract
 	PresentQuestionAlertDialogWith(
 		title,
 		message,
-		buttons,
-		fn // (err?, selectedButtonIdx?) -> Void
+		okButtonTitle,
+		cancelButtonTitle,
+		fn // (err?, didChooseYes?) -> Void
 	)
 	{
 		const self = this
 		const trueIfUserClickedOK_notCancel = confirm(message) // add: title, buttons
-		throw "trueIfUserClickedOK_notCancel must be translated into selectedButtonIdx - which means this API is too limited – use a modal UI library for this?" 
-		// var buttonIndex = 0; // TODO
-		// fn(null, buttonIndex)
+		fn(null, trueIfUserClickedOK_notCancel)
 	}
 }
 module.exports = WindowDialogs

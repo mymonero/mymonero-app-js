@@ -147,13 +147,13 @@ class ForgotPasswordView extends View
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
 					'Delete everything?', 
 					msg,
-					[ 'Delete Everything', 'Cancel' ],
-					function(err, selectedButtonIdx)
+					'Delete Everything', 
+					'Cancel',
+					function(err, didChooseYes)
 					{
 						if (err) {
 							throw err
 						}
-						const didChooseYes = selectedButtonIdx === 0
 						if (didChooseYes) {
 							self.context.passwordController.InitiateDeleteEverything(function(err) {})
 						}

@@ -98,13 +98,13 @@ class EditContactFromContactsTabView extends ContactFormView
 					self.context.windowDialogs.PresentQuestionAlertDialogWith(
 						'Delete this contact?', 
 						'Delete this contact?\n\nThis cannot be undone.',
-						[ 'Delete', 'Cancel' ],
-						function(err, selectedButtonIdx)
+						'Delete', 
+						'Cancel',
+						function(err, didChooseYes)
 						{
 							if (err) {
 								throw err
 							}
-							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {
 								__proceedTo_deleteRecord()
 							}
