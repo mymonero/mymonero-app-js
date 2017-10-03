@@ -217,7 +217,7 @@ class WalletsListView extends ListView
 		if (!self.listController.records || !self.listController.records.length) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return "MyMonero"
 		}
-		if (self.context.isLiteApp) {
+		if (self.context.isLiteApp == true) {
 			return "MyMonero"
 		}
 		return "My Monero Wallets"
@@ -225,7 +225,7 @@ class WalletsListView extends ListView
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
-		if (self.context.isLiteApp) {
+		if (self.context.isLiteApp == true) {
 			return null
 		}
 		if (self.listController.records.length === 0) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot

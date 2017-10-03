@@ -120,6 +120,7 @@ class CustomSelectView extends View
 		}
 		{
 			const layer = document.createElement("div")
+			self.disclosureArrowLayer = layer
 			layer.style.border = "none"
 			layer.style.position = "absolute"
 			const w = 10
@@ -143,21 +144,26 @@ class CustomSelectView extends View
 		//
 		self.startObserving_interactions()
 	}
+	overridable_wantsSelectionDisplayCellView_clickable()
+	{
+		return true // obviously - in the majority of cases
+	}
 	startObserving_interactions()
 	{
 		const self = this
-		//
-		self.selectionDisplayCellView.layer.addEventListener(
-			"click", 
-			function(e) 
-			{
-				e.preventDefault() // not that there would be one
-				if (self.isEnabled !== false) {
-					self.show__options_containerView()
+		if (self.overridable_wantsSelectionDisplayCellView_clickable() != false) {
+			self.selectionDisplayCellView.layer.addEventListener(
+				"click", 
+				function(e) 
+				{
+					e.preventDefault() // not that there would be one
+					if (self.isEnabled !== false) {
+						self.show__options_containerView()
+					}
+					return false
 				}
-				return false
-			}
-		)
+			)
+		}
 		// dismiss if not clicked on selectionDisplayCellView
 		self._window_click_fn = function(e)
 		{	// Now we must check if we can trigger a 'hide' of the options container layer.
