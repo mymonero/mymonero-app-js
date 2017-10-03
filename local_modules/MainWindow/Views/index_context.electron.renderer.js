@@ -107,7 +107,7 @@ var context_object_instantiation_descriptions =
 	},
 	// The following should go after the passwordController, persister, etc
 	{
-		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",
+		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController.Full",
 		instance_key: "walletsListController",
 		options: {}
 	},

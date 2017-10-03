@@ -113,7 +113,7 @@ function NewHydratedContext(initialContext)
 		},
 		// The following should go after the passwordController, persister, etc
 		{
-			module: require("../../WalletsList/Controllers/WalletsListController"),
+			module: require("../../WalletsList/Controllers/WalletsListController.Lite"),
 			instance_key: "walletsListController",
 			options: {}
 		},

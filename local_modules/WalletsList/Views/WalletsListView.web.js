@@ -222,6 +222,9 @@ class WalletsListView extends ListView
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
+		if (self.context.isLiteApp) {
+			return null
+		}
 		if (self.listController.records.length === 0) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return null
 		}
