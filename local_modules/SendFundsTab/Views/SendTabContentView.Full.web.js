@@ -28,20 +28,17 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const SendTabContentView_Base = require('./SendTabContentView_Base.web')
 //
-module.exports = function(params)
+class SendTabContentView extends SendTabContentView_Base
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	_required_rootViewClassModule()
+	{
+		return require('./SendFundsView.Full.web')
+	}
 }
+module.exports = SendTabContentView

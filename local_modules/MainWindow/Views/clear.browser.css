@@ -1,0 +1,20 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+body {
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
+    -webkit-user-select: none;
+
+    background-color: #272527;
+}
+html,
+body {
+    overflow: hidden;
+}
+input, 
+textarea {
+	/*-webkit-overflow-scrolling: touch;*/
+	-webkit-appearance: none;
+}

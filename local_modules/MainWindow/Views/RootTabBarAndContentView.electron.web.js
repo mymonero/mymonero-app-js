@@ -28,9 +28,9 @@
 //
 "use strict"
 //
-const RootTabBarAndContentView_Base = require('./RootTabBarAndContentView_Base.web')
+const RootTabBarAndContentView_Full = require('./RootTabBarAndContentView.Full.web')
 //
-class RootTabBarAndContentView extends RootTabBarAndContentView_Base
+class RootTabBarAndContentView extends RootTabBarAndContentView_Full
 {
 	constructor(options, context)
 	{

@@ -28,20 +28,28 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const WindowDialogs_Abstract = require('./WindowDialogs_Abstract')
 //
-module.exports = function(params)
+class WindowDialogs extends WindowDialogs_Abstract
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	//
+	// Runtime - Imperatives - Dialogs
+	PresentQuestionAlertDialogWith(
+		title,
+		message,
+		buttons,
+		fn // (err?, selectedButtonIdx?) -> Void
+	)
+	{
+		const self = this
+		const trueIfUserClickedOK_notCancel = confirm(message) // add: title, buttons
+		throw "trueIfUserClickedOK_notCancel must be translated into selectedButtonIdx - which means this API is too limited – use a modal UI library for this?" 
+		// var buttonIndex = 0; // TODO
+		// fn(null, buttonIndex)
+	}
 }
+module.exports = WindowDialogs

@@ -146,7 +146,8 @@ function NewHydratedContext(
 		urlOpeningController: urlOpeningController,
 		userDataAbsoluteFilepath: app.getPath('userData'),
 		isDebug: process.env.NODE_ENV === 'development',
-		crossPlatform_appBundledAssetsRootPath: "../..",
+		crossPlatform_appBundledIndexRelativeAssetsRootPath: "../..",
+		crossPlatform_appBundledModuleRelativeAssetsRootPath: "../..",
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 		TabBarView_thickness: 79,
 		TabBarView_isHorizontalBar: false,

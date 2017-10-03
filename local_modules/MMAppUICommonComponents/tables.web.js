@@ -35,7 +35,7 @@ const NamespaceName = "Tables"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath
 	const cssRules =
 	[
 		`.table_field {
@@ -520,16 +520,29 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	const padding_btm = isTruncatedPreviewForm ? 12 : 19
 	div.style.padding = `15px 0 ${padding_btm}px 0`
 	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
-	var copy_buttonLayer = New_copyButton_aLayer(
-		context,
-		value,
-		isValueNil === false ? true : false,
-		pasteboard
-	)
+	const canSupportCopyButton = context.isRunningInBrowser !== true
+	if (canSupportCopyButton == false) {
+		if (context.isLiteApp !== true) {
+			throw "Expected this to be lite app when unable to support copy button"
+		}
+	}
+	var copy_buttonLayer;
+	if (canSupportCopyButton) {
+		copy_buttonLayer = New_copyButton_aLayer(
+			context,
+			value,
+			isValueNil === false ? true : false,
+			pasteboard
+		)
+	}
 	var valueLayer = New_fieldValue_labelLayer("" + valueToDisplay, context)
+	if (canSupportCopyButton == false) {
+		valueLayer.style.userSelect = "all" // must allow copying, cause we're not displaying the COPY button 
+		valueLayer.style.webkitUserSelect = "all" 
+	}
 	if (isTruncatedPreviewForm == false) {
 		div.appendChild(labelLayer)
-		{
+		if (canSupportCopyButton) {
 			copy_buttonLayer.style.float = "right"
 			div.appendChild(copy_buttonLayer)
 		}
@@ -542,7 +555,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			valueLayer.style.float = "left"
 			valueLayer.style.textAlign = "left"
 			valueLayer.style.marginTop = "9px"
-			valueLayer.style.maxWidth = "270px"
+			valueLayer.style.maxWidth = canSupportCopyButton ? "270px" : "300px"
 			div.appendChild(valueLayer)
 		}
 	} else {
@@ -551,7 +564,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			div.appendChild(labelLayer)
 		}
 		{
-			valueLayer.style.maxWidth = "44%"
+			valueLayer.style.maxWidth = canSupportCopyButton ? "44%" : "50%"
 			valueLayer.style.float = "left"
 			valueLayer.style.whiteSpace = "nowrap"
 			valueLayer.style.overflow = "hidden"
@@ -559,7 +572,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 			valueLayer.style.marginLeft = "16px"
 			div.appendChild(valueLayer)
 		}
-		{
+		if (canSupportCopyButton) {
 			div.appendChild(copy_buttonLayer)
 		}
 	}
@@ -569,7 +582,9 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 		const to_value_isNil = to_value === null || typeof to_value === 'undefined' || to_value === ""
 		const to_valueToDisplay = !to_value_isNil ? ""+to_value : valueToDisplayIfValueNil_orDefault
 		valueLayer.innerHTML = to_valueToDisplay
-		copy_buttonLayer.Component_SetValue(to_value)
+		if (canSupportCopyButton) {
+			copy_buttonLayer.Component_SetValue(to_value)
+		}
 	}
 	div.Component_GetLabelLayer = function() { return labelLayer } // kinda gross… TODO: make this into a View component
 	div.Component_SetWordBreakMode = function(wordBreakMode)
@@ -586,7 +601,7 @@ function New_tableCell_accessoryChevronLayer(context)
 	//
 	const image_filename = "list_rightside_chevron@3x.png"
 	const layer = document.createElement("img")
-	layer.src = context.crossPlatform_appBundledAssetsRootPath+"/MMAppUICommonComponents/Resources/" + image_filename
+	layer.src = context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"/MMAppUICommonComponents/Resources/" + image_filename
 	layer.style.position = "absolute"
 	layer.style.width = "7px"
 	const h = 12

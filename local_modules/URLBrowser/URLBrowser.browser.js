@@ -28,20 +28,18 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const URLBrowser_Abstract = require('./URLBrowser_Abstract')
 //
-module.exports = function(params)
+class URLBrowser extends URLBrowser_Abstract
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	OpenURLInSystemBrowser(urlString)
+	{
+		const self = this
+		window.open(urlString, '_blank') // _system..?
+	}
 }
+module.exports = URLBrowser

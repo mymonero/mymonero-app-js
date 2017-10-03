@@ -28,20 +28,24 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const Locale_Abstract = require('./Locale_Abstract')
 //
-module.exports = function(params)
+class Locale extends Locale_Abstract
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	Locale(fn)
+	{
+		const self = this
+		var language;
+		if (window.navigator.languages) {
+			language = window.navigator.languages[0]
+		} else {
+			language = window.navigator.userLanguage || window.navigator.language
+		}
+		fn(null, language) // TODO: is language really locale name?
+	}
 }
+module.exports = Locale

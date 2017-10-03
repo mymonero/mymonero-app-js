@@ -38,9 +38,11 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^\.gitignore$/,
 	/\.electron\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
 	/^electron_/,
-	/^tests$/i,
+	/\.cordova\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
+	/^cordova_/,
 	/LICENSE\.txt/,
 	/README\.md/,
+	/^tests$/i,
 	/\.child\./, // slightly ambiguous but we don't want these as, in cordova, everything runs in WebCore
 	//
 	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us
@@ -48,7 +50,7 @@ const doNotCopyOrEnterFilepathsMatching =
 const numberOf_doNotCopyOrEnterFilepathsMatching = doNotCopyOrEnterFilepathsMatching.length
 //
 const pathTo_localModules = path.join(__dirname, "..", "local_modules")
-const pathTo_assembled_www = path.join(__dirname, "..", "www")
+const pathTo_assembled_www = path.join(__dirname, "..", "browser_build")
 //
 // (in case www doesn't exist…)
 if (fs.existsSync(pathTo_assembled_www) == false) {
@@ -153,7 +155,7 @@ function enumerateAndRecursivelyCopyDirContents(parentDir_prefix, isRootOf_local
 				fs.rmdirSync(filepathIn_www)
 			}
 		} else {
-			if (filepathPrefix === "MainWindow/Views/index.cordova.html") {
+			if (filepathPrefix === "MainWindow/Views/index.browser.html") {
 				filepathPrefix = "index.html" // this is a special case - put it at the root of www
 				filepathIn_www = path.join(pathTo_assembled_www, filepathPrefix)
 			}

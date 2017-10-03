@@ -34,14 +34,6 @@ module.exports = function(params)
 {
 	params = params || {}
 	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
-	}
 	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	renderer_setup_utils.IdentifyRuntime("IsBrowserRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
 }

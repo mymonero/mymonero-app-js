@@ -28,20 +28,18 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const RootTabBarAndContentView_Lite = require('./RootTabBarAndContentView.Lite.web')
 //
-module.exports = function(params)
+class RootTabBarAndContentView extends RootTabBarAndContentView_Lite
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	_setup_startObserving()
+	{
+		const self = this
+		super._setup_startObserving()
+	}
 }
+module.exports = RootTabBarAndContentView

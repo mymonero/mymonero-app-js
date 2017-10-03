@@ -28,20 +28,29 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const SendFundsView_Base = require('./SendFundsView_Base.web')
+const commonComponents_contactPicker_Lite = require('../../MMAppUICommonComponents/contactPicker.Lite.web')
 //
-module.exports = function(params)
+class SendFundsView extends SendFundsView_Base
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	//
+	// Overrides - Required
+	_new_required_contactPickerLayer()
+	{
+		const self = this
+		const layer = commonComponents_contactPicker_Lite.New_contactPickerLayer_Lite(
+			self.context,
+			"Email, domain, or Monero address",
+			function(event)
+			{ // didFinishTypingInInput_fn
+				self._didFinishTypingInContactPickerInput(event)
+			}
+		)
+		return layer
+	}
 }
+module.exports = SendFundsView

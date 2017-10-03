@@ -28,20 +28,54 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const path = require('path')
 //
-module.exports = function(params)
+module.exports = 
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	devtool: "inline-source-map", // "source-map"
+	context: __dirname,
+	entry: "./local_modules/MainWindow/Views/index.browser.js",
+	output: {
+		path: path.resolve(__dirname, "browser_build"),
+		filename: "mymonero-app-bundle.js"
+	},
+	cache: false,
+	resolve: {
+		alias: {
+			"fs": "html5-fs"
+		}
+	},
+	externals: {
+	},
+	module: {
+		loaders: [
+			{ 
+				test: /\.(otf|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+				loader: 'file-loader'
+			},
+			{
+				test: /\.json$/,
+				loader: 'json-loader'
+			},
+			{
+				test: /\.css$/,
+				loader: 'style!css!postcss'
+			},
+			{
+				test: /\.styl$/,
+				loader: 'style!css!postcss!stylus?paths=node_modules'
+			},
+			{
+				test: /\.js$/,
+				loader: 'babel-loader',
+				options: {
+					cacheDirectory: false,
+					// presets: ["es2015"],
+					// plugins: ["transform-runtime"]
+				},
+				exclude: path.join(__dirname, 'node_modules')
+			},
+
+		]
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
 }

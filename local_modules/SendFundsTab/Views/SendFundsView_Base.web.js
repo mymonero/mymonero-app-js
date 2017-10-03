@@ -36,7 +36,6 @@ const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltip
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
-const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
@@ -115,10 +114,12 @@ class SendFundsView extends View
 			}
 			self.actionButtonsContainerView = view
 			{
-				if (self.context.Cordova_isMobile === true) { // til we have Electron support
+				if (self.context.Cordova_isMobile === true /* but not context.isMobile */) { // til we have Electron support
 					self._setup_actionButton_useCamera()
 				}
-				self._setup_actionButton_chooseFile()
+				if (self.context.isLiteApp != true) {
+					self._setup_actionButton_chooseFile()
+				}
 			}
 			self.addSubview(view)
 		}
@@ -262,6 +263,10 @@ class SendFundsView extends View
 		td.appendChild(div)
 		tr.appendChild(td)
 	}
+	_new_required_contactPickerLayer()
+	{
+		throw "You must override and implement this method. Return value does not have to be an actual contactPicker but must support the same interface"
+	}
 	_setup_form_contactOrAddressPickerLayer()
 	{ // Request funds from sender
 		const self = this
@@ -277,33 +282,7 @@ class SendFundsView extends View
 		}
 		div.appendChild(labelLayer)
 		//
-		const layer = commonComponents_contactPicker.New_contactPickerLayer(
-			self.context,
-			"Contact name, or address/domain",
-			self.context.contactsListController,
-			function(contact)
-			{ // did pick
-				self._didPickContact(contact)
-			},
-			function(clearedContact)
-			{
-				self.cancelAny_requestHandle_for_oaResolution()
-				//
-				self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
-				self._hideResolvedPaymentID()
-				self._hideResolvedAddress()
-				//
-				self.addPaymentIDButtonView.layer.style.display = "block" // can re-show this
-				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
-				self.manualPaymentIDInputLayer.value = ""
-				//
-				self.pickedContact = null
-			},
-			function(event)
-			{ // didFinishTypingInInput_fn
-				self._didFinishTypingInContactPickerInput(event)
-			}
-		)
+		const layer = self._new_required_contactPickerLayer()
 		layer.ContactPicker_inputLayer.autocorrect = "off"
 		layer.ContactPicker_inputLayer.autocomplete = "off"
 		layer.ContactPicker_inputLayer.autocapitalize = "none"
@@ -420,7 +399,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
 			false,
 			function(layer, e)
 			{
@@ -439,7 +418,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
 			true,
 			function(layer, e)
 			{
@@ -496,7 +475,7 @@ class SendFundsView extends View
 			div.style.width = "100%" // cause centering in css is……
 			div.style.height = side+"px"
 			div.style.backgroundSize = side+"px " + side+"px"
-			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/qrDropzoneIcon@3x.png)"
+			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"/SendFundsTab/Resources/qrDropzoneIcon@3x.png)"
 			div.style.backgroundPosition = "center"
 			div.style.backgroundRepeat = "no-repeat"
 			div.style.backgroundSize = "48px 48px"
@@ -592,26 +571,6 @@ class SendFundsView extends View
 			emitter.on(
 				emitter.EventName_didTrigger_sendFundsFromWallet(), // observe 'did' so we're guaranteed to already be on right tab
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet
-			)
-		}
-		{ // urlOpeningController
-			const controller = self.context.urlOpeningController
-			controller.on(
-				controller.EventName_ReceivedURLToOpen_FundsRequest(),
-				function(url)
-				{
-					self.DismissModalViewsToView( // dismissing these b/c of checks in __shared_isAllowedToPerformDropOrURLOpeningOps
-						null, // null -> to top stack view
-						false // not animated
-					)
-					self.PopToRootView(false) // in case they're not on root
-					//
-					if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() != true) {
-						console.warn("Not allowed to perform URL opening ops yet.")
-						return false
-					}
-					self._shared_didPickRequestURIStringForAutofill(url)
-				}
 			)
 		}
 	}

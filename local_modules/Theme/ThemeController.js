@@ -35,20 +35,20 @@ const NamespaceName = "ThemeController"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const moduleRelative_assetsPath = context.crossPlatform_appBundledModuleRelativeAssetsRootPath
 	const cssRules =
 	[
 		`@font-face {
 			font-family: Native-Regular;
-			src: url("${assetsPath}/Theme/Resources/Native-Regular.otf") format("opentype");
+			src: url("${moduleRelative_assetsPath}/Theme/Resources/Native-Regular.otf") format("opentype");
 		}`,
 		`@font-face {
 			font-family: Native-Light;
-			src: url("${assetsPath}/Theme/Resources/Native-Light.otf") format("opentype");
+			src: url("${moduleRelative_assetsPath}/Theme/Resources/Native-Light.otf") format("opentype");
 		}`,
 		`@font-face {
 			font-family: Native-Bold;
-			src: url("${assetsPath}/Theme/Resources/Native-Bold.otf") format("opentype");
+			src: url("${moduleRelative_assetsPath}/Theme/Resources/Native-Bold.otf") format("opentype");
 		}`,
 	]
 	return cssRules

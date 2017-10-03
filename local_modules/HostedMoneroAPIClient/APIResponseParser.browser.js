@@ -28,20 +28,84 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const response_parser_utils = require('../mymonero_core_js/monero_utils/mymonero_response_parser_utils')
 //
-module.exports = function(params)
+class APIResponseParser
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	setup_worker()
+	{ // must be implemented
+		const self = this
+	}
+	//
+	// Runtime - Imperatives - Public
+	Parsed_AddressInfo(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
+	{
+		const self = this
+		response_parser_utils.Parsed_AddressInfo(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			function(err, returnValuesByKey)
+			{
+				fn(err, returnValuesByKey)
+			}
+		)
+	}
+	Parsed_AddressTransactions(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
+	{
+		const self = this
+		response_parser_utils.Parsed_AddressTransactions(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			function(err, returnValuesByKey)
+			{
+				fn(err, returnValuesByKey)
+			}
+		)
+	}
+	Parsed_UnspentOuts(
+		data, 
+		address,
+		view_key__private,
+		spend_key__public,
+		spend_key__private,
+		fn
+	)
+	{
+		const self = this
+		response_parser_utils.Parsed_UnspentOuts(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			function(err, returnValuesByKey)
+			{
+				fn(err, returnValuesByKey)
+			}
+		)
+	}
 }
+module.exports = APIResponseParser

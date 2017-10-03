@@ -1,0 +1,1 @@
+node_modules/.bin/webpack --config webpack.browser.config.js --display-modules

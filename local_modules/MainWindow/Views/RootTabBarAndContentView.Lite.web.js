@@ -1,3 +1,4 @@
+
 // Copyright (c) 2014-2017, MyMonero.com
 //
 // All rights reserved.
@@ -28,20 +29,42 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const RootTabBarAndContentView_Base = require('./RootTabBarAndContentView_Base.web')
 //
-module.exports = function(params)
+class RootTabBarAndContentView_Lite extends RootTabBarAndContentView_Base
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	_setup_addTabBarContentViews()
+	{
+		const self = this
+		const context = self.context
+		{ // walletsListView
+			const options = {}
+			const WalletsTabContentView = require('../../WalletsList/Views/WalletsTabContentView.web')
+			const view = new WalletsTabContentView(options, context)
+			self.walletsTabContentView = view
+		}
+		{ // sendTabContentView
+			const options = {}
+			const SendTabContentView = require('../../SendFundsTab/Views/SendTabContentView.Lite.web')
+			const view = new SendTabContentView(options, context)
+			self.sendTabContentView = view
+		}
+		{ // SettingsView
+			const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
+			const view = new SettingsTabContentView({}, context)
+			self.settingsTabContentView = view
+		}
+		self.SetTabBarContentViews(
+			[
+				self.walletsTabContentView,
+				self.sendTabContentView,
+				self.settingsTabContentView
+			]
+		)
+	}
 }
+module.exports = RootTabBarAndContentView_Lite

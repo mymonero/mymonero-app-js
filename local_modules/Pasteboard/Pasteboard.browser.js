@@ -28,20 +28,42 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+const PasteboardInterface = require('./PasteboardInterface')
 //
-module.exports = function(params)
+class Pasteboard extends PasteboardInterface
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
+		super(options, context)
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	//
+	IsHTMLCopyingSupported()
+	{
+		return false
+	}
+	//
+	CopyString(string, contentType_orText)
+	{
+		const self = this
+		const contentTypes = self.CopyContentTypes()
+		var contentType;
+		if (typeof contentType_orText === 'undefined' || !contentType_orText) {
+			contentType = contentTypes.Text
+		} else {
+			contentType = contentType_orText
+		}
+		console.warn("Not yet supported")
+		throw "TODO"
+	}
+	CopyValuesByType(valuesByType)
+	{
+		const self = this
+		const types = Object.keys(valuesByType)
+		for (let i in types) {
+			const type = types[i]
+			const value = valuesByType[type]
+			self.CopyString(value, type)
+		}
+	}
 }
+module.exports = Pasteboard

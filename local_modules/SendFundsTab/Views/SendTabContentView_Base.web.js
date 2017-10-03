@@ -30,7 +30,7 @@
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
-class SendTabContentView extends StackAndModalNavigationView
+class SendTabContentView_Base extends StackAndModalNavigationView
 {
 	constructor(options, context)
 	{
@@ -42,7 +42,7 @@ class SendTabContentView extends StackAndModalNavigationView
 		const self = this
 		{ // walletsListView
 			const options = {}
-			const SendFundsView = require('./SendFundsView.web')
+			const SendFundsView = self._required_rootViewClassModule()
 			const view = new SendFundsView(options, self.context)
 			self.sendFundsView = view
 		}
@@ -53,6 +53,10 @@ class SendTabContentView extends StackAndModalNavigationView
 				]
 			)
 		}
+	}
+	_required_rootViewClassModule()
+	{
+		throw "You must override and implement SendTabContentView_Base/_required_rootViewClassModule"
 	}
 	//
 	//
@@ -67,7 +71,7 @@ class SendTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/icon_tabBar_sendFunds@3x.png)",
+			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"/SendFundsTab/Resources/icon_tabBar_sendFunds@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 25px"
@@ -77,7 +81,7 @@ class SendTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/icon_tabBar_sendFunds__active@3x.png)",
+			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"/SendFundsTab/Resources/icon_tabBar_sendFunds__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 25px"
@@ -132,4 +136,4 @@ class SendTabContentView extends StackAndModalNavigationView
 		self.sendFundsView._proxied_ondrop(e)
 	}
 }
-module.exports = SendTabContentView
+module.exports = SendTabContentView_Base

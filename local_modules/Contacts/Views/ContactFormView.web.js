@@ -74,7 +74,7 @@ class ContactFormView extends View
 		// layer.style.webkitOverflowScrolling = "touch"
 		layer.style.overflowX = "hidden" // cause the Emoji picker likes to protrude
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		if (self.context.Cordova_isMobile === true) {
+		if (self.context.Cordova_isMobile === true || self.context.isMobile === true) {
 			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
 		}
 		//

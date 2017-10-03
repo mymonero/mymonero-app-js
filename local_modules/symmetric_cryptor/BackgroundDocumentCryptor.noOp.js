@@ -28,20 +28,39 @@
 //
 "use strict"
 //
-const renderer_setup_utils = require('./renderer_setup_utils')
+// The only reason this class exists is because I don't want to complicate the app code with checks
+// for whether encryption should be enabled.
 //
-module.exports = function(params)
+class BackgroundDocumentCryptor
 {
-	params = params || {}
-	//
-	if (process.env.NODE_ENV !== 'development') {
-		// renderer_setup_utils.StartExceptionReporting(
-		// 	require("../reporting/exceptionReporterOptions.cordova"),
-		// 	params.appVersion, 
-		// 	params.reporting_processName
-		// )
-		renderer_setup_utils.StartAlertingExceptions()
+	constructor(options, context)
+	{
 	}
-	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	//
+	// Runtime - Accessors - Interface
+	New_EncryptedDocument__Async(
+		plaintextDocument, 
+		documentCryptScheme, 
+		password, 
+		fn // fn: (err?, encryptedDocument) -> Void
+	)
+	{
+		const self = this
+		setTimeout(function() {
+			fn(null, plaintextDocument)
+		})
+	}
+	New_DecryptedDocument__Async(
+		encryptedDocument,
+		documentCryptScheme,
+		password,
+		fn // fn: (err?, decryptedDocument) -> Void
+	)
+	{
+		const self = this
+		setTimeout(function() {
+			fn(null, encryptedDocument)
+		})
+	}
 }
+module.exports = BackgroundDocumentCryptor
