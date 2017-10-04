@@ -86,10 +86,19 @@ function New_contactPickerLayer_Lite(
 			"keyup",
 			function(event)
 			{
-				const wasEscapeKey = event.keyCode == 27
+				const code = event.code
+				const wasEscapeKey = code == "Escape" || event.keyCode == 27 /* should we use keyCode? */
 				if (wasEscapeKey) { // toggle search results visibility
+					// TODO: clear input? esp if esc hit twice?
 					return // think it's ok to just return here and not mess with the typingDebounceTimeout
 				}
+				const wasOnlyModifierKey = code.indexOf("Meta") != -1 || code.indexOf("Alt") != -1 || code.indexOf("Control") != -1
+				if (wasOnlyModifierKey) {
+					console.log("Input was only modifier key. Ignoring.")
+					return
+				}
+				//
+				// timeout-clearing key pressed
 				if (typingDebounceTimeout !== null) {
 					clearTimeout(typingDebounceTimeout)
 				}
@@ -101,7 +110,7 @@ function New_contactPickerLayer_Lite(
 					if (didFinishTypingInInput_fn) {
 						didFinishTypingInInput_fn(event)
 					}
-				}, 250)
+				}, 500)
 			}
 		)
 	}

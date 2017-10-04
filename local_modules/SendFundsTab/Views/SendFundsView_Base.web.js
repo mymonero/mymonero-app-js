@@ -824,7 +824,9 @@ class SendFundsView extends View
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Disable()
 			}
-			self.chooseFile_buttonView.Disable()
+			if (self.chooseFile_buttonView) {
+				self.chooseFile_buttonView.Disable()
+			}
 			// 
 			self.amountInputLayer.disabled = true
 			self.manualPaymentIDInputLayer.disabled = true
@@ -851,7 +853,9 @@ class SendFundsView extends View
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Enable()
 			}
-			self.chooseFile_buttonView.Enable()
+			if (self.chooseFile_buttonView) {
+				self.chooseFile_buttonView.Enable()
+			}
 		}
 		function _trampolineToReturnWithValidationErrorString(errStr)
 		{ // call this anytime you want to exit this method before complete success (or otherwise also call _reEnableFormElements)
