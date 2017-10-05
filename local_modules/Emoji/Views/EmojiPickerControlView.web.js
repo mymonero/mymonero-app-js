@@ -41,7 +41,7 @@ const NamespaceName = "EmojiPickerControlView"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath
+	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath + (context.ThemeController_rootPathSuffixPrefixingPathToFontFiles || "")
 	const useMobRendOpts = context.Views_selectivelyEnableMobileRenderingOptimizations === true
 	const cssRules =
 	[
@@ -64,7 +64,7 @@ function cssRules_generatorFn(context)
 			line-height: 31px;
 			font-size: 13px;
 			
-			background-image: url(${assetsPath}/Emoji/Resources/popoverDisclosureArrow@3x.png);
+			background-image: url(${assetsPath}Emoji/Resources/popoverDisclosureArrow@3x.png);
 			background-size: 8px 7px;
 			background-position: 42px 13px;
 			background-repeat: no-repeat;

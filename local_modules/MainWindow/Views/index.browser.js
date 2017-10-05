@@ -70,8 +70,8 @@ window.BootApp = function()
 		isRunningInBrowser: true, // categorically
 		isMobile: isMobile,
 		Cordova_isMobile: false, // just to be clear
-		crossPlatform_appBundledIndexRelativeAssetsRootPath: ".",
-		crossPlatform_appBundledModuleRelativeAssetsRootPath: "../..", // b/c font is relative to the JS from which it's running, apparently
+		crossPlatform_appBundledIndexRelativeAssetsRootPath: "",
+		crossPlatform_indexContextRelativeAssetsRootPathSuffix: "../../", // b/c index_context is in MainWindow/Views; must end up /
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 		TabBarView_thickness: isHorizontalBar ? 48 : 79,
 		TabBarView_isHorizontalBar: isHorizontalBar,

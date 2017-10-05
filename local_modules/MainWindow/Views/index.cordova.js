@@ -64,7 +64,7 @@ window.BootApp = function()
 		cached_metadata.userDataAbsoluteFilepath = "Debug"
 		cached_metadata.app_version = "0.0.1"
 		cached_metadata.app_name = "MyMonero"
-		cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath = "../.." // cause can't access via browser at abs path for some reason
+		cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath = "../../" // browser access; must have trailing /
 		//
 		// patch straight to
 		_proceedTo_createContextAndRootView()
@@ -94,7 +94,7 @@ window.BootApp = function()
 	{ // cordova-specific - need to request various info - and they're mostly async, which sucks
 		// synchronous fetches:
 		cached_metadata.userDataAbsoluteFilepath = cordova.file.dataDirectory//applicationStorageDirectory
-		cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath = cordova.file.applicationDirectory + "www"
+		cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath = cordova.file.applicationDirectory + "www/" // must have trailing /
 		// asynchronous fetches:
 		cordova.getAppVersion.getVersionNumber(function(versionNumber)
 		{
@@ -124,7 +124,6 @@ window.BootApp = function()
 				Cordova_isMobile: isMobile,
 				isMobile: isMobile,
 				crossPlatform_appBundledIndexRelativeAssetsRootPath: cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath, // in this case, an absolute path.
-				crossPlatform_appBundledModuleRelativeAssetsRootPath: cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath, // going to assume the same thing but this should be verified to work (check fonts)
 				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 				TabBarView_thickness: 48,
 				TabBarView_isHorizontalBar: true,
