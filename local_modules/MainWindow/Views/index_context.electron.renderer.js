@@ -31,7 +31,7 @@
 const APIResponseParser = require('../../HostedMoneroAPIClient/BackgroundAPIResponseParser.electron')
 const instantiation_description__hostedMoneroAPIClient =
 { // this one is broken out so we can configure options with `app` object once we have it
-	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
+	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient.Full",
 	instance_key: "hostedMoneroAPIClient",
 	options: {
 		responseParser: new APIResponseParser({}),

@@ -75,7 +75,7 @@ function NewHydratedContext(initialContext)
 			}
 		},
 		{
-			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient"),
+			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient.Lite"),
 			instance_key: "hostedMoneroAPIClient",
 			options: {
 				appUserAgent_product: app.getName(),

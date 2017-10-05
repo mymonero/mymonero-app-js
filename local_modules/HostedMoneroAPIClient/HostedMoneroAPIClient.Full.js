@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2017, MyMonero.com
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //	conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //	of conditions and the following disclaimer in the documentation and/or other
 //	materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //	used to endorse or promote products derived from this software without specific
 //	prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -28,23 +28,31 @@
 
 "use strict"
 //
-// Hydrate context
-var context_object_instantiation_descriptions = 
-[ 
-	{
-		module_path: __dirname + "/../HostedMoneroAPIClient.Full",
-		instance_key: "hostedMoneroAPIClient",
-		options: {
-			request_conformant_module: require('request')
-		}
-	}
-]
-function NewHydratedContext() 
+const HostedMoneroAPIClient_Base = require('./HostedMoneroAPIClient_Base')
+//
+class HostedMoneroAPIClient extends HostedMoneroAPIClient_Base
 {
-	var initialContext = 
+	//
+	// Lifecycle - Init
+	constructor(options, context)
 	{
+		super(options, context)
 	}
-
-	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+	//
+	// Runtime - Accessors - Private - Requests - Overrides
+	_new_apiAddress_authority() // authority means [subdomain.]host.…[:…]
+	{
+		const self = this
+		const settingsController = self.context.settingsController
+		if (settingsController.hasBooted != true) {
+			throw "Expected SettingsController to have been booted"
+		}
+		const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority || ""
+		if (specificAPIAddressURLAuthority != "") {
+			return specificAPIAddressURLAuthority
+		}
+		// fall back to mymonero server
+		return super._new_apiAddress_authority()
+	}
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports = HostedMoneroAPIClient
