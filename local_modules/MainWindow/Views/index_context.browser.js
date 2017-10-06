@@ -97,7 +97,7 @@ function NewHydratedContext(initialContext)
 		//
 		// app controllers
 		{
-			module: require("../../Passwords/Controllers/PasswordController"),
+			module: require("../../Passwords/Controllers/PasswordController.Lite"),
 			instance_key: "passwordController",
 			options: {}
 		},

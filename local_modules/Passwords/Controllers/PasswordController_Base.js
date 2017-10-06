@@ -49,7 +49,7 @@ const _humanReadable_AvailableUserSelectableTypesOfPassword =
 //
 // Controller
 //
-class PasswordController extends EventEmitter
+class PasswordController_Base extends EventEmitter
 {
 
 
@@ -928,11 +928,11 @@ class PasswordController extends EventEmitter
 		fn
 	)
 	{
+		const self = this
+		//
 		const isForADeleteEverything = optl_isForADeleteEverything === true ? true : false
 		hasFiredWill_fn = hasFiredWill_fn || function(cb) { cb() }
 		fn = fn || function(err) {}
-		//
-		const self = this
 		// TODO:? do we need to cancel any waiting functions here? not sure it would be possible to have any (unless code fault)…… we'd only deconstruct the booted state and pop the enter pw screen here if we had already booted before - which means there theoretically shouldn't be such waiting functions - so maybe assert that here - which requires hanging onto those functions somehow
 		{ // indicate to consumers they should tear down and await the "did" event to re-request
 			const params =
@@ -983,4 +983,4 @@ class PasswordController extends EventEmitter
 		self._startObserving_userIdleInWindowController()
 	}
 }
-module.exports = PasswordController
+module.exports = PasswordController_Base

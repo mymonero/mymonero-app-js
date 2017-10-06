@@ -91,7 +91,7 @@ var context_object_instantiation_descriptions =
 	//
 	// app controllers
 	{
-		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
+		module_path: __dirname + "/../../Passwords/Controllers/PasswordController.Full",
 		instance_key: "passwordController",
 		options: {}
 	},

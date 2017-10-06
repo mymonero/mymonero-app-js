@@ -92,7 +92,9 @@ class SettingsView extends View
 			if (self.context.Settings_shouldDisplayAboutAppButton === true) {
 				self._setup_aboutAppButton()
 			}
-			self._setup_form_field_changePasswordButton()
+			if (self.context.isLiteApp != true) {
+				self._setup_form_field_changePasswordButton()
+			}
 			self._setup_form_field_appTimeoutSlider()
 			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
 			if (self.context.isLiteApp != true) {
@@ -428,19 +430,41 @@ class SettingsView extends View
 			}
 		}
 		const passwordController = self.context.passwordController
-		{ // config change pw btn text
-			const layer = self.changePasswordButtonView.layer
-			const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
-			const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
-			if (typeof passwordType_humanReadableString !== 'undefined') {
-				const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
-				layer.innerHTML = "Change " + capitalized_passwordType
-				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before your " + passwordType_humanReadableString + " is required again"
+		{ // config change pw btn text, app timeout slider, …
+			if (self.context.isLiteApp == true) {
+				if (self.changePasswordButtonView) {
+					throw "Did not expect self.changePasswordButtonView"
+				}
+				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before automatic log-out"
+			} else {
+				if (!self.changePasswordButtonView) {
+					throw "Expected self.changePasswordButtonView"
+				}
+				const layer = self.changePasswordButtonView.layer
+				const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
+				const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
+				if (typeof passwordType_humanReadableString !== 'undefined') {
+					const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
+					layer.innerHTML = "Change " + capitalized_passwordType
+					self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before your " + passwordType_humanReadableString + " is required again"
+				}
 			}
 		}
-		{
+		if (self.context.isLiteApp) {
+			if (self.changePasswordButtonView) {
+				throw "Did not expect self.changePasswordButtonView"
+			}
+			if (self.serverURLInputLayer) {
+				throw "Did not expect self.serverURLInputLayer"
+			}
+			const walletsExist = self.context.walletsListController.records.length > 0
+			self.appTimeoutRangeInputView.SetEnabled(true)
+			self.deleteEverything_buttonView.SetEnabled(walletsExist) // cause this is actually the 'log out' btn
+		} else {
 			if (passwordController.hasUserSavedAPassword !== true) {
-				self.changePasswordButtonView.SetEnabled(false) // can't change til entered
+				if (self.changePasswordButtonView) {
+					self.changePasswordButtonView.SetEnabled(false) // can't change til entered
+				}
 				if (self.serverURLInputLayer) {
 					self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				}
@@ -448,14 +472,18 @@ class SettingsView extends View
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
-				self.changePasswordButtonView.SetEnabled(false)
+				if (self.changePasswordButtonView) {
+					self.changePasswordButtonView.SetEnabled(false)
+				}
 				if (self.serverURLInputLayer) {
 					self.serverURLInputLayer.disabled = true
 				}
 				self.appTimeoutRangeInputView.SetEnabled(false)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else { // has entered PW - unlock
-				self.changePasswordButtonView.SetEnabled(true)
+				if (self.changePasswordButtonView) {
+					self.changePasswordButtonView.SetEnabled(true)
+				}
 				if (self.serverURLInputLayer) {
 					self.serverURLInputLayer.disabled = false
 				}

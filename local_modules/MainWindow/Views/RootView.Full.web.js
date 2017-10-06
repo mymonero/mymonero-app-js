@@ -28,36 +28,13 @@
 //
 "use strict"
 //
-const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
-setup_utils({
-	reporting_processName: "MainWindow"
-})
+const RootView_Base = require('./RootView_Base.web')
 //
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
-const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
-	remote__app,
-	remote__context.menuController, // for UI and app runtime access
-	remote__context.urlOpeningController
-)
-{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
-	const emoji_web = require('../../Emoji/emoji_web')
-	emoji_web.PreLoadAndSetUpEmojiOne(renderer_context)
+class RootView extends RootView_Base
+{
+	constructor(options, context)
+	{
+		super(options, context)
+	}
 }
-const options = {}
-const rootView = new RootView(options, renderer_context)
-rootView.superview = null // just to be explicit; however we will set a .superlayer
-{ // now manually attach the rootView to the DOM and specify view's usual managed reference(s)
-	const superlayer = document.body
-	rootView.superlayer = superlayer
-	superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
-}
-//
-// setup the context menu
-require('electron-context-menu')({
-	shouldShowMenu: (event, params) => params.isEditable,
-	showInspectElement: false
-});
+module.exports = RootView

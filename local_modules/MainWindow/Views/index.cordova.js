@@ -184,7 +184,7 @@ window.BootApp = function()
 			}, false)
 		}
 		{ // root view
-			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
+			const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
 			rootView = new RootView({}, context) // hang onto reference
 			rootView.superview = null // just to be explicit; however we will set a .superlayer
 			// manually attach the rootView to the DOM and specify view's usual managed reference(s)
