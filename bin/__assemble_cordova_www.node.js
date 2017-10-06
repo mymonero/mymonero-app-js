@@ -32,6 +32,7 @@ const packageAssembly_utils = require('./shared/packageAssembly_utils.node')
 //
 const doNotCopyOrEnterFilepathsMatching =
 [
+	/^favicon(.*)\.(png|ico)$/,
 	/^\.DS_Store$/,
 	/^\.git$/,
 	/^\.gitignore$/,
