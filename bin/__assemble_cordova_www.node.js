@@ -28,8 +28,7 @@
 //
 "use strict"
 //
-const fs = require('fs')
-const path = require('path')
+const packageAssembly_utils = require('./shared/packageAssembly_utils.node')
 //
 const doNotCopyOrEnterFilepathsMatching =
 [
@@ -41,131 +40,16 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^tests$/i,
 	/LICENSE\.txt/,
 	/README\.md/,
+	/\.Lite\./, // no need for it - this is full
 	/\.child\./, // slightly ambiguous but we don't want these as, in cordova, everything runs in WebCore
 	//
 	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us
 ]
-const numberOf_doNotCopyOrEnterFilepathsMatching = doNotCopyOrEnterFilepathsMatching.length
+const relativePathTo_assembledWWWDirectory = "www"
+const indexHTMLFileToPutAtRoot_filepathPrefixInWWW = "MainWindow/Views/index.cordova.html"
 //
-const pathTo_localModules = path.join(__dirname, "..", "local_modules")
-const pathTo_assembled_www = path.join(__dirname, "..", "www")
-//
-// (in case www doesn't exist…)
-if (fs.existsSync(pathTo_assembled_www) == false) {
-	// console.log(`📁  Creating ${pathTo_assembled_www}`)
-	fs.mkdirSync(pathTo_assembled_www)
-}
-//
-// I.
-deleteAll_assembled_www_contents_exceptGitIgnore()
-//
-// II. 
-enumerateAndRecursivelyCopyDirContents("", true)
-//
-// III.
-// bundleAndPackageJS() // NOTE: this is now handled on the command line in bin/_assemble_cordova_www
-//
-// implementations
-function deleteAll_assembled_www_contents_exceptGitIgnore()
-{
-	rmDirContents_recursively(
-		pathTo_assembled_www,
-		true, // is root lvl, so watch for .gitignore etc
-		false // do not delete the www dir itself
-	)
-}
-function rmDirContents_recursively(path, isRootLvl, alsoDeleteDir)
-{
-	if (!fs.existsSync(path)) {
-		throw `${path} does not exist`
-	}
-	const filenames = fs.readdirSync(path)
-	filenames.forEach(
-		function(file, index)
-		{
-			if (isRootLvl) {
-				if (file === ".gitignore") {
-					// console.log(`❎  Skipping deletion of ${file}`)
-					return
-				}
-			}
-			var filepath = `${path}/${file}`
-			if (fs.lstatSync(filepath).isDirectory()) { // recursely delete contents
-				// console.log(`📂  Entering ${file}`)
-				rmDirContents_recursively(
-					filepath, 
-					false,
-					true // no longer root-lvl so remove dir too
-				)
-				return
-			}
-			// otherwise, simply delete file
-			// console.log(`🗑  Deleting ${file}`)
-			fs.unlinkSync(filepath)
-		}
-	)
-	// have to wait until all contents are deleted before removing the directory
-	if (alsoDeleteDir) {
-		fs.rmdirSync(path)
-	}
-}
-//
-function enumerateAndRecursivelyCopyDirContents(parentDir_prefix, isRootOf_localModules)
-{
-	const parentDir = path.join(pathTo_localModules, parentDir_prefix)
-	const filenames = fs.readdirSync(parentDir)
-	const numberOf_filenames = filenames.length
-	for (let i = 0 ; i < numberOf_filenames ; i++) {
-		const filename = filenames[i]
-		var shouldSkipThisFilename = false
-		for (let j = 0 ; j < numberOf_doNotCopyOrEnterFilepathsMatching ; j++) {
-			const regex = doNotCopyOrEnterFilepathsMatching[j]
-			if (regex.test(filename) == true) {
-				shouldSkipThisFilename = true
-				break // no need to keep searching if should skip
-			}
-		}
-		if (shouldSkipThisFilename) {
-			// console.log(`❎  Skipping copy of ${filename}`)
-			continue // skip this one
-		}
-		const filepath = path.join(parentDir, filename)
-		const isSubdirAtPath = fs.lstatSync(filepath).isDirectory() // we're assuming the file at path actually exists by here
-		var filepathPrefix = path.join(parentDir_prefix, filename)
-		var filepathIn_www = path.join(pathTo_assembled_www, filepathPrefix)
-		if (isSubdirAtPath) {
-			// first re-create this dir in pathTo_assembled_www/…
-			if (fs.existsSync(filepathIn_www) == false) {
-				// console.log(`📁  Creating ${filepathPrefix}`)
-				fs.mkdirSync(filepathIn_www)
-			}
-			// now traverse downwards…
-			// console.log(`📂  Entering ${filepathPrefix}`)
-			enumerateAndRecursivelyCopyDirContents(
-				filepathPrefix, // the new parentDir_prefix for recursion
-				false
-			)
-			// console.log(`📂  Exiting ${filepathPrefix}`)
-			// finally, after going through the source contents, if no destination contents exist, delete this destination contents container directory
-			const filenamesIn_subdir = fs.readdirSync(filepathIn_www)
-			if (filenamesIn_subdir.length == 0) {
-				// console.log(`🗑  Since empty, actually removing ${filepathPrefix}`)
-				fs.rmdirSync(filepathIn_www)
-			}
-		} else {
-			if (filepathPrefix === "MainWindow/Views/index.cordova.html") {
-				filepathPrefix = "index.html" // this is a special case - put it at the root of www
-				filepathIn_www = path.join(pathTo_assembled_www, filepathPrefix)
-			}
-			console.log(`⤵️  Copying file to ${filepathPrefix}`)
-			copyFile(filepath, filepathIn_www)
-		}
-	}
-}
-function copyFile(fromPath, toPath)
-{
-	fs.writeFileSync(
-		toPath,
-		fs.readFileSync(fromPath)
-	)
-}
+packageAssembly_utils.assembleWith(
+	doNotCopyOrEnterFilepathsMatching,
+	relativePathTo_assembledWWWDirectory,
+	indexHTMLFileToPutAtRoot_filepathPrefixInWWW
+)

@@ -34,7 +34,8 @@
       "!www",
       "!cordova_res",
       "!bin",
-      "!**/*.cordova.*"
+      "!**/*.cordova.*",
+      "!**/*.Lite.*"
     ],
     "mac": {
       "category": "public.app-category.finance",
