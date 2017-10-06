@@ -1426,7 +1426,7 @@ class SendFundsView extends View
 	//
 	// Runtime - Delegation - Request URI string picking - Parsing / consuming / yielding
 	//	
-	_shared_didPickQRCodeAtPath(absoluteFilePath)
+	_shared_didPickQRCodeWithImageSrcValue(imageSrcValue)
 	{
 		const self = this
 		if (self.isFormDisabled === true) {
@@ -1464,7 +1464,6 @@ class SendFundsView extends View
 					return
 				}
 				const decodeResults = jsQR.decodeQR(rawQR)
-				console.log("decodeResults" , decodeResults)
 				// console.log("imageData.data", imageData.data)
 				// const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
 				// console.log("imageData.width", imageData.width)
@@ -1483,7 +1482,12 @@ class SendFundsView extends View
 				self._shared_didPickRequestURIStringForAutofill(requestURIString)
 			}
 		)
-		img.src = absoluteFilePath
+		img.src = imageSrcValue
+	}
+	_shared_didPickQRCodeAtPath(absoluteFilePath)
+	{
+		const self = this
+		self._shared_didPickQRCodeWithImageSrcValue(absoluteFilePath) // we can load the image directly like this
 	}
 	_shared_didPickRequestURIStringForAutofill(requestURIString)
 	{
@@ -1509,9 +1513,9 @@ class SendFundsView extends View
 				self.amountInputLayer.value = amount
 			}
 		}
-		{
-			const target_address = requestPayload.address
-			const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null
+		const target_address = requestPayload.address
+		const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null
+		if (typeof self.context.contactsListController != 'undefined' && self.context.contactsListController != null && self.context.contactsListController.records) {
 			if (target_address !== null && typeof target_address !== 'undefined' && target_address !== "") {
 				var foundContact = null
 				const contacts = self.context.contactsListController.records
@@ -1569,18 +1573,19 @@ class SendFundsView extends View
 					self.contactOrAddressPickerLayer.ContactPicker_pickContact(foundContact)
 					// but we're not going to show the PID stored on the contact!
 				} else { // we have an addr but no contact
-					{
-						if (self.pickedContact && typeof self.pickedContact !== 'undefined') { // unset
-							self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
-								true // true, do not focus input
-							)
-							self.pickedContact = null // jic
-						}
-						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
+					if (self.pickedContact && typeof self.pickedContact !== 'undefined') { // unset
+						self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+							true // true, do not focus input
+						)
+						self.pickedContact = null // jic
 					}
+					self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
 				}
 			}
-			// and no matter what , display payment id, if present
+		} else {
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
+		}
+		{ // and no matter what , display payment id, if present
 			if (payment_id_orNull !== null) { // but display it as a 'detected' pid
 				self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
@@ -1684,29 +1689,20 @@ class SendFundsView extends View
 	{
 		const self = this
 		if (self.__shared_isAllowedToPerformDropOrURLOpeningOps()) {
-			setTimeout(
-				function()
-				{
-					self.qrCodeInputs_containerView.Show()
-				},
-				10
-			)
+			self.qrCodeInputs_containerView.Show()
 		}
 	}
 	_proxied_ondragleave()
 	{
 		const self = this
-		setTimeout(
-			function()
-			{
-				self.qrCodeInputs_containerView.Hide()
-			},
-			10
-		)
+		self.qrCodeInputs_containerView.Hide()
 	}
 	_proxied_ondrop(e)
 	{
 		const self = this
+		//
+		self.qrCodeInputs_containerView.Hide()
+		//
 		if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() == false) {
 			// would be nice to NSBeep() here
 			return
@@ -1717,24 +1713,44 @@ class SendFundsView extends View
 			return
 		}
 		const file = files[0]
-		const absoluteFilePath = file.path // outside of timeout
-		if (absoluteFilePath == null || absoluteFilePath == "" || typeof absoluteFilePath === 'undefined') {
-			console.warn("No filepath in dropped. Bailing.")
-			return
-		}
-		setTimeout(
-			function()
+		const absoluteFilePath = file.path
+		const file_size = file.size
+		if (absoluteFilePath != null && absoluteFilePath != "" && typeof absoluteFilePath !== 'undefined') {
+			self._shared_didPickQRCodeAtPath(absoluteFilePath)
+		} else if (file_size) { // going to assume we're in a browser
+			if (self.context.isLiteApp != true) {
+				throw "Expected this to be Lite app aka browser"
+			}
+			if (!/^image\//.test(file.type)) {
+				self.validationMessageLayer.SetValidationError("Please select a QR code image file.")
+				return
+			}
+			var img = document.createElement("img")
+			img.file = file
+			img.style.display = "none"
+			document.body.appendChild(img)
 			{
-				self.qrCodeInputs_containerView.Hide()
-				//
-				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
-					self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
-					return // nothing picked / canceled
-				}
-				self._shared_didPickQRCodeAtPath(absoluteFilePath)
-			},
-			10
-		)
+				var reader = new FileReader()
+				reader.onload = (function(anImg)
+				{ 
+					const fn = function(e)
+					{ 
+						const loadedBase64Content = e.target.result
+						if (loadedBase64Content.indexOf("data:image/") != 0) {
+							self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
+							return
+						}
+						self._shared_didPickQRCodeWithImageSrcValue(loadedBase64Content)
+					}
+					return fn
+				})(img)
+				reader.readAsDataURL(file)
+			}
+			document.body.removeChild(img)
+		} else {
+			self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
+			return // nothing picked / canceled
+		}
 	}
 	//
 	//
