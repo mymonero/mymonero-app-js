@@ -55,7 +55,10 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const generatedOnInit_walletDescription = walletInstance.generatedOnInit_walletDescription
 		const mnemonicString = generatedOnInit_walletDescription.mnemonicString
 		self.mnemonicString = mnemonicString
-		const correctlyOrdered_mnemonicString_words = self.mnemonicString.split(" ")
+		const correctlyOrdered_mnemonicString_words = self.mnemonicString.split(" ").slice(
+			0, 
+			commonComponents_walletMnemonicBox.numberOfMnemonicWordsRequiredForVerification
+		) // NOTE: we are limiting the required-entered words to 7
 		self.numberOf_mnemonicString_words = correctlyOrdered_mnemonicString_words.length // cached
 		{
 			const text = "Verify your mnemonic"
@@ -66,7 +69,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			self.layer.appendChild(layer)
 		}
 		{
-			const text = "Choose each word in the correct&nbsp;order."
+			const text = "Choose the first 7 words in the correct&nbsp;order."
 			const layer = self._new_messages_paragraphLayer(text)
 			layer.style.marginBottom = "39px" // not 40 to leave 1px for clear border
 			layer.style.textAlign = "center"
@@ -274,9 +277,15 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	_hasUserEnteredCorrectlyOrderedMnemonic()
 	{
 		const self = this
+		const correctSufficient_mnemonicWords = self.mnemonicString.split(" ").slice(
+			0, 
+			commonComponents_walletMnemonicBox.numberOfMnemonicWordsRequiredForVerification
+		)
+		const correctSufficient_mnemonicString = correctSufficient_mnemonicWords.join(" ").toLowerCase()
+		//
 		const selected_mnemonicWords = self.mnemonicConfirmation_selectedWordsView.Component_SelectedWords()
 		const selected_mnemonicString = selected_mnemonicWords.join(" ").toLowerCase()
-		if (selected_mnemonicString === self.mnemonicString) {
+		if (selected_mnemonicString === correctSufficient_mnemonicString) {
 			return true
 		}
 		return false

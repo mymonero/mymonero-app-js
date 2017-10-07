@@ -95,6 +95,9 @@ function __injectCSSRules_ifNecessary(context)
 	)
 }
 //
+const numberOfMnemonicWordsRequiredForVerification = 7
+exports.numberOfMnemonicWordsRequiredForVerification = numberOfMnemonicWordsRequiredForVerification
+//
 function New_MnemonicTextDisplayView(mnemonicString, context)
 {
 	__injectCSSRules_ifNecessary(context)
@@ -136,7 +139,8 @@ function New_MnemonicConfirmation_SelectedWordsView(mnemonicString, context, did
 		layer.style.width = `calc(100% - ${2*16}px - ${2 * 1}px - ${2*24}px)`
 		layer.style.textAlign = "center"
 	}
-	const mnemonicWords = mnemonicString.split(" ")
+	// const all_mnemonicWords = mnemonicString.split(" ")
+	// const necessary_mnemonicWords = all_mnemonicWords.slice(0, 6)
 	const ordered_selectedWordUUIDs = []
 	view.Component_SelectedWords = function()
 	{ // this is a little circuitous but seems the price for soloing the uuid-word mapping in the selectableWordsView
@@ -276,10 +280,12 @@ function New_MnemonicConfirmation_SelectableWordsView(
 		layer.style.textAlign = "center"
 		layer.style.marginTop = "10px"
 	}
-	const alphabetized_mnemonicWords = mnemonicString.split(" ").sort()
+	const mnemonicWords = mnemonicString.split(" ")
+	const alphabetized_necessary_mnemonicWords = mnemonicWords.slice(0, numberOfMnemonicWordsRequiredForVerification).sort()
+
 	const wordsByWordUUID = {} // because words are not unique in a mnemonic
 	const wordViews_byWordUUID = {}
-	alphabetized_mnemonicWords.forEach(
+	alphabetized_necessary_mnemonicWords.forEach(
 		function(word, i)
 		{
 			const wordUUID = _new_UUID()
