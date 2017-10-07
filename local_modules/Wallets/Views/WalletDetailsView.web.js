@@ -81,7 +81,9 @@ class WalletDetailsView extends View
 		self._setup_self_layer()
 		self._setup_balanceLabelView()
 		self._setup_account_InfoDisclosingView()
-		self._setup_sendReceive_actionButtons()
+		if (self.context.isLiteApp !== true) {
+			self._setup_sendReceive_actionButtons()
+		}
 		self._setup_layers_transactionsListLayerContainerLayer()
 	}
 	_setup_self_layer()
@@ -290,7 +292,7 @@ class WalletDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Receive At", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/Contacts/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Wallets/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
 			// TODO?: borrowing another module's asset. sort of bad
 			false,
 			function(layer, e)
@@ -309,7 +311,7 @@ class WalletDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Send From", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/Contacts/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Wallets/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
@@ -827,7 +829,7 @@ class WalletDetailsView extends View
 				self.catchingUpProgressAndActivityIndicatorView = view
 				//
 				const scanningHeadlineLabelText = 
-					self.context.Cordova_isMobile === true 
+					self.context.Cordova_isMobile === true || self.context.isMobile == true
 					? "SCANNING…"  // just a quick solution for now
 					: "SCANNING BLOCKCHAIN…"
 				const activityIndicatorLayer = commonComponents_activityIndicators.New_GraphicAndLabel_ActivityIndicatorLayer(

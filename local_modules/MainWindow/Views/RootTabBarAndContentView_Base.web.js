@@ -79,44 +79,7 @@ class RootTabBarAndContentView extends TabBarAndContentView
 			}
 		}
 		{ // add tab bar content views
-			{ // walletsListView
-				const options = {}
-				const WalletsTabContentView = require('../../WalletsList/Views/WalletsTabContentView.web')
-				const view = new WalletsTabContentView(options, context)
-				self.walletsTabContentView = view
-			}
-			{ // sendTabContentView
-				const options = {}
-				const SendTabContentView = require('../../SendFundsTab/Views/SendTabContentView.web')
-				const view = new SendTabContentView(options, context)
-				self.sendTabContentView = view
-			}
-			{ // requestTabContentView
-				const options = {}
-				const RequestTabContentView = require('../../RequestFunds/Views/RequestTabContentView.web')
-				const view = new RequestTabContentView(options, context)
-				self.requestTabContentView = view
-			}
-			{ // contactsListView
-				const options = {}
-				const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
-				const view = new ContactsTabContentView(options, context)
-				self.contactsTabContentView = view
-			}
-			{ // SettingsView
-				const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
-				const view = new SettingsTabContentView({}, context)
-				self.settingsTabContentView = view
-			}
-			self.SetTabBarContentViews(
-				[
-					self.walletsTabContentView,
-					self.sendTabContentView,
-					self.requestTabContentView,
-					self.contactsTabContentView,
-					self.settingsTabContentView
-				]
-			)
+			self._setup_addTabBarContentViews()
 		}
 		function __passwordController_didBoot()
 		{
@@ -130,19 +93,14 @@ class RootTabBarAndContentView extends TabBarAndContentView
 			passwordController._executeWhenBooted(__passwordController_didBoot)
 		}
 	}
+	_setup_addTabBarContentViews()
+	{ // this is the typical case but you can override and re-implement this method
+		const self = this
+		throw "Override and implement this method"
+	}
 	_setup_startObserving()
 	{
 		const self = this
-		{ // menuController
-			const emitter = self.context.menuController
-			emitter.on( // on the main process -- so this will be synchronous IPC
-				emitter.EventName_menuItemSelected_Preferences(),
-				function()
-				{
-					self.selectTab_settings()
-				}
-			)
-		}
 		{ // passwordController
 			const emitter = self.context.passwordController
 			emitter.on(
@@ -199,28 +157,6 @@ class RootTabBarAndContentView extends TabBarAndContentView
 				emitter.EventName_willTrigger_sendFundsFromWallet(),
 				function()
 				{
-					self.selectTab_sendFunds()
-				}
-			)
-		}
-		{ // urlOpeningController
-			const controller = self.context.urlOpeningController
-			controller.on(
-				controller.EventName_ReceivedURLToOpen_FundsRequest(),
-				function(url)
-				{
-					if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
-						console.log("User hasn't entered valid pw yet")
-						return false
-					}
-					if (self.context.passwordController.IsUserChangingPassword() === true) {
-						console.log("User is changing pw.")
-						return false
-					}
-					if (!self.context.walletsListController.records || self.context.walletsListController.records.length == 0) {
-						console.log("No wallets.")
-						return false
-					}
 					self.selectTab_sendFunds()
 				}
 			)
@@ -326,7 +262,7 @@ class RootTabBarAndContentView extends TabBarAndContentView
 	}
 	//
 	//
-	// Runtime - Imperatives - Tab selection
+	// Runtime - Imperatives - Tab selection - Just going to assume only the methods which should get called will
 	//
 	_selectTab_withContentView(tabBarContentView)
 	{

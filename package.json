@@ -34,7 +34,10 @@
       "!www",
       "!cordova_res",
       "!bin",
-      "!**/*.cordova.*"
+      "!**/*.cordova.*",
+      "!**/*.Lite.*",
+      "!**/favicon*.png",
+      "!**/favicon*.ico"
     ],
     "mac": {
       "category": "public.app-category.finance",
@@ -87,9 +90,9 @@
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
+    "babel-minify": "^0.2.0",
     "electron": "^1.6.5",
     "electron-builder": "^16.0.1",
-    "babel-preset-es2015": "^6.24.1",
     "electron-packager": "^8.1.0",
     "eslint": "^3.19.0",
     "mocha": "^3.2.0",
@@ -97,6 +100,7 @@
     "sharp": "^0.17.3",
     "spectron": "^3.6.1",
     "webpack": "^2.3.3",
+    "webpack-merge": "^4.1.0",
     "worker-loader": "^0.8.0"
   }
 }

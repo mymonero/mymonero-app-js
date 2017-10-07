@@ -43,5 +43,5 @@ module.exports = function(params)
 		renderer_setup_utils.StartAlertingExceptions()
 	}
 	renderer_setup_utils.HardenRuntime()
-	renderer_setup_utils.IdentifyRuntime("IsCordovaElectronRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
+	renderer_setup_utils.IdentifyRuntime("IsCordovaRendererProcess") // set key-value to `true` on `window` -- not really using this under Cordova
 }

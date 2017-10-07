@@ -92,10 +92,14 @@ class SettingsView extends View
 			if (self.context.Settings_shouldDisplayAboutAppButton === true) {
 				self._setup_aboutAppButton()
 			}
-			self._setup_form_field_changePasswordButton()
+			if (self.context.isLiteApp != true) {
+				self._setup_form_field_changePasswordButton()
+			}
 			self._setup_form_field_appTimeoutSlider()
 			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
-			self._setup_form_field_serverURL()
+			if (self.context.isLiteApp != true) {
+				self._setup_form_field_serverURL()
+			}
 			self._setup_deleteEverythingButton()
 		}
 		self.layer.appendChild(containerLayer)
@@ -279,7 +283,8 @@ class SettingsView extends View
 		const self = this
 		const div = document.createElement("div")
 		div.style.paddingTop = "23px"
-		const view = commonComponents_tables.New_redTextButtonView("DELETE EVERYTHING…", self.context)
+		const titleText = self.context.isLiteApp ? "LOG OUT" : "DELETE EVERYTHING…"
+		const view = commonComponents_tables.New_redTextButtonView(titleText, self.context)
 		self.deleteEverything_buttonView = view
 		const layer = view.layer
 		layer.addEventListener(
@@ -290,17 +295,22 @@ class SettingsView extends View
 				if (self.deleteEverything_buttonView.isEnabled !== true) {
 					return false
 				}
-				var msg = 'Are you sure you want to delete all of your local data?\n\nAny wallets will remain permanently on the Monero blockchain but local data such as contacts will not be recoverable.'
+				var msg;
+				if (self.context.isLiteApp != true) { 
+					msg = 'Are you sure you want to delete all of your local data?\n\nAny wallets will remain permanently on the Monero blockchain but local data such as contacts will not be recoverable.'
+				} else {
+					msg = 'Are you sure you want to log out and clear all session data?'
+				}
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
-					'Delete everything?', 
+					self.context.isLiteApp != true ? 'Delete everything?' : 'Log out?', 
 					msg,
-					[ 'Delete Everything', 'Cancel' ],
-					function(err, selectedButtonIdx)
+					self.context.isLiteApp != true ? 'Delete Everything' : 'Log Out', 
+					'Cancel',
+					function(err, didChooseYes)
 					{
 						if (err) {
 							throw err
 						}
-						const didChooseYes = selectedButtonIdx === 0
 						if (didChooseYes) {
 							self.context.passwordController.InitiateDeleteEverything(
 								function(err)
@@ -363,6 +373,9 @@ class SettingsView extends View
 	_updateValidationErrorForAddressInputView(fn_orNil)
 	{
 		const self = this
+		if (self.serverURLInputLayer == null || typeof self.serverURLInputLayer == 'undefined') {
+			return // not included
+		}
 		//
 		const fn = fn_orNil || function(didError, savableValue) {}
 		const value = (self.serverURLInputLayer.value || "").replace(/^\s+|\s+$/g, '') // whitespace-stripped
@@ -417,37 +430,71 @@ class SettingsView extends View
 			}
 		}
 		const passwordController = self.context.passwordController
-		{ // config change pw btn text
-			const layer = self.changePasswordButtonView.layer
-			const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
-			const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
-			if (typeof passwordType_humanReadableString !== 'undefined') {
-				const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
-				layer.innerHTML = "Change " + capitalized_passwordType
-				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before your " + passwordType_humanReadableString + " is required again"
+		{ // config change pw btn text, app timeout slider, …
+			if (self.context.isLiteApp == true) {
+				if (self.changePasswordButtonView) {
+					throw "Did not expect self.changePasswordButtonView"
+				}
+				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before automatic log-out"
+			} else {
+				if (!self.changePasswordButtonView) {
+					throw "Expected self.changePasswordButtonView"
+				}
+				const layer = self.changePasswordButtonView.layer
+				const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
+				const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
+				if (typeof passwordType_humanReadableString !== 'undefined') {
+					const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
+					layer.innerHTML = "Change " + capitalized_passwordType
+					self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before your " + passwordType_humanReadableString + " is required again"
+				}
 			}
 		}
-		{
+		if (self.context.isLiteApp) {
+			if (self.changePasswordButtonView) {
+				throw "Did not expect self.changePasswordButtonView"
+			}
+			if (self.serverURLInputLayer) {
+				throw "Did not expect self.serverURLInputLayer"
+			}
+			const walletsExist = self.context.walletsListController.records.length > 0
+			self.appTimeoutRangeInputView.SetEnabled(true)
+			self.deleteEverything_buttonView.SetEnabled(walletsExist) // cause this is actually the 'log out' btn
+		} else {
 			if (passwordController.hasUserSavedAPassword !== true) {
-				self.changePasswordButtonView.SetEnabled(false) // can't change til entered
-				self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
+				if (self.changePasswordButtonView) {
+					self.changePasswordButtonView.SetEnabled(false) // can't change til entered
+				}
+				if (self.serverURLInputLayer) {
+					self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
+				}
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
-				self.changePasswordButtonView.SetEnabled(false)
-				self.serverURLInputLayer.disabled = true
+				if (self.changePasswordButtonView) {
+					self.changePasswordButtonView.SetEnabled(false)
+				}
+				if (self.serverURLInputLayer) {
+					self.serverURLInputLayer.disabled = true
+				}
 				self.appTimeoutRangeInputView.SetEnabled(false)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else { // has entered PW - unlock
-				self.changePasswordButtonView.SetEnabled(true)
-				self.serverURLInputLayer.disabled = false
+				if (self.changePasswordButtonView) {
+					self.changePasswordButtonView.SetEnabled(true)
+				}
+				if (self.serverURLInputLayer) {
+					self.serverURLInputLayer.disabled = false
+				}
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(true)
 			}
 		}
 		{
-			self.serverURLInputLayer.value = self.context.settingsController.specificAPIAddressURLAuthority || ""
+			if (self.serverURLInputLayer) {
+				self.serverURLInputLayer.value = self.context.settingsController.specificAPIAddressURLAuthority || ""
+			}
 			// and now that the value is set…
 			self._updateValidationErrorForAddressInputView() // so we get validation error from persisted but incorrect value, if necessary for user feedback
 		}

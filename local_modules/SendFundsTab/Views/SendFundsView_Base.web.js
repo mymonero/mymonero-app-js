@@ -36,7 +36,6 @@ const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltip
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
-const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
@@ -115,10 +114,12 @@ class SendFundsView extends View
 			}
 			self.actionButtonsContainerView = view
 			{
-				if (self.context.Cordova_isMobile === true) { // til we have Electron support
+				if (self.context.Cordova_isMobile === true /* but not context.isMobile */) { // til we have Electron support
 					self._setup_actionButton_useCamera()
 				}
-				self._setup_actionButton_chooseFile()
+				if (self.context.isLiteApp != true) {
+					self._setup_actionButton_chooseFile()
+				}
 			}
 			self.addSubview(view)
 		}
@@ -262,6 +263,10 @@ class SendFundsView extends View
 		td.appendChild(div)
 		tr.appendChild(td)
 	}
+	_new_required_contactPickerLayer()
+	{
+		throw "You must override and implement this method. Return value does not have to be an actual contactPicker but must support the same interface"
+	}
 	_setup_form_contactOrAddressPickerLayer()
 	{ // Request funds from sender
 		const self = this
@@ -277,33 +282,7 @@ class SendFundsView extends View
 		}
 		div.appendChild(labelLayer)
 		//
-		const layer = commonComponents_contactPicker.New_contactPickerLayer(
-			self.context,
-			"Contact name, or address/domain",
-			self.context.contactsListController,
-			function(contact)
-			{ // did pick
-				self._didPickContact(contact)
-			},
-			function(clearedContact)
-			{
-				self.cancelAny_requestHandle_for_oaResolution()
-				//
-				self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
-				self._hideResolvedPaymentID()
-				self._hideResolvedAddress()
-				//
-				self.addPaymentIDButtonView.layer.style.display = "block" // can re-show this
-				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
-				self.manualPaymentIDInputLayer.value = ""
-				//
-				self.pickedContact = null
-			},
-			function(event)
-			{ // didFinishTypingInInput_fn
-				self._didFinishTypingInContactPickerInput(event)
-			}
-		)
+		const layer = self._new_required_contactPickerLayer()
 		layer.ContactPicker_inputLayer.autocorrect = "off"
 		layer.ContactPicker_inputLayer.autocomplete = "off"
 		layer.ContactPicker_inputLayer.autocapitalize = "none"
@@ -420,7 +399,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
 			false,
 			function(layer, e)
 			{
@@ -439,7 +418,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
-			self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
 			true,
 			function(layer, e)
 			{
@@ -496,7 +475,7 @@ class SendFundsView extends View
 			div.style.width = "100%" // cause centering in css is……
 			div.style.height = side+"px"
 			div.style.backgroundSize = side+"px " + side+"px"
-			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledAssetsRootPath+"/SendFundsTab/Resources/qrDropzoneIcon@3x.png)"
+			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/qrDropzoneIcon@3x.png)"
 			div.style.backgroundPosition = "center"
 			div.style.backgroundRepeat = "no-repeat"
 			div.style.backgroundSize = "48px 48px"
@@ -592,26 +571,6 @@ class SendFundsView extends View
 			emitter.on(
 				emitter.EventName_didTrigger_sendFundsFromWallet(), // observe 'did' so we're guaranteed to already be on right tab
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet
-			)
-		}
-		{ // urlOpeningController
-			const controller = self.context.urlOpeningController
-			controller.on(
-				controller.EventName_ReceivedURLToOpen_FundsRequest(),
-				function(url)
-				{
-					self.DismissModalViewsToView( // dismissing these b/c of checks in __shared_isAllowedToPerformDropOrURLOpeningOps
-						null, // null -> to top stack view
-						false // not animated
-					)
-					self.PopToRootView(false) // in case they're not on root
-					//
-					if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() != true) {
-						console.warn("Not allowed to perform URL opening ops yet.")
-						return false
-					}
-					self._shared_didPickRequestURIStringForAutofill(url)
-				}
 			)
 		}
 	}
@@ -865,7 +824,9 @@ class SendFundsView extends View
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Disable()
 			}
-			self.chooseFile_buttonView.Disable()
+			if (self.chooseFile_buttonView) {
+				self.chooseFile_buttonView.Disable()
+			}
 			// 
 			self.amountInputLayer.disabled = true
 			self.manualPaymentIDInputLayer.disabled = true
@@ -892,7 +853,9 @@ class SendFundsView extends View
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Enable()
 			}
-			self.chooseFile_buttonView.Enable()
+			if (self.chooseFile_buttonView) {
+				self.chooseFile_buttonView.Enable()
+			}
 		}
 		function _trampolineToReturnWithValidationErrorString(errStr)
 		{ // call this anytime you want to exit this method before complete success (or otherwise also call _reEnableFormElements)
@@ -1463,7 +1426,7 @@ class SendFundsView extends View
 	//
 	// Runtime - Delegation - Request URI string picking - Parsing / consuming / yielding
 	//	
-	_shared_didPickQRCodeAtPath(absoluteFilePath)
+	_shared_didPickQRCodeWithImageSrcValue(imageSrcValue)
 	{
 		const self = this
 		if (self.isFormDisabled === true) {
@@ -1501,7 +1464,6 @@ class SendFundsView extends View
 					return
 				}
 				const decodeResults = jsQR.decodeQR(rawQR)
-				console.log("decodeResults" , decodeResults)
 				// console.log("imageData.data", imageData.data)
 				// const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
 				// console.log("imageData.width", imageData.width)
@@ -1520,7 +1482,12 @@ class SendFundsView extends View
 				self._shared_didPickRequestURIStringForAutofill(requestURIString)
 			}
 		)
-		img.src = absoluteFilePath
+		img.src = imageSrcValue
+	}
+	_shared_didPickQRCodeAtPath(absoluteFilePath)
+	{
+		const self = this
+		self._shared_didPickQRCodeWithImageSrcValue(absoluteFilePath) // we can load the image directly like this
 	}
 	_shared_didPickRequestURIStringForAutofill(requestURIString)
 	{
@@ -1546,9 +1513,9 @@ class SendFundsView extends View
 				self.amountInputLayer.value = amount
 			}
 		}
-		{
-			const target_address = requestPayload.address
-			const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null
+		const target_address = requestPayload.address
+		const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null
+		if (typeof self.context.contactsListController != 'undefined' && self.context.contactsListController != null && self.context.contactsListController.records) {
 			if (target_address !== null && typeof target_address !== 'undefined' && target_address !== "") {
 				var foundContact = null
 				const contacts = self.context.contactsListController.records
@@ -1606,18 +1573,19 @@ class SendFundsView extends View
 					self.contactOrAddressPickerLayer.ContactPicker_pickContact(foundContact)
 					// but we're not going to show the PID stored on the contact!
 				} else { // we have an addr but no contact
-					{
-						if (self.pickedContact && typeof self.pickedContact !== 'undefined') { // unset
-							self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
-								true // true, do not focus input
-							)
-							self.pickedContact = null // jic
-						}
-						self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
+					if (self.pickedContact && typeof self.pickedContact !== 'undefined') { // unset
+						self.contactOrAddressPickerLayer.ContactPicker_unpickExistingContact_andRedisplayPickInput(
+							true // true, do not focus input
+						)
+						self.pickedContact = null // jic
 					}
+					self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
 				}
 			}
-			// and no matter what , display payment id, if present
+		} else {
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value = target_address
+		}
+		{ // and no matter what , display payment id, if present
 			if (payment_id_orNull !== null) { // but display it as a 'detected' pid
 				self.addPaymentIDButtonView.layer.style.display = "none" // hide if showing
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
@@ -1721,29 +1689,20 @@ class SendFundsView extends View
 	{
 		const self = this
 		if (self.__shared_isAllowedToPerformDropOrURLOpeningOps()) {
-			setTimeout(
-				function()
-				{
-					self.qrCodeInputs_containerView.Show()
-				},
-				10
-			)
+			self.qrCodeInputs_containerView.Show()
 		}
 	}
 	_proxied_ondragleave()
 	{
 		const self = this
-		setTimeout(
-			function()
-			{
-				self.qrCodeInputs_containerView.Hide()
-			},
-			10
-		)
+		self.qrCodeInputs_containerView.Hide()
 	}
 	_proxied_ondrop(e)
 	{
 		const self = this
+		//
+		self.qrCodeInputs_containerView.Hide()
+		//
 		if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() == false) {
 			// would be nice to NSBeep() here
 			return
@@ -1754,24 +1713,44 @@ class SendFundsView extends View
 			return
 		}
 		const file = files[0]
-		const absoluteFilePath = file.path // outside of timeout
-		if (absoluteFilePath == null || absoluteFilePath == "" || typeof absoluteFilePath === 'undefined') {
-			console.warn("No filepath in dropped. Bailing.")
-			return
-		}
-		setTimeout(
-			function()
+		const absoluteFilePath = file.path
+		const file_size = file.size
+		if (absoluteFilePath != null && absoluteFilePath != "" && typeof absoluteFilePath !== 'undefined') {
+			self._shared_didPickQRCodeAtPath(absoluteFilePath)
+		} else if (file_size) { // going to assume we're in a browser
+			if (self.context.isLiteApp != true) {
+				throw "Expected this to be Lite app aka browser"
+			}
+			if (!/^image\//.test(file.type)) {
+				self.validationMessageLayer.SetValidationError("Please select a QR code image file.")
+				return
+			}
+			var img = document.createElement("img")
+			img.file = file
+			img.style.display = "none"
+			document.body.appendChild(img)
 			{
-				self.qrCodeInputs_containerView.Hide()
-				//
-				if (absoluteFilePath === null || absoluteFilePath === "" || typeof absoluteFilePath === 'undefined') {
-					self.validationMessageLayer.SetValidationError("Couldn't get the file path to that QR code.")
-					return // nothing picked / canceled
-				}
-				self._shared_didPickQRCodeAtPath(absoluteFilePath)
-			},
-			10
-		)
+				var reader = new FileReader()
+				reader.onload = (function(anImg)
+				{ 
+					const fn = function(e)
+					{ 
+						const loadedBase64Content = e.target.result
+						if (loadedBase64Content.indexOf("data:image/") != 0) {
+							self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
+							return
+						}
+						self._shared_didPickQRCodeWithImageSrcValue(loadedBase64Content)
+					}
+					return fn
+				})(img)
+				reader.readAsDataURL(file)
+			}
+			document.body.removeChild(img)
+		} else {
+			self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
+			return // nothing picked / canceled
+		}
 	}
 	//
 	//

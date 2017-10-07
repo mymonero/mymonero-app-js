@@ -139,15 +139,24 @@ function New_contactPickerLayer(
 			"keyup",
 			function(event)
 			{
-				const wasEscapeKey = event.keyCode == 27
+				const code = event.code
+				const wasEscapeKey = code == "Escape" || event.keyCode == 27 /* should we use keyCode? */
 				if (wasEscapeKey) { // toggle search results visibility
 					if (autocompleteResultsLayer.style.display != "none") {
 						_removeAllAndHideAutocompleteResults()
 					} else {
 						_searchForAndDisplaySearchResults()
 					}
+					// TODO: clear input? esp if esc hit twice?
 					return // think it's ok to just return here and not mess with the typingDebounceTimeout
 				}
+				const wasOnlyModifierKey = code.indexOf("Meta") != -1 || code.indexOf("Alt") != -1 || code.indexOf("Control") != -1
+				if (wasOnlyModifierKey) {
+					console.log("Input was only modifier key. Ignoring.")
+					return
+				}
+				//
+				// timeout-clearing key pressed
 				if (typingDebounceTimeout !== null) {
 					clearTimeout(typingDebounceTimeout)
 				}
@@ -160,7 +169,7 @@ function New_contactPickerLayer(
 						didFinishTypingInInput_fn(event)
 					}
 					_searchForAndDisplaySearchResults()
-				}, 250)
+				}, 350)
 			}
 		)
 	}
@@ -480,7 +489,7 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 			xButtonLayer.style.top = "0px"
 			xButtonLayer.style.width = "34px"
 			xButtonLayer.style.height = "100%"
-			xButtonLayer.style.backgroundImage = "url("+context.crossPlatform_appBundledAssetsRootPath+"/MMAppUICommonComponents/Resources/contactPicker_xBtnIcn@3x.png)"
+			xButtonLayer.style.backgroundImage = "url("+context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/contactPicker_xBtnIcn@3x.png)"
 			xButtonLayer.style.backgroundSize = "11px 10px"
 			xButtonLayer.style.backgroundPosition = "center"
 			xButtonLayer.style.backgroundRepeat = "no-repeat"

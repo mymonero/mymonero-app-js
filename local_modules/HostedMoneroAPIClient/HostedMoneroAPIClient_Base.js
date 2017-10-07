@@ -36,7 +36,7 @@ const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/mo
 //
 const config__MyMonero = require('./config__MyMonero')
 //
-class HostedMoneroAPIClient
+class HostedMoneroAPIClient_Base
 {
 	//
 	// Lifecycle - Initialization
@@ -91,21 +91,10 @@ class HostedMoneroAPIClient
 	{
 		return "import.mymonero.com" // possibly exists a better home for this
 	}
-
 	//
 	// Runtime - Accessors - Private - Requests
 	_new_apiAddress_authority() // authority means [subdomain.]host.…[:…]
-	{
-		const self = this
-		const settingsController = self.context.settingsController
-		if (settingsController.hasBooted != true) {
-			throw "Expected SettingsController to have been booted"
-		}
-		const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority || ""
-		if (specificAPIAddressURLAuthority != "") {
-			return specificAPIAddressURLAuthority
-		}
-		//
+	{ // overridable
 		return config__MyMonero.API__authority
 	}
 	_new_apiAddress_baseURL()
@@ -612,4 +601,4 @@ class HostedMoneroAPIClient
 		return requestHandle
 	}
 }
-module.exports = HostedMoneroAPIClient
+module.exports = HostedMoneroAPIClient_Base

@@ -64,7 +64,7 @@ window.BootApp = function()
 		cached_metadata.userDataAbsoluteFilepath = "Debug"
 		cached_metadata.app_version = "0.0.1"
 		cached_metadata.app_name = "MyMonero"
-		cached_metadata.crossPlatform_appBundledAssetsRootPath = "../.." // cause can't access via browser at abs path for some reason
+		cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath = "../../" // browser access; must have trailing /
 		//
 		// patch straight to
 		_proceedTo_createContextAndRootView()
@@ -94,7 +94,7 @@ window.BootApp = function()
 	{ // cordova-specific - need to request various info - and they're mostly async, which sucks
 		// synchronous fetches:
 		cached_metadata.userDataAbsoluteFilepath = cordova.file.dataDirectory//applicationStorageDirectory
-		cached_metadata.crossPlatform_appBundledAssetsRootPath = cordova.file.applicationDirectory + "www"
+		cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath = cordova.file.applicationDirectory + "www/" // must have trailing /
 		// asynchronous fetches:
 		cordova.getAppVersion.getVersionNumber(function(versionNumber)
 		{
@@ -122,7 +122,8 @@ window.BootApp = function()
 				app: app,
 				isDebug: cached_metadata.isDebug,
 				Cordova_isMobile: isMobile,
-				crossPlatform_appBundledAssetsRootPath: cached_metadata.crossPlatform_appBundledAssetsRootPath, // in this case, an absolute path.
+				isMobile: isMobile,
+				crossPlatform_appBundledIndexRelativeAssetsRootPath: cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath, // in this case, an absolute path.
 				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 				TabBarView_thickness: 48,
 				TabBarView_isHorizontalBar: true,
@@ -183,7 +184,7 @@ window.BootApp = function()
 			}, false)
 		}
 		{ // root view
-			const RootView = require('./RootView.web') // electron uses .web files as it has a web DOM
+			const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
 			rootView = new RootView({}, context) // hang onto reference
 			rootView.superview = null // just to be explicit; however we will set a .superlayer
 			// manually attach the rootView to the DOM and specify view's usual managed reference(s)

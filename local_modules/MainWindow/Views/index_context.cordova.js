@@ -97,7 +97,7 @@ function NewHydratedContext(initialContext)
 			}
 		},
 		{
-			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient"),
+			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient.Full"),
 			instance_key: "hostedMoneroAPIClient",
 			options: {
 				appUserAgent_product: app.getName(),
@@ -119,7 +119,7 @@ function NewHydratedContext(initialContext)
 		//
 		// app controllers
 		{
-			module: require("../../Passwords/Controllers/PasswordController"),
+			module: require("../../Passwords/Controllers/PasswordController.Full"),
 			instance_key: "passwordController",
 			options: {}
 		},
@@ -135,7 +135,7 @@ function NewHydratedContext(initialContext)
 		},
 		// The following should go after the passwordController, persister, etc
 		{
-			module: require("../../WalletsList/Controllers/WalletsListController"),
+			module: require("../../WalletsList/Controllers/WalletsListController.Full"),
 			instance_key: "walletsListController",
 			options: {}
 		},

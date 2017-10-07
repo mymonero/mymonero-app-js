@@ -94,6 +94,14 @@ class WalletsSelectView extends ListCustomSelectView
 		}
 		super(options, context)
 	}
+	overridable_wantsSelectionDisplayCellView_clickable()
+	{
+		const self = this
+		if (self.context.isLiteApp == true) {
+			return false // special case - b/c we'll only ever have max 1 wallet
+		}
+		return true
+	}
 	setup_views()
 	{
 		__injectCSSRules_ifNecessary() // may as well do this here
@@ -123,6 +131,9 @@ class WalletsSelectView extends ListCustomSelectView
 			layer.style.zIndex = "10" // below cells
 			layer.className = "background"
 			self.options_containerView.layer.appendChild(layer)
+		}
+		if (self.context.isLiteApp == true) {
+			self.disclosureArrowLayer.style.display = "none"
 		}
 	}
 	// Overrides

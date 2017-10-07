@@ -32,7 +32,7 @@
 var context_object_instantiation_descriptions = 
 [ 
 	{
-		module_path: __dirname + "/../HostedMoneroAPIClient",
+		module_path: __dirname + "/../HostedMoneroAPIClient.Full",
 		instance_key: "hostedMoneroAPIClient",
 		options: {
 			request_conformant_module: require('request')

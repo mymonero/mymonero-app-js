@@ -153,7 +153,12 @@ class EditWalletView extends View
 	_setup_deleteRecordButtonLayer()
 	{
 		const self = this
-		const view = commonComponents_tables.New_deleteRecordNamedButtonView("wallet", self.context, "REMOVE")
+		const view = commonComponents_tables.New_deleteRecordNamedButtonView(
+			"wallet", 
+			self.context, 
+			"REMOVE", 
+			self.context.isLiteApp == true ? "LOG OUT…" : undefined
+		)
 		const layer = view.layer
 		function __proceedTo_deleteRecord()
 		{
@@ -180,15 +185,17 @@ class EditWalletView extends View
 						return false
 					}
 					self.context.windowDialogs.PresentQuestionAlertDialogWith(
-						'Remove this wallet?', 
-						'You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?',
-						[ 'Remove', 'Cancel' ],
-						function(err, selectedButtonIdx)
+						self.context.isLiteApp == true ? 'Log out?' : 'Remove this wallet?', 
+						self.context.isLiteApp == true 
+							? 'Are you sure you want to log out of this wallet?' 
+							: 'You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?',
+						self.context.isLiteApp == true ? 'Log out' : 'Remove',
+						'Cancel',
+						function(err, didChooseYes)
 						{
 							if (err) {
 								throw err
 							}
-							const didChooseYes = selectedButtonIdx === 0
 							if (didChooseYes) {
 								setTimeout(function()
 								{ // make sure we're on next tick from this dialog cb

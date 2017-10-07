@@ -91,7 +91,7 @@ class ForgotPasswordView extends View
 		const self = this
 		const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
 			"😢", 
-			"Password reset is not possible,<br/>as your data is encrypted and local.<br/><br/>If you can't remember it, you'll need<br/>to clear all data and re-import your<br/>wallets to continue.",
+			"Password reset is<br/>unfortunately not possible.<br/><br/>If you can't remember your password,<br/>you'll need to clear all data and<br/>re-import your wallet(s).",
 			self.context,
 			16,
 			19 // and we'll set btm to 0 manually
@@ -147,13 +147,13 @@ class ForgotPasswordView extends View
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
 					'Delete everything?', 
 					msg,
-					[ 'Delete Everything', 'Cancel' ],
-					function(err, selectedButtonIdx)
+					'Delete Everything', 
+					'Cancel',
+					function(err, didChooseYes)
 					{
 						if (err) {
 							throw err
 						}
-						const didChooseYes = selectedButtonIdx === 0
 						if (didChooseYes) {
 							self.context.passwordController.InitiateDeleteEverything(function(err) {})
 						}

@@ -31,7 +31,7 @@
 const APIResponseParser = require('../../HostedMoneroAPIClient/BackgroundAPIResponseParser.electron')
 const instantiation_description__hostedMoneroAPIClient =
 { // this one is broken out so we can configure options with `app` object once we have it
-	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient",
+	module_path: __dirname + "/../../HostedMoneroAPIClient/HostedMoneroAPIClient.Full",
 	instance_key: "hostedMoneroAPIClient",
 	options: {
 		responseParser: new APIResponseParser({}),
@@ -91,7 +91,7 @@ var context_object_instantiation_descriptions =
 	//
 	// app controllers
 	{
-		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
+		module_path: __dirname + "/../../Passwords/Controllers/PasswordController.Full",
 		instance_key: "passwordController",
 		options: {}
 	},
@@ -107,7 +107,7 @@ var context_object_instantiation_descriptions =
 	},
 	// The following should go after the passwordController, persister, etc
 	{
-		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",
+		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController.Full",
 		instance_key: "walletsListController",
 		options: {}
 	},
@@ -146,7 +146,7 @@ function NewHydratedContext(
 		urlOpeningController: urlOpeningController,
 		userDataAbsoluteFilepath: app.getPath('userData'),
 		isDebug: process.env.NODE_ENV === 'development',
-		crossPlatform_appBundledAssetsRootPath: "../..",
+		crossPlatform_appBundledIndexRelativeAssetsRootPath: "../../", // must have trailing /
 		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 		TabBarView_thickness: 79,
 		TabBarView_isHorizontalBar: false,

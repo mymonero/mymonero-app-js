@@ -43,8 +43,9 @@ class WindowDialogs extends WindowDialogs_Abstract
 	PresentQuestionAlertDialogWith(
 		title,
 		message,
-		buttons,
-		fn // (err?, selectedButtonIdx?) -> Void
+		okButtonTitle,
+		cancelButtonTitle,
+		fn // (err?, didChooseYes?) -> Void
 	)
 	{
 		const self = this
@@ -54,7 +55,7 @@ class WindowDialogs extends WindowDialogs_Abstract
 		const options = 
 		{
 			type: 'question',
-			buttons: buttons,
+			buttons: [ okButtonTitle, cancelButtonTitle ],
 			title: title,
 			message: message
 		}
@@ -62,7 +63,8 @@ class WindowDialogs extends WindowDialogs_Abstract
 			electronWindow,
 			options
 		)
-		fn(null, choice)
+		const didChooseYes = choice === 0
+		fn(null, didChooseYes)
 	}
 }
 module.exports = WindowDialogs

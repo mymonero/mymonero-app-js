@@ -52,7 +52,7 @@ function NewHydratedContext(
 		app: app,
 		menuController: menuController,
 		isDebug: process.env.NODE_ENV === 'development',
-		crossPlatform_appBundledAssetsRootPath: "../..",
+		crossPlatform_appBundledIndexRelativeAssetsRootPath: __dirname + "../../",
 		appDownloadLink_domainAndPath: "mymonero.com/app"
 	}
 

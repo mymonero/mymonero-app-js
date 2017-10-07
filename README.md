@@ -33,7 +33,7 @@ All app source code and assets copyright © 2014-2017 by MyMonero. All rights re
 
 ## What's in This Repo?
 
-This repository holds the source code, resources, and build scripts for the official [MyMonero](https://www.mymonero.com) downloadable desktop and Cordova-based mobile apps, which are built in Javascript.
+This repository holds the Javascript source for the [MyMonero](https://www.mymonero.com) **desktop** and **Android** (Cordova) apps, plus the new MyMonero **web wallet**.
 
 
 ## What is MyMonero?

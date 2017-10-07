@@ -77,7 +77,7 @@ function __injectCSSRules_ifNecessary()
 function New_WalletIconLayer(context, optl_sizeClass)
 {
 	var sizeClass = optl_sizeClass || SizeClasses.Large48
-	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath + (context.ThemeController_rootPathSuffixPrefixingPathToFontFiles || "")
 	//
 	__injectCSSRules_ifNecessary()
 	//
@@ -88,7 +88,7 @@ function New_WalletIconLayer(context, optl_sizeClass)
 	div.ConfigureWithHexColorString = function(to_hexColorString)
 	{
 		const to_hexColorString_sansPound = to_hexColorString.substring(1, to_hexColorString.length)
-		div.style.backgroundImage = `url(${assetsPath}/MMAppUICommonComponents/Resources/wallet-${to_hexColorString_sansPound}@3x.png)`
+		div.style.backgroundImage = `url(${assetsPath}MMAppUICommonComponents/Resources/wallet-${to_hexColorString_sansPound}@3x.png)`
 	}
 	//
 	return div

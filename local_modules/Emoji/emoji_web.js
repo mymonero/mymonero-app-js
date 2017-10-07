@@ -35,11 +35,11 @@ emojione.sprites = true
 const Views__cssRules = require('../Views/cssRules.web')
 function stylesheetPaths_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledAssetsRootPath
+	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath
 	const stylesheetPaths =
 	[
-		`${assetsPath}/Emoji/Vendor/emojione.min.css`,
-		`${assetsPath}/Emoji/Vendor/emojione.spritesheet.css`
+		`${assetsPath}Emoji/Vendor/emojione.min.css`,
+		`${assetsPath}Emoji/Vendor/emojione.spritesheet.css`
 	]
 	return stylesheetPaths
 }
@@ -57,7 +57,7 @@ function PreLoadAndSetUpEmojiOne(context)
 	// preload sprites to prevent delay
 	if (context.Emoji_renderWithNativeEmoji !== true) {
 		const image = new Image()
-		image.src = context.crossPlatform_appBundledAssetsRootPath+"/Emoji/Vendor/emojione.sprites.png"
+		image.src = context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Emoji/Vendor/emojione.sprites.png"
 		cached_spritesheetImage = image
 		//
 		__injectCSS_ifNecessary(context) // good time to do this
