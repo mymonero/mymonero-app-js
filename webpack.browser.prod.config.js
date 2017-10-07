@@ -28,54 +28,17 @@
 //
 "use strict"
 //
-const path = require('path')
+const merge = require('webpack-merge')
+const common = require('./webpack.config.browser.common.js')
 //
-module.exports = 
-{
-	devtool: "inline-source-map", // "source-map"
-	context: __dirname,
-	entry: "./local_modules/MainWindow/Views/index.browser.js",
-	output: {
-		path: path.resolve(__dirname, "browser_build"),
-		filename: "mymonero-app-bundle.js"
-	},
-	cache: false,
-	resolve: {
-		alias: {
-			"fs": "html5-fs"
-		}
-	},
-	externals: {
-	},
-	module: {
-		loaders: [
-			{ 
-				test: /\.(otf|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-				loader: 'file-loader'
-			},
-			{
-				test: /\.json$/,
-				loader: 'json-loader'
-			},
-			{
-				test: /\.css$/,
-				loader: 'style!css!postcss'
-			},
-			{
-				test: /\.styl$/,
-				loader: 'style!css!postcss!stylus?paths=node_modules'
-			},
-			{
-				test: /\.js$/,
-				loader: 'babel-loader',
-				options: {
-					cacheDirectory: false,
-					// presets: ["es2015"],
-					// plugins: ["transform-runtime"]
-				},
-				exclude: path.join(__dirname, 'node_modules')
-			},
-
-		]
-	}
-}
+// const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+//
+module.exports = merge(common, {
+	// plugins: [
+	// 	new UglifyJSPlugin({
+	// 		compress: {
+	// 			drop_console: true,
+	// 		}
+	// 	})
+	// ]
+})

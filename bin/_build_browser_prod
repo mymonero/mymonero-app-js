@@ -1,0 +1,3 @@
+node bin/__assemble_browser_build.node.js && 
+bin/__webpack_browser__prod && 
+echo "✅  Assembled PRODUCTION ./browser_build."

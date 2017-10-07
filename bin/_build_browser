@@ -1,3 +1,0 @@
-node bin/__assemble_browser_build.node.js && 
-bin/__webpack_browser && 
-echo "✅  Assembled ./browser_build."
