@@ -62,7 +62,7 @@ class WalletsListController extends WalletsListController_Base
 			fn(new Error("Browser app only supports one wallet at a time"))
 			return
 		}
-		super.CreateNewWallet_NoBootNoListAdd(
+		super.WhenBooted_ObtainPW_AddNewlyGeneratedWallet(
 			walletInstance,
 			walletLabel,
 			swatch,
