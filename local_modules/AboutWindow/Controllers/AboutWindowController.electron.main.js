@@ -120,20 +120,26 @@ class AboutWindowController
 				window.show()
 			})
 		}
+		{ // cache some necessary state 
+			self.allowDevTools = process.env.NODE_ENV === 'development'
+			self.openDevTools = self.allowDevTools === true && true // flip this && BOOL to enable/disable in dev
+		}
 		{ // hardening
 			window.webContents.on("will-navigate", function(e)
 			{
 				e.preventDefault() // do not allow navigation when users drop links
 			})
-			window.webContents.on( // but it would be nicer to completely preclude it opening
-				'devtools-opened',
-				function()
-				{
-					if (self.window) {
-						self.window.webContents.closeDevTools()
+			if (self.allowDevTools !== true) { // this prevents the dev tools from staying open
+				window.webContents.on( // but it would be nicer to completely preclude it opening
+					'devtools-opened',
+					function()
+					{
+						if (self.window) {
+							self.window.webContents.closeDevTools()
+						}
 					}
-				}
-			)
+				)
+			}
 		}
 	}
 	MakeKeyAndVisible()
@@ -143,6 +149,13 @@ class AboutWindowController
 			self.window.show()
 		} else {
 			self.create_window_whenAppReady(true)
+		}
+		{ // open dev tools (or not)
+			if (self.openDevTools === true) {
+				setTimeout(function() {
+					self.window.webContents.openDevTools()
+				}, 10)
+			}
 		}
 	}
 	// Runtime - Delegation - Post-instantiation hook
