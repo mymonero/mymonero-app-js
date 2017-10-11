@@ -41,12 +41,7 @@ class URLBrowser extends URLBrowser_Abstract
 		const self = this
 		const device_platform_toUpperCase = device.platform.toUpperCase()
 		if (device_platform_toUpperCase === 'ANDROID') {
-			navigator.app.loadUrl(
-				urlString, 
-				{
-					openExternal: true
-				}
-			)
+			var ref = cordova.InAppBrowser.open(urlString, "_system", "location=yes")
 		} else if (device_platform_toUpperCase === 'IOS') {
 			window.open(urlString, '_system')
 		} else {
