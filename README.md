@@ -1,4 +1,4 @@
-# MyMonero JS - Desktop (Electron) & Android (Cordova) Apps
+# MyMonero App for Desktop, Android, and Browser (Javascript)
 
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
