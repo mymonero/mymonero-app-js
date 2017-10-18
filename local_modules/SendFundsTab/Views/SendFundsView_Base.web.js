@@ -245,8 +245,8 @@ class SendFundsView extends View
 			layer.style.marginTop = "8px"
 			layer.style.color = "#9E9C9E"
 			layer.style.display = "inline-block"
-			self.feeEstimateLayer = layer
-			self.refresh_feeEstimateLayer() // now that reference assigned…
+			self.networkFeeEstimateLayer = layer
+			self.refresh_networkFeeEstimateLayer() // now that reference assigned…
 			breakingDiv.appendChild(layer)
 		}
 		// {
@@ -677,7 +677,7 @@ class SendFundsView extends View
 	//
 	// Accessors - Factories - Values
 	//
-	_new_estimatedTransactionFee_displayString()
+	_new_estimatedNetworkFee_displayString()
 	{
 		const self = this
 		/*
@@ -694,7 +694,7 @@ class SendFundsView extends View
 		*/
 		const estimatedTotalFee_str = "0.028" 
 		// Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
-		var displayString = `+ ${estimatedTotalFee_str} EST. FEE`
+		var displayString = `+ ${estimatedTotalFee_str} EST. NETWORK FEE`
 		//
 		return displayString
 	}
@@ -702,10 +702,10 @@ class SendFundsView extends View
 	//
 	// Imperatives - UI - Config
 	//
-	refresh_feeEstimateLayer()
+	refresh_networkFeeEstimateLayer()
 	{
 		const self = this
-		self.feeEstimateLayer.innerHTML = self._new_estimatedTransactionFee_displayString()
+		self.networkFeeEstimateLayer.innerHTML = self._new_estimatedNetworkFee_displayString()
 	}
 	_clearForm()
 	{
