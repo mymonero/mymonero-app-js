@@ -53,7 +53,7 @@ function NewHydratedContext(
 		menuController: menuController,
 		isDebug: process.env.NODE_ENV === 'development',
 		crossPlatform_appBundledIndexRelativeAssetsRootPath: __dirname + "/../../", // TODO: not sure why __dirname was used here
-		appDownloadLink_domainAndPath: "mymonero.com/app"
+		appDownloadLink_domainAndPath: "mymonero.com"
 	}
 
 	return require("../../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)

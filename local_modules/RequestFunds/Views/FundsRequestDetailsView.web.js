@@ -286,7 +286,7 @@ class FundsRequestDetailsView extends View
 					valueLayer.style.float = "none"
 					valueLayer.style.textAlign = "left"
 					//
-					valueLayer.style.margin = "30px 15px 0 15px"
+					valueLayer.style.margin = "16px 15px 0 15px"
 				}
 				div.appendChild(valueLayer)
 			}
@@ -354,23 +354,21 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		var value = "" // must use \r\n instead of \n for Windows
-		value += "Someone wants some Monero."
-		value += "\r\n---------------------------"
-		{
-			value += `\r\n${ self.fundsRequest.amount ? self.fundsRequest.amount + " XMR" : "Any amount" }`
-			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
-				value += `\r\n${self.fundsRequest.message}`
-			}
-			if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
-				value += `\r\n${self.fundsRequest.description}`
-			}
+		value += "Someone has requested a Monero payment"+(self.fundsRequest.amount ? " of "+self.fundsRequest.amount+" XMR" : "")+"."
+		if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
+			value += `\r\n`
+			value += `\r\nMemo: "${self.fundsRequest.message}"`
+		}
+		if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
+			value += `\r\n`
+			value += `\r\nDescription: "${self.fundsRequest.description}"`
 		}
 		value += "\r\n" // spacer
 		value += "\r\n---------------------------"
+		value += `\r\n`
 		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI()}`
-		const appDownloadLink_domainAndPath = self.context.appDownloadLink_domainAndPath
-		const appDownloadLink_fullURL = "https://" + appDownloadLink_domainAndPath
-		value += `\r\nIf you don't have MyMonero installed, download it from ${appDownloadLink_fullURL}`
+		value += `\r\n`
+		value += `\r\nIf you don't have MyMonero installed, download it from ${"https://" + self.context.appDownloadLink_domainAndPath}`
 		//
 		return value
 	}
@@ -378,23 +376,18 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		var value = ""
-		value += "<p>Someone wants some Monero.</p>"
-		value += "<p>---------------------------</p>"
-		value += `<p>${ self.fundsRequest.amount ? self.fundsRequest.amount + " XMR" : "Any amount" }`
-		{ // within same p tag to get visual grouping/line-height
-			if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
-				value += `</br>${self.fundsRequest.message}`
-			}
-			if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
-				value += `<br/>${self.fundsRequest.description}`
-			}
+		//
+		value += "<p>Someone has requested a Monero payment"+(self.fundsRequest.amount ? " of "+self.fundsRequest.amount+" XMR" : "")+".</p>"
+		if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
+			value += `<p>Memo: "${self.fundsRequest.message}"</p>`
 		}
-		value += "</p>"
+		if (self.fundsRequest.description && typeof self.fundsRequest.description !== 'undefined') {
+			value += `<p>Description: "${self.fundsRequest.description}"</p>`
+		}
 		value += "<p>---------------------------</p>"
 		value += `<p>If you have MyMonero installed, <a href="${self.fundsRequest.Lazy_URI()}">press this link to send the funds</a>.</p>`
 		const appDownloadLink_domainAndPath = self.context.appDownloadLink_domainAndPath
-		const appDownloadLink_fullURL = "https://" + appDownloadLink_domainAndPath
-		value += `<p>If you don't have MyMonero installed, download it from <a href="${appDownloadLink_fullURL}">${appDownloadLink_domainAndPath}</a>.</p>`
+		value += `<p>If you don't have MyMonero installed, download it from <a href="https://${appDownloadLink_domainAndPath}">${appDownloadLink_domainAndPath}</a>.</p>`
 		//
 		return value
 	}
