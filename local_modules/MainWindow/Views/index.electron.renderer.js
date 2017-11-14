@@ -38,7 +38,7 @@ const remote__app = remote__electron.app
 const remote__context = remote__electron.getGlobal("context")
 //
 const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
-const renderer_context = require('./index_context.electron.renderer').NewHydratedContext(
+const renderer_context = require('../Models/index_context.electron.renderer').NewHydratedContext(
 	remote__app,
 	remote__context.menuController, // for UI and app runtime access
 	remote__context.urlOpeningController

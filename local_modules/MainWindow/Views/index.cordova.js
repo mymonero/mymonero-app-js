@@ -118,13 +118,13 @@ window.BootApp = function()
 			})
 		}
 		{ // context
-			context = require('./index_context.cordova').NewHydratedContext({
+			context = require('../Models/index_context.cordova').NewHydratedContext({
 				app: app,
 				isDebug: cached_metadata.isDebug,
 				Cordova_isMobile: isMobile,
 				isMobile: isMobile,
 				crossPlatform_appBundledIndexRelativeAssetsRootPath: cached_metadata.crossPlatform_appBundledIndexRelativeAssetsRootPath, // in this case, an absolute path.
-				platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
+				platformSpecific_RootTabBarAndContentView: require('../Views/RootTabBarAndContentView.cordova.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 				TabBarView_thickness: 48,
 				TabBarView_isHorizontalBar: true,
 				ThemeController_isMobileBrowser: isMobile == true,

@@ -157,7 +157,7 @@ function NewHydratedContext(
 		userDataAbsoluteFilepath: app.getPath('userData'),
 		isDebug: process.env.NODE_ENV === 'development',
 		crossPlatform_appBundledIndexRelativeAssetsRootPath: "../../", // must have trailing /
-		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
+		platformSpecific_RootTabBarAndContentView: require('../Views/RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
 		TabBarView_thickness: 79,
 		TabBarView_isHorizontalBar: false,
 		appDownloadLink_domainAndPath: "mymonero.com",

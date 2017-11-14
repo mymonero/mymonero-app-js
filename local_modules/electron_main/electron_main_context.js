@@ -53,7 +53,7 @@ var context_object_instantiation_descriptions =
 	}
 	/*
 		NOTE: Most of the actual electron application context lives
-		in local_modules/MainWindow/Views/index_context.electron.renderer.js
+		in local_modules/MainWindow/Models/index_context.electron.renderer.js
 	*/
 ]
 function NewHydratedContext(app)
