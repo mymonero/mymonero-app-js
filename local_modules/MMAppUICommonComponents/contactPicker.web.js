@@ -81,7 +81,7 @@ function New_contactPickerLayer(
 	contactsListController,
 	didPickContact_fn,
 	didClearPickedContact_fn,
-	didFinishTypingInInput_fn // ((event) -> Void)?
+	didFinishTypingInInput_fn // ((event?) -> Void)? 
 ) //  -> Component (which is just a customized DOM element obj)
 { // NOTE: You must call Component_TearDown when you're done with this component
 	if (!contactsListController) {
@@ -135,6 +135,32 @@ function New_contactPickerLayer(
 			commonComponents_forms._shared_scrollConformingElementIntoView(this_layer)
 		}
 		var typingDebounceTimeout = null
+		function _inputLayer_receivedInputOrChanged(optl_event)
+		{
+			//
+			// timeout-clearing key pressed
+			if (typingDebounceTimeout !== null) {
+				clearTimeout(typingDebounceTimeout)
+			}
+			const this_inputLayer = this
+			typingDebounceTimeout = setTimeout(function()
+			{ // to prevent searching too fast
+				typingDebounceTimeout = null // clear for next
+				//
+				if (didFinishTypingInInput_fn) {
+					didFinishTypingInInput_fn(optl_event)
+				}
+				_searchForAndDisplaySearchResults()
+			}, 350)
+		}
+		inputLayer.addEventListener(
+			"input", 
+			function()
+			{
+				_inputLayer_receivedInputOrChanged(undefined)
+				// this might seem redundant and/or to race with "keyup" but _inputLayer_receivedInputOrChanged is hardened against that except perhaps in side-effect
+			}
+		)
 		inputLayer.addEventListener(
 			"keyup",
 			function(event)
@@ -155,21 +181,7 @@ function New_contactPickerLayer(
 					console.log("Input was only modifier key. Ignoring.")
 					return
 				}
-				//
-				// timeout-clearing key pressed
-				if (typingDebounceTimeout !== null) {
-					clearTimeout(typingDebounceTimeout)
-				}
-				const this_inputLayer = this
-				typingDebounceTimeout = setTimeout(function()
-				{ // to prevent searching too fast
-					typingDebounceTimeout = null // clear for next
-					//
-					if (didFinishTypingInInput_fn) {
-						didFinishTypingInInput_fn(event)
-					}
-					_searchForAndDisplaySearchResults()
-				}, 350)
+				_inputLayer_receivedInputOrChanged(event)
 			}
 		)
 	}

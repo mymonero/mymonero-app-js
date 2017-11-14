@@ -253,6 +253,7 @@ class SendFundsView extends View
 				self.set_effectiveAmountLabelLayer_needsUpdate()
 			}
 		)
+		// TODO? do we need to observe "propertychange" too?
 		self.amountInputLayer.addEventListener(
 			"keyup", 
 			function(event)
@@ -1637,14 +1638,14 @@ class SendFundsView extends View
 			}
 		)
 	}
-	_didFinishTypingInContactPickerInput(event)
+	_didFinishTypingInContactPickerInput(optl_event)
 	{
 		const self = this
 		//
 		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
 		const hasEnteredNoAddressContent = !enteredPossibleAddress || typeof enteredPossibleAddress === 'undefined'
 		//
-		const wasEnterKey = event.keyCode == 13
+		const wasEnterKey = optl_event ? optl_event.keyCode == 13 : false/*'input' event which lacks 'e' arg in cb seems not to be called on 'enter' key*/
 		if (wasEnterKey) {
 			let requestExists = typeof self.requestHandle_for_oaResolution !== 'undefined' && self.requestHandle_for_oaResolution !== null
 			if (requestExists) { // means we are currently requesting still and they just hit the enter btn - just "ignore"
