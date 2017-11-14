@@ -60,7 +60,6 @@ class FundsRequestsListCellView extends ListCellView
 		}
 		{ 
 			const layer = commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context)
-			layer.style.top = "26px" // instead of halfway down
 			self.layer.appendChild(layer)
 		}
 		self.__setup_cellSeparatorLayer()
