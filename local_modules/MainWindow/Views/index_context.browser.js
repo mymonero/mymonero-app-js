@@ -59,6 +59,16 @@ function NewHydratedContext(initialContext)
 		//
 		// services
 		{
+			module: require("../../CcyConversionRates/Controller"),
+			instance_key: "CcyConversionRates_Controller_shared",
+			options: {}
+		},
+		{
+			module: require("../../CcyConversionRates/Temporary_RateAPIPollingClient"),
+			instance_key: "Temporary_RateAPIPollingClient_shared",
+			options: {}
+		},
+		{
 			module: require("../../Locale/Locale.browser"),
 			instance_key: "locale",
 			options: {}

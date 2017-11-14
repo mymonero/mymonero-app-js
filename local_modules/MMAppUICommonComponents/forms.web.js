@@ -169,7 +169,7 @@ function New_fieldValue_textInputLayer(context, params)
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("input")
 	layer.className = "field_value"
-	layer.type = "text"
+	layer.type = params.customInputType || "text"
 	layer.style.display = "block" // own line
 	const existingValue = params.existingValue
 	if (typeof existingValue !== 'undefined' && existingValue !== null) {
@@ -179,8 +179,12 @@ function New_fieldValue_textInputLayer(context, params)
 	if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 		layer.placeholder = placeholderText
 	}
-	layer.style.height = "29px"
-	const padding_h = 7
+	//
+	layer.Component_default_padding_h = function() { return 7 } // H for horizontal
+	let padding_h = layer.Component_default_padding_h()
+	//
+	layer.Component_default_h = function() { return 29 } // H for height
+	layer.style.height = layer.Component_default_h() + "px"
 	const borderWidth = 1
 	if (typeof params.target_width !== 'undefined') {
 		const width = params.target_width - 2*borderWidth - 2*padding_h
@@ -422,69 +426,3 @@ function New_Detected_IconAndMessageLayer(context)
 	return layer
 }
 exports.New_Detected_IconAndMessageLayer = New_Detected_IconAndMessageLayer
-//
-//
-function New_AmountInputFieldPKG(
-	context,
-	humanReadable_currencyAbbrv, // e.g. "XMR"
-	optl__enterPressed_fn
-)
-{ // -> {} // Experimental 'pkg' style return… maybe refactor into View later
-	const enterPressed_fn = optl__enterPressed_fn ? optl__enterPressed_fn : function() {}
-	//
-	const div = New_fieldContainerLayer()
-	div.style.width = "210px"
-	div.style.padding = "7px 22px 0 22px"
-	//
-	const labelLayer = New_fieldTitle_labelLayer("AMOUNT", context)
-	div.appendChild(labelLayer)
-	// ^ block
-	const valueLayer = New_fieldValue_textInputLayer(context, {
-		placeholderText: "00.00"
-	})
-	// not going to set `pattern` attribute because it can't support periods
-	// not going to set type="number" because it inserts commas, etc
-	valueLayer.style.textAlign = "right"
-	valueLayer.float = "left" // because we want it to be on the same line as the "XMR" label
-	valueLayer.style.display = "inline-block" // so we can have the XMR label on the right
-	valueLayer.style.width = "98px"
-	valueLayer.addEventListener("keyup", function(event)
-	{
-		if (event.keyCode === 13) {
-			enterPressed_fn()
-			return
-		}
-	})
-	div.appendChild(valueLayer)
-	valueLayer.Component_ScrollIntoViewInFormContainerParent = function()
-	{ // this could also be called on window resize
-		const this_layer = this
-		_shared_scrollConformingElementIntoView(this_layer)
-	}
-	if (context.CommonComponents_Forms_scrollToInputOnFocus == true) {
-		valueLayer.addEventListener(
-			"focus",
-			function()
-			{
-				valueLayer.Component_ScrollIntoViewInFormContainerParent()
-			}
-		)
-	}
-	//
-	const currencyLabel = New_fieldTitle_labelLayer(humanReadable_currencyAbbrv, context)
-	currencyLabel.style.display = "inline-block"
-	currencyLabel.style.margin = "0 0 0 8px"
-	currencyLabel.style.verticalAlign = "middle"
-	currencyLabel.style.color = "#8D8B8D"
-	div.appendChild(currencyLabel)
-	//
-	div.appendChild(commonComponents_tables.New_clearingBreakLayer())
-	
-	return {
-		containerLayer: div,
-		labelLayer: labelLayer,
-		valueLayer: valueLayer,
-		currencyLabel: currencyLabel
-	}
-}
-exports.New_AmountInputFieldPKG = New_AmountInputFieldPKG

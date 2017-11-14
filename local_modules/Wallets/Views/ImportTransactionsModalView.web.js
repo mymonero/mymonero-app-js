@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
@@ -168,9 +169,8 @@ class ImportTransactionsModalView extends View
 	_setup_form_amountInputLayer(tr)
 	{ 
 		const self = this
-		const pkg = commonComponents_forms.New_AmountInputFieldPKG(
+		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
-			"XMR", // TODO: grab, update from selected wallet
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateSend()
@@ -180,9 +180,18 @@ class ImportTransactionsModalView extends View
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
 		labelLayer.style.marginTop = "0"
-		self.amountInputLayer = pkg.valueLayer
-		self.amountInputLayer.disabled = true
-		self.__styleInputAsDisabled(self.amountInputLayer)
+		{
+			self.amountInputLayer = pkg.valueLayer
+			self.amountInputLayer.disabled = true
+			self.__styleInputAsDisabled(self.amountInputLayer)
+		}
+		{
+			self.ccySelectLayer = pkg.ccySelectLayer
+			self.ccySelectLayer.disabled = true
+		}
+		{
+			pkg.effectiveAmountLabelLayer.style.display = "none"
+		}
 		//
 		const td = document.createElement("td")
 		td.style.width = "100px"

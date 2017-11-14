@@ -110,6 +110,7 @@ class FundsRequest extends EventEmitter
 			self.to_walletHexColorString = self.options.to_walletHexColorString
 			self.to_address = self.options.to_address
 			self.amount = self.options.amount_StringOrNil
+			self.amountCcySymbol = self.options.amountCcySymbol
 			self.payment_id = self.options.payment_id
 			self.message = self.options.message
 			self.description = self.options.description
@@ -257,6 +258,7 @@ class FundsRequest extends EventEmitter
 				address: self.to_address,
 				payment_id: self.payment_id,
 				amount: self.amount,
+				amountCcySymbol: self.amountCcySymbol,
 				description: self.description,
 				message: self.message
 			})

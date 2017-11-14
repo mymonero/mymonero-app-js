@@ -95,6 +95,7 @@ class FundsRequestsListController extends ListBaseController
 		to_address,
 		payment_id,
 		amount_StringOrNil,
+		amountCcySymbol,
 		message,
 		description,
 		fn // fn: (err: Error?, instance: FundsRequest?) -> Void
@@ -116,6 +117,7 @@ class FundsRequestsListController extends ListBaseController
 							to_address: to_address,
 							payment_id: payment_id,
 							amount_StringOrNil: amount_StringOrNil,
+							amountCcySymbol: amountCcySymbol,
 							message: message,
 							description: description
 						}

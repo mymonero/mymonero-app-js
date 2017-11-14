@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
@@ -161,9 +162,8 @@ class CreateRequestFormView extends View
 	_setup_form_amountInputLayer(tr)
 	{ // Request funds amount from sender
 		const self = this
-		const pkg = commonComponents_forms.New_AmountInputFieldPKG(
+		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
-			"XMR", // TODO: grab, update from selected wallet
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateRequest()
@@ -171,6 +171,11 @@ class CreateRequestFormView extends View
 		)		
 		const div = pkg.containerLayer
 		self.amountInputLayer = pkg.valueLayer
+		//
+		self.ccySelectLayer = pkg.ccySelectLayer
+		self.ccySelectLayer.style.top = self.ccySelectLayer.Component_default_top() + 20/* measured… TODO remove by revamping container layout system*/ + "px"
+		//
+		pkg.effectiveAmountLabelLayer.style.display = "none"
 		//
 		const td = document.createElement("td")
 		td.style.width = "100px"
@@ -522,6 +527,7 @@ class CreateRequestFormView extends View
 			receiveTo_address: wallet.public_address,
 			payment_id: payment_id,
 			amount_StringOrNil: amount_Number == null ? amount_Number : "" + amount_Number, // back into a string if non nils
+			amountCcySymbol: self.ccySelectLayer.value, // always expecting to have one… TODO: does this need to be sanitized? probably… (but maybe by the fundsRequestsListController)
 			memo: self.memoInputLayer.value, // request description, AKA memo or label
 			message: undefined // "message"; no support yet 
 		})
@@ -533,6 +539,7 @@ class CreateRequestFormView extends View
 		const receiveTo_address = params.receiveTo_address
 		const payment_id = params.payment_id
 		const amount_StringOrNil = params.amount_StringOrNil
+		const amountCcySymbol = params.amountCcySymbol
 		const memo = params.memo
 		const message = params.message
 		//
@@ -544,6 +551,7 @@ class CreateRequestFormView extends View
 			receiveTo_address,
 			payment_id,
 			amount_StringOrNil,
+			amountCcySymbol,
 			memo, // description, AKA memo or label
 			message,
 			function(err, record)

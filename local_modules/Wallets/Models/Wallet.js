@@ -935,7 +935,7 @@ class Wallet extends EventEmitter
 		return (self.blockchain_height - self.account_scanned_block_height) >= 10
 	}
 	//
-	Balance_FormattedString()
+	Balance_JSBigInt()
 	{
 		const self = this
 		var total_received = self.total_received
@@ -948,17 +948,41 @@ class Wallet extends EventEmitter
 		}
 		const balance_JSBigInt = total_received.subtract(total_sent)
 		//
-		return monero_utils.formatMoney(balance_JSBigInt)
+		return balance_JSBigInt
 	}
-	LockedBalance_FormattedString()
+	Balance_FormattedString()
+	{ // provided for convenience mainly so consumers don't have to require monero_utils
+		let self = this
+		let balance_JSBigInt = self.Balance_JSBigInt()
+		//
+		return monero_utils.formatMoney(balance_JSBigInt) 
+	}
+	Balance_DoubleNumber()
 	{
-		const self = this
-		var locked_balance_JSBigInt = self.locked_balance
-		if (typeof locked_balance_JSBigInt === 'undefined') {
-			locked_balance_JSBigInt = new JSBigInt(0)
+		let self = this
+		return parseFloat(self.Balance_FormattedString()) // is this appropriate and safe?
+	}
+	LockedBalance_JSBigInt()
+	{
+		let self = this
+		var lockedBalance_JSBigInt = self.locked_balance
+		if (typeof lockedBalance_JSBigInt === 'undefined') {
+			lockedBalance_JSBigInt = new JSBigInt(0)
 		}
 		//
-		return monero_utils.formatMoney(locked_balance_JSBigInt)
+		return lockedBalance_JSBigInt
+	}
+	LockedBalance_FormattedString()
+	{ // provided for convenience mainly so consumers don't have to require monero_utils
+		let self = this
+		let lockedBalance_JSBigInt = self.LockedBalance_JSBigInt()
+		//
+		return monero_utils.formatMoney(lockedBalance_JSBigInt)
+	}
+	LockedBalance_DoubleNumber()
+	{
+		let self = this
+		return parseFloat(self.LockedBalance_FormattedString()) // is this appropriate and safe?
 	}
 	HasLockedFunds()
 	{

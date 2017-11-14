@@ -45,22 +45,37 @@
 // ]
 //
 // Hydrate context
+//
 function NewHydratedContext(context_object_instantiation_descriptions, initialContext_orNilForNew)
 {
 	var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {}
 	for (let i in context_object_instantiation_descriptions) {
 		var description = context_object_instantiation_descriptions[i]
-		var module = description.module || require("" + description.module_path)
+		let module_path = description.module_path
+		let description_module = description.module
+		if (module_path && typeof module_path !== 'string') {
+			console.error("Invalid description.module_path: ", JSON.stringify(description, null, '  '))
+			throw "runtime_context found invalid description 'module_path' key value type"
+		}
+		if (description_module && typeof description_module === 'string') {
+			console.error("Invalid description.module: ", JSON.stringify(description, null, '  '))
+			throw "runtime_context found invalid description 'module' key value type"
+		}
+		var module = description_module || require("" + module_path)
 		if (typeof module === 'undefined' || module === null) {
-			console.log("Error: Unable to require " + description.module_path + ". Skipping.")
-			
+			console.error("Unable to require " + description.module_path + ". Skipping.")
 			continue
 		}
-		let instance = new module(description.options, context)
+		var instance;
+		try {
+			instance = new module(description.options, context)
+		} catch (e) {
+			console.error("Code fault while loading ", JSON.stringify(description, null, '  '))
+			throw e
+		}
 		if (typeof instance === 'undefined' || instance === null) {
-			console.log("Error: Unable to create an instance of " + description.module_path + ". Skipping.")
-			
-			continue
+			console.error("Unable to create an instance of " + description.module_path + ". Skipping.")
+			throw "runtime_context: Unable to create an instance"
 		}
 		context[description.instance_key] = instance
 		//

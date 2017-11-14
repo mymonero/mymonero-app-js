@@ -354,7 +354,14 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		var value = "" // must use \r\n instead of \n for Windows
-		value += "Someone has requested a Monero payment"+(self.fundsRequest.amount ? " of "+self.fundsRequest.amount+" XMR" : "")+"."
+		let ccy = self.fundsRequest.amountCcySymbol || "XMR"
+		{
+			value += "Someone has requested a Monero payment"
+			if (self.fundsRequest.amount) {
+				value += ` of ${self.fundsRequest.amount} ${ccy}`
+			}
+			value += "."
+		}
 		if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
 			value += `\r\n`
 			value += `\r\nMemo: "${self.fundsRequest.message}"`
@@ -365,7 +372,6 @@ class FundsRequestDetailsView extends View
 		}
 		value += "\r\n" // spacer
 		value += "\r\n---------------------------"
-		value += `\r\n`
 		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI()}`
 		value += `\r\n`
 		value += `\r\nIf you don't have MyMonero installed, download it from ${"https://" + self.context.appDownloadLink_domainAndPath}`
@@ -377,7 +383,16 @@ class FundsRequestDetailsView extends View
 		const self = this
 		var value = ""
 		//
-		value += "<p>Someone has requested a Monero payment"+(self.fundsRequest.amount ? " of "+self.fundsRequest.amount+" XMR" : "")+".</p>"
+		let ccy = self.fundsRequest.amountCcySymbol || "XMR"
+		value += "<p>"
+		{
+			value += "Someone has requested a Monero payment"
+			if (self.fundsRequest.amount) {
+				value += ` of <strong>${self.fundsRequest.amount} ${ccy}</strong>`
+			}
+			value += "."
+		}
+		value += "</p>"
 		if (self.fundsRequest.message && typeof self.fundsRequest.message !== 'undefined') {
 			value += `<p>Memo: "${self.fundsRequest.message}"</p>`
 		}

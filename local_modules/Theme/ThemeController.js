@@ -131,6 +131,20 @@ class ThemeController
 			}
 		}
 	}
+	StyleLayer_FontAsMiddlingRegularMonospace(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.FontFamily_monospaceRegular()
+		layer.style.fontSize = "13px"
+		layer.style.fontWeight = "normal"
+	}
+	StyleLayer_FontAsSubMiddlingRegularMonospace(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.FontFamily_monospaceRegular()
+		layer.style.fontSize = "12px"
+		layer.style.fontWeight = "normal"
+	}
 	StyleLayer_FontAsMessageBearingSmallLightMonospace(layer)
 	{
 		const self = this
@@ -182,7 +196,6 @@ class ThemeController
 			layer.style.fontSize = "12px" // design says 13 but chrome/webkit/electron renders oddly, simulating with…
 			layer.style.fontWeight = "500"
 			layer.style.letterSpacing = "0.5px"
-			layer.style.fontWeight = "500"
 		}
 	}
 	StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)

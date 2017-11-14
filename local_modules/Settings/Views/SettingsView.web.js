@@ -35,6 +35,9 @@ const commonComponents_labeledRangeInputs = require('../../MMAppUICommonComponen
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_switchToggles = require('../../MMAppUICommonComponents/switchToggles.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
+const commonComponents_ccySelect = require('../../MMAppUICommonComponents/ccySelect.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
+//
 const config__MyMonero = require('../../HostedMoneroAPIClient/config__MyMonero')
 //
 class SettingsView extends View
@@ -96,6 +99,7 @@ class SettingsView extends View
 				self._setup_form_field_changePasswordButton()
 			}
 			self._setup_form_field_appTimeoutSlider()
+			self._setup_form_field_displayCcy()
 			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
 			if (self.context.isLiteApp != true) {
 				self._setup_form_field_serverURL()
@@ -278,6 +282,85 @@ class SettingsView extends View
 		}
 		self.form_containerLayer.appendChild(div)
 	}
+	_setup_form_field_displayCcy()
+	{
+		const self = this
+		let selectLayer_w = 126
+		let selectLayer_h = 32
+		//
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("DISPLAY CURRENCY", self.context)
+			div.appendChild(labelLayer)
+			//
+			let selectContainerLayer = document.createElement("div")
+			selectContainerLayer.style.position = "relative" // to container pos absolute
+			selectContainerLayer.style.left = "0"
+			selectContainerLayer.style.top = "0"
+			selectContainerLayer.style.width = selectLayer_w+"px"
+			selectContainerLayer.style.height =selectLayer_h+"px"
+			//
+			let ccySelectLayer = commonComponents_ccySelect.new_selectLayer()
+			self.displayCcySelectLayer = ccySelectLayer
+			self._configure_displayCcySelectLayer_value()
+			{
+				let selectLayer = ccySelectLayer
+				// selectLayer.style.textAlign = "center"
+				// selectLayer.style.textAlignLast = "center"
+				selectLayer.style.outline = "none"
+				selectLayer.style.color = "#FCFBFC"
+				selectLayer.style.backgroundColor = "#383638"
+				selectLayer.style.width = selectLayer_w+"px"
+				selectLayer.style.height =selectLayer_h+"px"
+				selectLayer.style.border = "0"
+				selectLayer.style.padding = "0"
+				selectLayer.style.borderRadius = "3px"
+				selectLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+				selectLayer.style.webkitAppearance = "none" // apparently necessary in order to activate the following style.border…Radius
+				selectLayer.style.appearance = "none"
+				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+					selectLayer,
+					true // bright content, dark bg
+				)
+				selectLayer.style.textIndent = "11px"
+				{ // hover effects/classes
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+				}
+				//
+				// observation
+				ccySelectLayer.addEventListener(
+					"change", 
+					function()
+					{
+						self._ccySelectLayer_did_change()
+					}
+				)
+			}
+			selectContainerLayer.appendChild(ccySelectLayer)
+			{
+				const layer = document.createElement("div")
+				self.disclosureArrowLayer = layer
+				layer.style.border = "none"
+				layer.style.position = "absolute"
+				const w = 10
+				const h = 8
+				let top = Math.ceil((selectLayer_h - h)/2)
+				layer.style.width = w+"px"
+				layer.style.height = h+"px"
+				layer.style.right = "13px"
+				layer.style.top = top+"px"
+				layer.style.zIndex = "100" // above options_containerView 
+				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundRepeat = "no-repeat"
+				layer.style.backgroundPosition = "center"
+				layer.style.backgroundSize = w+"px "+ h+"px"
+				selectContainerLayer.appendChild(layer)			
+			}
+			div.appendChild(selectContainerLayer)
+		}
+		self.form_containerLayer.appendChild(div)
+	}
 	_setup_deleteEverythingButton()
 	{
 		const self = this
@@ -370,6 +453,11 @@ class SettingsView extends View
 	}
 	//
 	// Runtime - Imperatives - UI config
+	_configure_displayCcySelectLayer_value()
+	{
+		let self = this
+		self.displayCcySelectLayer.value = self.context.settingsController.displayCcySymbol
+	}
 	_updateValidationErrorForAddressInputView(fn_orNil)
 	{
 		const self = this
@@ -459,6 +547,7 @@ class SettingsView extends View
 			}
 			const walletsExist = self.context.walletsListController.records.length > 0
 			self.appTimeoutRangeInputView.SetEnabled(true)
+			self.displayCcySelectLayer.disabled = false
 			self.deleteEverything_buttonView.SetEnabled(walletsExist) // cause this is actually the 'log out' btn
 		} else {
 			if (passwordController.hasUserSavedAPassword !== true) {
@@ -468,6 +557,7 @@ class SettingsView extends View
 				if (self.serverURLInputLayer) {
 					self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				}
+				self.displayCcySelectLayer.disabled = true
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
@@ -478,6 +568,7 @@ class SettingsView extends View
 				if (self.serverURLInputLayer) {
 					self.serverURLInputLayer.disabled = true
 				}
+				self.displayCcySelectLayer.disabled = true
 				self.appTimeoutRangeInputView.SetEnabled(false)
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else { // has entered PW - unlock
@@ -487,6 +578,7 @@ class SettingsView extends View
 				if (self.serverURLInputLayer) {
 					self.serverURLInputLayer.disabled = false
 				}
+				self.displayCcySelectLayer.disabled = false
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(true)
 			}
@@ -497,6 +589,9 @@ class SettingsView extends View
 			}
 			// and now that the value is set…
 			self._updateValidationErrorForAddressInputView() // so we get validation error from persisted but incorrect value, if necessary for user feedback
+		}
+		{
+			self._configure_displayCcySelectLayer_value()
 		}
 	}
 	viewDidAppear()
@@ -533,6 +628,21 @@ class SettingsView extends View
 	}
 	//
 	// Delegation - Interactions
+	_ccySelectLayer_did_change()
+	{
+		let self = this
+		self.context.settingsController.Set_settings_valuesByKey(
+			{
+				displayCcySymbol: self.displayCcySelectLayer.value
+			},
+			function(err)
+			{
+				if (err) {
+					throw err
+				}
+			}
+		)
+	}
 	_serverURLInputLayer_did_keyUp()
 	{
 		const self = this

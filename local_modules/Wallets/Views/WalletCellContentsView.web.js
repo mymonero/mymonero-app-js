@@ -32,6 +32,9 @@ const View = require('../../Views/View.web')
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
+let Currencies = require('../../CcyConversionRates/Currencies')
+let monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+//
 class WalletCellContentsView extends View
 {
 	constructor(options, context)
@@ -200,30 +203,58 @@ class WalletCellContentsView extends View
 				self.wallet.EventName_booted(),
 				self.wallet_EventName_booted_listenerFunction
 			)
+			self.wallet_EventName_booted_listenerFunction = null
 		}
 		if (doesListenerFunctionExist(self.wallet_EventName_errorWhileBooting_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_errorWhileBooting(),
 				self.wallet_EventName_errorWhileBooting_listenerFunction
 			)
+			self.wallet_EventName_errorWhileBooting_listenerFunction = null
 		}
 		if (doesListenerFunctionExist(self.wallet_EventName_walletLabelChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_walletLabelChanged(),
 				self.wallet_EventName_walletLabelChanged_listenerFunction
 			)
+			self.wallet_EventName_walletLabelChanged_listenerFunction = null
 		}
 		if (doesListenerFunctionExist(self.wallet_EventName_walletSwatchChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_walletSwatchChanged(),
 				self.wallet_EventName_walletSwatchChanged_listenerFunction
 			)
+			self.wallet_EventName_walletSwatchChanged_listenerFunction = null
 		}
 		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
 			self.wallet.removeListener(
 				self.wallet.EventName_balanceChanged(),
 				self.wallet_EventName_balanceChanged_listenerFunction
 			)
+			self.wallet_EventName_balanceChanged_listenerFunction = null
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_balanceChanged_listenerFunction) === true) {
+			self.wallet.removeListener(
+				self.wallet.EventName_balanceChanged(),
+				self.wallet_EventName_balanceChanged_listenerFunction
+			)
+			self.wallet_EventName_balanceChanged_listenerFunction = null
+		}
+		if (doesListenerFunctionExist(self._CcyConversionRates_didUpdateAvailabilityOfRates_fn) === true) {
+			let emitter = self.context.CcyConversionRates_Controller_shared
+			emitter.removeListener(
+				emitter.eventName_didUpdateAvailabilityOfRates(),
+				self._CcyConversionRates_didUpdateAvailabilityOfRates_fn
+			)
+			self._CcyConversionRates_didUpdateAvailabilityOfRates_fn = null
+		}
+		if (doesListenerFunctionExist(self._settingsController__EventName_settingsChanged_displayCcySymbol__fn) === true) {
+			let emitter = self.context.settingsController
+			emitter.removeListener(
+				emitter.EventName_settingsChanged_displayCcySymbol(),
+				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
+			)
+			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = null
 		}
 	}
 	// Interface - Runtime - Imperatives - State/UI Configuration
@@ -268,9 +299,69 @@ class WalletCellContentsView extends View
 			} else if (wallet.HasEverFetched_accountInfo() === false) {
 				descriptionLayer_innerHTML = "Loading…"
 			} else {
-				descriptionLayer_innerHTML = `${wallet.Balance_FormattedString()} ${wallet.HumanReadable_walletCurrency()}`
-				if (wallet.HasLockedFunds() === true) {
-					descriptionLayer_innerHTML += ` (${wallet.LockedBalance_FormattedString()} 🔒)`
+				let hasLockedFunds = wallet.HasLockedFunds()
+				//
+				var finalizable_displayCurrency = self.context.settingsController.displayCcySymbol
+				var finalizable_balanceAmountDouble = wallet.Balance_DoubleNumber() // to finalize…
+				var finalizable_lockedBalanceAmountDouble_orNull = hasLockedFunds ? wallet.LockedBalance_DoubleNumber() : null // to finalize…
+				//
+				let XMR = Currencies.ccySymbolsByCcy.XMR
+				if (finalizable_displayCurrency != XMR) {
+					if (finalizable_displayCurrency == XMR) {
+						throw "Unexpected displayCurrency=.XMR"
+					}
+					let converted_balanceAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
+						self.context.CcyConversionRates_Controller_shared,
+						finalizable_displayCurrency,
+						finalizable_balanceAmountDouble
+					)
+					let converted_lockedBalanceAmountDouble_orNull = hasLockedFunds ? Currencies.displayUnitsRounded_amountInCurrency(
+						self.context.CcyConversionRates_Controller_shared,
+						finalizable_displayCurrency,
+						finalizable_lockedBalanceAmountDouble_orNull // we'll say this is non-nil here bc hasLockedFunds=true
+					) : null
+					if (converted_balanceAmountDouble_orNull != null) {
+						finalizable_balanceAmountDouble = converted_balanceAmountDouble_orNull // use converted, non-xmr amount
+						finalizable_lockedBalanceAmountDouble_orNull = converted_lockedBalanceAmountDouble_orNull // use converted, non-xmr amount
+					} else {
+						finalizable_displayCurrency = XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
+					}
+				}
+				//
+				let final_balanceAmountDouble = finalizable_balanceAmountDouble
+				let final_lockedBalanceAmountDouble = finalizable_lockedBalanceAmountDouble_orNull
+				let final_displayCcySymbol = finalizable_displayCurrency
+				//
+				var final_balanceAmountString;
+				var final_lockedBalanceAmountString_orNull;
+				if (final_displayCcySymbol == XMR) {
+					var final_balance_moneroAmount = monero_utils.parseMoney(
+						""+final_balanceAmountDouble // Double -> String - display formatting not required
+					) 
+					final_balanceAmountString = monero_utils.formatMoney(final_balance_moneroAmount)
+					if (hasLockedFunds) {
+						var final_lockedBalance_moneroAmount = monero_utils.parseMoney(
+							""+final_lockedBalanceAmountDouble // Double -> String
+						)
+						final_lockedBalanceAmountString_orNull = monero_utils.formatMoney(final_lockedBalance_moneroAmount)
+					}
+				} else {
+					final_balanceAmountString = Currencies.nonAtomicCurrency_formattedString(
+						final_balanceAmountDouble,
+						final_displayCcySymbol
+					)
+					if (hasLockedFunds) {
+						final_lockedBalanceAmountString_orNull = Currencies.nonAtomicCurrency_formattedString(
+							final_lockedBalanceAmountDouble,
+							final_displayCcySymbol
+						)
+					}
+				}
+				//
+				descriptionLayer_innerHTML = final_balanceAmountString+" "+final_displayCcySymbol
+				if (hasLockedFunds) {
+					let final_lockedBalanceAmountString = final_lockedBalanceAmountString_orNull
+					descriptionLayer_innerHTML += " (" + final_lockedBalanceAmountString + " 🔒)"
 				}
 			}
 		}
@@ -347,6 +438,28 @@ class WalletCellContentsView extends View
 			self.wallet.EventName_balanceChanged(),
 			self.wallet_EventName_balanceChanged_listenerFunction
 		)
+		{
+			let emitter = self.context.CcyConversionRates_Controller_shared
+			self._CcyConversionRates_didUpdateAvailabilityOfRates_fn = function()
+			{
+				self._configureUIWithWallet__labels()
+			}
+			emitter.on(
+				emitter.eventName_didUpdateAvailabilityOfRates(),
+				self._CcyConversionRates_didUpdateAvailabilityOfRates_fn
+			)
+		}
+		{
+			let emitter = self.context.settingsController
+			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = function()
+			{
+				self._configureUIWithWallet__labels()
+			}
+			emitter.on(
+				emitter.EventName_settingsChanged_displayCcySymbol(),
+				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
+			)
+		}
 	}
 }
 module.exports = WalletCellContentsView

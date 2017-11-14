@@ -31,12 +31,14 @@
 const async = require('async')
 const EventEmitter = require('events')
 const CollectionName = "Settings"
+let Currencies = require('../../CcyConversionRates/Currencies')
 //
-const k_default_appTimeoutAfterS = 3 * 60 // 3 minutes
-const k_defaults_record = 
+let k_defaults_record = 
 {
 	specificAPIAddressURLAuthority: "",
-	appTimeoutAfterS: k_default_appTimeoutAfterS
+	appTimeoutAfterS: 3 * 60, // 3 mins
+	invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: false,
+	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR // default
 }
 //
 class SettingsController extends EventEmitter
@@ -93,6 +95,8 @@ class SettingsController extends EventEmitter
 			//
 			self.specificAPIAddressURLAuthority = record_doc.specificAPIAddressURLAuthority
 			self.appTimeoutAfterS = record_doc.appTimeoutAfterS
+			self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount = record_doc.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount
+			self.displayCcySymbol = record_doc.displayCcySymbol
 			//
 			self.hasBooted = true // all done!
 		}
@@ -108,6 +112,10 @@ class SettingsController extends EventEmitter
 	EventName_settingsChanged_appTimeoutAfterS()
 	{
 		return "EventName_settingsChanged_appTimeoutAfterS"
+	}
+	EventName_settingsChanged_displayCcySymbol()
+	{
+		return "EventName_settingsChanged_displayCcySymbol"
 	}
 	//
 	AppTimeoutNeverValue()
@@ -130,6 +138,7 @@ class SettingsController extends EventEmitter
 				const valueKeys = Object.keys(valuesByKey)
 				var didUpdate_specificAPIAddressURLAuthority = false
 				var didUpdate_appTimeoutAfterS = false
+				var didUpdate_displayCcySymbol = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
@@ -137,7 +146,10 @@ class SettingsController extends EventEmitter
 							didUpdate_specificAPIAddressURLAuthority = true
 						} else if (valueKey === "appTimeoutAfterS") {
 							didUpdate_appTimeoutAfterS = true
+						} else if (valueKey === "displayCcySymbol") {
+							didUpdate_displayCcySymbol = true
 						}
+						// NOTE: not checking invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount b/c invisible_ and therefore always set programmatically
 					}
 					{ // set
 						self[valueKey] = value
@@ -151,10 +163,22 @@ class SettingsController extends EventEmitter
 						} else {
 							console.log("📝  Successfully saved " + self.constructor.name + " update ", JSON.stringify(valuesByKey))
 							if (didUpdate_specificAPIAddressURLAuthority) {
-								self.emit(self.EventName_settingsChanged_specificAPIAddressURLAuthority(), self.specificAPIAddressURLAuthority)
+								self.emit(
+									self.EventName_settingsChanged_specificAPIAddressURLAuthority(), 
+									self.specificAPIAddressURLAuthority
+								)
 							}
 							if (didUpdate_appTimeoutAfterS) {
-								self.emit(self.EventName_settingsChanged_appTimeoutAfterS(), self.appTimeoutAfterS)
+								self.emit(
+									self.EventName_settingsChanged_appTimeoutAfterS(), 
+									self.appTimeoutAfterS
+								)
+							}
+							if (didUpdate_displayCcySymbol) {
+								self.emit(
+									self.EventName_settingsChanged_displayCcySymbol(), 
+									self.displayCcySymbol
+								)
 							}
 						}
 						fn(err)
@@ -195,7 +219,9 @@ class SettingsController extends EventEmitter
 				{
 					_id: self._id, // important to set for updates
 					specificAPIAddressURLAuthority: self.specificAPIAddressURLAuthority,
-					appTimeoutAfterS: self.appTimeoutAfterS
+					appTimeoutAfterS: self.appTimeoutAfterS,
+					invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount,
+					displayCcySymbol: self.displayCcySymbol
 				}
 				if (self._id === null || typeof self._id === 'undefined') {
 					_proceedTo_insertNewDocument(persistableDocument)

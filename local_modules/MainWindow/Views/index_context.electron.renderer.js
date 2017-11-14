@@ -63,6 +63,16 @@ var context_object_instantiation_descriptions =
 	//
 	// services
 	{
+		module_path: __dirname + "/../../CcyConversionRates/Controller",
+		instance_key: "CcyConversionRates_Controller_shared",
+		options: {}
+	},
+	{
+		module: require("../../CcyConversionRates/Temporary_RateAPIPollingClient"),
+		instance_key: "Temporary_RateAPIPollingClient_shared",
+		options: {}
+	},
+	{
 		module_path: __dirname + "/../../Locale/Locale.electron",
 		instance_key: "locale",
 		options: {}
@@ -131,7 +141,7 @@ var context_object_instantiation_descriptions =
 		module_path: __dirname + "/../../Menus/MenuControllerController.renderer",
 		instance_key: "menuControllerController", // we/you probably won't need to access this ever though
 		options: {}
-	},
+	}
 ]
 function NewHydratedContext(
 	app, 

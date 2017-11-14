@@ -42,6 +42,7 @@ const documentCryptScheme =
 	to_address: { type: CryptSchemeFieldValueTypes.String },
 	payment_id: { type: CryptSchemeFieldValueTypes.String },
 	amount: { type: CryptSchemeFieldValueTypes.String },
+	amountCcySymbol: { type: CryptSchemeFieldValueTypes.String },
 	message: { type: CryptSchemeFieldValueTypes.String },
 	description: { type: CryptSchemeFieldValueTypes.String },
 	//
@@ -72,6 +73,7 @@ function HydrateInstance(
 	self.to_address = plaintextDocument.to_address
 	self.payment_id = plaintextDocument.payment_id
 	self.amount = plaintextDocument.amount
+	self.amountCcySymbol = plaintextDocument.amountCcySymbol
 	self.message = plaintextDocument.message
 	self.description = plaintextDocument.description
 	self.qrCode_imgDataURIString = plaintextDocument.qrCode_imgDataURIString
@@ -110,6 +112,7 @@ function SaveToDisk(
 		to_address: self.to_address,
 		payment_id: self.payment_id,
 		amount: self.amount != null && self.amount != "" ? "" + self.amount : self.amount, // storing this as an optional String
+		amountCcySymbol: self.amountCcySymbol,
 		message: self.message || "",
 		description: self.description || "",
 		qrCode_imgDataURIString: self.qrCode_imgDataURIString || ""

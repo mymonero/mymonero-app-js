@@ -229,7 +229,8 @@ class FundsRequestCellContentsView extends View
 			self.qrCode_img.src = fundsRequest.qrCode_imgDataURIString
 		}
 		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
-		self.amountLayer.innerHTML = fundsRequest.amount ? parseFloat("" + fundsRequest.amount) + " XMR" : "Any amount"
+		let ccy = fundsRequest.amountCcySymbol || "XMR"
+		self.amountLayer.innerHTML = fundsRequest.amount ? parseFloat("" + fundsRequest.amount) + " "+ccy : "Any amount"
 		var memoString = fundsRequest.message
 		if (!memoString || memoString.length == "") {
 			memoString = fundsRequest.description || ""

@@ -31,6 +31,7 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
@@ -52,6 +53,9 @@ const monero_utils = require('../../mymonero_core_js/monero_utils/monero_crypton
 const jsQR = require('jsqr')
 const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
 //
+let Currencies = require('../../CcyConversionRates/Currencies')
+let JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
+//
 class SendFundsView extends View
 {
 	constructor(options, context)
@@ -71,6 +75,10 @@ class SendFundsView extends View
 		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		self.setup_views()
 		self.startObserving()
+		//
+		setTimeout(function() {
+			self.set_isSubmittable_needsUpdate() // start off disabled
+		}, 10) // this is really lame but to fix it requires a good method to be notified of the moment self gets put into the nav bar…… I'll also place in VDA for good measure
 	}
 	_isUsingRelativeNotFixedActionButtonsContainer()
 	{
@@ -219,9 +227,8 @@ class SendFundsView extends View
 	_setup_form_amountInputLayer(tr)
 	{ 
 		const self = this
-		const pkg = commonComponents_forms.New_AmountInputFieldPKG(
+		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
-			"XMR", // TODO: grab, update from selected wallet
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateSend()
@@ -238,6 +245,44 @@ class SendFundsView extends View
 		}
 		labelLayer.style.marginTop = "0"
 		self.amountInputLayer = pkg.valueLayer
+		self.amountInputLayer.addEventListener(
+			"input",  // to cover copy/paste ops, etc
+			function(event)
+			{
+				self.set_isSubmittable_needsUpdate()
+				self.set_effectiveAmountLabelLayer_needsUpdate()
+			}
+		)
+		self.amountInputLayer.addEventListener(
+			"keyup", 
+			function(event)
+			{
+				self.set_isSubmittable_needsUpdate()
+				self.set_effectiveAmountLabelLayer_needsUpdate()
+			}
+		)
+		//
+		self.ccySelectLayer = pkg.ccySelectLayer
+		self.ccySelectLayer.addEventListener(
+			"change", 
+			function()
+			{
+				self.set_isSubmittable_needsUpdate() // b/c whether submittable amount can be derived has changed
+				self.set_effectiveAmountLabelLayer_needsUpdate()
+			}
+		)
+		//
+		self.effectiveAmountLabelLayer = pkg.effectiveAmountLabelLayer // for configuration
+		{
+			const tooltipText = `Currency selector for display purposes only. The app will send ${
+				Currencies.ccySymbolsByCcy.XMR
+			}.<br/><br/>Rate via '${
+				self.context.Temporary_RateAPIPollingClient_shared.domain() // TODO: obtain this from constant once server provides matrix` //
+			}'.`
+			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+			const layer = view.layer
+			self.effectiveAmountLabel_tooltipLayer = layer // we can append this straight to effectiveAmountLabelLayer but must do so later, at the specific time we modify effectiveAmountLabelLayer' innerHTML
+	}
 		//
 		const breakingDiv = document.createElement("div")
 		{ // addtl element on this screen
@@ -573,6 +618,31 @@ class SendFundsView extends View
 				self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet
 			)
 		}
+		{
+			let emitter = self.context.CcyConversionRates_Controller_shared
+			self._CcyConversionRates_didUpdateAvailabilityOfRates_fn = function()
+			{
+				self.set_isSubmittable_needsUpdate() // this is updated (called) here rather than not bc the amount fieldset does not observe the rate as it does in the iOS app codebase
+				self.set_effectiveAmountLabelLayer_needsUpdate()
+				self.refresh_networkFeeEstimateLayer()
+			}
+			emitter.on(
+				emitter.eventName_didUpdateAvailabilityOfRates(),
+				self._CcyConversionRates_didUpdateAvailabilityOfRates_fn
+			)
+		}
+		{
+			let emitter = self.context.settingsController
+			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = function()
+			{
+				self.set_effectiveAmountLabelLayer_needsUpdate()
+				self.refresh_networkFeeEstimateLayer()
+			}
+			emitter.on(
+				emitter.EventName_settingsChanged_displayCcySymbol(),
+				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
+			)
+		}
 	}
 	//
 	//
@@ -634,6 +704,22 @@ class SendFundsView extends View
 			)
 			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsFromWallet = null
 		}
+		{
+			let emitter = self.context.CcyConversionRates_Controller_shared
+			emitter.removeListener(
+				emitter.eventName_didUpdateAvailabilityOfRates(),
+				self._CcyConversionRates_didUpdateAvailabilityOfRates_fn
+			)
+			self._CcyConversionRates_didUpdateAvailabilityOfRates_fn = null
+		}
+		{
+			let emitter = self.context.settingsController
+			emitter.removeListener(
+				emitter.EventName_settingsChanged_displayCcySymbol(),
+				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
+			)
+			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = null
+		}
 	}
 	//
 	//
@@ -692,15 +778,174 @@ class SendFundsView extends View
 		const estimatedTotalFee_JSBigInt = /*hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
 		*/
-		const estimatedTotalFee_str = "0.028" 
+		const estimatedTotalFee_moneroAmountDouble = 0.028
 		// Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
-		var displayString = `+ ${estimatedTotalFee_str} EST. NETWORK FEE`
+		let displayCcySymbol = self.context.settingsController.displayCcySymbol
+		let finalizable_ccySymbol = displayCcySymbol
+		var finalizable_formattedAmountString = `${estimatedTotalFee_moneroAmountDouble}`
+		{
+			if (displayCcySymbol != Currencies.ccySymbolsByCcy.XMR) {
+				let displayCurrencyAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
+					self.context.CcyConversionRates_Controller_shared,
+					displayCcySymbol,
+					estimatedTotalFee_moneroAmountDouble
+				)
+				if (displayCurrencyAmountDouble_orNull != null) {
+					let displayCurrencyAmountDouble = displayCurrencyAmountDouble_orNull
+					finalizable_formattedAmountString = Currencies.nonAtomicCurrency_formattedString(
+						displayCurrencyAmountDouble,
+						finalizable_ccySymbol
+					)
+				} else {
+					finalizable_ccySymbol = Currencies.ccySymbolsByCcy.XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
+				}
+			}
+		}
+		let final_formattedAmountString = finalizable_formattedAmountString
+		let final_ccySymbol = finalizable_ccySymbol
+		let displayString = `+ ${final_formattedAmountString} ${final_ccySymbol} EST. NETWORK FEE`
 		//
 		return displayString
 	}
 	//
 	//
-	// Imperatives - UI - Config
+	// Internal - Imperatives - UI - Config
+	//
+	// Submittable
+	set_isSubmittable_needsUpdate()
+	{
+		const self = this
+		//
+		// compute new state value:
+		var isSubmittable = self.isFormDisabled != true && self.isResolvingSendTarget != true
+		const raw_amount_String = self.amountInputLayer.value
+		{
+			if (typeof raw_amount_String !== 'undefined' && raw_amount_String) {
+				let selected_ccySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
+				let rawInput_amount_Number = +raw_amount_String // turns string into JS Number
+				if (!isNaN(rawInput_amount_Number)) {
+					let submittableMoneroAmountDouble_orNull = Currencies.submittableMoneroAmountDouble_orNull(
+						self.context.CcyConversionRates_Controller_shared,
+						selected_ccySymbol,
+						rawInput_amount_Number
+					)
+					if (submittableMoneroAmountDouble_orNull == null) { // amt input exists but no converted amt found
+						if (selected_ccySymbol == Currencies.ccySymbolsByCcy.XMR) {
+							throw "null submittableMoneroAmountDouble_orNull while selected_ccySymbol=.XMR"
+						}
+						isSubmittable = false // because we must be still loading the rate - so we want to explicitly /disable/ submission
+					}
+				}
+			}
+		}
+		// for now, not going to check if contact has been chosen b/c we have a validation err for that
+		//
+		// update state:
+		let final_isSubmittable = isSubmittable
+		self.isSubmitButtonDisabled = !final_isSubmittable
+		//
+		// update UI to match…
+		// TODO: for now, not diffing… potential optimization
+		if (self.isSubmitButtonDisabled) {
+			self._disable_submitButton()
+		} else {
+			self._enable_submitButton()
+		}
+	}
+	set_effectiveAmountLabelLayer_needsUpdate()
+	{
+		let self = this
+		function __hideEffectiveAmountUI()
+		{
+			self.effectiveAmountLabelLayer.style.display = "none"
+		}
+		function __setTextOnAmountUI(
+			title,
+			shouldHide_tooltipButton
+		)
+		{
+			self.effectiveAmountLabelLayer.innerHTML = title
+			if (shouldHide_tooltipButton != true) {
+				// NOTE: shouldn't need to remove self.effectiveAmountLabel_tooltipLayer from its parentNode b/c we're rewriting innerHTML each time - DOM will handle
+				self.effectiveAmountLabelLayer.appendChild(self.effectiveAmountLabel_tooltipLayer) // NOTE: adding this /after/ updating title text
+			}
+			//
+			self.effectiveAmountLabelLayer.style.display = "inline-block" // NOTE: not block!!
+		}
+		function __convenience_setLoadingTextAndHideTooltip()
+		{
+			__setTextOnAmountUI("LOADING…", true /* shouldHide_tooltipButton */)
+		}
+		//
+		let raw_amount_String = self.amountInputLayer.value
+		if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
+			__hideEffectiveAmountUI()
+			return
+		} 
+		let rawInput_amount_Number = +raw_amount_String // String -> Number
+		if (isNaN(rawInput_amount_Number)) {
+			__hideEffectiveAmountUI()
+			return
+		}
+		//
+		// now we know amount is not empty and is valid number
+		let selected_ccySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
+		let displayCcySymbol = self.context.settingsController.displayCcySymbol
+		if (displayCcySymbol == null) {
+			throw "unexpectedly null displayCcySymbol"
+		}
+		let XMR = Currencies.ccySymbolsByCcy.XMR
+		if (selected_ccySymbol == XMR && displayCcySymbol == XMR) { // special case - no label necessary
+			__hideEffectiveAmountUI()
+			return
+		}
+		//
+		let xmrAmountDouble_orNull = Currencies.submittableMoneroAmountDouble_orNull(
+			self.context.CcyConversionRates_Controller_shared,
+			selected_ccySymbol,
+			rawInput_amount_Number
+		)
+		if (xmrAmountDouble_orNull == null) {
+			// but not empty … should have an amount… must be a non-XMR currency
+			if (selected_ccySymbol == XMR) {
+				throw "Unexpected selected_ccySymbol=.XMR"
+			}
+			__convenience_setLoadingTextAndHideTooltip()
+			return
+		}
+		let xmrAmountDouble = xmrAmountDouble_orNull
+		var finalizable_text
+		if (selected_ccySymbol == XMR) {
+			if (displayCcySymbol == XMR) {
+				throw "Unexpected displayCurrency=.XMR"
+			}
+			let displayCurrencyAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
+				self.context.CcyConversionRates_Controller_shared,
+				displayCcySymbol,
+				xmrAmountDouble
+			)
+			if (displayCurrencyAmountDouble_orNull == null) {
+				__convenience_setLoadingTextAndHideTooltip()
+				return
+			}
+			let displayCurrencyAmountDouble = displayCurrencyAmountDouble_orNull
+			let displayFormattedAmount = Currencies.nonAtomicCurrency_formattedString(
+				displayCurrencyAmountDouble,
+				displayCcySymbol
+			)
+			finalizable_text = `~ ${displayFormattedAmount} ${displayCcySymbol}`
+		} else {
+			let moneroAmountDouble_atomicPlaces = xmrAmountDouble * Math.pow(10, monero_config.coinUnitPlaces)
+			let moneroAmount = new JSBigInt(moneroAmountDouble_atomicPlaces)
+			let formatted_moneroAmount = monero_utils.formatMoney(moneroAmount)
+			finalizable_text = `= ${formatted_moneroAmount} ${Currencies.ccySymbolsByCcy.XMR}`
+		}
+		let final_text = finalizable_text
+		__setTextOnAmountUI(
+			final_text,
+			false // shouldHide_tooltipButton
+		)
+	}
 	//
 	refresh_networkFeeEstimateLayer()
 	{
@@ -713,6 +958,8 @@ class SendFundsView extends View
 		self._dismissValidationMessageLayer()
 		{
 			self.amountInputLayer.value = ""
+			self.ccySelectLayer.value = self.context.settingsController.displayCcySymbol
+			self.set_effectiveAmountLabelLayer_needsUpdate() // jic
 		}
 		{
 			if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
@@ -738,20 +985,24 @@ class SendFundsView extends View
 	//
 	// Runtime - Imperatives - Submit button enabled state
 	//
-	disable_submitButton()
+	_disable_submitButton()
 	{
 		const self = this
-		if (self.isSubmitButtonDisabled !== true) {
+		if (typeof self.rightBarButtonView !== 'undefined' && self.rightBarButtonView) {
 			self.isSubmitButtonDisabled = true
 			self.rightBarButtonView.SetEnabled(false)
+		} else {
+			self.isSubmitButtonDisabled = undefined
 		}
 	}
-	enable_submitButton()
+	_enable_submitButton()
 	{
 		const self = this
-		if (self.isSubmitButtonDisabled !== false) {
+		if (typeof self.rightBarButtonView !== 'undefined' && self.rightBarButtonView) {
 			self.isSubmitButtonDisabled = false
 			self.rightBarButtonView.SetEnabled(true)
+		} else {
+			self.isSubmitButtonDisabled = undefined
 		}
 	}
 	//
@@ -813,9 +1064,34 @@ class SendFundsView extends View
 			console.warn("⚠️  Submit button currently disabled. Bailing.")
 			return
 		}
+		function _reEnableFormElements()
+		{
+			self.isFormDisabled = false
+			self.set_isSubmittable_needsUpdate() // since we've updated form enabled
+			//
+			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
+			//
+			self.walletSelectView.SetEnabled(true)
+			//
+			self.amountInputLayer.disabled = false
+			self.ccySelectLayer.disabled = false
+			//
+			self.manualPaymentIDInputLayer.disabled = false
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
+			//
+			if (self.useCamera_buttonView) {
+				self.useCamera_buttonView.Enable()
+			}
+			if (self.chooseFile_buttonView) {
+				self.chooseFile_buttonView.Enable()
+			}
+		}
 		{ // disable form elements
-			self.disable_submitButton()
 			self.isFormDisabled = true
+			self.set_isSubmittable_needsUpdate() // since we've updated form enabled
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
 			if (self.context.Cordova_isMobile === true) {
 				window.plugins.insomnia.keepAwake() // disable screen dim/off
@@ -828,34 +1104,16 @@ class SendFundsView extends View
 				self.chooseFile_buttonView.Disable()
 			}
 			// 
-			self.amountInputLayer.disabled = true
-			self.manualPaymentIDInputLayer.disabled = true
-			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
 			self.walletSelectView.SetEnabled(false)
+			//
+			self.amountInputLayer.disabled = true
+			self.ccySelectLayer.disabled = true
+			//
+			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
+			self.manualPaymentIDInputLayer.disabled = true
 		}
 		{
 			self._dismissValidationMessageLayer()
-		}
-		function _reEnableFormElements()
-		{
-			self.isFormDisabled = false
-			self.context.userIdleInWindowController.ReEnable_userIdle()					
-			if (self.context.Cordova_isMobile === true) {
-				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
-			}
-			//
-			self.enable_submitButton() 
-			self.amountInputLayer.disabled = false
-			self.manualPaymentIDInputLayer.disabled = false
-			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
-			self.walletSelectView.SetEnabled(true)
-			//
-			if (self.useCamera_buttonView) {
-				self.useCamera_buttonView.Enable()
-			}
-			if (self.chooseFile_buttonView) {
-				self.chooseFile_buttonView.Enable()
-			}
 		}
 		function _trampolineToReturnWithValidationErrorString(errStr)
 		{ // call this anytime you want to exit this method before complete success (or otherwise also call _reEnableFormElements)
@@ -879,21 +1137,34 @@ class SendFundsView extends View
 			}
 		}
 		const raw_amount_String = self.amountInputLayer.value
-		var amount_Number = null;
 		{
 			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
 				_trampolineToReturnWithValidationErrorString("Please enter the amount to send.")
 				return
 			}
-			amount_Number = +raw_amount_String // turns into Number, apparently
-			if (isNaN(amount_Number)) {
-				_trampolineToReturnWithValidationErrorString("Please enter a valid amount of Monero.")
+		}
+		let selected_ccySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
+		var final_amount_Number = null;
+		{
+			let rawInput_amount_Number = +raw_amount_String // turns into Number, apparently
+			if (isNaN(rawInput_amount_Number)) {
+				_trampolineToReturnWithValidationErrorString("Please enter a valid amount to send.")
 				return
 			}
-			if (amount_Number <= 0) {
+			let submittableMoneroAmountDouble_orNull = Currencies.submittableMoneroAmountDouble_orNull(
+				self.context.CcyConversionRates_Controller_shared,
+				selected_ccySymbol,
+				rawInput_amount_Number
+			)
+			if (submittableMoneroAmountDouble_orNull == null) {
+				throw "submittableMoneroAmountDouble unexpectedly null while sending - button should be disabled"
+			}
+			let submittableMoneroAmountDouble = submittableMoneroAmountDouble_orNull
+			if (submittableMoneroAmountDouble <= 0) { // check this /after/ conversion to also check ->0 converted values
 				_trampolineToReturnWithValidationErrorString("The amount to send must be greater than zero.")
 				return
 			}
+			final_amount_Number = submittableMoneroAmountDouble
 		}
 		//
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
@@ -961,8 +1232,7 @@ class SendFundsView extends View
 					address__decode_result = monero_utils.decode_address(enteredAddressValue)
 				} catch (e) {
 					console.warn("Couldn't decode as a Monero address.", e)
-					_trampolineToReturnWithValidationErrorString("Please enter a valid Monero address.")
-					self.enable_submitButton()
+					_trampolineToReturnWithValidationErrorString("Please enter a valid Monero address.") // this will re-enable submit btn etc
 					return // just return silently
 				}
 				target_address = enteredAddressValue // then this look like a valid XMR addr
@@ -1007,15 +1277,75 @@ class SendFundsView extends View
 				return
 			}
 		}
-		{
-			self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
+
+		//
+		// now if using alternate display currency, be sure to ask for terms agreement before doing send
+		if (selected_ccySymbol != Currencies.ccySymbolsByCcy.XMR) {
+			let hasAgreedToUsageGateTerms = self.context.settingsController.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount || false
+			if (hasAgreedToUsageGateTerms == false) {
+				// show alert… iff user agrees, write user has agreed to terms and proceed to branch, else bail
+				let title = `Important`
+				let rateServiceDomainText = self.context.Temporary_RateAPIPollingClient_shared.domain() // not .authority - don't need subdomain
+				// TODO: ^--- obtain this from constant once server provides matrix
+				let message = `Though ${selected_ccySymbol} is selected, the app will send ${Currencies.ccySymbolsByCcy.XMR}. (This is not an exchange.)\n\nRate provided by '${rateServiceDomainText}'. Neither accuracy nor favorability guaranteed. Use at your own risk. Not responsible for losses.`
+				let ok_buttonTitle = `Agree and Send ${final_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}`
+				let cancel_buttonTitle = "Cancel"
+				self.context.windowDialogs.PresentQuestionAlertDialogWith(
+					title, 
+					message,
+					ok_buttonTitle, 
+					cancel_buttonTitle,
+					function(err, didChooseYes)
+					{
+						if (err) {
+							throw err
+						}
+						if (didChooseYes != true) {
+							// user canceled!
+							__currencyConversionRateAppliesAlert_cancel_action_op_fn()
+							return
+						}
+						__currencyConversionRateAppliesAlert_ok_action_op_fn()
+					}
+				)
+				//
+				return // early return pending alert result
+			}
+			// fall through
 		}
-		__proceedTo_generateSendTransactionWith(
-			wallet, // FROM wallet
-			target_address, // TO address
-			payment_id,
-			amount_Number
-		)
+		// fall through
+		__proceedTo_executeSend()
+		//
+		function __proceedTo_executeSend()
+		{
+			// unlike in iOS, the form is already disabled here in JS
+			__proceedTo_generateSendTransactionWith(
+				wallet, // FROM wallet
+				target_address, // TO address
+				payment_id,
+				final_amount_Number
+			)
+		}
+		function __currencyConversionRateAppliesAlert_cancel_action_op_fn()
+		{
+			_reEnableFormElements()
+		}
+		function __currencyConversionRateAppliesAlert_ok_action_op_fn()
+		{ // must be sure to save state so alert is now not required until a DeleteEverything
+			self.context.settingsController.Set_settings_valuesByKey(
+				{
+					invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: true
+				},
+				function(err)
+				{
+					if (err) {
+						throw err
+					}
+				}
+			)
+			// and of course proceed
+			__proceedTo_executeSend()
+		}
 		function __proceedTo_generateSendTransactionWith(
 			sendFrom_wallet,
 			target_address,
@@ -1023,6 +1353,8 @@ class SendFundsView extends View
 			amount_Number
 		)
 		{
+			self.validationMessageLayer.SetValidationError(`Sending ${final_amount_Number} XMR…`)
+			//
 			const sendFrom_address = sendFrom_wallet.public_address
 			//
 			const mixin_int = self._mixin_int()
@@ -1191,6 +1523,13 @@ class SendFundsView extends View
 				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + self.navigationController.NavigationBarHeight()}px`
 			}
 		}
+		self.set_isSubmittable_needsUpdate() // start off disabled
+	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		self.set_isSubmittable_needsUpdate() // start off disabled
 	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
 	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
@@ -1232,7 +1571,8 @@ class SendFundsView extends View
 				} else {
 					self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
 				}
-				self.enable_submitButton()
+				self.isResolvingSendTarget = false 
+				self.set_isSubmittable_needsUpdate()
 				// and exit early
 				return // no need to re-resolve what is not an OA addr
 			} else { // they're using an OA addr, so we still need to check if they still have one
@@ -1245,7 +1585,8 @@ class SendFundsView extends View
 		// look up the payment ID again 
 		{ // (and show the "resolving UI")
 			self.resolving_activityIndicatorLayer.style.display = "block"
-			self.disable_submitButton()
+			self.isResolvingSendTarget = true
+			self.set_isSubmittable_needsUpdate()
 			//
 			self._dismissValidationMessageLayer() // assuming it's okay to do this here - and need to since the coming callback can set the validation msg
 		}
@@ -1283,7 +1624,8 @@ class SendFundsView extends View
 					self.validationMessageLayer.SetValidationError(err.toString())
 					return
 				}
-				self.enable_submitButton() // only enable if no err
+				self.isResolvingSendTarget = false // only enable if no err
+				self.set_isSubmittable_needsUpdate()
 				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
 					// we don't want to show the resolved addr here
 					if (typeof payment_id !== 'undefined' && payment_id) {
@@ -1311,7 +1653,6 @@ class SendFundsView extends View
 			}
 		}
 		// 
-		//
 		self.cancelAny_requestHandle_for_oaResolution()
 		//
 		self._hideResolvedAddress()
@@ -1325,7 +1666,8 @@ class SendFundsView extends View
 			return
 		}
 		//
-		self.disable_submitButton()
+		self.isResolvingSendTarget = true
+		self.set_isSubmittable_needsUpdate()
 		//
 		const isOAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredPossibleAddress)
 		if (isOAAddress !== true) {
@@ -1334,7 +1676,8 @@ class SendFundsView extends View
 				address__decode_result = monero_utils.decode_address(enteredPossibleAddress)
 			} catch (e) {
 				console.warn("Couldn't decode as a Monero address.", e)
-				self.disable_submitButton()
+				self.isResolvingSendTarget = false
+				self.set_isSubmittable_needsUpdate()
 				return // just return silently
 			}
 			if (address__decode_result.intPaymentId) {
@@ -1345,7 +1688,8 @@ class SendFundsView extends View
 			} else {
 				self._hideResolvedPaymentID() // not that it would be showing
 			}
-			self.enable_submitButton()
+			self.isResolvingSendTarget = false
+			self.set_isSubmittable_needsUpdate()
 			return
 		}
 		// then this could be an OA address…
@@ -1378,7 +1722,8 @@ class SendFundsView extends View
 			)
 			{
 				self.resolving_activityIndicatorLayer.style.display = "none"
-				self.enable_submitButton()
+				self.isResolvingSendTarget = false
+				self.set_isSubmittable_needsUpdate()
 				//
 				if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
 					console.warn("⚠️  Called back from ResolveOpenAliasAddress but no longer have a self.requestHandle_for_oaResolution. Canceled by someone else? Bailing after neutralizing UI.")
@@ -1512,6 +1857,13 @@ class SendFundsView extends View
 			if (amount !== null && typeof amount !== 'undefined' && amount !== "") {
 				self.amountInputLayer.value = amount
 			}
+			//
+			const amountCcy = requestPayload.amount_ccy || "XMR"
+			// TODO: validate amountCcy
+			self.ccySelectLayer.value = amountCcy // TODO: possibly to just do this?
+			//
+			self.set_isSubmittable_needsUpdate()
+			self.set_effectiveAmountLabelLayer_needsUpdate()
 		}
 		const target_address = requestPayload.address
 		const payment_id_orNull = requestPayload.payment_id && typeof requestPayload.payment_id !== 'undefined' ? requestPayload.payment_id : null

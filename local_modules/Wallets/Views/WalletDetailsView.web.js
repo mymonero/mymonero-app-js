@@ -45,6 +45,9 @@ const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAn
 const TransactionDetailsView = require("./TransactionDetailsView.web")
 const ImportTransactionsModalView = require('./ImportTransactionsModalView.web')
 //
+let Currencies = require('../../CcyConversionRates/Currencies')
+let monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+//
 class WalletDetailsView extends View
 {
 	constructor(options, context)
@@ -135,9 +138,9 @@ class WalletDetailsView extends View
 			layer.style.fontSize = "32px"
 			view.layer.appendChild(layer)
 		}
-		const paddingZeroesLabelSpan = document.createElement("span")
+		const secondarySectionLabelSpan = document.createElement("span")
 		{
-			const layer = paddingZeroesLabelSpan			
+			const layer = secondarySectionLabelSpan
 			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontWeight = "100"
 			layer.style.fontSize = "32px"
@@ -149,12 +152,12 @@ class WalletDetailsView extends View
 			if (isDark) {
 				mainLabelSpan.style.color = "#F8F7F8" // so use light text
 				// ^-- TODO: for some reason, this has a much heavier visual/apparent font weight despite it being 100 :\
-				paddingZeroesLabelSpan.style.color = "rgba(248, 247, 248, 0.2)"
+				secondarySectionLabelSpan.style.color = "rgba(248, 247, 248, 0.2)"
 			} else {
 				mainLabelSpan.style.color = "#161416" // so use dark text
-				paddingZeroesLabelSpan.style.color = "rgba(29, 26, 29, 0.2)"
+				secondarySectionLabelSpan.style.color = "rgba(29, 26, 29, 0.2)"
 			}
-			view.layer.style.color = paddingZeroesLabelSpan.style.color // for the '…' during truncation
+			view.layer.style.color = secondarySectionLabelSpan.style.color // for the '…' during truncation
 			//
 			view._swatch_hexColorString = swatch_hexColorString
 			view.layer.style.backgroundColor = swatch_hexColorString
@@ -162,13 +165,46 @@ class WalletDetailsView extends View
 		view.SetPlainString = function(plainString)
 		{
 			mainLabelSpan.innerHTML = plainString
-			paddingZeroesLabelSpan.innerHTML = ""
+			secondarySectionLabelSpan.innerHTML = ""
 		}
 		view.SetBalanceWithWallet = function(wallet)
 		{ 
+			let XMR = Currencies.ccySymbolsByCcy.XMR
+			//
 			var finalized_main_string = ""
-			var finalized_paddingZeros_string = ""
+			var finalized_secondarySection_string = ""
+			var mutable_displayCcySymbol = self.context.settingsController.displayCcySymbol
 			{
+				if (mutable_displayCcySymbol != XMR) {
+					let balance_monero_doubleNumber = wallet.Balance_DoubleNumber()
+					let displayCurrencyAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
+						self.context.CcyConversionRates_Controller_shared,
+						mutable_displayCcySymbol,
+						balance_monero_doubleNumber
+					)
+					if (displayCurrencyAmountDouble_orNull == null) {
+						mutable_displayCcySymbol = XMR 
+						// rate is not ready, so wait to fall through to display XMR 
+					} else { 
+						// rate is ready
+						let final_displayCcySymbol = mutable_displayCcySymbol
+						let displayCurrencyAmountDouble = displayCurrencyAmountDouble_orNull
+						let displayFormattedAmount = Currencies.nonAtomicCurrency_formattedString(
+							displayCurrencyAmountDouble,
+							mutable_displayCcySymbol
+						)
+						finalized_main_string = displayFormattedAmount
+						finalized_secondarySection_string = "&nbsp;" + final_displayCcySymbol // special case
+					}
+				}
+			}
+			// now check if the ccy is /still/ XMR…
+			let final_displayCcySymbol = mutable_displayCcySymbol
+			if (final_displayCcySymbol == XMR) { 
+				// NOTE: checking if ccy is XMR again to catch displayCurrencyAmountDouble_orNull=null fallthrough case from alt display ccy 
+				if (finalized_main_string != "") {
+					throw "final_displayCcySymbol=XMR but finalized_main_string unexpectedly != its initial value"
+				}
 				const raw_balanceString = wallet.Balance_FormattedString()
 				const coinUnitPlaces = monero_config.coinUnitPlaces
 				const raw_balanceString__components = raw_balanceString.split(".")
@@ -176,26 +212,24 @@ class WalletDetailsView extends View
 					const balance_aspect_integer = raw_balanceString__components[0]
 					if (balance_aspect_integer === "0") {
 						finalized_main_string = ""
-						finalized_paddingZeros_string = "00." + Array(coinUnitPlaces).join("0")
+						finalized_secondarySection_string = "00." + Array(coinUnitPlaces).join("0")
 					} else {
 						finalized_main_string = balance_aspect_integer + "."
-						finalized_paddingZeros_string = Array(coinUnitPlaces).join("0")
+						finalized_secondarySection_string = Array(coinUnitPlaces).join("0")
 					}
 				} else if (raw_balanceString__components.length == 2) {
 					finalized_main_string = raw_balanceString
 					const decimalComponent = raw_balanceString__components[1]
 					const decimalComponent_length = decimalComponent.length
 					if (decimalComponent_length < coinUnitPlaces + 2) {
-						finalized_paddingZeros_string = Array(coinUnitPlaces - decimalComponent_length + 2).join("0")
+						finalized_secondarySection_string = Array(coinUnitPlaces - decimalComponent_length + 2).join("0")
 					}
 				} else {
 					throw "Couldn't parse formatted balance string."
-					// finalized_main_string = raw_balanceString
-					// finalized_paddingZeros_string = ""
 				}
 			}
 			mainLabelSpan.innerHTML = finalized_main_string
-			paddingZeroesLabelSpan.innerHTML = finalized_paddingZeros_string
+			secondarySectionLabelSpan.innerHTML = finalized_secondarySection_string
 		}
 	}
 	_new_fieldBaseView(entitled, isTruncatedPreviewForm)
@@ -437,6 +471,28 @@ class WalletDetailsView extends View
 			self.wallet.EventName_willBeDeleted(),
 			self._wallet_EventName_willBeDeleted_fn
 		)
+		{
+			let emitter = self.context.CcyConversionRates_Controller_shared
+			self._CcyConversionRates_didUpdateAvailabilityOfRates_fn = function()
+			{
+				self._configureUIWithWallet__balance()
+			}
+			emitter.on(
+				emitter.eventName_didUpdateAvailabilityOfRates(),
+				self._CcyConversionRates_didUpdateAvailabilityOfRates_fn
+			)
+		}
+		{
+			let emitter = self.context.settingsController
+			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = function()
+			{
+				self._configureUIWithWallet__balance()
+			}
+			emitter.on(
+				emitter.EventName_settingsChanged_displayCcySymbol(),
+				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
+			)
+		}
 	}
 	//
 	//
@@ -473,35 +529,65 @@ class WalletDetailsView extends View
 			self.wallet.EventName_booted(),
 			self.wallet_EventName_booted_listenerFunction
 		)
+		self.wallet_EventName_booted_listenerFunction = null
+		//
 		self.wallet.removeListener(
 			self.wallet.EventName_errorWhileBooting(),
 			self.wallet_EventName_errorWhileBooting_listenerFunction
 		)
+		self.wallet_EventName_errorWhileBooting_listenerFunction = null
 		//
 		self.wallet.removeListener(
 			self.wallet.EventName_walletLabelChanged(),
 			self.wallet_EventName_walletLabelChanged_listenerFunction
 		)
+		self.wallet_EventName_walletLabelChanged_listenerFunction = null
+		//
 		self.wallet.removeListener(
 			self.wallet.EventName_walletSwatchChanged(),
 			self.wallet_EventName_walletSwatchChanged_listenerFunction
 		)
+		self.wallet_EventName_walletSwatchChanged_listenerFunction = null
+		//
 		self.wallet.removeListener(
 			self.wallet.EventName_heightsUpdated(),
 			self.wallet_EventName_heightsUpdated_listenerFunction
 		)
+		self.wallet_EventName_heightsUpdated_listenerFunction = null
+		//
 		self.wallet.removeListener(
 			self.wallet.EventName_balanceChanged(),
 			self.wallet_EventName_balanceChanged_listenerFunction
 		)
+		self.wallet_EventName_balanceChanged_listenerFunction = null
+		//
 		self.wallet.removeListener(
 			self.wallet.EventName_transactionsChanged(),
 			self.wallet_EventName_transactionsChanged_listenerFunction
 		)
+		self.wallet_EventName_transactionsChanged_listenerFunction = null
+		//
 		self.wallet.removeListener(
 			self.wallet.EventName_willBeDeleted(),
 			self._wallet_EventName_willBeDeleted_fn
 		)
+		self._wallet_EventName_willBeDeleted_fn = null
+		{
+			let emitter = self.context.CcyConversionRates_Controller_shared
+			emitter.removeListener(
+				emitter.eventName_didUpdateAvailabilityOfRates(),
+				self._CcyConversionRates_didUpdateAvailabilityOfRates_fn
+			)
+			self._CcyConversionRates_didUpdateAvailabilityOfRates_fn = null
+		}
+		{
+			let emitter = self.context.settingsController
+			emitter.removeListener(
+				emitter.EventName_settingsChanged_displayCcySymbol(),
+				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
+			)
+			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = null
+		}
 	}
 	//
 	//
