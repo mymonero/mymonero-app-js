@@ -69,6 +69,22 @@ class InfoDisclosingView extends View
 			layer.style.top = "0"
 			layer.style.padding = "0"
 			layer.style.overflow = "hidden"
+			layer.addEventListener(
+				"click",
+				function(e)
+				{
+					let target = e.target
+					let hasClass_doNotUseForDisclosureToggling = target.classList.contains(self._className_doNotUseForDisclosureToggling())
+					if (hasClass_doNotUseForDisclosureToggling) {
+						return
+					}
+					let target_isInteractiveSubElement = target.tagName.toLowerCase() == "a"
+					if (target_isInteractiveSubElement) {
+						return
+					}
+					self.disclosureButtonView.toggleDisclosed()
+				}
+			)
 		}
 		{
 			const to_width = `calc(100% - ${self.padding_right + self.padding_left}px)`
@@ -90,6 +106,7 @@ class InfoDisclosingView extends View
 		{ // disclosure button view
 			const view = new View({ tag: "a" }, self.context)
 			const layer = view.layer
+			layer.classList.add(self._className_doNotUseForDisclosureToggling()) // even though the toggling animation code ignores 'spam'…
 			layer.style.position = "absolute"
 			layer.style.left = "14px"
 			layer.style.top = "15px"
@@ -125,15 +142,18 @@ class InfoDisclosingView extends View
 					layer.style.transform = to_transform
 				}
 			}
+			view.toggleDisclosed = function(optl_isAnimated)
+			{
+				let to_isDisclosed = self.isDisclosed ? false : true // verbosity bc "!" is a little hard to see
+				let final_isAnimated = optl_isAnimated || true
+				self.setDisclosed(to_isDisclosed, final_isAnimated)
+			}
 			layer.addEventListener(
 				"click",
 				function(e)
 				{
 					e.preventDefault()
-					self.setDisclosed(
-						!self.isDisclosed, // toggle
-						true // animate
-					)
+					view.toggleDisclosed()
 					return false
 				}
 			)
@@ -160,6 +180,10 @@ class InfoDisclosingView extends View
 	_fade_transitionAnimationDuration_ms()
 	{
 		return 280
+	}
+	_className_doNotUseForDisclosureToggling()
+	{
+		return "__infoDisclosing_doNotUseForDisclosureToggling"
 	}
 	//
 	//

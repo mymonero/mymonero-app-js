@@ -315,11 +315,9 @@ function New_customButton_aLayer(context, buttonTitleText, enabled_orTrue, click
 		"click",
 		function(e)
 		{
-			e.preventDefault()
 			if (layer.Component_IsEnabled !== false) {
 				clicked_fn() // just going to assume it exists or code fault
 			}
-			return false
 		}
 	)
 	return layer
