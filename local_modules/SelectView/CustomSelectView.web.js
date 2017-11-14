@@ -121,6 +121,7 @@ class CustomSelectView extends View
 		{
 			const layer = document.createElement("div")
 			self.disclosureArrowLayer = layer
+			layer.style.pointerEvents = "none" // definitely do not want to prevent or intercept pointer events
 			layer.style.border = "none"
 			layer.style.position = "absolute"
 			const w = 10

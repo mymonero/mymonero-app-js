@@ -603,6 +603,7 @@ function New_tableCell_accessoryChevronLayer(context)
 	const layer = document.createElement("img")
 	layer.src = context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/" + image_filename
 	layer.style.position = "absolute"
+	layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
 	layer.style.width = "7px"
 	const h = 12
 	layer.style.height = `${h}px`
