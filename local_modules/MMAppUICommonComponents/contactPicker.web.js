@@ -134,25 +134,6 @@ function New_contactPickerLayer(
 			const this_layer = this
 			commonComponents_forms._shared_scrollConformingElementIntoView(this_layer)
 		}
-		var typingDebounceTimeout = null
-		function _inputLayer_receivedInputOrChanged(optl_event)
-		{
-			//
-			// timeout-clearing key pressed
-			if (typingDebounceTimeout !== null) {
-				clearTimeout(typingDebounceTimeout)
-			}
-			const this_inputLayer = this
-			typingDebounceTimeout = setTimeout(function()
-			{ // to prevent searching too fast
-				typingDebounceTimeout = null // clear for next
-				//
-				if (didFinishTypingInInput_fn) {
-					didFinishTypingInInput_fn(optl_event)
-				}
-				_searchForAndDisplaySearchResults()
-			}, 350)
-		}
 		inputLayer.addEventListener(
 			"input", 
 			function()
@@ -320,6 +301,27 @@ function New_contactPickerLayer(
 			}
 		)
 		containerLayer.appendChild(__pickedContactLayer)
+	}
+	//
+	// Delegation
+	var typingDebounceTimeout = null
+	function _inputLayer_receivedInputOrChanged(optl_event)
+	{
+		//
+		// timeout-clearing key pressed
+		if (typingDebounceTimeout !== null) {
+			clearTimeout(typingDebounceTimeout)
+		}
+		const this_inputLayer = this
+		typingDebounceTimeout = setTimeout(function()
+		{ // to prevent searching too fast
+			typingDebounceTimeout = null // clear for next
+			//
+			if (didFinishTypingInInput_fn) {
+				didFinishTypingInInput_fn(optl_event)
+			}
+			_searchForAndDisplaySearchResults()
+		}, 350)
 	}
 	//
 	// observing contacts list controller for deletions 
