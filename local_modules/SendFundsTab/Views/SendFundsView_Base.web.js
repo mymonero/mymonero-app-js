@@ -277,7 +277,7 @@ class SendFundsView extends View
 		{
 			const tooltipText = `Currency selector for display purposes only. The app will send ${
 				Currencies.ccySymbolsByCcy.XMR
-			}.<br/><br/>Rate via '${
+			}.<br/><br/>Rate via sources such as '${
 				self.context.Temporary_RateAPIPollingClient_shared.domain() // TODO: obtain this from constant once server provides matrix` //
 			}'.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
@@ -1288,7 +1288,9 @@ class SendFundsView extends View
 				let title = `Important`
 				let rateServiceDomainText = self.context.Temporary_RateAPIPollingClient_shared.domain() // not .authority - don't need subdomain
 				// TODO: ^--- obtain this from constant once server provides matrix
-				let message = `Though ${selected_ccySymbol} is selected, the app will send ${Currencies.ccySymbolsByCcy.XMR}. (This is not an exchange.)\n\nRate provided by '${rateServiceDomainText}'. Neither accuracy nor favorability guaranteed. Use at your own risk. Not responsible for losses.`
+				let message = `Though ${selected_ccySymbol} is selected, the app will send ${Currencies.ccySymbolsByCcy.XMR}. (This is not an exchange.)`
+				message += `\n\n`
+				message += `Rate provided by sources such as '${rateServiceDomainText}'. No guarantee of accuracy nor favorability. Use at own risk / Not responsible for losses.`
 				let ok_buttonTitle = `Agree and Send ${final_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}`
 				let cancel_buttonTitle = "Cancel"
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
