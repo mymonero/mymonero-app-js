@@ -28,15 +28,39 @@
 
 "use strict"
 //
+//
+// IMPORTANT NOTE: This class is not at all intended for use by the public and is only for the purpose
+// of obtaining mock (and definitely INaccurate) rates for the MyMonero pre-release developer preview.
+//
+//
 let Currencies = require('./Currencies')
 //
 class Controller 
 {
 	//
-	// Interface - Constants
-	domain()
-	{
-		return "cryptocompare.com"
+	// Constants
+	domain() { return "cryptocompare.com" }
+	//
+	_path_plusArgs_sansCurrenciesCSV() { return "/data/price?fsym=XMR&tsyms=" }
+	path() {
+		let self = this
+		var string = ""
+		string += self._path_plusArgs_sansCurrenciesCSV()
+		var currenciesCSV;
+		{
+			let allCurrencies = Currencies.allOrderedCurrencySymbols
+			// ^-- from which we want to…
+			// strip .XMR
+			let filtered_currencySymbols = allCurrencies.filter(
+				function(ccySymbol) 
+				{ 
+					return ccySymbol != Currencies.ccySymbolsByCcy.XMR; 
+				}
+			)
+			currenciesCSV = filtered_currencySymbols.join(",")
+		}
+		string += currenciesCSV
+		return string
 	}
 	//
 	// Interface - Lifecycle - Init
