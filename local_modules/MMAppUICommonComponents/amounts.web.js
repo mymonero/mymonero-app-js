@@ -146,9 +146,7 @@ function New_AmountInputFieldPKG(
 		// TODO: move these into class + css rules
 		//
 		let selectLayer = ccySelectLayer
-		// selectLayer.style.textAlign = "center"
-		// selectLayer.style.textAlignLast = "center"
-		selectLayer.style.textIndent = "8px" // looks /slightly/ worse but textAlign* didn't work in Safari
+		selectLayer.style.textIndent = "8px" // left align text not desired bc of disclosure arrow
 		// selectLayer.style.outline = "none" // actually going to leave outline enabled for now for accessibility purposes 
 		selectLayer.style.color = "#DFDEDF"
 		selectLayer.style.backgroundColor = "rgba(80, 74, 80, 0.55)"
