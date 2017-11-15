@@ -341,6 +341,7 @@ class SettingsView extends View
 			{
 				const layer = document.createElement("div")
 				self.disclosureArrowLayer = layer
+				layer.style.pointerEvents = "none" // mustn't intercept pointer events
 				layer.style.border = "none"
 				layer.style.position = "absolute"
 				const w = 10
