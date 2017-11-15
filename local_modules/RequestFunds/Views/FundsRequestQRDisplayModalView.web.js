@@ -33,6 +33,8 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 //
+let Currencies = require('../../CcyConversionRates/Currencies')
+//
 class FundsRequestQRDisplayModalView extends View
 {
 	constructor(options, context)
@@ -100,7 +102,7 @@ class FundsRequestQRDisplayModalView extends View
 		{
 			let payment_id = self.initializing__fundsRequest.payment_id
 			let amount = self.initializing__fundsRequest.amount
-			let amountCcySymbol = self.initializing__fundsRequest.amountCcySymbol || "XMR"
+			let amountCcySymbol = self.initializing__fundsRequest.amountCcySymbol || Currencies.ccySymbolsByCcy.XMR
 			let to_address = self.initializing__fundsRequest.to_address
 			var middleTruncatedString = function(fullStr, numFrontChars, numEndChars, separator)
 			{
@@ -114,7 +116,14 @@ class FundsRequestQRDisplayModalView extends View
 					fullStr.substr(fullStr.length - numEndChars);
 			};
 			innerHTML = "Scan this code to send "
-			innerHTML += amount ? (amount + " " + amountCcySymbol) : "Monero"
+			if (amount) {
+				innerHTML += amount + " " + amountCcySymbol
+				if (amountCcySymbol != Currencies.ccySymbolsByCcy.XMR) {
+					innerHTML += " in Monero"
+				}
+			} else {
+				innerHTML += "Monero"
+			}
 			if (payment_id != null && payment_id != "" && typeof payment_id !== "undefined") {
 				innerHTML += " with payment ID " + middleTruncatedString(payment_id, 10, 6, "…")
 			}
