@@ -58,8 +58,10 @@ function New_AmountInputFieldPKG(
 { // -> {} // Experimental 'pkg' style return… maybe refactor into View later
 	const enterPressed_fn = optl__enterPressed_fn ? optl__enterPressed_fn : function() {}
 	//
-	let amountInput_baseW = 98
-	let selectLayer_w = 40
+	let amountInput_baseW = 68
+	let ccySelect_disclosureArrow_w = 8
+	let ccySelect_disclosureArrow_margin_right = 4 + 1
+	let selectLayer_w = 4 + 32/*text*/ + 4 + ccySelect_disclosureArrow_w + ccySelect_disclosureArrow_margin_right
 	//
 	const div = commonComponents_forms.New_fieldContainerLayer()
 	div.style.position = "relative" // to have layout reset origin of any position=absolute items
@@ -135,7 +137,9 @@ function New_AmountInputFieldPKG(
 	// TODO: move these into class + css rules
 	let selectLayer_left = container_padding_h + amountInput_baseW + 2*valueLayer.Component_default_padding_h() + 1.5
 	let selectLayer_h = valueLayer.Component_default_h() + 0.5
+	let ccySelect_disclosureArrow_h = 13
 	let ccySelectLayer = commonComponents_ccySelect.new_selectLayer()
+	var ccySelect_disclosureArrow_layer; // will be set
 	{
 		context.themeController.StyleLayer_FontAsSmallSemiboldSansSerif(ccySelectLayer)
 		//
@@ -150,8 +154,20 @@ function New_AmountInputFieldPKG(
 		selectLayer.style.backgroundColor = "rgba(80, 74, 80, 0.55)"
 		selectLayer.style.position = "absolute"
 		selectLayer.style.left = selectLayer_left+"px" // b/c it does not include the currency select padding and is therefore the origin.x of the select element
-		selectLayer.Component_default_top = function() { return 24 }
-		selectLayer.style.top = selectLayer.Component_default_top()+"px" // is this constant much too fragile?
+		selectLayer.Component_setTop = function(optl__to_topNumber)
+		{ // IMPORTANT: this must be called on setup
+			//
+			let to_topNumber = 
+				typeof optl__to_topNumber !== 'undefined' && optl__to_topNumber != null 
+					? optl__to_topNumber 
+					: 24
+			selectLayer.Component_topNumber = to_topNumber 
+			//
+			ccySelectLayer.style.top = to_topNumber+"px"
+			ccySelect_disclosureArrow_layer.style.top = Math.floor(
+				to_topNumber + (selectLayer_h - ccySelect_disclosureArrow_h)/2 + 1
+			)+"px"
+		}
 		selectLayer.style.width = selectLayer_w+"px"
 		selectLayer.style.height =selectLayer_h+"px"
 		selectLayer.style.border = "0"
@@ -165,6 +181,26 @@ function New_AmountInputFieldPKG(
 		selectLayer.style.borderTopLeftRadius = "0px"
 	}
 	div.appendChild(ccySelectLayer)
+	{
+		const layer = document.createElement("div")
+		ccySelect_disclosureArrow_layer = layer
+		layer.style.pointerEvents = "none" // definitely do not want to prevent or intercept pointer events
+		layer.style.border = "none"
+		layer.style.position = "absolute"
+		const w = ccySelect_disclosureArrow_w
+		const h = ccySelect_disclosureArrow_h
+		layer.style.width = w+"px"
+		layer.style.height = h+"px"
+		layer.style.left = (selectLayer_left + selectLayer_w - ccySelect_disclosureArrow_margin_right - w) + "px"
+		layer.style.top = 
+		layer.style.zIndex = "100" // above options_containerView 
+		layer.style.backgroundImage = "url("+context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/smallSelect_disclosureArrow@3x.png)"
+		layer.style.backgroundRepeat = "no-repeat"
+		layer.style.backgroundPosition = "center"
+		layer.style.backgroundSize = w+"px "+ h+"px"
+		div.appendChild(layer)			
+	}
+	ccySelectLayer.Component_setTop() // IMPORTANT: this must be called on setup
 	//
 	//
 	const effectiveAmountLabelLayer = commonComponents_forms.New_fieldTitle_labelLayer(
@@ -185,6 +221,7 @@ function New_AmountInputFieldPKG(
 		labelLayer: labelLayer,
 		valueLayer: valueLayer,
 		ccySelectLayer: ccySelectLayer,
+		ccySelect_disclosureArrow_layer: ccySelect_disclosureArrow_layer, 
 		effectiveAmountLabelLayer: effectiveAmountLabelLayer
 	}
 }

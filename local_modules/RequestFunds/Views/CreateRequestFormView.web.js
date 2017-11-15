@@ -173,7 +173,16 @@ class CreateRequestFormView extends View
 		self.amountInputLayer = pkg.valueLayer
 		//
 		self.ccySelectLayer = pkg.ccySelectLayer
-		self.ccySelectLayer.style.top = self.ccySelectLayer.Component_default_top() + 20/* measured… TODO remove by revamping container layout system*/ + "px"
+		{ // special case: adjust style.top -- which must be done via Component function 
+			let ccySelectLayer_currentTop = self.ccySelectLayer.Component_topNumber
+			if (typeof ccySelectLayer_currentTop == 'undefined' || ccySelectLayer_currentTop == null) {
+				throw "nil ccySelectLayer_currentTop"
+			}
+			self.ccySelectLayer.Component_setTop( // NOTE: this is guaranteed to have been already called at its setup; (ctd)
+				ccySelectLayer_currentTop // so this can be accessed
+					+ 20 // measured… TODO: fragile -- remove by revamping container layout system
+			)
+		}
 		//
 		pkg.effectiveAmountLabelLayer.style.display = "none"
 		//
