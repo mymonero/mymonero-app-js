@@ -97,7 +97,8 @@ function __proceedTo_test_addressInfo(fn)
 			account_scanned_block_height,
 			account_scan_start_height,
 			transaction_height,
-			blockchain_height
+			blockchain_height,
+			ratesBySymbol
 		)
 		{
 			console.log("err", err)

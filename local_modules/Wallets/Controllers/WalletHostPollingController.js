@@ -198,7 +198,8 @@ class WalletHostPollingController
 				account_scanned_block_height,
 				account_scan_start_height,
 				transaction_height,
-				blockchain_height
+				blockchain_height,
+				ratesBySymbol
 			)
 			{
 				// immediately unlock this request fetch
@@ -221,7 +222,8 @@ class WalletHostPollingController
 					account_scanned_block_height,
 					account_scan_start_height,
 					transaction_height,
-					blockchain_height
+					blockchain_height,
+					ratesBySymbol
 				)
 			}
 		)

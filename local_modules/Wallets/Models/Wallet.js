@@ -1264,11 +1264,22 @@ class Wallet extends EventEmitter
 		account_scanned_block_height,
 		account_scan_start_height,
 		transaction_height,
-		blockchain_height
+		blockchain_height,
+		ratesBySymbol
 	)
 	{
 		const self = this
-		// console.log("_didFetchTransactionHistory")
+		//
+		// console.log("_didFetch_accountInfo")
+		//
+		setTimeout(
+			function()
+			{ // just so as not to interfere w/ the _didFetch_accountInfo 'meat'
+				self.context.CcyConversionRates_Controller_shared.set_batchOf_ratesBySymbol(
+					ratesBySymbol
+				)
+			}
+		)
 		//
 		// JSBigInts
 		var accountBalance_didActuallyChange = false

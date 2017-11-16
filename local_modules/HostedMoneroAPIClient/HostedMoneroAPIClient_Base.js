@@ -284,7 +284,9 @@ class HostedMoneroAPIClient_Base
 						returnValuesByKey.account_scanned_block_height,
 						returnValuesByKey.account_scan_start_height,
 						returnValuesByKey.transaction_height,
-						returnValuesByKey.blockchain_height
+						returnValuesByKey.blockchain_height,
+						//
+						returnValuesByKey.ratesBySymbol
 					)
 				}
 			)

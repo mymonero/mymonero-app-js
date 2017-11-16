@@ -56,6 +56,8 @@ const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/mon
 let Currencies = require('../../CcyConversionRates/Currencies')
 let JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
 //
+let rateServiceDomainText = "cryptocompare.com" 
+//
 class SendFundsView extends View
 {
 	constructor(options, context)
@@ -278,7 +280,7 @@ class SendFundsView extends View
 			const tooltipText = `Currency selector for display purposes only. The app will send ${
 				Currencies.ccySymbolsByCcy.XMR
 			}.<br/><br/>Rate via sources such as '${
-				self.context.Temporary_RateAPIPollingClient_shared.domain() // TODO: obtain this from constant once server provides matrix` //
+				rateServiceDomainText
 			}'.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
@@ -1286,8 +1288,6 @@ class SendFundsView extends View
 			if (hasAgreedToUsageGateTerms == false) {
 				// show alert… iff user agrees, write user has agreed to terms and proceed to branch, else bail
 				let title = `Important`
-				let rateServiceDomainText = self.context.Temporary_RateAPIPollingClient_shared.domain() // not .authority - don't need subdomain
-				// TODO: ^--- obtain this from constant once server provides matrix
 				let message = `Though ${selected_ccySymbol} is selected, the app will send ${Currencies.ccySymbolsByCcy.XMR}. (This is not an exchange.)`
 				message += `\n\n`
 				message += `Rate provided by sources such as '${rateServiceDomainText}'. No guarantee of accuracy nor favorability. Use at own risk / Not responsible for losses.`

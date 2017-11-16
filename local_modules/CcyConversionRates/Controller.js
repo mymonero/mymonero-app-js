@@ -127,6 +127,41 @@ class Controller extends EventEmitter
 		self._notifyOf_updateTo_XMRToCurrencyRate()
 	}
 	//
+	set_batchOf_ratesBySymbol(
+		ratesBySymbol //: [String: Number]
+	)
+	{
+		const self = this
+		//
+		var mutable_didUpdateAnyValues = false
+		{
+			let ccySymbols = Object.keys(Currencies.ccySymbolsByCcy)
+			let numberOf_ccySymbols = ccySymbols.length
+			for (var i = 0 ; i < numberOf_ccySymbols ; i++) {
+				let ccySymbol = ccySymbols[i]
+				if (ccySymbol == Currencies.ccySymbolsByCcy.XMR) {
+					continue; // do not need to mock XMR<->XMR rate
+				}
+				let rateAsNumber = ratesBySymbol[ccySymbol]
+				if (typeof rateAsNumber !== 'undefined') { // but this WILL allow nulls! is that ok? figure being able to nil serverside might be important... and if it is null from server, invalidating/expiring the local value is probably therefore a good idea
+					let _wasSetValueDifferent = self.set(
+						rateAsNumber,
+						ccySymbol,
+						true // isPartOfBatch … defer notify
+					)
+					if (_wasSetValueDifferent) {
+						mutable_didUpdateAnyValues = true
+					}
+				}
+			}
+		}
+		let didUpdateAnyValues = mutable_didUpdateAnyValues
+		if (didUpdateAnyValues) {
+			// notify all of update
+			self.ifBatched_notifyOf_set_XMRToCurrencyRate()
+		}
+	}
+	//
 	// Internal - Imperatives
 	_notifyOf_updateTo_XMRToCurrencyRate()
 	{

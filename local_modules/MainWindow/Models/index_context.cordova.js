@@ -84,11 +84,6 @@ function NewHydratedContext(initialContext)
 			options: {}
 		},
 		{
-			module: require("../../CcyConversionRates/Temporary_RateAPIPollingClient"),
-			instance_key: "Temporary_RateAPIPollingClient_shared",
-			options: {}
-		},
-		{
 			module: require("../../Locale/Locale.cordova"),
 			instance_key: "locale",
 			options: {}

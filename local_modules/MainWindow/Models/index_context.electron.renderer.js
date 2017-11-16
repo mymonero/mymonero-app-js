@@ -68,11 +68,6 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module: require("../../CcyConversionRates/Temporary_RateAPIPollingClient"),
-		instance_key: "Temporary_RateAPIPollingClient_shared",
-		options: {}
-	},
-	{
 		module_path: __dirname + "/../../Locale/Locale.electron",
 		instance_key: "locale",
 		options: {}
