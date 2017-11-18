@@ -58,7 +58,7 @@ function New_AmountInputFieldPKG(
 { // -> {} // Experimental 'pkg' style return… maybe refactor into View later
 	const enterPressed_fn = optl__enterPressed_fn ? optl__enterPressed_fn : function() {}
 	//
-	let amountInput_baseW = 68
+	let amountInput_baseW = 80
 	let ccySelect_disclosureArrow_w = 8
 	let ccySelect_disclosureArrow_margin_right = 4 + 1
 	let selectLayer_w = 4 + 32/*text*/ + 4 + ccySelect_disclosureArrow_w + ccySelect_disclosureArrow_margin_right
