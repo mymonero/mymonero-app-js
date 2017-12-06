@@ -60,7 +60,7 @@ function New_AmountInputFieldPKG(
 	//
 	let amountInput_baseW = 80
 	let ccySelect_disclosureArrow_w = 8
-	let ccySelect_disclosureArrow_margin_right = 4 + 1
+	let ccySelect_disclosureArrow_margin_right = 4 + 2
 	let selectLayer_w = 4 + 32/*text*/ + 4 + ccySelect_disclosureArrow_w + ccySelect_disclosureArrow_margin_right
 	//
 	const div = commonComponents_forms.New_fieldContainerLayer()
