@@ -277,9 +277,9 @@ class SendFundsView extends View
 		//
 		self.effectiveAmountLabelLayer = pkg.effectiveAmountLabelLayer // for configuration
 		{
-			const tooltipText = `Currency selector for display purposes only. The app will send ${
+			const tooltipText = `Currency selector for display<br/>purposes only. The app will<br/>send ${
 				Currencies.ccySymbolsByCcy.XMR
-			}.<br/><br/>Rate via sources such as '${
+			}.<br/><br/>Rate sources include<br/>'${
 				rateServiceDomainText
 			}'.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
@@ -297,12 +297,12 @@ class SendFundsView extends View
 			self.refresh_networkFeeEstimateLayer() // now that reference assigned…
 			breakingDiv.appendChild(layer)
 		}
-		// {
-		// 	const tooltipText = "This figure is based on network<br/>fee estimate, and is not final."
-		// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-		// 	const layer = view.layer
-		// 	breakingDiv.appendChild(layer)
-		// }
+		{
+			const tooltipText = "Based on Monero network<br/>priority fee estimate (not final).<br/><br/>MyMonero adds no transaction fee."
+			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+			const layer = view.layer
+			breakingDiv.appendChild(layer)
+		}
 		div.appendChild(breakingDiv)
 		//
 		const td = document.createElement("td")
