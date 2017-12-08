@@ -240,7 +240,7 @@ class SendFundsView extends View
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
 		{
-			const tooltipText = `Monero makes transactions with your<br/>"available outputs", so part of your<br/>balance will be briefly locked and<br/>then returned as change.<br/><br/>Monero ringsize value set to ${self._mixin_int()+1}.`
+			const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.<br/><br/>Monero ringsize value set<br/>to ${self._mixin_int()+1}.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -323,7 +323,7 @@ class SendFundsView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
 		{
-			const tooltipText = `Please double-check the accuracy of<br/>your recipient information as Monero<br/>transactions are irreversible.`
+			const tooltipText = `Please double-check the accuracy<br/>of your recipient information as<br/>Monero transfers are irreversible.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
