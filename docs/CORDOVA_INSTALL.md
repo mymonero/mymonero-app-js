@@ -4,13 +4,16 @@
 
 ## Cordova Installation Notes
 
-For full instructions on running the Cordova builds, please refer back to the [Readme](./README.md).
+For full instructions on running the Cordova builds, please refer to the [Readme](./README.md).
 
 ### System Requirements
 
  * Latest Android Studio/cli tools
 
-### Android Notes
+ * Java 8
+ 	* **not Java 9** - https://stackoverflow.com/questions/46402772/failed-to-install-android-sdk
+
+### Gotchas
 
 [Cordova: Android - 'dev' - Installing the Requirements](https://cordova.apache.org/docs/en/dev/guide/platforms/android/index.html#installing-the-requirements)
 
@@ -22,8 +25,9 @@ Cordova requires you to make various locations available via your PATH variable.
 
 	```
 	export JAVA_HOME="$(/usr/libexec/java_home)"
-	export ANDROID_HOME="$HOME/Library/Android/sdk"
-	export PATH="$PATH:$JAVA_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools"
+	export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+	export ANDROID_HOME="$ANDROID_SDK_ROOT"
+	export PATH="$PATH:$JAVA_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin"
 	```
  
 * How to find `android_path`: 
