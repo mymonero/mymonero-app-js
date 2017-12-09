@@ -37,7 +37,7 @@
     <plugin name="com.ozexpert.devicemeta" spec="https://github.com/ozexpert/cordova-plugin-device-meta.git" />
     <plugin name="cordova-plugin-compat" spec="~1.1.0" />
     <plugin name="cordova-base64-to-gallery" spec="https://github.com/medi-y-sato/cordova-base64-to-gallery" />
-    <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
+    <plugin name="com.verso.cordova.clipboard" spec="https://github.com/ibnclaudius/CordovaClipboard" />
     <plugin name="cordova-plugin-customurlscheme" spec="~4.2.0">
         <variable name="URL_SCHEME" value="monero" />
         <variable name="ANDROID_SCHEME" value=" " />
