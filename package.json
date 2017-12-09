@@ -96,7 +96,7 @@
     "com.ozexpert.devicemeta": "https://github.com/ozexpert/cordova-plugin-device-meta.git",
     "cordova-plugin-compat": "~1.1.0",
     "cordova-base64-to-gallery": "https://github.com/medi-y-sato/cordova-base64-to-gallery",
-    "com.verso.cordova.clipboard": "https://github.com/VersoSolutions/CordovaClipboard",
+    "com.verso.cordova.clipboard": "https://github.com/ibnclaudius/CordovaClipboard",
     "cordova-plugin-customurlscheme": "~4.2.0",
     "cordova-plugin-inappbrowser": "~1.7.0",
     "cordova-plugin-splashscreen": "https://github.com/apache/cordova-plugin-splashscreen.git",
