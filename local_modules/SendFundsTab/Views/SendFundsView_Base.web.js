@@ -1274,10 +1274,26 @@ class SendFundsView extends View
 				}
 			}
 		}
-		{ // final validation
+		{ // final validation / sanitization / transformation
 			if (!target_address) {
 				_trampolineToReturnWithValidationErrorString("Unable to derive a target address for this transfer. This may be a bug.")
 				return
+			}
+			if (payment_id && payment_id != "") { // so, valid by this point
+				if (payment_id.length == 16) { // a short one
+					if (isIntegratedAddress == true) {
+						throw "unexpected isIntegratedAddress=true" // we'll assume user didn't enter an overriding integrated address
+					}
+					// construct integrated address
+					let overwritten__target_address = target_address;
+					target_address = monero_utils.new__int_addr_from_addr_and_short_pid(
+						overwritten__target_address, // the monero one
+						payment_id // short pid
+					)
+					//
+					payment_id = null // must now zero this or Send will throw a "pid must be blank with integrated addr"
+					isIntegratedAddress = true // should update this
+				}
 			}
 		}
 
