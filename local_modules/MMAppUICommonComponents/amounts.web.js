@@ -61,7 +61,8 @@ function New_AmountInputFieldPKG(
 	let amountInput_baseW = 80
 	let ccySelect_disclosureArrow_w = 8
 	let ccySelect_disclosureArrow_margin_right = 4 + 2
-	let selectLayer_w = 4 + 32/*text*/ + 4 + ccySelect_disclosureArrow_w + ccySelect_disclosureArrow_margin_right
+	let ccySelect_label_margin_left = 6
+	let selectLayer_w = ccySelect_label_margin_left + 32/*text*/ + 4 + ccySelect_disclosureArrow_w + ccySelect_disclosureArrow_margin_right
 	//
 	const div = commonComponents_forms.New_fieldContainerLayer()
 	div.style.position = "relative" // to have layout reset origin of any position=absolute items
@@ -146,7 +147,7 @@ function New_AmountInputFieldPKG(
 		// TODO: move these into class + css rules
 		//
 		let selectLayer = ccySelectLayer
-		selectLayer.style.textIndent = "8px" // left align text not desired bc of disclosure arrow
+		selectLayer.style.textIndent = (4 + ccySelect_label_margin_left) + "px" // left align text not desired bc of disclosure arrow
 		// selectLayer.style.outline = "none" // actually going to leave outline enabled for now for accessibility purposes 
 		selectLayer.style.color = "#DFDEDF"
 		selectLayer.style.backgroundColor = "rgba(80, 74, 80, 0.55)"
