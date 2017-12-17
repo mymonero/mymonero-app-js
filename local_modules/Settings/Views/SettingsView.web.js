@@ -285,7 +285,7 @@ class SettingsView extends View
 	_setup_form_field_displayCcy()
 	{
 		const self = this
-		let selectLayer_w = 126
+		let selectLayer_w = 132 // disclosure arrow visual alignment with change pw content right edge
 		let selectLayer_h = 32
 		//
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
