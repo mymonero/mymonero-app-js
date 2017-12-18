@@ -321,7 +321,7 @@ class Contact extends EventEmitter
 	{
 		let self = this
 		let payment_id = self.payment_id;
-		if (payment_id == null || payment_id == null || typeof payment_id == "undefined") {
+		if (payment_id == null || payment_id == "" || typeof payment_id == "undefined") {
 			return null; // no possible derived int address
 		}
 		if (monero_paymentID_utils.IsValidShortPaymentID(payment_id) == false) {
