@@ -88,6 +88,7 @@ class ContactDetailsView extends View
 			{
 				self._setup_field_address()
 				self._setup_field__cached_OAResolved_XMR_address()
+				self._setup_field__derived__integrated_XMR_address()
 				containerLayer.appendChild(commonComponents_tables.New_separatorLayer(self.context))
 				self._setup_field_paymentID()
 			}
@@ -140,7 +141,7 @@ class ContactDetailsView extends View
 	_setup_field__cached_OAResolved_XMR_address()
 	{
 		const self = this
-		const fieldLabelTitle = "Resolved Address (XMR)"
+		const fieldLabelTitle = "XMR Address (cached)"
 		const value = self.contact.cached_OAResolved_XMR_address
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
@@ -152,6 +153,26 @@ class ContactDetailsView extends View
 		)
 		div.style.paddingRight = "16px" // manually here cause we removed right padding on container to get separator flush with right side 
 		self.cached_OAResolved_XMR_address__valueField_component = div
+		if (typeof value === 'undefined' || !value) {
+			div.style.display = "none"
+		}
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_setup_field__derived__integrated_XMR_address()
+	{
+		const self = this
+		const fieldLabelTitle = "Integrated Address (derived)"
+		const value = self.contact.new_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		const valueToDisplayIfValueNil = "N/A"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
+			fieldLabelTitle, 
+			value,
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		div.style.paddingRight = "16px" // manually here cause we removed right padding on container to get separator flush with right side 
+		self.derived__integrated_XMR_address__valueField_component = div
 		if (typeof value === 'undefined' || !value) {
 			div.style.display = "none"
 		}
@@ -355,6 +376,16 @@ class ContactDetailsView extends View
 		{
 			const value = self.contact.cached_OAResolved_XMR_address
 			const layer = self.cached_OAResolved_XMR_address__valueField_component
+			if (!value || typeof value === 'undefined') {
+				layer.style.display = "none"
+			} else {
+				layer.Component_SetValue(value)
+				layer.style.display = "block"
+			}
+		}
+		{
+			const value = self.contact.new_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+			const layer = self.derived__integrated_XMR_address__valueField_component
 			if (!value || typeof value === 'undefined') {
 				layer.style.display = "none"
 			} else {

@@ -36,6 +36,7 @@ const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
 const contact_persistence_utils = require('./contact_persistence_utils')
 //
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 //
 class Contact extends EventEmitter
 {
@@ -314,6 +315,36 @@ class Contact extends EventEmitter
 		const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
 		//
 		return isIntegratedAddress
+	}
+	//
+	new_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+	{
+		let self = this
+		let payment_id = self.payment_id;
+		if (payment_id == null || payment_id == null || typeof payment_id == "undefined") {
+			return null; // no possible derived int address
+		}
+		if (monero_paymentID_utils.IsValidShortPaymentID(payment_id) == false) {
+			return null; // must be a long payment ID
+		}
+		if (self.HasIntegratedAddress()) {
+			return null; // b/c we don't want to show a derived int addr if we already have it!
+		}
+		var address = null;
+		if (self.HasOpenAliasAddress()) {
+			address = self.cached_OAResolved_XMR_address;
+		} else {
+			address = self.address;
+		}
+		if (address == null || address == "" || typeof address == "undefined") {
+			return null; // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
+		}
+		// now we know we have a std xmr addr and a short pid
+		let int_addr = monero_utils.new__int_addr_from_addr_and_short_pid(
+			address,
+			payment_id
+		);
+		return int_addr;
 	}
 	
 
