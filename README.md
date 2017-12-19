@@ -201,6 +201,12 @@ See [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md) for inf
 
 `bin/start_dev_cordova_android_device`
 
+### Browser (Web wallet)
+
+`bin/start_dev_browser`
+
+*Note:* If your system does not have the `open` command as is found on MacOS, then this command will fail at the last step to open `browser_build/index.html`. So after running the `start_dev` command, simply open `index.html` in your browser of choice.
+
 
 ## Contributing
 
