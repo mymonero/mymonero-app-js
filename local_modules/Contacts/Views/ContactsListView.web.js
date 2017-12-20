@@ -133,19 +133,25 @@ class ContactsListView extends ListView
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
+		//
 		const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
 		view.layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
-				{
-					const view = new AddContactFromContactsTabView({}, self.context)
-					self.currentlyPresented_AddContactView = view
-					const navigationView = new StackAndModalNavigationView({}, self.context)
-					navigationView.SetStackViews([ view ])
-					self.navigationController.PresentView(navigationView, true)
+				//
+				if (self.navigationController.isCurrentlyTransitioningAManagedView__Modal == true) {
+					console.warn("Ignoring ix on rightBarButtonView while self.navigationController.isCurrentlyTransitioningAManagedView__Modal=true")
+					return
 				}
+				//
+				const view = new AddContactFromContactsTabView({}, self.context)
+				self.currentlyPresented_AddContactView = view
+				const navigationView = new StackAndModalNavigationView({}, self.context)
+				navigationView.SetStackViews([ view ])
+				self.navigationController.PresentView(navigationView, true)
+				//
 				return false
 			}
 		)

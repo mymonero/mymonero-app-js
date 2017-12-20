@@ -332,6 +332,7 @@ class ContactDetailsView extends View
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
+		//
 		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
 		const layer = view.layer
 		{ // observe
@@ -340,6 +341,11 @@ class ContactDetailsView extends View
 				function(e)
 				{
 					e.preventDefault()
+					//
+					if (self.navigationController.isCurrentlyTransitioningAManagedView__Modal == true) {
+						console.warn("Ignoring ix on rightBarButtonView while self.navigationController.isCurrentlyTransitioningAManagedView__Modal=true")
+						return
+					}
 					{ // v--- self.navigationController because self is presented packaged in a StackNavigationView				
 						const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 						const EditContactFromContactsTabView = require('./EditContactFromContactsTabView.web')
@@ -354,6 +360,7 @@ class ContactDetailsView extends View
 						navigationView.SetStackViews([ view ])
 						self.navigationController.PresentView(navigationView, true)
 					}
+					//
 					return false
 				}
 			)
