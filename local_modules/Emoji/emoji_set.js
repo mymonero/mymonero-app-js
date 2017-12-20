@@ -46,6 +46,7 @@ const emojiCategories =
 const numberOf_emojiCategories = emojiCategories.length
 //
 const emojiCharsByCategory = {}
+const orderByEmojiChar = {}
 const keys = Object.keys(emojiDescriptionsByKey)
 const numberOf_keys = keys.length
 for (let i = 0 ; i < numberOf_keys ; i++) {
@@ -55,13 +56,23 @@ for (let i = 0 ; i < numberOf_keys ; i++) {
 	const unicode = emoji_description.code_points.output // "the recommended code point to use for conversion to native unicode"
 	const category_key = emoji_description.category
 	var nativeUnicodeEmoji = unicodeCodePointOrPairToChar(unicode) // TODO/FIXME: move call to emojione.unicodeCodePointOrPairToChar()
+	orderByEmojiChar[nativeUnicodeEmoji] = emoji_description.order
 	//
 	if (typeof emojiCharsByCategory[category_key] == 'undefined') {
 		emojiCharsByCategory[category_key] = []
 	}
-	console.log("emoji_description", emoji_description)
-	console.log(category_key, shortname, nativeUnicodeEmoji)
 	emojiCharsByCategory[category_key].push(nativeUnicodeEmoji)
+}
+// sort
+for (let i = 0 ; i < numberOf_emojiCategories ; i++) {
+	const category_key = emojiCategories[i].key
+	const category_emojiChars = emojiCharsByCategory[category_key]
+	emojiCharsByCategory[category_key] = category_emojiChars.sort(
+		function(a, b)
+		{
+			return orderByEmojiChar[a] - orderByEmojiChar[b]
+		}
+	)
 }
 //
 const all_emojiChars = []
