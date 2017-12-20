@@ -192,7 +192,7 @@ function New_AmountInputFieldPKG(
 		layer.style.height = h+"px"
 		layer.style.left = (selectLayer_left + selectLayer_w - ccySelect_disclosureArrow_margin_right - w) + "px"
 		layer.style.top = 
-		layer.style.zIndex = "100" // above options_containerView 
+		layer.style.zIndex = "9" // below .options_containerView 
 		layer.style.backgroundImage = "url("+context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/smallSelect_disclosureArrow@3x.png)"
 		layer.style.backgroundRepeat = "no-repeat"
 		layer.style.backgroundPosition = "center"
