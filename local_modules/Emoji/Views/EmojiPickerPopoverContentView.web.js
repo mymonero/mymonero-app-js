@@ -32,7 +32,7 @@ const View = require('../../Views/View.web')
 const emoji_set = require('../emoji_set')
 const emoji_web = require('../emoji_web')
 //
-const EmojiButtonView_height = 30	
+const EmojiButtonView_height = 40
 //
 const Views__cssRules = require('../../Views/cssRules.web')
 const NamespaceName = "EmojiPickerPopoverContentView"
@@ -43,20 +43,19 @@ const cssRules =
 		overflow-y: auto;
 	}`,
 	`.${NamespaceName} > .EmojiButtonView {
-		width: 34px;
+		width: 42px;
 		height: ${EmojiButtonView_height}px;
-		line-height: ${30 + 4}px;
+		line-height: ${EmojiButtonView_height}px;
 		text-indent: 0px; /* native emoji */
 		display: inline-block;
 		text-align: center;
 		vertical-align: middle;
-		font-size: 16px;
+		font-size: 24px;
 		cursor: pointer;
 		background: rgba(0,0,0,0);
 		/* transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out; */
 	}`,
 	`.${NamespaceName} > .EmojiButtonView.withNonNativeEmoji {
-		text-indent: -4px;
 	}`,
 	`.${NamespaceName} > .EmojiButtonView.active,
 	 .${NamespaceName} > .EmojiButtonView:hover {
@@ -65,9 +64,9 @@ const cssRules =
  		border-radius: 3px;
 	}`,
 	`.${NamespaceName} > .EmojiButtonView .emojione {
-		transform: scale(${17/64});
-		margin-left: -11px;
-		margin-top: -14px;
+		transform: scale(.75);
+		margin-left: 3px;
+		margin-top: 0px;
 	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }

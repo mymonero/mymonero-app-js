@@ -40,9 +40,9 @@ const cssRules =
 	// autocomplete-results rows
 	`.${NamespaceName} .autocomplete-results .row .emojione {
 		position: absolute;
-		left: -10px;
-		top: -17px;
-		transform: scale(${17/64});
+		left: 5px;
+		top: -1px;
+		transform: scale(.5);
 	}`,
 	`.${NamespaceName} .autocomplete-results .row .title {
 		position: absolute;
@@ -55,16 +55,14 @@ const cssRules =
 		width: calc(100% - 48px - 12px)
 	}`,
 	`.${NamespaceName} .autocomplete-results .row .title.withNonNativeEmoji	 {
-		left: 48px;
-		width: calc(100% - 48px - 12px)
 	}`,
 	//
 	// picked contacts
 	`.${NamespaceName} .picked-contact .emojione {
 		position: absolute;
-		left: -15px;
-		top: -17px;
-		transform: scale(${17/64});
+		left: 1px;
+		top: -1px;
+		transform: scale(.5);
 	}`,
 	`.${NamespaceName} .picked-contact .title {
 		margin-left: 10px;

@@ -44,8 +44,8 @@ const cssRules =
 	`.${NamespaceName} .title-label {
 	}`,
 	`.${NamespaceName} .title-label .emojione {
-		transform: scale(${17/64});
-		margin: -9px 0 0 -32px;
+		transform: scale(.5);
+		margin: 7px 0 0 -16px;
 		position: absolute; 
 	}`
 ]

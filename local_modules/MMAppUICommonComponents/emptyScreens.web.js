@@ -63,9 +63,9 @@ const cssRules =
 		-webkit-font-smoothing: subpixel-antialiased;
 	}`,
 	`.${NamespaceName} .content-container .emoji-label .emojione {
-		transform: scale(${17/64});
+		transform: scale(.5);
 		margin-left: 0px;
-		margin-top: -19px;
+		margin-top: 1px;
 	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }

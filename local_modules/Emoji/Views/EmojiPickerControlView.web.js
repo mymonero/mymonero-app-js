@@ -79,9 +79,9 @@ function cssRules_generatorFn(context)
 			 box-shadow: ${useMobRendOpts?"":"0 0.5px 1px 0 #161416, "}inset 0 0.5px 0 0 #5A585A;
 		}`,
 		`.${NamespaceName} > a .emojione {
-			transform: scale(${17/64});
-			margin-left: -24px;
-			margin-top: -14px;
+			transform: scale(.5);
+			margin-left: -7px;
+			margin-top: 0px;
 		}`
 	]
 	return cssRules

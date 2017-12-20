@@ -43,9 +43,9 @@ const cssRules =
 	`.${NamespaceName} .emoji-label {
 	}`,
 	`.${NamespaceName} .emoji-label .emojione {
-		transform: scale(${17/64});
-		margin-left: -20px;
-		margin-top: -22px;
+		transform: scale(.5);
+		margin-left: -7px;
+		margin-top: -6px;
 	}`
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }

@@ -32,6 +32,8 @@ const emojione = require('./Vendor/emojione.min')
 emojione.imageType = "png" // png instead of svg as svg appear too slow to display en-masse
 emojione.sprites = true
 //
+const emoji_set = require('./emoji_set')
+//
 const Views__cssRules = require('../Views/cssRules.web')
 function stylesheetPaths_generatorFn(context)
 {
@@ -39,7 +41,7 @@ function stylesheetPaths_generatorFn(context)
 	const stylesheetPaths =
 	[
 		`${assetsPath}Emoji/Vendor/emojione.min.css`,
-		`${assetsPath}Emoji/Vendor/emojione.spritesheet.css`
+		`${assetsPath}Emoji/Vendor/emojione-sprite-32.min.css`
 	]
 	return stylesheetPaths
 }
@@ -51,20 +53,39 @@ function __injectCSS_ifNecessary(context)
 	) 
 }
 //
-var cached_spritesheetImage;
+var cached_spritesheetImages = [];
 function PreLoadAndSetUpEmojiOne(context)
 { // ^ be sure to call this in order to inject the stylesheets
 	// preload sprites to prevent delay
 	if (context.Emoji_renderWithNativeEmoji !== true) {
-		const image = new Image()
-		image.src = context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Emoji/Vendor/emojione.sprites.png"
-		cached_spritesheetImage = image
-		//
+		const categories = emoji_set.EmojiCategories
+		categories.forEach(
+			function(
+				categoryDescription, 
+				i
+			) {
+				const key = categoryDescription.key
+				const pathBase = context.crossPlatform_appBundledIndexRelativeAssetsRootPath 
+					+ "Emoji/Vendor/emojione-sprite-32-" 
+					+ key
+				//
+				const image = new Image()
+				image.src = pathBase+".png"
+				cached_spritesheetImages.push(image)
+				//
+				const image_2x = new Image()
+				image_2x.src = pathBase+"@2x.png"
+				cached_spritesheetImages.push(image_2x)
+			}
+		);
 		__injectCSS_ifNecessary(context) // good time to do this
 	}
 }
 exports.PreLoadAndSetUpEmojiOne = PreLoadAndSetUpEmojiOne
 // 
+//
+// Interface - Accessors - Transforms
+//
 function NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(context, nativeEmojiText)
 {
 	if (context.Emoji_renderWithNativeEmoji !== true) {
@@ -79,10 +100,7 @@ function nativeEmojiTextToImageBackedEmojiText(nativeEmojiText)
 	if (typeof nativeEmojiText !== "string") { // to protect against numbers and such
 		nativeEmojiText = "" + nativeEmojiText
 	}
-	// perhaps uncomment this in the near future, but ensure emoji font size (esp on retina):
-	// if (process.platform === "darwin") { // because MacOS has good support for Emoji; add iOS here too
-	// 	return nativeEmojiText
-	// }
 	const text = emojione.unicodeToImage(nativeEmojiText)
+	//
 	return text
 }
