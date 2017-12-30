@@ -1,3 +1,0 @@
-echo "💬   Setting up repo…";
-git submodule init;
-git submodule update;
