@@ -232,7 +232,7 @@ class WalletDetailsView extends View
 			secondarySectionLabelSpan.innerHTML = finalized_secondarySection_string
 		}
 	}
-	_new_fieldBaseView(entitled, isTruncatedPreviewForm)
+	_new_fieldBaseView(entitled, isTruncatedPreviewForm, isSecretData)
 	{
 		const self = this
 		const fieldView = new View({}, self.context)
@@ -245,7 +245,8 @@ class WalletDetailsView extends View
 			"",
 			self.context.pasteboard,
 			"N/A",
-			isTruncatedPreviewForm == true ? true : false
+			isTruncatedPreviewForm == true ? true : false,
+			isSecretData
 		)
 		layer.appendChild(fieldContainerLayer)
 		//
@@ -264,25 +265,25 @@ class WalletDetailsView extends View
 		const self = this
 		const previewView = new View({}, self.context)
 		{
-			const preview__address_fieldView = self._new_fieldBaseView("Address", true)
+			const preview__address_fieldView = self._new_fieldBaseView("Address", true, false)
 			self.preview__address_fieldView = preview__address_fieldView
 			previewView.addSubview(preview__address_fieldView)
 		}
 		const disclosedView = new View({}, self.context)
 		{
-			const disclosed__address_fieldView = self._new_fieldBaseView("Address")
+			const disclosed__address_fieldView = self._new_fieldBaseView("Address", false, false)
 			self.disclosed__address_fieldView = disclosed__address_fieldView
 			disclosedView.addSubview(disclosed__address_fieldView)
 			//
-			const viewKey_fieldView = self._new_fieldBaseView("Secret View Key")
+			const viewKey_fieldView = self._new_fieldBaseView("Secret View Key", false, true)
 			self.viewKey_fieldView = viewKey_fieldView
 			disclosedView.addSubview(viewKey_fieldView)
 			//
-			const spendKey_fieldView = self._new_fieldBaseView("Secret Spend Key")
+			const spendKey_fieldView = self._new_fieldBaseView("Secret Spend Key", false, true)
 			self.spendKey_fieldView = spendKey_fieldView
 			disclosedView.addSubview(spendKey_fieldView)
 			//
-			const mnemonicSeed_fieldView = self._new_fieldBaseView("Secret Mnemonic")
+			const mnemonicSeed_fieldView = self._new_fieldBaseView("Secret Mnemonic", false, true)
 			self.mnemonicSeed_fieldView = mnemonicSeed_fieldView
 			mnemonicSeed_fieldView.SetWordBreakMode("break-word")
 			disclosedView.addSubview(mnemonicSeed_fieldView)

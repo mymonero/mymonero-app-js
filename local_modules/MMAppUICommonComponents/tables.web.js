@@ -505,12 +505,14 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	value,
 	pasteboard, 
 	valueToDisplayIfValueNil_orDefault,
-	optl_isTruncatedPreviewForm // single line, … trunc, etc
-)
-{ 
+	optl_isTruncatedPreviewForm, // single line, … trunc, etc
+	optl_isSecretData
+) { 
 	__injectCSSRules_ifNecessary(context)
 	//
-	const isTruncatedPreviewForm = optl_isTruncatedPreviewForm == true ? true : false
+	const isTruncatedPreviewForm = optl_isTruncatedPreviewForm == true ? true : false // undefined -> false
+	const isSecretData = optl_isSecretData == false ? false : true // undefined -> true
+	const wantsCopyButton = isSecretData == false // only allow copy if not secret
 	//
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
 	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
@@ -518,9 +520,9 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	const padding_btm = isTruncatedPreviewForm ? 12 : 19
 	div.style.padding = `15px 0 ${padding_btm}px 0`
 	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
-	const canSupportCopyButton = context.isRunningInBrowser !== true
+	const canSupportCopyButton = wantsCopyButton && context.isRunningInBrowser !== true
 	if (canSupportCopyButton == false) {
-		if (context.isLiteApp !== true) {
+		if (wantsCopyButton && context.isLiteApp !== true) {
 			throw "Expected this to be lite app when unable to support copy button"
 		}
 	}
@@ -535,8 +537,10 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	}
 	var valueLayer = New_fieldValue_labelLayer("" + valueToDisplay, context)
 	if (canSupportCopyButton == false) {
-		valueLayer.style.userSelect = "all" // must allow copying, cause we're not displaying the COPY button 
-		valueLayer.style.webkitUserSelect = "all" 
+		if (isSecretData == false) { // only if this is not secret data
+			valueLayer.style.userSelect = "all" // must allow copying, cause we're not displaying the COPY button 
+			valueLayer.style.webkitUserSelect = "all" 
+		}
 	}
 	if (isTruncatedPreviewForm == false) {
 		div.appendChild(labelLayer)
