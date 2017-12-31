@@ -145,6 +145,13 @@ class CreateRequestFormView extends View
 			self.walletSelectView = view
 			const valueLayer = view.layer
 			div.appendChild(valueLayer)
+			//
+			div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+			//
+			const separatorLayer = commonComponents_tables.New_separatorLayer(self.context)
+			separatorLayer.style.marginTop = "5px"
+			separatorLayer.style.width = "100%"
+			div.appendChild(separatorLayer)
 		}
 		self.form_containerLayer.appendChild(div)
 		{ // initial config
@@ -171,7 +178,7 @@ class CreateRequestFormView extends View
 			}
 		)		
 		const div = pkg.containerLayer
-		div.style.paddingTop = "16px"
+		div.style.paddingTop = "6px"
 		self.amountInputLayer = pkg.valueLayer
 		//
 		self.ccySelectLayer = pkg.ccySelectLayer
@@ -182,7 +189,7 @@ class CreateRequestFormView extends View
 			}
 			self.ccySelectLayer.Component_setTop( // NOTE: this is guaranteed to have been already called at its setup; (ctd)
 				ccySelectLayer_currentTop // so this can be accessed
-					+ 29 // measured… TODO: fragile -- remove by revamping container layout system
+					+ 19 // measured… TODO: fragile -- remove by revamping container layout system
 			)
 		}
 		//
@@ -198,7 +205,7 @@ class CreateRequestFormView extends View
 	{ // Memo
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
-		div.style.paddingTop = "31px"
+		div.style.paddingTop = "5px"
 		div.style.paddingBottom = "0"
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MEMO", self.context)
