@@ -58,6 +58,8 @@ class Controller extends EventEmitter
 	{
 		const self = this
 		//
+		self.setMaxListeners(999) // avoid error
+		//
 		// Internal - Properties
 		self.xmrToCcyRateJSNumbersByCcySymbols = {} // [CurrencySymbol: Rate]
 	}
