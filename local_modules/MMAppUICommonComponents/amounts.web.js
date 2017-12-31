@@ -53,6 +53,7 @@ function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNeces
 //
 function New_AmountInputFieldPKG(
 	context,
+	isOptional,
 	optl__enterPressed_fn
 )
 { // -> {} // Experimental 'pkg' style return… maybe refactor into View later
@@ -74,6 +75,15 @@ function New_AmountInputFieldPKG(
 	const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AMOUNT", context)
 	div.appendChild(labelLayer)
 	// ^ block
+	if (isOptional == true) {
+		labelLayer.style.float = "left"
+		//
+		const accessoryLabel = commonComponents_forms.New_fieldTitle_rightSide_accessoryLayer("optional", context)
+		div.appendChild(accessoryLabel)
+		//
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
+	}
+	//
 	const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(context, {
 		placeholderText: "00.00"
 	})

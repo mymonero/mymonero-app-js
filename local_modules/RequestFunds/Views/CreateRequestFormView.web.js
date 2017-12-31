@@ -164,12 +164,14 @@ class CreateRequestFormView extends View
 		const self = this
 		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
+			true, // isOptional
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateRequest()
 			}
 		)		
 		const div = pkg.containerLayer
+		div.style.paddingTop = "16px"
 		self.amountInputLayer = pkg.valueLayer
 		//
 		self.ccySelectLayer = pkg.ccySelectLayer
@@ -180,7 +182,7 @@ class CreateRequestFormView extends View
 			}
 			self.ccySelectLayer.Component_setTop( // NOTE: this is guaranteed to have been already called at its setup; (ctd)
 				ccySelectLayer_currentTop // so this can be accessed
-					+ 20 // measured… TODO: fragile -- remove by revamping container layout system
+					+ 29 // measured… TODO: fragile -- remove by revamping container layout system
 			)
 		}
 		//

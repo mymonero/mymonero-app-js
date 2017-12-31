@@ -231,6 +231,7 @@ class SendFundsView extends View
 		const self = this
 		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
+			false, // isOptional
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateSend()
