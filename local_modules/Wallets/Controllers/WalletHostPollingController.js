@@ -184,6 +184,7 @@ class WalletHostPollingController
 			return
 		}
 		const requestHandle = self.context.hostedMoneroAPIClient.AddressInfo_returningRequestHandle(
+			wallet.keyImage_cache,
 			wallet.public_address,
 			wallet.private_keys.view,
 			wallet.public_keys.spend,
@@ -271,6 +272,7 @@ class WalletHostPollingController
 			return
 		}
 		const requestHandle = self.context.hostedMoneroAPIClient.AddressTransactions_returningRequestHandle(
+			wallet.keyImage_cache,
 			wallet.public_address,
 			wallet.private_keys.view,
 			wallet.public_keys.spend,

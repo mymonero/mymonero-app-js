@@ -36,7 +36,6 @@ function NewHydratedContext(initialContext)
 		throw "app required"
 	}
 	//
-	const APIResponseParser = require('../../HostedMoneroAPIClient/APIResponseParser.browser')
 	// placing context_object_instantiation_descriptions in here so we can get the console opened in time to catch any errors (sigh)
 	var context_object_instantiation_descriptions =
 	[
@@ -85,7 +84,6 @@ function NewHydratedContext(initialContext)
 			options: {
 				appUserAgent_product: app.getName(),
 				appUserAgent_version: app.getVersion(),
-				responseParser: new APIResponseParser({}),
 				request_conformant_module: require('xhr') 
 			}
 		},

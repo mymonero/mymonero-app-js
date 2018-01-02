@@ -32,7 +32,7 @@ const async = require('async')
 //
 const JSBigInt = require('../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
-const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
+const response_parser_utils = require('../mymonero_core_js/monero_utils/mymonero_response_parser_utils')
 //
 const config__MyMonero = require('./config__MyMonero')
 //
@@ -46,10 +46,6 @@ class HostedMoneroAPIClient_Base
 		self.options = options
 		self.context = context
 		//
-		self.responseParser = options.responseParser
-		if (!self.responseParser) {
-			throw `${self.constructor.name} requires an options.responseParser`
-		}
 		self.request = options.request_conformant_module
 		if (!self.request) {
 			throw `${self.constructor.name} requires an options.request_conformant_module such as require('request' / 'xhr')`
@@ -213,6 +209,7 @@ class HostedMoneroAPIClient_Base
 	//
 	// Syncing
 	AddressInfo_returningRequestHandle(
+		keyImage_cache,
 		address,
 		view_key__private,
 		spend_key__public,
@@ -237,7 +234,8 @@ class HostedMoneroAPIClient_Base
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			self.responseParser.Parsed_AddressInfo(
+			response_parser_utils.Parsed_AddressInfo(
+				keyImage_cache,
 				data,
 				address,
 				view_key__private,
@@ -294,6 +292,7 @@ class HostedMoneroAPIClient_Base
 		return requestHandle
 	}
 	AddressTransactions_returningRequestHandle(
+		keyImage_cache,
 		address,
 		view_key__private,
 		spend_key__public,
@@ -318,7 +317,8 @@ class HostedMoneroAPIClient_Base
 		)
 		function __parseAndCallBack(data)
 		{
-			self.responseParser.Parsed_AddressTransactions(
+			response_parser_utils.Parsed_AddressTransactions(
+				keyImage_cache,
 				data,
 				address,
 				view_key__private,
@@ -403,6 +403,7 @@ class HostedMoneroAPIClient_Base
 	//
 	// Getting outputs for sending funds
 	UnspentOuts(
+		keyImage_cache,
 		address,
 		view_key__private,
 		spend_key__public,
@@ -438,7 +439,8 @@ class HostedMoneroAPIClient_Base
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			self.responseParser.Parsed_UnspentOuts(
+			response_parser_utils.Parsed_UnspentOuts(
+				keyImage_cache,
 				data,
 				address,
 				view_key__private,

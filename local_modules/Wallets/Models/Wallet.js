@@ -91,6 +91,7 @@ class Wallet extends EventEmitter
 		self.context = context
 		//
 		self.initTimeInstanceUUID = uuidV1() // so that e.g. the list controller can immediately have an id with which to do observation listener fn cache hashes
+		self.keyImage_cache = {} // stored on wallet for proper lifecycle and security
 		//
 		// initialization state
 		self._id = self.options._id || null // initialize to null if creating wallet
@@ -1120,6 +1121,7 @@ class Wallet extends EventEmitter
 			true, // isRingCT
 			target_address,
 			amount,
+			self.keyImage_cache,
 			self.public_address,
 			self.private_keys,
 			self.public_keys,
