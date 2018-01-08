@@ -154,7 +154,7 @@ function NewHydratedContext(
 		TabBarView_thickness: 79,
 		TabBarView_isHorizontalBar: false,
 		appDownloadLink_domainAndPath: "mymonero.com",
-		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false
+		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development'
 	}
 	// required options (which can only be obtained with `app`, etc.)
 	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()

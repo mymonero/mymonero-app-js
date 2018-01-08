@@ -132,7 +132,7 @@ window.BootApp = function()
 				Emoji_renderWithNativeEmoji: true,
 				appDownloadLink_domainAndPath: "mymonero.com",
 				Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
-				HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false,
+				HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
 				Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true,
 				CommonComponents_Forms_scrollToInputOnFocus: isMobile === true
 			})
