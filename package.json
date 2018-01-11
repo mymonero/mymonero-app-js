@@ -16,7 +16,7 @@
   },
   "build": {
     "appId": "com.mymonero.mymonero",
-    "copyright": "Copyright © 2014-2017 MyMonero/",
+    "copyright": "Copyright © 2014-2018 MyMonero/",
     "asar": true,
     "forceCodeSigning": false,
     "files": [
@@ -50,7 +50,7 @@
       "target": [
         "nsis"
       ],
-      "legalTrademarks": "Copyright © 2014-2017 MyMonero.",
+      "legalTrademarks": "Copyright © 2014-2018 MyMonero.",
       "publisherName": "MyMonero"
     },
     "nsis": {

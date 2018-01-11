@@ -1,5 +1,5 @@
 
-// Copyright (c) 2014-2017, MyMonero.com
+// Copyright (c) 2014-2018, MyMonero.com
 //
 // All rights reserved.
 //
