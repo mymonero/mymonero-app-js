@@ -74,6 +74,10 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		return "Your Monero is on its way."
 	}
+	_overridable_initial_inlineMessage_wantsXButtonHidden()
+	{
+		return true // fixed message
+	}
 	_overridable_new_fieldInputLayer__address()
 	{
 		const self = this

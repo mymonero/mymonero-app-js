@@ -455,7 +455,7 @@ function New_spacerLayer()
 }
 exports.New_spacerLayer = New_spacerLayer
 //
-function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVisible)
+function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVisible, optl_wantsXButtonHidden)
 {
 	const immediatelyVisible = optl_immediatelyVisible === true ? true : false // These are configured to not by default be initially visible
 	//
@@ -471,7 +471,10 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 	//
 	const closeBtnLayer = document.createElement("a")
 	closeBtnLayer.href = "#" // to make clickable
-	closeBtnLayer.classList.add("close-btn")
+	closeBtnLayer.classList.add("close-btn") // contains display:block
+	if (optl_wantsXButtonHidden == true) { // default to visible
+		closeBtnLayer.style.display = "none" 
+	}
 	layer.appendChild(closeBtnLayer)
 	closeBtnLayer.addEventListener("click", function(e) {
 		e.preventDefault()
@@ -481,7 +484,7 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 		return false
 	})
 	//
-	layer.SetValidationError = function(to_messageString)
+	layer.SetValidationError = function(to_messageString, method__optl_wantsXButtonHidden)
 	{
 		if (to_messageString === "") {
 			layer.ClearAndHideMessage()
@@ -489,6 +492,12 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 		}
 		messageLayer.innerHTML = to_messageString
 		layer.style.display = "block"
+		let wantsXButtonHidden = method__optl_wantsXButtonHidden == true ? true : false // default false
+		if (wantsXButtonHidden) {
+			closeBtnLayer.style.display = "none"
+		} else {
+			closeBtnLayer.style.display = "block"
+		}
 	}
 	layer.ClearAndHideMessage = function()
 	{

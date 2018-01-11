@@ -87,8 +87,9 @@ class ContactFormView extends View
 	{
 		const self = this
 		const initial_message = self._overridable_initial_inlineMessageString()
+		const initial_wantsXButtonHidden = self._overridable_initial_inlineMessage_wantsXButtonHidden()
 		const initial_message__exists = initial_message !== "" && initial_message && typeof initial_message !== 'undefined' 
-		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, initial_message, initial_message__exists)
+		const layer = commonComponents_tables.New_inlineMessageDialogLayer(self.context, initial_message, initial_message__exists, initial_wantsXButtonHidden)
 		layer.style.width = "calc(100% - 48px)"
 		layer.style.marginLeft = "24px"
 		self.validationMessageLayer = layer
@@ -146,6 +147,10 @@ class ContactFormView extends View
 	_overridable_initial_inlineMessageString()
 	{
 		return ""
+	}
+	_overridable_initial_inlineMessage_wantsXButtonHidden()
+	{
+		return undefined // this will be interpreted as the default, i.e. false
 	}
 	_overridable_shouldNotDisplayPaymentIDFieldLayer()
 	{

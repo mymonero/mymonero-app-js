@@ -433,7 +433,10 @@ class ImportTransactionsModalView extends View
 		const mixin_int = 6 // reasonable? use 12 instead?
 		const amount_Number = parseFloat(self.amountInputLayer.value)
 		{
-			self.validationMessageLayer.SetValidationError(`Sending ${amount_Number} XMR…`)
+			self.validationMessageLayer.SetValidationError(
+				`Sending ${amount_Number} XMR…`,
+				true/*wantsXButtonHidden*/
+			)
 		}
 		__proceedTo_generateSendTransactionWith(
 			wallet, // FROM wallet
@@ -469,7 +472,7 @@ class ImportTransactionsModalView extends View
 						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 						return
 					}
-					self.validationMessageLayer.SetValidationError(`Sent.`)
+					self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
 					// finally, clean up form 
 					setTimeout(
 						function()

@@ -362,7 +362,10 @@ class TransactionDetailsView extends View
 			if (self.validationMessageLayer__isLocked.userHasClosedThisLayer !== true) {
 				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
 				var messageString = "This transaction is currently locked. " + lockedReason
-				self.validationMessageLayer__isLocked.SetValidationError(messageString) // this shows the validation err msg
+				self.validationMessageLayer__isLocked.SetValidationError(
+					messageString,
+					true/*wantsXButtonHidden*/
+				) // this shows the validation err msg
 			}
 		} else {
 			self.validationMessageLayer__isLocked.style.display = "none"

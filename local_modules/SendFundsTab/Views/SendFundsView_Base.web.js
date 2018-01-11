@@ -1373,7 +1373,10 @@ class SendFundsView extends View
 			amount_Number
 		)
 		{
-			self.validationMessageLayer.SetValidationError(`Sending ${final_amount_Number} XMR…`)
+			self.validationMessageLayer.SetValidationError(
+				`Sending ${final_amount_Number} XMR…`, 
+				true/*wantsXButtonHidden*/
+			)
 			//
 			const sendFrom_address = sendFrom_wallet.public_address
 			//
