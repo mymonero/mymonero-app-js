@@ -1,6 +1,0 @@
-echo "💬   bin/_refresh_cordova_platforms";
-bin/_refresh_cordova_platforms;
-
-echo "💬   cp cordova.android.build.EXAMPLE.json cordova.android.build.json";
-cp cordova.android.build.EXAMPLE.json cordova.android.build.json && 
-echo "💡  (For Android release builds) Be sure to edit ./cordova.android.build.json and add your Android keystore signing info.";
