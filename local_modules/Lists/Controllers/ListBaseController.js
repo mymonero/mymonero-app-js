@@ -268,7 +268,20 @@ class ListBaseController extends EventEmitter
 				controller.EventName_didDeconstructBootedStateAndClearPassword(),
 				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
 			)
-		}		
+		}
+		{ // EventName_ObtainedCorrectExistingPassword
+			if (self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn !== null && typeof self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn !== 'undefined') {
+				throw "self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn not nil in " + self.constructor.name
+			}
+			self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn = function()
+			{
+				self._passwordController_EventName_ObtainedCorrectExistingPassword()
+			}
+			controller.on(
+				controller.EventName_ObtainedCorrectExistingPassword(), 
+				self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn
+			)
+		}
 	}
 	
 
@@ -325,6 +338,16 @@ class ListBaseController extends EventEmitter
 				self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn
 			)
 			self._passwordController_EventName_didDeconstructBootedStateAndClearPassword_listenerFn = null
+		}
+		{ // EventName_ObtainedCorrectExistingPassword
+			if (typeof self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn == 'undefined' || !self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn) {
+				throw "self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn undefined"
+			}
+			controller.removeListener(
+				controller.EventName_ObtainedCorrectExistingPassword(),
+				self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn
+			)
+			self._passwordController_EventName_ObtainedCorrectExistingPassword_listenerFn = null
 		}
 	}
 	//
@@ -589,8 +612,21 @@ class ListBaseController extends EventEmitter
 		{ // manually emit so that the UI updates to empty list after the pw entry screen is shown
 			self.__listUpdated_records()
 		}
-		{ // this will re-request the pw and lead to loading records & booting self 
+		{ // if saved records exist, this will re-request the pw (and wait on it), leading to loading records and boot
+			// if none, sets self booted 
 			self._tryToBoot()
+		}
+	}
+	_passwordController_EventName_ObtainedCorrectExistingPassword()
+	{
+		const self = this
+		if (self.hasBooted) { // we're checking this synchronously, and also registered earlier than list-load-listeners… so this check should not race
+			self.__listUpdated_records()
+			// what's going on here is an attempt at detecting the list controller already having 
+			// been booted when the PW was entered - which would be indicative of a listController 
+			// which had no records when the app went idle (user already had pw but deleted records)
+			// … without treating this as a list update (which is logically is), the empty screen 
+			// never gets reshown even on subsequent idles/reloads
 		}
 	}
 }

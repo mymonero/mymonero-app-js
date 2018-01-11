@@ -274,7 +274,8 @@ class WalletsListView extends ListView
 		// so we update to return no right bar btn when there are no wallets as we show empty state action bar
 		self.navigationController.SetNavigationBarButtonsNeedsUpdate() // no animation
 		self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from whether there are wallets
-		const isEmptyVisible = records.length === 0
+		const isEmptyVisible = records.length === 0 && (self.context.passwordController.hasUserSavedAPassword == false || self.context.passwordController.HasUserEnteredValidPasswordYet())
+		// ^-- passwordController state checked to avoid improperly showing empty screen when no records loaded but pw not yet entered
 		{
 			self.emptyStateContainerView.SetVisible(isEmptyVisible)
 		}

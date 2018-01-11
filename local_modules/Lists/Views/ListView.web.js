@@ -92,16 +92,19 @@ class ListView extends View
 	_setup_startObserving()
 	{
 		const self = this
-		const emitter = self.listController
-		emitter.on(
-			emitter.EventName_listUpdated(),
-			function()
+		{
+			self.listController__EventName_listUpdated__listenerFn = function()
 			{
 				self.reloadData({
 					isFrom_EventName_listUpdated: true
 				})
 			}
-		)
+			const emitter = self.listController
+			emitter.on(
+				emitter.EventName_listUpdated(),
+				self.listController__EventName_listUpdated__listenerFn
+			)
+		}
 	}
 	//
 	//
@@ -111,7 +114,17 @@ class ListView extends View
 	{
 		const self = this
 		super.TearDown()
+		self.stopObserving()
 		self.tearDownAnySpawnedReferencedPresentedViews()
+	}
+	stopObserving()
+	{
+		const self = this
+		const emitter = self.listController
+		emitter.removeListener(
+			emitter.EventName_listUpdated(),
+			self.listController__EventName_listUpdated__listenerFn
+		)
 	}
 	tearDownAnySpawnedReferencedPresentedViews()
 	{ // provided for convenience as well - subclassers can override - but make sure to call on super!

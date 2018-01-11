@@ -241,7 +241,8 @@ class FundsRequestsListView extends ListView
 		const self = this
 		// v--- we don't need this here as at present according to design the buttons don't change… just stays the 'Add' btn
 		// self.navigationController.SetNavigationBarButtonsNeedsUpdate() // explicit: no animation
-		const isEmptyVisible = records.length === 0
+		const isEmptyVisible = records.length === 0 && (self.context.passwordController.hasUserSavedAPassword == false || self.context.passwordController.HasUserEnteredValidPasswordYet())
+		// ^-- passwordController state checked to avoid improperly showing empty screen when no records loaded but pw not yet entered
 		{
 			self.emptyStateContainerView.SetVisible(isEmptyVisible)
 		}
