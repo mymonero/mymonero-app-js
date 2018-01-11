@@ -383,7 +383,7 @@ class SettingsView extends View
 				if (self.context.isLiteApp != true) { 
 					msg = 'Are you sure you want to delete all of your local data?\n\nAny wallets will remain permanently on the Monero blockchain but local data such as contacts will not be recoverable.'
 				} else {
-					msg = 'Are you sure you want to log out and clear all session data?'
+					msg = 'Are you sure you want to log out?'
 				}
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
 					self.context.isLiteApp != true ? 'Delete everything?' : 'Log out?', 
