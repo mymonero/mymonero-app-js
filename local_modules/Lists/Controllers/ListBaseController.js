@@ -45,6 +45,7 @@ class ListBaseController extends EventEmitter
 		self.options = options
 		self.context = context
 		{
+			self._whenBooted_fns = []
 			self.hasBooted = false // not booted yet - we'll defer things till we have
 		}
 		self.setup()
@@ -54,7 +55,7 @@ class ListBaseController extends EventEmitter
 		const self = this
 		optlFn = optlFn || function() {}
 		{
-			self.hasBooted = true // all done!
+			self._setBooted()
 		}
 		setTimeout(function()
 		{ // on next tick to avoid instantiator missing this
@@ -82,6 +83,22 @@ class ListBaseController extends EventEmitter
 	{
 		const self = this
 		self._setup_fetchAndReconstituteExistingRecords()
+	}
+	_setBooted()
+	{
+		const self = this
+		if (self.hasBooted == true) {
+			throw "code fault: _setBooted called while self.hasBooted=true"
+		}
+		self.hasBooted = true
+		let fns_length = self._whenBooted_fns.length
+		for (var i = 0 ; i < fns_length ; i++) {
+			let fn = self._whenBooted_fns[i]
+			setTimeout(function() {
+				fn() // so it's on 'next tick'
+			})
+		}
+		self._whenBooted_fns = [] // flash for next time
 	}
 	_setup_fetchAndReconstituteExistingRecords(optl_isForSetup)
 	{
@@ -216,8 +233,7 @@ class ListBaseController extends EventEmitter
 		persistencePassword,
 		forOverrider_instance_didBoot_fn,
 		forOverrider_instance_didFailBoot_fn
-	)
-	{
+	) {
 		const self = this
 		throw `[${self.constructor.name}/override_booting_reconstituteRecordInstanceOptionsWithBase]: You must implement this method and call at least one of the appropriate callbacks.`
 	}
@@ -428,17 +444,11 @@ class ListBaseController extends EventEmitter
 	ExecuteWhenBooted(fn)
 	{
 		const self = this
-		if (self.hasBooted === true) {
+		if (self.hasBooted == true) {
 			fn()
 			return
 		}
-		setTimeout(
-			function()
-			{
-				self.ExecuteWhenBooted(fn)
-			},
-			50 // ms
-		)
+		self._whenBooted_fns.push(fn)
 	}
 	//
 	//
@@ -447,8 +457,7 @@ class ListBaseController extends EventEmitter
 	WhenBooted_DeleteRecordWithId(
 		_id,
 		fn
-	)
-	{
+	) {
 		const self = this
 		//
 		self.ExecuteWhenBooted(
@@ -472,8 +481,7 @@ class ListBaseController extends EventEmitter
 	givenBooted_DeleteRecord(
 		recordInstance,
 		fn
-	)
-	{
+	) {
 		const self = this
 		const indexOfRecord = self.__recordInstanceAndIndexWithId(recordInstance._id)
 		self.givenBooted_DeleteRecordAtIndex(
@@ -486,8 +494,7 @@ class ListBaseController extends EventEmitter
 		recordInstance,
 		indexOfRecord,
 		fn
-	)
-	{
+	) {
 		const self = this
 		//
 		recordInstance.TearDown() // stop polling, etc -- important.

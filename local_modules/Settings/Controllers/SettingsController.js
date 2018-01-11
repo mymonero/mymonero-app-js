@@ -53,6 +53,7 @@ class SettingsController extends EventEmitter
 		self.context = context
 		//
 		self.hasBooted = false
+		self._whenBooted_fns = []
 		self.password = undefined // it's not been obtained from the user yet - we only store it in memory
 		//
 		self.context.passwordController.AddRegistrantForDeleteEverything(self)
@@ -98,9 +99,26 @@ class SettingsController extends EventEmitter
 			self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount = record_doc.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount
 			self.displayCcySymbol = record_doc.displayCcySymbol
 			//
-			self.hasBooted = true // all done!
+			self._setBooted() // all done!
 		}
 	}
+	_setBooted()
+	{
+		const self = this
+		if (self.hasBooted == true) {
+			throw "code fault: _setBooted called while self.hasBooted=true"
+		}
+		self.hasBooted = true
+		let fns_length = self._whenBooted_fns.length
+		for (var i = 0 ; i < fns_length ; i++) {
+			let fn = self._whenBooted_fns[i]
+			setTimeout(function() {
+				fn() // so it's on 'next tick'
+			})
+		}
+		self._whenBooted_fns = [] // flash for next time
+	}
+
 	//
 	//
 	// Runtime - Accessors
@@ -129,8 +147,7 @@ class SettingsController extends EventEmitter
 	Set_settings_valuesByKey(
 		valuesByKey,
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		self._executeWhenBooted(
 			function()
@@ -188,21 +205,15 @@ class SettingsController extends EventEmitter
 		)
 	}
 	//
-	//
 	// Runtime - Imperatives - Private - Deferring until booted
-	//
 	_executeWhenBooted(fn)
 	{
 		const self = this
-		if (self.hasBooted === false) {
-			// console.log("Deferring execution of function until booted.")
-			setTimeout(function()
-			{
-				self._executeWhenBooted(fn)
-			}, 50) // ms
+		if (self.hasBooted == true) {
+			fn() // ready to execute
 			return
 		}
-		fn() // ready to execute
+		self._whenBooted_fns.push(fn)
 	}
 	//
 	//

@@ -66,6 +66,7 @@ class PasswordController_Base extends EventEmitter
 		self.context = context
 		//
 		self.deleteEverythingRegistrants = []
+		self._whenBooted_fns = []
 		//
 		self.hasBooted = false
 		self.password = undefined // it's not been obtained from the user yet - we only store it in memory
@@ -129,8 +130,24 @@ class PasswordController_Base extends EventEmitter
 				}
 			}
 			self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = passwordModel_doc // this will be nil'd after it's been parsed once the user has entered their pw
-			self.hasBooted = true // all done!
+			self._setBooted() // all done! call waiting fns
 		}
+	}
+	_setBooted()
+	{
+		const self = this
+		if (self.hasBooted == true) {
+			throw "code fault: _setBooted called while self.hasBooted=true"
+		}
+		self.hasBooted = true
+		let fns_length = self._whenBooted_fns.length
+		for (var i = 0 ; i < fns_length ; i++) {
+			let fn = self._whenBooted_fns[i]
+			setTimeout(function() {
+				fn() // so it's on 'next tick'
+			})
+		}
+		self._whenBooted_fns = [] // flash for next time
 	}
 	//
 	//
@@ -717,15 +734,12 @@ class PasswordController_Base extends EventEmitter
 	_executeWhenBooted(fn)
 	{
 		const self = this
-		if (self.hasBooted === false) {
-			// console.log("Deferring execution of function until booted.")
-			setTimeout(function()
-			{
-				self._executeWhenBooted(fn)
-			}, 50) // ms
+		if (self.hasBooted == true) {
+			fn() // ready to execute
 			return
 		}
-		fn() // ready to execute
+		// console.log("Deferring execution of function until booted.")
+		self._whenBooted_fns.push(fn)
 	}
 
 

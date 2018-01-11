@@ -45,10 +45,10 @@ class PasswordController extends PasswordController_Base
 		setTimeout( // for effect / simulated synchronization
 			function()
 			{
-				self.hasBooted = true // all done!
 				self.hasUserSavedAPassword = true
 				self.password = "totally arbitrary"
 				self.userSelectedTypeOfPassword = self.AvailableUserSelectableTypesOfPassword().FreeformStringPW
+				self._setBooted() // all done! call waiting fns
 			},
 			1
 		)

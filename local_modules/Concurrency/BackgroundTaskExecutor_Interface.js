@@ -39,6 +39,7 @@ class BackgroundTaskExecutor
 		self.context = context
 		{
 			self.hasBooted = false
+			self._whenBooted_fns = []
 			self.callbacksByUUID = {}
 		}		
 		self.setup()
@@ -82,17 +83,11 @@ class BackgroundTaskExecutor
 		// (a) it could theoretically be callable by self consumers
 		// (b) it's the same code as used in other places so maintains regularity
 		const self = this
-		if (self.hasBooted === true) {
+		if (self.hasBooted == true) {
 			fn()
 			return
 		}
-		setTimeout(
-			function()
-			{
-				self.ExecuteWhenBooted(fn)
-			},
-			10 // ms
-		)
+		self._whenBooted_fns.push(fn)
 	}
 	executeBackgroundTaskNamed(
 		taskName,
@@ -139,9 +134,25 @@ class BackgroundTaskExecutor
 		}
 		{
 			console.log("👶  " + self.constructor.name + " worker process up")
-			self.hasBooted = true
+			self._setBooted()
 		}
 		return
+	}
+	_setBooted()
+	{
+		const self = this
+		if (self.hasBooted == true) {
+			throw "code fault: _setBooted called while self.hasBooted=true"
+		}
+		self.hasBooted = true
+		let fns_length = self._whenBooted_fns.length
+		for (var i = 0 ; i < fns_length ; i++) {
+			let fn = self._whenBooted_fns[i]
+			setTimeout(function() {
+				fn() // so it's on 'next tick'
+			})
+		}
+		self._whenBooted_fns = [] // flash for next time
 	}
 	_receivedPayloadFromWorker(payload)
 	{
