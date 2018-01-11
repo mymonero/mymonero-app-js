@@ -74,23 +74,20 @@
     "node": "7.4.0"
   },
   "dependencies": {
-    "async": "^2.1.2",
-    "electron-context-menu": "^0.9.0",
-    "fastclick": "^1.0.6",
-    "jsqr": "^0.2.1",
-    "mkdirp": "^0.5.1",
-    "node-notifier": "^4.6.1",
-    "qrcode": "^0.8.1",
-    "underscore": "^1.8.3",
-    "uuid": "^3.0.1",
-    "velocity-animate": "^1.4.0",
-    "xhr": "^2.3.1"
+    "async": "git+https://github.com/mymonero/async.git#ba6ed320e350f8b2eae4eb9683302ddac0ddf66f",
+    "electron-context-menu": "git+https://github.com/mymonero/electron-context-menu.git#c3f6224af8680ccc81ace042539260c1808b222a",
+    "fastclick": "git+https://github.com/mymonero/fastclick.git#9977a916739360ad4ffd7aa19b0016bf375e934b",
+    "jsqr": "git+https://github.com/mymonero/jsQR.git#397a6eb8f90752cf640cb4bb67ba6f86e3bb5d1f",
+    "qrcode": "git+https://github.com/mymonero/node-qrcode.git#6b5e5b1b6a147e2c463ebf53d6e5019cf1df9aa3",
+    "uuid": "git+https://github.com/mymonero/node-uuid.git#374de826de71d8997f71b4641f65552e48956ced",
+    "velocity-animate": "git+https://github.com/mymonero/velocity.git#6dd28a2a6b7ec87257bb8e5b54a3355bd766e027",
+    "xhr": "git+https://github.com/mymonero/xhr.git#3bf5eb75fd929da4efeff6dfcc8d174dea62feab"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
     "babel-minify": "^0.2.0",
-    "electron": "1.7.9",
+    "electron": "^1.7.10",
     "electron-builder": "^16.0.1",
     "electron-packager": "^8.1.0",
     "eslint": "^3.19.0",
