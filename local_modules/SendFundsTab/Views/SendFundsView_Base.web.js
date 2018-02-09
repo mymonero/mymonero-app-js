@@ -770,23 +770,25 @@ class SendFundsView extends View
 	_new_estimatedNetworkFee_displayString()
 	{
 		const self = this
-		/*
+
 		var mixin_int = self._mixin_int()
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_ringCT_networkFee(
-			mixin_int
+			mixin_int,
+			new JSBigInt("209000000") // TODO: grab this from polling request for dynamic per kb fee
 		)
-		const hostingServiceFee_JSBigInt = self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
+		const hostingServiceFee_JSBigInt = new JSBigInt(0)/* self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
 			estimatedNetworkFee_JSBigInt
-		)
+		)*/
 		// NOTE: the hostingServiceFee has been disabled with RCT for now
-		const estimatedTotalFee_JSBigInt = /*hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
+		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
-		*/
-		const estimatedTotalFee_moneroAmountDouble = 0.028
+		const estimatedTotalFee_moneroAmountDouble = parseFloat(estimatedTotalFee_str)
+		
+		// const estimatedTotalFee_moneroAmountDouble = 0.028
 		// Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
 		let displayCcySymbol = self.context.settingsController.displayCcySymbol
 		let finalizable_ccySymbol = displayCcySymbol
-		var finalizable_formattedAmountString = `${estimatedTotalFee_moneroAmountDouble}`
+		var finalizable_formattedAmountString = estimatedTotalFee_str;//`${estimatedTotalFee_moneroAmountDouble}`
 		{
 			if (displayCcySymbol != Currencies.ccySymbolsByCcy.XMR) {
 				let displayCurrencyAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
