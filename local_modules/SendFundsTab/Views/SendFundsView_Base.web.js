@@ -241,7 +241,7 @@ class SendFundsView extends View
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
 		{
-			const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.<br/><br/>Monero ringsize value set<br/>to ${self._mixin_int()+1}.`
+			const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.<br/><br/>Monero ringsize value set<br/>to ${monero_sendingFunds_utils.fixedRingsize()}.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -299,7 +299,7 @@ class SendFundsView extends View
 			breakingDiv.appendChild(layer)
 		}
 		{
-			const tooltipText = "Based on Monero network<br/>fee estimate (not final).<br/><br/>MyMonero does not charge<br/>any transfer fees."
+			const tooltipText = "Based on Monero network<br/>fee estimate (not final).<br/><br/>Default priority is "+monero_sendingFunds_utils.default_priority()+"<br/>(medium-low).<br/><br/>MyMonero does not charge<br/>any transfer fees."
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			breakingDiv.appendChild(layer)
@@ -757,25 +757,15 @@ class SendFundsView extends View
 	}
 	//
 	//
-	// Accessors - Lookups - Mixin
-	//
-	_mixin_int()
-	{
-		return 9 // hard-coded, for now at least. in future, get from libmonero/wallet
-	}
-	//
-	//
 	// Accessors - Factories - Values
 	//
 	_new_estimatedNetworkFee_displayString()
 	{
 		const self = this
-
-		var mixin_int = self._mixin_int()
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_networkFee(
-			mixin_int,
+			monero_sendingFunds_utils.fixedMixin(),
 			new JSBigInt("209000000"), // TODO: grab this from polling request for dynamic per kb fee
-			2 // default priority -- TODO: input based on slider (once C++ core or JS priority impl in tx added)
+			monero_sendingFunds_utils.default_priority() // TODO: get from UI
 		)
 		const hostingServiceFee_JSBigInt = new JSBigInt(0)/* self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
 			estimatedNetworkFee_JSBigInt
@@ -1374,8 +1364,7 @@ class SendFundsView extends View
 			target_address,
 			payment_id,
 			amount_Number
-		)
-		{
+		) {
 			self.validationMessageLayer.SetValidationError(
 				`Sending ${final_amount_Number} XMR…`, 
 				true/*wantsXButtonHidden*/
@@ -1383,12 +1372,11 @@ class SendFundsView extends View
 			//
 			const sendFrom_address = sendFrom_wallet.public_address
 			//
-			const mixin_int = self._mixin_int()
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
-				mixin_int,
 				payment_id,
+				monero_sendingFunds_utils.default_priority(), 
 				function(
 					err,
 					currencyReady_targetDescription_address,
@@ -1415,7 +1403,7 @@ class SendFundsView extends View
 						mockedTransaction =
 						{
 							hash: tx_hash,
-							mixin: "" + mixin_int,
+							mixin: "" + monero_sendingFunds_utils.fixedMixin(),
 							coinbase: false,
 							//
 							isConfirmed: false, // important

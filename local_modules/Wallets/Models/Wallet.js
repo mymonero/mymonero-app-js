@@ -1037,8 +1037,8 @@ class Wallet extends EventEmitter
 	SendFunds(
 		target_address, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 		amount, // number
-		mixin,
 		payment_id,
+		simple_priority,
 		fn
 		// fn: (
 		//		err?,
@@ -1049,8 +1049,7 @@ class Wallet extends EventEmitter
 		//		tx_hash?,
 		//		tx_fee?
 		// )
-	)
-	{
+	) {
 		const self = this
 		// state-lock the function
 		if (self.isSendingFunds === true) {
@@ -1127,8 +1126,8 @@ class Wallet extends EventEmitter
 			self.public_keys,
 			self.context.hostedMoneroAPIClient,
 			monero_openalias_utils,
-			mixin,
 			payment_id,
+			simple_priority,
 			__trampolineFor_success,
 			__trampolineFor_err_withErr
 		)

@@ -38,6 +38,7 @@ const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltip
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
 //
 class ImportTransactionsModalView extends View
 {
@@ -430,7 +431,6 @@ class ImportTransactionsModalView extends View
 		}
 		const target_address = self.addressInputLayer.value
 		const payment_id = self.manualPaymentIDInputLayer.value
-		const mixin_int = 6 // reasonable? use 12 instead?
 		const amount_Number = parseFloat(self.amountInputLayer.value)
 		{
 			self.validationMessageLayer.SetValidationError(
@@ -438,61 +438,44 @@ class ImportTransactionsModalView extends View
 				true/*wantsXButtonHidden*/
 			)
 		}
-		__proceedTo_generateSendTransactionWith(
-			wallet, // FROM wallet
-			target_address, // TO address
-			payment_id,
-			amount_Number,
-			mixin_int
-		)
-		function __proceedTo_generateSendTransactionWith(
-			sendFrom_wallet,
+		const sendFrom_address = wallet.public_address
+		wallet.SendFunds(
 			target_address,
-			payment_id,
 			amount_Number,
-			mixin_int
-		)
-		{
-			const sendFrom_address = sendFrom_wallet.public_address
-			sendFrom_wallet.SendFunds(
-				target_address,
-				amount_Number,
-				mixin_int,
-				payment_id,
-				function(
-					err,
-					currencyReady_targetDescription_address,
-					sentAmount,
-					final__payment_id,
-					tx_hash,
-					tx_fee
-				)
-				{
-					if (err) {
-						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
-						return
-					}
-					self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
-					// finally, clean up form 
-					setTimeout(
-						function()
-						{
-							self._dismissValidationMessageLayer()
-							// Now dismiss
-							self.dismissView()
-						},
-						500
-					)
-					// and fire off a request to have the wallet get the latest (real) tx records
-					setTimeout(
-						function()
-						{
-							sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
-						}
-					)
+			payment_id,
+			monero_sendingFunds_utils.default_priority(),
+			function(
+				err,
+				currencyReady_targetDescription_address,
+				sentAmount,
+				final__payment_id,
+				tx_hash,
+				tx_fee
+			) {
+				if (err) {
+					_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
+					return
 				}
-			)
-		}
+				self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
+				// finally, clean up form 
+				setTimeout(
+					function()
+					{
+						self._dismissValidationMessageLayer()
+						// Now dismiss
+						self.dismissView()
+					},
+					500
+				)
+				// and fire off a request to have the wallet get the latest (real) tx records
+				setTimeout(
+					function()
+					{
+						sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+					}
+				)
+			}
+		)
 	}
 	//
 	// Runtime - Delegation - Navigation/View lifecycle
