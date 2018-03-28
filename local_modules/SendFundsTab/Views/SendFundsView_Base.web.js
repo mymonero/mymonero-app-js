@@ -34,6 +34,7 @@ const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web'
 const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
@@ -208,6 +209,9 @@ class SendFundsView extends View
 			self._setup_form_contactOrAddressPickerLayer() // this will set up the 'resolving' activity indicator
 			self._setup_form_addPaymentIDButtonView()
 			self._setup_form_manualPaymentIDInputLayer()
+			self._setup_form_field_ringSize()
+			//
+			self.refresh_networkFeeEstimateLayer() // initial; now that references to both the networkFeeEstimateLayer and the ringSizeSelectLayer have been assigned…
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -241,7 +245,7 @@ class SendFundsView extends View
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
 		{
-			const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.<br/><br/>Monero ringsize value set<br/>to ${monero_sendingFunds_utils.fixedRingsize()}.`
+			const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -286,7 +290,7 @@ class SendFundsView extends View
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			self.effectiveAmountLabel_tooltipLayer = layer // we can append this straight to effectiveAmountLabelLayer but must do so later, at the specific time we modify effectiveAmountLabelLayer' innerHTML
-	}
+		}
 		//
 		const breakingDiv = document.createElement("div")
 		{ // addtl element on this screen
@@ -295,11 +299,10 @@ class SendFundsView extends View
 			layer.style.color = "#9E9C9E"
 			layer.style.display = "inline-block"
 			self.networkFeeEstimateLayer = layer
-			self.refresh_networkFeeEstimateLayer() // now that reference assigned…
 			breakingDiv.appendChild(layer)
 		}
 		{
-			const tooltipText = "Based on Monero network<br/>fee estimate (not final).<br/><br/>Default priority is "+monero_sendingFunds_utils.default_priority()+"<br/>(medium-low).<br/><br/>MyMonero does not charge<br/>any transfer fees."
+			const tooltipText = "Based on Monero network<br/>fee estimate (not final).<br/><br/>MyMonero does not charge<br/>a transfer service fee.<br/><br/>Transfer priority: med-low (2)"
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			breakingDiv.appendChild(layer)
@@ -324,7 +327,7 @@ class SendFundsView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
 		{
-			const tooltipText = `Please double-check the accuracy<br/>of your recipient information as<br/>Monero transfers are irreversible.`
+			const tooltipText = `Please double-check the<br/>accuracy of your recipient<br/>information because Monero<br/>transfers are irreversible.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -403,8 +406,9 @@ class SendFundsView extends View
 				}
 			}
 		)
-		view.layer.style.marginTop = "4px"
+		view.layer.style.marginTop = "-8px"
 		view.layer.style.marginLeft = "32px"
+		view.layer.style.marginBottom = "24px" // additional padding beyond 20 for following form elements
 		self.addPaymentIDButtonView = view
 		self.form_containerLayer.appendChild(view.layer)
 	}
@@ -440,6 +444,110 @@ class SendFundsView extends View
 		}
 		self.manualPaymentIDInputLayer_containerLayer = div
 		//
+		self.form_containerLayer.appendChild(div)
+	}
+	_setup_form_field_ringSize()
+	{
+		const self = this
+		let selectLayer_w = 122 // disclosure arrow visual alignment with change pw content right edge
+		let selectLayer_h = 32
+		//
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("RING SIZE", self.context)
+			labelLayer.style.marginTop = "4px"
+			{
+				const tooltipText = `Monero anonymizes senders<br/>by mixing their "outputs" with</br>other outputs in a "ring".`
+				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+				const layer = view.layer
+				labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+			}
+			div.appendChild(labelLayer)
+			//
+			let selectContainerLayer = document.createElement("div")
+			selectContainerLayer.style.position = "relative" // to container pos absolute
+			selectContainerLayer.style.left = "0"
+			selectContainerLayer.style.top = "0"
+			selectContainerLayer.style.width = selectLayer_w+"px"
+			selectContainerLayer.style.height =selectLayer_h+"px"
+			//
+			let selectLayer = document.createElement("select")
+			{
+				let values = 
+				[ 
+					monero_sendingFunds_utils.thisFork_minRingSize(), 
+					11, 
+					21, 
+					41 
+				]
+				let descriptions = [ "Minimum", "Medium", "High", "Paranoid" ]
+				let numberOf_values = values.length
+				for (var i = 0 ; i < numberOf_values ; i++) {
+					let value = values[i]
+					const optionLayer = document.createElement("option")
+					optionLayer.style.textAlign = "center"
+					optionLayer.value = value
+					optionLayer.innerText = `${descriptions[i]} (${value})`
+					selectLayer.appendChild(optionLayer)
+				}
+			}
+			self.ringSizeSelectLayer = selectLayer
+			{
+				// selectLayer.style.textAlign = "center"
+				// selectLayer.style.textAlignLast = "center"
+				selectLayer.style.outline = "none"
+				selectLayer.style.color = "#FCFBFC"
+				selectLayer.style.backgroundColor = "#383638"
+				selectLayer.style.width = selectLayer_w+"px"
+				selectLayer.style.height =selectLayer_h+"px"
+				selectLayer.style.border = "0"
+				selectLayer.style.padding = "0"
+				selectLayer.style.borderRadius = "3px"
+				selectLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+				selectLayer.style.webkitAppearance = "none" // apparently necessary in order to activate the following style.border…Radius
+				selectLayer.style.appearance = "none"
+				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+					selectLayer,
+					true // bright content, dark bg
+				)
+				selectLayer.style.textIndent = "11px"
+				{ // hover effects/classes
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+				}
+				//
+				// observation
+				selectLayer.addEventListener(
+					"change", 
+					function()
+					{
+						self._ringSizeSelectLayer_did_change()
+					}
+				)
+			}
+			selectContainerLayer.appendChild(selectLayer)
+			{
+				const layer = document.createElement("div")
+				self.disclosureArrowLayer = layer
+				layer.style.pointerEvents = "none" // mustn't intercept pointer events
+				layer.style.border = "none"
+				layer.style.position = "absolute"
+				const w = 10
+				const h = 8
+				let top = Math.ceil((selectLayer_h - h)/2)
+				layer.style.width = w+"px"
+				layer.style.height = h+"px"
+				layer.style.right = "13px"
+				layer.style.top = top+"px"
+				layer.style.zIndex = "100" // above options_containerView 
+				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundRepeat = "no-repeat"
+				layer.style.backgroundPosition = "center"
+				layer.style.backgroundSize = w+"px "+ h+"px"
+				selectContainerLayer.appendChild(layer)			
+			}
+			div.appendChild(selectContainerLayer)
+		}
 		self.form_containerLayer.appendChild(div)
 	}
 	//
@@ -763,7 +871,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_networkFee(
-			monero_sendingFunds_utils.fixedMixin(),
+			self._selected_mixinSize(),
 			new JSBigInt("209000000"), // TODO: grab this from polling request for dynamic per kb fee
 			monero_sendingFunds_utils.default_priority() // TODO: get from UI
 		)
@@ -803,6 +911,16 @@ class SendFundsView extends View
 		let displayString = `+ ${final_formattedAmountString} ${final_ccySymbol} EST. NETWORK FEE`
 		//
 		return displayString
+	}
+	//
+	// Accessors - Reading form state
+	_selected_mixinSize()
+	{
+		const self = this
+		let ringsize = parseInt("" + self.ringSizeSelectLayer.value)
+		let mixin = ringsize - 1
+
+		return mixin
 	}
 	//
 	//
@@ -1371,7 +1489,7 @@ class SendFundsView extends View
 			)
 			//
 			const sendFrom_address = sendFrom_wallet.public_address
-			const mixin = monero_sendingFunds_utils.fixedMixin()
+			const mixin = self._selected_mixinSize()
 			//
 			sendFrom_wallet.SendFunds(
 				target_address,
@@ -2119,6 +2237,13 @@ class SendFundsView extends View
 			self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
 			return // nothing picked / canceled
 		}
+	}
+	//
+	// Delegation - Select etc controls
+	_ringSizeSelectLayer_did_change()
+	{
+		let self = this
+		self.refresh_networkFeeEstimateLayer() // now that reference assigned…
 	}
 	//
 	//
