@@ -1038,6 +1038,7 @@ class Wallet extends EventEmitter
 		target_address, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 		amount, // number
 		payment_id,
+		mixin,
 		simple_priority,
 		fn
 		// fn: (
@@ -1127,6 +1128,7 @@ class Wallet extends EventEmitter
 			self.context.hostedMoneroAPIClient,
 			monero_openalias_utils,
 			payment_id,
+			mixin,
 			simple_priority,
 			__trampolineFor_success,
 			__trampolineFor_err_withErr
