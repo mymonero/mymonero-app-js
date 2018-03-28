@@ -1371,12 +1371,13 @@ class SendFundsView extends View
 			)
 			//
 			const sendFrom_address = sendFrom_wallet.public_address
+			const mixin = monero_sendingFunds_utils.fixedMixin()
 			//
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
 				payment_id,
-				monero_sendingFunds_utils.fixedMixin(),
+				mixin,
 				monero_sendingFunds_utils.default_priority(), 
 				function(
 					err,
@@ -1404,7 +1405,7 @@ class SendFundsView extends View
 						mockedTransaction =
 						{
 							hash: tx_hash,
-							mixin: "" + monero_sendingFunds_utils.fixedMixin(),
+							mixin: "" + mixin,
 							coinbase: false,
 							//
 							isConfirmed: false, // important
