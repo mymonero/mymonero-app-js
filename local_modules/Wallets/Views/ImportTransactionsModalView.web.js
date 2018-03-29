@@ -443,7 +443,7 @@ class ImportTransactionsModalView extends View
 			target_address,
 			amount_Number,
 			payment_id,
-			monero_sendingFunds_utils.thisFork_minMixin(),
+			monero_sendingFunds_utils.fixedMixin(),
 			monero_sendingFunds_utils.default_priority(),
 			function(
 				err,

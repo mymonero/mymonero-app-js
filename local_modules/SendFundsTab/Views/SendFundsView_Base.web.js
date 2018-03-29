@@ -209,9 +209,9 @@ class SendFundsView extends View
 			self._setup_form_contactOrAddressPickerLayer() // this will set up the 'resolving' activity indicator
 			self._setup_form_addPaymentIDButtonView()
 			self._setup_form_manualPaymentIDInputLayer()
-			self._setup_form_field_ringSize()
+			self._setup_form_field_priority()
 			//
-			self.refresh_networkFeeEstimateLayer() // initial; now that references to both the networkFeeEstimateLayer and the ringSizeSelectLayer have been assigned…
+			self.refresh_networkFeeEstimateLayer() // initial; now that references to both the networkFeeEstimateLayer and the prioritySelectLayer have been assigned…
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -221,6 +221,12 @@ class SendFundsView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
+			{
+				const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
+				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+				const layer = view.layer
+				labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+			}
 			div.appendChild(labelLayer)
 			//
 			const view = new WalletsSelectView({}, self.context)
@@ -245,7 +251,7 @@ class SendFundsView extends View
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
 		{
-			const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
+			const tooltipText = `Ring size value set to<br/>Monero default of ${monero_sendingFunds_utils.fixedRingsize()}`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -302,7 +308,7 @@ class SendFundsView extends View
 			breakingDiv.appendChild(layer)
 		}
 		{
-			const tooltipText = "Based on Monero network<br/>fee estimate (not final).<br/><br/>MyMonero does not charge<br/>a transfer service fee.<br/><br/>Transfer priority: med-low (2)"
+			const tooltipText = "Based on Monero network<br/>fee estimate (not final).<br/><br/>MyMonero does not charge<br/>a transfer service fee."
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			breakingDiv.appendChild(layer)
@@ -446,7 +452,7 @@ class SendFundsView extends View
 		//
 		self.form_containerLayer.appendChild(div)
 	}
-	_setup_form_field_ringSize()
+	_setup_form_field_priority()
 	{
 		const self = this
 		let selectLayer_w = 122 // disclosure arrow visual alignment with change pw content right edge
@@ -454,10 +460,10 @@ class SendFundsView extends View
 		//
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("RING SIZE", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PRIORITY", self.context)
 			labelLayer.style.marginTop = "4px"
 			{
-				const tooltipText = `Monero anonymizes senders<br/>by mixing their "outputs" with</br>other outputs in a "ring".`
+				const tooltipText = `You can pay the Monero<br/>network a higher fee to<br/>have your transfers<br/>confirmed faster.`
 				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 				const layer = view.layer
 				labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -473,25 +479,29 @@ class SendFundsView extends View
 			//
 			let selectLayer = document.createElement("select")
 			{
+				const defaultValue = monero_sendingFunds_utils.default_priority()
 				let values = 
 				[ 
-					monero_sendingFunds_utils.thisFork_minRingSize(), 
-					11, 
-					21, 
-					41 
+					1,
+					2,
+					3,
+					4
 				]
-				let descriptions = [ "Minimum", "Medium", "High", "Paranoid" ]
+				let descriptions = [ "Low", "Medium", "High", "Very High" ]
 				let numberOf_values = values.length
 				for (var i = 0 ; i < numberOf_values ; i++) {
 					let value = values[i]
 					const optionLayer = document.createElement("option")
+					if (defaultValue === value) {
+						optionLayer.selected = "selected"
+					}
 					optionLayer.style.textAlign = "center"
 					optionLayer.value = value
-					optionLayer.innerText = `${descriptions[i]} (${value})`
+					optionLayer.innerText = `${descriptions[i]}`// (${value})`
 					selectLayer.appendChild(optionLayer)
 				}
 			}
-			self.ringSizeSelectLayer = selectLayer
+			self.prioritySelectLayer = selectLayer
 			{
 				// selectLayer.style.textAlign = "center"
 				// selectLayer.style.textAlignLast = "center"
@@ -521,7 +531,7 @@ class SendFundsView extends View
 					"change", 
 					function()
 					{
-						self._ringSizeSelectLayer_did_change()
+						self._priority_selectLayer_did_change()
 					}
 				)
 			}
@@ -871,9 +881,9 @@ class SendFundsView extends View
 	{
 		const self = this
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_networkFee(
-			self._selected_mixinSize(),
+			monero_sendingFunds_utils.fixedMixin(),
 			new JSBigInt("209000000"), // TODO: grab this from polling request for dynamic per kb fee
-			monero_sendingFunds_utils.default_priority() // TODO: get from UI
+			self._selected_simplePriority()
 		)
 		const hostingServiceFee_JSBigInt = new JSBigInt(0)/* self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
 			estimatedNetworkFee_JSBigInt
@@ -914,13 +924,12 @@ class SendFundsView extends View
 	}
 	//
 	// Accessors - Reading form state
-	_selected_mixinSize()
+	_selected_simplePriority()
 	{
 		const self = this
-		let ringsize = parseInt("" + self.ringSizeSelectLayer.value)
-		let mixin = ringsize - 1
+		let intValue = parseInt("" + self.prioritySelectLayer.value)
 
-		return mixin
+		return intValue
 	}
 	//
 	//
@@ -1489,14 +1498,15 @@ class SendFundsView extends View
 			)
 			//
 			const sendFrom_address = sendFrom_wallet.public_address
-			const mixin = self._selected_mixinSize()
+			const mixin = monero_sendingFunds_utils.fixedMixin()
+			const priority = self._selected_simplePriority()
 			//
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
 				payment_id,
 				mixin,
-				monero_sendingFunds_utils.default_priority(), 
+				priority, 
 				function(
 					err,
 					currencyReady_targetDescription_address,
@@ -2240,7 +2250,7 @@ class SendFundsView extends View
 	}
 	//
 	// Delegation - Select etc controls
-	_ringSizeSelectLayer_did_change()
+	_priority_selectLayer_did_change()
 	{
 		let self = this
 		self.refresh_networkFeeEstimateLayer() // now that reference assigned…
