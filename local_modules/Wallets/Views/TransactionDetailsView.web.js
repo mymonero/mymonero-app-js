@@ -199,7 +199,7 @@ class TransactionDetailsView extends View
 	_addTableFieldLayer_ringsize()
 	{
 		const self = this
-		const title = "Ringsize"
+		const title = "Ring size"
 		const div = self.__new_tableFieldLayer_simpleValue(
 			"", // for now
 			title			
