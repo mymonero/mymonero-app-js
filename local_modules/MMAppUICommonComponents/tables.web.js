@@ -515,12 +515,12 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	pasteboard, 
 	valueToDisplayIfValueNil_orDefault,
 	optl_isTruncatedPreviewForm, // single line, … trunc, etc
-	optl_isSecretData
+	optl_isSecretData // IMPORTANT: defaults to false if undefined
 ) { 
 	__injectCSSRules_ifNecessary(context)
 	//
 	const isTruncatedPreviewForm = optl_isTruncatedPreviewForm == true ? true : false // undefined -> false
-	const isSecretData = optl_isSecretData == false ? false : true // undefined -> true
+	const isSecretData = optl_isSecretData == true ? true : false // undefined -> false
 	const wantsCopyButton = isSecretData == false // only allow copy if not secret
 	//
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
