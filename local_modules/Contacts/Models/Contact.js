@@ -337,7 +337,7 @@ class Contact extends EventEmitter
 			address = self.address;
 		}
 		if (address == null || address == "" || typeof address == "undefined") {
-			return null; // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
+			return null; // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
 		}
 		// now we know we have a std xmr addr and a short pid
 		let int_addr = monero_utils.new__int_addr_from_addr_and_short_pid(
