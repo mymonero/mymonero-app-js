@@ -368,7 +368,7 @@ function _new_autocompleteResultsLayer()
 	layer.style.boxShadow = "0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.30)"
 	layer.style.overflowY = "auto"
 	// layer.style.webkitOverflowScrolling = "touch"
-	layer.style.zIndex = "100"
+	layer.style.zIndex = "1000"
 	//
 	layer.style.display = "none" // for now - no results at init!
 	//
