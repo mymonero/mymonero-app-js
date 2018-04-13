@@ -826,7 +826,7 @@ class WalletDetailsView extends View
 						div.style.color = "#9E9C9E"
 						div.style.fontWeight = "100"
 						//
-						div.innerHTML = `${ tx.payment_id || "N/A" }`
+						div.innerHTML = `${ tx.payment_id || "" }`
 					}
 					{ // Status
 						const div = document.createElement("div")

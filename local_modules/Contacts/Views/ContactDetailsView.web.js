@@ -183,7 +183,7 @@ class ContactDetailsView extends View
 		const self = this
 		const fieldLabelTitle = "Payment ID"
 		const value = self.contact.payment_id
-		const valueToDisplayIfValueNil = "N/A"
+		const valueToDisplayIfValueNil = "None"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
 			self.context,
 			fieldLabelTitle, 

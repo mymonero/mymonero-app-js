@@ -228,7 +228,7 @@ class TransactionDetailsView extends View
 	{
 		const self = this
 		const fieldLabelTitle = "Payment ID"
-		const valueToDisplayIfValueNil = "N/A"
+		const valueToDisplayIfValueNil = "None"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
 			self.context,
 			fieldLabelTitle, 
