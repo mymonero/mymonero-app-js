@@ -288,11 +288,11 @@ class SendFundsView extends View
 		//
 		self.effectiveAmountLabelLayer = pkg.effectiveAmountLabelLayer // for configuration
 		{
-			const tooltipText = `Currency selector for display<br/>purposes only. The app will<br/>send ${
+			const tooltipText = `Currency selector for<br/>display purposes only.<br/>The app will send ${
 				Currencies.ccySymbolsByCcy.XMR
-			}.<br/><br/>Rate sources include<br/>'${
+			}.<br/><br/>Rate providers include<br/>${
 				rateServiceDomainText
-			}'.`
+			}.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			self.effectiveAmountLabel_tooltipLayer = layer // we can append this straight to effectiveAmountLabelLayer but must do so later, at the specific time we modify effectiveAmountLabelLayer' innerHTML
@@ -1427,7 +1427,7 @@ class SendFundsView extends View
 				let title = `Important`
 				let message = `Though ${selected_ccySymbol} is selected, the app will send ${Currencies.ccySymbolsByCcy.XMR}. (This is not an exchange.)`
 				message += `\n\n`
-				message += `Rate provided by sources such as '${rateServiceDomainText}'. No guarantee of accuracy nor favorability. Use at own risk / Not responsible for losses.`
+				message += `Rate providers include ${rateServiceDomainText}. Neither accuracy or favorability are guaranteed. Use at your own risk.`
 				let ok_buttonTitle = `Agree and Send ${final_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}`
 				let cancel_buttonTitle = "Cancel"
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
