@@ -365,13 +365,14 @@ class SendFundsView extends View
 			self.resolving_activityIndicatorLayer = layer
 			div.appendChild(layer)
 		}
-		{ // resolved monero address field - only really used when a manual OA addr yields an addr
+		{ // resolved monero address field
 			const fieldContainerLayer = document.createElement("div")
 			self.resolvedAddress_containerLayer = fieldContainerLayer
 			div.appendChild(fieldContainerLayer)
 			fieldContainerLayer.style.display = "none" // initial state
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MONERO ADDRESS", self.context)
+				labelLayer.style.marginTop = "6px" // instead of 15
 				fieldContainerLayer.appendChild(labelLayer)
 				//
 				const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
@@ -386,6 +387,7 @@ class SendFundsView extends View
 			fieldContainerLayer.style.display = "none" // initial state
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
+				labelLayer.style.marginTop = "6px" // instead of 15
 				fieldContainerLayer.appendChild(labelLayer)
 				//
 				const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
@@ -986,8 +988,7 @@ class SendFundsView extends View
 		function __setTextOnAmountUI(
 			title,
 			shouldHide_tooltipButton
-		)
-		{
+		) {
 			self.effectiveAmountLabelLayer.innerHTML = title
 			if (shouldHide_tooltipButton != true) {
 				// NOTE: shouldn't need to remove self.effectiveAmountLabel_tooltipLayer from its parentNode b/c we're rewriting innerHTML each time - DOM will handle
@@ -1705,7 +1706,7 @@ class SendFundsView extends View
 			self.addPaymentIDButtonView.layer.style.display = "none"
 			self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 			self.manualPaymentIDInputLayer.value = ""
-			self._hideResolvedAddress() // no possible need to show this
+			self._hideResolvedAddress() 
 		}
 		{ // payment id - if we already have one
 			if (self.pickedContact.HasOpenAliasAddress() === false) {
@@ -1717,8 +1718,10 @@ class SendFundsView extends View
 				}
 				self.isResolvingSendTarget = false 
 				self.set_isSubmittable_needsUpdate()
+				//
 				// and exit early
 				return // no need to re-resolve what is not an OA addr
+				//
 			} else { // they're using an OA addr, so we still need to check if they still have one
 				self._hideResolvedPaymentID() // in case it's visible… although it wouldn't be
 			}
@@ -1746,8 +1749,7 @@ class SendFundsView extends View
 				oaRecords_0_name,
 				oaRecords_0_description,
 				dnssec_used_and_secured
-			)
-			{
+			) {
 				self.resolving_activityIndicatorLayer.style.display = "none"
 				//
 				if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
@@ -1770,6 +1772,13 @@ class SendFundsView extends View
 				}
 				self.isResolvingSendTarget = false // only enable if no err
 				self.set_isSubmittable_needsUpdate()
+				{
+					if (typeof moneroReady_address !== 'undefined' && moneroReady_address) { // not that it would be
+						self._displayResolvedAddress(moneroReady_address)
+					} else {
+						// we already hid it above - not that this will ever be entered
+					}
+				}
 				{ // there is no need to tell the contact to update its address and payment ID here as it will be observing the emitted event from this very request to .Resolve
 					// we don't want to show the resolved addr here
 					if (typeof payment_id !== 'undefined' && payment_id) {
@@ -1863,8 +1872,7 @@ class SendFundsView extends View
 				oaRecords_0_name,
 				oaRecords_0_description,
 				dnssec_used_and_secured
-			)
-			{
+			) {
 				self.resolving_activityIndicatorLayer.style.display = "none"
 				self.isResolvingSendTarget = false
 				self.set_isSubmittable_needsUpdate()
