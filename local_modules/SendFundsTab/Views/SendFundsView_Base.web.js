@@ -767,6 +767,20 @@ class SendFundsView extends View
 				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
 			)
 		}
+		{ // EventName_willDeconstructBootedStateAndClearPassword
+			let emitter = self.context.passwordController
+			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
+				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
+			}
+			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = function()
+			{
+				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword()
+			}
+			emitter.on(
+				emitter.EventName_willDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
+			)
+		}
 	}
 	//
 	//
@@ -843,6 +857,14 @@ class SendFundsView extends View
 				self._settingsController__EventName_settingsChanged_displayCcySymbol__fn
 			)
 			self._settingsController__EventName_settingsChanged_displayCcySymbol__fn = null
+		}
+		{ // EventName_willDeconstructBootedStateAndClearPassword
+			let emitter = self.context.passwordController
+			emitter.removeListener(
+				emitter.EventName_willDeconstructBootedStateAndClearPassword(),
+				self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn
+			)
+			self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn = null
 		}
 	}
 	//
@@ -1515,8 +1537,7 @@ class SendFundsView extends View
 					final__payment_id,
 					tx_hash,
 					tx_fee
-				)
-				{
+				) {
 					if (err) {
 						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 						return
@@ -2269,12 +2290,20 @@ class SendFundsView extends View
 	//
 	passwordController_DeleteEverything(
 		fn // this MUST be called
-	)
-	{
+	) {
 		const self = this
 		console.log(self.constructor.name + " passwordController_DeleteEverything")
+		self.cancelAny_requestHandle_for_oaResolution()
 		self._clearForm()
 		fn()
+	}
+	//
+	// Delegation - Events - Password controller
+	_passwordController_EventName_willDeconstructBootedStateAndClearPassword()
+	{
+		const self = this
+		self.cancelAny_requestHandle_for_oaResolution()
+		self._clearForm()
 	}
 }
 module.exports = SendFundsView
