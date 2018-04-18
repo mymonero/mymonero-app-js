@@ -60,7 +60,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 			div.style.backgroundColor = "#302D2F"
 			div.style.height = "1px"
 			div.style.width = "236px"
-			div.style.margin = "0 auto 22px auto"
+			div.style.margin = "0 auto 20px auto"
 			self.layer.appendChild(div)
 		}
 		{
@@ -121,19 +121,19 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		const list = []
 		list.push([
 			"Creating a wallet",
-			"Each Monero wallet gets a secret word-sequence called a mnemonic."
+			"Each Monero wallet gets a unique word-sequence called a mnemonic."
 		])
 		list.push([
 			"Write down your mnemonic", 
-			"It's the only way to recover access to your wallet, and is never uploaded."
+			"It's the only way to regain access to your funds if you delete the app."
 		])
 		list.push([
-			"Keep it secure &amp; private", 
-			"Anyone with the mnemonic can view and spend the funds in your wallet."
-		])
-		list.push([
-			"Use pen and paper or back it up", 
+			"Keep it secret and safe",
 			"If you save it to an insecure location, it may be viewable by other apps."
+		])
+		list.push([
+			"Use it like an actual wallet",
+			"For keeping large amounts long-term, make a cold-storage wallet instead."
 		])
 		return list
 	}
