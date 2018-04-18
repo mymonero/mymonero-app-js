@@ -83,8 +83,7 @@ class StackAndModalNavigationView extends StackNavigationView
 	PresentView(
 		modalView,
 		isAnimated_orTrue // defaults to true if you don't pass anything here
-	)
-	{
+	) {
 		const self = this
 		if (modalView === null || typeof modalView === 'undefined') {
 			throw "StackNavigationView asked to PresentView nil modalView"
@@ -133,13 +132,18 @@ class StackAndModalNavigationView extends StackNavigationView
 		{ // and then actually present the view:
 			const modalView_layer = modalView.layer
 			const preExisting_boxShadow = modalView_layer.style.boxShadow
+			function __configureModalLayerForTransitionEnd()
+			{
+				modalView_layer.style.position = "absolute" // final style.position needs to be absolute or nav bar effects (due to higher effective z-index) will appear above a position:relative modal
+				modalView_layer.style.zIndex = "10"
+			}
 			if (isAnimated === true) { // prepare for animation
 				if (typeof old_topModalView !== 'undefined' && old_topModalView) {
 					old_topModalView.layer.style.position = "absolute"
 					old_topModalView.layer.style.zIndex = "9"
 				}
 				modalView_layer.style.position = "absolute"
-				modalView_layer.style.zIndex = "20" // 2 because we'll want to insert a semi-trans curtain view under the modalView_layer above the old_topStackView
+				modalView_layer.style.zIndex = "20" // 20 because we'll want to insert a semi-trans curtain view under the modalView_layer above the old_topStackView
 				modalView_layer.style.top = `${ self.layer.offsetHeight }px`
 				//
 				if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
@@ -156,6 +160,7 @@ class StackAndModalNavigationView extends StackNavigationView
 			}
 			if (isAnimated === false) { // no need to animate anything - straight to end state
 				_afterHavingFullyPresentedNewModalView_removeOldTopModalView()
+				__configureModalLayerForTransitionEnd()
 				__trampolineFor_transitionEnded()
 			} else {
 				setTimeout(
@@ -171,7 +176,7 @@ class StackAndModalNavigationView extends StackNavigationView
 								easing: self._animation_modalPresent_easing(),
 								complete: function()
 								{
-									modalView_layer.style.zIndex = "10"
+									__configureModalLayerForTransitionEnd()
 									if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) { // since we didn't change it if this is not the case
 										modalView_layer.style.boxShadow = preExisting_boxShadow // restore pre-existing, in case consumer had put one on
 									}
@@ -195,8 +200,7 @@ class StackAndModalNavigationView extends StackNavigationView
 	DismissTopModalView(
 		isAnimated_orTrue,
 		fn
-	)
-	{
+	) {
 		const self = this
 		const numberOf_modalViews = self.modalViews.length
 		if (numberOf_modalViews == 0) {
@@ -222,8 +226,7 @@ class StackAndModalNavigationView extends StackNavigationView
 		to_modalView_orNullForTopStackView,
 		isAnimated_orTrue,
 		fn
-	)
-	{
+	) {
 		const self = this
 		fn = fn || function() {}
 		const isAnimated =

@@ -217,8 +217,7 @@ class NavigationBarView extends View
 		isAnimated, 
 		ifAnimated_isFromRightNotLeft,
 		trueIfPoppingToRoot
-	)
-	{
+	) {
 		const self = this
 		//
 		self.__stopObserving_old_topStackView(old_topStackView)
@@ -272,8 +271,7 @@ class NavigationBarView extends View
 		isAnimated, 
 		ifAnimated_isFromRightNotLeft,
 		trueIfPoppingToRoot
-	)
-	{
+	) {
 		const self = this
 		if (typeof stackView === 'undefined' || stackView === null) {
 			self.titleLayer.innerHTML = "" // clear
@@ -414,8 +412,7 @@ class NavigationBarView extends View
 		isAnimated,
 		ifAnimated_isFromRightNotLeft,
 		trueIfPoppingToRoot
-	)
-	{
+	) {
 		const self = this
 		const self_layer_width = self.layer.offsetWidth
 		{ // remove existing
