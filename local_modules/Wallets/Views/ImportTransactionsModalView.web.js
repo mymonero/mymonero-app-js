@@ -139,6 +139,7 @@ class ImportTransactionsModalView extends View
 			}
 			self._setup_form_addressInputLayer() // this will set up the 'resolving' activity indicator
 			self._setup_form_manualPaymentIDInputLayer()
+			self._setup_noteLayer()
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -252,7 +253,7 @@ class ImportTransactionsModalView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.paddingTop = "4px"
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID (REQUIRED)", self.context)
 			labelLayer.style.margin = "0 0 8px 8px"
 			labelLayer.style.float = "left"
 			labelLayer.style.display = "block"
@@ -281,6 +282,30 @@ class ImportTransactionsModalView extends View
 			div.appendChild(valueLayer)
 		}
 		self.form_containerLayer.appendChild(div)
+	}
+	_setup_noteLayer()
+	{
+		// TODO: factor to component
+		const self = this
+		const layer = document.createElement("div")
+		layer.style.background = "rgba(245,230,125,0.05)"
+		const padding_h = 8
+		const margin_h = 24
+		layer.style.width = `calc(100% - ${2*margin_h}px - ${2*1}px - ${2*padding_h}px)`
+		layer.style.borderRadius = "5px"
+		layer.style.border = "1px solid rgba(245,230,125,0.30)"
+		layer.style.padding = `6px ${padding_h}px 7px ${padding_h}px`
+		layer.style.margin = `4px ${margin_h}px 8px ${margin_h}px`
+		layer.style.fontWeight = "300"
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontSize = "11px"
+		layer.style.fontWeight = "400"
+		layer.style.webkitFontSmoothing = "subpixel-antialiased"
+		layer.style.wordBreak = "break-word"
+		layer.style.color = "#F5E67E"
+		const text = "NOTE: Do not send your wallet's balance to this address. (This is not your new&nbsp;address.)"
+		layer.innerHTML = text
+		self.form_containerLayer.appendChild(layer)
 	}
 	//
 	startObserving()
