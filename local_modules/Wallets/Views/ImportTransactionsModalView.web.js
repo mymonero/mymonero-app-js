@@ -303,7 +303,7 @@ class ImportTransactionsModalView extends View
 		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.wordBreak = "break-word"
 		layer.style.color = "#F5E67E"
-		const text = "NOTE: Do not send your wallet's balance to this address. (This is not your new&nbsp;address.)"
+		const text = "NOTE: Don't transfer your wallet's balance to this address. (This isn't your new&nbsp;address.)"
 		layer.innerHTML = text
 		self.form_containerLayer.appendChild(layer)
 	}
