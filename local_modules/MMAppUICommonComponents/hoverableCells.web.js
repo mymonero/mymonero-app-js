@@ -37,13 +37,13 @@ const cssRules =
 	`.hoverable-cell {
 		transition: background-color 0.1s ease-out;
 	}`,
-	`.hoverable-cell.utility:not(.disabled):not(.active):hover {
+	`.hoverable-cell.utility:not(.disabled):not(.active):not([disabled]):hover {
 		background-color: #3f3e3f !important;
 	}`,
-	`.hoverable-cell.action:not(.disabled):not(.active):hover {
+	`.hoverable-cell.action:not(.disabled):not(.active):not([disabled]):hover {
 		background-color: #33d1ff !important;
 	}`,
-	`.hoverable-cell.destructive:not(.disabled):not(.active):hover {
+	`.hoverable-cell.destructive:not(.disabled):not(.active):not([disabled]):hover {
 		background-color: #F77E7E !important;
 	}`
 ]
