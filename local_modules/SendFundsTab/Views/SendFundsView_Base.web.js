@@ -1225,6 +1225,7 @@ class SendFundsView extends View
 			//
 			self.amountInputLayer.disabled = false
 			self.ccySelectLayer.disabled = false
+			self.prioritySelectLayer.disabled = false
 			//
 			self.manualPaymentIDInputLayer.disabled = false
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
@@ -1255,6 +1256,7 @@ class SendFundsView extends View
 			//
 			self.amountInputLayer.disabled = true
 			self.ccySelectLayer.disabled = true
+			self.prioritySelectLayer.disabled = true
 			//
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
 			self.manualPaymentIDInputLayer.disabled = true
