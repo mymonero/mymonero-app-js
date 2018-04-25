@@ -122,7 +122,6 @@ class FundsRequestDetailsView extends View
 			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
 			div.style.padding = "15px 0 17px 0"
 			{
-				const uri = self.fundsRequest.Lazy_URI()
 				{ // left
 					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("QR Code", self.context)
 					labelLayer.style.margin = "0 0 0 0"
@@ -200,7 +199,7 @@ class FundsRequestDetailsView extends View
 			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
 			div.style.padding = "15px 0 17px 0"
 			{
-				const uri = self.fundsRequest.Lazy_URI()
+				const clickableLink_uri = self.fundsRequest.Lazy_URI__addressAsAuthority()
 				{ // left
 					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link", self.context)
 					labelLayer.style.margin = "0 0 0 0"
@@ -210,7 +209,7 @@ class FundsRequestDetailsView extends View
 				{ // right
 					const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 						self.context,
-						uri,
+						clickableLink_uri,
 						true,
 						self.context.pasteboard
 					)
@@ -221,7 +220,7 @@ class FundsRequestDetailsView extends View
 				{
 					div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				}
-				const value = uri
+				const value = clickableLink_uri
 				const valueLayer = commonComponents_tables.New_fieldValue_labelLayer("" + value, self.context)
 				{ // special case
 					valueLayer.style.float = "none"
@@ -372,7 +371,7 @@ class FundsRequestDetailsView extends View
 		}
 		value += "\r\n" // spacer
 		value += "\r\n---------------------------"
-		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI()}`
+		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI__addressAsAuthority()}`
 		value += `\r\n`
 		value += `\r\nIf you don't have MyMonero installed, download it from ${"https://" + self.context.appDownloadLink_domainAndPath}`
 		//
@@ -400,7 +399,7 @@ class FundsRequestDetailsView extends View
 			value += `<p>Description: "${self.fundsRequest.description}"</p>`
 		}
 		value += "<p>---------------------------</p>"
-		value += `<p>If you have MyMonero installed, <a href="${self.fundsRequest.Lazy_URI()}">press this link to send the funds</a>.</p>`
+		value += `<p>If you have MyMonero installed, <a href="${self.fundsRequest.Lazy_URI__addressAsAuthority()}">press this link to send the funds</a>.</p>`
 		const appDownloadLink_domainAndPath = self.context.appDownloadLink_domainAndPath
 		value += `<p>If you don't have MyMonero installed, download it from <a href="https://${appDownloadLink_domainAndPath}">${appDownloadLink_domainAndPath}</a>.</p>`
 		//

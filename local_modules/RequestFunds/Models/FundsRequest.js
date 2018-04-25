@@ -226,7 +226,7 @@ class FundsRequest extends EventEmitter
 	{
 		const self = this
 		//
-		return `${self.constructor.name}<${self._id}> URI: ${self.uri}.`
+		return `${self.constructor.name}<${self._id}> URI: ${self.uri__addressAsAuthority}.`
 	}
 	//
 	EventName_booted()
@@ -242,33 +242,60 @@ class FundsRequest extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors
 	
-	Lazy_URI()
+	Lazy_URI__addressAsFirstPathComponent()
 	{
 		const self = this
 		if (self.hasBooted !== true) {
-			throw "Lazy_URI() called while FundsRequest instance not booted"
+			throw "Lazy_URI__addressAsFirstPathComponent() called while FundsRequest instance not booted"
 		}
-		return self._assumingBootedOrEquivalent__Lazy_URI()
+		return self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
 	}
-	_assumingBootedOrEquivalent__Lazy_URI()
+	_assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
 	{
 		const self = this
-		if (typeof self.uri === 'undefined' || !self.uri) {
-			self.uri = monero_requestURI_utils.New_RequestFunds_URI({
+		if (typeof self.uri_addressAsFirstPathComponent === 'undefined' || !self.uri_addressAsFirstPathComponent) {
+			self.uri_addressAsFirstPathComponent = monero_requestURI_utils.New_RequestFunds_URI({
 				address: self.to_address,
 				payment_id: self.payment_id,
 				amount: self.amount,
 				amountCcySymbol: self.amountCcySymbol,
 				description: self.description,
-				message: self.message
+				message: self.message,
+				uriType: monero_requestURI_utils.URITypes.addressAsFirstPathComponent
 			})
 		}
-		return self.uri
+		return self.uri_addressAsFirstPathComponent
 	}
+	//
+	Lazy_URI__addressAsAuthority()
+	{
+		const self = this
+		if (self.hasBooted !== true) {
+			throw "Lazy_URI__addressAsAuthority() called while FundsRequest instance not booted"
+		}
+		return self._assumingBootedOrEquivalent__Lazy_URI__addressAsAuthority()
+	}
+	_assumingBootedOrEquivalent__Lazy_URI__addressAsAuthority()
+	{
+		const self = this
+		if (typeof self.uri_addressAsAuthority === 'undefined' || !self.uri_addressAsAuthority) {
+			self.uri_addressAsAuthority = monero_requestURI_utils.New_RequestFunds_URI({
+				address: self.to_address,
+				payment_id: self.payment_id,
+				amount: self.amount,
+				amountCcySymbol: self.amountCcySymbol,
+				description: self.description,
+				message: self.message,
+				uriType: monero_requestURI_utils.URITypes.addressAsAuthority
+			})
+		}
+		return self.uri_addressAsAuthority
+	}
+	//
 	_new_qrCode_imgDataURIString(fn)
 	{
 		const self = this
-		const fundsRequestURI = self._assumingBootedOrEquivalent__Lazy_URI() 
+		const fundsRequestURI = self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent() // NOTE: creating QR code with URI w/o "//" - wider scanning support in ecosystem
 		// ^- since we're not booted yet but we're only calling this when we know we have all the info
 		const options = { errorCorrectionLevel: 'Q' } // Q: quartile: 25%
 		QRCode.toDataURL(
@@ -300,8 +327,7 @@ class FundsRequest extends EventEmitter
 
 	Delete(
 		fn /* (err?) -> Void */
-	)
-	{
+	) {
 		const self = this
 		fundsRequest_persistence_utils.DeleteFromDisk(self, fn)
 	}
@@ -313,8 +339,7 @@ class FundsRequest extends EventEmitter
 	ChangePasswordTo(
 		changeTo_persistencePassword,
 		fn
-	)
-	{
+	) {
 		const self = this
 		const old_persistencePassword = self.persistencePassword
 		self.persistencePassword = changeTo_persistencePassword
