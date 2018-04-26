@@ -74,6 +74,7 @@
     "node": "7.4.0"
   },
   "dependencies": {
+    "hoek": "~> 5.0.3",
     "async": "git+https://github.com/mymonero/async.git#ba6ed320e350f8b2eae4eb9683302ddac0ddf66f",
     "electron-context-menu": "git+https://github.com/mymonero/electron-context-menu.git#c3f6224af8680ccc81ace042539260c1808b222a",
     "fastclick": "git+https://github.com/mymonero/fastclick.git#9977a916739360ad4ffd7aa19b0016bf375e934b",
