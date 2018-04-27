@@ -37,6 +37,7 @@ const commonComponents_switchToggles = require('../../MMAppUICommonComponents/sw
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_ccySelect = require('../../MMAppUICommonComponents/ccySelect.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
+const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
 const config__MyMonero = require('../../HostedMoneroAPIClient/config__MyMonero')
 //
@@ -224,6 +225,12 @@ class SettingsView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AUTHENTICATION", self.context)
+			{
+				const tooltipText = `An extra layer of security<br/>for approving certain<br/>actions after you've<br/>unlocked the app`
+				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+				const layer = view.layer
+				labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+			}
 			div.appendChild(labelLayer)
 			{
 				const switchView = commonComponents_switchToggles.New_fieldValue_switchToggleView({
