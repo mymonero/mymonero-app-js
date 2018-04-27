@@ -84,12 +84,12 @@ class PasswordController extends PasswordController_Base
 	OnceBooted_GetNewPasswordAndTypeOrExistingPasswordFromUserAndEmitIt() {
 		throw "Not available"
 	}
-	InitiateChangePassword() {
+	Initiate_ChangePassword() {
 		throw "Not available"
 	}
 	//
 	// Runtime - Imperatives - Private - Overrides
-	_getUserToEnterTheirExistingPassword(isForChangePassword, fn) {
+	_getUserToEnterTheirExistingPassword(isForChangePassword, isForAuthorizingAppActionOnly, customNavigationBarTitle_orNull, fn) {
 		throw "Not available"
 	}
 	_getUserToEnterNewPassword(isForChangePassword, fn) {

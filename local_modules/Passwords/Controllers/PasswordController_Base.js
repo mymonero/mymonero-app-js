@@ -226,6 +226,14 @@ class PasswordController_Base extends EventEmitter
 	{
 		return "EventName_errorWhileChangingPassword"
 	}
+	EventName_errorWhileAuthorizingForAppAction()
+	{
+		return "EventName_errorWhileAuthorizingForAppAction"
+	}
+	EventName_successfullyAuthenticatedForAppAction()
+	{
+		return "EventName_successfullyAuthenticatedForAppAction"
+	}
 	EventName_SingleObserver_getUserToEnterExistingPasswordWithCB()
 	{
 		return "EventName_SingleObserver_getUserToEnterExistingPasswordWithCB"
@@ -316,8 +324,7 @@ class PasswordController_Base extends EventEmitter
 	WhenBootedAndPasswordObtained_PasswordAndType(
 		fn, // (password, passwordType) -> Void
 		optl__userDidCancel_fn
-	)
-	{ // this function is for convenience to wrap consumers' waiting for password readiness
+	) { // this function is for convenience to wrap consumers' waiting for password readiness
 		const userDidCancel_fn = optl__userDidCancel_fn || function() {}
 		const self = this
 		function callBackHavingObtainedPassword()
@@ -423,6 +430,8 @@ class PasswordController_Base extends EventEmitter
 				}
 				// we'll use this in a couple places
 				const isForChangePassword = false // this is simply for requesting to have the existing or a new password from the user				
+				const isForAuthorizingAppActionOnly = false
+				const customNavigationBarTitle_orNull = null
 				//
 				if (typeof self._id === 'undefined' || self._id === null) { // if the user is not unlocking an already pw-protected app
 					// then we need to get a new PW from the user
@@ -438,6 +447,8 @@ class PasswordController_Base extends EventEmitter
 					}	
 					self._getUserToEnterTheirExistingPassword(
 						isForChangePassword,
+						isForAuthorizingAppActionOnly,
+						customNavigationBarTitle_orNull,
 						function(didCancel_orNil, validationErr_orNil, existingPassword)
 						{
 							if (validationErr_orNil != null) { // takes precedence over cancel
@@ -484,18 +495,18 @@ class PasswordController_Base extends EventEmitter
 			}
 		)
 	}
-	InitiateChangePassword()
+	Initiate_ChangePassword()
 	{
 		const self = this
 		self._executeWhenBooted(function()
 		{
 			if (self.HasUserEnteredValidPasswordYet() === false) {
-				const errStr = "InitiateChangePassword called but HasUserEnteredValidPasswordYet === false. This should be disallowed in the UI"
+				const errStr = "Initiate_ChangePassword called but HasUserEnteredValidPasswordYet === false. This should be disallowed in the UI"
 				throw errStr
 			}
 			{ // guard
 				if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
-					const errStr = "InitiateChangePassword called but isAlreadyGettingExistingOrNewPWFromUser === true. This should be precluded in the UI"
+					const errStr = "Initiate_ChangePassword called but isAlreadyGettingExistingOrNewPWFromUser === true. This should be precluded in the UI"
 					throw errStr
 					// only need to wait for it to be obtained
 				}
@@ -503,8 +514,12 @@ class PasswordController_Base extends EventEmitter
 			}
 			// ^-- we're relying on having checked above that user has entered a valid pw already
 			const isForChangePassword = true // we'll use this in a couple places
+			const isForAuthorizingAppActionOnly = false
+			const customNavigationBarTitle_orNull = null
 			self._getUserToEnterTheirExistingPassword(
 				isForChangePassword,
+				isForAuthorizingAppActionOnly,
+				customNavigationBarTitle_orNull,
 				function(didCancel_orNil, validationErr_orNil, entered_existingPassword)
 				{
 					if (validationErr_orNil != null) { // takes precedence over cancel
@@ -517,7 +532,7 @@ class PasswordController_Base extends EventEmitter
 						self.emit(self.EventName_canceledWhileChangingPassword())
 						return // just silently exit after unguarding
 					}
-					// v-- is this check a point of weakness? better to try decrypt? how is that more hardened if `if` can be circumvented?
+					// v-- is this check a point of weakness? better to try decrypt? 
 					if (self.password !== entered_existingPassword) {
 						self.unguard_getNewOrExistingPassword()
 						const errStr = self._new_incorrectPasswordValidationErrorMessageString()
@@ -527,6 +542,65 @@ class PasswordController_Base extends EventEmitter
 					}
 					// passwords match checked as necessary, we can proceed
 					self.obtainNewPasswordFromUser(isForChangePassword)
+				}
+			)
+		})
+	}
+	Initiate_VerifyUserAuthenticationForAction(
+		customNavigationBarTitle_orNull, // String? -- null if you don't want one
+		canceled_fn, // () -> Void
+		entryAttempt_succeeded_fn // () -> Void
+	) {
+		const self = this
+		self._executeWhenBooted(function()
+		{
+			if (self.HasUserEnteredValidPasswordYet() === false) {
+				const errStr = "Initiate_VerifyUserAuthenticationForAction called but HasUserEnteredValidPasswordYet === false. This should be disallowed in the UI"
+				throw errStr
+			}
+			{ // guard
+				if (self.isAlreadyGettingExistingOrNewPWFromUser === true) {
+					const errStr = "Initiate_VerifyUserAuthenticationForAction called but isAlreadyGettingExistingOrNewPWFromUser === true. This should be precluded in the UI"
+					throw errStr
+					// only need to wait for it to be obtained
+				}
+				self.isAlreadyGettingExistingOrNewPWFromUser = true
+			}
+			// ^-- we're relying on having checked above that user has entered a valid pw already
+			// proceed to verify via passphrase check
+			const isForChangePassword = false
+			const isForAuthorizingAppActionOnly = true
+			self._getUserToEnterTheirExistingPassword(
+				isForChangePassword,
+				isForAuthorizingAppActionOnly,
+				customNavigationBarTitle_orNull,
+				function(didCancel_orNil, validationErr_orNil, entered_existingPassword)
+				{
+
+					if (validationErr_orNil != null) { // takes precedence over cancel
+						self.unguard_getNewOrExistingPassword()
+						self.emit(self.EventName_errorWhileAuthorizingForAppAction(), validationErr_orNil)
+						return
+					}
+					if (didCancel_orNil === true) {
+						self.unguard_getNewOrExistingPassword()
+						//
+						// currently there's no need of a .canceledWhileAuthorizingForAppAction note post here
+						canceled_fn() // but must call cb
+						//
+						return 
+					}
+					// v-- is this check a point of weakness? better to try decrypt? 
+					if (self.password !== entered_existingPassword) {
+						self.unguard_getNewOrExistingPassword()
+						const errStr = self._new_incorrectPasswordValidationErrorMessageString()
+						const err = new Error(errStr)
+						self.emit(self.EventName_errorWhileAuthorizingForAppAction(), err)
+						return
+					}
+					self.unguard_getNewOrExistingPassword() // must be called
+					self.emit(self.EventName_successfullyAuthenticatedForAppAction()) // this must be posted so the PresentationController can dismiss the entry modal
+					entryAttempt_succeeded_fn()
 				}
 			)
 		})
@@ -543,9 +617,10 @@ class PasswordController_Base extends EventEmitter
 	}
 	_getUserToEnterTheirExistingPassword(
 		isForChangePassword, 
+		isForAuthorizingAppActionOnly,
+		customNavigationBarTitle_orNull,
 		fn // (didCancel_orNil?, validationErr_orNil?, existingPassword?) -> Void
-	)
-	{
+	) {
 		const self = this
 		var isCurrentlyLockedOut = false
 		var unlock_timeout = null
@@ -568,9 +643,14 @@ class PasswordController_Base extends EventEmitter
 				fn(null, "", null) // this is _sort_ of a hack and should be made more explicit in API but I'm sending an empty string, and not even an Error, to clear the validation error so the user knows to try again
 			}, unlockInT_s * 1000)
 		}
+		if (isForChangePassword && isForAuthorizingAppActionOnly) {
+			throw "Illegal: isForChangePassword && isForAuthorizingAppActionOnly"
+		}
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(), 
 			isForChangePassword,
+			isForAuthorizingAppActionOnly,
+			customNavigationBarTitle_orNull,
 			function(didCancel_orNil, obtainedPasswordString) // we don't have them pass back the type because that will already be known by self
 			{ // we're passing a function that the single observer should call
 				var validationErr_orNil = null // so far…
@@ -618,8 +698,7 @@ class PasswordController_Base extends EventEmitter
 	_getUserToEnterNewPassword(
 		isForChangePassword,
 		fn // (didCancel_orNil?, existingPassword?) -> Void
-	)
-	{
+	) {
 		const self = this
 		self.emit(
 			self.EventName_SingleObserver_getUserToEnterNewPasswordAndTypeWithCB(), 
@@ -940,8 +1019,7 @@ class PasswordController_Base extends EventEmitter
 		optl_isForADeleteEverything,
 		hasFiredWill_fn, // (cb) -> Void; cb: (err?) -> Void
 		fn
-	)
-	{
+	) {
 		const self = this
 		//
 		const isForADeleteEverything = optl_isForADeleteEverything === true ? true : false

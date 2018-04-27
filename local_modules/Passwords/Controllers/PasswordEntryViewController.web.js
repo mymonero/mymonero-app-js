@@ -91,6 +91,16 @@ class PasswordEntryViewController extends EventEmitter
 			}
 		)
 		controller.on(
+			controller.EventName_successfullyAuthenticatedForAppAction(),
+			function() 
+			{
+				setTimeout(function()
+				{ // give everything time to set up/reconstitute underneath - to avoid jitters 
+					self.view.Dismiss()
+				}, 100)
+			}
+		)
+		controller.on(
 			controller.EventName_ErroredWhileSettingNewPassword(),
 			function(err)
 			{
@@ -126,11 +136,23 @@ class PasswordEntryViewController extends EventEmitter
 				}
 			}
 		)
+		controller.on(
+			controller.EventName_errorWhileAuthorizingForAppAction(),
+			function(err)
+			{				
+				self.view.ReEnableSubmittingForm()
+				if ((typeof err === "string" && err == "") || !err) {
+					self.view.ClearValidationErrorMessage()
+				} else {
+					self.view.ShowValidationErrorMessageToUser(err, "Unknown error. Please try again.")
+				}
+			}
+		)
 		//
 		// supplying the password:
 		controller.on(
 			controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
-			function(isForChangePassword, enterPassword_cb)
+			function(isForChangePassword, isForAuthorizingAppActionOnly, customNavigationBarTitle_orNull, enterPassword_cb)
 			{
 				const existingPasswordType = self.passwordController.userSelectedTypeOfPassword 
 				if (typeof existingPasswordType === 'undefined' || existingPasswordType === null || existingPasswordType.length == 0) {
@@ -145,6 +167,8 @@ class PasswordEntryViewController extends EventEmitter
 					isForChangePassword, // this will mean false for (1) enter pw on app launch; and (2) enter pw when user idle timer kicks in… we actually want false for #2
 					// because in case the user is currently trying to change their pw, we still want to be able to lock-out the app if they step away, else security issue… and
 					// we dismiss the 
+					isForAuthorizingAppActionOnly, 
+					customNavigationBarTitle_orNull,
 					existingPasswordType,
 					enterPassword_cb
 				)

@@ -92,7 +92,7 @@ class MenuControllerController
 			controller.EventName_menuItemSelected_ChangePassword(),
 			function()
 			{
-				self.context.passwordController.InitiateChangePassword() // this will throw if no pw has been entered yet
+				self.context.passwordController.Initiate_ChangePassword() // this will throw if no pw has been entered yet
 			}
 		)
 	}

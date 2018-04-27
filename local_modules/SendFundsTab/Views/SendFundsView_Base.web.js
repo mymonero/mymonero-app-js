@@ -1532,6 +1532,11 @@ class SendFundsView extends View
 				payment_id,
 				mixin,
 				priority, 
+				function()
+				{ // canceled_fn
+					self._dismissValidationMessageLayer()
+					_reEnableFormElements()
+				},
 				function(
 					err,
 					currencyReady_targetDescription_address,

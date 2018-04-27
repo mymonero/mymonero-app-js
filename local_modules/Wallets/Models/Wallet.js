@@ -438,8 +438,7 @@ class Wallet extends EventEmitter
 	Boot_decryptingExistingInitDoc(
 		persistencePassword,
 		fn
-	)
-	{
+	) {
 		const self = this
 		const document_cryptor__background = self.context.document_cryptor__background
 		// TODO: move this function's contents to wallet_persistence_utils?
@@ -592,8 +591,7 @@ class Wallet extends EventEmitter
 	// Runtime - Imperatives - Private - Booting
 	_trampolineFor_successfullyBooted(
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		{
 			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed == "") {
@@ -651,8 +649,7 @@ class Wallet extends EventEmitter
 		wasAGeneratedWallet,
 		persistEvenIfLoginFailed_forServerChange,
 		fn
-	)
-	{
+	) {
 		const self = this
 		//
 		self.isLoggingIn = true
@@ -670,8 +667,7 @@ class Wallet extends EventEmitter
 				public_keys,
 				private_keys,
 				isInViewOnlyMode
-			)
-			{
+			) {
 				if (err) {
 					if (persistEvenIfLoginFailed_forServerChange) {
 						throw "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true but components-for-login appear to no longer be valid with error" + err 
@@ -692,8 +688,7 @@ class Wallet extends EventEmitter
 			public_keys,  // so they can be set in one place below
 			private_keys,
 			isInViewOnlyMode
-		)
-		{
+		) {
 			//
 			// record these properties regardless of whether we are about to error on login
 			self.public_address = address
@@ -1040,6 +1035,7 @@ class Wallet extends EventEmitter
 		payment_id,
 		mixin,
 		simple_priority,
+		canceled_fn,
 		fn
 		// fn: (
 		//		err?,
@@ -1064,9 +1060,6 @@ class Wallet extends EventEmitter
 		//
 		// now that we've done that, we can ask the user idle controller to disable user idle until we're done with this - cause it's not something we want to have interrupted by the user idle controller tearing everything down!!
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
-		if (self.context.Cordova_isMobile === true) {
-			window.plugins.insomnia.keepAwake() // disable screen dim/off
-		}
 		//
 		// some callback trampoline function declarations…
 		// these are important for resetting self's state,
@@ -1078,8 +1071,7 @@ class Wallet extends EventEmitter
 			final__payment_id,
 			tx_hash,
 			tx_fee
-		)
-		{
+		) {
 			___aTrampolineForFnWasCalled()
 			//
 			console.log("✅  Successfully sent funds.")
@@ -1101,6 +1093,11 @@ class Wallet extends EventEmitter
 			console.error(err)
 			fn(err)
 		}
+		function __trampolineFor_canceled_fn()
+		{
+			___aTrampolineForFnWasCalled()
+			canceled_fn()
+		}
 		function __trampolineFor_err_withStr(errStr)
 		{
 			__trampolineFor_err_withErr(new Error(errStr))
@@ -1112,27 +1109,42 @@ class Wallet extends EventEmitter
 			//
 			// critical to do on every exit from this method
 			self.context.userIdleInWindowController.ReEnable_userIdle()
-			if (self.context.Cordova_isMobile === true) {
-				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
-			}
 		}
-		//
-		monero_sendingFunds_utils.SendFunds(
-			true, // isRingCT
-			target_address,
-			amount,
-			self.keyImage_cache,
-			self.public_address,
-			self.private_keys,
-			self.public_keys,
-			self.context.hostedMoneroAPIClient,
-			monero_openalias_utils,
-			payment_id,
-			mixin,
-			simple_priority,
-			__trampolineFor_success,
-			__trampolineFor_err_withErr
-		)
+		function __proceed()
+		{
+			monero_sendingFunds_utils.SendFunds(
+				true, // isRingCT
+				target_address,
+				amount,
+				self.keyImage_cache,
+				self.public_address,
+				self.private_keys,
+				self.public_keys,
+				self.context.hostedMoneroAPIClient,
+				monero_openalias_utils,
+				payment_id,
+				mixin,
+				simple_priority,
+				__trampolineFor_success,
+				__trampolineFor_err_withErr
+			)
+		}
+		if (self.context.settingsController.authentication_requireWhenSending == false) {
+			__proceed()
+		} else {
+			self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
+				"Authenticate to Send",
+				function()
+				{
+					__trampolineFor_canceled_fn()
+				},
+				function()
+				{
+					__proceed()
+				}
+			)
+		}
+
 	}
 
 

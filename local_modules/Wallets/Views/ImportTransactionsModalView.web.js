@@ -470,6 +470,11 @@ class ImportTransactionsModalView extends View
 			payment_id,
 			monero_sendingFunds_utils.fixedMixin(),
 			monero_sendingFunds_utils.default_priority(),
+			function()
+			{ // canceled_fn
+				self._dismissValidationMessageLayer()
+				_reEnableFormElements()
+			},
 			function(
 				err,
 				currencyReady_targetDescription_address,

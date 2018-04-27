@@ -38,7 +38,8 @@ let k_defaults_record =
 	specificAPIAddressURLAuthority: "",
 	appTimeoutAfterS: 3 * 60, // 3 mins
 	invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: false,
-	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR // default
+	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR, // default
+	authentication_requireWhenSending: true
 }
 //
 class SettingsController extends EventEmitter
@@ -98,6 +99,11 @@ class SettingsController extends EventEmitter
 			self.appTimeoutAfterS = record_doc.appTimeoutAfterS
 			self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount = record_doc.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount
 			self.displayCcySymbol = record_doc.displayCcySymbol
+			if (typeof record_doc.authentication_requireWhenSending === 'undefined' || record_doc.authentication_requireWhenSending == null) {
+				self.authentication_requireWhenSending = k_defaults_record.authentication_requireWhenSending
+			} else {
+				self.authentication_requireWhenSending = record_doc.authentication_requireWhenSending 
+			}
 			//
 			self._setBooted() // all done!
 		}
@@ -135,6 +141,10 @@ class SettingsController extends EventEmitter
 	{
 		return "EventName_settingsChanged_displayCcySymbol"
 	}
+	EventName_settingsChanged_authentication_requireWhenSending()
+	{
+		return "EventName_settingsChanged_authentication_requireWhenSending"
+	}
 	//
 	AppTimeoutNeverValue()
 	{
@@ -156,6 +166,7 @@ class SettingsController extends EventEmitter
 				var didUpdate_specificAPIAddressURLAuthority = false
 				var didUpdate_appTimeoutAfterS = false
 				var didUpdate_displayCcySymbol = false
+				var didUpdate_authentication_requireWhenSending = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
@@ -165,6 +176,8 @@ class SettingsController extends EventEmitter
 							didUpdate_appTimeoutAfterS = true
 						} else if (valueKey === "displayCcySymbol") {
 							didUpdate_displayCcySymbol = true
+						} else if (valueKey === "authentication_requireWhenSending") {
+							didUpdate_authentication_requireWhenSending = true
 						}
 						// NOTE: not checking invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount b/c invisible_ and therefore always set programmatically
 					}
@@ -195,6 +208,12 @@ class SettingsController extends EventEmitter
 								self.emit(
 									self.EventName_settingsChanged_displayCcySymbol(), 
 									self.displayCcySymbol
+								)
+							}
+							if (didUpdate_authentication_requireWhenSending) {
+								self.emit(
+									self.EventName_settingsChanged_authentication_requireWhenSending(), 
+									self.authentication_requireWhenSending
 								)
 							}
 						}
@@ -232,7 +251,8 @@ class SettingsController extends EventEmitter
 					specificAPIAddressURLAuthority: self.specificAPIAddressURLAuthority,
 					appTimeoutAfterS: self.appTimeoutAfterS,
 					invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount,
-					displayCcySymbol: self.displayCcySymbol
+					displayCcySymbol: self.displayCcySymbol,
+					authentication_requireWhenSending: self.authentication_requireWhenSending
 				}
 				if (self._id === null || typeof self._id === 'undefined') {
 					_proceedTo_insertNewDocument(persistableDocument)

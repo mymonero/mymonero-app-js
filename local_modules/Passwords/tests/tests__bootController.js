@@ -136,7 +136,7 @@ function _proceedTo_test_gettingPassword(cb)
 	// supplying the password:
 	controller.on(
 		controller.EventName_SingleObserver_getUserToEnterExistingPasswordWithCB(),
-		function(enterPassword_cb)
+		function(isForChangePassword, isForAuthorizingAppActionOnly, customNavigationBarTitle_orNull, enterPassword_cb)
 		{
 			const didCancel_orNil = null
 			const obtainedPassword = theOriginalPassword
@@ -184,7 +184,7 @@ function _proceedTo_test_changingPassword(cb)
 	}
 	// the following call ought to defer till the controller is booted
 	const existingPassword = theOriginalPassword
-	controller.InitiateChangePassword(
+	controller.Initiate_ChangePassword(
 		existingPassword
 	)
 }

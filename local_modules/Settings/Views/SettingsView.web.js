@@ -99,12 +99,16 @@ class SettingsView extends View
 				self._setup_form_field_changePasswordButton()
 			}
 			self._setup_form_field_appTimeoutSlider()
+			if (self.context.isLiteApp != true) {
+				self._setup_form_field_authentication() // no password protecting Lite app
+			}
 			self._setup_form_field_displayCcy()
-			//self._setup_form_field_notifyOptions() //TODO: override current mock-fields
 			if (self.context.isLiteApp != true) {
 				self._setup_form_field_serverURL()
 			}
 			self._setup_deleteEverythingButton()
+			//
+			containerLayer.style.paddingBottom = "64px"
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -147,7 +151,7 @@ class SettingsView extends View
 			{
 				e.preventDefault()
 				if (view.isEnabled !== false) {
-					self.context.passwordController.InitiateChangePassword() // this will throw if no pw has been entered yet
+					self.context.passwordController.Initiate_ChangePassword() // this will throw if no pw has been entered yet
 				}
 				return false
 			})
@@ -214,28 +218,60 @@ class SettingsView extends View
 		}
 		self.form_containerLayer.appendChild(div)
 	}
-	_setup_form_field_notifyOptions()
+	_setup_form_field_authentication()
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NOTIFY ME WHEN", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AUTHENTICATION", self.context)
 			div.appendChild(labelLayer)
-
-			const switch_notifyFundsComeIn = commonComponents_switchToggles.New_fieldValue_switchToggle({
-				name: "notify_when_funds_come_in",
-				note: "Funds come in",
-				border: true,
-			}, self.context)  
-			div.appendChild(switch_notifyFundsComeIn.layer)
-
-			const switch_notifyConfirmedOutgoing = commonComponents_switchToggles.New_fieldValue_switchToggle({
-				name: "notify_when_outgoing_tx_confirmed",
-				note: "Outgoing transactions are confirmed",
-				border: true,
-			}, self.context)
-
-			div.appendChild(switch_notifyConfirmedOutgoing.layer)
+			{
+				const switchView = commonComponents_switchToggles.New_fieldValue_switchToggleView({
+					note: "Require when sending",
+					border: true,
+					changed_fn: function(isChecked)
+					{
+						self.context.settingsController.Set_settings_valuesByKey(
+							{
+								authentication_requireWhenSending: isChecked
+							},
+							function(err)
+							{
+								if (err) {
+									throw err
+								}
+							}
+						)
+					},
+					shouldToggle_fn: function(to_isSelected, async_shouldToggle_fn) 
+					{
+						if (to_isSelected == false) { // if it's being turned OFF
+							// then they need to authenticate
+							self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
+								"Authenticate to Disable Setting",
+								function()
+								{
+									async_shouldToggle_fn(false) // disallowed
+								},
+								function()
+								{
+									setTimeout(
+										function()
+										{
+											async_shouldToggle_fn(true) // allowed
+										},
+										400 // this delay is purely for visual effect, waiting for pw entry to dismiss
+									)
+								}
+							)
+						} else {
+							async_shouldToggle_fn(true) // no auth needed
+						}
+					}
+				}, self.context)  
+				div.appendChild(switchView.layer)
+				self.requireWhenSending_switchView = switchView
+			}
 		}
 		self.form_containerLayer.appendChild(div)
 	}
@@ -559,7 +595,8 @@ class SettingsView extends View
 					self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				}
 				self.displayCcySelectLayer.disabled = true
-				self.appTimeoutRangeInputView.SetEnabled(true)
+				self.appTimeoutRangeInputView.SetEnabled(false) 
+				self.requireWhenSending_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
@@ -571,6 +608,7 @@ class SettingsView extends View
 				}
 				self.displayCcySelectLayer.disabled = true
 				self.appTimeoutRangeInputView.SetEnabled(false)
+				self.requireWhenSending_switchView.SetEnabled(false) // "
 				self.deleteEverything_buttonView.SetEnabled(false)
 			} else { // has entered PW - unlock
 				if (self.changePasswordButtonView) {
@@ -581,8 +619,15 @@ class SettingsView extends View
 				}
 				self.displayCcySelectLayer.disabled = false
 				self.appTimeoutRangeInputView.SetEnabled(true)
+				self.requireWhenSending_switchView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(true)
 			}
+			// we only have password authentication in the Full app
+			self.requireWhenSending_switchView.setChecked(
+				self.context.settingsController.authentication_requireWhenSending,
+				true, // squelch_changed_fn_emit - or we'd get redundant saves
+				true // setWithoutShouldToggle - or we get asked to auth
+			)
 		}
 		{
 			if (self.serverURLInputLayer) {

@@ -39,7 +39,9 @@ const passwordEntryTaskModes =
 	ForFirstEntry_NewPasswordAndType		  : 'ForFirstEntry_NewPasswordAndType',
 	//
 	ForChangingPassword_ExistingPasswordGivenType : 'ForChangingPassword_ExistingPasswordGivenType',
-	ForChangingPassword_NewPasswordAndType		  : 'ForChangingPassword_NewPasswordAndType'
+	ForChangingPassword_NewPasswordAndType		  : 'ForChangingPassword_NewPasswordAndType',
+	//
+	ForAuthorizingAppAction: 'ForAuthorizingAppAction'
 }
 //
 class PasswordEntryView extends StackAndModalNavigationView
@@ -110,6 +112,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 		switch (self.passwordEntryTaskMode) {
 			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
+			case passwordEntryTaskModes.ForAuthorizingAppAction:
 				return undefined // we're going to allow this function to be called and simply return undefined because 
 				// the caller needs to pass it to a general purpose function
 			case passwordEntryTaskModes.ForFirstEntry_NewPasswordAndType:
@@ -140,13 +143,17 @@ class PasswordEntryView extends StackAndModalNavigationView
 	GetUserToEnterExistingPasswordWithCB(
 		root_tabBarViewAndContentView,
 		isForChangePassword,
+		isForAuthorizingAppActionOnly, 
+		customNavigationBarTitle_orNull,
 		existingPasswordType,
 		enterPassword_cb
 		// TODO: add flag for whether this is for a change pw
-	)
-	{
+	) {
 		const self = this
-		const shouldAnimateToNewState = isForChangePassword
+		if (isForChangePassword && isForAuthorizingAppActionOnly) {
+			throw "Illegal: isForChangePassword && isForAuthorizingAppActionOnly"
+		}
+		const shouldAnimateToNewState = isForChangePassword || isForAuthorizingAppActionOnly
 		{ // check legality
 			if (self.passwordEntryTaskMode !== passwordEntryTaskModes.None) {
 				throw "GetUserToEnterExistingPasswordWithCB called but self.passwordEntryTaskMode not .None"
@@ -159,12 +166,14 @@ class PasswordEntryView extends StackAndModalNavigationView
 			let taskMode;
 			if (isForChangePassword === true) {
 				taskMode = passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType
+			} else if (isForAuthorizingAppActionOnly) {
+				taskMode = passwordEntryTaskModes.ForAuthorizingAppAction
 			} else {
 				taskMode = passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType
 			}
 			self.passwordEntryTaskMode = taskMode
 			//
-			self._configureWithMode(shouldAnimateToNewState)			
+			self._configureWithMode(shouldAnimateToNewState, customNavigationBarTitle_orNull)			
 		}
 		self.presentIn__root_tabBarViewAndContentView(
 			root_tabBarViewAndContentView,
@@ -176,8 +185,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 		isForChangePassword,
 		enterPasswordAndType_cb
 		// TODO: add flag for whether this is for a change pw
-	)
-	{
+	) {
 		const self = this
 		const shouldAnimateToNewState = isForChangePassword
 		{ // check legality
@@ -199,7 +207,10 @@ class PasswordEntryView extends StackAndModalNavigationView
 			}
 			self.passwordEntryTaskMode = taskMode
 			//
-			self._configureWithMode(shouldAnimateToNewState)			
+			self._configureWithMode(
+				shouldAnimateToNewState, 
+				null/*customNavigationBarTitle_orNull*/
+			)
 		}
 		self.presentIn__root_tabBarViewAndContentView(
 			root_tabBarViewAndContentView,
@@ -295,7 +306,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 	//
 	// Runtime - Imperatives - Internal - View configuration
 	//
-	_configureWithMode(shouldAnimate)
+	_configureWithMode(shouldAnimate, customNavigationBarTitle_orNull)
 	{
 		const self = this
 		if (typeof shouldAnimate === 'undefined') {
@@ -304,16 +315,22 @@ class PasswordEntryView extends StackAndModalNavigationView
 		const isForChangingPassword = 
 			self.passwordEntryTaskMode == passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType 
 			|| self.passwordEntryTaskMode == passwordEntryTaskModes.ForChangingPassword_NewPasswordAndType
+		const isForAuthorizingAppActionOnly = 
+			isForChangingPassword == false
+			&& self.passwordEntryTaskMode == passwordEntryTaskModes.ForAuthorizingAppAction
 		//
 		// we do not need to call self._clearValidationMessage() here because the ConfigureToBeShown() fns have the same effect
 		{ // transition to screen
 			switch (self.passwordEntryTaskMode) {
 				case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 				case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
+				case passwordEntryTaskModes.ForAuthorizingAppAction:
 				{
 					const EnterExistingPasswordView = require('./EnterExistingPasswordView.web')
 					const enterExistingPasswordView = new EnterExistingPasswordView({
-						isForChangingPassword: isForChangingPassword
+						isForChangingPassword: isForChangingPassword,
+						isForAuthorizingAppActionOnly: isForAuthorizingAppActionOnly,
+						customNavigationBarTitle_orNull: customNavigationBarTitle_orNull
 					}, self.context)
 					{ // observation
 						enterExistingPasswordView.on(
@@ -438,6 +455,7 @@ class PasswordEntryView extends StackAndModalNavigationView
 		switch (self.passwordEntryTaskMode) {
 			case passwordEntryTaskModes.ForUnlockingApp_ExistingPasswordGivenType:
 			case passwordEntryTaskModes.ForChangingPassword_ExistingPasswordGivenType:
+			case passwordEntryTaskModes.ForAuthorizingAppAction:
 			{
 				{ // validate cb state
 					if (typeof self.enterPassword_cb === 'undefined' || self.enterPassword_cb === null) {

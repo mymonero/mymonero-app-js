@@ -42,6 +42,8 @@ class EnterExistingPasswordView extends View
 		super(options, context)
 		const self = this
 		self.isForChangingPassword = options.isForChangingPassword
+		self.isForAuthorizingAppActionOnly = options.isForAuthorizingAppActionOnly
+		self.customNavigationBarTitle_orNull = options.customNavigationBarTitle_orNull
 		{
 			const userSelectedTypeOfPassword = self.context.passwordController.userSelectedTypeOfPassword
 			if (userSelectedTypeOfPassword === null || userSelectedTypeOfPassword == "" || typeof userSelectedTypeOfPassword === 'undefined') {
@@ -110,7 +112,9 @@ class EnterExistingPasswordView extends View
 			self.passwordInputLabelLayer = layer
 			containerLayer.appendChild(layer)
 		}
-		{ // 'Forgot?' btn
+
+		if (self.isForAuthorizingAppActionOnly != true) { // no need to show if true
+			// 'Forgot?' btn
 			const view = commonComponents_tables.New_clickableLinkButtonView(
 				"Forgot?", 
 				self.context, 
@@ -198,13 +202,17 @@ class EnterExistingPasswordView extends View
 	Navigation_Title()
 	{
 		const self = this
+		if (self.customNavigationBarTitle_orNull != null && typeof self.customNavigationBarTitle_orNull !== 'undefined' && self.customNavigationBarTitle_orNull != "") {
+			return self.customNavigationBarTitle_orNull
+		}
 		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
+		//
 		return "Enter "+passwordType_humanReadableString
 	}
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
-		if (self.isForChangingPassword !== true) {
+		if (self.isForChangingPassword !== true && self.isForAuthorizingAppActionOnly !== true) {
 			return null
 		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
@@ -298,7 +306,9 @@ class EnterExistingPasswordView extends View
 		const self = this
 		self.disable_submitButton()
 		self.passwordInputLayer.disabled = true
-		self.forgotPassword_buttonView.SetEnabled(false)
+		if (typeof self.forgotPassword_buttonView !== 'undefined' && self.forgotPassword_buttonView) {
+			self.forgotPassword_buttonView.SetEnabled(false)
+		}
 	}
 	__reEnableForm()
 	{
@@ -306,7 +316,9 @@ class EnterExistingPasswordView extends View
 		self.enable_submitButton()
 		self.passwordInputLayer.disabled = undefined
 		self.passwordInputLayer.focus() // since disable would have de-focused
-		self.forgotPassword_buttonView.SetEnabled(true)	
+		if (typeof self.forgotPassword_buttonView !== 'undefined' && self.forgotPassword_buttonView) {
+			self.forgotPassword_buttonView.SetEnabled(true)
+		}
 	}
 	//
 	_tryToSubmitForm()
