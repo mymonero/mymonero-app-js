@@ -293,7 +293,37 @@ class WalletDetailsView extends View
 			disclosedView: disclosedView,
 			padding_left: 18,
 			padding_right: 18,
-			padding_v: 0
+			padding_v: 0,
+			shouldToggle_fn: function(
+				to_isDisclosed, 
+				async_reply_fn
+			) {
+				if (to_isDisclosed) { // when opening
+					if (self.context.settingsController.authentication_requireWhenDisclosingWalletSecrets) {
+						self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
+							"Authenticate to Open",
+							function()
+							{
+								async_reply_fn(false) // disallowed
+							},
+							function()
+							{
+								setTimeout(
+									function()
+									{
+										async_reply_fn(true) // allowed
+									},
+									300 // this delay is purely for visual effect, waiting for pw entry to dismiss
+								)
+							}
+						)
+					} else {
+						async_reply_fn(true) // no need to auth
+					}
+				} else {
+					async_reply_fn(true) // no need to auth
+				}
+			}
 		}, self.context)
 		{
 			const layer = infoDisclosingView.layer

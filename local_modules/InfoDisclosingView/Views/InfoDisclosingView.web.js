@@ -42,6 +42,7 @@ class InfoDisclosingView extends View
 			self.padding_left = typeof options.padding_left == 'undefined' ? 18 : options.padding_left
 			self.padding_right = typeof options.padding_right == 'undefined' ? 42 : options.padding_right
 			self.padding_v = typeof options.padding_v == 'undefined' ? 16 : options.padding_v
+			self.shouldToggle_fn = options.shouldToggle_fn || function(to_isDisclosed, async_reply_fn) { async_reply_fn(true) }
 			//
 			self.previewView = options.previewView
 			if (!self.previewView) {
@@ -195,75 +196,86 @@ class InfoDisclosingView extends View
 		if (self.isTransitioning === true) {
 			return
 		}
-		self.isTransitioning = true // unset wherever method finishes
-		//
-		const isAnimated = optl_isAnimated == false ? false : true
-		//
 		if (self.isDisclosed === isDisclosed) {
 			console.warn(`⚠️  ${self.constructor.name} asked to setDisclosed(${isDisclosed}) but already so.`)
 			return
 		}
-		const wasDisclosed = self.isDisclosed
-		self.isDisclosed = isDisclosed
-		self.disclosureButtonView.setDisclosed(isDisclosed, optl_isAnimated)
-		const fromView = isDisclosed ? self.previewView : self.disclosedView
-		const toView = isDisclosed ? self.disclosedView : self.previewView
-		if (isAnimated == false) {
-			fromView.removeFromSuperview()
+		function __really_proceed()
+		{
+			self.isTransitioning = true // unset wherever method finishes
+			//
+			const isAnimated = optl_isAnimated == false ? false : true
+			//
+			const wasDisclosed = self.isDisclosed
+			self.isDisclosed = isDisclosed
+			self.disclosureButtonView.setDisclosed(isDisclosed, optl_isAnimated)
+			const fromView = isDisclosed ? self.previewView : self.disclosedView
+			const toView = isDisclosed ? self.disclosedView : self.previewView
+			if (isAnimated == false) {
+				fromView.removeFromSuperview()
+				self.addSubview(toView)
+				self.isTransitioning = false
+				return
+			}
+			fromView.layer.style.position = "absolute"
+			toView.layer.style.position = "absolute"
+			toView.layer.style.opacity = "0"
 			self.addSubview(toView)
-			self.isTransitioning = false
-			return
+			// v--- must ask for height /after/ inserting into the DOM
+			const to_height_px = toView.layer.offsetHeight
+			//
+			self.layer.style.height = fromView.layer.offsetHeight + "px" // flip from "auto" to px system
+			Animate(
+				self.layer,
+				{
+					height: to_height_px + "px"
+				},
+				{
+					duration: self._layout_transitionAnimationDuration_ms(),
+					easing: "ease-in-out",
+					complete: function() {}
+				}
+			)
+			//
+			Animate(
+				fromView.layer, { opacity: 0 },
+				{
+					delay: self._fade_transitionAnimationDuration_ms()/7, // so it starts slightly after the layout anim
+					duration: self._fade_transitionAnimationDuration_ms(),
+					easing: "ease-in-out",
+					complete: function()
+					{
+						fromView.removeFromSuperview() // which we can do as soon as it's invisible… because
+						// the layout won't be changed by doing so, because we set self.layer.style.height to the offsetHeight and do px animation instead of relying on contents
+						fromView.layer.style.position = "relative"
+					}
+				}
+			)
+			Animate(
+				toView.layer, { opacity: 1.0 },
+				{
+					delay: self._fade_transitionAnimationDuration_ms()/10, // so it starts slightly after the layout anim
+					duration: self._fade_transitionAnimationDuration_ms(),
+					easing: "ease-in-out",
+					complete: function()
+					{
+						toView.layer.style.position = "relative"
+						self.layer.style.height = "auto" // flip back
+						//
+						self.isTransitioning = false // going to consider this 'done'
+					}
+				}
+			)
 		}
-		fromView.layer.style.position = "absolute"
-		toView.layer.style.position = "absolute"
-		toView.layer.style.opacity = "0"
-		self.addSubview(toView)
-		// v--- must ask for height /after/ inserting into the DOM
-		const to_height_px = toView.layer.offsetHeight
-		//
-		self.layer.style.height = fromView.layer.offsetHeight + "px" // flip from "auto" to px system
-		Animate(
-			self.layer,
+		self.shouldToggle_fn(
+			isDisclosed, // to_isDisclosed
+			function(shouldToggle)
 			{
-				height: to_height_px + "px"
-			},
-			{
-				duration: self._layout_transitionAnimationDuration_ms(),
-				easing: "ease-in-out",
-				complete: function() {}
-			}
-		)
-		//
-		Animate(
-			fromView.layer, { opacity: 0 },
-			{
-				delay: self._fade_transitionAnimationDuration_ms()/7, // so it starts slightly after the layout anim
-				duration: self._fade_transitionAnimationDuration_ms(),
-				easing: "ease-in-out",
-				complete: function()
-				{
-					fromView.removeFromSuperview() // which we can do as soon as it's invisible… because
-					// the layout won't be changed by doing so, because we set self.layer.style.height to the offsetHeight and do px animation instead of relying on contents
-					fromView.layer.style.position = "relative"
+				if (shouldToggle) {
+					__really_proceed()
 				}
 			}
 		)
-		Animate(
-			toView.layer, { opacity: 1.0 },
-			{
-				delay: self._fade_transitionAnimationDuration_ms()/10, // so it starts slightly after the layout anim
-				duration: self._fade_transitionAnimationDuration_ms(),
-				easing: "ease-in-out",
-				complete: function()
-				{
-					toView.layer.style.position = "relative"
-					self.layer.style.height = "auto" // flip back
-					//
-					self.isTransitioning = false // going to consider this 'done'
-				}
-			}
-		)
-
 	}
 }
 module.exports = InfoDisclosingView

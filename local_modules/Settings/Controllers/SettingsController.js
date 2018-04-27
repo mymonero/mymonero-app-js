@@ -39,7 +39,8 @@ let k_defaults_record =
 	appTimeoutAfterS: 3 * 60, // 3 mins
 	invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: false,
 	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR, // default
-	authentication_requireWhenSending: true
+	authentication_requireWhenSending: true,
+	authentication_requireWhenDisclosingWalletSecrets: true
 }
 //
 class SettingsController extends EventEmitter
@@ -104,6 +105,11 @@ class SettingsController extends EventEmitter
 			} else {
 				self.authentication_requireWhenSending = record_doc.authentication_requireWhenSending 
 			}
+			if (typeof record_doc.authentication_requireWhenDisclosingWalletSecrets === 'undefined' || record_doc.authentication_requireWhenDisclosingWalletSecrets == null) {
+				self.authentication_requireWhenDisclosingWalletSecrets = k_defaults_record.authentication_requireWhenDisclosingWalletSecrets
+			} else {
+				self.authentication_requireWhenDisclosingWalletSecrets = record_doc.authentication_requireWhenDisclosingWalletSecrets 
+			}
 			//
 			self._setBooted() // all done!
 		}
@@ -144,6 +150,10 @@ class SettingsController extends EventEmitter
 	EventName_settingsChanged_authentication_requireWhenSending()
 	{
 		return "EventName_settingsChanged_authentication_requireWhenSending"
+	}	
+	EventName_settingsChanged_authentication_requireWhenDisclosingWalletSecrets()
+	{
+		return "EventName_settingsChanged_authentication_requireWhenDisclosingWalletSecrets"
 	}
 	//
 	AppTimeoutNeverValue()
@@ -167,6 +177,7 @@ class SettingsController extends EventEmitter
 				var didUpdate_appTimeoutAfterS = false
 				var didUpdate_displayCcySymbol = false
 				var didUpdate_authentication_requireWhenSending = false
+				var didUpdate_authentication_requireWhenDisclosingWalletSecrets = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
@@ -178,6 +189,8 @@ class SettingsController extends EventEmitter
 							didUpdate_displayCcySymbol = true
 						} else if (valueKey === "authentication_requireWhenSending") {
 							didUpdate_authentication_requireWhenSending = true
+						} else if (valueKey === "authentication_requireWhenDisclosingWalletSecrets") {
+							didUpdate_authentication_requireWhenDisclosingWalletSecrets = true
 						}
 						// NOTE: not checking invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount b/c invisible_ and therefore always set programmatically
 					}
@@ -216,6 +229,12 @@ class SettingsController extends EventEmitter
 									self.authentication_requireWhenSending
 								)
 							}
+							if (didUpdate_authentication_requireWhenDisclosingWalletSecrets) {
+								self.emit(
+									self.EventName_settingsChanged_authentication_requireWhenDisclosingWalletSecrets(), 
+									self.authentication_requireWhenDisclosingWalletSecrets
+								)
+							}							
 						}
 						fn(err)
 					}
@@ -252,7 +271,8 @@ class SettingsController extends EventEmitter
 					appTimeoutAfterS: self.appTimeoutAfterS,
 					invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount,
 					displayCcySymbol: self.displayCcySymbol,
-					authentication_requireWhenSending: self.authentication_requireWhenSending
+					authentication_requireWhenSending: self.authentication_requireWhenSending,
+					authentication_requireWhenDisclosingWalletSecrets: self.authentication_requireWhenDisclosingWalletSecrets
 				}
 				if (self._id === null || typeof self._id === 'undefined') {
 					_proceedTo_insertNewDocument(persistableDocument)
