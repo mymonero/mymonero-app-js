@@ -41,7 +41,7 @@
 		   <meta http-equiv="Content-Security-Policy"
           content="default-src * data: gap: blob: https://ssl.gstatic.com http://localhost 'unsafe-eval' 'unsafe-inline';
                  style-src 'self' 'unsafe-inline';
-                 script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                 script-src 'self' https://www.google-analytics.com/analytics.js 'unsafe-inline' 'unsafe-eval';
                  object-src 'none'; 
                  font-src 'self'; 
                  img-src 'self' data:; 
@@ -55,5 +55,14 @@
     </head>
     <body>
         <script type="text/javascript" src="mymonero-app-bundle.js"></script>
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-53312765-3', 'auto');
+			ga('send', 'pageview');
+		</script>
     </body>
 </html>
