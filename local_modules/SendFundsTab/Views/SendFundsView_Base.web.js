@@ -1977,33 +1977,21 @@ class SendFundsView extends View
 				context.drawImage(img, 0, 0, width, height)
 				const imageData = context.getImageData(0, 0, width, height)
 				//
-				const binarizedImage = jsQR.binarizeImage(imageData.data, imageData.width, imageData.height)
-				const qrCodeLocation = jsQR.locateQRInBinaryImage(binarizedImage)
-				if (!qrCodeLocation) {
+				const code = jsQR(imageData.data, imageData.width, imageData.height)
+				if (!code || !code.location) {
 					self.validationMessageLayer.SetValidationError("MyMonero was unable to find a QR code in that image.")
 					return
 				}
-				const rawQR = jsQR.extractQRFromBinaryImage(binarizedImage, qrCodeLocation)
-				if (!rawQR) {
-					self.validationMessageLayer.SetValidationError("MyMonero was unable to extract the QR code from that image.")
+				const stringData = code.data
+				if (!stringData) {
+					self.validationMessageLayer.SetValidationError("MyMonero was unable to decode a QR code from that image.")
 					return
 				}
-				const decodeResults = jsQR.decodeQR(rawQR)
-				// console.log("imageData.data", imageData.data)
-				// const decodeResults = jsQR.decodeQRFromImage(imageData.data, imageData.width, imageData.height)
-				// console.log("imageData.width", imageData.width)
-				// console.log("imageData.height", imageData.height)
-				// console.log("decodeResults", decodeResults)
-				if (!decodeResults || typeof decodeResults === 'undefined') {
-					console.error("No decodeResults from QR. Couldn't decode?")
-					self.validationMessageLayer.SetValidationError("MyMonero was unable to decode that QR code.")
-					return
-				}
-				if (typeof decodeResults !== 'string') {
+				if (typeof stringData !== 'string') {
 					self.validationMessageLayer.SetValidationError("MyMonero was able to decode QR code but got unrecognized result.")
 					return
 				}
-				const requestURIString = decodeResults
+				const requestURIString = stringData
 				self._shared_didPickRequestURIStringForAutofill(requestURIString)
 			}
 		)
