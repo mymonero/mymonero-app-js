@@ -2280,9 +2280,7 @@ class SendFundsView extends View
 		self.refresh_networkFeeEstimateLayer() // now that reference assigned…
 	}
 	//
-	//
 	// Delegation - Delete everything
-	//
 	passwordController_DeleteEverything(
 		fn // this MUST be called
 	) {

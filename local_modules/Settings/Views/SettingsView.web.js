@@ -512,6 +512,7 @@ class SettingsView extends View
 	startObserving()
 	{
 		const self = this
+		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 	}
 	//
 	// Lifecycle - Teardown - Overrides
@@ -535,6 +536,7 @@ class SettingsView extends View
 	stopObserving()
 	{
 		const self = this
+		// self.context.passwordController.RemoveRegistrantForDeleteEverything(self) // not yet implemented
 	}
 	//
 	// Runtime - Accessors - Navigation
@@ -809,6 +811,16 @@ class SettingsView extends View
 			},
 			600
 		)
+	}
+	//
+	// Delegation - Delete everything
+	passwordController_DeleteEverything(
+		fn // this MUST be called
+	) {
+		const self = this
+		self.layer.scrollTop = 0
+		//
+		fn() // this MUST get called
 	}
 }
 module.exports = SettingsView
