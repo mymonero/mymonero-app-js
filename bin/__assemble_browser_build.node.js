@@ -43,6 +43,7 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^electron_/,
 	/LICENSE\.txt/,
 	/README\.md/,
+	/package\.json/, 
 	/^tests$/i,
 	/\.child\./, // slightly ambiguous but we don't want these as
 	//
