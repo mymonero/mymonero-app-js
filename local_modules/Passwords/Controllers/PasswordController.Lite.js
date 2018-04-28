@@ -87,6 +87,14 @@ class PasswordController extends PasswordController_Base
 	Initiate_ChangePassword() {
 		throw "Not available"
 	}
+	Initiate_VerifyUserAuthenticationForAction(
+		customNavigationBarTitle_orNull, // String? -- null if you don't want one
+		canceled_fn, // () -> Void
+		entryAttempt_succeeded_fn // () -> Void
+	) {
+		entryAttempt_succeeded_fn() // rather than not implementing this in Lite mode, just going to return immediately - it's more convenient for app objects to be coded as if it exists
+	}
+
 	//
 	// Runtime - Imperatives - Private - Overrides
 	_getUserToEnterTheirExistingPassword(isForChangePassword, isForAuthorizingAppActionOnly, customNavigationBarTitle_orNull, fn) {
