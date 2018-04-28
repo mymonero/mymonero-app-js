@@ -54,6 +54,8 @@ class SettingsController extends EventEmitter
 		self.options = options
 		self.context = context
 		//
+		self.setMaxListeners(999) // avoid error
+		//
 		self.hasBooted = false
 		self._whenBooted_fns = []
 		self.password = undefined // it's not been obtained from the user yet - we only store it in memory
