@@ -54,7 +54,7 @@ function assembleWith(
 	enumerateAndRecursivelyCopyDirContents("", true)
 	//
 	// III.
-	// bundleAndPackageJS() // NOTE: this is now handled on the command line in bin/_assemble_cordova_www
+	// bundleAndPackageJS() // NOTE: this is now handled on the command line
 	//
 	// implementations
 	function deleteAll_assembled_www_contents_exceptGitIgnore()

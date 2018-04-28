@@ -41,12 +41,10 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^\.gitignore$/,
 	/\.electron\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
 	/^electron_/,
-	/\.cordova\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
-	/^cordova_/,
 	/LICENSE\.txt/,
 	/README\.md/,
 	/^tests$/i,
-	/\.child\./, // slightly ambiguous but we don't want these as, in cordova, everything runs in WebCore
+	/\.child\./, // slightly ambiguous but we don't want these as
 	//
 	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us
 ]
