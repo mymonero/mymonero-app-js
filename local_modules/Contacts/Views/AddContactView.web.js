@@ -44,9 +44,9 @@ class AddContactView extends ContactFormView
 		const self = this
 		super.setup()
 	}
-	_setup_field_address()
+	_did_setup_field_address()
 	{
-		super._setup_field_address()
+		super._did_setup_field_address()
 		// we're hooking into this function purely to get called just after the corresponding field layer's setup
 		const self = this 
 		self._setup_form_resolving_activityIndicatorLayer()

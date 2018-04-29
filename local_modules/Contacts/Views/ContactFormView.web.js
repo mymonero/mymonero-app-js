@@ -108,6 +108,7 @@ class ContactFormView extends View
 			self._setup_field_emoji()
 			self.form_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
 			self._setup_field_address()
+			self._did_setup_field_address() // for subclasses - overridable
 			self._setup_field_paymentID()
 		}
 		self.layer.appendChild(containerLayer)
@@ -262,6 +263,10 @@ class ContactFormView extends View
 		div.appendChild(inputLayer)
 		//
 		self.form_containerLayer.appendChild(div)
+	}
+	_did_setup_field_address()
+	{
+		// overridable
 	}
 	_setup_field_paymentID()
 	{
