@@ -210,9 +210,6 @@ class AddContactFromOtherTabView extends AddContactView
 		if (payment_id_orNull !== null) { 
 			self.paymentIDInputLayer.value = payment_id_orNull
 		}
-		// {
-		// 	self.set_isSubmittable_needsUpdate()
-		// }
 	}
 	//
 	//
