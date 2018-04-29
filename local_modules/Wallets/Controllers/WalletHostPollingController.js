@@ -65,12 +65,9 @@ class WalletHostPollingController
 			self._fetch_accountInfo()
 			self._fetch_transactionHistory()
 		}
-		
-		// TODO: this all needs to be fixed up with a way to cancel the timer
-		
 		//
 		// kick off synchronizations
-		setImmediate(function()
+		setTimeout(function()
 		{
 			__callAllSyncFunctions()
 		})
