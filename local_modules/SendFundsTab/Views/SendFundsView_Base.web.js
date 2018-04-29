@@ -42,7 +42,7 @@ const commonComponents_activityIndicators = require('../../MMAppUICommonComponen
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-const AddContactFromSendTabView = require('./AddContactFromSendTabView.web')
+const AddContactFromSendTabView = require('../../Contacts/Views/AddContactFromSendTabView.web')
 const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView.web')
 //
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
