@@ -44,9 +44,7 @@ const documentCryptScheme =
 	amount: { type: CryptSchemeFieldValueTypes.String },
 	amountCcySymbol: { type: CryptSchemeFieldValueTypes.String },
 	message: { type: CryptSchemeFieldValueTypes.String },
-	description: { type: CryptSchemeFieldValueTypes.String },
-	//
-	qrCode_imgDataURIString: { type: CryptSchemeFieldValueTypes.String }, // hopefully encrypting and saving this doesn't turn out to have been a terrible idea
+	description: { type: CryptSchemeFieldValueTypes.String }
 }
 exports.DocumentCryptScheme = documentCryptScheme
 //
@@ -55,8 +53,7 @@ exports.DocumentCryptScheme = documentCryptScheme
 function HydrateInstance(
 	instance,
 	plaintextDocument
-)
-{
+) {
 	const self = instance
 	//
 	// console.log("plaintextDocument", plaintextDocument)
@@ -76,15 +73,13 @@ function HydrateInstance(
 	self.amountCcySymbol = plaintextDocument.amountCcySymbol
 	self.message = plaintextDocument.message
 	self.description = plaintextDocument.description
-	self.qrCode_imgDataURIString = plaintextDocument.qrCode_imgDataURIString
 }
 exports.HydrateInstance = HydrateInstance
 //
 function SaveToDisk(
 	instance,
 	fn
-)
-{
+) {
 	const self = instance
 	const document_cryptor__background = self.context.document_cryptor__background
 	console.log("📝  Saving fundsRequest to disk ", self.Description())
@@ -114,8 +109,7 @@ function SaveToDisk(
 		amount: self.amount != null && self.amount != "" ? "" + self.amount : self.amount, // storing this as an optional String
 		amountCcySymbol: self.amountCcySymbol,
 		message: self.message || "",
-		description: self.description || "",
-		qrCode_imgDataURIString: self.qrCode_imgDataURIString || ""
+		description: self.description || ""
 	}
 	document_cryptor__background.New_EncryptedDocument__Async(
 		plaintextDocument,
@@ -187,8 +181,7 @@ exports.SaveToDisk = SaveToDisk
 function DeleteFromDisk(
 	instance,
 	fn
-)
-{
+) {
 	const self = instance
 	console.log("📝  Deleting fundsRequest ", self.Description())
 	self.context.persister.RemoveDocumentsWithIds(

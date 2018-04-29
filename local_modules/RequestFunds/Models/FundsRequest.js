@@ -77,14 +77,26 @@ class FundsRequest extends EventEmitter
 	__setup_didBoot()
 	{
 		const self = this
+		//
+		self._new_qrCode_imgDataURIString(
+			function(err, qrCode_imgDataURIString)
+			{
+				if (err) {
+					throw err
+				}
+				self.qrCode_imgDataURIString = qrCode_imgDataURIString
+				__proceedTo_didBoot()
+			}
+		)
+		function __proceedTo_didBoot()
 		{
 			self.hasBooted = true
+			setTimeout(function()
+			{ // wait til next tick so that instantiator cannot have missed this
+				self.successfullyInitialized_cb(self)
+				self.emit(self.EventName_booted(), self)
+			})
 		}
-		setTimeout(function()
-		{ // wait til next tick so that instantiator cannot have missed this
-			self.successfullyInitialized_cb(self)
-			self.emit(self.EventName_booted(), self)
-		})
 	}
 	__setup_didFailToBoot(err)
 	{
@@ -114,35 +126,20 @@ class FundsRequest extends EventEmitter
 			self.payment_id = self.options.payment_id
 			self.message = self.options.message
 			self.description = self.options.description
-			//
-			self._new_qrCode_imgDataURIString(
-				function(err, qrCode_imgDataURIString)
-				{
-					if (err) {
-						throw err
-					}
-					self.qrCode_imgDataURIString = qrCode_imgDataURIString
-					__proceedTo_save()
-				}
-			)
 		}
-
-		function __proceedTo_save()
-		{
-			self.saveToDisk(
-				function(err)
-				{
-					if (err) {
-						console.error("Failed to save new fundsRequest", err)
-						self.__setup_didFailToBoot(err)
-						return
-					}
-					console.log("📝  Successfully saved new fundsRequest.")
-					//
-					self.__setup_didBoot()
+		self.saveToDisk(
+			function(err)
+			{
+				if (err) {
+					console.error("Failed to save new fundsRequest", err)
+					self.__setup_didFailToBoot(err)
+					return
 				}
-			)
-		}
+				console.log("📝  Successfully saved new fundsRequest.")
+				//
+				self.__setup_didBoot()
+			}
+		)
 	}
 	_setup_fetchExistingDocumentWithId()
 	{
