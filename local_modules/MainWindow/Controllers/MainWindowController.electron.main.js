@@ -91,8 +91,8 @@ class MainWindowController
 		const options =
 		{
 			width: 500,
-			height: 500,
-			minWidth: 400,
+			height: 552,
+			minWidth: 412, // For action buttons
 			minHeight: 420,
 			//
 			show: false, // shown on ready
