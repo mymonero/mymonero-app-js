@@ -38,6 +38,9 @@ const contact_persistence_utils = require('./contact_persistence_utils')
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 //
+const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
+const QRCode = require('qrcode')
+//
 class Contact extends EventEmitter
 {
 	//
@@ -85,16 +88,22 @@ class Contact extends EventEmitter
 	__setup_didBoot()
 	{
 		const self = this
+		self._startObserving_openAliasResolver()
+		self.regenerateQRCode(function()
 		{
-			self._startObserving_openAliasResolver()
-			//
-			self.hasBooted = true
-		}
-		setTimeout(function()
-		{ // wait til next tick so that instantiator cannot have missed this
-			self.successfullyInitialized_cb(self)
-			self.emit(self.EventName_booted(), self)
+			__proceedTo_didBoot()
 		})
+		function __proceedTo_didBoot()
+		{
+			{
+				self.hasBooted = true
+			}
+			setTimeout(function()
+			{ // wait til next tick so that instantiator cannot have missed this
+				self.successfullyInitialized_cb(self)
+				self.emit(self.EventName_booted(), self)
+			})
+		}
 	}
 	__setup_didFailToBoot(err)
 	{
@@ -217,8 +226,7 @@ class Contact extends EventEmitter
 			oaRecords_0_name,
 			oaRecords_0_description,
 			dnssec_used_and_secured
-		)
-		{
+		) {
 			if (self.address === openAliasAddress) {
 				// ^-- this update is for self
 				self.Set_valuesByKey(
@@ -349,6 +357,74 @@ class Contact extends EventEmitter
 	
 
 	////////////////////////////////////////////////////////////////////////////////
+	// Runtime - Accessors
+	
+	Lazy_URI__addressAsFirstPathComponent()
+	{
+		const self = this
+		if (self.hasBooted !== true) {
+			throw "Lazy_URI__addressAsFirstPathComponent() called while FundsRequest instance not booted"
+		}
+		return self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
+	}
+	_assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
+	{
+		const self = this
+		if (typeof self.uri_addressAsFirstPathComponent === 'undefined' || !self.uri_addressAsFirstPathComponent) {
+			// using the request URIs because all parsing is the same anyway
+			self.uri_addressAsFirstPathComponent = monero_requestURI_utils.New_RequestFunds_URI({
+				address: self.address,
+				payment_id: self.payment_id,
+				amount: null,
+				amountCcySymbol: null,
+				description: null,
+				message: null,
+				uriType: monero_requestURI_utils.URITypes.addressAsFirstPathComponent
+			})
+		}
+		return self.uri_addressAsFirstPathComponent
+	}
+	//
+	_new_qrCode_imgDataURIString(fn)
+	{
+		const self = this
+		const uri = self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent() // NOTE: creating QR code with URI w/o "//" - wider scanning support in ecosystem
+		// ^- since we're not booted yet but we're only calling this when we know we have all the info
+		const options = { errorCorrectionLevel: 'Q' } // Q: quartile: 25%
+		QRCode.toDataURL(
+			uri, 
+			options,
+			function(err, imgDataURIString)
+			{
+				if (err) {
+					console.error("Error generating QR code:", err)
+				}
+				fn(err, imgDataURIString)
+			}
+		)
+	}
+
+
+	//
+	// Runtime - Imperatives 
+
+	regenerateQRCode(fn)
+	{
+		const self = this
+		self._new_qrCode_imgDataURIString(
+			function(err, qrCode_imgDataURIString)
+			{
+				if (err) {
+					throw err
+				}
+				self.qrCode_imgDataURIString = qrCode_imgDataURIString
+				fn()
+			}
+		)
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Persistence
 
 	saveToDisk(fn)
@@ -366,8 +442,7 @@ class Contact extends EventEmitter
 
 	Delete(
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		self.emit(self.EventName_willBeDeleted(), self._id)
 		contact_persistence_utils.DeleteFromDisk(
@@ -390,8 +465,7 @@ class Contact extends EventEmitter
 	ChangePasswordTo(
 		changeTo_persistencePassword,
 		fn
-	)
-	{
+	) {
 		const self = this
 		const old_persistencePassword = self.persistencePassword
 		self.persistencePassword = changeTo_persistencePassword
@@ -416,8 +490,7 @@ class Contact extends EventEmitter
 	Set_valuesByKey(
 		valuesByKey, // keys like "emoji", "fullname", "address", "cached_OAResolved_XMR_address"
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		const valueKeys = Object.keys(valuesByKey)
 		for (let valueKey of valueKeys) {
@@ -448,7 +521,9 @@ class Contact extends EventEmitter
 					console.error("Failed to save new valuesByKey", err)
 				} else {
 					// console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
-					self._atRuntime_contactInfoUpdated()
+					self.regenerateQRCode(function() {
+						self._atRuntime_contactInfoUpdated()
+					})
 				}
 				fn(err)
 			}

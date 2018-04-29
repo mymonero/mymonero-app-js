@@ -146,7 +146,7 @@ class FundsRequestDetailsView extends View
 				div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 				{ 
 					const qrContainer_div = document.createElement("div")
-					let side = 98
+					let side = 56
 					let imageInset = 0
 					{
 						const layer = qrContainer_div
