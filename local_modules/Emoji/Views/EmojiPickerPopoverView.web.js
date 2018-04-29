@@ -64,6 +64,7 @@ class EmojiPickerPopoverView extends View
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.backgroundSize = `${bg_w}px ${bg_h}px`
 			layer.style.pointerEvents = "none" // otherwise the transparent part of the bg img interferes with clicking on the control, itself
+			layer.style.zIndex = "10000" 
 		}
 		{
 			const view = new EmojiPickerPopoverContentView({
