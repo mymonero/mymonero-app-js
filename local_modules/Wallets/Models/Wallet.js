@@ -241,8 +241,7 @@ class Wallet extends EventEmitter
 		walletLabel,
 		swatch,
 		fn
-	)
-	{
+	) {
 		const self = this
 		//		
 		self.persistencePassword = persistencePassword || null
@@ -280,8 +279,7 @@ class Wallet extends EventEmitter
 		mnemonicString,
 		persistEvenIfLoginFailed_forServerChange, // need to be able to pass this in, in this case
 		fn
-	)
-	{ // fn: (err?) -> Void
+	) { // fn: (err?) -> Void
 		const self = this
 		//
 		self.persistencePassword = persistencePassword || null
@@ -339,8 +337,7 @@ class Wallet extends EventEmitter
 		spend_key__private,
 		persistEvenIfLoginFailed_forServerChange,
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		{
 			self.persistencePassword = persistencePassword || null
@@ -371,8 +368,7 @@ class Wallet extends EventEmitter
 		reconstitutionDescription,
 		persistEvenIfLoginFailed_forServerChange,
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		function _proceedTo_login(mnemonicString_orNil)
 		{
@@ -556,8 +552,7 @@ class Wallet extends EventEmitter
 	Reboot(
 		persistencePassword,
 		specific_reconstitutionDescription // may be nil
-	)
-	{
+	) {
 		const self = this
 		if (self.isBooted == true) {
 			throw "wallet.isBooted == true"
@@ -1035,6 +1030,7 @@ class Wallet extends EventEmitter
 		payment_id,
 		mixin,
 		simple_priority,
+		preSuccess_nonTerminal_statusUpdate_fn,
 		canceled_fn,
 		fn
 		// fn: (
@@ -1110,6 +1106,16 @@ class Wallet extends EventEmitter
 			// critical to do on every exit from this method
 			self.context.userIdleInWindowController.ReEnable_userIdle()
 		}
+		let statusUpdate_messageBase = `Sending ${amount} XMR…`
+		function ___do_statusUpdate(code)
+		{
+			let suffix = monero_sendingFunds_utils.SendFunds_ProcessStep_MessageSuffix[code]
+			preSuccess_nonTerminal_statusUpdate_fn(
+				statusUpdate_messageBase + " " + suffix, // TODO: localize concatenation
+				code
+			)
+		}
+		preSuccess_nonTerminal_statusUpdate_fn(statusUpdate_messageBase)
 		function __proceed()
 		{
 			monero_sendingFunds_utils.SendFunds(
@@ -1125,6 +1131,9 @@ class Wallet extends EventEmitter
 				payment_id,
 				mixin,
 				simple_priority,
+				function(code) { // preSuccess_nonTerminal_statusUpdate_fn
+					___do_statusUpdate(code)
+				},
 				__trampolineFor_success,
 				__trampolineFor_err_withErr
 			)

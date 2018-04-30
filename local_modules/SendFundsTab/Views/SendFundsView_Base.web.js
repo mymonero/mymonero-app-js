@@ -1517,11 +1517,6 @@ class SendFundsView extends View
 			payment_id,
 			amount_Number
 		) {
-			self.validationMessageLayer.SetValidationError(
-				`Sending ${final_amount_Number} XMR…`, 
-				true/*wantsXButtonHidden*/
-			)
-			//
 			const sendFrom_address = sendFrom_wallet.public_address
 			const mixin = monero_sendingFunds_utils.fixedMixin()
 			const priority = self._selected_simplePriority()
@@ -1532,6 +1527,13 @@ class SendFundsView extends View
 				payment_id,
 				mixin,
 				priority, 
+				function(str) // preSuccess_nonTerminal_statusUpdate_fn
+				{
+					self.validationMessageLayer.SetValidationError(
+						str,
+						true/*wantsXButtonHidden*/
+					)
+				},
 				function()
 				{ // canceled_fn
 					self._dismissValidationMessageLayer()

@@ -457,12 +457,6 @@ class ImportTransactionsModalView extends View
 		const target_address = self.addressInputLayer.value
 		const payment_id = self.manualPaymentIDInputLayer.value
 		const amount_Number = parseFloat(self.amountInputLayer.value)
-		{
-			self.validationMessageLayer.SetValidationError(
-				`Sending ${amount_Number} XMR…`,
-				true/*wantsXButtonHidden*/
-			)
-		}
 		const sendFrom_address = wallet.public_address
 		wallet.SendFunds(
 			target_address,
@@ -470,6 +464,13 @@ class ImportTransactionsModalView extends View
 			payment_id,
 			monero_sendingFunds_utils.fixedMixin(),
 			monero_sendingFunds_utils.default_priority(),
+			function(str) // preSuccess_nonTerminal_statusUpdate_fn
+			{
+				self.validationMessageLayer.SetValidationError(
+					str,
+					true/*wantsXButtonHidden*/
+				)
+			},
 			function()
 			{ // canceled_fn
 				self._dismissValidationMessageLayer()
