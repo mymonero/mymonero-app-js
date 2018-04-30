@@ -170,11 +170,15 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	}
 	//
 	//
-	// Runtime - Accessors - Overridable
+	// Runtime - Accessors - Overrides
 	//
 	_overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues()
 	{
 		return true // very special case - cause we just / already resolved this info
+	}
+	_overridable_defaultTrue_wantsQRPickingActionButtons()
+	{
+		return false
 	}
 	_overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
 	{
