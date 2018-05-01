@@ -66,7 +66,19 @@ class WalletsListCellView extends ListCellView
 			layer.style.margin = "0 0 12px 0" // for cell spacing & scroll bottom inset
 			// layer.style.border = "1px solid yellow"
 		}
-		self.layer.appendChild(commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context))
+		{
+			let layer = commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context)
+			self.accessoryChevronLayer = layer
+			self.layer.appendChild(layer)
+		}
+		{
+			let layer = commonComponents_tables.New_tableCell_accessoryActivityIndicatorLayer(
+				true // is on dark bg
+			)
+			layer.style.display = "none"
+			self.accessoryActivityIndicatorLayer = layer
+			self.layer.appendChild(layer)
+		}
 	}
 	overridable_layerToObserveForTaps()
 	{
@@ -103,6 +115,14 @@ class WalletsListCellView extends ListCellView
 		//
 		const self = this
 		self.cellContentsView.ConfigureWithRecord(self.record)
+		//
+		if (self.record.IsFetchingAnyUpdates()) {
+			self.accessoryChevronLayer.style.display = "none"
+			self.accessoryActivityIndicatorLayer.style.display = "block"
+		} else {
+			self.accessoryChevronLayer.style.display = "block"
+			self.accessoryActivityIndicatorLayer.style.display = "none"
+		}
 	}
 	overridable_startObserving_record()
 	{
@@ -113,7 +133,17 @@ class WalletsListCellView extends ListCellView
 			throw "self.record undefined in start observing"
 			// return
 		}
-		// TODO? so far, updates on the list lvl
+		// here, we're going to store a bunch of functions as instance properties
+		// because if we need to stopObserving we need to have access to the listener fns
+		const emitter = self.record
+		self.EventName_isFetchingUpdatesChanged_listenerFunction = function()
+		{
+			self.configureUI() // calls overridable_configureUIWithRecord
+		}
+		emitter.on(
+			emitter.EventName_isFetchingUpdatesChanged(),
+			self.EventName_isFetchingUpdatesChanged_listenerFunction
+		)
 	}
 	overridable_stopObserving_record()
 	{
@@ -131,7 +161,12 @@ class WalletsListCellView extends ListCellView
 			}
 			return false
 		}
-		// TODO? so far, updates on the list lvl
+		if (doesListenerFunctionExist(self.EventName_isFetchingUpdatesChanged_listenerFunction) === true) {
+			emitter.removeListener(
+				emitter.EventName_isFetchingUpdatesChanged(),
+				self.EventName_isFetchingUpdatesChanged_listenerFunction
+			)
+		}
 	}
 }
 module.exports = WalletsListCellView

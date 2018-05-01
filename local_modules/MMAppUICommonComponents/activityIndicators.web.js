@@ -30,6 +30,8 @@
 //
 const Views__cssRules = require('../Views/cssRules.web')
 //
+const className_onNormalBackground = "on-normal-background"
+const className_onLightBackground = "on-light-background"
 const NamespaceName = "activityIndicators"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 const cssRules =
@@ -40,20 +42,30 @@ const cssRules =
 		width: 3px;
 		height: 8px;
 		border-radius: 2px;
-		background-color: #383638;
 		box-shadow: inset 0 1px 0 rgba(73, 71, 73, 0.5), 0 1px 1px rgba(0, 0, 0, 0.3);
-		animation: block-animate .75s infinite ease-in-out;
-  	}`,
+	}`,
+	`.${NamespaceName}.${className_onNormalBackground} .loader > .block  {
+		background-color: #383638;
+		animation: block-animate-normal-bg .75s infinite ease-in-out;
+	}`,
+	`.${NamespaceName}.${className_onLightBackground} .loader > .block  {
+		background-color: #5A585A;
+		animation: block-animate-on-light-bg .75s infinite ease-in-out;
+	}`,
+	/* 
+  		the following animation-delays use "!important" as a short-cut to give the CSS rules more
+  	 weight than the above "on*Background" variants' "animation" styles which would override the delay
+  	 */
 	`.${NamespaceName} .loader > .block1 {
-		animation-delay: -1.2s;
-  	}`,
+		animation-delay: -1.2s !important;
+	}`,
 	`.${NamespaceName} .loader > .block2 {
-		animation-delay: -1.0s;
-  	}`,
+		animation-delay: -1.0s !important;
+	}`,
 	`.${NamespaceName} .loader > .block3 {
-		animation-delay: -0.8s;
-  	}`,
-	`@keyframes block-animate {
+		animation-delay: -0.8s !important;
+	}`,
+	`@keyframes block-animate-normal-bg {
 		0%, 20%, 60%, 100% {
 			transform: translateY(2px);
 			background-color: #383638;
@@ -61,7 +73,17 @@ const cssRules =
 		40% {
 			transform: translateY(0);
 			background-color: #494749;
-		} 
+		}
+	}`,
+	`@keyframes block-animate-on-light-bg {
+		0%, 20%, 60%, 100% {
+			transform: translateY(2px);
+			background-color: #5A585A;
+		}
+		40% {
+			transform: translateY(0);
+			background-color: #7C7A7C;
+		}
 	}`,
 	//
 	// .graphicAndLabel
@@ -86,12 +108,18 @@ const loader_innerHTML =
 	+`<div class="block block3"></div>`
 +`</div>`
 //
-function New_Graphic_ActivityIndicatorLayer()
+function New_Graphic_ActivityIndicatorLayer(isOnLightBackground)
 {
 	__injectCSSRules_ifNecessary()
+	//
 	const layer = document.createElement("div")
 	layer.classList.add("graphicOnly")
 	layer.classList.add(NamespaceName)
+	if (isOnLightBackground) {
+		layer.classList.add(className_onLightBackground)
+	} else {
+		layer.classList.add(className_onNormalBackground)
+	}
 	layer.innerHTML = loader_innerHTML
 		
 	//
@@ -99,9 +127,10 @@ function New_Graphic_ActivityIndicatorLayer()
 }
 exports.New_Graphic_ActivityIndicatorLayer = New_Graphic_ActivityIndicatorLayer
 //
-function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey)
+function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey, isOnLightBackground)
 {
 	__injectCSSRules_ifNecessary()
+	//
 	var style_str = ``
 	customCSSByKey = customCSSByKey || {}
 	const customCSSKeys = Object.keys(customCSSByKey)
@@ -111,7 +140,13 @@ function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey)
 		const cssValue = customCSSByKey[cssKey]
 		style_str += `${cssKey}: ${cssValue}; `
 	}
-	const htmlString = `<div class="graphicOnly ${NamespaceName}" style="${style_str}">`
+	var classes = `graphicOnly ${NamespaceName}`
+	if (isOnLightBackground) {
+		classes += " " + className_onLightBackground
+	} else {
+		classes += " " + className_onNormalBackground
+	}
+	const htmlString = `<div class="${classes}" style="${style_str}">`
 		+ loader_innerHTML
 		+ `</div>`
 	//
@@ -120,11 +155,12 @@ function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey)
 exports.New_Graphic_ActivityIndicatorLayer_htmlString = New_Graphic_ActivityIndicatorLayer_htmlString
 //
 function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
-{
+{ // no support for isOnLightBackground yet  
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.classList.add("graphicAndLabel")
 	layer.classList.add(NamespaceName)
+	layer.classList.add(className_onNormalBackground)
 	layer.innerHTML = 
 		loader_innerHTML
 		+`&nbsp;`

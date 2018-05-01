@@ -31,6 +31,8 @@
 const View = require('../Views/View.web')
 const Views__cssRules = require('../Views/cssRules.web')
 //
+const activityIndicators = require('./activityIndicators.web')
+//
 const NamespaceName = "Tables"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
@@ -623,6 +625,20 @@ function New_tableCell_accessoryChevronLayer(context)
 	return layer
 }
 exports.New_tableCell_accessoryChevronLayer = New_tableCell_accessoryChevronLayer
+//
+function New_tableCell_accessoryActivityIndicatorLayer(isOnLightBackground)
+{
+	const layer = activityIndicators.New_Graphic_ActivityIndicatorLayer(isOnLightBackground)
+	layer.style.position = "absolute"
+	layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
+	layer.style.width = "16px"
+	const h = 14
+	layer.style.height = `${h}px`
+	layer.style.right = "16px"
+	layer.style.top = `calc(50% - ${h / 2}px)`
+	return layer
+}
+exports.New_tableCell_accessoryActivityIndicatorLayer = New_tableCell_accessoryActivityIndicatorLayer
 //
 function New_tableCell_separatorLayer()
 {

@@ -621,7 +621,13 @@ class Wallet extends EventEmitter
 	_atRuntime_setup_hostPollingController()
 	{ 
 		const self = this
-		let options = { wallet: self }
+		let options = { 
+			wallet: self,
+			factorOfIsFetchingStateDidUpdate_fn: function()
+			{
+				self.emit(self.EventName_isFetchingUpdatesChanged())
+			}
+		}
 		let context = self.context
 		self.hostPollingController = new WalletHostPollingController(options, context)
 	}
@@ -786,6 +792,10 @@ class Wallet extends EventEmitter
 	{
 		return "EventName_transactionsAdded"
 	}
+	EventName_isFetchingUpdatesChanged()
+	{
+		return "EventName_isFetchingUpdatesChanged"
+	}
 	//
 	EventName_willBeDeleted()
 	{
@@ -800,6 +810,14 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Wallet properties
 	
+	IsFetchingAnyUpdates()
+	{
+		const self = this
+		if (typeof self.hostPollingController === 'undefined' || !self.hostPollingController) {
+			return false
+		}
+		return self.hostPollingController.IsFetchingAnyUpdates()
+	}
 	HasEverFetched_accountInfo()
 	{ // semantically, accountInfo here actually excludes the address, keys, mnemonic, …
 		// and mostly means stuff like totals (balances) and heights… but we keep accountInfo
@@ -1290,8 +1308,7 @@ class Wallet extends EventEmitter
 		transaction_height,
 		blockchain_height,
 		ratesBySymbol
-	)
-	{
+	) {
 		const self = this
 		//
 		// console.log("_didFetch_accountInfo")

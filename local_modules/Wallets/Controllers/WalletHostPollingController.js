@@ -43,6 +43,8 @@ class WalletHostPollingController
 		self.options = options
 		self.context = context
 		//
+		self.factorOfIsFetchingStateDidUpdate_fn = self.options.factorOfIsFetchingStateDidUpdate_fn || function() {}
+		//
 		// This controller is to be instantiated and owned by a HostedWallet instance
 		self.wallet = self.options.wallet
 		if (typeof self.wallet === 'undefined' || self.wallet === null) {
@@ -121,20 +123,29 @@ class WalletHostPollingController
 			}
 			self.requestHandle_for_transactions = null
 		}
+		self._didUpdate_factorOf_isFetchingState() // not sure if we care about this here - we're tearing down - is emitting not desired then? probably doesn't matter
+	}
+	//
+	// Runtime - Accessors - State
+	IsFetchingAnyUpdates()
+	{
+		const self = this
+		//
+		return self.IsFetching_accountInfo() || self.IsFetching_transactions()
+	}
+	IsFetching_accountInfo()
+	{
+		const self = this
+		//
+		return typeof self.requestHandle_for_accountInfo !== 'undefined' && self.requestHandle_for_accountInfo !== null
+	}
+	IsFetching_transactions()
+	{
+		const self = this
+		//
+		return typeof self.requestHandle_for_transactions !== 'undefined' && self.requestHandle_for_transactions !== null
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Events
-	
-	EventName_didReceive_accountInfo()
-	{
-		return "EventName_didReceive_accountInfo"
-	}
-	EventName_didReceive_transactions()
-	{
-		return "EventName_didReceive_transactions"
-	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private - Requests
@@ -198,10 +209,10 @@ class WalletHostPollingController
 				transaction_height,
 				blockchain_height,
 				ratesBySymbol
-			)
-			{
+			) {
 				// immediately unlock this request fetch
 				self.requestHandle_for_accountInfo = null 
+				self._didUpdate_factorOf_isFetchingState()
 				//
 				if (err) { // already logged
 					fn(err)
@@ -226,6 +237,7 @@ class WalletHostPollingController
 			}
 		)
 		self.requestHandle_for_accountInfo = requestHandle
+		self._didUpdate_factorOf_isFetchingState()
 	}
 	_fetch_transactionHistory()
 	{ // fn: (err?) -> HostedMoneroAPIClient_RequestHandle
@@ -282,10 +294,10 @@ class WalletHostPollingController
 				transaction_height,
 				blockchain_height,
 				transactions
-			)
-			{
+			) {
 				// immediately unlock this request fetch
 				self.requestHandle_for_transactions = null 
+				self._didUpdate_factorOf_isFetchingState()
 				//
 				if (err) { // already logged
 					fn(err)
@@ -303,6 +315,30 @@ class WalletHostPollingController
 			}
 		)
 		self.requestHandle_for_transactions = requestHandle
+		self._didUpdate_factorOf_isFetchingState()
+	}
+	//
+	// Delegation - Internal
+	_didUpdate_factorOf_isFetchingState()
+	{
+		const self = this
+		const lastEmittedState = self.lastEmitted_isFetchingUpdate
+		const currentState = self.IsFetchingAnyUpdates()
+		self.lastEmitted_isFetchingUpdate = currentState
+		function __really_emit()
+		{
+			self.factorOfIsFetchingStateDidUpdate_fn()
+		}
+		if (lastEmittedState !== true && lastEmittedState !== false) { // not yet been one recorded
+			__really_emit()
+		} else if (lastEmittedState != currentState) { // change in state
+			__really_emit()
+		} else {
+			// a request finished but one is still going
+			if (!self.IsFetching_accountInfo() && !self.IsFetching_transactions()) {
+				// assert false
+			}
+		}
 	}
 }
 module.exports = WalletHostPollingController
