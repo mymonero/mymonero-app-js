@@ -1475,8 +1475,33 @@ class SendFundsView extends View
 				)
 				//
 				return // early return pending alert result
+			} else {
+				// show alert… iff user agrees, write user has agreed to terms and proceed to branch, else bail
+				let title = `Confirm Amount`
+				let message = `Send ${final_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}?`
+				let ok_buttonTitle = `Send`
+				let cancel_buttonTitle = "Cancel"
+				self.context.windowDialogs.PresentQuestionAlertDialogWith(
+					title, 
+					message,
+					ok_buttonTitle, 
+					cancel_buttonTitle,
+					function(err, didChooseYes)
+					{
+						if (err) {
+							throw err
+						}
+						if (didChooseYes != true) {
+							// user canceled!
+							__confirmAmountAlert_cancel_action_op_fn()
+							return
+						}
+						__confirmAmountAlert_ok_action_op_fn()
+					}
+				)
+				//
+				return // early return pending alert result
 			}
-			// fall through
 		}
 		// fall through
 		__proceedTo_executeSend()
@@ -1509,6 +1534,14 @@ class SendFundsView extends View
 				}
 			)
 			// and of course proceed
+			__proceedTo_executeSend()
+		}
+		function __confirmAmountAlert_cancel_action_op_fn()
+		{
+			_reEnableFormElements()
+		}
+		function __confirmAmountAlert_ok_action_op_fn()
+		{
 			__proceedTo_executeSend()
 		}
 		function __proceedTo_generateSendTransactionWith(
