@@ -31,7 +31,7 @@
 const Views__cssRules = require('../Views/cssRules.web')
 //
 const className_onNormalBackground = "on-normal-background"
-const className_onLightBackground = "on-light-background"
+const className_onAccentBackground = "on-accent-background"
 const NamespaceName = "activityIndicators"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 const cssRules =
@@ -48,9 +48,9 @@ const cssRules =
 		background-color: #383638;
 		animation: block-animate-normal-bg .75s infinite ease-in-out;
 	}`,
-	`.${NamespaceName}.${className_onLightBackground} .loader > .block  {
+	`.${NamespaceName}.${className_onAccentBackground} .loader > .block  {
 		background-color: #5A585A;
-		animation: block-animate-on-light-bg .75s infinite ease-in-out;
+		animation: block-animate-on-accent-bg .75s infinite ease-in-out;
 	}`,
 	/* 
   		the following animation-delays use "!important" as a short-cut to give the CSS rules more
@@ -75,7 +75,7 @@ const cssRules =
 			background-color: #494749;
 		}
 	}`,
-	`@keyframes block-animate-on-light-bg {
+	`@keyframes block-animate-on-accent-bg {
 		0%, 20%, 60%, 100% {
 			transform: translateY(2px);
 			background-color: #5A585A;
@@ -108,15 +108,15 @@ const loader_innerHTML =
 	+`<div class="block block3"></div>`
 +`</div>`
 //
-function New_Graphic_ActivityIndicatorLayer(isOnLightBackground)
+function New_Graphic_ActivityIndicatorLayer(isOnAccentBackground)
 {
 	__injectCSSRules_ifNecessary()
 	//
 	const layer = document.createElement("div")
 	layer.classList.add("graphicOnly")
 	layer.classList.add(NamespaceName)
-	if (isOnLightBackground) {
-		layer.classList.add(className_onLightBackground)
+	if (isOnAccentBackground) {
+		layer.classList.add(className_onAccentBackground)
 	} else {
 		layer.classList.add(className_onNormalBackground)
 	}
@@ -127,7 +127,7 @@ function New_Graphic_ActivityIndicatorLayer(isOnLightBackground)
 }
 exports.New_Graphic_ActivityIndicatorLayer = New_Graphic_ActivityIndicatorLayer
 //
-function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey, isOnLightBackground)
+function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey, isOnAccentBackground)
 {
 	__injectCSSRules_ifNecessary()
 	//
@@ -141,8 +141,8 @@ function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey, isOnLight
 		style_str += `${cssKey}: ${cssValue}; `
 	}
 	var classes = `graphicOnly ${NamespaceName}`
-	if (isOnLightBackground) {
-		classes += " " + className_onLightBackground
+	if (isOnAccentBackground) {
+		classes += " " + className_onAccentBackground
 	} else {
 		classes += " " + className_onNormalBackground
 	}
@@ -155,7 +155,7 @@ function New_Graphic_ActivityIndicatorLayer_htmlString(customCSSByKey, isOnLight
 exports.New_Graphic_ActivityIndicatorLayer_htmlString = New_Graphic_ActivityIndicatorLayer_htmlString
 //
 function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
-{ // no support for isOnLightBackground yet  
+{ // no support for isOnAccentBackground yet  
 	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.classList.add("graphicAndLabel")

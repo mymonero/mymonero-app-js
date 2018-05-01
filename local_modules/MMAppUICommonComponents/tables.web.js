@@ -626,9 +626,9 @@ function New_tableCell_accessoryChevronLayer(context)
 }
 exports.New_tableCell_accessoryChevronLayer = New_tableCell_accessoryChevronLayer
 //
-function New_tableCell_accessoryActivityIndicatorLayer(isOnLightBackground)
+function New_tableCell_accessoryActivityIndicatorLayer(isOnAccentBackground)
 {
-	const layer = activityIndicators.New_Graphic_ActivityIndicatorLayer(isOnLightBackground)
+	const layer = activityIndicators.New_Graphic_ActivityIndicatorLayer(isOnAccentBackground)
 	layer.style.position = "absolute"
 	layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
 	layer.style.width = "16px"
