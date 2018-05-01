@@ -136,13 +136,13 @@ class WalletsListCellView extends ListCellView
 		// here, we're going to store a bunch of functions as instance properties
 		// because if we need to stopObserving we need to have access to the listener fns
 		const emitter = self.record
-		self.EventName_isFetchingUpdatesChanged_listenerFunction = function()
+		self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction = function()
 		{
 			self.configureUI() // calls overridable_configureUIWithRecord
 		}
 		emitter.on(
 			emitter.EventName_isFetchingUpdatesChanged(),
-			self.EventName_isFetchingUpdatesChanged_listenerFunction
+			self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
 		)
 	}
 	overridable_stopObserving_record()
@@ -161,10 +161,10 @@ class WalletsListCellView extends ListCellView
 			}
 			return false
 		}
-		if (doesListenerFunctionExist(self.EventName_isFetchingUpdatesChanged_listenerFunction) === true) {
+		if (doesListenerFunctionExist(self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction) === true) {
 			emitter.removeListener(
 				emitter.EventName_isFetchingUpdatesChanged(),
-				self.EventName_isFetchingUpdatesChanged_listenerFunction
+				self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
 			)
 		}
 	}

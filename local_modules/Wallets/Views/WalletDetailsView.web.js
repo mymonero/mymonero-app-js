@@ -76,7 +76,7 @@ class WalletDetailsView extends View
 		self._configureUIWithWallet__accountInfo()
 		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
-		self._configureUIWithWallet__heightsAndImportState()
+		self._configureUIWithWallet__heightsAndImportAndFetchingState()
 	}
 	_setup_views()
 	{
@@ -482,6 +482,15 @@ class WalletDetailsView extends View
 			self.wallet_EventName_transactionsChanged_listenerFunction
 		)
 		//
+		// self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction = function()
+		// {
+		// 	self._configureUIWithWallet__heightsAndImportAndFetchingState()
+		// }
+		// self.wallet.on(
+		// 	self.wallet.EventName_isFetchingUpdatesChanged(),
+		// 	self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
+		// )
+		//
 		// deletion
 		self._wallet_EventName_willBeDeleted_fn = function()
 		{ // ^-- we observe /will/ instead of /did/ because if we didn't, self.navigationController races to get freed
@@ -597,6 +606,12 @@ class WalletDetailsView extends View
 			self.wallet_EventName_transactionsChanged_listenerFunction
 		)
 		self.wallet_EventName_transactionsChanged_listenerFunction = null
+		//
+		// self.wallet.removeListener(
+		// 	self.wallet.EventName_isFetchingUpdatesChanged(),
+		// 	self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
+		// )
+		// self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction = null
 		//
 		self.wallet.removeListener(
 			self.wallet.EventName_willBeDeleted(),
@@ -881,7 +896,7 @@ class WalletDetailsView extends View
 		}
 		layer_transactions.appendChild(listContainerLayer)
 	}
-	_configureUIWithWallet__heightsAndImportState()
+	_configureUIWithWallet__heightsAndImportAndFetchingState()
 	{
 		const self = this
 		const wallet = self.wallet
@@ -896,7 +911,6 @@ class WalletDetailsView extends View
 				}
 			}
 		}
-		var shouldShow_catchingUpProgressAndActivityIndicator = wallet.IsScannerCatchingUp() && wallet_bootFailed == false
 		if (shouldShow_importTxsBtn) {
 			if (!self.importTransactionsButtonView || typeof self.importTransactionsButtonView === 'undefined') {
 				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
@@ -925,14 +939,39 @@ class WalletDetailsView extends View
 				}
 			}
 		}
-		if (shouldShow_catchingUpProgressAndActivityIndicator) {
+		var shouldShowActivityIndicator = 
+			wallet_bootFailed == false 
+			&& (wallet.IsScannerCatchingUp()/* || wallet.IsFetchingAnyUpdates()*/)
+		if (shouldShowActivityIndicator) {
 			if (!self.catchingUpProgressAndActivityIndicatorView || typeof self.catchingUpProgressAndActivityIndicatorView === 'undefined') {
 				const view = new View({}, self.context)
 				view.ConfigureWithProgress = function()
 				{
-					// const formattedFloatStr = "" + (to_float * 100).toFixed(0) + "%"
-					const innerHTMLStr = `${self.wallet.NBlocksBehind()} blocks behind`
-					self.progressLabelLayer.innerHTML = innerHTMLStr
+					function __blocksBehindMsg(nBlocks)
+					{
+						if (nBlocks > 0) {
+							return `${nBlocks} block${nBlocks != 1 ? "s" : ""} behind`
+						} else {
+							return shouldShow_importTxsBtn != true ? `Scanner up-to-date` : ""
+						}
+					}
+					var messageText;
+					var progressLabelLayer_innerHTMLStr = "" // default
+					const nBlocks = self.wallet.NBlocksBehind()
+/*					if (wallet.IsFetchingAnyUpdates()) {
+						messageText = self.context.isMobile == true
+							? "FETCHING…" 
+							: "FETCHING UPDATES…"
+					} else */if (wallet.IsScannerCatchingUp()) {
+						messageText = self.context.isMobile == true
+							? "SCANNING…" 
+							: "SCANNING BLOCKCHAIN…"
+					} else {
+						throw "Illegal: !wallet.IsFetchingAnyUpdates() && !wallet.IsScannerCatchingUp()"
+					}
+					progressLabelLayer_innerHTMLStr = __blocksBehindMsg(nBlocks)
+					self.catchingUp_activityIndicatorLayer.Component_setMessageText(messageText)
+					self.progressLabelLayer.innerHTML = progressLabelLayer_innerHTMLStr
 				}
 				const layer = view.layer
 				layer.style.position = "relative"
@@ -945,16 +984,13 @@ class WalletDetailsView extends View
 				layer.style.padding = "0 14px 0 19px"
 				self.catchingUpProgressAndActivityIndicatorView = view
 				//
-				const scanningHeadlineLabelText = 
-					self.context.Cordova_isMobile === true || self.context.isMobile == true
-					? "SCANNING…"  // just a quick solution for now
-					: "SCANNING BLOCKCHAIN…"
 				const activityIndicatorLayer = commonComponents_activityIndicators.New_GraphicAndLabel_ActivityIndicatorLayer(
-					scanningHeadlineLabelText,
+					"",
 					self.context
 				)
 				activityIndicatorLayer.style.paddingLeft = "0" // overriding
 				activityIndicatorLayer.style.color = "#9E9C9E" // overriding
+				self.catchingUp_activityIndicatorLayer = activityIndicatorLayer
 				self.catchingUpProgressAndActivityIndicatorView.layer.appendChild(activityIndicatorLayer)
 				//
 				const progressLabelLayer = document.createElement("span")
@@ -1098,7 +1134,7 @@ class WalletDetailsView extends View
 		self._configureUIWithWallet__accountInfo()
 		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
-		self._configureUIWithWallet__heightsAndImportState()
+		self._configureUIWithWallet__heightsAndImportAndFetchingState()
 	}
 	_wallet_failedToLogIn()
 	{
@@ -1106,7 +1142,7 @@ class WalletDetailsView extends View
 		self._configureUIWithWallet__accountInfo()
 		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
-		self._configureUIWithWallet__heightsAndImportState()
+		self._configureUIWithWallet__heightsAndImportAndFetchingState()
 	}
 	//
 	wallet_EventName_walletLabelChanged()
@@ -1132,7 +1168,7 @@ class WalletDetailsView extends View
 	wallet_EventName_heightsUpdated()
 	{
 		const self = this
-		self._configureUIWithWallet__heightsAndImportState()
+		self._configureUIWithWallet__heightsAndImportAndFetchingState()
 	}
 	//
 	//

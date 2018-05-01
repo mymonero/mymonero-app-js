@@ -161,12 +161,17 @@ function New_GraphicAndLabel_ActivityIndicatorLayer(messageText, context)
 	layer.classList.add("graphicAndLabel")
 	layer.classList.add(NamespaceName)
 	layer.classList.add(className_onNormalBackground)
-	layer.innerHTML = 
-		loader_innerHTML
-		+`&nbsp;`
-		+`<span>${messageText}</span>`
 	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
 	layer.style.color = "#F8F7F8"
+	//
+	layer.Component_setMessageText = function(to_messageText)
+	{
+		const html = loader_innerHTML
+			+`&nbsp;`
+			+`<span>${to_messageText}</span>`
+		layer.innerHTML = html
+	}
+	layer.Component_setMessageText(messageText)
 	//
 	return layer		
 }
