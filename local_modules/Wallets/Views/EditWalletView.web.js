@@ -185,11 +185,11 @@ class EditWalletView extends View
 						return false
 					}
 					self.context.windowDialogs.PresentQuestionAlertDialogWith(
-						self.context.isLiteApp == true ? 'Log out?' : 'Remove this wallet?', 
+						self.context.isLiteApp == true ? 'Log out?' : 'Logging out', 
 						self.context.isLiteApp == true 
-							? 'Are you sure you want to log out of this wallet?' 
-							: 'You are about to locally delete a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need it to recover access to this wallet.\n\nAre you sure you want to remove this wallet?',
-						self.context.isLiteApp == true ? 'Log out' : 'Remove',
+							? 'Logging Out' 
+							: 'You are about to log out of a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need your mnemonic to recover access to this wallet.\n\nAre you sure you want to log out of this wallet?',
+						self.context.isLiteApp == true ? 'Log out' : 'Log out'/*used to be 'Remove' but that's confusing*/,
 						'Cancel',
 						function(err, didChooseYes)
 						{
