@@ -51,7 +51,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 			self.is_enteredAddressValue_OAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.enteredAddressValue)
 			if (self.is_enteredAddressValue_OAAddress === false) {
 				try {
-					self.address__decode_result = monero_utils.decode_address(self.enteredAddressValue)
+					self.address__decode_result = monero_utils.decode_address(self.enteredAddressValue, self.context.nettype)
 				} catch (e) {
 					console.warn("Couldn't decode as a Monero address.", e)
 					return // just return silently

@@ -76,6 +76,7 @@ class OpenAliasResolver extends EventEmitter
 		const requestHandle = monero_openalias_utils.ResolvedMoneroAddressInfoFromOpenAliasAddress( 
 			openAliasAddress,
 			self.context.hostedMoneroAPIClient,
+			self.context.nettype,
 			function(
 				err,
 				moneroReady_address,
@@ -85,8 +86,7 @@ class OpenAliasResolver extends EventEmitter
 				oaRecords_0_name,
 				oaRecords_0_description,
 				dnssec_used_and_secured
-			)
-			{
+			) {
 				if (err) {
 					fn(
 						err,

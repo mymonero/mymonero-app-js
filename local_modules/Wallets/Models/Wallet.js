@@ -193,7 +193,7 @@ class Wallet extends EventEmitter
 			// case II: user is inputting address + view & spend keys
 			// case III: we're creating a new wallet
 			if (self.options.generateNewWallet === true) { // generate new mnemonic seed -- we will pick this up later in the corresponding Boot_*
-				self.generatedOnInit_walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName)
+				self.generatedOnInit_walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName, self.context.nettype)
 			}
 			//
 			// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
@@ -305,6 +305,7 @@ class Wallet extends EventEmitter
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
 			self.mnemonic_wordsetName,
+			self.context.nettype,
 			function(err, seed, keys)
 			{
 				if (err) {
@@ -657,6 +658,7 @@ class Wallet extends EventEmitter
 		//
 		monero_wallet_utils.VerifiedComponentsForLogIn(
 			address,
+			self.context.nettype,
 			view_key,
 			spend_key_orUndefinedForViewOnly,
 			seed_orUndefined,
@@ -1139,6 +1141,7 @@ class Wallet extends EventEmitter
 			monero_sendingFunds_utils.SendFunds(
 				true, // isRingCT
 				target_address,
+				self.context.nettype,
 				amount,
 				self.keyImage_cache,
 				self.public_address,

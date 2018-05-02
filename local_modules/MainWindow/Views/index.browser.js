@@ -64,6 +64,7 @@ window.BootApp = function()
 	// context
 	var isHorizontalBar = isMobile
 	const context = require('../Models/index_context.browser').NewHydratedContext({
+		nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
 		app: app,
 		isDebug: isDebug,
 		isLiteApp: true, // used sparingly for to disable (but not redact) functionality

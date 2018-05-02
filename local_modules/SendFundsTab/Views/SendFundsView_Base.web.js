@@ -1378,7 +1378,7 @@ class SendFundsView extends View
 				// then it's an XMR addr
 				var address__decode_result; 
 				try {
-					address__decode_result = monero_utils.decode_address(enteredAddressValue)
+					address__decode_result = monero_utils.decode_address(enteredAddressValue, self.context.nettype)
 				} catch (e) {
 					console.warn("Couldn't decode as a Monero address.", e)
 					_trampolineToReturnWithValidationErrorString("Please enter a valid Monero address.") // this will re-enable submit btn etc
@@ -1434,7 +1434,8 @@ class SendFundsView extends View
 					let overwritten__target_address = target_address;
 					target_address = monero_utils.new__int_addr_from_addr_and_short_pid(
 						overwritten__target_address, // the monero one
-						payment_id // short pid
+						payment_id, // short pid
+						self.context.nettype
 					)
 					//
 					payment_id = null // must now zero this or Send will throw a "pid must be blank with integrated addr"
@@ -1889,7 +1890,7 @@ class SendFundsView extends View
 		if (isOAAddress !== true) {
 			var address__decode_result; 
 			try {
-				address__decode_result = monero_utils.decode_address(enteredPossibleAddress)
+				address__decode_result = monero_utils.decode_address(enteredPossibleAddress, self.context.nettype)
 			} catch (e) {
 				console.warn("Couldn't decode as a Monero address.", e)
 				self.isResolvingSendTarget = false

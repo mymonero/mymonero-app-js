@@ -318,7 +318,7 @@ class Contact extends EventEmitter
 			return false
 		}
 		// TODO: how to cache this? would need to invalidate every time .address is touched
-		const address__decode_result = monero_utils.decode_address(address) // just letting it throw
+		const address__decode_result = monero_utils.decode_address(address, self.context.nettype) // just letting it throw
 		const integratedAddress_paymentId = address__decode_result.intPaymentId
 		const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
 		//
@@ -350,7 +350,8 @@ class Contact extends EventEmitter
 		// now we know we have a std xmr addr and a short pid
 		let int_addr = monero_utils.new__int_addr_from_addr_and_short_pid(
 			address,
-			payment_id
+			payment_id,
+			self.context.nettype
 		);
 		return int_addr;
 	}

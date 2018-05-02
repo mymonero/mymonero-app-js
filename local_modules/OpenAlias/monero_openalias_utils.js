@@ -47,6 +47,7 @@ exports.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOA
 function ResolvedMoneroAddressInfoFromOpenAliasAddress( 
 	openAliasAddress,
 	hostedMoneroAPIClient, // to get TXT records
+	nettype,
 	fn
 	// fn: (
 	// 	err,
@@ -58,8 +59,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 	// 	oaRecords_0_description,
 	// 	dnssec_used_and_secured
 	// ) -> HostedMoneroAPIClient_RequestHandle
-)
-{
+) {
 	if (DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(openAliasAddress) === false) {
 		throw "Asked to resolve non-OpenAlias address." // throw as code fault
 	}
@@ -95,7 +95,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 			// console.log("OpenAlias record: ", sampled_oaRecord)
 			var oaRecord_address = sampled_oaRecord.address
 			try { // verify address is decodable for currency
-				monero_utils.decode_address(oaRecord_address)
+				monero_utils.decode_address(oaRecord_address, nettype)
 			} catch (e) {
 				const errStr = "Address received by parsing OpenAlias address " + oaRecord_address + " was not a valid Monero address: " + e 
 				const error = new Error(errStr) // apparently if this is named err, JS will complain. no-semicolon parsing issue?

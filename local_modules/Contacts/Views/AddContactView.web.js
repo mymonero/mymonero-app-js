@@ -200,7 +200,7 @@ class AddContactView extends ContactFormView
 		if (openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) {
 			var address__decode_result; 
 			try {
-				address__decode_result = monero_utils.decode_address(address)
+				address__decode_result = monero_utils.decode_address(address, self.context.nettype)
 			} catch (e) {
 				__reEnableForm()
 				self.validationMessageLayer.SetValidationError("Please enter a valid Monero address") // not using the error here cause it can be pretty unhelpful to the lay user

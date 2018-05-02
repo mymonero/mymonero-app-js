@@ -140,10 +140,10 @@ function NewHydratedContext(
 	app, 
 	menuController,
 	urlOpeningController
-)
-{
+) {
 	var initialContext =
 	{
+		nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
 		app: app,
 		menuController: menuController,
 		urlOpeningController: urlOpeningController,
