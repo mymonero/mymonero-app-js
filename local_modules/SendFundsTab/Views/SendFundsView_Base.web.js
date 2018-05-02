@@ -906,7 +906,7 @@ class SendFundsView extends View
 		const self = this
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_networkFee(
 			monero_sendingFunds_utils.fixedMixin(),
-			new JSBigInt("187630000"), // TODO: grab this from polling request for dynamic per kb fee
+			new JSBigInt("187000000"), // TODO: grab this from polling request for dynamic per kb fee
 			self._selected_simplePriority()
 		)
 		const hostingServiceFee_JSBigInt = new JSBigInt(0)/* self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
