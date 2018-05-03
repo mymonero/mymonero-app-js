@@ -214,7 +214,7 @@ class WalletDetailsView extends View
 						finalized_main_string = ""
 						finalized_secondarySection_string = "00." + Array(coinUnitPlaces).join("0")
 					} else {
-						finalized_main_string = balance_aspect_integer + "."
+						finalized_main_string = balance_aspect_integer + ".0"
 						finalized_secondarySection_string = Array(coinUnitPlaces).join("0")
 					}
 				} else if (raw_balanceString__components.length == 2) {
