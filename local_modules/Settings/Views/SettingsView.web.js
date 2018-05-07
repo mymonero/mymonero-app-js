@@ -170,14 +170,14 @@ class SettingsView extends View
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP TIMEOUT", self.context)
 			div.appendChild(labelLayer)
 			//
-			const min = 5
+			const min = 15
 			const max = 60 * 25
 			const view = commonComponents_labeledRangeInputs.New_fieldValue_timeBasedLabeledRangeInputView({
 				min: min,
 				max: max,
-				step: 5, // 5s at a time?
+				step: 15, // 15s at a time
 				//
-				slideSideLabelFor_min: "5s",
+				slideSideLabelFor_min: "15s",
 				slideSideLabelStyleWidthFor_min: "20px",
 				slideSideLabelFor_max: "Never",
 				slideSideLabelStyleWidthFor_max: "34px",
