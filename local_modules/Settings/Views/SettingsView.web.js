@@ -559,13 +559,28 @@ class SettingsView extends View
 		}
 		//
 		const fn = fn_orNil || function(didError, savableValue) {}
-		const value = (self.serverURLInputLayer.value || "").replace(/^\s+|\s+$/g, '') // whitespace-stripped
+		var mutable_value = (self.serverURLInputLayer.value || "").replace(/^\s+|\s+$/g, '') // whitespace-stripped
 		//
 		var preSubmission_validationError = null;
 		{
-			if (value != "") {
-				if (value.indexOf(".") == -1 && value.indexOf(":") == -1 && value.indexOf("localhost") == -1) {
+			if (mutable_value != "") {
+				if (mutable_value.indexOf(".") == -1 && mutable_value.indexOf(":") == -1 && mutable_value.indexOf("localhost") == -1) {
 					preSubmission_validationError = `Please enter a valid URL authority, e.g. ${config__MyMonero.API__authority}.`
+				} else { // important else in the absence of reorganizing this code 
+					// strip http:// and https:// prefix here.. there's got to be a better way to do this..
+					// ... probably not a good idea to naively strip "*://" prefix ... or is it?
+					const strippablePrefixes =
+					[
+						"https://",
+						"http://",
+						"//" // we can strip it for https anyway
+					]
+					for (var i = 0 ; i < strippablePrefixes.length ; i++) {
+						const prefix = strippablePrefixes[i]
+						if (mutable_value.indexOf(prefix) === 0) {
+							mutable_value = mutable_value.slice(prefix.length, mutable_value.length)
+						}
+					}
 				}
 			}
 		}
@@ -577,7 +592,8 @@ class SettingsView extends View
 			fn(true, null)
 			return
 		}
-		fn(false, value) // no error, save value
+		const final_value = mutable_value
+		fn(false, final_value) // no error, save value
 	}
 	//
 	// Runtime - Imperatives - UI config - Validation messages - Server URL
