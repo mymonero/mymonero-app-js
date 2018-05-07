@@ -87,8 +87,7 @@ class WalletsListController extends ListBaseController
 		persistencePassword,
 		forOverrider_instance_didBoot_fn,
 		forOverrider_instance_didFailBoot_fn
-	)
-	{
+	) {
 		const self = this
 		// now supply actual Wallet callbacks
 		optionsBase.failedToInitialize_cb = function(err, returnedInstance)
@@ -109,14 +108,18 @@ class WalletsListController extends ListBaseController
 		optionsBase.didReceiveUpdateToAccountInfo = function() {} // TODO: bubble?
 		optionsBase.didReceiveUpdateToAccountTransactions = function() {} // TODO: bubble?
 	}
+	overridable_shouldSortOnEveryRecordAdditionAtRuntime()
+	{
+		return true
+	}
 	overridable_sortRecords(fn) // () -> Void; must call this!
 	{
 		const self = this
 		// do not call on `super` of fn could be called redundantly
 		self.records = self.records.sort(
 			function(a, b)
-			{ // sorting specifically by date added
-				return b.dateWalletFirstSavedLocally - a.dateWalletFirstSavedLocally
+			{ // sorting specifically by date added with new additions at the end
+				return a.dateWalletFirstSavedLocally - b.dateWalletFirstSavedLocally
 			}
 		)
 		fn() // ListBaseController overriders must call this!
