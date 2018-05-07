@@ -1163,7 +1163,7 @@ class Wallet extends EventEmitter
 			__proceed()
 		} else {
 			self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
-				"Authenticate to Send",
+				"Authenticate",
 				function()
 				{
 					__trampolineFor_canceled_fn()

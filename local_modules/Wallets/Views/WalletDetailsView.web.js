@@ -301,7 +301,7 @@ class WalletDetailsView extends View
 				if (to_isDisclosed) { // when opening
 					if (self.context.settingsController.authentication_requireWhenDisclosingWalletSecrets) {
 						self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
-							"Authenticate to Open",
+							"Authenticate",
 							function()
 							{
 								async_reply_fn(false) // disallowed

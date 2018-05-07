@@ -224,7 +224,7 @@ class SettingsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AUTHENTICATION", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("AUTHENTICATE", self.context)
 			{
 				const tooltipText = `An extra layer of security<br/>for approving certain<br/>actions after you've<br/>unlocked the app`
 				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
@@ -234,7 +234,7 @@ class SettingsView extends View
 			div.appendChild(labelLayer)
 			{
 				const switchView = commonComponents_switchToggles.New_fieldValue_switchToggleView({
-					note: "Require when sending",
+					note: "When sending",
 					border: true,
 					changed_fn: function(isChecked)
 					{
@@ -255,7 +255,7 @@ class SettingsView extends View
 						if (to_isSelected == false) { // if it's being turned OFF
 							// then they need to authenticate
 							self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
-								"Authenticate to Disable Setting",
+								"Authenticate",
 								function()
 								{
 									async_shouldToggle_fn(false) // disallowed
@@ -281,7 +281,7 @@ class SettingsView extends View
 			}
 			{
 				const switchView = commonComponents_switchToggles.New_fieldValue_switchToggleView({
-					note: "Require to show wallet secrets",
+					note: "To show wallet secrets",
 					border: true,
 					changed_fn: function(isChecked)
 					{
@@ -302,7 +302,7 @@ class SettingsView extends View
 						if (to_isSelected == false) { // if it's being turned OFF
 							// then they need to authenticate
 							self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
-								"Authenticate to Disable Setting",
+								"Authenticate",
 								function()
 								{
 									async_shouldToggle_fn(false) // disallowed
@@ -457,7 +457,7 @@ class SettingsView extends View
 		const self = this
 		const div = document.createElement("div")
 		div.style.paddingTop = "23px"
-		const titleText = self.context.isLiteApp ? "LOG OUT" : "DELETE EVERYTHING…"
+		const titleText = self.context.isLiteApp ? "LOG OUT" : "DELETE EVERYTHING"
 		const view = commonComponents_tables.New_redTextButtonView(titleText, self.context)
 		self.deleteEverything_buttonView = view
 		const layer = view.layer

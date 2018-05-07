@@ -207,7 +207,9 @@ class EnterExistingPasswordView extends View
 		}
 		const passwordType_humanReadableString = self.context.passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[self.userSelectedTypeOfPassword]
 		//
-		return "Enter "+passwordType_humanReadableString
+		return "Enter "+passwordType_humanReadableString.replace(/^\w/, function(chr) {
+			return chr.toUpperCase()
+		})
 	}
 	Navigation_New_LeftBarButtonView()
 	{
