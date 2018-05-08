@@ -220,7 +220,7 @@ class WalletsListView extends ListView
 		if (self.context.isLiteApp == true) {
 			return "MyMonero"
 		}
-		return "My Monero Wallets"
+		return "Wallets"
 	}
 	Navigation_New_RightBarButtonView()
 	{
