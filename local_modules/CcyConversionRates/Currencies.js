@@ -92,8 +92,8 @@ let unitsForDisplay = exports.unitsForDisplay = function(ccySymbol)
 let nonAtomicCurrency_formattedString = exports.nonAtomicCurrency_formattedString = function(
 	final_amountDouble, // final as in display-units-rounded - will throw if amount has too much precision
 	ccySymbol
-) // -> String
-{ // is nonAtomic-unit'd currency a good enough way to categorize these? 
+) { // -> String
+	// is nonAtomic-unit'd currency a good enough way to categorize these? 
 	if (ccySymbol == ccySymbolsByCcy.XMR) {
 		throw "nonAtomicCurrency_formattedString not to be called with ccySymbol=.XMR"
 	}
@@ -131,12 +131,15 @@ let nonAtomicCurrency_formattedString = exports.nonAtomicCurrency_formattedStrin
 	}
 	return component_1+"."+component_2+rightSidePaddingZeroes // pad
 }
+function roundTo(num, digits) {
+    return +(Math.round(num + "e+"+digits)  + "e-"+digits);
+}
 exports.submittableMoneroAmountDouble_orNull = function(
 	CcyConversionRates_Controller_shared,
 	selectedCurrencySymbol,
 	submittableAmountRawNumber_orNull // passing null causes immediate return of null
-) // -> Double?
-{ // conversion approximation will be performed from user input
+) { // -> Double?
+	// conversion approximation will be performed from user input
 	if (submittableAmountRawNumber_orNull == null) {
 		return null
 	}
@@ -157,8 +160,7 @@ let rounded_ccyConversionRateCalculated_moneroAmountNumber
 	CcyConversionRates_Controller_shared,
 	userInputAmountJSNumber,
 	selectedCurrencySymbol
-) // -> Double? // may return nil if ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
-{
+) { // -> Double? // may return nil if ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
 	let xmrToCurrencyRate = CcyConversionRates_Controller_shared.rateFromXMR_orNullIfNotReady(
 		selectedCurrencySymbol
 	)
@@ -170,8 +172,7 @@ let rounded_ccyConversionRateCalculated_moneroAmountNumber
 	// xmrAmt = currencyAmt / xmrToCurrencyRate.
 	// I figure it's better to apply the rounding here rather than only at the display level so that what is actually sent corresponds to what the user saw, even if greater ccyConversion precision /could/ be accomplished..
 	let raw_ccyConversionRateApplied_amount = userInputAmountJSNumber * (1 / xmrToCurrencyRate)
-	let roundingMultiplier = 10 * 10 * 10 * 10 // 4 rather than, say, 2, b/c it's relatively more unlikely that fiat amts will be over 10-100 xmr - and b/c some currencies require it for xmr value not to be 0 - and 5 places is a bit excessive
-	let truncated_amount = Math.round(roundingMultiplier * raw_ccyConversionRateApplied_amount) / roundingMultiplier // must be truncated for display purposes
+	let truncated_amount = roundTo(raw_ccyConversionRateApplied_amount, 4) // must be truncated for display purposes
 	//
 	return truncated_amount
 }
@@ -179,8 +180,7 @@ exports.displayUnitsRounded_amountInCurrency = function( // Note: __DISPLAY__ un
 	CcyConversionRates_Controller_shared,
 	ccySymbol,
 	moneroAmountNumber // NOTE: 'Double' JS Number, not JS BigInt
-) // -> Double?
-{
+) { // -> Double?
 	if (typeof moneroAmountNumber != 'number') {
 		throw 'unexpected typeof moneroAmountNumber='+(typeof moneroAmountNumber)
 	}
@@ -193,10 +193,9 @@ exports.displayUnitsRounded_amountInCurrency = function( // Note: __DISPLAY__ un
 	if (xmrToCurrencyRate == null) {
 		return null // ccyConversion rate unavailable - consumers will try again
 	}
-	let currency_unitsForDisplay = unitsForDisplay(ccySymbol) 
-	let roundingMultiplier = Math.pow(10, currency_unitsForDisplay)
+	let currency_unitsForDisplay = unitsForDisplay(ccySymbol)
 	let raw_ccyConversionRateApplied_amountNumber = moneroAmountNumber * xmrToCurrencyRate
-	let truncated_amount = Math.round(roundingMultiplier * raw_ccyConversionRateApplied_amountNumber) / roundingMultiplier
+	let truncated_amount = roundTo(raw_ccyConversionRateApplied_amountNumber, currency_unitsForDisplay) // must be truncated for display purposes
 	//
 	return truncated_amount
 }
