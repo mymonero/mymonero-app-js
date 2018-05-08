@@ -289,5 +289,18 @@ class WalletsListView extends ListView
 			}
 		}
 	}
+	//
+	// Delegation - View - Visibility
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		if (self.listController.records) { // it's ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
+			self.listController.records.forEach(function(el, idx)
+			{
+				el.requestFromUI_manualRefresh()
+			})
+		}
+	}
 }
 module.exports = WalletsListView

@@ -101,9 +101,3 @@ class WalletsTabContentView extends StackAndModalNavigationView
 	}
 }
 module.exports = WalletsTabContentView
-
-
-
-
-
-

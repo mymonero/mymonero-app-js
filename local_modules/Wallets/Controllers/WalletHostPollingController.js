@@ -30,6 +30,9 @@
 //
 const EventEmitter = require('events')
 //
+const manualRefreshCoolDownMinimumTimeInterval_s = 10
+const pollingPeriodTimeInterval_s = 30
+//
 class WalletHostPollingController
 {
 	
@@ -57,36 +60,17 @@ class WalletHostPollingController
 	setup()
 	{
 		const self = this
-		self._setup_startPolling() // we're just immediately going to jump into the runtime - so only instantiate self when you're ready to do this
-	}
-	_setup_startPolling()
-	{
-		const self = this
-		function __callAllSyncFunctions()
-		{
-			self._fetch_accountInfo()
-			self._fetch_transactionHistory()
-		}
 		//
-		// kick off synchronizations
+		// we're just immediately going to jump into the runtime - so only instantiate self when you're ready to do this
 		setTimeout(function()
 		{
-			__callAllSyncFunctions()
-		})
-		//
-		// and kick off the polling call to pull latest updates
-		const syncPollingInterval = 30 * 1000 // ms
-		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
-		self.intervalTimeout = setInterval(function()
-		{
-			__callAllSyncFunctions()
-		}, syncPollingInterval)
+			self.performRequests()
+		}, 100) // give everything a moment to get rendered - it would be great to get these on a background thread
+		// but note all checks must be synchronized on that thread
+		self.startPollingTimer()
 	}
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
+	//
 	// Lifecycle - Teardown
-	
 	TearDown()
 	{ // this is public and must be called manually by wallet
 		const self = this
@@ -100,9 +84,7 @@ class WalletHostPollingController
 		if (typeof self.intervalTimeout === 'undefined' || self.intervalTimeout === null) {
 			throw "_tearDown_stopTimers called but self.intervalTimeout already nil"
 		}
-		// console.log("💬  Clearing polling intervalTimeout.")
-		clearInterval(self.intervalTimeout)
-		self.intervalTimeout = null
+		self.invalidateTimer()
 	}
 	_tearDown_abortAndFreeRequests()
 	{
@@ -145,11 +127,61 @@ class WalletHostPollingController
 		//
 		return typeof self.requestHandle_for_transactions !== 'undefined' && self.requestHandle_for_transactions !== null
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
+	// Imperatives - Manual refresh
+	requestFromUI_manualRefresh()
+	{
+		const self = this
+		if (self.IsFetching_accountInfo() || self.IsFetching_transactions()) {
+			return // still refreshing.. no need
+		}
+		// now since addressInfo and addressTransactions are nearly happening at the same time (with failures and delays unlikely), I'm just going to use time since addressTransactions to approximate length since last collective refresh
+		var mutable_hasBeenLongEnoughSinceLastRefreshToRefresh = false
+		if (self._dateOfLast_fetch_addressTransactions == null || typeof self._dateOfLast_fetch_addressTransactions === 'undefined') {
+			mutable_hasBeenLongEnoughSinceLastRefreshToRefresh = true
+		} else {
+			// we know a request is not _currently_ happening, so nil date means one has never happened 
+			const msDiff_sinceLastRefresh = (new Date()).getTime() - self._dateOfLast_fetch_addressTransactions.getTime()
+			const s_sinceLastRefresh = Math.abs(msDiff_sinceLastRefresh / 1000)
+			if (s_sinceLastRefresh >= manualRefreshCoolDownMinimumTimeInterval_s) { 
+				mutable_hasBeenLongEnoughSinceLastRefreshToRefresh = true
+			}
+		}
+		const hasBeenLongEnough = mutable_hasBeenLongEnoughSinceLastRefreshToRefresh
+		if (hasBeenLongEnough) {
+			// and here we again know we don't have any requests to cancel
+			self.performRequests() // approved manual refresh
+			//
+			self.invalidateTimer() // clear and reset timer to push next fresh out by timer period
+			self.startPollingTimer()
+		}
+	}
+	//
+	// Runtime - Imperatives - Polling
+	performRequests()
+	{
+		const self = this
+		self._fetch_accountInfo()
+		self._fetch_transactionHistory()
+	}
+	invalidateTimer()
+	{
+		const self = this
+		// console.log("💬  Clearing polling intervalTimeout.")
+		clearInterval(self.intervalTimeout)
+		self.intervalTimeout = null
+	}
+	startPollingTimer()
+	{
+		const self = this
+		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
+		self.intervalTimeout = setInterval(function()
+		{
+			self.performRequests()
+		}, pollingPeriodTimeInterval_s * 1000 /*ms*/)
+	}
+	// 
 	// Runtime - Imperatives - Private - Requests
-
 	_fetch_accountInfo()
 	{ // -> HostedMoneroAPIClient_RequestHandle
 		var __debug_fnName = "_fetch_accountInfo"
@@ -295,6 +327,8 @@ class WalletHostPollingController
 				blockchain_height,
 				transactions
 			) {
+				self._dateOfLast_fetch_addressTransactions = new Date()
+				//
 				// immediately unlock this request fetch
 				self.requestHandle_for_transactions = null 
 				self._didUpdate_factorOf_isFetchingState()

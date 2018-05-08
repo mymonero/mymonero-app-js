@@ -1176,11 +1176,20 @@ class Wallet extends EventEmitter
 		}
 
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
+	//
+	// Runtime - Imperatives - Manual refresh
+	requestFromUI_manualRefresh()
+	{
+		const self = this
+		if (typeof self.hostPollingController !== 'undefined' && self.hostPollingController !== null) {
+			self.hostPollingController.requestFromUI_manualRefresh()
+		} else {
+			console.warn("Wallet: Manual refresh requested before hostPollingController set up.")
+			// not booted yet.. ignoring
+		}
+	}
+	//
 	// Runtime - Imperatives - Private - Persistence
-
 	saveToDisk(fn)
 	{
 		const self = this
@@ -1201,8 +1210,7 @@ class Wallet extends EventEmitter
 
 	Delete(
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		self.emit(self.EventName_willBeDeleted(), self._id)
 		wallet_persistence_utils.DeleteFromDisk(

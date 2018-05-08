@@ -1106,6 +1106,16 @@ class WalletDetailsView extends View
 			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px` // no need to set height as we're box-sizing: border-box
 		}
 	}
+	viewDidAppear()
+	{
+		const self = this
+		super.viewDidAppear()
+		//
+		if (typeof self.wallet === 'undefined' || self.wallet === null) {
+			throw "WalletDetailsView/viewDidAppear: self.wallet=nil"
+		}
+		self.wallet.requestFromUI_manualRefresh()
+	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
 	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
 	navigationView_didDismissModalToRevealView()
