@@ -122,10 +122,10 @@ class Controller extends EventEmitter
 	{
 		const self = this
 		//
-		console.log(
-			"CcyConversionRates: Received updates:", 
-			JSON.stringify(self.xmrToCcyRateJSNumbersByCcySymbols, null, '  ')
-		)
+		// console.log(
+		// 	"CcyConversionRates: Received updates:", 
+		// 	JSON.stringify(self.xmrToCcyRateJSNumbersByCcySymbols, null, '  ')
+		// )
 		self._notifyOf_updateTo_XMRToCurrencyRate()
 	}
 	//

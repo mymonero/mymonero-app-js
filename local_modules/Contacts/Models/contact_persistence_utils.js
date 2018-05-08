@@ -147,7 +147,7 @@ function SaveToDisk(
 					fn(err)
 					return
 				}
-				console.log("✅  Saved update to record with _id " + self._id + ".")
+				// console.log("✅  Saved update to record with _id " + self._id + ".")
 				fn()
 			}
 		)

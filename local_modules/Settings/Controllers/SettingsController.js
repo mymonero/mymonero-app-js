@@ -319,7 +319,7 @@ class SettingsController extends EventEmitter
 								fn(err)
 								return
 							}
-							console.log("✅  Saved update to Settings record with _id " + self._id + ".")
+							// console.log("✅  Saved update to Settings record with _id " + self._id + ".")
 							fn()
 						}
 					)
