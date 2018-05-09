@@ -52,7 +52,7 @@ const {/*crashReporter, */app} = require('electron')
 // 	}
 // }
 { // `app` configuration
-	const appId = "com.mymonero.mymonero" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
+	const appId = "com.mymonero.mymonero-desktop" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
 	app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
 }
 { // Application
