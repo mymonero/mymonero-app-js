@@ -51,11 +51,11 @@ class SendFundsView extends SendFundsView_Base
 				controller.EventName_ReceivedURLToOpen_FundsRequest(),
 				function(url)
 				{
-					self.DismissModalViewsToView( // dismissing these b/c of checks in __shared_isAllowedToPerformDropOrURLOpeningOps
+					self.navigationController.DismissModalViewsToView( // dismissing these b/c of checks in __shared_isAllowedToPerformDropOrURLOpeningOps
 						null, // null -> to top stack view
 						false // not animated
 					)
-					self.PopToRootView(false) // in case they're not on root
+					self.navigationController.PopToRootView(false) // in case they're not on root
 					//
 					if (self.__shared_isAllowedToPerformDropOrURLOpeningOps() != true) {
 						console.warn("Not allowed to perform URL opening ops yet.")
