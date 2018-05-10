@@ -10,8 +10,8 @@
   "scripts": {
     "start": "electron ./local_modules/electron_main/electron_main.js",
     "start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
-    "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Mac Developer\" build --dir -mwl",
-    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Developer ID Application\" build -mwl",
+    "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"Mac Developer\" electron-builder --dir -mwl",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -42,16 +42,24 @@
     "mac": {
       "category": "public.app-category.finance",
       "target": [
-        "dir"
+        "dir",
+        "dmg"
       ],
-      "icon": "build/icon.icns"
+      "type": "distribution",
+      "icon": "icon.icns",
+      "identity": "MyMonero Pty Ltd (NLN5D623Y3)",
+      "extendInfo": {
+        "com.apple.developer.team-identifier": "NLN5D623Y3",
+        "com.apple.application-identifier": "NLN5D623Y3.com.mymonero.mymonero-desktop"
+      }
     },
     "win": {
       "target": [
         "nsis"
       ],
       "legalTrademarks": "Copyright © 2014-2018 MyMonero.",
-      "publisherName": "MyMonero"
+      "certificateSubjectName": "MyMonero",
+      "publisherName": "MyMonero Pty Ltd."
     },
     "nsis": {
       "perMachine": true
@@ -91,7 +99,7 @@
     "babel-loader": "^6.4.1",
     "babel-minify": "^0.2.0",
     "electron": "^1.8.6",
-    "electron-builder": "^16.0.1",
+    "electron-builder": "^20.13.3",
     "electron-packager": "^8.1.0",
     "eslint": "^3.19.0",
     "mocha": "^3.2.0",
