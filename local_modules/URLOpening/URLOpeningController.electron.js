@@ -42,23 +42,36 @@ class URLOpeningController extends URLOpeningController_Abstract
 		const app = self.context.app
 		app.on('will-finish-launching', function()
 		{ // ^ we might not need to do this
-			app.on("open-url", function(event, url)
-			{
-				event.preventDefault() // "should call this" since we want to handle it
-				self.__didReceivePossibleURIToOpen(
-					url,
-					function()
-					{
-						event.preventDefault()
-					}
-				)
+			setTimeout(function()
+			{ // it might be necessary to give everything a moment to get established
+				app.on("open-url", function(event, url)
+				{
+					event.preventDefault() // "should call this" since we want to handle it
+					self.__didReceivePossibleURIToOpen(
+						url,
+						function()
+						{
+							event.preventDefault()
+						}
+					)
+				})
+				app.on('launched-duplicatively', function(argv)
+				{ // main window listens for this too - and brings itself to forefont…
+					// we need to listen for this here for Windows (not MacOS)
+					self._didLaunchOrReOpenWithArgv(argv)
+				})
+				//
+				function do_setAsDefaultProtocolClient()
+				{
+					app.setAsDefaultProtocolClient(self.PROTOCOL_PREFIX()) // this seems to be mainly necessary for Windows
+				}
+				// unsure if this 'ready' check is necessary - but probably can't hurt
+				if (self.context.app.isReady()) {
+					do_setAsDefaultProtocolClient()
+				} else {
+					self.context.app.on("ready", function() { do_setAsDefaultProtocolClient() })
+				}
 			})
-			app.on('launched-duplicatively', function(argv)
-			{ // main window listens for this too - and brings itself to forefont…
-				// we need to listen for this here for Windows (not MacOS)
-				self._didLaunchOrReOpenWithArgv(argv)
-			})
-			app.setAsDefaultProtocolClient(self.PROTOCOL_PREFIX()) // this seems to be mainly necessary for Windows
 		})
 		setTimeout(function()
 		{
