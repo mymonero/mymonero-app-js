@@ -94,11 +94,13 @@ class MainWindowController
 			height: 552,
 			minWidth: 412, // For action buttons
 			minHeight: 420,
+			title: "MyMonero", // Windows
 			//
 			show: false, // shown on ready
 			//
 			backgroundColor: "#272527",
 			titleBarStyle: "hidden-inset",
+			//
 			webPreferences: {
 				backgroundThrottling: false, // disable powersaving/throttling so that app lock-down 
 				// can actually occur when app is in the background or is minimized

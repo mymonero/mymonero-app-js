@@ -58,6 +58,7 @@ class AboutWindowController
 			resizable: false,
 			minimizable: true,
 			//
+			title: "MyMonero", // Windows
 			show: false, // do not show by default
 			//
 			width: 200,
