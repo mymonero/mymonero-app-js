@@ -82,6 +82,40 @@ function New_contactPickerLayer_Lite(
 			commonComponents_forms._shared_scrollConformingElementIntoView(this_layer)
 		}
 		var typingDebounceTimeout = null
+		function _inputLayer_receivedInputOrChanged(optl_event)
+		{
+			//
+			// timeout-clearing key pressed
+			if (typingDebounceTimeout !== null) {
+				clearTimeout(typingDebounceTimeout)
+			}
+			const this_inputLayer = this
+			typingDebounceTimeout = setTimeout(function()
+			{ // to prevent searching too fast
+				typingDebounceTimeout = null // clear for next
+				//
+				if (didFinishTypingInInput_fn) {
+					didFinishTypingInInput_fn(event)
+				}
+
+				// _searchForAndDisplaySearchResults() // there isn't this call in .Lite.
+
+			}, 350)
+		}
+		inputLayer.addEventListener(
+			"input", 
+			function()
+			{
+				_inputLayer_receivedInputOrChanged(undefined) // this might seem redundant and/or to race with "keyup" but it doesn't affect _inputLayer_receivedInputOrChanged 
+			}
+		)
+		inputLayer.addEventListener(
+			"change", // try to catch paste on as many platforms as possible
+			function()
+			{
+				_inputLayer_receivedInputOrChanged(undefined) // this might seem redundant and/or to race with "keyup" but it doesn't affect _inputLayer_receivedInputOrChanged 
+			}
+		)
 		inputLayer.addEventListener(
 			"keyup",
 			function(event)
@@ -97,20 +131,7 @@ function New_contactPickerLayer_Lite(
 					console.log("Input was only modifier key. Ignoring.")
 					return
 				}
-				//
-				// timeout-clearing key pressed
-				if (typingDebounceTimeout !== null) {
-					clearTimeout(typingDebounceTimeout)
-				}
-				const this_inputLayer = this
-				typingDebounceTimeout = setTimeout(function()
-				{ // to prevent searching too fast
-					typingDebounceTimeout = null // clear for next
-					//
-					if (didFinishTypingInInput_fn) {
-						didFinishTypingInInput_fn(event)
-					}
-				}, 500)
+				_inputLayer_receivedInputOrChanged(event)
 			}
 		)
 	}

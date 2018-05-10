@@ -136,8 +136,14 @@ function New_contactPickerLayer(
 			"input", 
 			function()
 			{
-				_inputLayer_receivedInputOrChanged(undefined)
-				// this might seem redundant and/or to race with "keyup" but _inputLayer_receivedInputOrChanged is hardened against that except perhaps in side-effect
+				_inputLayer_receivedInputOrChanged(undefined) // this might seem redundant and/or to race with "keyup" but it doesn't affect _inputLayer_receivedInputOrChanged 
+			}
+		)
+		inputLayer.addEventListener(
+			"change", // try to catch paste on as many platforms as possible
+			function()
+			{
+				_inputLayer_receivedInputOrChanged(undefined) // this might seem redundant and/or to race with "keyup" but it doesn't affect _inputLayer_receivedInputOrChanged 
 			}
 		)
 		inputLayer.addEventListener(
