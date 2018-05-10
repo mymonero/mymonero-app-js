@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const {Menu, electron_shell, ipcMain} = require('electron')
+const {Menu, shell, ipcMain} = require('electron')
 const isMacOS = process.platform === 'darwin'
 //
 const MenuController_Abstract = require('./MenuController_Abstract')
@@ -301,7 +301,7 @@ class MenuController extends MenuController_Abstract
 					label: 'MyMonero.com',
 					click: function(menuItem, browserWindow, event)
 					{
-						electron_shell.openExternal('https://mymonero.com/')
+						shell.openExternal('https://mymonero.com/')
 					}
 				},
 				{
@@ -311,7 +311,7 @@ class MenuController extends MenuController_Abstract
 					label: 'Support',
 					click: function(menuItem, browserWindow, event)
 					{
-						electron_shell.openExternal('https://mymonero.com/#/support')
+						shell.openExternal('https://mymonero.com/#/support')
 					}
 				},
 				{
@@ -321,14 +321,14 @@ class MenuController extends MenuController_Abstract
 					label: 'Privacy Policy',
 					click: function(menuItem, browserWindow, event)
 					{
-						electron_shell.openExternal('https://mymonero.com/#/privacy-policy')
+						shell.openExternal('https://mymonero.com/#/privacy-policy')
 					}
 				},
 				{
 					label: 'Terms of Use',
 					click: function(menuItem, browserWindow, event)
 					{
-						electron_shell.openExternal('https://mymonero.com/#/terms')
+						shell.openExternal('https://mymonero.com/#/terms')
 					}
 				}
 			]
