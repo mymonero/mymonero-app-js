@@ -3,6 +3,7 @@
 node_modules
 npm-debug.log
 dist
+browser_build
 
 test_products
 **/tests_config.js
