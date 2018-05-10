@@ -632,7 +632,7 @@ class SettingsView extends View
 				if (self.changePasswordButtonView) {
 					throw "Did not expect self.changePasswordButtonView"
 				}
-				self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before automatic log-out"
+				self.appTimeoutSlider_messageLayer.innerHTML = "Idle time before automatic log-out"
 			} else {
 				if (!self.changePasswordButtonView) {
 					throw "Expected self.changePasswordButtonView"
@@ -643,7 +643,7 @@ class SettingsView extends View
 				if (typeof passwordType_humanReadableString !== 'undefined') {
 					const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
 					layer.innerHTML = "Change " + capitalized_passwordType
-					self.appTimeoutSlider_messageLayer.innerHTML = "Amount of idle time before your " + passwordType_humanReadableString + " is required again"
+					self.appTimeoutSlider_messageLayer.innerHTML = "Idle time before your " + passwordType_humanReadableString + " is required"
 				}
 			}
 		}
