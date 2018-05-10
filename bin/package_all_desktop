@@ -1,1 +1,1 @@
-npm run-script dist
+DEBUG=electron-builder npm run-script dist
