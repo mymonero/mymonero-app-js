@@ -65,6 +65,7 @@
       "perMachine": true
     },
     "linux": {
+      "icon": "icon.icns",
       "target": [
         "AppImage"
       ]

@@ -58,7 +58,7 @@ class AboutWindowController
 			resizable: false,
 			minimizable: true,
 			//
-			title: "MyMonero", // Windows
+			title: "About", // Windows
 			show: false, // do not show by default
 			//
 			width: 200,
@@ -76,7 +76,7 @@ class AboutWindowController
 		const isWin = /^win/.test(process.platform)
 		const isLinux = /linux/.test(process.platform)
 		if (isLinux) {
-			const pathTo_iconImage_png = __dirname + "../../local_modules/electron_main/resources/icons/icon.png"
+			const pathTo_iconImage_png = __dirname + "/../../electron_main/Resources/icons/icon.png"
 			options.icon = pathTo_iconImage_png
 		}
 		if (isWin || isLinux) { // for window decoration
@@ -121,6 +121,12 @@ class AboutWindowController
 				window.show()
 			})
 		}
+		window.on('page-title-updated', function(e, title) { 
+			// prevent system from changing the name of the window - may be relevant on platforms like Linux
+			if (title !== "About") { 
+				e.preventDefault() 
+			} 
+		}) 
 		{ // cache some necessary state 
 			self.allowDevTools = process.env.NODE_ENV === 'development'
 			self.openDevTools = self.allowDevTools === true && true // flip this && BOOL to enable/disable in dev

@@ -114,8 +114,14 @@ class MainWindowController
 		const isWin = /^win/.test(process.platform)
 		const isLinux = /linux/.test(process.platform)
 		if (isLinux) {
-			const pathTo_iconImage_png = __dirname + "../../local_modules/electron_main/resources/icons/icon.png"
-			options.icon = pathTo_iconImage_png
+			const pathTo_iconImage_png = __dirname + "/../../electron_main/Resources/icons/icon.png"
+			
+			const {dialog} = require('electron')
+			dialog.showMessageBox({
+				"message": "pathTo_iconImage_png: " + pathTo_iconImage_png
+			})
+			
+			// options.icon = pathTo_iconImage_png
 		}
 		if (isWin || isLinux) {
 			options.height += 55
@@ -165,6 +171,12 @@ class MainWindowController
 				self.context.app.quit()
 			}
 		})
+		window.on('page-title-updated', function(e, title) { 
+			// prevent system from changing the name of the window - may be relevant on platforms like Linux
+			if (title !== "MyMonero") { 
+				e.preventDefault() 
+			} 
+		}) 
 		{ // hardening
 			window.webContents.on("will-navigate", function(e)
 			{
