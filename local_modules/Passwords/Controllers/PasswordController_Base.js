@@ -298,10 +298,8 @@ class PasswordController_Base extends EventEmitter
 	{
 		const self = this
 		{
-			if (password.length === 6) { // if is 6 chars…
-				if (/^\d+$/.test(password) === true) { // and contains only numbers
-					return self.AvailableUserSelectableTypesOfPassword().SixCharPIN
-				}
+			if (/^\d+$/.test(password) === true) { // and contains only numbers
+				return self.AvailableUserSelectableTypesOfPassword().SixCharPIN
 			}
 		}
 		return self.AvailableUserSelectableTypesOfPassword().FreeformStringPW
@@ -734,9 +732,9 @@ class PasswordController_Base extends EventEmitter
 				//
 				// I. Validate features of pw before trying and accepting
 				if (userSelectedTypeOfPassword === self.AvailableUserSelectableTypesOfPassword().SixCharPIN) {
-					if (obtainedPasswordString.length != 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
+					if (obtainedPasswordString.length < 6) { // this is too short. get back to them with a validation err by re-entering obtainPasswordFromUser_cb
 						self.unguard_getNewOrExistingPassword()
-						const err = new Error("Please enter a 6-digit PIN.")
+						const err = new Error("Please enter a longer PIN.")
 						self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 						return // bail 
 					}
