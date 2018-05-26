@@ -223,6 +223,7 @@ class FundsRequestCellContentsView extends View
 		if (self.record.didFailToInitialize_flag === true || self.record.didFailToBoot_flag === true) { // unlikely, but possible
 			__clearAllLayers() // then, show an err
 			self.amountLayer.innerHTML = "❌ Error: Contact support"
+			self.memoLayer.innerHTML = self.record.didFailToBoot_errOrNil ? " " + self.record.didFailToBoot_errOrNil : ""
 			return
 		}
 		if (self.doNotDisplayQRCode != true) {

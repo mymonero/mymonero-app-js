@@ -80,6 +80,14 @@ class ContactsListController extends ListBaseController
 		self.records = self.records.sort(
 			function(a, b)
 			{
+				if (!a.fullname) {
+					if (b.fullname) {
+						return 1
+					}
+					return -1
+				} else if (!b.fullname) {
+					return -1
+				}
 				return a.fullname.localeCompare(b.fullname) // to get unicode support
 			}
 		)

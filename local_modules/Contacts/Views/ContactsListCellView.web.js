@@ -197,7 +197,7 @@ class ContactsListCellView extends ListCellView
 				"❌"
 			)
 			self.nameLayer.innerHTML = "Error: Please contact support."
-			self.addressLayer.innerHTML = ""
+			self.addressLayer.innerHTML = self.record.didFailToBoot_errOrNil ? " " + self.record.didFailToBoot_errOrNil : ""
 			return
 		}
 		self.emojiLayer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(

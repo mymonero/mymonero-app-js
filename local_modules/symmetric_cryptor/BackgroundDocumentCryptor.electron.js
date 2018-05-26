@@ -71,8 +71,7 @@ class BackgroundDocumentCryptor extends BackgroundTaskExecutor
 		documentCryptScheme,
 		password,
 		fn // fn: (err?, decryptedDocument) -> Void
-	)
-	{
+	) {
 		const self = this
 		self.executeBackgroundTaskNamed(
 			'New_DecryptedDocument__Async',

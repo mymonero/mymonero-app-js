@@ -65,8 +65,7 @@ const tasksByName =
 		encryptedDocument, 
 		documentCryptScheme, 
 		password
-	)
-	{
+	) {
 		// console.time("decrypting " + taskUUID)
 		document_cryptor.New_DecryptedDocument__Async(
 			encryptedDocument,
@@ -75,7 +74,7 @@ const tasksByName =
 			function(err, plaintextDocument)
 			{
 				// console.timeEnd("decrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, null, plaintextDocument)
+				child_ipc.CallBack(taskUUID, err, plaintextDocument)
 			}
 		)
 	}

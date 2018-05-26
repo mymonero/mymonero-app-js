@@ -146,8 +146,7 @@ function New_DecryptedDocument__Async(
 	documentCryptScheme, 
 	password,
 	fn
-)
-{
+) {
 	var decryptedDocument = {}
 	//	
 	const encryptedDocument_keys = Object.keys(encryptedDocument)
@@ -180,7 +179,7 @@ function New_DecryptedDocument__Async(
 					function(err, decryptedStoredValue)
 					{
 						if (err) {
-							console.error("Error while decrypting document:", err)
+							// console.error("Error while decrypting document:", err)
 							cb(err)
 							return
 						}
@@ -198,7 +197,7 @@ function New_DecryptedDocument__Async(
 							const errStr = "Error: Unrecognized document_cryptor key value type: " + keyValue_plaintextType
 							const err = new Error(errStr)
 							console.error(errStr)
-							fn(err)
+							cb(err)
 							return
 						}
 						// console.log("received finalizedValue", finalizedValue)
