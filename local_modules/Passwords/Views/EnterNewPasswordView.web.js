@@ -210,10 +210,13 @@ class EnterNewPasswordView extends View
 			function(e)
 			{
 				e.preventDefault()
-				self.emit(self.EventName_CancelButtonPressed())
+				if (view.isEnabled === true) {
+					self.emit(self.EventName_CancelButtonPressed())
+				}
 				return false
 			}
 		)
+		self.cancelBarButtonView = view
 		return view
 	}
 	Navigation_New_RightBarButtonView()
@@ -281,6 +284,7 @@ class EnterNewPasswordView extends View
 		self.passwordInputLayer.disabled = undefined
 		self.confirmPasswordInputLayer.disabled = undefined
 		self.passwordInputLayer.focus() // since disable would have de-focused (picking one)
+		self.cancelBarButtonView.SetEnabled(true)
 		self.enable_submitButton()
 	}
 	//
@@ -298,7 +302,8 @@ class EnterNewPasswordView extends View
 			return
 		}
 		self.ClearValidationMessage()
-		self.__disableForm() // for slow platforms
+		self.__disableForm() // for slow platforms and for change pw
+		self.cancelBarButtonView.SetEnabled(false) // for change pw - although the app is hardened against a mishap during this
 		self._yield_nonZeroPasswordAndPasswordType()
 	}
 	_yield_nonZeroPasswordAndPasswordType()
@@ -350,7 +355,11 @@ class EnterNewPasswordView extends View
 		} else {
 			submitEnabled = true
 		}
-		self.navigationController.navigationBarView.rightBarButtonView.SetEnabled(submitEnabled)
+		if (submitEnabled) {
+			self.enable_submitButton()
+		} else {
+			self.disable_submitButton()
+		}
 	}
 }
 module.exports = EnterNewPasswordView

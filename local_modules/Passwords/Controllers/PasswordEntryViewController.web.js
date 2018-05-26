@@ -76,7 +76,9 @@ class PasswordEntryViewController extends EventEmitter
 			{
 				setTimeout(function()
 				{ // give everything time to set up/reconstitute underneath - to avoid jitters 
-					self.view.Dismiss()
+					if (self.view != null && typeof self.view !== 'undefined') { // to ensure user didn't cancel while change pw was happening
+						self.view.Dismiss()
+					}
 				}, 100)
 			}
 		)
@@ -86,7 +88,9 @@ class PasswordEntryViewController extends EventEmitter
 			{
 				setTimeout(function()
 				{ // give everything time to set up/reconstitute underneath - to avoid jitters 
-					self.view.Dismiss()
+					if (self.view != null && typeof self.view !== 'undefined') { // to ensure user didn't cancel while change pw was happening
+						self.view.Dismiss()
+					}
 				}, 100)
 			}
 		)
@@ -96,7 +100,9 @@ class PasswordEntryViewController extends EventEmitter
 			{
 				setTimeout(function()
 				{ // give everything time to set up/reconstitute underneath - to avoid jitters 
-					self.view.Dismiss()
+					if (self.view != null && typeof self.view !== 'undefined') { // to ensure user didn't cancel while change pw was happening
+						self.view.Dismiss()
+					}
 				}, 100)
 			}
 		)
