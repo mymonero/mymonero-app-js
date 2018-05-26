@@ -58,7 +58,12 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface
 		const child = fork( // fork will set up electron properly in the child process for us (e.g. env)
 			self.absolutePathToChildProcessSourceFile,
 			self.argsForChild,
-			{ stdio: [ 'ipc' ] }
+			{ 
+				stdio: [ 
+					0, 1, 2, // equivalent to process.stdin, process.stdout, process.stderr 
+					'ipc' 
+				]
+			}
 		)
 		self.worker = child // so that super is satisfied with existence of self.worker - we will translate internally
 	}
