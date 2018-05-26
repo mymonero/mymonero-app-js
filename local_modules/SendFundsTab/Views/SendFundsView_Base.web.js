@@ -333,7 +333,7 @@ class SendFundsView extends View
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("TO", self.context)
 		labelLayer.style.marginTop = "17px" // to square with MEMO field on Send Funds
 		{
-			const tooltipText = `Drag & drop QR codes<br/>to auto-fill.<br/><br/>Please double-check<br/>your recipient info as<br/>Monero transfers are<br/>not yet&nbsp;reversible.`
+			const tooltipText = `Drag &amp; drop QR codes<br/>to auto-fill.<br/><br/>Please double-check<br/>your recipient info as<br/>Monero transfers are<br/>not yet&nbsp;reversible.`
 			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 			const layer = view.layer
 			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
@@ -1373,9 +1373,10 @@ class SendFundsView extends View
 			}
 			// address
 			const is_enteredAddressValue_OAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredAddressValue)
-			var isIntegratedAddress;
+			var isEnteredValue_integratedAddress;
+			var isEnteredValue_subAddress;
 			if (is_enteredAddressValue_OAAddress !== true) {
-				// then it's an XMR addr
+				// then it's an XMR addr of some kind
 				var address__decode_result; 
 				try {
 					address__decode_result = monero_utils.decode_address(enteredAddressValue, self.context.nettype)
@@ -1386,12 +1387,14 @@ class SendFundsView extends View
 				}
 				target_address = enteredAddressValue // then this look like a valid XMR addr
 				if (address__decode_result.intPaymentId) {
-					isIntegratedAddress = true
+					isEnteredValue_integratedAddress = true
 				} else {
-					isIntegratedAddress = false
+					isEnteredValue_integratedAddress = false
 				}
+				isEnteredValue_subAddress = isEnteredValue_integratedAddress == false ? monero_utils.is_subaddress(enteredAddressValue, self.context.nettype) : false
 			} else { // then it /is/ an OA addr
-				isIntegratedAddress = false // important to set
+				isEnteredValue_integratedAddress = false // important to set
+				isEnteredValue_subAddress = false
 				if (!resolvedAddress_fieldIsVisible || !resolvedAddress_exists) {
 					_trampolineToReturnWithValidationErrorString("Couldn't resolve this OpenAlias address.")
 					return
@@ -1399,7 +1402,7 @@ class SendFundsView extends View
 				target_address = resolvedAddress
 			}
 			// payment ID:
-			if (isIntegratedAddress === true) {
+			if (isEnteredValue_integratedAddress === true) {
 				payment_id = null
 			} else {
 				if (canUseManualPaymentID) {
@@ -1419,6 +1422,11 @@ class SendFundsView extends View
 					payment_id = resolvedPaymentID
 				}
 			}
+			if (isEnteredValue_subAddress && (payment_id && payment_id !== "")) {
+				_trampolineToReturnWithValidationErrorString("Payment IDs cannot be used with subaddresses.")
+				return
+			}
+
 		}
 		{ // final validation / sanitization / transformation
 			if (!target_address) {
@@ -1427,8 +1435,11 @@ class SendFundsView extends View
 			}
 			if (payment_id && payment_id != "") { // so, valid by this point
 				if (payment_id.length == 16) { // a short one
-					if (isIntegratedAddress == true) {
-						throw "unexpected isIntegratedAddress=true" // we'll assume user didn't enter an overriding integrated address
+					if (isEnteredValue_integratedAddress == true) {
+						throw "unexpected isEnteredValue_integratedAddress=true" // we'll assume user didn't enter an overriding integrated address
+					}
+					if (isEnteredValue_subAddress == true) { // should never be using a subaddress to make an integrated address
+						throw "unexpected isEnteredValue_subAddress=true"
 					}
 					// construct integrated address
 					let overwritten__target_address = target_address;
@@ -1439,7 +1450,7 @@ class SendFundsView extends View
 					)
 					//
 					payment_id = null // must now zero this or Send will throw a "pid must be blank with integrated addr"
-					isIntegratedAddress = true // should update this
+					isEnteredValue_integratedAddress = true // should update this
 				}
 			}
 		}

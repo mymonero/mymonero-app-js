@@ -172,6 +172,12 @@ class AddContactView extends ContactFormView
 			self.validationMessageLayer.SetValidationError("Please enter an address for this contact.")
 			return
 		}
+		if (typeof paymentID !== 'undefined' && paymentID) {
+			if (monero_utils.is_subaddress(address, self.context.nettype)) { // paymentID disallowed with subaddress
+				self.validationMessageLayer.SetValidationError("Payment IDs cannot be used with subaddresses.")
+				return
+			}
+		}
 		//		
 		const canSkipEntireOAResolveAndDirectlyUseInputValues = self._overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues()
 		if (canSkipEntireOAResolveAndDirectlyUseInputValues === true) { // not the typical case
@@ -208,15 +214,20 @@ class AddContactView extends ContactFormView
 			}
 			const integratedAddress_paymentId = address__decode_result.intPaymentId
 			const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
-			if (isIntegratedAddress !== true) { // not an integrated addr - normal wallet addr
-				if (paymentID === "" || typeof paymentID === 'undefined') { // if no existing payment ID
-					paymentID = monero_paymentID_utils.New_TransactionID() // generate new one for them
-					self.paymentIDInputLayer.value = paymentID
-				} else { // just use entered paymentID
-				}
-			} else { // is integrated address
+			if (isIntegratedAddress) { // is integrated address
 				paymentID = integratedAddress_paymentId // use this one instead
 				self.paymentIDInputLayer.value = paymentID
+			} else { // not an integrated addr - normal wallet addr or subaddress
+				if (monero_utils.is_subaddress(address, self.context.nettype)) { // paymentID disallowed with subaddress
+					paymentID = undefined
+					self.paymentIDInputLayer.value = ""
+				} else { // normal wallet address
+					if (paymentID === "" || typeof paymentID === 'undefined') { // if no existing payment ID
+						paymentID = monero_paymentID_utils.New_TransactionID() // generate new one for them
+						self.paymentIDInputLayer.value = paymentID
+					} else { // just use/allow entered paymentID
+					}
+				}
 			}
 			//
 			_proceedTo_addContact_paymentID(paymentID)
@@ -235,8 +246,7 @@ class AddContactView extends ContactFormView
 					oaRecords_0_name,
 					oaRecords_0_description,
 					dnssec_used_and_secured
-				)
-				{
+				) {
 					self.resolving_activityIndicatorLayer.style.display = "none"
 					//
 					if (typeof self.requestHandle_for_oaResolution === 'undefined' || !self.requestHandle_for_oaResolution) {
