@@ -335,6 +335,8 @@ class CreateRequestFormView extends View
 				if (self.isFormDisabled !== true) {
 					self.manualPaymentIDInputLayer_containerLayer.style.display = "block"
 					self.addPaymentIDButtonView.layer.style.display = "none"
+					//
+					self.manualPaymentIDInputLayer.focus()
 				}
 			}
 		)
