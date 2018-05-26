@@ -74,7 +74,6 @@ class ListBaseController extends EventEmitter
 	setup()
 	{
 		const self = this
-		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		self.startObserving_passwordController()
 		//
 		self._tryToBoot() // TODO: boot lazily? (on whenbooted request)
@@ -246,19 +245,8 @@ class ListBaseController extends EventEmitter
 	{
 		const self = this
 		const controller = self.context.passwordController
-		{ // EventName_ChangedPassword
-			if (self._passwordController_EventName_ChangedPassword_listenerFn !== null && typeof self._passwordController_EventName_ChangedPassword_listenerFn !== 'undefined') {
-				throw "self._passwordController_EventName_ChangedPassword_listenerFn not nil in " + self.constructor.name
-			}
-			self._passwordController_EventName_ChangedPassword_listenerFn = function()
-			{
-				self._passwordController_EventName_ChangedPassword()
-			}
-			controller.on(
-				controller.EventName_ChangedPassword(),
-				self._passwordController_EventName_ChangedPassword_listenerFn
-			)
-		}
+		self.registrantForDeleteEverything_token = controller.AddRegistrantForDeleteEverything(self)
+		self.registrantForChangePassword_token = controller.AddRegistrantForChangePassword(self)
 		{ // EventName_willDeconstructBootedStateAndClearPassword
 			if (self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== null && typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn !== 'undefined') {
 				throw "self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn not nil in " + self.constructor.name
@@ -325,15 +313,11 @@ class ListBaseController extends EventEmitter
 	{
 		const self = this
 		const controller = self.context.passwordController
-		{ // EventName_ChangedPassword
-			if (typeof self._passwordController_EventName_ChangedPassword_listenerFn === 'undefined' || self._passwordController_EventName_ChangedPassword_listenerFn === null) {
-				throw "self._passwordController_EventName_ChangedPassword_listenerFn undefined"
-			}
-			controller.removeListener(
-				controller.EventName_ChangedPassword(),
-				self._passwordController_EventName_ChangedPassword_listenerFn
-			)
-			self._passwordController_EventName_ChangedPassword_listenerFn = null
+		{
+			controller.RemoveRegistrantForDeleteEverything(self.registrantForDeleteEverything_token)
+			self.registrantForDeleteEverything_token = null
+			controller.RemoveRegistrantForChangePassword(self.registrantForChangePassword_token)
+			self.registrantForChangePassword_token = null
 		}
 		{ // EventName_willDeconstructBootedStateAndClearPassword
 			if (typeof self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === 'undefined' || self._passwordController_EventName_willDeconstructBootedStateAndClearPassword_listenerFn === null) {
@@ -558,20 +542,21 @@ class ListBaseController extends EventEmitter
 		self.emit(self.EventName_listUpdated())
 	}
 	//
-	//
 	// Runtime/Boot - Delegation - Private
-	//
-	_passwordController_EventName_ChangedPassword()
-	{
+	passwordController_ChangePassword(
+		toPassword,
+		fn // this MUST get called
+	) {
 		const self = this
 		if (self.hasBooted !== true) {
 			console.warn("⚠️  " + self.constructor.name + " asked to ChangePassword but not yet booted.")
+			fn("Asked to change password but " + self.constructor.name + " not yet booted") // must call back!
 			return // critical: not ready to get this 
 		}
 		// change all record passwords:
-		const toPassword = self.context.passwordController.password // we're just going to directly access it here because getting this event means the passwordController is also saying it's ready
-		self.records.forEach(
-			function(record, i)
+		async.each(
+			self.records,
+			function(record, record_cb)
 			{
 				if (record.didFailToInitialize_flag !== true && record.didFailToBoot_flag !== true) {
 					record.ChangePasswordTo(
@@ -580,11 +565,16 @@ class ListBaseController extends EventEmitter
 						{
 							// err is logged in ChangePasswordTo
 							// TODO: is there any sensible strategy to handle failures here?
+							record_cb(err) // pass any error back 
 						}
 					)
 				} else {
 					console.warn("This record failed to boot. Not messing with its saved data")
 				}
+			},
+			function(err)
+			{
+				fn(err) // must call back!
 			}
 		)
 	}

@@ -75,7 +75,6 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.isSubmitButtonDisabled = false
-		self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		self.setup_views()
 		self.startObserving()
 		//
@@ -673,6 +672,7 @@ class SendFundsView extends View
 	startObserving()
 	{
 		const self = this
+		self.registrantForDeleteEverything_token = self.context.passwordController.AddRegistrantForDeleteEverything(self)
 		{ // walletAppCoordinator
 			const emitter = self.context.walletAppCoordinator
 			self._walletAppCoordinator_fn_EventName_didTrigger_sendFundsToContact = function(contact)
@@ -828,6 +828,10 @@ class SendFundsView extends View
 	stopObserving()
 	{
 		const self = this
+		{
+			self.context.passwordController.RemoveRegistrantForDeleteEverything(self.registrantForDeleteEverything_token)
+			self.registrantForDeleteEverything_token = null
+		}
 		{
 			const emitter = self.context.walletAppCoordinator
 			emitter.removeListener(

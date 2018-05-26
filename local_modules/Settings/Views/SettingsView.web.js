@@ -512,7 +512,7 @@ class SettingsView extends View
 	startObserving()
 	{
 		const self = this
-		self.context.passwordController.AddRegistrantForDeleteEverything(self)
+		self.registrantForDeleteEverything_token = self.context.passwordController.AddRegistrantForDeleteEverything(self)
 	}
 	//
 	// Lifecycle - Teardown - Overrides
@@ -536,7 +536,8 @@ class SettingsView extends View
 	stopObserving()
 	{
 		const self = this
-		// self.context.passwordController.RemoveRegistrantForDeleteEverything(self) // not yet implemented
+		self.context.passwordController.RemoveRegistrantForDeleteEverything(self.registrantForDeleteEverything_token)
+		self.registrantForDeleteEverything_token = null
 	}
 	//
 	// Runtime - Accessors - Navigation

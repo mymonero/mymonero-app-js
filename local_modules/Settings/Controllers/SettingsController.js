@@ -60,7 +60,9 @@ class SettingsController extends EventEmitter
 		self._whenBooted_fns = []
 		self.password = undefined // it's not been obtained from the user yet - we only store it in memory
 		//
-		self.context.passwordController.AddRegistrantForDeleteEverything(self)
+		// TODO: implement stopObserving_passwordController
+		self.registrantForDeleteEverything_token = self.context.passwordController.AddRegistrantForDeleteEverything(self)
+		self.registrantForChangePassword_token = self.context.passwordController.AddRegistrantForChangePassword(self)
 		//
 		self._tryToBoot()
 	}
@@ -289,8 +291,7 @@ class SettingsController extends EventEmitter
 						function(
 							err,
 							newDocument
-						)
-						{
+						) {
 							if (err) {
 								console.error("Error while saving " + CollectionName + ":", err)
 								fn(err)
@@ -328,9 +329,22 @@ class SettingsController extends EventEmitter
 		)
 	}
 	//
-	//
-	// Delegation - 
-	//
+	// Runtime/Boot - Delegation - Private
+	passwordController_ChangePassword(
+		toPassword,
+		fn // this MUST get called
+	) {
+		const self = this
+		if (self.hasBooted !== true) {
+			console.warn("⚠️  " + self.constructor.name + " asked to ChangePassword but not yet booted.")
+			fn("Asked to change password but " + self.constructor.name + " not yet booted")
+			return // critical: not ready to get this 
+		}
+		self.saveToDisk(function(err) 
+		{ 
+			fn(err) 
+		})
+	}
 	passwordController_DeleteEverything(fn)
 	{
 		const self = this

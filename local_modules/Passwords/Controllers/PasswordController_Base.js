@@ -30,6 +30,7 @@
 //
 const async = require('async')
 const EventEmitter = require('events')
+const uuidV1 = require('uuid/v1')
 //
 const symmetric_string_cryptor = require('../../symmetric_cryptor/symmetric_string_cryptor')
 //
@@ -65,7 +66,8 @@ class PasswordController_Base extends EventEmitter
 		self.options = options
 		self.context = context
 		//
-		self.deleteEverythingRegistrants = []
+		self.deleteEverythingRegistrants = {}
+		self.changePasswordRegistrants = {}
 		self._whenBooted_fns = []
 		//
 		self.hasBooted = false
@@ -720,6 +722,9 @@ class PasswordController_Base extends EventEmitter
 		const self = this
 		const wasFirstSetOfPasswordAtRuntime = self.HasUserEnteredValidPasswordYet() === false // it's ok if we derive this here instead of in obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet		
 		//
+		const old_password = self.password
+		const old_userSelectedTypeOfPassword = self.userSelectedTypeOfPassword
+		//
 		self._getUserToEnterNewPassword(
 			isForChangePassword,
 			function(didCancel_orNil, obtainedPasswordString, userSelectedTypeOfPassword)
@@ -783,23 +788,90 @@ class PasswordController_Base extends EventEmitter
 					{
 						if (err) {
 							self.unguard_getNewOrExistingPassword()
-							self.password = undefined // they'll have to try again
+							self.password = old_password // they'll have to try again
+							self.userSelectedTypeOfPassword = old_userSelectedTypeOfPassword // they'll have to try again
 							self.emit(self.EventName_ErroredWhileSettingNewPassword(), err)
 							return
 						}
-						self.unguard_getNewOrExistingPassword()
-						{ // detecting & emiting first set or change
-							if (wasFirstSetOfPasswordAtRuntime === true) {
-								self.emit(self.EventName_SetFirstPasswordDuringThisRuntime(), self.password, self.userSelectedTypeOfPassword)
-							} else {
-								self.emit(self.EventName_ChangedPassword(), self.password, self.userSelectedTypeOfPassword)
-							}
-						}
-						{ // general purpose emit
+						if (wasFirstSetOfPasswordAtRuntime === true) {
+							self.unguard_getNewOrExistingPassword()
+							self.emit(self.EventName_SetFirstPasswordDuringThisRuntime(), self.password, self.userSelectedTypeOfPassword)
+							// general purpose emit
 							self.emit(self.EventName_ObtainedNewPassword(), self.password, self.userSelectedTypeOfPassword)
+						} else {
+							self._changePassword_tellRegistrants_doTaskFn(
+								function(taskRegistrant, taskDone_fn)
+								{
+									taskRegistrant.passwordController_ChangePassword(
+										self.password, 
+										function(err)
+										{
+											taskDone_fn(err)
+										}
+									)
+								},
+								function(changePassword_err)
+								{
+									if (changePassword_err) {
+										// try to revert save files to old password... 
+										self.password = old_password
+										self.userSelectedTypeOfPassword = old_userSelectedTypeOfPassword
+										//
+										self.saveToDisk(function(err) { // save self first..
+											if (err) {
+												throw err
+											}
+											self._changePassword_tellRegistrants_doTaskFn(
+												function(taskRegistrant, taskDone_fn)
+												{
+													taskRegistrant.passwordController_ChangePassword( // this may well end up failing...
+														self.password,
+														function(err)
+														{
+															taskDone_fn(err)
+														}
+													)
+												},
+												function(err)
+												{
+													if (err) {
+														throw err
+													}
+													self.unguard_getNewOrExistingPassword()
+													self.emit(self.EventName_ErroredWhileSettingNewPassword(), changePassword_err) // original err
+												}
+											)
+										})
+									} else {
+										self.unguard_getNewOrExistingPassword()
+										self.emit(self.EventName_ChangedPassword(), self.password, self.userSelectedTypeOfPassword) // not much used anymore - never use it for critical things 
+										// general purpose emit
+										self.emit(self.EventName_ObtainedNewPassword(), self.password, self.userSelectedTypeOfPassword)
+									}
+								}
+							)
 						}
 					}
 				)
+			}
+		)
+	}
+	_changePassword_tellRegistrants_doTaskFn(task_fn, end_fn)
+	{
+		const self = this
+		const tokens = Object.keys(self.changePasswordRegistrants)
+		async.each( // parallel; waits till all subscribers finished writing data successfully
+			tokens,
+			function(token, registrant_cb)
+			{
+				const registrant = self.changePasswordRegistrants[token]
+				task_fn(registrant, function(err) {
+					registrant_cb(err)
+				})
+			},
+			function(err)
+			{
+				end_fn(err) // must be called
 			}
 		)
 	}
@@ -952,10 +1024,12 @@ class PasswordController_Base extends EventEmitter
 							return
 						}
 						console.log("🗑  Deleted password record.")
+						const tokens = Object.keys(self.deleteEverythingRegistrants)
 						async.each( // parallel; waits till all finished
-							self.deleteEverythingRegistrants,
-							function(registrant, registrant_cb)
+							tokens,
+							function(token, registrant_cb)
 							{
+								const registrant = self.deleteEverythingRegistrants[token]
 								registrant.passwordController_DeleteEverything(function(err)
 								{
 									registrant_cb(err)
@@ -990,8 +1064,30 @@ class PasswordController_Base extends EventEmitter
 	AddRegistrantForDeleteEverything(registrant)
 	{
 		const self = this
-		// console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
-		self.deleteEverythingRegistrants.push(registrant)
+		console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
+		const token = uuidV1()
+		self.deleteEverythingRegistrants[token] = registrant
+		return token
+	}
+	AddRegistrantForChangePassword(registrant)
+	{
+		const self = this
+		// console.log("Adding registrant for 'ChangePassword': ", registrant.constructor.name)
+		const token = uuidV1()
+		self.changePasswordRegistrants[token] = registrant
+		return token
+	}
+	RemoveRegistrantForDeleteEverything(registrant)
+	{
+		const self = this
+		// console.log("Removing registrant for 'DeleteEverything': ", registrant.constructor.name)
+		delete self.deleteEverythingRegistrants[token]
+	}
+	RemoveRegistrantForChangePassword(registrant)
+	{
+		const self = this
+		// console.log("Removing registrant for 'ChangePassword': ", registrant.constructor.name)
+		delete self.changePasswordRegistrants[token]
 	}
 	//
 	//
