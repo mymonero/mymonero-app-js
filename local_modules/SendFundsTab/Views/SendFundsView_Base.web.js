@@ -1606,7 +1606,8 @@ class SendFundsView extends View
 					// 	"SENT",
 					// 	currencyReady_targetDescription_address,
 					// 	sentAmount,
-					// 	final__payment_id,
+					// 	"final__payment_id:", final__payment_id,
+					// 	"payment_id:", payment_id,
 					// 	tx_hash,
 					// 	tx_fee
 					// )
@@ -1634,7 +1635,7 @@ class SendFundsView extends View
 							// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
 							tx_fee: tx_fee,
 							//
-							payment_id: payment_id,
+							payment_id: final__payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
 							//
 							target_address: target_address, // only we here are saying it's the target
 							//
