@@ -1921,7 +1921,12 @@ class SendFundsView extends View
 				self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 				self.manualPaymentIDInputLayer.value = ""
 			} else {
-				self._hideResolvedPaymentID() // not that it would be showing
+				self._hideResolvedPaymentID() // it might be showing from an integrated address that got typed over by a regular address
+				if (self.manualPaymentIDInputLayer_containerLayer.style.display == "none") { 
+					if (self.addPaymentIDButtonView.layer.style.display != "block") {
+						self.addPaymentIDButtonView.layer.style.display = "block" // then must ensure that this gets reshown
+					}
+				}
 			}
 			self.isResolvingSendTarget = false
 			self.set_isSubmittable_needsUpdate()
