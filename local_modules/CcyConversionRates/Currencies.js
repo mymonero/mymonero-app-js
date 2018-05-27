@@ -173,6 +173,9 @@ let rounded_ccyConversionRateCalculated_moneroAmountNumber
 	// I figure it's better to apply the rounding here rather than only at the display level so that what is actually sent corresponds to what the user saw, even if greater ccyConversion precision /could/ be accomplished..
 	let raw_ccyConversionRateApplied_amount = userInputAmountJSNumber * (1 / xmrToCurrencyRate)
 	let truncated_amount = roundTo(raw_ccyConversionRateApplied_amount, 4) // must be truncated for display purposes
+	if (isNaN(truncated_amount)) {
+		throw "truncated_amount in rounded_ccyConversionRateCalculated_moneroAmountNumber is NaN"
+	}
 	//
 	return truncated_amount
 }
