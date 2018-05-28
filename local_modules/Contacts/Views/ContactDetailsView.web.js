@@ -165,7 +165,7 @@ class ContactDetailsView extends View
 	{
 		const self = this
 		const fieldLabelTitle = "Integrated Address (derived)"
-		const value = self.contact.new_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+		const value = self.contact.new_integratedXMRAddress_orNilIfNotApplicable()
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
 			self.context,
@@ -491,7 +491,7 @@ class ContactDetailsView extends View
 			}
 		}
 		{
-			const value = self.contact.new_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+			const value = self.contact.new_integratedXMRAddress_orNilIfNotApplicable()
 			const layer = self.derived__integrated_XMR_address__valueField_component
 			if (!value || typeof value === 'undefined') {
 				layer.style.display = "none"

@@ -325,7 +325,7 @@ class Contact extends EventEmitter
 		return isIntegratedAddress
 	}
 	//
-	new_integratedXMRAddress_orNilIfNotStdAddrPlusShortPid()
+	new_integratedXMRAddress_orNilIfNotApplicable()
 	{
 		let self = this
 		let payment_id = self.payment_id;
@@ -346,6 +346,9 @@ class Contact extends EventEmitter
 		}
 		if (address == null || address == "" || typeof address == "undefined") {
 			return null; // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
+		}
+		if (monero_utils.is_subaddress(address, self.context.nettype)) {
+			return null; // integrated addr must not be generated for subaddrs
 		}
 		// now we know we have a std xmr addr and a short pid
 		let int_addr = monero_utils.new__int_addr_from_addr_and_short_pid(
