@@ -722,7 +722,7 @@ class PasswordController_Base extends EventEmitter
 		const self = this
 		const wasFirstSetOfPasswordAtRuntime = self.HasUserEnteredValidPasswordYet() === false // it's ok if we derive this here instead of in obtainNewPasswordFromUser because this fn will only be called, if setting the pw for the first time, if we have not yet accepted a valid PW yet		
 		//
-		const old_password = self.password
+		const old_password = self.password // this may be undefined
 		const old_userSelectedTypeOfPassword = self.userSelectedTypeOfPassword
 		//
 		self._getUserToEnterNewPassword(
@@ -837,7 +837,8 @@ class PasswordController_Base extends EventEmitter
 													if (err) {
 														throw err
 													}
-													self.unguard_getNewOrExistingPassword()
+													self.unguard_getNewOrExistingPassword() // this is important
+													// and this is not success but the end of reverting aftr an error, so emit the error
 													self.emit(self.EventName_ErroredWhileSettingNewPassword(), changePassword_err) // original err
 												}
 											)
