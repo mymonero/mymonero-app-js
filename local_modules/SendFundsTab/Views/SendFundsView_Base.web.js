@@ -1571,10 +1571,12 @@ class SendFundsView extends View
 			const sendFrom_address = sendFrom_wallet.public_address
 			const mixin = monero_sendingFunds_utils.fixedMixin()
 			const priority = self._selected_simplePriority()
+			const isSweepTx = false  // TODO: read from UI state
 			//
 			sendFrom_wallet.SendFunds(
 				target_address,
 				amount_Number,
+				isSweepTx,
 				payment_id,
 				mixin,
 				priority, 

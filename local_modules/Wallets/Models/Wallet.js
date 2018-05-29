@@ -1047,6 +1047,7 @@ class Wallet extends EventEmitter
 	SendFunds(
 		target_address, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 		amount, // number
+		isSweepTx, // when true, amount will be ignored
 		payment_id,
 		mixin,
 		simple_priority,
@@ -1139,10 +1140,10 @@ class Wallet extends EventEmitter
 		function __proceed()
 		{
 			monero_sendingFunds_utils.SendFunds(
-				true, // isRingCT
 				target_address,
 				self.context.nettype,
 				amount,
+				isSweepTx,
 				self.keyImage_cache,
 				self.public_address,
 				self.private_keys,
@@ -1164,14 +1165,8 @@ class Wallet extends EventEmitter
 		} else {
 			self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
 				"Authenticate",
-				function()
-				{
-					__trampolineFor_canceled_fn()
-				},
-				function()
-				{
-					__proceed()
-				}
+				function() { __trampolineFor_canceled_fn() },
+				function() { __proceed() }
 			)
 		}
 

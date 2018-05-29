@@ -461,6 +461,7 @@ class ImportTransactionsModalView extends View
 		wallet.SendFunds(
 			target_address,
 			amount_Number,
+			false, // is not a sweep tx
 			payment_id,
 			monero_sendingFunds_utils.fixedMixin(),
 			monero_sendingFunds_utils.default_priority(),
