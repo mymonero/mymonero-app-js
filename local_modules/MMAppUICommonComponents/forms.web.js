@@ -45,10 +45,14 @@ const cssRules =
 	`.form_field .field_value {
 		-webkit-font-smoothing: subpixel-antialiased;
 	}`,
-	`.form_field .field_value::-webkit-input-placeholder  {
+	`.form_field .field_value::-webkit-input-placeholder {
 		-webkit-font-smoothing: subpixel-antialiased;
 		color: #6B696B;
 	}`,
+	// add/remove .placeholderAsValue if you want to display fixed input without making it the value
+	`.form_field .field_value.placeholderAsValue::-webkit-input-placeholder {
+		color: #dfdedf;
+	}`,	
 	//
 	// .iconAndMessageLayer
 	`.iconAndMessageLayer {

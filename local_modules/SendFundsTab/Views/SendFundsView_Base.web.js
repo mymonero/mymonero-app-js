@@ -210,7 +210,17 @@ class SendFundsView extends View
 			self._setup_form_manualPaymentIDInputLayer()
 			self._setup_form_field_priority()
 			//
-			self.refresh_networkFeeEstimateLayer() // initial; now that references to both the networkFeeEstimateLayer and the prioritySelectLayer have been assigned…
+			// initial config
+			self.context.settingsController._executeWhenBooted( // wait for boot for this
+				function()
+				{
+					self._givenBootedSettingsController_setCcySelectLayer_initialValue() // to get display ccy
+				}
+			)
+			// (now that references to both the networkFeeEstimateLayer and the prioritySelectLayer have been assigned…)
+			self.refresh_networkFeeEstimateLayer() 
+			self.set_effectiveAmountLabelLayer_needsUpdate() // this will call set_effectiveAmountLabelLayer_needsUpdate
+
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -241,6 +251,7 @@ class SendFundsView extends View
 		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
 			false, // isOptional
+			true, // wants MAX btn
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateSend()
@@ -296,6 +307,7 @@ class SendFundsView extends View
 			const layer = view.layer
 			self.effectiveAmountLabel_tooltipLayer = layer // we can append this straight to effectiveAmountLabelLayer but must do so later, at the specific time we modify effectiveAmountLabelLayer' innerHTML
 		}
+		self.max_buttonView = pkg.max_buttonView
 		//
 		const breakingDiv = document.createElement("div")
 		{ // addtl element on this screen
@@ -1006,6 +1018,11 @@ class SendFundsView extends View
 			self._enable_submitButton()
 		}
 	}
+	set_max_buttonView_visibility_needsUpdate()
+	{
+		const self = this
+		self.max_buttonView.visibilityAndSelectedState_setNeedsUpdate()
+	}
 	set_effectiveAmountLabelLayer_needsUpdate()
 	{
 		let self = this
@@ -1029,12 +1046,15 @@ class SendFundsView extends View
 		{
 			__setTextOnAmountUI("LOADING…", true /* shouldHide_tooltipButton */)
 		}
-		//
+		// regardless of the result of the following, update max btn visibility
+		self.set_max_buttonView_visibility_needsUpdate()
+		// 
 		let raw_amount_String = self.amountInputLayer.value
 		if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
 			__hideEffectiveAmountUI()
 			return
 		} 
+		// NOTE: in this function we must make sure to always call self.max_buttonView.setHidden so initial config happens
 		let rawInput_amount_Number = +raw_amount_String // String -> Number
 		if (isNaN(rawInput_amount_Number)) {
 			__hideEffectiveAmountUI()
@@ -1105,14 +1125,24 @@ class SendFundsView extends View
 		const self = this
 		self.networkFeeEstimateLayer.innerHTML = self._new_estimatedNetworkFee_displayString()
 	}
+	_givenBootedSettingsController_setCcySelectLayer_initialValue()
+	{
+		const self = this
+		if (self.context.settingsController.hasBooted != true) {
+			throw "_givenBootedSettingsController_setCcySelectLayer_initialValue called but !self.context.settingsController.hasBooted"
+		}
+		const amountCcy = self.context.settingsController.displayCcySymbol || "XMR"
+		self.ccySelectLayer.value = amountCcy
+	}
 	_clearForm()
 	{
 		const self = this
 		self._dismissValidationMessageLayer()
 		{
 			self.amountInputLayer.value = ""
-			self.ccySelectLayer.value = self.context.settingsController.displayCcySymbol
-			self.set_effectiveAmountLabelLayer_needsUpdate() // jic
+			self._givenBootedSettingsController_setCcySelectLayer_initialValue()
+			self.max_buttonView.setToggledOn(false) // must specifically un-set if set
+			self.set_effectiveAmountLabelLayer_needsUpdate() // just in case - as well as we must update or clear the MAX button toggle state and visibility
 		}
 		{
 			if (self.pickedContact && typeof self.pickedContact !== 'undefined') {
@@ -1132,6 +1162,21 @@ class SendFundsView extends View
 			self.manualPaymentIDInputLayer_containerLayer.style.display = "none"
 			//
 			self.addPaymentIDButtonView.layer.style.display = "block"
+		}
+		{
+			var sel = self.prioritySelectLayer
+			const defaultVal = monero_sendingFunds_utils.default_priority()
+			var opts = sel.options;
+			for (var j = 0; j < opts.length; j++) {
+				var opt = opts[j]
+				if (opt.value == defaultVal) {
+					sel.selectedIndex = j
+					opt.selected = "selected"
+				} else {
+					opt.selected = undefined
+				}
+			}
+			self._priority_selectLayer_did_change() // recalculate est fee
 		}
 	}
 	//
@@ -1291,8 +1336,9 @@ class SendFundsView extends View
 				return
 			}
 		}
+		const sweeping = self.max_buttonView.isMAXToggledOn
 		const raw_amount_String = self.amountInputLayer.value
-		{
+		if (!sweeping) {
 			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
 				_trampolineToReturnWithValidationErrorString("Please enter the amount to send.")
 				return
@@ -1300,7 +1346,7 @@ class SendFundsView extends View
 		}
 		let selected_ccySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
 		var final_amount_Number = null;
-		{
+		if (!sweeping) {
 			let rawInput_amount_Number = +raw_amount_String // turns into Number, apparently
 			if (isNaN(rawInput_amount_Number)) {
 				_trampolineToReturnWithValidationErrorString("Please enter a valid amount to send.")
@@ -1463,7 +1509,7 @@ class SendFundsView extends View
 
 		//
 		// now if using alternate display currency, be sure to ask for terms agreement before doing send
-		if (selected_ccySymbol != Currencies.ccySymbolsByCcy.XMR) {
+		if (!sweeping && selected_ccySymbol != Currencies.ccySymbolsByCcy.XMR) {
 			let hasAgreedToUsageGateTerms = self.context.settingsController.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount || false
 			if (hasAgreedToUsageGateTerms == false) {
 				// show alert… iff user agrees, write user has agreed to terms and proceed to branch, else bail
@@ -1530,8 +1576,7 @@ class SendFundsView extends View
 			__proceedTo_generateSendTransactionWith(
 				wallet, // FROM wallet
 				target_address, // TO address
-				payment_id,
-				final_amount_Number
+				payment_id
 			)
 		}
 		function __currencyConversionRateAppliesAlert_cancel_action_op_fn()
@@ -1565,18 +1610,16 @@ class SendFundsView extends View
 		function __proceedTo_generateSendTransactionWith(
 			sendFrom_wallet,
 			target_address,
-			payment_id,
-			amount_Number
+			payment_id
 		) {
 			const sendFrom_address = sendFrom_wallet.public_address
 			const mixin = monero_sendingFunds_utils.fixedMixin()
 			const priority = self._selected_simplePriority()
-			const isSweepTx = false  // TODO: read from UI state
 			//
 			sendFrom_wallet.SendFunds(
 				target_address,
-				amount_Number,
-				isSweepTx,
+				final_amount_Number,
+				sweeping,
 				payment_id,
 				mixin,
 				priority, 

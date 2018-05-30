@@ -1127,7 +1127,7 @@ class Wallet extends EventEmitter
 			// critical to do on every exit from this method
 			self.context.userIdleInWindowController.ReEnable_userIdle()
 		}
-		let statusUpdate_messageBase = `Sending ${amount} XMR…`
+		let statusUpdate_messageBase = isSweepTx ? `Sending wallet balance…` : `Sending ${amount} XMR…`
 		function ___do_statusUpdate(code)
 		{
 			let suffix = monero_sendingFunds_utils.SendFunds_ProcessStep_MessageSuffix[code]

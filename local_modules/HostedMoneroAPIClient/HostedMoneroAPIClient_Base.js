@@ -409,9 +409,9 @@ class HostedMoneroAPIClient_Base
 		spend_key__public,
 		spend_key__private,
 		mixinNumber,
+		sweeping,
 		fn
-	) // -> RequestHandle
-	{
+	) { // -> RequestHandle
 		const self = this
 		mixinNumber = parseInt(mixinNumber) // jic
 		//
@@ -421,7 +421,7 @@ class HostedMoneroAPIClient_Base
 			view_key: view_key__private,
 			amount: '0',
 			mixin: mixinNumber,
-			use_dust: mixinNumber === 0, // Use dust outputs only when we are using no mixins
+			use_dust: true, // Client now filters unmixable by dustthreshold amount (unless sweeping) + non-rct 
 			dust_threshold: monero_config.dustThreshold.toString()
 		}
 		const endpointPath = 'get_unspent_outs'

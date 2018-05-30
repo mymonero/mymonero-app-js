@@ -54,10 +54,12 @@ function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNeces
 function New_AmountInputFieldPKG(
 	context,
 	isOptional,
+	wantsMAXbutton, 
 	optl__enterPressed_fn
 )
 { // -> {} // Experimental 'pkg' style return… maybe refactor into View later
 	const enterPressed_fn = optl__enterPressed_fn ? optl__enterPressed_fn : function() {}
+	wantsMAXbutton = wantsMAXbutton == true ? true : false // nil -> false
 	//
 	let amountInput_baseW = 80
 	let ccySelect_disclosureArrow_w = 8
@@ -84,8 +86,9 @@ function New_AmountInputFieldPKG(
 		div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 	}
 	//
+	const valueLayer_amountPlaceholderText = "00.00"
 	const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(context, {
-		placeholderText: "00.00"
+		placeholderText: valueLayer_amountPlaceholderText
 	})
 	// not going to set `pattern` attribute because it can't support periods
 	// not going to set type="number" because it inserts commas, etc
@@ -223,6 +226,63 @@ function New_AmountInputFieldPKG(
 	context.themeController.StyleLayer_FontAsSubMiddlingRegularMonospace(effectiveAmountLabelLayer)
 	div.appendChild(effectiveAmountLabelLayer)
 	//
+	var max_buttonView;
+	if (wantsMAXbutton == true) {
+		max_buttonView = commonComponents_tables.New_clickableLinkButtonView(
+			"MAX", 
+			context, 
+			function()
+			{
+				max_buttonView.setToggledOn(true)
+			}
+		)
+		max_buttonView.isMAXToggledOn = false // state
+		max_buttonView.layer.style.margin = "0 0 0 12px"
+		max_buttonView.layer.style.verticalAlign = "middle"
+		max_buttonView.setToggledOn = function(isToggledOn)
+		{
+			max_buttonView.isMAXToggledOn = isToggledOn
+			if (isToggledOn) {
+				valueLayer.classList.add("placeholderAsValue")
+				valueLayer.placeholder = "MAX"
+				max_buttonView.setHidden(true) // hide - NOTE! This must avoid eventually calling _setToggledOn
+			} else {
+				valueLayer.classList.remove("placeholderAsValue")
+				valueLayer.placeholder = valueLayer_amountPlaceholderText
+			}
+		}
+		max_buttonView.setHidden = function(isHidden)
+		{
+			max_buttonView.layer.style.display = isHidden ? "none" : "inline-block"
+			// This function must never call setToggledOn
+		}
+		max_buttonView.visibilityAndSelectedState_setNeedsUpdate = function()
+		{
+			const raw_amount_String = valueLayer.value
+			// NOTE: in this function we must make sure to always call self.max_buttonView.setHidden so initial config happens
+			if (typeof raw_amount_String === 'undefined' || !raw_amount_String) {
+				max_buttonView.setHidden(false) // NOTE: this will only actually show the btn if we're not in MAX mode
+				if (valueLayer === document.activeElement) { // must disable this mode in case it was enabled
+					max_buttonView.setToggledOn(false)
+				} else {
+					max_buttonView.setToggledOn(max_buttonView.isMAXToggledOn) // to update the UI again , not to change the state
+				}
+			} else {
+				max_buttonView.setHidden(true) // has an amount, shouldn't show MAX btn
+				max_buttonView.setToggledOn(false) // must disable this mode in case it was enabled
+			}
+		}
+		max_buttonView.setHidden(true) // not actually meant to be hidden at first but consumers must call setHidden on setup and runtime events config anyway - decided not to manage internally .. yet
+		div.appendChild(max_buttonView.layer)
+		valueLayer.addEventListener(
+			"focus",
+			function()
+			{
+				max_buttonView.visibilityAndSelectedState_setNeedsUpdate()
+			}
+		)
+	}
+	//
 	div.appendChild(commonComponents_tables.New_clearingBreakLayer())
 	
 	return {
@@ -231,7 +291,8 @@ function New_AmountInputFieldPKG(
 		valueLayer: valueLayer,
 		ccySelectLayer: ccySelectLayer,
 		ccySelect_disclosureArrow_layer: ccySelect_disclosureArrow_layer, 
-		effectiveAmountLabelLayer: effectiveAmountLabelLayer
+		effectiveAmountLabelLayer: effectiveAmountLabelLayer,
+		max_buttonView: max_buttonView
 	}
 }
 exports.New_AmountInputFieldPKG = New_AmountInputFieldPKG

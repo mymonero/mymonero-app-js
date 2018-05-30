@@ -174,6 +174,7 @@ class ImportTransactionsModalView extends View
 		const pkg = commonComponents_amounts.New_AmountInputFieldPKG(
 			self.context,
 			false, // isOptional
+			false, // wants MAX btn
 			function()
 			{ // enter btn pressed
 				self._tryToGenerateSend()
