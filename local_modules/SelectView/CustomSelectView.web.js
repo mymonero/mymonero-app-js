@@ -56,6 +56,8 @@ class CustomSelectView extends View
 			self.didSetUp_fn = self.options.didSetUp_fn || function(selectView) {}
 			// teardown
 			self.stopObserving_fn = self.options.stopObserving_fn || function(selectView) {}
+			//
+			self.didUpdateSelection_fn = self.options.didUpdateSelection_fn || function() {}
 			// constructing/configuring lists
 			self.cellView_createAndReturnOne_fn = self.options.cellView_createAndReturnOne_fn || function(selectView) { throw "You must implement options.cellView_createAndReturnOne_fn in " + self.constructor.name; /*return null;*/ }
 			self.cellView_height_fn = self.options.cellView_height_fn || function(selectView, cellView) { throw "You must implement options.cellView_height_fn in " + self.constructor.name; /*return 0;*/ }
@@ -298,6 +300,7 @@ class CustomSelectView extends View
 					if (self.isEnabled !== false) {
 						const clicked__rowItem = rowItem // this scope capture actually appears to work…
 						self.CurrentlySelectedRowItem = clicked__rowItem
+						self.didUpdateSelection_fn()
 						self._configureSelectionUIWithSelectedRowItem()
 					}
 					// … a dismiss will occur due with window.onclick
@@ -341,6 +344,7 @@ class CustomSelectView extends View
 		} else {
 			self.CurrentlySelectedRowItem = null // no matter what, if no wallets
 		}
+		self.didUpdateSelection_fn()
 		self._configureSelectionUIWithSelectedRowItem()
 	}
 	overridable_maxNumberOfCellsToDisplayAtATime() { return 3 }
@@ -385,6 +389,7 @@ class CustomSelectView extends View
 	{
 		const self = this
 		self.CurrentlySelectedRowItem = rowObject
+		self.didUpdateSelection_fn() 
 		self._configureSelectionUIWithSelectedRowItem()
 	}
 	//

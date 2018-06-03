@@ -241,14 +241,13 @@ function New_AmountInputFieldPKG(
 		max_buttonView.layer.style.verticalAlign = "middle"
 		max_buttonView.setToggledOn = function(isToggledOn)
 		{
-			max_buttonView.isMAXToggledOn = isToggledOn
-			if (isToggledOn) {
-				valueLayer.classList.add("placeholderAsValue")
-				valueLayer.placeholder = "MAX"
-				max_buttonView.setHidden(true) // hide - NOTE! This must avoid eventually calling _setToggledOn
-			} else {
-				valueLayer.classList.remove("placeholderAsValue")
-				valueLayer.placeholder = valueLayer_amountPlaceholderText
+			max_buttonView.isMAXToggledOn = isToggledOn 
+			//
+			// previously, hide here if toggled on, but that was changed
+			//
+			const fn = max_buttonView.didUpdateMAXButtonToggleState_fn
+			if (fn && typeof fn !== 'undefined') {
+				fn()
 			}
 		}
 		max_buttonView.setHidden = function(isHidden)
@@ -281,6 +280,25 @@ function New_AmountInputFieldPKG(
 				max_buttonView.visibilityAndSelectedState_setNeedsUpdate()
 			}
 		)
+		valueLayer.Component_configureWithMAXToggled = function(
+			isMAXToggledOn,
+			toToggledOnText_orNullIfNotToggled
+		) {
+			if (isMAXToggledOn) {
+				if (toToggledOnText_orNullIfNotToggled == null) {
+					throw "Illegal isMAXToggledOn && !toToggledOnText_orNullIfNotToggled"
+				}
+				const toToggledOnText = toToggledOnText_orNullIfNotToggled
+				valueLayer.classList.add("placeholderAsValue")
+				valueLayer.placeholder = toToggledOnText
+			} else {
+				if (toToggledOnText_orNullIfNotToggled != null) {
+					throw "Illegal !isMAXToggledOn && toToggledOnText_orNullIfNotToggled"
+				}
+				valueLayer.classList.remove("placeholderAsValue")
+				valueLayer.placeholder = valueLayer_amountPlaceholderText
+			}
+		}
 	}
 	//
 	div.appendChild(commonComponents_tables.New_clearingBreakLayer())

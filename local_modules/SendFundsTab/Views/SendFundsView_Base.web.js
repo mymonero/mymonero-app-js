@@ -219,8 +219,8 @@ class SendFundsView extends View
 			)
 			// (now that references to both the networkFeeEstimateLayer and the prioritySelectLayer have been assigned…)
 			self.refresh_networkFeeEstimateLayer() 
+			self.configure_amountInputTextGivenMaxToggledState()
 			self.set_effectiveAmountLabelLayer_needsUpdate() // this will call set_effectiveAmountLabelLayer_needsUpdate
-
 		}
 		self.layer.appendChild(containerLayer)
 	}
@@ -239,6 +239,10 @@ class SendFundsView extends View
 			div.appendChild(labelLayer)
 			//
 			const view = new WalletsSelectView({}, self.context)
+			view.didUpdateSelection_fn = function()
+			{
+				self.configure_amountInputTextGivenMaxToggledState()
+			}
 			self.walletSelectView = view
 			const valueLayer = view.layer
 			div.appendChild(valueLayer)
@@ -308,6 +312,10 @@ class SendFundsView extends View
 			self.effectiveAmountLabel_tooltipLayer = layer // we can append this straight to effectiveAmountLabelLayer but must do so later, at the specific time we modify effectiveAmountLabelLayer' innerHTML
 		}
 		self.max_buttonView = pkg.max_buttonView
+		self.max_buttonView.didUpdateMAXButtonToggleState_fn = function()
+		{
+			self.configure_amountInputTextGivenMaxToggledState()
+		}
 		//
 		const breakingDiv = document.createElement("div")
 		{ // addtl element on this screen
@@ -763,6 +771,7 @@ class SendFundsView extends View
 				self.set_isSubmittable_needsUpdate() // this is updated (called) here rather than not bc the amount fieldset does not observe the rate as it does in the iOS app codebase
 				self.set_effectiveAmountLabelLayer_needsUpdate()
 				self.refresh_networkFeeEstimateLayer()
+				self.configure_amountInputTextGivenMaxToggledState()
 			}
 			emitter.on(
 				emitter.eventName_didUpdateAvailabilityOfRates(),
@@ -775,6 +784,7 @@ class SendFundsView extends View
 			{
 				self.set_effectiveAmountLabelLayer_needsUpdate()
 				self.refresh_networkFeeEstimateLayer()
+				self.configure_amountInputTextGivenMaxToggledState()
 			}
 			emitter.on(
 				emitter.EventName_settingsChanged_displayCcySymbol(),
@@ -916,10 +926,8 @@ class SendFundsView extends View
 		return view
 	}
 	//
-	//
 	// Accessors - Factories - Values
-	//
-	_new_estimatedNetworkFee_displayString()
+	new_xmr_estFeeAmount() 
 	{
 		const self = this
 		const estimatedNetworkFee_JSBigInt = monero_sendingFunds_utils.EstimatedTransaction_networkFee(
@@ -927,11 +935,67 @@ class SendFundsView extends View
 			new JSBigInt("187000000"), // TODO: grab this from polling request for dynamic per kb fee
 			self._selected_simplePriority()
 		)
-		const hostingServiceFee_JSBigInt = new JSBigInt(0)/* self.context.hostedMoneroAPIClient.HostingServiceChargeFor_transactionWithNetworkFee(
-			estimatedNetworkFee_JSBigInt
-		)*/
-		// NOTE: the hostingServiceFee has been disabled with RCT for now
-		const estimatedTotalFee_JSBigInt = hostingServiceFee_JSBigInt.add(estimatedNetworkFee_JSBigInt)
+		const estimatedTotalFee_JSBigInt = estimatedNetworkFee_JSBigInt // no tx hosting service fee
+		//
+		return estimatedTotalFee_JSBigInt
+	}
+	new_xmr_estMaxAmount() // may return null
+	{ // may return nil if a wallet isn't present yet
+		const self = this
+		const wallet = self.walletSelectView.CurrentlySelectedRowItem
+		if (typeof wallet === 'undefined' || !wallet) {
+			return null // no wallet yet
+		}
+		const availableWalletBalance = wallet.Balance_JSBigInt().subtract(wallet.LockedBalance_JSBigInt()) // TODO: is it correct to incorporate locked balance into this?
+		const estNetworkFee_moneroAmount = self.new_xmr_estFeeAmount()
+		const possibleMax_moneroAmount = availableWalletBalance.subtract(estNetworkFee_moneroAmount)
+		if (possibleMax_moneroAmount > 0) { // if the Max amount is greater than 0
+			return possibleMax_moneroAmount
+		}
+		return new JSBigInt("0") // can't actually send any of the balance - or maybe there are some dusty outputs that will come up in the actual sweep?99
+	}
+	new_displayCcyFormatted_estMaxAmountString()
+	{  // this is going to return nil if the rate is not ready for the selected display currency - user will probably just have to keep hitting 'max'
+		const self = this
+		const xmr_estMaxAmount = self.new_xmr_estMaxAmount()
+		if (xmr_estMaxAmount == null || typeof xmr_estMaxAmount === 'undefined') {
+			return null
+		}
+		const xmr_estMaxAmount_str = monero_utils.formatMoney(xmr_estMaxAmount)
+		//
+		const displayCcySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
+		if (displayCcySymbol != Currencies.ccySymbolsByCcy.XMR) {
+			const xmr_estMaxAmountDouble = parseFloat(xmr_estMaxAmount_str)
+			let displayCurrencyAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
+				self.context.CcyConversionRates_Controller_shared,
+				displayCcySymbol,
+				xmr_estMaxAmountDouble
+			)
+			if (displayCurrencyAmountDouble_orNull == null) {
+				return null // rate not ready yet
+			}
+			let displayCurrencyAmountDouble = displayCurrencyAmountDouble_orNull
+			return Currencies.nonAtomicCurrency_formattedString(
+				displayCurrencyAmountDouble,
+				displayCcySymbol
+			)
+		}
+		return xmr_estMaxAmount_str // then it's an xmr amount
+	}
+	new_displayCcyFormatted_estMaxAmount_fullInputText()
+	{
+		const self = this
+		const string = self.new_displayCcyFormatted_estMaxAmountString()
+		if (string == null || typeof string == 'undefined' || string == ""/*not that it would be*/) {
+			return "MAX" // such as while rate not available
+		}
+		return `~ ${string}` // TODO: is this localized enough - consider writing direction
+		// ^ luckily we can do this for long numbers because the field will right truncate it and then left align the text
+	}
+	_new_estimatedNetworkFee_displayString()
+	{
+		const self = this
+		const estimatedTotalFee_JSBigInt = self.new_xmr_estFeeAmount()
 		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
 		const estimatedTotalFee_moneroAmountDouble = parseFloat(estimatedTotalFee_str)
 		
@@ -1022,6 +1086,18 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.max_buttonView.visibilityAndSelectedState_setNeedsUpdate()
+	}
+	configure_amountInputTextGivenMaxToggledState()
+	{
+		const self = this
+		let isMaxToggledOn = self.max_buttonView.isMAXToggledOn
+		let toToggledOnText_orNullIfNotToggled = isMaxToggledOn
+			? self.new_displayCcyFormatted_estMaxAmount_fullInputText() // if non xmr ccy but rate nil (amount nil), will display "MAX" til it's ready
+			: null
+		self.amountInputLayer.Component_configureWithMAXToggled(
+			isMaxToggledOn,
+			toToggledOnText_orNullIfNotToggled
+		)
 	}
 	set_effectiveAmountLabelLayer_needsUpdate()
 	{
@@ -2382,6 +2458,7 @@ class SendFundsView extends View
 	{
 		let self = this
 		self.refresh_networkFeeEstimateLayer() // now that reference assigned…
+		self.configure_amountInputTextGivenMaxToggledState()
 	}
 	//
 	// Delegation - Delete everything
