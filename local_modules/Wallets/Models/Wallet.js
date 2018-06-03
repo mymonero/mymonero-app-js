@@ -596,13 +596,18 @@ class Wallet extends EventEmitter
 			} else {
 				const derived_mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
 				if (self.mnemonicString != null && typeof self.mnemonicString != 'undefined') {
-					if (self.mnemonicString != derived_mnemonicString) { // would be rather odd
+					const areMnemonicsEqual = monero_wallet_utils.AreEqualMnemonics(
+						self.mnemonicString,
+						derived_mnemonicString,
+						self.mnemonic_wordsetName,
+						self.mnemonic_wordsetName // assume second is the same
+					)
+					if (areMnemonicsEqual == false) { // would be rather odd
 						throw "Different mnemonicString derived from accountSeed than was entered for login"
 					}
 					console.log("Not setting mnemonicSeed because the instance was initialized with one and it's the same as the one derived from the account_seed.")
-				} else {
-					self.mnemonicString = derived_mnemonicString
 				}
+				self.mnemonicString = derived_mnemonicString // in all cases, save derived mnemonic in case input mnemonic was truncated words form - so we always recover full form
 			}
 		}
 		// console.info("✅  Successfully instantiated", self.Description())

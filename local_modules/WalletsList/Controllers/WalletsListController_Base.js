@@ -30,6 +30,8 @@
 //
 const async = require('async')
 //
+const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
+//
 const ListBaseController = require('../../Lists/Controllers/ListBaseController')
 //
 const Wallet = require('../../Wallets/Models/Wallet')
@@ -289,16 +291,34 @@ class WalletsListController extends ListBaseController
 				)
 				function _proceedWithPassword(persistencePassword)
 				{
+					var mnemonicString_wordsetName;
+					try { 
+						mnemonicString_wordsetName = monero_wallet_utils.WordsetNameAccordingToMnemonicString(mnemonicString) // slightly redundant
+					} catch (e) { // validates word length, though should not be necessary here
+						fn(e)
+						return
+					}
 					var walletAlreadyExists = false
 					const wallets_length = self.records.length
 					for (let i = 0 ; i < wallets_length ; i++) {
 						const wallet = self.records[i]
-						if (wallet.mnemonicString === mnemonicString) {
+						if (!wallet.mnemonicString || typeof wallet.mnemonicString === 'undefined') {
+							continue // TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
+						}
+						if (!wallet.mnemonic_wordsetName || typeof wallet.mnemonic_wordsetName === 'undefined') {
+							throw "Illegal mnemonicString && !mnemonic_wordsetName"
+						}
+						const areMnemonicsEqual = monero_wallet_utils.AreEqualMnemonics(
+							mnemonicString,
+							wallet.mnemonicString,
+							mnemonicString_wordsetName,
+							wallet.mnemonic_wordsetName // assume exists if wallet.mnemonicString
+						)
+						if (areMnemonicsEqual) {
 							// simply return existing wallet
 							fn(null, wallet, true) // wasWalletAlreadyInserted: true
 							return
-						}
-						// TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
+						}						
 					}
 					//
 					const options =

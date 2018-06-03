@@ -285,7 +285,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		//
 		const selected_mnemonicWords = self.mnemonicConfirmation_selectedWordsView.Component_SelectedWords()
 		const selected_mnemonicString = selected_mnemonicWords.join(" ").toLowerCase()
-		if (selected_mnemonicString === correctSufficient_mnemonicString) {
+		if (selected_mnemonicString === correctSufficient_mnemonicString) { // here, a direct string comparison is ok because we don't need to support partial (prefix len) words
 			return true
 		}
 		return false
