@@ -86,6 +86,9 @@ function cssRules_generatorFn(context)
 			top: 0;
 			left: 0;
 		}`,
+		`.inlineMessageDialogLayer.wantsCloseButton {
+			padding-right: 18px;
+		}`,
 		`.inlineMessageDialogLayer > a.close-btn {
 			background-image: url(${assetsPath}MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@3x.png);
 			background-size: 8px 8px;
@@ -476,6 +479,8 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 	closeBtnLayer.classList.add("close-btn") // contains display:block
 	if (optl_wantsXButtonHidden == true) { // default to visible
 		closeBtnLayer.style.display = "none" 
+	} else {
+		layer.classList.add("wantsCloseButton")
 	}
 	layer.appendChild(closeBtnLayer)
 	closeBtnLayer.addEventListener("click", function(e) {
@@ -497,8 +502,10 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 		let wantsXButtonHidden = method__optl_wantsXButtonHidden == true ? true : false // default false
 		if (wantsXButtonHidden) {
 			closeBtnLayer.style.display = "none"
+			layer.classList.remove("wantsCloseButton")
 		} else {
 			closeBtnLayer.style.display = "block"
+			layer.classList.add("wantsCloseButton")
 		}
 	}
 	layer.ClearAndHideMessage = function()
