@@ -39,6 +39,7 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^\.DS_Store$/,
 	/^\.git$/,
 	/^\.gitignore$/,
+	/^\.eslint/,
 	/\.electron\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
 	/^electron_/,
 	/LICENSE\.txt/,
