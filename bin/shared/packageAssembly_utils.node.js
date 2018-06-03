@@ -75,7 +75,7 @@ function assembleWith(
 			function(file, index)
 			{
 				if (isRootLvl) {
-					if (file === ".gitignore") {
+					if (file === ".gitignore") { // old support for keeping the root build dir around in the repo
 						// console.log(`❎  Skipping deletion of ${file}`)
 						return
 					}
