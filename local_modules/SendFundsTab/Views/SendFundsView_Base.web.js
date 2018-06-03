@@ -2171,8 +2171,8 @@ class SendFundsView extends View
 					self.validationMessageLayer.SetValidationError("MyMonero was able to decode QR code but got unrecognized result.")
 					return
 				}
-				const requestURIString = stringData
-				self._shared_didPickRequestURIStringForAutofill(requestURIString)
+				const possibleURIString = stringData
+				self._shared_didPickPossibleRequestURIStringForAutofill(possibleURIString)
 			}
 		)
 		img.src = imageSrcValue
@@ -2182,7 +2182,7 @@ class SendFundsView extends View
 		const self = this
 		self._shared_didPickQRCodeWithImageSrcValue(absoluteFilePath) // we can load the image directly like this
 	}
-	_shared_didPickRequestURIStringForAutofill(requestURIString)
+	_shared_didPickPossibleRequestURIStringForAutofill(possibleUriString)
 	{
 		const self = this
 		//
@@ -2193,13 +2193,18 @@ class SendFundsView extends View
 		//
 		var requestPayload;
 		try {
-			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromRequestURIString(requestURIString)
+			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromPossibleRequestURIString(possibleUriString, self.context.nettype)
 		} catch (errStr) {
 			if (errStr) {
 				self.validationMessageLayer.SetValidationError("Unable to use the result of decoding that QR code: " + errStr)
 				return
 			}
 		}
+		self._shared_havingClearedForm_didPickRequestPayloadForAutofill(requestPayload)
+	}
+	_shared_havingClearedForm_didPickRequestPayloadForAutofill(requestPayload)
+	{
+		const self = this
 		{
 			const amount = requestPayload.amount
 			if (amount !== null && typeof amount !== 'undefined' && amount !== "") {
@@ -2337,21 +2342,21 @@ class SendFundsView extends View
 		const self = this
 		// Cordova_disallowLockDownOnAppPause is handled within qrScanningUI
 		self.context.qrScanningUI.PresentUIToScanOneQRCodeString(
-			function(err, uriString)
+			function(err, possibleUriString)
 			{
 				if (err) {
 					self.validationMessageLayer.SetValidationError(""+err)
 					return
 				}
-				if (uriString == null) { // err and uriString are null - treat as a cancellation
+				if (possibleUriString == null) { // err and possibleUriString are null - treat as a cancellation
 					self.validationMessageLayer.ClearAndHideMessage() // clear to resolve ambiguity in case existing error is displaying
 					return
 				}
-				if (!uriString) { // if not explicitly null but "" or undefined…
+				if (!possibleUriString) { // if not explicitly null but "" or undefined…
 					self.validationMessageLayer.SetValidationError("No scanned QR code content found.")
 					return
 				}
-				self._shared_didPickRequestURIStringForAutofill(uriString)
+				self._shared_didPickPossibleRequestURIStringForAutofill(possibleUriString)
 			}
 		)
 	}

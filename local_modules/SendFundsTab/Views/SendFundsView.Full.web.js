@@ -39,8 +39,6 @@ class SendFundsView extends SendFundsView_Base
 	}
 	//
 	// Overrides - Setup - Imperatives
-
-	//
 	startObserving()
 	{
 		const self = this
@@ -61,7 +59,7 @@ class SendFundsView extends SendFundsView_Base
 						console.warn("Not allowed to perform URL opening ops yet.")
 						return false
 					}
-					self._shared_didPickRequestURIStringForAutofill(url)
+					self._shared_didPickRequestConfirmedURIStringForAutofill(url)
 				}
 			)
 		}
@@ -99,6 +97,28 @@ class SendFundsView extends SendFundsView_Base
 			}
 		)
 		return layer
+	}
+	//
+	// Delegation - Internal
+	_shared_didPickRequestConfirmedURIStringForAutofill(possibleUriString)
+	{
+		const self = this
+		//
+		self.validationMessageLayer.ClearAndHideMessage()  // in case there was a parsing err etc displaying
+		self._clearForm()
+		//
+		self.cancelAny_requestHandle_for_oaResolution()
+		//
+		var requestPayload;
+		try {
+			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromPossibleRequestURIString(possibleUriString, self.context.nettype)
+		} catch (errStr) {
+			if (errStr) {
+				self.validationMessageLayer.SetValidationError("Unable to decode that URL: " + errStr)
+				return
+			}
+		}
+		self._shared_havingClearedForm_didPickRequestPayloadForAutofill(requestPayload)
 	}
 }
 module.exports = SendFundsView
