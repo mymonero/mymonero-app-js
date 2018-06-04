@@ -36,7 +36,7 @@ let Currencies = require('../../CcyConversionRates/Currencies')
 let k_defaults_record = 
 {
 	specificAPIAddressURLAuthority: "",
-	appTimeoutAfterS: 3 * 60, // 3 mins
+	appTimeoutAfterS: 2 * 60, // 2 mins
 	invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: false,
 	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR, // default
 	authentication_requireWhenSending: true,

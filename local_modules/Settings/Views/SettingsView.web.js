@@ -182,7 +182,7 @@ class SettingsView extends View
 				slideSideLabelFor_max: "Never",
 				slideSideLabelStyleWidthFor_max: "34px",
 				//
-				displayAsMinutesAtXMin: 2,
+				displayAsMinutesAtXMin: 1,
 				//
 				isMaxInfinity: true,
 				labelForInfinity: "Never",
