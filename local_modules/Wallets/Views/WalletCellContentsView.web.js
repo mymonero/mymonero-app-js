@@ -128,7 +128,7 @@ class WalletCellContentsView extends View
 		layer.style.boxSizing = "border-box"
 		const paddingTop = self._lookup_titlelabelPaddingTop()
 		const paddingLeft = self._lookup_labelsPaddingLeft()
-		layer.style.padding = paddingTop + "px 66px 4px "+paddingLeft+"px"
+		layer.style.padding = paddingTop + "px 38px 4px "+paddingLeft+"px"
 		layer.style.display = "block"
 		layer.style.wordBreak = "break-word"
 		layer.style.whiteSpace = "nowrap"
@@ -145,10 +145,11 @@ class WalletCellContentsView extends View
 	{
 		const self = this
 		const layer = document.createElement("div")
+		layer.classList.add("description-label")
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
 		const paddingLeft = self._lookup_labelsPaddingLeft()
-		layer.style.padding = "0px 66px 4px "+paddingLeft+"px"
+		layer.style.padding = "0px 38px 4px "+paddingLeft+"px"
 		layer.style.fontSize = "13px"
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontWeight = "100"
@@ -360,8 +361,7 @@ class WalletCellContentsView extends View
 				//
 				descriptionLayer_innerHTML = final_balanceAmountString+" "+final_displayCcySymbol
 				if (hasLockedFunds) {
-					let final_lockedBalanceAmountString = final_lockedBalanceAmountString_orNull
-					descriptionLayer_innerHTML += " (" + final_lockedBalanceAmountString + " 🔒)"
+					descriptionLayer_innerHTML += ` with ${final_lockedBalanceAmountString_orNull} locked`
 				}
 			}
 		}
