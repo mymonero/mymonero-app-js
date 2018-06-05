@@ -1065,7 +1065,7 @@ class PasswordController_Base extends EventEmitter
 	AddRegistrantForDeleteEverything(registrant)
 	{
 		const self = this
-		console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
+		// console.log("Adding registrant for 'DeleteEverything': ", registrant.constructor.name)
 		const token = uuidV1()
 		self.deleteEverythingRegistrants[token] = registrant
 		return token

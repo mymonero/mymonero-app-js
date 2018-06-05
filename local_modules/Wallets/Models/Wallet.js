@@ -91,7 +91,6 @@ class Wallet extends EventEmitter
 		self.context = context
 		//
 		self.initTimeInstanceUUID = uuidV1() // so that e.g. the list controller can immediately have an id with which to do observation listener fn cache hashes
-		self.keyImage_cache = {} // stored on wallet for proper lifecycle and security
 		//
 		// initialization state
 		self._id = self.options._id || null // initialize to null if creating wallet
@@ -212,6 +211,9 @@ class Wallet extends EventEmitter
 		self.hasBeenTornDown = true
 		console.log("♻️  Tearing down Wallet", self._id)
 		self._tearDown_polling()
+		//
+		// and be sure to delete the managed key image cache
+		self.context.backgroundAPIResponseParser.DeleteManagedKeyImagesForWalletWith(self.public_address, function() {})
 	}
 	_tearDown_polling()
 	{
@@ -1149,7 +1151,6 @@ class Wallet extends EventEmitter
 				self.context.nettype,
 				amount,
 				isSweepTx,
-				self.keyImage_cache,
 				self.public_address,
 				self.private_keys,
 				self.public_keys,

@@ -209,14 +209,12 @@ class HostedMoneroAPIClient_Base
 	//
 	// Syncing
 	AddressInfo_returningRequestHandle(
-		keyImage_cache,
 		address,
 		view_key__private,
 		spend_key__public,
 		spend_key__private,
 		fn
-	)  // -> RequestHandle
-	{
+	) {  // -> RequestHandle
 		const self = this
 		const endpointPath = "get_address_info"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
@@ -234,8 +232,8 @@ class HostedMoneroAPIClient_Base
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			response_parser_utils.Parsed_AddressInfo(
-				keyImage_cache,
+			self.context.backgroundAPIResponseParser.Parsed_AddressInfo(
+				// key-image-managed - just be sure to dekete your wallet's key img cache when you tear down
 				data,
 				address,
 				view_key__private,
@@ -292,14 +290,12 @@ class HostedMoneroAPIClient_Base
 		return requestHandle
 	}
 	AddressTransactions_returningRequestHandle(
-		keyImage_cache,
 		address,
 		view_key__private,
 		spend_key__public,
 		spend_key__private,
 		fn
-	) // -> RequestHandle
-	{
+	) { // -> RequestHandle
 		const self = this
 		const endpointPath = "get_address_txs"
 		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
@@ -317,8 +313,7 @@ class HostedMoneroAPIClient_Base
 		)
 		function __parseAndCallBack(data)
 		{
-			response_parser_utils.Parsed_AddressTransactions(
-				keyImage_cache,
+			self.context.backgroundAPIResponseParser.Parsed_AddressTransactions(
 				data,
 				address,
 				view_key__private,
@@ -403,7 +398,6 @@ class HostedMoneroAPIClient_Base
 	//
 	// Getting outputs for sending funds
 	UnspentOuts(
-		keyImage_cache,
 		address,
 		view_key__private,
 		spend_key__public,
@@ -439,8 +433,7 @@ class HostedMoneroAPIClient_Base
 		)
 		function __proceedTo_parseAndCallBack(data)
 		{
-			response_parser_utils.Parsed_UnspentOuts(
-				keyImage_cache,
+			self.context.backgroundAPIResponseParser.Parsed_UnspentOuts(
 				data,
 				address,
 				view_key__private,
@@ -472,8 +465,7 @@ class HostedMoneroAPIClient_Base
 		using_outs,
 		mixinNumber,
 		fn
-	) // -> RequestHandle
-	{
+	) { // -> RequestHandle
 		const self = this
 		//
 		mixinNumber = parseInt(mixinNumber)

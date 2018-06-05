@@ -80,6 +80,11 @@ var context_object_instantiation_descriptions =
 		instance_key: "persister",
 		options: {}
 	},
+	{
+		module_path: __dirname + "/../../HostedMoneroAPIClient/BackgroundResponseParser.electron",
+		instance_key: "backgroundAPIResponseParser",
+		options: {}
+	},
 	instantiation_description__hostedMoneroAPIClient,
 	{
 		module_path: __dirname + "/../../OpenAlias/OpenAliasResolver",

@@ -79,6 +79,11 @@ function NewHydratedContext(initialContext)
 			}
 		},
 		{
+			module: require("../../HostedMoneroAPIClient/BackgroundResponseParser.web"),
+			instance_key: "backgroundAPIResponseParser",
+			options: {}
+		},
+		{
 			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient.Lite"),
 			instance_key: "hostedMoneroAPIClient",
 			options: {
