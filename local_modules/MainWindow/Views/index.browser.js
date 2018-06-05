@@ -78,8 +78,8 @@ window.BootApp = function()
 		TabBarView_isHorizontalBar: isHorizontalBar,
 		ThemeController_isMobileBrowser: isMobile == true,
 		Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
-		Emoji_renderWithNativeEmoji: isMobile == false, // b/c this is a browser, we could be on desktop, i.e. w/o guaranteed native emoji support
-		// TODO: detect if Mac … if so, render w/o native emoji
+		Emoji_renderWithNativeEmoji: isMobile == true, // b/c this is a browser, we could be on desktop, i.e. w/o guaranteed native emoji support
+		// TODO: detect if Mac … if so, render w/o native emoji (need holistic fallback solution though - see Gitlab post referenced by https://github.com/mymonero/mymonero-app-js/issues/194)
 		//
 		appDownloadLink_domainAndPath: "mymonero.com",
 		Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
