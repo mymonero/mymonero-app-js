@@ -29,7 +29,7 @@
 "use strict"
 //
 // In the future this could implement web workers
-const response_parser_utils = require('../mymonero_core_js/monero_utils/mymonero_response_parser_utils')
+const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
 //
 class BackgroundResponseParser

@@ -60,7 +60,7 @@ class ImportTransactionsModalView extends View
 		const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority
 		self.approximate_importOAAddress = specificAPIAddressURLAuthority != null && specificAPIAddressURLAuthority != "" && typeof specificAPIAddressURLAuthority !== 'undefined'
 			? `import.${specificAPIAddressURLAuthority}` // this is obvs 'approximate' and only meant to be used as an example…… if specificAPIAddressURLAuthority contains a port or a subdomain then this will appear to be obviously wrong but still server its purpose as an example to the power user who is entering a custom server address
-			: self.context.hostedMoneroAPIClient.HostingService_importFeeSubmissionTarget_openAliasAddress()
+			: "import.mymonero.com" // TODO: possibly get this from a shared config file
 		//
 		self.setup_views()
 		self.startObserving()

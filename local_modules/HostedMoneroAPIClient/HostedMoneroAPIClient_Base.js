@@ -32,7 +32,8 @@ const async = require('async')
 //
 const JSBigInt = require('../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
-const response_parser_utils = require('../mymonero_core_js/monero_utils/mymonero_response_parser_utils')
+const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
+const net_service_utils = require('../mymonero_core_js/hostAPI/net_service_utils')
 //
 const config__MyMonero = require('./config__MyMonero')
 //
@@ -66,114 +67,12 @@ class HostedMoneroAPIClient_Base
 				throw `${self.constructor.name} requires options.appUserAgent_version`
 			}
 		}
-		{ // derived caches
-			self.txChargeRatio = config__MyMonero.HostingServiceFee_txFeeRatioOfNetworkFee  // Service fee relative to tx fee (e.g. 0.5 => 50%)
-		}
-	}
-	//
-	// Runtime - Accessors - Public - Metrics/lookups/transforms
-	HostingServiceChargeFor_transactionWithNetworkFee(networkFee)
-	{
-		const self = this
-		networkFee = new JSBigInt(networkFee)
-		// amount * txChargeRatio
-		return networkFee.divide(1 / self.txChargeRatio)
-	}
-	HostingServiceFeeDepositAddress()
-	{ // -> String
-		return config__MyMonero.HostingServiceFee_depositAddress
-	}
-	HostingService_importFeeSubmissionTarget_openAliasAddress()
-	{
-		return "import.mymonero.com" // possibly exists a better home for this
 	}
 	//
 	// Runtime - Accessors - Private - Requests
-	_new_apiAddress_authority() // authority means [subdomain.]host.…[:…]
+	_new_apiAddress_authority() 
 	{ // overridable
 		return config__MyMonero.API__authority
-	}
-	_new_apiAddress_baseURL()
-	{
-		const self = this
-		const scheme = "https"
-		//
-		return scheme + "://" + self._new_apiAddress_authority() + "/"
-	}
-	_new_parameters_forWalletRequest(address, view_key__private)
-	{
-		return {
-			address: address,
-			view_key: view_key__private
-		}
-	}
-	//
-	// Runtime - Imperatives - Private
-	_API_doRequest_returningRequestHandle(endpointPath, parameters, fn)
-	{ // fn: (err?, data?) -> new Request
-		const self = this
-		//
-		parameters = parameters || {}
-		// setting these on params instead of as header field User-Agent so as to retain all info found in User-Agent, such as platform… and these are set so server has option to control delivery
-		parameters.app_name = self.appUserAgent_product 
-		parameters.app_version = self.appUserAgent_version
-		//
-		const completeURL = self._new_apiAddress_baseURL() + endpointPath
-		console.log("📡  " + completeURL)
-		//
-		const request_options =
-		{
-			method: "POST", // maybe break this out
-			url: completeURL,
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json"
-			},
-			json: parameters,
-			useXDR: true, // CORS
-			withCredentials: true // CORS
-		}
-		const request_handlerFn = function(err_orProgressEvent, res, body)
-		{
-			// err appears to actually be a ProgressEvent
-			var err = null
-			const statusCode = typeof res !== 'undefined' ? res.statusCode : -1
-			if (statusCode == 0 || statusCode == -1) { // we'll treat 0 as a lack of internet connection.. unless there's a better way to make use of err_orProgressEvent which is apparently going to be typeof ProgressEvent here
-				err = new Error("Connection Failure")
-			} else if (statusCode !== 200) {
-				const body_Error = body && typeof body == 'object' ? body.Error : undefined
-				const statusMessage = res && res.statusMessage ? res.statusMessage : undefined
-				if (typeof body_Error !== 'undefined' && body_Error) {
-					err = new Error(body_Error)
-				} else if (typeof statusMessage !== 'undefined' && statusMessage) {
-					err = new Error(statusMessage)
-				} else {
-					err = new Error("Unknown " + statusCode + " error")
-				}
-			}
-			if (err) {
-				console.error("❌  " + err);
-				// console.error("Body:", body)
-				fn(err, null)
-				return
-			}
-			var json;
-			if (typeof body === 'string') {
-				try {
-					json = JSON.parse(body);
-				} catch (e) {
-					console.error("❌  HostedMoneroAPIClient Error: Unable to parse json with exception:", e, "\nbody:", body);
-					fn(e, null)
-				}
-			} else {
-				json = body
-			}
-			console.log("✅  " + completeURL + " " + statusCode)
-			fn(null, json)
-		}
-		const requestHandle = self.request(request_options, request_handlerFn)
-		//
-		return requestHandle
 	}
 	//
 	// Runtime - Accessors - Public - Requests
@@ -181,11 +80,12 @@ class HostedMoneroAPIClient_Base
 	{ // fn: (err?, new_address?) -> RequestHandle
 		const self = this
 		const endpointPath = "login"
-		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
+		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
 		parameters.create_account = true
-		//
-		const requestHandle = self._API_doRequest_returningRequestHandle(
-			endpointPath,
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
+			endpointPath, 
 			parameters,
 			function(err, data)
 			{
@@ -217,8 +117,10 @@ class HostedMoneroAPIClient_Base
 	) {  // -> RequestHandle
 		const self = this
 		const endpointPath = "get_address_info"
-		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -298,8 +200,10 @@ class HostedMoneroAPIClient_Base
 	) { // -> RequestHandle
 		const self = this
 		const endpointPath = "get_address_txs"
-		const parameters = self._new_parameters_forWalletRequest(address, view_key__private)
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -357,16 +261,18 @@ class HostedMoneroAPIClient_Base
 		address,
 		view_key__private,
 		fn
-	) // -> RequestHandle
-	{
+	) { // -> RequestHandle
 		const self = this
 		const endpointPath = "import_wallet_request"
-		const parameters = 
-		{
-			address: address,
-			view_key: view_key__private
-		}
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+		net_service_utils.AddUserAgentParamters(
+			parameters,
+			self.appUserAgent_product, 
+			self.appUserAgent_version
+		)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -409,17 +315,20 @@ class HostedMoneroAPIClient_Base
 		const self = this
 		mixinNumber = parseInt(mixinNumber) // jic
 		//
-		const parameters =
-		{
-			address: address,
-			view_key: view_key__private,
-			amount: '0',
-			mixin: mixinNumber,
-			use_dust: true, // Client now filters unmixable by dustthreshold amount (unless sweeping) + non-rct 
-			dust_threshold: monero_config.dustThreshold.toString()
-		}
 		const endpointPath = 'get_unspent_outs'
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+		parameters.amount = '0'
+		parameters.mixin = mixinNumber
+		parameters.use_dust = true // Client now filters unmixable by dustthreshold amount (unless sweeping) + non-rct 
+		parameters.dust_threshold = monero_config.dustThreshold.toString()
+		net_service_utils.AddUserAgentParamters(
+			parameters,
+			self.appUserAgent_product, 
+			self.appUserAgent_version
+		)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -446,7 +355,6 @@ class HostedMoneroAPIClient_Base
 						return
 					}
 					const per_kb_fee__String = returnValuesByKey.per_kb_fee
-					console.log("per_kb_fee__String", per_kb_fee__String)
 					if (per_kb_fee__String == null || per_kb_fee__String == "" || typeof per_kb_fee__String === 'undefined') {
 						throw "Unexpected / missing per_kb_fee"
 					}
@@ -481,13 +389,20 @@ class HostedMoneroAPIClient_Base
 			amounts.push(using_outs[l].rct ? "0" : using_outs[l].amount.toString())
 		}
 		//
+		const endpointPath = 'get_random_outs'
 		var parameters =
 		{
 			amounts: amounts,
 			count: mixinNumber + 1 // Add one to mixin so we can skip real output key if necessary
 		}
-		const endpointPath = 'get_random_outs'
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		net_service_utils.AddUserAgentParamters(
+			parameters,
+			self.appUserAgent_product, 
+			self.appUserAgent_version
+		)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -516,8 +431,7 @@ class HostedMoneroAPIClient_Base
 	TXTRecords(
 		domain,
 		fn
-	) // -> RequestHandle
-	{
+	) { // -> RequestHandle
 		const self = this
 		//
 		const endpointPath = 'get_txt_records'
@@ -525,7 +439,14 @@ class HostedMoneroAPIClient_Base
 		{
 			domain: domain
 		}
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		net_service_utils.AddUserAgentParamters(
+			parameters,
+			self.appUserAgent_product, 
+			self.appUserAgent_version
+		)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
@@ -577,13 +498,16 @@ class HostedMoneroAPIClient_Base
 		}
 		// actual implementation:
 		const endpointPath = 'submit_raw_tx'
-		const parameters =
-		{
-			address: address,
-			view_key: view_key__private,
-			tx: serializedSignedTx
-		}
-		const requestHandle = self._API_doRequest_returningRequestHandle(
+		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+		parameters.tx = serializedSignedTx
+		net_service_utils.AddUserAgentParamters(
+			parameters,
+			self.appUserAgent_product, 
+			self.appUserAgent_version
+		)
+		const requestHandle = net_service_utils.HTTPRequest(
+			self.request,
+			self._new_apiAddress_authority(),
 			endpointPath,
 			parameters,
 			function(err, data)
