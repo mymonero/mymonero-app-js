@@ -36,6 +36,9 @@ const instantiation_description__hostedMoneroAPIClient =
 		request_conformant_module: require('xhr')
 	}
 }
+const TXTRecordResolver = require(__dirname + "/../../OpenAlias/TXTResolver.electron.renderer")
+const txtRecordResolver = new TXTRecordResolver({})
+//
 var context_object_instantiation_descriptions =
 [
 	{ // might as well put it in the renderer proc so we don't have to do IPC to pasteboard
@@ -86,10 +89,12 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	instantiation_description__hostedMoneroAPIClient,
-	{
+	{ // depends upon txtRecordResolver ... maybe inject
 		module_path: __dirname + "/../../OpenAlias/OpenAliasResolver",
 		instance_key: "openAliasResolver",
-		options: {}
+		options: {
+			txtRecordResolver: txtRecordResolver
+		}
 	},
 	{
 		module_path: __dirname + "/../../Theme/ThemeController",

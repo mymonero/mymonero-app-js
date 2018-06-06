@@ -427,56 +427,6 @@ class HostedMoneroAPIClient_Base
 		return requestHandle
 	}
 	//
-	// Resolving OA addresses
-	TXTRecords(
-		domain,
-		fn
-	) { // -> RequestHandle
-		const self = this
-		//
-		const endpointPath = 'get_txt_records'
-		const parameters =
-		{
-			domain: domain
-		}
-		net_service_utils.AddUserAgentParamters(
-			parameters,
-			self.appUserAgent_product, 
-			self.appUserAgent_version
-		)
-		const requestHandle = net_service_utils.HTTPRequest(
-			self.request,
-			self._new_apiAddress_authority(),
-			endpointPath,
-			parameters,
-			function(err, data)
-			{
-				if (err) {
-					fn(err)
-					return
-				}
-				__proceedTo_parseAndCallBack(data)
-			}
-		)
-		function __proceedTo_parseAndCallBack(data)
-		{
-			// console.log("debug: info: txt records: data", data)
-			const records = data.records
-			const dnssec_used = data.dnssec_used
-			const secured = data.secured
-			const dnssec_fail_reason = data.dnssec_fail_reason
-			//
-			fn(
-				null, // no error
-				records,
-				dnssec_used,
-				secured,
-				dnssec_fail_reason
-			)
-		}
-		return requestHandle
-	}
-	//
 	// Runtime - Imperatives - Public - Sending funds
 	SubmitSerializedSignedTransaction(
 		address,

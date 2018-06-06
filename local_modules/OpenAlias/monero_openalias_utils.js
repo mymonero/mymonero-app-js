@@ -46,7 +46,7 @@ exports.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOA
 //
 function ResolvedMoneroAddressInfoFromOpenAliasAddress( 
 	openAliasAddress,
-	hostedMoneroAPIClient, // to get TXT records
+	txtRecordResolver, // see "./TXTResolver*.js"
 	nettype,
 	fn
 	// fn: (
@@ -64,7 +64,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 		throw "Asked to resolve non-OpenAlias address." // throw as code fault
 	}
 	var openAlias_domain = openAliasAddress.replace(/@/g, ".");
-	const requestHandle = hostedMoneroAPIClient.TXTRecords(
+	const resolverHandle = txtRecordResolver.TXTRecords(
 		openAlias_domain,
 		function(err, records, dnssec_used, secured, dnssec_fail_reason)
 		{
@@ -124,6 +124,6 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 			)
 		}
 	)
-	return requestHandle
+	return resolverHandle
 }
 exports.ResolvedMoneroAddressInfoFromOpenAliasAddress = ResolvedMoneroAddressInfoFromOpenAliasAddress

@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const TXTRecordResolver = require("../../OpenAlias/TXTResolver.web")
+const txtRecordResolver = new TXTRecordResolver({})
 function NewHydratedContext(initialContext)
 {
 	initialContext = initialContext || {}
@@ -95,7 +97,9 @@ function NewHydratedContext(initialContext)
 		{
 			module: require("../../OpenAlias/OpenAliasResolver"),
 			instance_key: "openAliasResolver",
-			options: {}
+			options: {
+				txtRecordResolver: txtRecordResolver
+			}
 		},
 		{
 			module: require("../../Theme/ThemeController"),

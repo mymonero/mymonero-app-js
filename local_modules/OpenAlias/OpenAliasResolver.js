@@ -44,6 +44,8 @@ class OpenAliasResolver extends EventEmitter
 		const self = this
 		{
 			self.options = options
+			self.txtRecordResolver = options.txtRecordResolver // probably a better way to inject this dependency than using context
+			//
 			self.context = context
 		}
 		self.setMaxListeners(10000) // in case we have many contacts… :P
@@ -71,11 +73,11 @@ class OpenAliasResolver extends EventEmitter
 	// Runtime - Imperatives (not Accessors because these cause emits and so have [side-]effects)
 	//
 	ResolveOpenAliasAddress(openAliasAddress, fn)
-	{ // -> HostedMoneroAPIClient_RequestHandle
+	{ // -> DNSResolverHandle
 		const self = this
-		const requestHandle = monero_openalias_utils.ResolvedMoneroAddressInfoFromOpenAliasAddress( 
+		const resolverHandle = monero_openalias_utils.ResolvedMoneroAddressInfoFromOpenAliasAddress( 
 			openAliasAddress,
-			self.context.hostedMoneroAPIClient,
+			self.txtRecordResolver,
 			self.context.nettype,
 			function(
 				err,
@@ -130,7 +132,7 @@ class OpenAliasResolver extends EventEmitter
 				}
 			}
 		)
-		return requestHandle
+		return resolverHandle
 	}
 }
 module.exports = OpenAliasResolver
