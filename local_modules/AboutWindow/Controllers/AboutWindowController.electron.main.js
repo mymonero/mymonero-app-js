@@ -66,7 +66,7 @@ class AboutWindowController
 			minWidth: 200,
 			minHeight: 200,
 			backgroundColor: "#272527",
-			titleBarStyle: "hidden-inset",
+			titleBarStyle: "hiddenInset",
 			webPreferences: { // these are all currently the default values but stating them here to be explicit…
 				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true
 				allowDisplayingInsecureContent: false, // https content only
@@ -77,10 +77,10 @@ class AboutWindowController
 		const isLinux = /linux/.test(process.platform)
 		if (isLinux) {
 			var mutable_pathTo_localModules_components = __dirname.split('/')
-		    mutable_pathTo_localModules_components.pop() // ../
-		    mutable_pathTo_localModules_components.pop() // ../
-		    const absPathTo_localModules = mutable_pathTo_localModules_components.join('/')
-		    //
+			mutable_pathTo_localModules_components.pop() // ../
+			mutable_pathTo_localModules_components.pop() // ../
+			const absPathTo_localModules = mutable_pathTo_localModules_components.join('/')
+			//
 			const pathTo_iconImage_png = absPathTo_localModules + "/electron_main/Resources/icons/icon.png"
 			options.icon = pathTo_iconImage_png
 		}

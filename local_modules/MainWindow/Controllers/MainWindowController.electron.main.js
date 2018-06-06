@@ -99,7 +99,7 @@ class MainWindowController
 			show: false, // shown on ready
 			//
 			backgroundColor: "#272527",
-			titleBarStyle: "hidden-inset",
+			titleBarStyle: "hiddenInset",
 			//
 			webPreferences: {
 				backgroundThrottling: false, // disable powersaving/throttling so that app lock-down 
@@ -115,10 +115,10 @@ class MainWindowController
 		const isLinux = /linux/.test(process.platform)
 		if (isLinux) {
 			var mutable_pathTo_localModules_components = __dirname.split('/')
-		    mutable_pathTo_localModules_components.pop() // ../
-		    mutable_pathTo_localModules_components.pop() // ../
-		    const absPathTo_localModules = mutable_pathTo_localModules_components.join('/')
-		    //
+			mutable_pathTo_localModules_components.pop() // ../
+			mutable_pathTo_localModules_components.pop() // ../
+			const absPathTo_localModules = mutable_pathTo_localModules_components.join('/')
+			//
 			const pathTo_iconImage_png = absPathTo_localModules + "/electron_main/Resources/icons/icon.png"
 			options.icon = pathTo_iconImage_png
 		}

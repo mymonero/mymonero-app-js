@@ -43,42 +43,52 @@ module.exports =
 	resolve: {
 		alias: {
 			"fs": "html5-fs"
-		}
+		},
+		extensions: ['.js', '.jsx', '.css', '.json', 'otf', 'ttf', 'eot', 'svg'],
+		modules: [
+			'node_modules'
+		]
 	},
 	externals: {
 	},
 	stats: {
 		colors: true
 	},
-     module: {
-		loaders: [
-			{ 
-				test: /\.(otf|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-				loader: 'file-loader'
-			},
+	module: {
+		rules: [
 			{
-				test: /\.json$/,
-				loader: 'json-loader'
+				test: /\.(otf|ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+				use: [
+					{ loader: 'file-loader' }
+				]
 			},
 			{
 				test: /\.css$/,
-				loader: 'style!css!postcss'
+				use: [
+					{ loader: 'style!css!postcss' }
+				]
 			},
 			{
 				test: /\.styl$/,
-				loader: 'style!css!postcss!stylus?paths=node_modules'
+				use: [
+					{ loader: 'style!css!postcss!stylus?paths=node_modules' }
+				]
 			},
 			{
 				test: /\.js$/,
-				loader: 'babel-loader',
-				options: {
-					cacheDirectory: false,
-					// presets: [ "es2015" ],
-					// plugins: ["transform-runtime"]
-				},
-				exclude: path.join(__dirname, 'node_modules')
-			},
-
+				exclude: path.join(__dirname, 'node_modules'),
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							cacheDirectory: false
+							// ,
+							// presets: [ "es2015" ],
+							// plugins: ["transform-runtime"]
+						}
+					}
+				]
+			}
 		]
 	}
 }
