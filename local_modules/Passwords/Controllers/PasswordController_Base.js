@@ -1014,34 +1014,35 @@ class PasswordController_Base extends EventEmitter
 				self._id = undefined
 				self.encryptedMessageForUnlockChallenge = undefined
 				self._initial_waitingForFirstPWEntryDecode_passwordModel_doc = undefined
-				//
-				// delete pw record
-				self.context.persister.RemoveAllDocuments(
-					CollectionName, 
+				// first have all registrants delete everything
+				const tokens = Object.keys(self.deleteEverythingRegistrants)
+				async.each( // parallel; waits till all finished
+					tokens,
+					function(token, registrant_cb)
+					{
+						const registrant = self.deleteEverythingRegistrants[token]
+						registrant.passwordController_DeleteEverything(function(err)
+						{
+							registrant_cb(err)
+						})
+					},
 					function(err)
-					{ // now have others delete everything else
+					{
 						if (err) {
 							cb(err)
-							return
+							return // will travel back to the 'throw' below
 						}
-						console.log("🗑  Deleted password record.")
-						const tokens = Object.keys(self.deleteEverythingRegistrants)
-						async.each( // parallel; waits till all finished
-							tokens,
-							function(token, registrant_cb)
-							{
-								const registrant = self.deleteEverythingRegistrants[token]
-								registrant.passwordController_DeleteEverything(function(err)
-								{
-									registrant_cb(err)
-								})
-							},
+						//
+						// then delete pw record - after registrants in case any of them fail and user still needs to be able to delete some of them on next boot
+						self.context.persister.RemoveAllDocuments(
+							CollectionName, 
 							function(err)
-							{
+							{ 
 								if (err) {
 									cb(err)
-									return // will travel back to the 'throw' below
+									return
 								}
+								console.log("🗑  Deleted password record.")
 								self.setupAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
 								//
 								cb(err)
@@ -1054,7 +1055,7 @@ class PasswordController_Base extends EventEmitter
 			{
 				if (err) {
 					fn(err)
-					throw err
+					throw err // throwing because self's runtime is not in a good state given un-setting of instance props like .password
 				}
 				self.emit(self.EventName_havingDeletedEverything_didDeconstructBootedStateAndClearPassword())
 				fn()
