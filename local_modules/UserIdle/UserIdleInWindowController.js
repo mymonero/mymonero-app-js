@@ -134,6 +134,7 @@ class UserIdleInWindowController extends EventEmitter
 		const self = this
 		const intervalTimer_interval_ms = 1000
 		if (!self._userIdle_intervalTimer_fn || typeof self._userIdle_intervalTimer_fn === 'undefined') {
+			self._numberOfSecondsSinceLastUserInteraction = 0 // reset this in case the app disabled user idle at a time at all different from when the last idle breaking action occurred
 			self._userIdle_intervalTimer_fn = function()
 			{
 				self._numberOfSecondsSinceLastUserInteraction += 1 // count the second
