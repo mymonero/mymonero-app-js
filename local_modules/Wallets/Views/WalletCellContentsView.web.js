@@ -363,7 +363,7 @@ class WalletCellContentsView extends View
 				var isOnNewLine = false
 				if (hasLockedFunds) {
 					isOnNewLine = true
-					descriptionLayer_innerHTML += `<br/>${final_lockedBalanceAmountString_orNull} locked`
+					descriptionLayer_innerHTML += ` (${final_lockedBalanceAmountString_orNull} locked)`
 				}
 				// TODO: pending amount
 			}
