@@ -154,9 +154,9 @@ class WalletCellContentsView extends View
 		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontWeight = "100"
 		layer.style.webkitFontSmoothing = "subpixel-antialiased"
-		layer.style.height = "20px"
+		layer.style.maxHeight = "32px"
 		layer.style.color = "#9e9c9e"
-		layer.style.whiteSpace = "nowrap"
+		layer.style.wordBreak = "normal" // ensure we don't break words now that we support two lines
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
 		layer.style.cursor = "default"
@@ -360,9 +360,12 @@ class WalletCellContentsView extends View
 				}
 				//
 				descriptionLayer_innerHTML = final_balanceAmountString+" "+final_displayCcySymbol
+				var isOnNewLine = false
 				if (hasLockedFunds) {
-					descriptionLayer_innerHTML += ` with ${final_lockedBalanceAmountString_orNull} locked`
+					isOnNewLine = true
+					descriptionLayer_innerHTML += `<br/>${final_lockedBalanceAmountString_orNull} locked`
 				}
+				// TODO: pending amount
 			}
 		}
 		self.descriptionLayer.innerHTML = descriptionLayer_innerHTML
