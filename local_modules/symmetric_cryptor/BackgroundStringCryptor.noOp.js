@@ -28,49 +28,35 @@
 //
 "use strict"
 //
-const document_cryptor = require('./document_cryptor')
+// The only reason this class exists is because I don't want to complicate the app code with checks
+// for whether encryption should be enabled.
 //
-class BackgroundDocumentCryptor 
-{ // NOTE: This is not really a "background" processor - just a way to access the same functionality for tests in Node.JS
+class BackgroundStringCryptor
+{
 	constructor(options, context)
 	{
-		const self = this
-		{
-			self.options = options
-			self.context = context
-		}
 	}
-	//
 	//
 	// Runtime - Accessors - Interface
-	//
-	New_EncryptedDocument__Async(
+	New_EncryptedBase64String__Async(
 		plaintextDocument, 
-		documentCryptScheme, 
 		password, 
 		fn // fn: (err?, encryptedDocument) -> Void
-	)
-	{
-		document_cryptor.New_EncryptedDocument__Async(
-			plaintextDocument, 
-			documentCryptScheme, 
-			password,
-			fn
-		)
+	) {
+		const self = this
+		setTimeout(function() {
+			fn(null, plaintextDocument)
+		})
 	}
-	New_DecryptedDocument__Async(
+	New_DecryptedString__Async(
 		encryptedDocument,
-		documentCryptScheme,
 		password,
 		fn // fn: (err?, decryptedDocument) -> Void
-	)
-	{
-		document_cryptor.New_DecryptedDocument__Async(
-			encryptedDocument,
-			documentCryptScheme,
-			password,
-			fn
-		)
+	) {
+		const self = this
+		setTimeout(function() {
+			fn(null, encryptedDocument)
+		})
 	}
 }
-module.exports = BackgroundDocumentCryptor
+module.exports = BackgroundStringCryptor

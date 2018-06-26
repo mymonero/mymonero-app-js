@@ -30,6 +30,8 @@
 //
 const async = require('async')
 const EventEmitter = require('events')
+const uuidV1 = require('uuid/v1')
+//
 const CollectionName = "Settings"
 let Currencies = require('../../CcyConversionRates/Currencies')
 //
@@ -74,24 +76,26 @@ class SettingsController extends EventEmitter
 		// first, check if any password model has been stored
 		self.context.persister.AllDocuments(
 			CollectionName,
-			function(err, docs)
+			function(err, contentStrings)
 			{
 				if (err) {
 					console.error("Error while fetching existing", CollectionName, err)
 					throw err
 				}
-				const docs_length = docs.length
-				if (docs_length === 0) { //
+				const contentStrings_length = contentStrings.length
+				if (contentStrings_length === 0) { //
 					const mocked_doc = JSON.parse(JSON.stringify(k_defaults_record)) // hamfisted copy
 					_proceedTo_loadStateFromRecord(mocked_doc)
 					return
 				}
-				if (docs_length > 1) {
+				if (contentStrings_length > 1) {
 					const errStr = "Error while fetching existing " + CollectionName + "... more than one record found. Selecting first."
 					console.error(errStr)
 					// this is indicative of a code fault
+					throw errStr // might as well throw then
 				}
-				const doc = docs[0]
+				const plaintextString = contentStrings[0] // NOTE: Settings is not presently encrypted
+				const doc = JSON.parse(plaintextString);
 				// console.log("💬  Found existing saved " + CollectionName + " with _id", doc._id)
 				_proceedTo_loadStateFromRecord(doc)
 			}
@@ -285,23 +289,22 @@ class SettingsController extends EventEmitter
 				}
 				function _proceedTo_insertNewDocument(persistableDocument)
 				{
+					const _id = uuidV1() // must generate it
+					persistableDocument._id = _id
+					//
+					const jsonString = JSON.stringify(persistableDocument)
 					self.context.persister.InsertDocument(
 						CollectionName,
-						persistableDocument,
-						function(
-							err,
-							newDocument
-						) {
+						_id,
+						jsonString,
+						function(err) 
+						{
 							if (err) {
 								console.error("Error while saving " + CollectionName + ":", err)
 								fn(err)
 								return
 							}
-							if (newDocument._id === null) { // not that this would happen…
-								fn(new Error("Inserted " + CollectionName + " record but _id after saving was null"))
-								return // bail
-							}
-							self._id = newDocument._id // so we have it in runtime memory now…
+							self._id = _id // must save it back
 							console.log("✅  Saved newly inserted " + CollectionName + " record with _id " + self._id + ".")
 							fn()
 						}

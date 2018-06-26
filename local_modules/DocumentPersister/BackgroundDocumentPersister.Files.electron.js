@@ -92,7 +92,7 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
 
-	InsertDocument(collectionName, savableDocument, fn)
+	InsertDocument(collectionName, id, savableDocument, fn)
 	{
 		const self = this
 		self.executeBackgroundTaskNamed(
@@ -103,6 +103,7 @@ class BackgroundDocumentPersister extends BackgroundTaskExecutor
 			},
 			[
 				collectionName, 
+				id,
 				savableDocument
 			]
 		)

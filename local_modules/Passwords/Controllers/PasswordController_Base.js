@@ -83,14 +83,14 @@ class PasswordController_Base extends EventEmitter
 		// first, check if any password model has been stored
 		self.context.persister.AllDocuments(
 			CollectionName,
-			function(err, docs)
+			function(err, contentStrings)
 			{
 				if (err) {
 					console.error("Error while fetching existing", CollectionName, err)
 					throw err
 				}
-				const docs_length = docs.length
-				if (docs_length === 0) { //
+				const contentStrings_length = contentStrings.length
+				if (contentStrings_length === 0) { //
 					const mocked_doc =
 					{
 						userSelectedTypeOfPassword: self.AvailableUserSelectableTypesOfPassword().FreeformStringPW // default…… for desktop anyway. this might change based on UX direction
@@ -101,16 +101,17 @@ class PasswordController_Base extends EventEmitter
 					)
 					return
 				}
-				if (docs_length > 1) {
+				if (contentStrings_length > 1) {
 					const errStr = "Error while fetching existing " + CollectionName + "... more than one PasswordModel found. Selecting first."
 					console.error(errStr)
 					// this is indicative of a code fault
 				}
-				const doc = docs[0]
+				const contentString = contentStrings[0]
+				const plaintextDoc = JSON.parse(contentString) // whole doc is not encrypted - only challenge
 				// console.log("💬  Found existing saved password model with _id", doc._id)
 				_proceedTo_loadStateFromModel(
 					true,
-					doc
+					plaintextDoc
 				)
 			}
 		)
@@ -461,7 +462,7 @@ class PasswordController_Base extends EventEmitter
 								self.unguard_getNewOrExistingPassword()
 								return // just silently exit after unguarding
 							}
-							symmetric_string_cryptor.DecryptedPlaintextString__Async(
+							symmetric_string_cryptor.New_DecryptedString__Async(
 								self.encryptedMessageForUnlockChallenge,
 								existingPassword,
 								function(err, decryptedMessageForUnlockChallenge)
@@ -907,7 +908,7 @@ class PasswordController_Base extends EventEmitter
 			fn(new Error(errStr))
 			throw errStr
 		}
-		const encryptedMessageForUnlockChallenge = symmetric_string_cryptor.EncryptedBase64String__Async(
+		const encryptedMessageForUnlockChallenge = symmetric_string_cryptor.New_EncryptedBase64String__Async(
 			plaintextMessageToSaveForUnlockChallenges,
 			self.password,
 			function(err, encryptedMessageForUnlockChallenge)
@@ -935,21 +936,22 @@ class PasswordController_Base extends EventEmitter
 		)
 		function _proceedTo_insertNewDocument(persistableDocument)
 		{
+			const _id = uuidV1() // generate new
+			persistableDocument._id = _id
+			//
+			const jsonString = JSON.stringify(persistableDocument)
 			self.context.persister.InsertDocument(
 				CollectionName,
+				_id,
 				persistableDocument,
-				function(err, newDocument)
+				function(err)
 				{
 					if (err) {
 						console.error("Error while saving password record:", err)
 						fn(err)
 						return
 					}
-					if (newDocument._id === null) { // not that this would happen…
-						fn(new Error("Inserted password record but _id after saving was null"))
-						return // bail
-					}
-					self._id = newDocument._id // so we have it in runtime memory now…
+					self._id = _id // must save it back
 					console.log("✅  Saved newly inserted password record with _id " + self._id + ".")
 					fn()
 				}

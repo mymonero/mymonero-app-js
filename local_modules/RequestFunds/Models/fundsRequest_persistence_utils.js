@@ -26,30 +26,14 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
-const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
+//
+const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 //
 // Constants
-//
 const CollectionName = "FundsRequests"
 exports.CollectionName = CollectionName
 //
-const documentCryptScheme =
-{
-	dateCreated: { type: CryptSchemeFieldValueTypes.String }, // think this doesn't strictly have to be encrypted
-	from_fullname: { type: CryptSchemeFieldValueTypes.String },
-	to_walletHexColorString: { type: CryptSchemeFieldValueTypes.String },
-	to_address: { type: CryptSchemeFieldValueTypes.String },
-	payment_id: { type: CryptSchemeFieldValueTypes.String },
-	amount: { type: CryptSchemeFieldValueTypes.String },
-	amountCcySymbol: { type: CryptSchemeFieldValueTypes.String },
-	message: { type: CryptSchemeFieldValueTypes.String },
-	description: { type: CryptSchemeFieldValueTypes.String }
-}
-exports.DocumentCryptScheme = documentCryptScheme
-//
 // Utility functions
-//
 function HydrateInstance(
 	instance,
 	plaintextDocument
@@ -81,7 +65,7 @@ function SaveToDisk(
 	fn
 ) {
 	const self = instance
-	const document_cryptor__background = self.context.document_cryptor__background
+	const string_cryptor__background = self.context.string_cryptor__background
 	console.log("📝  Saving fundsRequest to disk ", self.Description())
 	{
 		fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
@@ -110,71 +94,16 @@ function SaveToDisk(
 		amountCcySymbol: self.amountCcySymbol,
 		message: self.message || "",
 		description: self.description || ""
-	}
-	document_cryptor__background.New_EncryptedDocument__Async(
-		plaintextDocument,
-		documentCryptScheme,
+	}	
+	persistable_object_utils.write(
+		self.context.string_cryptor__background,
+		self.context.persister,
+		self, // for reading and writing the _id
+		CollectionName,
+		plaintextDocument, // _id will get generated for this if self does not have an _id
 		persistencePassword,
-		function(err, encryptedDocument)
-		{
-			if (err) {
-				console.error("Error while saving :", err)
-				fn(err)
-				return
-			}
-			if (self._id === null || typeof self._id === 'undefined') {
-				_proceedTo_insertNewDocument(encryptedDocument)
-			} else {
-				_proceedTo_updateExistingDocument(encryptedDocument)
-			}
-		}
+		fn
 	)
-	//
-	// insert & update fn declarations for imminent usage…
-	function _proceedTo_insertNewDocument(encryptedDocument)
-	{
-		self.context.persister.InsertDocument(
-			CollectionName,
-			encryptedDocument,
-			function(
-				err,
-				newDocument
-			)
-			{
-				if (err) {
-					console.error("Error while saving fundsRequest:", err)
-					fn(err)
-					return
-				}
-				if (newDocument._id === null) { // not that this would happen…
-					fn(new Error("❌  Inserted fundsRequest but _id after saving was null"))
-					return // bail
-				}
-				self._id = newDocument._id // so we know it at runtime now
-				console.log("✅  Saved newly inserted fundsRequest with _id " + self._id + ".")
-				fn()
-			}
-		)
-	}
-	function _proceedTo_updateExistingDocument(encryptedDocument)
-	{
-		var update = encryptedDocument
-		self.context.persister.UpdateDocumentWithId(
-			CollectionName,
-			self._id,
-			update,
-			function(err)
-			{
-				if (err) {
-					console.error("Error while saving record:", err)
-					fn(err)
-					return
-				}
-				// console.log("✅  Saved update to record with _id " + self._id + ".")
-				fn()
-			}
-		)
-	}
 }
 exports.SaveToDisk = SaveToDisk
 //
@@ -190,8 +119,7 @@ function DeleteFromDisk(
 		function(
 			err,
 			numRemoved
-		)
-		{
+		) {
 			if (err) {
 				console.error("Error while removing fundsRequest:", err)
 				fn(err)

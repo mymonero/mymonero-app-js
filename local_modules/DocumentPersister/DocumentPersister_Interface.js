@@ -45,7 +45,7 @@ class DocumentPersister_Interface
 	DocumentsWithIds(collectionName, ids, fn)
 	{
 		var self = this
-		self.__documentsWithIds(collectionName, ids, fn)
+		self.__documentContentStringsWithIds(collectionName, ids, fn)
 	}
 	IdsOfAllDocuments(collectionName, fn)
 	{
@@ -62,11 +62,11 @@ class DocumentPersister_Interface
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public
 
-	InsertDocument(collectionName, documentToInsert, fn)
+	InsertDocument(collectionName, id, documentToInsert, fn)
 	{
 		const self = this
 		//
-		self.__insertDocument(collectionName, documentToInsert, fn)
+		self.__insertDocument(collectionName, id, documentToInsert, fn)
 	}
 	UpdateDocumentWithId(collectionName, id, update, fn)
 	{
@@ -88,11 +88,11 @@ class DocumentPersister_Interface
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Private
 	
-	__documentsWithIds(collectionName, ids, fn)
+	__documentContentStringsWithIds(collectionName, ids, fn)
 	{ // fn: (err, docs) -> Void
 		const self = this
 		//
-		console.log("Error: You must override __documentsWithIds in ", self)
+		console.log("Error: You must override __documentContentStringsWithIds in ", self)
 	}
 	__idsOfAllDocuments(collectionName, fn)
 	{
@@ -109,7 +109,7 @@ class DocumentPersister_Interface
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Private
 
-	__insertDocument(collectionName, documentToInsert, fn)
+	__insertDocument(collectionName, id, documentToInsert, fn)
 	{ // fn: (err, newDocument) -> Void
 		const self = this
 		console.log("Error: You must override __insertDocument in", self)

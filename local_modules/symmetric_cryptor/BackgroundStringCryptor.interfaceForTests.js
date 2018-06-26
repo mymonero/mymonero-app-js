@@ -28,60 +28,45 @@
 //
 "use strict"
 //
-const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.electron')
+const string_cryptor = require('./symmetric_string_cryptor')
 //
-class BackgroundDocumentCryptor extends BackgroundTaskExecutor
-{
+class BackgroundStringCryptor 
+{ // NOTE: This is not really a "background" processor - just a way to access the same functionality for tests in Node.JS
 	constructor(options, context)
 	{
-		options = options || {}
-		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundDocumentCryptor.electron.child.js'
-		//
-		const electron = require('electron')
-		const app = electron.app || electron.remote.app
-		const forReporting_appVersion = app.getVersion()
-		options.argsForChild = [ forReporting_appVersion ]
-		//
-		super(options, context)
+		const self = this
+		{
+			self.options = options
+			self.context = context
+		}
 	}
 	//
 	//
 	// Runtime - Accessors - Interface
 	//
-	New_EncryptedDocument__Async(
+	New_EncryptedBase64String__Async(
 		plaintextDocument, 
-		documentCryptScheme, 
 		password, 
 		fn // fn: (err?, encryptedDocument) -> Void
 	)
 	{
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'New_EncryptedDocument__Async',
-			fn, // fn goes as second arg
-			[
-				plaintextDocument, 
-				documentCryptScheme, 
-				password
-			]
+		string_cryptor.New_EncryptedBase64String__Async(
+			plaintextDocument, 
+			password,
+			fn
 		)
 	}
-	New_DecryptedDocument__Async(
+	New_DecryptedString__Async(
 		encryptedDocument,
-		documentCryptScheme,
 		password,
 		fn // fn: (err?, decryptedDocument) -> Void
-	) {
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'New_DecryptedDocument__Async',
-			fn, // fn goes as second arg
-			[
-				encryptedDocument, 
-				documentCryptScheme, 
-				password
-			]
+	)
+	{
+		string_cryptor.New_DecryptedString__Async(
+			encryptedDocument,
+			password,
+			fn
 		)
 	}
 }
-module.exports = BackgroundDocumentCryptor
+module.exports = BackgroundStringCryptor

@@ -56,8 +56,7 @@ const tasksByName =
 		taskUUID, // child_ipc inserts the task UUID so we have it
 		collectionName, 
 		ids
-	)
-	{
+	) {
 		// console.time("DocumentsWithIds " + taskUUID)
 		persister.DocumentsWithIds(
 			collectionName, 
@@ -72,8 +71,7 @@ const tasksByName =
 	IdsOfAllDocuments: function(
 		taskUUID, // child_ipc inserts the task UUID so we have it
 		collectionName
-	)
-	{
+	) {
 		// console.time("IdsOfAllDocuments " + taskUUID)
 		persister.IdsOfAllDocuments(
 			collectionName, 
@@ -87,8 +85,7 @@ const tasksByName =
 	AllDocuments: function(
 		taskUUID, // child_ipc inserts the task UUID so we have it
 		collectionName
-	)
-	{
+	) {
 		// console.time("AllDocuments " + taskUUID)
 		persister.AllDocuments(
 			collectionName, 
@@ -102,12 +99,13 @@ const tasksByName =
 	InsertDocument: function(
 		taskUUID, // child_ipc inserts the task UUID so we have it
 		collectionName, 
+		id,
 		savableDocument
-	)
-	{
+	) {
 		// console.time("InsertDocument " + taskUUID)
 		persister.InsertDocument(
 			collectionName, 
+			id,
 			savableDocument,
 			function(err, newDocument)
 			{
@@ -121,8 +119,7 @@ const tasksByName =
 		collectionName, 
 		id, 
 		update
-	)
-	{
+	) {
 		// console.time("UpdateDocuments " + taskUUID)
 		persister.UpdateDocumentWithId(
 			collectionName, 
@@ -144,8 +141,7 @@ const tasksByName =
 		collectionName, 
 		ids, 
 		options
-	)
-	{
+	) {
 		// console.time("RemoveDocuments " + taskUUID)
 		persister.RemoveDocumentsWithIds(
 			collectionName, 
@@ -161,8 +157,7 @@ const tasksByName =
 		taskUUID, // child_ipc inserts the task UUID so we have it
 		collectionName, 
 		options
-	)
-	{
+	) {
 		// console.time("RemoveDocuments " + taskUUID)
 		persister.RemoveAllDocuments(
 			collectionName, 

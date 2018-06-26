@@ -29,7 +29,6 @@
 "use strict"
 //
 const async = require('async')
-const uuidV1 = require('uuid/v1')
 //
 //
 const DocumentPersister_Interface = require('./DocumentPersister_Interface')
@@ -47,45 +46,45 @@ class DocumentPersister extends DocumentPersister_Interface
 	}
 	//
 	// Runtime - InMemory - Accessors
-	___lazy_writable_collectionDocumentsById(collectionName)
+	___lazy_writable_collectionStringsById(collectionName)
 	{
 		const self = this
-		var collectionDocumentsById = self.store[collectionName] || null
-		if (typeof collectionDocumentsById == 'undefined' || !collectionDocumentsById) {
-			collectionDocumentsById = {}
-			self.store[collectionName] = collectionDocumentsById
+		var collectionStringsById = self.store[collectionName] || null
+		if (typeof collectionStringsById == 'undefined' || !collectionStringsById) {
+			collectionStringsById = {}
+			self.store[collectionName] = collectionStringsById
 		}
-		if (typeof collectionDocumentsById == 'undefined' || !collectionDocumentsById) {
-			throw "expected non-nil collectionDocumentsById"
+		if (typeof collectionStringsById == 'undefined' || !collectionStringsById) {
+			throw "expected non-nil collectionStringsById"
 		}
-		return collectionDocumentsById
+		return collectionStringsById
 	}
 	//
 	//
 	// Runtime - Accessors - Interface - Overrides
 	//
-	__documentsWithIds(collectionName, ids, fn)
+	__documentContentStringsWithIds(collectionName, ids, fn)
 	{
 		const self = this
-		const collectionDocumentsById = self.store[collectionName] || {}
+		const collectionStringsById = self.store[collectionName] || {}
 		const ids_length = ids.length
-		const documentsWithIds = []
+		const stringsWithIds = []
 		for (var i = 0 ; i < ids_length ; i++) {
 			const id = ids[i]
-			const documentWithId = collectionDocumentsById[id] || null
-			if (documentWithId != null) {
-				documentsWithIds.push(documentWithId)
+			const stringWithId = collectionStringsById[id] || null
+			if (stringWithId != null) {
+				stringsWithIds.push(stringWithId)
 			}
 		}
 		setTimeout(function() { // maintain async
-			fn(null, documentsWithIds)
+			fn(null, stringsWithIds)
 		})
 	}
 	__idsOfAllDocuments(collectionName, fn)
 	{
 		const self = this
-		const collectionDocumentsById = self.store[collectionName] || {}
-		const ids = Object.keys(collectionDocumentsById)
+		const collectionStringsById = self.store[collectionName] || {}
+		const ids = Object.keys(collectionStringsById)
 		setTimeout(function() { // maintain async
 			fn(null, ids)
 		})
@@ -93,60 +92,50 @@ class DocumentPersister extends DocumentPersister_Interface
 	__allDocuments(collectionName, fn)
 	{
 		const self = this
-		const collectionDocumentsById = self.store[collectionName] || {}
-		const ids = Object.keys(collectionDocumentsById)
+		const collectionStringsById = self.store[collectionName] || {}
+		const ids = Object.keys(collectionStringsById)
 		const ids_length = ids.length
-		const documents = []
+		const strings = []
 		for (var i = 0 ; i < ids_length ; i++) {
 			const id = ids[i]
-			const documentWithId = collectionDocumentsById[id] || null
-			documents.push(documentWithId)
+			const stringWithId = collectionStringsById[id] || null
+			strings.push(stringWithId)
 		}
 		setTimeout(function() { // maintain async
-			fn(null, documents)
+			fn(null, strings)
 		})
 	}
 	//
 	//
 	// Runtime - Imperatives - Interface - Overrides
 	//
-	__insertDocument(collectionName, documentToInsert, fn)
+	__insertDocument(collectionName, id, documentToInsert, fn)
 	{
 		const self = this
-		var id = documentToInsert._id
-		if (!id || typeof id === 'undefined') {
-			id = uuidV1() // generate one
-			documentToInsert._id = id // now it's actually savable
-		}
-		const collectionDocumentsById = self.___lazy_writable_collectionDocumentsById(collectionName)
-		collectionDocumentsById[id] = documentToInsert
+		const collectionStringsById = self.___lazy_writable_collectionStringsById(collectionName)
+		collectionStringsById[id] = documentToInsert
 		setTimeout(function() {
 			fn(null, documentToInsert)
 		})
 	}
-	__updateDocumentWithId(collectionName, id, update, fn)
+	__updateDocumentWithId(collectionName, id, updateString, fn)
 	{
 		const self = this
-		{
-			if (typeof update._id === 'undefined' || !update._id) {
-				update._id = id // just as a safeguard against consumers submitting a different document
-			}
-		}
-		const collectionDocumentsById = self.___lazy_writable_collectionDocumentsById(collectionName)
-		collectionDocumentsById[id] = update
+		const collectionStringsById = self.___lazy_writable_collectionStringsById(collectionName)
+		collectionStringsById[id] = updateString
 		setTimeout(function() {
-			fn(null, update)
+			fn(null, updateString)
 		})
 	}
 	__removeDocumentsWithIds(collectionName, idsToRemove, fn)
 	{ 
 		const self = this
-		const collectionDocumentsById = self.store[collectionName] || {}
+		const collectionStringsById = self.store[collectionName] || {}
 		var numRemoved = 0
 		const idsToRemove_length = idsToRemove.length
 		for (var i = 0 ; i < idsToRemove_length ; i++) {
 			const id = idsToRemove[i]
-			const valueExistsAtId = (collectionDocumentsById[id] || null) != null
+			const valueExistsAtId = (collectionStringsById[id] || null) != null
 			if (valueExistsAtId) {
 				delete self.store[collectionName][id]
 				numRemoved += 1

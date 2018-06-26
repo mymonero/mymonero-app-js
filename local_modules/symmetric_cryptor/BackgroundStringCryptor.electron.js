@@ -28,59 +28,56 @@
 //
 "use strict"
 //
-const document_cryptor = require('./document_cryptor')
-const child_ipc = require('../Concurrency/ipc.electron.child')
+const BackgroundTaskExecutor = require('../Concurrency/BackgroundTaskExecutor.electron')
 //
-const reporting_appVersion = process.argv[2]
-if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
-	throw "BackgroundDocumentCryptor.electron.child.js requires argv[2] reporting_appVersion"
-}
-//
-//
-// Declaring tasks:
-//
-const tasksByName =
+class BackgroundStringCryptor extends BackgroundTaskExecutor
 {
-	New_EncryptedDocument__Async: function(
-		taskUUID,
+	constructor(options, context)
+	{
+		options = options || {}
+		options.absolutePathToChildProcessSourceFile = __dirname + '/./BackgroundStringCryptor.electron.child.js'
+		//
+		const electron = require('electron')
+		const app = electron.app || electron.remote.app
+		const forReporting_appVersion = app.getVersion()
+		options.argsForChild = [ forReporting_appVersion ]
+		//
+		super(options, context)
+	}
+	//
+	//
+	// Runtime - Accessors - Interface
+	//
+	New_EncryptedBase64String__Async(
 		plaintextDocument, 
-		documentCryptScheme, 
-		password
+		password, 
+		fn // fn: (err?, encryptedDocument) -> Void
 	)
 	{
-		// console.time("encrypting " + taskUUID)
-		document_cryptor.New_EncryptedDocument__Async(
-			plaintextDocument, 
-			documentCryptScheme, 
-			password,
-			function(err, encryptedDocument)
-			{
-				// console.timeEnd("encrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, err, encryptedDocument)
-			}
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'New_EncryptedBase64String__Async',
+			fn, // fn goes as second arg
+			[
+				plaintextDocument, 
+				password
+			]
 		)
-	},
-	New_DecryptedDocument__Async: function(
-		taskUUID,
-		encryptedDocument, 
-		documentCryptScheme, 
-		password
+	}
+	New_DecryptedString__Async(
+		encryptedDocument,
+		password,
+		fn // fn: (err?, decryptedDocument) -> Void
 	) {
-		// console.time("decrypting " + taskUUID)
-		document_cryptor.New_DecryptedDocument__Async(
-			encryptedDocument,
-			documentCryptScheme,
-			password,
-			function(err, plaintextDocument)
-			{
-				// console.timeEnd("decrypting " + taskUUID)
-				child_ipc.CallBack(taskUUID, err, plaintextDocument)
-			}
+		const self = this
+		self.executeBackgroundTaskNamed(
+			'New_DecryptedString__Async',
+			fn, // fn goes as second arg
+			[
+				encryptedDocument, 
+				password
+			]
 		)
 	}
 }
-//
-//
-// Kicking off runtime:
-//
-child_ipc.InitWithTasks_AndStartListening(tasksByName, "BackgroundDocumentCryptor.electron.child", reporting_appVersion)
+module.exports = BackgroundStringCryptor

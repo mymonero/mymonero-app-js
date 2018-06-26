@@ -74,8 +74,8 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../symmetric_cryptor/BackgroundDocumentCryptor.electron",
-		instance_key: "document_cryptor__background",
+		module_path: __dirname + "/../../symmetric_cryptor/BackgroundStringCryptor.electron",
+		instance_key: "string_cryptor__background",
 		options: {}
 	},
 	{

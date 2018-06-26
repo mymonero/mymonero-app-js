@@ -30,7 +30,7 @@
 //
 const EventEmitter = require('events')
 //
-const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
+const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const fundsRequest_persistence_utils = require('./fundsRequest_persistence_utils')
 //
 const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
@@ -144,44 +144,20 @@ class FundsRequest extends EventEmitter
 	_setup_fetchExistingDocumentWithId()
 	{
 		const self = this
-		self.context.persister.DocumentsWithIds(
+		persistable_object_utils.read(
+			self.context.string_cryptor__background,
+			self.context.persister,
 			fundsRequest_persistence_utils.CollectionName,
-			[ self._id ], // cause we're saying we have an _id passed in…
-			function(err, docs)
+			self, // because an _id was supposed to have been passed in
+			function(err, plaintextDocument)
 			{
 				if (err) {
-					console.error(err.toString())
 					self.__setup_didFailToBoot(err)
 					return
 				}
-				if (docs.length === 0) {
-					const errStr = "❌  FundsRequest with that _id not found."
-					const err = new Error(errStr)
-					console.error(errStr)
-					self.__setup_didFailToBoot(err)
-					return
-				}
-				const encryptedDocument = docs[0]
-				__proceedTo_decryptEncryptedDocument(encryptedDocument)
+				__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 			}
 		)
-		function __proceedTo_decryptEncryptedDocument(encryptedDocument)
-		{
-			self.context.document_cryptor__background.New_DecryptedDocument__Async(
-				encryptedDocument,
-				fundsRequest_persistence_utils.DocumentCryptScheme,
-				self.persistencePassword,
-				function(err, plaintextDocument)
-				{
-					if (err) {
-						console.error("❌  Decryption err: " + err.toString())
-						self.__setup_didFailToBoot(err)
-						return
-					}
-					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
-				}
-			)
-		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…
 			fundsRequest_persistence_utils.HydrateInstance(

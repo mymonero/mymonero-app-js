@@ -30,7 +30,6 @@
 //
 const { Resolver } = require('dns')
 const { ipcMain } = require('electron')
-const uuidV1 = require('uuid/v1')
 //
 const TXTResolver_Interface = require('./TXTResolver_Interface')
 const DNSResolverHandle = require('./DNSResolverHandle.node')

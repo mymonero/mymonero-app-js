@@ -54,15 +54,12 @@ var cryptor_settings =
 	}
 }
 //
-//
 // Encryption
-//
-function EncryptedBase64String__Async(
+function New_EncryptedBase64String__Async(
 	plaintext_msg, 
 	password,
 	fn
-)
-{
+) {
 	if (typeof plaintext_msg === 'undefined') {
 		return undefined
 	}
@@ -128,19 +125,16 @@ function EncryptedBase64String__Async(
 		}
 	)
 }
-module.exports.EncryptedBase64String__Async = EncryptedBase64String__Async;
-//
+module.exports.New_EncryptedBase64String__Async = New_EncryptedBase64String__Async;
 //
 // Decryption
-//
-function DecryptedPlaintextString__Async(
+function New_DecryptedString__Async(
 	encrypted_msg_base64_string, 
 	password, 
 	fn
-)
-{
+) {
 	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
-		console.warn("DecryptedPlaintextString__Async was passed nil encrypted_msg_base64_string")
+		console.warn("New_DecryptedString__Async was passed nil encrypted_msg_base64_string")
 		return fn(null, encrypted_msg_base64_string)
 	}
 	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
@@ -178,11 +172,9 @@ function DecryptedPlaintextString__Async(
 		}
 	)
 }
-module.exports.DecryptedPlaintextString__Async = DecryptedPlaintextString__Async;
-//
+module.exports.New_DecryptedString__Async = New_DecryptedString__Async;
 //
 // Shared
-//
 function _new_encrypted_base64_unpacked_components_object(b64str) 
 {
 	if (!b64str || typeof b64str === 'undefined') { // prevent toString() exception
@@ -245,8 +237,7 @@ function _is_hmac_valid__async(
 	components, 
 	password, 
 	fn // (err, isValid?) -> Void
-)
-{
+) {
 	_new_calculated_pbkdf2_key__async(
 		password, 
 		components.headers.hmac_salt,
@@ -267,8 +258,7 @@ function _new_calculated_pbkdf2_key__async(
 	password, 
 	salt, 
 	fn
-)
-{ // Apply pseudo-random function HMAC-SHA1 by default
+) { // Apply pseudo-random function HMAC-SHA1 by default
 	crypto.pbkdf2(
 		password, 
 		salt, 

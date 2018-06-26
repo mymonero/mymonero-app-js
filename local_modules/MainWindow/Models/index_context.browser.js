@@ -70,8 +70,8 @@ function NewHydratedContext(initialContext)
 			options: {}
 		},
 		{ // is not actually background, at the moment
-			module: require("../../symmetric_cryptor/BackgroundDocumentCryptor.noOp"),
-			instance_key: "document_cryptor__background",
+			module: require("../../symmetric_cryptor/BackgroundStringCryptor.noOp"),
+			instance_key: "string_cryptor__background",
 			options: {}
 		},
 		{

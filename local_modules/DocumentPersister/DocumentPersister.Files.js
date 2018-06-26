@@ -29,7 +29,6 @@
 "use strict"
 //
 const async = require('async')
-const uuidV1 = require('uuid/v1')
 //
 //
 const DocumentPersister_Interface = require('./DocumentPersister_Interface')
@@ -67,7 +66,7 @@ class DocumentPersister extends DocumentPersister_Interface
 	//
 	// Runtime - Accessors - Private - Overrides
 	//
-	__documentsWithIds(collectionName, _ids, fn)
+	__documentContentStringsWithIds(collectionName, _ids, fn)
 	{
 		const self = this
 		async.map(_ids, function(_id, cb)
@@ -79,7 +78,7 @@ class DocumentPersister extends DocumentPersister_Interface
 			cb(null, fileDescription)
 		}, function(err, fileDescriptions)
 		{
-			self.___read_dataWithDocumentFileDescriptions(
+			self.___read_contentStringsWithDocumentFileDescriptions(
 				fileDescriptions,
 				fn
 			)
@@ -121,7 +120,7 @@ class DocumentPersister extends DocumentPersister_Interface
 					fn(err)
 					return
 				}
-				self.___read_dataWithDocumentFileDescriptions(
+				self.___read_contentStringsWithDocumentFileDescriptions(
 					documentFileDescriptions,
 					fn
 				)
@@ -132,19 +131,15 @@ class DocumentPersister extends DocumentPersister_Interface
 	//
 	// Runtime - Imperatives - Private - Overrides
 	//
-	__insertDocument(collectionName, documentToInsert, fn)
+	__insertDocument(collectionName, id, documentToInsert, fn)
 	{
 		const self = this
-		var id = documentToInsert._id
-		if (!id || typeof id === 'undefined') {
-			id = uuidV1() // generate one
-			documentToInsert._id = id // now it's actually savable
-		}
+		// you may like to be sure to specify the _id manually within your "documentToInsert"
 		const fileDescription = self._new_fileDescriptionWithComponents(
 			collectionName,
 			id
 		)
-		self.___write_fileDescriptionDocumentData(fileDescription, documentToInsert, fn)
+		self.___write_fileDescriptionDocumentContentString(fileDescription, documentToInsert, fn)
 	}
 	__updateDocumentWithId(collectionName, id, update, fn)
 	{
@@ -153,10 +148,7 @@ class DocumentPersister extends DocumentPersister_Interface
 			collectionName,
 			id
 		)
-		if (typeof update._id === 'undefined' || !update._id) {
-			update._id = id // just as a safeguard against consumers submitting a different document
-		}
-		self.___write_fileDescriptionDocumentData(fileDescription, update, fn)
+		self.___write_fileDescriptionDocumentContentString(fileDescription, update, fn)
 	}
 	__removeDocumentsWithIds(collectionName, ids, fn)
 	{ 
@@ -210,19 +202,23 @@ class DocumentPersister extends DocumentPersister_Interface
 	//
 	// Internal - Imperatives - File writing
 	//
-	___write_fileDescriptionDocumentData(fileDescription, documentToWrite, fn)
+	___write_fileDescriptionDocumentContentString(fileDescription, documentToWrite, fn)
 	{
 		const self = this
 		var stringContents = null
-		try {
-			stringContents = JSON.stringify(documentToWrite)
-		} catch (e) {
-			fn(e)
-			return
-		}
-		if (!stringContents || typeof stringContents === 'undefined') { // just to be careful
-			fn(new Error("Unable to stringify document for write."))
-			return
+		if (typeof documentToWrite === 'string') {
+			stringContents = documentToWrite
+		} else {
+			try {
+				stringContents = JSON.stringify(documentToWrite)
+			} catch (e) {
+				fn(e)
+				return
+			}
+			if (!stringContents || typeof stringContents === 'undefined') { // just to be careful
+				fn(new Error("Unable to stringify document for write."))
+				return
+			}
 		}
 		const fileKey = self.____fileKeyFromFileDescription(fileDescription)
 		const filename = self.____filenameWithFileKey(fileKey)
@@ -243,7 +239,7 @@ class DocumentPersister extends DocumentPersister_Interface
 			collectionName: collectionName
 		}
 	}
-	___read_dataWithDocumentFileDescriptions(documentFileDescriptions, fn)
+	___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions, fn)
 	{
 		const self = this
 		if (!documentFileDescriptions || documentFileDescriptions.length == 0) {
@@ -254,15 +250,15 @@ class DocumentPersister extends DocumentPersister_Interface
 			documentFileDescriptions,
 			function(documentFileDescription, cb)
 			{
-				self.___read_documentDataWithFileDescription(
+				self.___read_contentStringWithDocumentFileDescription(
 					documentFileDescription,
-					function(err, documentData)
+					function(err, documentContentString)
 					{
 						if (err) {
 							cb(err)
 							return
 						}
-						cb(null, documentData)
+						cb(null, documentContentString)
 					}
 				)
 			},
@@ -289,18 +285,17 @@ class DocumentPersister extends DocumentPersister_Interface
 	}
 	____filenameExtension()
 	{
-		return ".MMDBDoc.json" // just trying to pick something fairly unique, and short
+		return ".MMDBDoc" // just trying to pick something fairly unique, and short
 	}
 	____filenameWithFileKey(fileKey)
 	{
 		const self = this
 		return `${fileKey}${self.____filenameExtension()}`
 	}
-	___read_documentDataWithFileDescription(
+	___read_contentStringWithDocumentFileDescription(
 		documentFileDescription,
 		fn
-	)
-	{
+	) {
 		const self = this
 		const expected_fileKey = self.____fileKeyFromFileDescription(documentFileDescription)
 		const expected_filename = self.____filenameWithFileKey(expected_fileKey)
@@ -311,28 +306,17 @@ class DocumentPersister extends DocumentPersister_Interface
 				fn(new Error("Document for file description does not exist."))
 				return
 			}
-			self.fs.readFile(filepath, { encoding: 'utf8' }, function(err, stringContents)
-			{
-				if (err) {
-					fn(err)
-					return
-				}
-				var jsonData = null;
-				try {
-					jsonData = JSON.parse(stringContents)
-				} catch (e) {
-					fn(e, null)
-					return
-				}
-				fn(null, jsonData)
-			})
+			self.fs.readFile(
+				filepath, 
+				{ encoding: 'utf8' }, 
+				fn
+			)
 		})
 	}
 	___read_collection_documentFileDescriptions(
 		collectionName,
 		fn
-	)
-	{
+	) {
 		const self = this
 		self.fs.readdir(
 			self.pathTo_dataSubdir, 

@@ -41,7 +41,7 @@ const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').B
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 //
-const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
+const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const wallet_persistence_utils = require('./wallet_persistence_utils')
 const WalletHostPollingController = require('../Controllers/WalletHostPollingController')
 //
@@ -133,40 +133,23 @@ class Wallet extends EventEmitter
 		self.context.persister.DocumentsWithIds(
 			wallet_persistence_utils.CollectionName,
 			[ self._id ], // cause we're saying we have an _id passed in…
-			function(err, docs)
+			function(err, contentStrings)
 			{
 				if (err) {
 					console.error("err.message:", err.message)
 					self.failedToInitialize_cb(err)
 					return
 				}
-				if (docs.length === 0) {
+				if (contentStrings.length === 0) {
 					const errStr = "❌  Wallet with that _id not found."
 					const err = new Error(errStr)
 					console.error(errStr)
 					self.failedToInitialize_cb(err)
 					return
 				}
-				const encryptedDocument = docs[0]
-				//
-				// we can pull out unencrypted values like metadata
-				wallet_persistence_utils.HydrateInstance_withUnencryptedValues(
-					self,
-					encryptedDocument
-				)
-				// For future: Validation of necessary non-encrypted values 
-				// function _failWithValidationErr(errStr)
-				// {
-				// 	const err = new Error(errStr)
-				// 	console.error(errStr)
-				// 	self.failedToInitialize_cb(err)
-				// }
-				// if (self.aProperty !== true) {
-				// 	return _failWithValidationErr("Reconstituted wallet had non-true aProperty")
-				// }
-				//
+				const encryptedString = contentStrings[0]
 				// and we hang onto this for when the instantiator opts to boot the instance
-				self.initialization_encryptedDocument = encryptedDocument
+				self.initialization_encryptedString = encryptedString
 				self.successfullyInitialized_cb()
 			}
 		)
@@ -439,9 +422,6 @@ class Wallet extends EventEmitter
 		fn
 	) {
 		const self = this
-		const document_cryptor__background = self.context.document_cryptor__background
-		// TODO: move this function's contents to wallet_persistence_utils?
-		//
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
 			const errStr = "❌  You must supply a persistencePassword when you are calling a Boot_* method of Wallet"
@@ -451,38 +431,44 @@ class Wallet extends EventEmitter
 			return
 		}
 		//
-		const encryptedDocument = self.initialization_encryptedDocument
-		if (typeof encryptedDocument === 'undefined' || encryptedDocument === null) {
-			const errStr = "__boot_decryptInitDoc_andBoot called but encryptedDocument undefined"
+		const encryptedString = self.initialization_encryptedString
+		if (typeof encryptedString === 'undefined' || encryptedString === null) {
+			const errStr = "__boot_decryptInitDoc_andBoot called but encryptedString undefined"
 			const err = new Error(err)
 			self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 			return
 		}
 		//
-		__proceedTo_decryptDocument(encryptedDocument)
+		__proceedTo_decryptContentString(encryptedString)
 		//
-		function __proceedTo_decryptDocument(encryptedDocument)
+		function __proceedTo_decryptContentString(encryptedString)
 		{
-			document_cryptor__background.New_DecryptedDocument__Async(
-				encryptedDocument,
-				wallet_persistence_utils.DocumentCryptScheme,
+			self.context.string_cryptor__background.New_DecryptedString__Async(
+				encryptedString,
 				self.persistencePassword,
-				function(err, plaintextDocument)
+				function(err, plaintextString)
 				{
 					if (err) {
 						console.error("❌  Decryption err: " + err.toString())
 						self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 						return
 					}
-					self.initialization_encryptedDocument = null // now we can free this
+					self.initialization_encryptedString = null // now we can free this
 					//
+					var plaintextDocument = null;
+					try {
+						plaintextDocument = JSON.parse(plaintextString)
+					} catch (e) {
+						self.__trampolineFor_failedToBootWith_fnAndErr(fn, e)
+						return
+					}
 					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 				}
 			)
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…
-			wallet_persistence_utils.HydrateInstance_withDecryptedValues(
+			wallet_persistence_utils.HydrateInstance(
 				self,
 				plaintextDocument
 			)

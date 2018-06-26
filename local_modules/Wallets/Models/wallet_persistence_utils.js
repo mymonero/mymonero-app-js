@@ -1,86 +1,62 @@
-// Constants
-
-const document_cryptor = require('../../symmetric_cryptor/document_cryptor')
-const CryptSchemeFieldValueTypes = document_cryptor.CryptSchemeFieldValueTypes
+// Copyright (c) 2014-2018, MyMonero.com
+// 
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without modification, are
+// permitted provided that the following conditions are met:
+// 
+// 1. Redistributions of source code must retain the above copyright notice, this list of
+//	conditions and the following disclaimer.
+// 
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list
+//	of conditions and the following disclaimer in the documentation and/or other
+//	materials provided with the distribution.
+// 
+// 3. Neither the name of the copyright holder nor the names of its contributors may be
+//	used to endorse or promote products derived from this software without specific
+//	prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//
+const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
-//
-//
-const documentCryptScheme =
-{
-	walletLabel: { type: CryptSchemeFieldValueTypes.String },
-	wallet_currency: { type: CryptSchemeFieldValueTypes.String },
-	swatch: { type: CryptSchemeFieldValueTypes.String },
-	//
-	public_address: { type: CryptSchemeFieldValueTypes.String },
-	mnemonic_wordsetName: { type: CryptSchemeFieldValueTypes.String },
-	account_seed: { type: CryptSchemeFieldValueTypes.String },
-	public_keys: { type: CryptSchemeFieldValueTypes.JSON },
-		// view
-		// spend
-	private_keys: { type: CryptSchemeFieldValueTypes.JSON },
-		// view
-		// spend
-	//
-	heights: { type: CryptSchemeFieldValueTypes.JSON },
-		// account_scanned_height
-		// account_scanned_tx_height
-		// account_scanned_block_height
-		// account_scan_start_height
-		// transaction_height
-		// blockchain_height
-	totals: { type: CryptSchemeFieldValueTypes.JSON },
-		// total_received
-		// locked_balance
-		// total_sent
-	//
-	transactions: { type: CryptSchemeFieldValueTypes.Array },
-	spent_outputs: { type: CryptSchemeFieldValueTypes.Array }
-}
-exports.DocumentCryptScheme = documentCryptScheme
 //
 const CollectionName = "Wallets"
 exports.CollectionName = CollectionName
-
-
-// Utility functions
-function HydrateInstance_withUnencryptedValues(
-	walletInstance,
-	encryptedDocument
-)
-{
-	const self = walletInstance
-	//
-	// console.log("encryptedDocument", encryptedDocument)
-	self.isLoggedIn = encryptedDocument.isLoggedIn
-	self.isInViewOnlyMode = encryptedDocument.isInViewOnlyMode
-	self.shouldDisplayImportAccountOption = encryptedDocument.shouldDisplayImportAccountOption
-	{
-		function _isNonNil_dateStr(v)
-		{
-			return v && typeof v !== 'undefined' && v !== ""
-		}
-		{
-			const dateStr = encryptedDocument.dateThatLast_fetchedAccountInfo
-			self.dateThatLast_fetchedAccountInfo = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
-		}
-		{
-			const dateStr = encryptedDocument.dateThatLast_fetchedAccountTransactions
-			self.dateThatLast_fetchedAccountTransactions = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
-		}
-		{
-			const dateStr = encryptedDocument.dateWalletFirstSavedLocally
-			self.dateWalletFirstSavedLocally = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
-		}
-	}
-}
-exports.HydrateInstance_withUnencryptedValues = HydrateInstance_withUnencryptedValues
 //
-function HydrateInstance_withDecryptedValues(
+// Utility functions
+function HydrateInstance(
 	walletInstance,
 	plaintextDocument
-)
-{
+) {
 	const self = walletInstance
+	//
+	// console.log("plaintextDocument", plaintextDocument)
+	self.isLoggedIn = plaintextDocument.isLoggedIn
+	self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+	self.shouldDisplayImportAccountOption = plaintextDocument.shouldDisplayImportAccountOption
+	function _isNonNil_dateStr(v) { return v && typeof v !== 'undefined' && v !== "" }
+	{
+		const dateStr = plaintextDocument.dateThatLast_fetchedAccountInfo
+		self.dateThatLast_fetchedAccountInfo = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+	}
+	{
+		const dateStr = plaintextDocument.dateThatLast_fetchedAccountTransactions
+		self.dateThatLast_fetchedAccountTransactions = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+	}
+	{
+		const dateStr = plaintextDocument.dateWalletFirstSavedLocally
+		self.dateWalletFirstSavedLocally = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
+	}
 	//
 	self.walletLabel = plaintextDocument.walletLabel
 	self.wallet_currency = plaintextDocument.wallet_currency
@@ -96,8 +72,7 @@ function HydrateInstance_withDecryptedValues(
 	//
 	self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
 	self.transactions.forEach(
-		function(tx, i)
-		{ // we must fix up what JSON stringifying did to the data
+		function(tx, i) { // we must fix up what JSON stringifying did to the data
 			tx.timestamp = new Date(tx.timestamp)
 		}
 	)
@@ -119,16 +94,14 @@ function HydrateInstance_withDecryptedValues(
 	//
 	self.spent_outputs = plaintextDocument.spent_outputs // no || [] because we always persist at least []
 }
-exports.HydrateInstance_withDecryptedValues = HydrateInstance_withDecryptedValues
+exports.HydrateInstance = HydrateInstance
 //
 //
 function SaveToDisk(
 	walletInstance,
 	fn
-)
-{
+) {
 	const self = walletInstance
-	const document_cryptor__background = self.context.document_cryptor__background
 	// console.log("📝  Saving wallet to disk ", self.Description())
 	//
 	const persistencePassword = self.persistencePassword
@@ -199,85 +172,22 @@ function SaveToDisk(
 		totals: totals,
 		spent_outputs: self.spent_outputs || [] // maybe not fetched yet
 	}
-	// console.log("debug info: going to save plaintextDocument", JSON.stringify(plaintextDocument, null, '\t'))
-	// console.log("type of account_scanned_height", typeof plaintextDocument.heights.account_scanned_height)
-	// console.log("totals", JSON.stringify(plaintextDocument.totals))
-	// console.log("parsed", JSON.parse(JSON.stringify(plaintextDocument.totals)))
-	
-	document_cryptor__background.New_EncryptedDocument__Async(
-		plaintextDocument,
-		documentCryptScheme,
+	persistable_object_utils.write(
+		self.context.string_cryptor__background,
+		self.context.persister,
+		self, // for reading and writing the _id
+		CollectionName,
+		plaintextDocument, // _id will get generated for this if self does not have an _id
 		persistencePassword,
-		function(err, encryptedDocument)
-		{
-			if (err) {
-				console.error("Error while saving :", err)
-				fn(err)
-				return
-			}
-
-			if (self._id === null) {
-				_proceedTo_insertNewDocument(encryptedDocument)
-			} else {
-				_proceedTo_updateExistingDocument(encryptedDocument)
-			}
-		}
-	)
-	// console.log("debug info: going to save encryptedDocument", encryptedDocument)
-	//
-	// insert & update fn declarations for imminent usage…
-	function _proceedTo_insertNewDocument(encryptedDocument)
-	{
-		self.context.persister.InsertDocument(
-			CollectionName,
-			encryptedDocument,
-			function(
-				err,
-				newDocument
-			)
-			{
-				if (err) {
-					console.error("Error while saving wallet:", err)
-					fn(err)
-					return
-				}
-				if (newDocument._id === null) { // not that this would happen…
-					fn(new Error("❌  Inserted wallet but _id after saving was null"))
-					return // bail
-				}
-				self._id = newDocument._id // so we have it in runtime memory now…
-				console.log("✅  Saved newly inserted wallet with _id " + self._id + ".")
-				fn()
-			}
-		)
-	}
-	function _proceedTo_updateExistingDocument(encryptedDocument)
-	{
-		var update = encryptedDocument
-		self.context.persister.UpdateDocumentWithId(
-			CollectionName,
-			self._id,
-			update,
-			function(err)
-			{
-				if (err) {
-					console.error("Error while saving record:", err)
-					fn(err)
-					return
-				}
-				// console.log("✅  Saved update to record with _id " + self._id + ".")
-				fn()
-			}
-		)
-	}
+		fn
+	);
 }
 exports.SaveToDisk = SaveToDisk
 //
 function DeleteFromDisk(
 	instance,
 	fn
-)
-{
+) {
 	const self = instance
 	console.log("📝  Deleting wallet ", self.Description())
 	self.context.persister.RemoveDocumentsWithIds(
