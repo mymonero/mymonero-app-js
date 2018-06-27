@@ -32,7 +32,7 @@ const path = require('path')
 //
 module.exports = 
 {
-	devtool: "inline-source-map", // "source-map"
+	devtool: "source-map",
 	context: __dirname,
 	entry: "./local_modules/MainWindow/Views/index.browser.js",
 	output: {
