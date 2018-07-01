@@ -66,20 +66,22 @@ function New_EncryptedBase64String__Async(
 	if (plaintext_msg == null) {
 		return null
 	}
-	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
+	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'binary')) // we're expecting a string, but might as well check anyway
+	Buffer.isBuffer(password) || (password = new Buffer(password, 'binary')) // we're expecting a string, but might as well check anyway
 	//
 	const components = 
 	{
 		headers: 
 		{
-			version: String.fromCharCode(currentVersionCryptorFormatVersion),
-			options: String.fromCharCode(cryptor_settings.options)
+			version: new Buffer(String.fromCharCode(currentVersionCryptorFormatVersion)),
+			options: new Buffer(String.fromCharCode(cryptor_settings.options))
 		}
 	}
 	components.headers.encryption_salt = _new_random_salt()
 	components.headers.hmac_salt = _new_random_salt()
 	components.headers.iv = _new_random_iv_of_length(cryptor_settings.iv_length)
 	//
+	// TODO: maybe do the key gen here in parallel
 	_new_calculated_pbkdf2_key__async(
 		password, 
 		components.headers.encryption_salt,
@@ -99,25 +101,35 @@ function New_EncryptedBase64String__Async(
 						return
 					}
 					var iv = components.headers.iv
-					Buffer.isBuffer(iv) || (iv = new Buffer(iv, 'binary'))
-					Buffer.isBuffer(encryption_key) || (encryption_key = new Buffer(encryption_key, 'binary'))
-					//
-					const cipher = crypto.createCipheriv(cryptor_settings.algorithm, encryption_key, iv)
-					const encrypted_cipherText = cipher.update(plaintext_msg, 'binary', 'binary') + cipher.final('binary')
-					//
-					components.cipher_text = encrypted_cipherText
-					//
-					var binary_data = ''
-					binary_data += components.headers.version
-					binary_data += components.headers.options
-					binary_data += components.headers.encryption_salt ? components.headers.encryption_salt : ''
-					binary_data += components.headers.hmac_salt ? components.headers.hmac_salt : ''
-					binary_data += components.headers.iv
-					binary_data += components.cipher_text
-					//
-					const hmac = _new_generated_hmac(components, hmac_key)
-					const encryptedMessage_binaryBuffer = new Buffer(binary_data + hmac, 'binary')
-					const encryptedMessage_base64String = encryptedMessage_binaryBuffer.toString('base64')
+					if (Buffer.isBuffer(iv) == false) {
+						throw "Expected Buffer.isBuffer(iv)";
+					}
+					if (Buffer.isBuffer(encryption_key) == false) {
+						throw "Expected Buffer.isBuffer(encryption_key)";
+					}
+					if (cryptor_settings.iv_length !== components.headers.iv.length) {
+						throw "Expected cryptor_settings.iv_length == components.headers.iv.length";
+					}
+					const cipher = crypto.createCipheriv(
+						cryptor_settings.algorithm, 
+						encryption_key, 
+						iv
+					);
+					// pkcs padding is done automatically; see cipher.setAutoPadding
+					components.cipher_text = Buffer.concat([
+						cipher.update(plaintext_msg), 
+						cipher.final()
+					]);
+					var data = Buffer.concat([
+						components.headers.version,
+						components.headers.options,
+						components.headers.encryption_salt || new Buffer(''),
+						components.headers.hmac_salt || new Buffer(''),
+						components.headers.iv,
+						components.cipher_text
+					]);
+					const hmac = _new_generated_hmac(components, hmac_key);
+					const encryptedMessage_base64String = Buffer.concat([data, hmac]).toString('base64');
 					//
 					fn(null, encryptedMessage_base64String)
 				}
@@ -133,6 +145,8 @@ function New_DecryptedString__Async(
 	password, 
 	fn
 ) {
+	Buffer.isBuffer(password) || (password = new Buffer(password, 'binary'));
+
 	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
 		console.warn("New_DecryptedString__Async was passed nil encrypted_msg_base64_string")
 		return fn(null, encrypted_msg_base64_string)
@@ -155,18 +169,25 @@ function New_DecryptedString__Async(
 			_new_calculated_pbkdf2_key__async(
 				password, 
 				unpacked_base64_components.headers.encryption_salt,
-				function(err, cipherKey) 
+				function(err, cipherKey_binaryBuffer) 
 				{
 					if (err) {
 						fn(err)
 						return
 					}
-					const cipherKey_binaryBuffer = new Buffer(cipherKey, 'binary')
-					const iv_binaryBuffer = new Buffer(unpacked_base64_components.headers.iv, 'binary')
-					const cipherText_binaryBuffer = new Buffer(unpacked_base64_components.cipher_text, 'binary')
-					const deCipher = crypto.createDecipheriv(cryptor_settings.algorithm, cipherKey_binaryBuffer, iv_binaryBuffer)
-					const decrypted = deCipher.update(cipherText_binaryBuffer, 'binary', 'utf8') + deCipher.final('utf8')
-					fn(null, decrypted)
+					const deCipher = crypto.createDecipheriv(
+						cryptor_settings.algorithm, 
+						cipherKey_binaryBuffer, 
+						unpacked_base64_components.headers.iv
+					);
+					// pkcs unpadding is done automatically; see cipher.setAutoPadding
+					const unpadded_decrypted_buffer = Buffer.concat([
+						deCipher.update(unpacked_base64_components.cipher_text), 
+						deCipher.final()
+					]);
+					const decrypted_string = unpadded_decrypted_buffer.toString('utf8')
+					//
+					fn(null, decrypted_string)
 				}
 			)
 		}
@@ -181,37 +202,37 @@ function _new_encrypted_base64_unpacked_components_object(b64str)
 		throw "_new_encrypted_base64_unpacked_components_object was passed nil b64str"
 		// return undefined
 	}
-	var binary_data = new Buffer(b64str, 'base64').toString('binary')
+	var data = new Buffer(b64str, 'base64')
 	var components = 
 	{
-		headers: _new_parsed_headers_object(binary_data),
-		hmac: binary_data.substr(-cryptor_settings.hmac.length)
+		headers: _new_parsed_headers_object(data),
+		hmac: data.slice(data.length -cryptor_settings.hmac.length)
 	}
 	var header_length = components.headers.length
-	var cipher_text_length = binary_data.length - header_length - components.hmac.length
-	components.cipher_text = binary_data.substr(header_length, cipher_text_length)
+	var cipher_text_length = data.length - header_length - components.hmac.length
+	components.cipher_text = data.slice(header_length, header_length + cipher_text_length) 
 	//
 	return components
 }
-function _new_parsed_headers_object(bin_data) 
+function _new_parsed_headers_object(buffer_data) 
 {
 	var offset = 0;
 
-	var version_char = bin_data[0];
+	var version_char = buffer_data.slice(offset, offset + 1);
 	offset += version_char.length;
 
-	validate_schema_version(version_char.charCodeAt());
+	validate_schema_version(version_char.toString('binary').charCodeAt());
 
-	var options_char = bin_data[1];
+	var options_char = buffer_data.slice(offset, offset + 1);
 	offset += options_char.length;
 
-	var encryption_salt = bin_data.substr(offset, cryptor_settings.salt_length);
+	var encryption_salt = buffer_data.slice(offset, offset + cryptor_settings.salt_length);
 	offset += encryption_salt.length;
 
-	var hmac_salt = bin_data.substr(offset, cryptor_settings.salt_length);
+	var hmac_salt = buffer_data.slice(offset, offset + cryptor_settings.salt_length);
 	offset += hmac_salt.length;
 
-	var iv = bin_data.substr(offset, cryptor_settings.iv_length);
+	var iv = buffer_data.slice(offset, offset + cryptor_settings.iv_length);
 	offset += iv.length;
 
 	var parsing_description = 
@@ -247,8 +268,9 @@ function _is_hmac_valid__async(
 				fn(err)
 				return
 			}
-			var generated_hmac = _new_generated_hmac(components, hmac_key);
-			var isValid = (components.hmac === generated_hmac);
+			var generated_hmac_buffer = _new_generated_hmac(components, hmac_key);
+			// For 0.11+ we can use Buffer.compare
+			const isValid = components.hmac.toString('hex') == generated_hmac_buffer.toString('hex');
 			//
 			fn(null, isValid)
 		}
@@ -271,21 +293,28 @@ function _new_calculated_pbkdf2_key__async(
 		}
 	)
 }
-function _new_generated_hmac(components, hmac_key)
-{
-	var hmac_message = '';
+var _new_generated_hmac = function(
+	components, 
+	hmac_key
+) {
+	var hmac_message = new Buffer('');
 	if (cryptor_settings.hmac.includes_header) {
-		hmac_message += components.headers.version;
-		hmac_message += components.headers.options;
-		hmac_message += components.headers.encryption_salt ? components.headers.encryption_salt.toString('binary') : '';
-		hmac_message += components.headers.hmac_salt ? components.headers.hmac_salt.toString('binary') : '';
-		hmac_message += components.headers.iv.toString('binary');
+		hmac_message = Buffer.concat([
+			hmac_message,
+			components.headers.version,
+			components.headers.options,
+			components.headers.encryption_salt || new Buffer(''),
+			components.headers.hmac_salt || new Buffer(''),
+			components.headers.iv
+		]);
 	}
-	hmac_message += components.cipher_text.toString('binary');
-	
-	var hmac_itself = crypto.createHmac(cryptor_settings.hmac.algorithm, hmac_key).update(hmac_message).digest('binary');
-	
-	return hmac_itself;
+	hmac_message = Buffer.concat([hmac_message, components.cipher_text]);
+	return crypto.createHmac(
+		cryptor_settings.hmac.algorithm, 
+		hmac_key
+	).update(
+		hmac_message
+	).digest();
 }
 function _new_random_salt() 
 {
@@ -294,10 +323,10 @@ function _new_random_salt()
 function _new_random_iv_of_length(block_size) 
 {
 	try {
-		var ivBuffer = crypto.randomBytes(block_size);	
-		var ivString = ivBuffer.toString('binary', 0, block_size);
+		var raw_ivBuffer = crypto.randomBytes(block_size);	
+		var final_ivBuffer = raw_ivBuffer.slice(0, block_size); // not sure if this slice is actually necessary with the randomBytes call
 
-		return ivString;
+		return final_ivBuffer;
 	} catch (ex) {
 		// TODO: handle error (this should be getting caught in consumer anyway)
 		// most likely, entropy sources are drained
