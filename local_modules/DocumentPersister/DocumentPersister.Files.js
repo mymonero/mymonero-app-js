@@ -285,7 +285,7 @@ class DocumentPersister extends DocumentPersister_Interface
 	}
 	____filenameExtension()
 	{
-		return ".MMDBDoc" // just trying to pick something fairly unique, and short
+		return ".mmdbdoc_v1" // just trying to pick something fairly unique, and short
 	}
 	____filenameWithFileKey(fileKey)
 	{
