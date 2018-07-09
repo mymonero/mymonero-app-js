@@ -940,7 +940,9 @@ class WalletDetailsView extends View
 			}
 		}
 		var shouldShowActivityIndicator = 
-			wallet_bootFailed == false 
+			wallet.isBooted // rule out still-logging-in (for now) 
+			&& wallet.HasEverFetched_accountInfo() // rule out still loading (for now)
+			&& wallet_bootFailed == false 
 			&& (wallet.IsScannerCatchingUp()/* || wallet.IsFetchingAnyUpdates()*/)
 		if (shouldShowActivityIndicator) {
 			if (!self.catchingUpProgressAndActivityIndicatorView || typeof self.catchingUpProgressAndActivityIndicatorView === 'undefined') {
