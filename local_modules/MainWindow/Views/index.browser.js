@@ -70,11 +70,12 @@ window.BootApp = function()
 		isLiteApp: true, // used sparingly for to disable (but not redact) functionality
 		isRunningInBrowser: true, // categorically
 		isMobile: isMobile,
-		Cordova_isMobile: false, // just to be clear
+		Cordova_isMobile: false, // (this can be renamed or maybe deprecated)
 		crossPlatform_appBundledIndexRelativeAssetsRootPath: "",
 		crossPlatform_indexContextRelativeAssetsRootPathSuffix: "../../", // b/c index_context is in MainWindow/Views; must end up /
-		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this (thanks to Cordova port) but it works
+		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this but it works
 		TabBarView_thickness: isHorizontalBar ? 48 : 79,
+		rootViewFooterHeight: 32,
 		TabBarView_isHorizontalBar: isHorizontalBar,
 		ThemeController_isMobileBrowser: isMobile == true,
 		Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc

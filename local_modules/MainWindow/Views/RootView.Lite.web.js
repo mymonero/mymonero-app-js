@@ -29,12 +29,25 @@
 "use strict"
 //
 const RootView_Base = require('./RootView_Base.web')
+const RootFooterView = require('./RootFooterView.web')
 //
 class RootView extends RootView_Base
 {
 	constructor(options, context)
 	{
 		super(options, context)
+	}
+	setup_tabBarAndContentView()
+	{
+		super.setup_tabBarAndContentView() // must call first
+		//
+		const self = this
+		const layer = self.tabBarViewAndContentView.layer
+		layer.style.height = `calc(100% - ${self.context.rootViewFooterHeight}px)`
+		//
+		const footerView = new RootFooterView({}, self.context)
+		self.footerView = footerView
+		self.addSubview(footerView)
 	}
 	setup_passwordEntryViewController()
 	{// overridden and not calling on super

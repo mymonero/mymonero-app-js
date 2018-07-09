@@ -112,6 +112,19 @@ class ThemeController
 
 	//
 	// Imperatives - Centralizations of element styling (for, e.g. cross-platform support)
+	StyleLayer_FontAsSmallRegularSansSerif(layer)
+	{
+		const self = this
+		layer.style.fontFamily = self.FontFamily_sansSerif()
+		layer.style.fontSize = "12px"
+		layer.style.fontWeight = "500"
+		if (self.context.ThemeController_isMobileBrowser === true) {
+			//
+		} else { 
+			layer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
+			layer.style.letterSpacing = "0.5px"
+		}
+	}
 	StyleLayer_FontAsSmallRegularMonospace(layer)
 	{
 		const self = this
@@ -124,7 +137,7 @@ class ThemeController
 			layer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
 			layer.style.fontSize = "10px"
 			layer.style.letterSpacing = "0.5px"
-			if (process.platform === "linux") {
+			if (typeof process !== 'undefined' && process.platform === "linux") {
 				layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
 			} else {
 				layer.style.fontWeight = "300"

@@ -41,10 +41,10 @@
 		<meta http-equiv="Content-Security-Policy"
 			content="default-src * data: gap: blob: https://ssl.gstatic.com http://localhost 'unsafe-eval' 'unsafe-inline';
 			style-src 'self' 'unsafe-inline';
-			script-src 'self' https://www.google-analytics.com/analytics.js 'unsafe-inline' 'unsafe-eval';
+			script-src 'self' https://www.google-analytics.com/analytics.js https://widget.intercom.io/widget/hi3rzlw0 https://widget.intercom.io/widget/qa83i5n9 https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval';
 			object-src 'none'; 
-			font-src 'self'; 
-			img-src 'self' data:; 
+			font-src 'self' https://js.intercomcdn.com/fonts/;  
+			img-src 'self' data:  https://downloads.intercomcdn.com/i/o/  https://js.intercomcdn.com/images/; 
 			connect-src * data: blob: filesystem:;">
 
 		<meta name="apple-itunes-app" content="app-id=1372508199">
@@ -53,6 +53,18 @@
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height">
         <link rel="stylesheet" type="text/css" href="MainWindow/Views/clear.browser.css">
+        <script>
+			window.INTERCOM__APP_ID = /*production*/"hi3rzlw0"  // "qa83i5n9"/*development*/  // TODO: select this via webpack env
+			window.intercomSettings = 
+			{
+				app_id: window.INTERCOM__APP_ID,
+				vertical_padding: 100,
+				hide_default_launcher: true 
+			};
+		</script>
+		<script>
+			(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/' + w.INTERCOM__APP_ID;var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()
+		</script>
     </head>
     <body>
         <script type="text/javascript" src="mymonero-app-bundle.js"></script>
