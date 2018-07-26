@@ -235,10 +235,13 @@ class Contact extends EventEmitter
 	{
 		const self = this
 		const emitter = self.context.openAliasResolver
-		emitter.removeListener(
-			emitter.EventName_resolvedOpenAliasAddress(),
-			self._EventName_resolvedOpenAliasAddress_fn
-		)
+		if (self._EventName_resolvedOpenAliasAddress_fn && typeof self._EventName_resolvedOpenAliasAddress_fn != 'undefined') {
+			emitter.removeListener(
+				emitter.EventName_resolvedOpenAliasAddress(),
+				self._EventName_resolvedOpenAliasAddress_fn
+			)
+			self._EventName_resolvedOpenAliasAddress_fn = null;
+		}
 	}
 
 
