@@ -66,8 +66,8 @@ function New_EncryptedBase64String__Async(
 	if (plaintext_msg == null) {
 		return null
 	}
-	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'binary')) // we're expecting a string, but might as well check anyway
-	Buffer.isBuffer(password) || (password = new Buffer(password, 'binary')) // we're expecting a string, but might as well check anyway
+	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
+	Buffer.isBuffer(password) || (password = new Buffer(password, 'utf8')) // we're expecting a string, but might as well check anyway
 	//
 	const components = 
 	{
@@ -145,7 +145,7 @@ function New_DecryptedString__Async(
 	password, 
 	fn
 ) {
-	Buffer.isBuffer(password) || (password = new Buffer(password, 'binary'));
+	Buffer.isBuffer(password) || (password = new Buffer(password, 'utf8'));
 
 	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
 		console.warn("New_DecryptedString__Async was passed nil encrypted_msg_base64_string")
