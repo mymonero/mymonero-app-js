@@ -89,7 +89,7 @@ class AboutWindowController
 			options.maxHeight += 27
 		}
 		const window = new electron.BrowserWindow(options)
-		window.loadURL(`file://${__dirname}/../Views/index.electron.html`)
+		window.loadURL(`file://${__dirname}/../Views/index.electron.html`) // it is critical that this remains a local, controlled file since nodeIntegration=true
 		window.setMenu(null) // because on Windows and Linux we do not want to have a menubar on top of this about menu
 		//
 		return window

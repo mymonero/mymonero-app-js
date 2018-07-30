@@ -106,7 +106,7 @@ class MainWindowController
 				// can actually occur when app is in the background or is minimized
 
 				// the following are currently the default values but stating them here to be explicit…
-				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true
+				webSecurity: true,
 				allowDisplayingInsecureContent: false, // https content only
 				allowRunningInsecureContent: false // html/js/css from https only
 			}
@@ -127,7 +127,7 @@ class MainWindowController
 			options.maxHeight += 55
 		}
 		const window = new electron.BrowserWindow(options)
-		window.loadURL(`file://${__dirname}/../Views/index.electron.html`)
+		window.loadURL(`file://${__dirname}/../Views/index.electron.html`) // it is critical that this remains a local, controlled file since nodeIntegration=true
 		//
 		return window
 	}
