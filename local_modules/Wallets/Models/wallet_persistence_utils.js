@@ -43,7 +43,12 @@ function HydrateInstance(
 	// console.log("plaintextDocument", plaintextDocument)
 	self.isLoggedIn = plaintextDocument.isLoggedIn
 	self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
-	self.shouldDisplayImportAccountOption = plaintextDocument.shouldDisplayImportAccountOption
+
+	self.login__new_address = plaintextDocument.login__new_address // may be undefined
+	self.login__generated_locally = plaintextDocument.login__generated_locally // may be undefined
+	if (typeof plaintextDocument.local_wasAGeneratedWallet !== 'undefined') {
+		self.local_wasAGeneratedWallet = plaintextDocument.local_wasAGeneratedWallet
+	}
 	function _isNonNil_dateStr(v) { return v && typeof v !== 'undefined' && v !== "" }
 	{
 		const dateStr = plaintextDocument.dateThatLast_fetchedAccountInfo
@@ -165,12 +170,20 @@ function SaveToDisk(
 		dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally ? self.dateWalletFirstSavedLocally.toString() : undefined, // must convert to string else will get exception on encryption
 		//
 		isInViewOnlyMode: self.isInViewOnlyMode,
-		shouldDisplayImportAccountOption: self.shouldDisplayImportAccountOption,
 		//
 		transactions: self.transactions || [], 
 		heights: heights,
 		totals: totals,
 		spent_outputs: self.spent_outputs || [] // maybe not fetched yet
+	}
+	if (typeof self.login__new_address !== 'undefined') {
+		plaintextDocument.login__new_address = self.login__new_address
+	}
+	if (typeof self.login__generated_locally !== 'undefined') {
+		plaintextDocument.login__generated_locally = self.login__generated_locally
+	}
+	if (typeof self.local_wasAGeneratedWallet !== 'undefined') { // saving this primarily so that we can keep calling the regen function with this value
+		plaintextDocument.local_wasAGeneratedWallet = self.local_wasAGeneratedWallet
 	}
 	persistable_object_utils.write(
 		self.context.string_cryptor__background,

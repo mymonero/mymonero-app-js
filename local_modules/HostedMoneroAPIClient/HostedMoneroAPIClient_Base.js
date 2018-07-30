@@ -76,12 +76,13 @@ class HostedMoneroAPIClient_Base
 	}
 	//
 	// Runtime - Accessors - Public - Requests
-	LogIn(address, view_key__private, fn)
+	LogIn(address, view_key__private, generated_locally, fn)
 	{ // fn: (err?, new_address?) -> RequestHandle
 		const self = this
 		const endpointPath = "login"
 		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
 		parameters.create_account = true
+		parameters.generated_locally = generated_locally
 		const requestHandle = net_service_utils.HTTPRequest(
 			self.request,
 			self._new_apiAddress_authority(),
@@ -99,10 +100,12 @@ class HostedMoneroAPIClient_Base
 		function __proceedTo_parseAndCallBack(data)
 		{
 			const new_address = data.new_address
+			const received__generated_locally = data.generated_locally
+			const start_height = data.start_height
 			// console.log("data from login: ", data)
 			// TODO? parse anything else?
 			//
-			fn(null, new_address)
+			fn(null, new_address, received__generated_locally, start_height)
 		}
 		return requestHandle
 	}

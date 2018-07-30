@@ -472,6 +472,9 @@ class Wallet extends EventEmitter
 				self,
 				plaintextDocument
 			)
+			// Regenerate any runtime vals that depend on persisted vals..
+			self.regenerate_shouldDisplayImportAccountOption()
+			//
 			__proceedTo_validateEncryptedValuesHydration()
 		}
 		function __proceedTo_validateEncryptedValuesHydration()
@@ -695,17 +698,21 @@ class Wallet extends EventEmitter
 			self.public_keys = public_keys
 			self.private_keys = private_keys
 			self.isInViewOnlyMode = isInViewOnlyMode
+			self.local_wasAGeneratedWallet = wasAGeneratedWallet // for regeneration purposes later
 			//
 			self.context.hostedMoneroAPIClient.LogIn(
 				address,
 				view_key,
-				function(login__err, new_address)
+				wasAGeneratedWallet,
+				function(login__err, new_address, received__generated_locally, start_height)
 				{
 					self.isLoggingIn = false
 					self.isLoggedIn = login__err == null
+					self.login__new_address = new_address
+					self.login__generated_locally = received__generated_locally // now update this b/c the server may have pre-existing information
+					self.account_scan_start_height = start_height // is actually the same thing - we should save this here so we can use it when calculating whether to show the import btn
 					//
-					const shouldDisplayImportAccountOption = !wasAGeneratedWallet && new_address
-					self.shouldDisplayImportAccountOption = shouldDisplayImportAccountOption
+					self.regenerate_shouldDisplayImportAccountOption() // now this can be called
 					//
 					const shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
 					if (login__err) {
@@ -739,6 +746,25 @@ class Wallet extends EventEmitter
 					)
 				}
 			)
+		}
+	}
+	regenerate_shouldDisplayImportAccountOption()
+	{
+		const self = this
+		let isAPIBeforeGeneratedLocallyAPISupport = typeof self.login__generated_locally == "undefined" || typeof self.account_scan_start_height == 'undefined'
+		if (isAPIBeforeGeneratedLocallyAPISupport) {
+			if (typeof self.local_wasAGeneratedWallet == 'undefined') {
+				self.local_wasAGeneratedWallet = false // just going to set this to false - it means the user is on a wallet which was logged in via a previous version
+			}
+			if (typeof self.login__new_address == 'undefined') {
+				self.login__new_address = false // going to set this to false if it doesn't exist - it means the user is on a wallet which was logged in via a previous version
+			}
+			self.shouldDisplayImportAccountOption = !self.local_wasAGeneratedWallet && self.login__new_address 
+		} else {
+			if (typeof self.account_scan_start_height === 'undefined') {
+				throw "Logic error: expected latest_scan_start_height"
+			}
+			self.shouldDisplayImportAccountOption = self.login__generated_locally != true && self.account_scan_start_height !== 0
 		}
 	}
 
@@ -1413,6 +1439,7 @@ class Wallet extends EventEmitter
 					}
 					if (heights_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
 						anyChanges = true
+						self.regenerate_shouldDisplayImportAccountOption() // scan start height may have changed
 						self.___didReceiveActualChangeTo_heights()
 					}
 					if (anyChanges == false) {
@@ -1535,6 +1562,7 @@ class Wallet extends EventEmitter
 						// console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
 					}
 					if (heights_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
+						self.regenerate_shouldDisplayImportAccountOption() // heights may have changed
 						self.___didReceiveActualChangeTo_heights()
 					}
 				}
