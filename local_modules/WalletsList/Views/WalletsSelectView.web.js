@@ -76,6 +76,14 @@ const cssRules =
 ]
 function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
+function _fromContext_wantsHoverAndSelectable(context)
+{
+	if (context.isLiteApp == true) {
+		return false // special case - b/c we'll only ever have max 1 wallet
+	}
+	return true
+}
+//
 class WalletsSelectView extends ListCustomSelectView
 {
 	// Lifecycle - Setup
@@ -90,17 +98,14 @@ class WalletsSelectView extends ListCustomSelectView
 		options.cellContentsViewClass = WalletCellContentsView // must pass
 		options.cellContentsView_init_baseOptions = // optl but set here for things like icon_sizeClass
 		{
-			icon_sizeClass: commonComponents_walletIcons.SizeClasses.Medium32
+			icon_sizeClass: commonComponents_walletIcons.SizeClasses.Medium32,
+			wantsHoverable: _fromContext_wantsHoverAndSelectable(context)
 		}
 		super(options, context)
 	}
 	overridable_wantsSelectionDisplayCellView_clickable()
 	{
-		const self = this
-		if (self.context.isLiteApp == true) {
-			return false // special case - b/c we'll only ever have max 1 wallet
-		}
-		return true
+		return _fromContext_wantsHoverAndSelectable(this.context);
 	}
 	setup_views()
 	{

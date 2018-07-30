@@ -42,6 +42,7 @@ class WalletCellContentsView extends View
 		super(options, context)
 		//
 		const self = this
+		self.wantsHoverable = self.options.wantsHoverable === false ? false : true; // default true
 		self.icon_sizeClass = self.options.icon_sizeClass || commonComponents_walletIcons.SizeClasses.Large48
 		self.setup()
 	}
@@ -53,9 +54,11 @@ class WalletCellContentsView extends View
 	setup_views()
 	{
 		const self = this
-		// hover effects/classes
-		self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-		self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+		if (self.wantsHoverable) {
+			// hover effects/classes
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+		}
 		{ 
 			const layer = self.layer
 			layer.style.wordBreak = "break-all" // to get the text to wrap
