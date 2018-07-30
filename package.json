@@ -10,9 +10,9 @@
   "scripts": {
     "start": "electron ./local_modules/electron_main/electron_main.js",
     "start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
-    "dist-m": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m",
-    "dist-w": "electron-builder -w",
-    "dist-l": "electron-builder -l",
+    "dist-m": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m -p never",
+    "dist-w": "electron-builder -w -p never",
+    "dist-l": "electron-builder -l -p never",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -40,9 +40,17 @@
       "!**/favicon*.png",
       "!**/favicon*.ico"
     ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "mymonero",
+        "repo": "mymonero-app-js"
+      }
+    ],
     "mac": {
       "category": "public.app-category.finance",
       "target": [
+        "zip",
         "dir",
         "dmg"
       ],
@@ -85,6 +93,7 @@
   "dependencies": {
     "async": "^2.6.1",
     "electron-context-menu": "^0.9.1",
+    "electron-updater": "^3.0.3",
     "fastclick": "^1.0.6",
     "html5-fs": "^0.1.1",
     "jsqr": "^1.0.4",

@@ -71,3 +71,12 @@ if (shouldQuit) { // would be true if this is a duplicative app instance
 	app.quit()
 	return
 }
+//
+const { autoUpdater } = require("electron-updater")
+const { dialog } = require('electron')
+// const log = require('electron-log');
+// autoUpdater.logger = log;
+// autoUpdater.logger.transports.file.level = 'info';
+app.on('ready', function()  {
+	autoUpdater.checkForUpdatesAndNotify();
+});

@@ -145,7 +145,8 @@ class MenuController extends MenuController_Abstract
 					label: 'Check for Updates',
 					click: function(menuItem, browserWindow, event)
 					{
-						console.log("TODO: check for updates")
+						const { autoUpdater } = require("electron-updater")
+						autoUpdater.checkForUpdatesAndNotify();
 					}
 				},
 				{
