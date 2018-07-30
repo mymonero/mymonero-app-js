@@ -41,8 +41,6 @@ const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
-const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-const AddContactFromSendTabView = require('../../Contacts/Views/AddContactFromSendTabView.web')
 const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView.web')
 //
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
@@ -1770,22 +1768,9 @@ class SendFundsView extends View
 						}
 						self.pushDetailsViewFor_transaction(sendFrom_wallet, mockedTransaction)
 					}
-					{ // and after a delay, present AddContactFromSendTabView
+					{
 						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-						if (this_pickedContact === null) { // so they're going with a custom addr
-							setTimeout(
-								function()
-								{
-									const view = new AddContactFromSendTabView({
-										mockedTransaction: mockedTransaction
-									}, self.context)
-									const navigationView = new StackAndModalNavigationView({}, self.context)
-									navigationView.SetStackViews([ view ])
-									self.navigationController.PresentView(navigationView, true)
-								},
-								750 + 300 // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
-							)
-						}
+						self.__didSendWithPickedContact(this_pickedContact, mockedTransaction);
 					}
 					{ // finally, clean up form
 						setTimeout(
@@ -2456,6 +2441,12 @@ class SendFundsView extends View
 			self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
 			return // nothing picked / canceled
 		}
+	}
+	//
+	// Delegation - Internal - Overridable
+	__didSendWithPickedContact(pickedContact_orNull, mockedTransaction)
+	{
+		// overridable
 	}
 	//
 	// Delegation - Select etc controls

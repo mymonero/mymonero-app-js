@@ -30,6 +30,9 @@
 //
 const SendFundsView_Base = require('./SendFundsView_Base.web')
 const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
+const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
+const AddContactFromSendTabView = require('../../Contacts/Views/AddContactFromSendTabView.web')
+const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //
 class SendFundsView extends SendFundsView_Base
 {
@@ -119,6 +122,24 @@ class SendFundsView extends SendFundsView_Base
 			}
 		}
 		self._shared_havingClearedForm_didPickRequestPayloadForAutofill(requestPayload)
+	}
+	__didSendWithPickedContact(pickedContact_orNull, mockedTransaction)
+	{
+		const self = this;
+		if (pickedContact_orNull === null) { // so they're going with a custom addr
+			setTimeout(
+				function()
+				{
+					const view = new AddContactFromSendTabView({
+						mockedTransaction: mockedTransaction
+					}, self.context)
+					const navigationView = new StackAndModalNavigationView({}, self.context)
+					navigationView.SetStackViews([ view ])
+					self.navigationController.PresentView(navigationView, true)
+				},
+				750 + 300 // after the navigation transition just above has taken place, and given a little delay for user to get their bearings
+			)
+		}
 	}
 }
 module.exports = SendFundsView
