@@ -79,7 +79,15 @@ class InfoDisclosingView extends View
 					if (hasClass_doNotUseForDisclosureToggling) {
 						return
 					}
-					let target_isInteractiveSubElement = target.tagName.toLowerCase() == "a"
+					let target_isInteractiveSubElement = false; // derive
+					{
+						if (target.tagName.toLowerCase() == "a") {
+							target_isInteractiveSubElement = true;
+						} else if (target.style.userSelect == "all"
+							|| target.style.webkitUserSelect == "all") {
+							target_isInteractiveSubElement = true;
+						}
+					}
 					if (target_isInteractiveSubElement) {
 						return
 					}
