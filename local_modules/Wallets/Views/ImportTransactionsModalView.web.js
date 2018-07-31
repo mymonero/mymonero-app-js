@@ -214,7 +214,7 @@ class ImportTransactionsModalView extends View
 		labelLayer.style.float = "left"
 		labelLayer.style.display = "block"
 		div.appendChild(labelLayer)
-		{ // right
+		if (self.context.isRunningInBrowser != true) { // right
 			// copying both html and plaintext
 			const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 				self.context,
@@ -259,7 +259,7 @@ class ImportTransactionsModalView extends View
 			labelLayer.style.float = "left"
 			labelLayer.style.display = "block"
 			div.appendChild(labelLayer)
-			{ // right
+			if (self.context.isRunningInBrowser != true) { // right
 				// copying both html and plaintext
 				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 					self.context,
