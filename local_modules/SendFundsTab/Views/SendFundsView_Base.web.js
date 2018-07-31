@@ -139,6 +139,9 @@ class SendFundsView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		layer.style.MozUserSelect = "none" // disable selection here but enable selectively
+		layer.style.msUserSelect = "none" // disable selection here but enable selectively
+		layer.style.userSelect = "none" // disable selection here but enable selectively
 		//
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
@@ -536,6 +539,8 @@ class SendFundsView extends View
 				selectLayer.style.borderRadius = "3px"
 				selectLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 				selectLayer.style.webkitAppearance = "none" // apparently necessary in order to activate the following style.border…Radius
+				selectLayer.style.MozAppearance = "none"
+				selectLayer.style.msAppearance = "none"
 				selectLayer.style.appearance = "none"
 				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
 					selectLayer,
