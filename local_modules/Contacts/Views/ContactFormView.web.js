@@ -82,6 +82,7 @@ class ContactFormView extends View
 		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		// no need to support other browsers since this is not in the web wallet
 	}
 	setup_validationMessageLayer()
 	{

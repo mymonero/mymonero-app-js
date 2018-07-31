@@ -38,6 +38,35 @@ const k_runnableTrackHeight = k_knobWidth + 2
 // CSS rules
 const NamespaceName = "labeledRangeInputs"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+
+
+const thumbCSS = `-webkit-appearance: none;
+	-moz-appearance: none;
+	-ms-appearance: none;
+	appearance: none;
+	
+	height: ${k_knobWidth}px;
+	width: ${k_knobWidth}px;
+	border-radius:100%;
+	margin-top: 1px; /* minor visual */
+
+	background:#494749;
+	cursor: pointer;
+	box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
+`
+const active_thumbCSS = `background:#404040;
+	box-shadow:0 1px 1px 0 rgba(0,0,0,0.50), 0 0.5px 0.5px 0 #161416, inset 0 0.5px 0 0 #505050;
+`
+const runnableTrackCSS = `-webkit-appearance: none;
+	-moz-appearance: none;
+	-ms-appearance: none;
+	appearance: none;
+
+	cursor: pointer;
+
+	width:100%;
+	height: ${k_runnableTrackHeight}px;
+`
 const cssRules =
 [
 	`.labeledRangeInput-container {
@@ -57,29 +86,32 @@ const cssRules =
 		outline: none;
 	}`,
 	`.labeledRangeInput-container input[type=range]::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		appearance: none;
-		
-		height: ${k_knobWidth}px;
-		width: ${k_knobWidth}px;
-		border-radius:100%;
-		margin-top: 1px; /* minor visual */
-
-		background:#494749;
-		cursor: pointer;
-		box-shadow:0 2px 4px 0 rgba(0,0,0,0.50), 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #6b696b;
+		${thumbCSS}
+	}`,
+	`.labeledRangeInput-container input[type=range]::-moz-range-thumb {
+		${thumbCSS}
+	}`,
+	`.labeledRangeInput-container input[type=range]::-ms-thumb {
+		${thumbCSS}
 	}`,
 	// :active
 	`.labeledRangeInput-container:not(.disabled) input[type=range]:active::-webkit-slider-thumb {
-		background:#404040;
-		box-shadow:0 1px 1px 0 rgba(0,0,0,0.50), 0 0.5px 0.5px 0 #161416, inset 0 0.5px 0 0 #505050;
+		${active_thumbCSS}
+	}`,
+	`.labeledRangeInput-container:not(.disabled) input[type=range]:active::-moz-range-thumb {
+		${active_thumbCSS}
+	}`,
+	`.labeledRangeInput-container:not(.disabled) input[type=range]:active::-ms-thumb {
+		${active_thumbCSS}
 	}`,
 	`.labeledRangeInput-container input[type=range]::-webkit-slider-runnable-track {
-		-webkit-appearance: none;
-		cursor: pointer;
-		
-		width:100%;
-		height: ${k_runnableTrackHeight}px;
+		${runnableTrackCSS}
+	}`,
+	`.labeledRangeInput-container input[type=range]::-moz-range-track {
+		${runnableTrackCSS}
+	}`,
+	`.labeledRangeInput-container input[type=range]::-ms-track {
+		${runnableTrackCSS}
 	}`,
 	`.labeledRangeInput-container .slider-runnable-track {		
 		position: absolute;
@@ -94,6 +126,14 @@ const cssRules =
 	}`,
 	`.labeledRangeInput-container.disabled input[type=range]::-webkit-slider-thumb,
 	 .labeledRangeInput-container.disabled input[type=range]::-webkit-slider-runnable-track {
+		cursor: default !important;
+	}`,
+	`.labeledRangeInput-container.disabled input[type=range]::-moz-range-thumb,
+	 .labeledRangeInput-container.disabled input[type=range]::-moz-range-track {
+		cursor: default !important;
+	}`,
+	`.labeledRangeInput-container.disabled input[type=range]::-ms-thumb,
+	 .labeledRangeInput-container.disabled input[type=range]::-ms-track {
 		cursor: default !important;
 	}`,
 ]

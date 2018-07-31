@@ -57,6 +57,8 @@ class RootView extends View
 			layer.style.top = "0px"
 			layer.style.webkitAppRegion = "drag" // make draggable
 			layer.style.webkitUserSelect = "none"
+			layer.style.MozUserSelect = "none"
+			layer.style.msUserSelect = "none"
 			layer.style.cursor = "default"
 		}
 		{

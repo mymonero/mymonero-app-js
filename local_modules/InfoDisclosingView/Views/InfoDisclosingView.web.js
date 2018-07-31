@@ -84,7 +84,9 @@ class InfoDisclosingView extends View
 						if (target.tagName.toLowerCase() == "a") {
 							target_isInteractiveSubElement = true;
 						} else if (target.style.userSelect == "all"
-							|| target.style.webkitUserSelect == "all") {
+							|| target.style.webkitUserSelect == "all"
+							|| target.style.MozUserSelect == "all"
+							|| target.style.msUserSelect == "all") {
 							target_isInteractiveSubElement = true;
 						}
 					}

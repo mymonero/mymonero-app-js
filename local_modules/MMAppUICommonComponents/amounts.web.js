@@ -186,6 +186,8 @@ function New_AmountInputFieldPKG(
 		selectLayer.style.padding = "0"
 		selectLayer.style.borderRadius = "0"
 		selectLayer.style.webkitAppearance = "none" // apparently necessary in order to activate the following style.border…Radius
+		selectLayer.style.MozAppearance = "none"
+		selectLayer.style.msAppearance = "none"
 		let cornerRadius = 4
 		selectLayer.style.borderTopRightRadius = cornerRadius+"px"
 		selectLayer.style.borderBottomRightRadius = cornerRadius+"px"

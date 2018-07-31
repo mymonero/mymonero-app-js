@@ -85,6 +85,9 @@ function New_fieldTitle_labelLayer(labelText, context)
 	layer.className = "field_title"
 	layer.innerHTML = labelText
 	layer.style.webkitUserSelect = "none"
+	layer.style.MozUserSelect = "none"
+	layer.style.msUserSelect = "none"
+	layer.style.userSelect = "none"
 	layer.style.display = "block" // own line
 	layer.style.margin = "15px 0 8px 8px"
 	layer.style.textAlign = "left"

@@ -407,6 +407,8 @@ class SettingsView extends View
 				selectLayer.style.borderRadius = "3px"
 				selectLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 				selectLayer.style.webkitAppearance = "none" // apparently necessary in order to activate the following style.border…Radius
+				selectLayer.style.MozAppearance = "none"
+				selectLayer.style.msAppearance = "none"
 				selectLayer.style.appearance = "none"
 				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
 					selectLayer,

@@ -67,6 +67,7 @@ class ContactQRDisplayModalView extends View
 		//
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+		// ^-- not in other browsers
 		//
 		layer.style.position = "relative"
 		layer.style.textAlign = "center"

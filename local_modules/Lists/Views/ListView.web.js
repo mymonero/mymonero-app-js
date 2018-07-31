@@ -80,6 +80,8 @@ class ListView extends View
 		// we wait til viewWillAppear is called by the nav controller to set height
 		//
 		layer.style.webkitUserSelect = "none"
+		layer.style.MozUserSelect = "none"
+		layer.style.msUserSelect = "none"
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 		//
 		layer.style.backgroundColor = "#272527"

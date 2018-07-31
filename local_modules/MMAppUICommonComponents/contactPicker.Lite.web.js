@@ -51,6 +51,9 @@ function New_contactPickerLayer_Lite(
 	containerLayer.style.position = "relative"
 	containerLayer.style.width = "100%"
 	containerLayer.style.webkitUserSelect = "none" // disable selection
+	containerLayer.style.MozUserSelect = "none"
+	containerLayer.style.msUserSelect = "none"
+	containerLayer.style.userSelect = "none"
 	//
 	const inputLayer = _new_inputLayer(placeholderText, context)
 	containerLayer.ContactPicker_inputLayer = inputLayer // so it can be accessed by consumers who want to check if the inputLayer is empty on their submission
@@ -95,7 +98,7 @@ function New_contactPickerLayer_Lite(
 				typingDebounceTimeout = null // clear for next
 				//
 				if (didFinishTypingInInput_fn) {
-					didFinishTypingInInput_fn(event)
+					didFinishTypingInInput_fn(optl_event)
 				}
 
 				// _searchForAndDisplaySearchResults() // there isn't this call in .Lite.

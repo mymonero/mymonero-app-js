@@ -86,6 +86,9 @@ class RootFooterView extends View
 		a.style.color = colorValue
 		a.style.cursor = "pointer"
 		a.style.webkitUserSelect = "none" // disable selection
+		a.style.MozUserSelect = "none"
+		a.style.msUserSelect = "none"
+		a.style.userSelect = "none"
 		self.context.themeController.StyleLayer_FontAsSmallRegularSansSerif(a)
 		a.style.webkitTapHighlightColor = "rgba(0,0,0,0)" 
 		a.style.margin = "0 8px 0 24px"

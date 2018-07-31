@@ -62,6 +62,7 @@ class ContactDetailsView extends View
 		{
 			const layer = self.layer
 			layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+			// no need to support other browsers here yet b/c this is not available in the web wallet
 			//
 			layer.style.position = "relative" // to make sure children with position:fixed are laid out relative to parent
 			layer.style.boxSizing = "border-box"
