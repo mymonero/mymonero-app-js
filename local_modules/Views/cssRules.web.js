@@ -46,7 +46,11 @@ function InjectCSSRules_ifNecessary(
 		reversed_cssRules.forEach(
 			function(cssRuleString, i)
 			{
-				document.styleSheets[0].insertRule(cssRuleString, 0)
+				try {
+					document.styleSheets[0].insertRule(cssRuleString, 0)
+				} catch(e) {
+					console.warn("Unable to insert rule: ", cssRuleString)
+				}
 			}
 		)
 		document[haveCSSRulesBeenInjected_documentKey] = true
