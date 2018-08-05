@@ -45,6 +45,9 @@ const doNotCopyOrEnterFilepathsMatching =
 	/LICENSE\.txt/,
 	/README\.md/,
 	/package\.json/, 
+	/package\.json/, 
+	/^\.prettier*/, 
+	/yarn\.lock/, 
 	/^tests$/i,
 	/\.child\./, // slightly ambiguous but we don't want these as
 	//
