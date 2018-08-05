@@ -1,2 +1,2 @@
 bin/_build_browser_dev; 
-open browser_build/index.html;
+cd browser_build && python -m SimpleHTTPServer 9100;
