@@ -27,6 +27,10 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
+
+if (process.env.NODE_ENV !== 'development') {
+	console.log = function() {}
+}
 //	
 const {/*crashReporter, */app} = require('electron')
 // if (process.env.NODE_ENV !== 'development') {
