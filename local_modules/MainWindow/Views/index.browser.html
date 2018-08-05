@@ -41,12 +41,12 @@
 		<meta http-equiv="Content-Security-Policy"
 			content="default-src * data: gap: blob: https://ssl.gstatic.com http://localhost 'unsafe-eval' 'unsafe-inline';
 			style-src 'self' 'unsafe-inline';
-			script-src 'self' https://www.google-analytics.com/analytics.js https://widget.intercom.io/widget/hi3rzlw0 https://widget.intercom.io/widget/qa83i5n9 https://js.intercomcdn.com 'unsafe-inline';
+			script-src 'self' https://www.google-analytics.com/analytics.js https://widget.intercom.io/widget/hi3rzlw0 https://widget.intercom.io/widget/qa83i5n9 https://js.intercomcdn.com 'unsafe-inline' 'unsafe-eval';
 			object-src 'none'; 
 			font-src 'self' https://js.intercomcdn.com/fonts/;  
 			img-src 'self' data:  https://downloads.intercomcdn.com/i/o/  https://js.intercomcdn.com/images/ https://static.intercomassets.com/; 
 			connect-src * data: blob: filesystem:;">
-
+			<!-- script-src of unsafe-eval required to load wasm files at present but actual eval is disabled in renderer_setup_utils -->
 		<meta name="apple-itunes-app" content="app-id=1372508199">
 
         <meta name="format-detection" content="telephone=no">
