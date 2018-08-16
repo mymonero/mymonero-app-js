@@ -37,7 +37,7 @@ const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltip
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
 //
 class ImportTransactionsModalView extends View
@@ -549,7 +549,7 @@ class ImportTransactionsModalView extends View
 						self.informationalHeaderLayer.innerHTML = "&nbsp;" // clear for now
 						return
 					}
-					const raw_formattedMoney = monero_utils.formatMoney(import_fee__JSBigInt)
+					const raw_formattedMoney = monero_amount_format_utils.formatMoney(import_fee__JSBigInt)
 					{
 						self.informationalHeaderLayer.innerHTML = `This requires a one-time import fee of ${raw_formattedMoney} XMR`
 						//

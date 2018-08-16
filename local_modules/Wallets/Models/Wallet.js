@@ -38,7 +38,7 @@ const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/mone
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
 const monero_wallet_locale = require('../../mymonero_core_js/monero_utils/monero_wallet_locale')
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 //
 const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
@@ -985,7 +985,7 @@ class Wallet extends EventEmitter
 		let self = this
 		let balance_JSBigInt = self.Balance_JSBigInt()
 		//
-		return monero_utils.formatMoney(balance_JSBigInt) 
+		return monero_amount_format_utils.formatMoney(balance_JSBigInt) 
 	}
 	Balance_DoubleNumber()
 	{
@@ -1007,7 +1007,7 @@ class Wallet extends EventEmitter
 		let self = this
 		let lockedBalance_JSBigInt = self.LockedBalance_JSBigInt()
 		//
-		return monero_utils.formatMoney(lockedBalance_JSBigInt)
+		return monero_amount_format_utils.formatMoney(lockedBalance_JSBigInt)
 	}
 	LockedBalance_DoubleNumber()
 	{

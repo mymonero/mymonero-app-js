@@ -33,7 +33,7 @@ const commonComponents_walletIcons = require('../../MMAppUICommonComponents/wall
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
-let monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+let monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 //
 class WalletCellContentsView extends View
 {
@@ -339,15 +339,15 @@ class WalletCellContentsView extends View
 				var final_balanceAmountString;
 				var final_lockedBalanceAmountString_orNull;
 				if (final_displayCcySymbol == XMR) {
-					var final_balance_moneroAmount = monero_utils.parseMoney(
+					var final_balance_moneroAmount = monero_amount_format_utils.parseMoney(
 						""+final_balanceAmountDouble // Double -> String - display formatting not required
 					) 
-					final_balanceAmountString = monero_utils.formatMoney(final_balance_moneroAmount)
+					final_balanceAmountString = monero_amount_format_utils.formatMoney(final_balance_moneroAmount)
 					if (hasLockedFunds) {
-						var final_lockedBalance_moneroAmount = monero_utils.parseMoney(
+						var final_lockedBalance_moneroAmount = monero_amount_format_utils.parseMoney(
 							""+final_lockedBalanceAmountDouble // Double -> String
 						)
-						final_lockedBalanceAmountString_orNull = monero_utils.formatMoney(final_lockedBalance_moneroAmount)
+						final_lockedBalanceAmountString_orNull = monero_amount_format_utils.formatMoney(final_lockedBalance_moneroAmount)
 					}
 				} else {
 					final_balanceAmountString = Currencies.nonAtomicCurrency_formattedString(

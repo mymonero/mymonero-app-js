@@ -48,6 +48,7 @@ const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 //
 const jsQR = require('jsqr')
 const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
@@ -964,7 +965,7 @@ class SendFundsView extends View
 		if (xmr_estMaxAmount == null || typeof xmr_estMaxAmount === 'undefined') {
 			return null
 		}
-		const xmr_estMaxAmount_str = monero_utils.formatMoney(xmr_estMaxAmount)
+		const xmr_estMaxAmount_str = monero_amount_format_utils.formatMoney(xmr_estMaxAmount)
 		//
 		const displayCcySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
 		if (displayCcySymbol != Currencies.ccySymbolsByCcy.XMR) {
@@ -999,7 +1000,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		const estimatedTotalFee_JSBigInt = self.new_xmr_estFeeAmount()
-		const estimatedTotalFee_str = monero_utils.formatMoney(estimatedTotalFee_JSBigInt)
+		const estimatedTotalFee_str = monero_amount_format_utils.formatMoney(estimatedTotalFee_JSBigInt)
 		const estimatedTotalFee_moneroAmountDouble = parseFloat(estimatedTotalFee_str)
 		
 		// const estimatedTotalFee_moneroAmountDouble = 0.028
@@ -1189,7 +1190,7 @@ class SendFundsView extends View
 		} else {
 			let moneroAmountDouble_atomicPlaces = xmrAmountDouble * Math.pow(10, monero_config.coinUnitPlaces)
 			let moneroAmount = new JSBigInt(moneroAmountDouble_atomicPlaces)
-			let formatted_moneroAmount = monero_utils.formatMoney(moneroAmount)
+			let formatted_moneroAmount = monero_amount_format_utils.formatMoney(moneroAmount)
 			finalizable_text = `= ${formatted_moneroAmount} ${Currencies.ccySymbolsByCcy.XMR}`
 		}
 		let final_text = finalizable_text
