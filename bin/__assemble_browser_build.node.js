@@ -39,16 +39,21 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^\.DS_Store$/,
 	/^\.git$/,
 	/^\.gitignore$/,
+	/^\.gitmodules$/,
 	/^\.eslint/,
 	/\.electron\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
 	/^electron_/,
 	/LICENSE\.txt/,
 	/README\.md/,
+	/CMakeLists\.txt/, 
 	/package\.json/, 
 	/package\.json/, 
 	/^\.prettier*/, 
 	/yarn\.lock/, 
 	/^tests$/i,
+	/^bin$/,
+	/^src$/, // no CPP!!
+	/^(.*)\.jam$/,
 	/\.child\./, // slightly ambiguous but we don't want these as
 	//
 	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us

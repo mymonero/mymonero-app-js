@@ -1,1 +1,1 @@
-node_modules/.bin/webpack --config webpack.browser.prod.config.js --display-modules
+node --max_old_space_size=8192 node_modules/.bin/webpack --config webpack.browser.prod.config.js --display-modules 
