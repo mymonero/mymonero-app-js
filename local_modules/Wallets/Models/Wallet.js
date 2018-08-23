@@ -642,7 +642,7 @@ class Wallet extends EventEmitter
 	_boot_byLoggingIn(
 		address,
 		view_key,
-		spend_key_orUndefinedForViewOnly,
+		sec_spendKey_orUndef,
 		seed_orUndefined,
 		wasAGeneratedWallet,
 		persistEvenIfLoginFailed_forServerChange,
@@ -656,15 +656,11 @@ class Wallet extends EventEmitter
 			address,
 			self.context.nettype,
 			view_key,
-			spend_key_orUndefinedForViewOnly,
+			sec_spendKey_orUndef,
 			seed_orUndefined,
-			wasAGeneratedWallet,
 			function(
 				err,
-				address,
-				account_seed,
 				public_keys,
-				private_keys,
 				isInViewOnlyMode
 			) {
 				if (err) {
@@ -675,9 +671,8 @@ class Wallet extends EventEmitter
 					return
 				}
 				__proceedTo_loginViaHostedAPI(
-					account_seed,
+					seed_orUndefined,
 					public_keys,
-					private_keys,
 					isInViewOnlyMode
 				)
 			}
@@ -685,7 +680,6 @@ class Wallet extends EventEmitter
 		function __proceedTo_loginViaHostedAPI(
 			account_seed,  // these arguments only get passed through
 			public_keys,  // so they can be set in one place below
-			private_keys,
 			isInViewOnlyMode
 		) {
 			//
@@ -696,7 +690,11 @@ class Wallet extends EventEmitter
 				throw "__proceedTo_loginViaHostedAPI was passed empty string for account_seed"
 			}
 			self.public_keys = public_keys
-			self.private_keys = private_keys
+			self.private_keys = 
+			{
+				view: view_key,
+				spend: sec_spendKey_orUndef
+			};
 			self.isInViewOnlyMode = isInViewOnlyMode
 			self.local_wasAGeneratedWallet = wasAGeneratedWallet // for regeneration purposes later
 			//
