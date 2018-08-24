@@ -33,6 +33,7 @@ const EventEmitter = require('events')
 const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
 //
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
 const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
@@ -275,29 +276,24 @@ class Wallet extends EventEmitter
 		self.walletLabel = walletLabel || ""
 		self.swatch = swatch || ""
 		//
-		// autodetect the wordset based on checking the presence of all the words in a given wordset.
-		// error if wordset comparison issue		
-		try {
-			self.mnemonic_wordsetName = monero_wallet_utils.WordsetNameAccordingToMnemonicString(mnemonicString)
-		} catch (e) {
-			console.error("Error while detecting mnemonic wordset from mnemonic string: ", e)
-			self.__trampolineFor_failedToBootWith_fnAndErr(fn, e)
-			return
-		}
-		//
 		self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
+		// we'll grab the mnemonic_language in a sec
 		//
 		monero_wallet_utils.SeedAndKeysFromMnemonic(
 			mnemonicString,
-			self.mnemonic_wordsetName,
 			self.context.nettype,
-			function(err, seed, keys)
+			function(err, mnemonic_language, seed, keys)
 			{
 				if (err) {
 					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 					return
 				}
-				// console.log("keys" , keys)
+				if (typeof mnemonic_language == 'undefined' || !mnemonic_language) {
+					self.__trampolineFor_failedToBootWith_fnAndErr(fn, "Unknown mnemonic language")
+					return
+				}
+				self.mnemonic_wordsetName = mnemonic_language;
+				//
 				const address = keys.public_addr
 				const view_key__private = keys.view.sec
 				const spend_key__private = keys.spend.sec
@@ -402,7 +398,7 @@ class Wallet extends EventEmitter
 				}
 				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
 				console.log("Rederiving mnemonic seed from account seed as mnemonic was not persisted - this probably occurred after app relaunched but wallet needed to be reconstituted")
-				const seedAsMnemonic = monero_wallet_utils.MnemonicStringFromSeed(
+				const seedAsMnemonic = monero_wallet_utils.MnemonicStringFromSeed( // TODO: possibly just call straight into monero_utils given redundancy of wrapper
 					reconstitutionDescription.account_seed, 
 					reconstitutionDescription.mnemonic_wordsetName
 				)
@@ -587,11 +583,9 @@ class Wallet extends EventEmitter
 			} else {
 				const derived_mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
 				if (self.mnemonicString != null && typeof self.mnemonicString != 'undefined') {
-					const areMnemonicsEqual = monero_wallet_utils.AreEqualMnemonics(
+					const areMnemonicsEqual = monero_utils.are_equal_mnemonics(
 						self.mnemonicString,
-						derived_mnemonicString,
-						self.mnemonic_wordsetName,
-						self.mnemonic_wordsetName // assume second is the same
+						derived_mnemonicString
 					)
 					if (areMnemonicsEqual == false) { // would be rather odd
 						throw "Different mnemonicString derived from accountSeed than was entered for login"
@@ -1244,8 +1238,7 @@ class Wallet extends EventEmitter
 	ChangePasswordTo(
 		changeTo_persistencePassword,
 		fn
-	)
-	{
+	) {
 		const self = this
 		console.log("Wallet changing password.")
 		const old_persistencePassword = self.persistencePassword
@@ -1271,8 +1264,7 @@ class Wallet extends EventEmitter
 	Set_valuesByKey(
 		valuesByKey, // keys like "walletLabel", "swatch"
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		const valueKeys = Object.keys(valuesByKey)
 		var didUpdate_walletLabel = false
@@ -1454,8 +1446,7 @@ class Wallet extends EventEmitter
 		transaction_height,
 		blockchain_height,
 		transactions
-	)
-	{
+	) {
 		const self = this
 		//
 		var heights_didActuallyChange = false
@@ -1576,8 +1567,7 @@ class Wallet extends EventEmitter
 		old_total_received,
 		old_total_sent,
 		old_locked_balance
-	)
-	{
+	) {
 		const self = this
 		console.log("💬  Received an update to balance")
 		self.emit(self.EventName_balanceChanged(), self, old_total_received, old_total_sent, old_locked_balance)

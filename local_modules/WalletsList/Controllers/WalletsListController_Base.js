@@ -30,6 +30,7 @@
 //
 const async = require('async')
 //
+const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
 //
 const ListBaseController = require('../../Lists/Controllers/ListBaseController')
@@ -271,8 +272,7 @@ class WalletsListController extends ListBaseController
 		mnemonicString,
 		fn, // fn: (err: Error?, walletInstance: Wallet, wasWalletAlreadyInserted: Bool?) -> Void
 		optl__userCanceledPasswordEntry_fn
-	)
-	{
+	) {
 		const userCanceledPasswordEntry_fn = optl__userCanceledPasswordEntry_fn || function() {}
 		const self = this
 		const context = self.context
@@ -291,13 +291,6 @@ class WalletsListController extends ListBaseController
 				)
 				function _proceedWithPassword(persistencePassword)
 				{
-					var mnemonicString_wordsetName;
-					try { 
-						mnemonicString_wordsetName = monero_wallet_utils.WordsetNameAccordingToMnemonicString(mnemonicString) // slightly redundant
-					} catch (e) { // validates word length, though should not be necessary here
-						fn(e)
-						return
-					}
 					var walletAlreadyExists = false
 					const wallets_length = self.records.length
 					for (let i = 0 ; i < wallets_length ; i++) {
@@ -305,16 +298,7 @@ class WalletsListController extends ListBaseController
 						if (!wallet.mnemonicString || typeof wallet.mnemonicString === 'undefined') {
 							continue // TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
 						}
-						if (!wallet.mnemonic_wordsetName || typeof wallet.mnemonic_wordsetName === 'undefined') {
-							throw "Illegal mnemonicString && !mnemonic_wordsetName"
-						}
-						const areMnemonicsEqual = monero_wallet_utils.AreEqualMnemonics(
-							mnemonicString,
-							wallet.mnemonicString,
-							mnemonicString_wordsetName,
-							wallet.mnemonic_wordsetName // assume exists if wallet.mnemonicString
-						)
-						if (areMnemonicsEqual) {
+						if (monero_utils.are_equal_mnemonics(mnemonicString, wallet.mnemonicString)) {
 							// simply return existing wallet
 							fn(null, wallet, true) // wasWalletAlreadyInserted: true
 							return
