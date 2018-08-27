@@ -37,7 +37,6 @@ const monero_utils = require('../../mymonero_core_js/monero_utils/monero_crypton
 const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
 const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
-const monero_wallet_locale = require('../../mymonero_core_js/monero_utils/monero_wallet_locale')
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
@@ -162,6 +161,11 @@ class Wallet extends EventEmitter
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false
 		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default
+		if (self.options.generateNewWallet === false) { // if not generating new mnemonic seed -- which we will pick this up later in the corresponding Boot_*
+			// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
+			self.successfullyInitialized_cb();
+			return;
+		}
 		self.context.locale.Locale(function(err, currentLocale)
 		{
 			if (err) {
@@ -169,19 +173,44 @@ class Wallet extends EventEmitter
 				self.failedToInitialize_cb(err)
 				throw err
 			}
-			self.mnemonic_wordsetName = monero_wallet_locale.MnemonicWordsetNameWithLocale(currentLocale) // will default to english if no match
 			//
 			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
 			// case I: user is inputting mnemonic string
 			// case II: user is inputting address + view & spend keys
 			// case III: we're creating a new wallet
-			if (self.options.generateNewWallet === true) { // generate new mnemonic seed -- we will pick this up later in the corresponding Boot_*
-				self.generatedOnInit_walletDescription = monero_wallet_utils.NewlyCreatedWallet(self.mnemonic_wordsetName, self.context.nettype)
+			try {
+				const ret = monero_utils.newly_created_wallet(
+					currentLocale,
+					self.context.nettype
+				);
+				self.mnemonic_wordsetName = ret.mnemonic_language;  // newly_created_wallet converts locale language code to mnemonic language for us
+				if (typeof self.mnemonic_wordsetName == 'undefined' || !self.mnemonic_wordsetName) {
+					throw "self.mnemonic_wordsetName not found"
+				}
+				self.generatedOnInit_walletDescription = 
+				{ // this structure here is an artifact of a previous organization of the mymonero-core-js code. it should/can be phased out
+					seed: ret.sec_seed_string,
+					mnemonicString: ret.mnemonic_string,
+					keys: {
+						public_addr: ret.address_string,
+						view: {
+							sec: ret.sec_viewKey_string,
+							pub: ret.pub_viewKey_string
+						},
+						spend: {
+							sec: ret.sec_spendKey_string,
+							pub: ret.pub_spendKey_string
+						}
+					}
+				};
+			} catch (e) {
+				self.failedToInitialize_cb(e)
+				return;
 			}
 			//
 			// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
 			self.successfullyInitialized_cb()
-		})
+		});
 	}
 
 	
