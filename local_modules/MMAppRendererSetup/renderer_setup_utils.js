@@ -74,6 +74,12 @@ function HardenRuntime()
 	{
 		throw new Error("MyMonero does not support window.eval() for security reasons.")
 	}
+	// Math.random is black-holed in mymonero_core_js/cryptonote_utils/cryptonote_utils.js
+	// BUT since we don't load that in the renderer process anymore, I do it here too
+	Math.random = function()
+	{
+		throw "Math.random disallowed in renderer process for safety"
+	}
 }
 exports.HardenRuntime = HardenRuntime
 //
