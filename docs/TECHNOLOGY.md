@@ -38,7 +38,7 @@ The web wallet was built entirely upon a now-aging version of Angular, which mea
 
 A 'context' object, which references top-level application controllers, is constructed and passed to application object constructors as a form of dependency injection [3]. The work to port existing functionality also included clarifications to codepaths like transaction construction in send-funds operations. Additionally, many of the dependency scripts in the web wallet needed to be exposed as importable JS modules. 
 
-Note that the wallet mnemonic generation in the desktop version is now implemented through the Node.JS crypto library's `randomBytes` function [4]. This might be changed back to the browser function.
+Note that the wallet mnemonic generation in the desktop version is now implemented through the Node.JS crypto library's `randomBytes` function. This might be changed back to the browser function.
 
 1. `local_modules/Wallets`, `local_modules/OpenAlias`
 
@@ -46,7 +46,6 @@ Note that the wallet mnemonic generation in the desktop version is now implement
 
 3. `local_modules/mymonero_core_js`
 
-4. `local_modules/cryptonote_utils/mnemonic.js` 
 
 ### "Store arbitrary encrypted structured data locally"
 
