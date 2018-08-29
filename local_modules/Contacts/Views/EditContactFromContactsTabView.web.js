@@ -219,7 +219,7 @@ class EditContactFromContactsTabView extends ContactFormView
 					self.paymentIDInputLayer.value = ""
 				} else { // normal wallet address
 					if (paymentID === "" || typeof paymentID === 'undefined') { // if no existing payment ID
-						paymentID = monero_paymentID_utils.New_TransactionID() // generate new one for them
+						paymentID = monero_utils.new_payment_id() // generate new one for them
 						self.paymentIDInputLayer.value = paymentID
 					} else { // just use/allow entered paymentID
 					}
