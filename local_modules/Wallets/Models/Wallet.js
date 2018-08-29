@@ -1077,7 +1077,6 @@ class Wallet extends EventEmitter
 		amount, // number
 		isSweepTx, // when true, amount will be ignored
 		payment_id,
-		mixin,
 		simple_priority,
 		preSuccess_nonTerminal_statusUpdate_fn,
 		canceled_fn,
@@ -1089,7 +1088,9 @@ class Wallet extends EventEmitter
 		//		targetDescription_domain_orNone?,
 		//		final__payment_id?,
 		//		tx_hash?,
-		//		tx_fee?
+		//		tx_fee?,
+		//		tx_key?,
+		// 		mixin?,
 		// )
 	) {
 		const self = this
@@ -1115,7 +1116,9 @@ class Wallet extends EventEmitter
 			targetDescription_domain_orNone,
 			final__payment_id,
 			tx_hash,
-			tx_fee
+			tx_fee,
+			tx_key,
+			mixin,
 		) {
 			___aTrampolineForFnWasCalled()
 			//
@@ -1128,7 +1131,9 @@ class Wallet extends EventEmitter
 				targetDescription_domain_orNone,
 				final__payment_id,
 				tx_hash,
-				tx_fee
+				tx_fee,
+				tx_key,
+				mixin,
 			)
 		}
 		function __trampolineFor_err_withErr(err)
@@ -1178,7 +1183,6 @@ class Wallet extends EventEmitter
 				self.context.hostedMoneroAPIClient,
 				monero_openalias_utils,
 				payment_id,
-				mixin,
 				simple_priority,
 				function(code) { // preSuccess_nonTerminal_statusUpdate_fn
 					___do_statusUpdate(code)

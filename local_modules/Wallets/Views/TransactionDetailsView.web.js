@@ -112,6 +112,7 @@ class TransactionDetailsView extends View
 			self._addTableFieldLayer_amountsFeesAndTotals()
 			self._addTableFieldLayer_ringsize()
 			self._addTableFieldLayer_transactionHash()
+			self._addTableFieldLayer_transactionKey()
 			self._addTableFieldLayer_paymentID()
 		}
 		self.layer.appendChild(containerLayer)
@@ -220,6 +221,23 @@ class TransactionDetailsView extends View
 			valueToDisplayIfValueNil
 		)
 		self.valueLayer__transactionHash = div
+		const labelLayer = div.Component_GetLabelLayer()
+		self.___styleLabelLayerAsFieldHeader(labelLayer)
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_addTableFieldLayer_transactionKey()
+	{
+		const self = this
+		const fieldLabelTitle = "Transaction Secret Key"
+		const valueToDisplayIfValueNil = "Unknown"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
+			fieldLabelTitle, 
+			"", // for now
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil
+		)
+		self.valueLayer__transactionKey = div
 		const labelLayer = div.Component_GetLabelLayer()
 		self.___styleLabelLayerAsFieldHeader(labelLayer)
 		self.tableSection_containerLayer.appendChild(div)
@@ -415,6 +433,10 @@ class TransactionDetailsView extends View
 		{ // TX hash
 			const value = self.transaction.hash
 			self.valueLayer__transactionHash.Component_SetValue(value)
+		}
+		{
+			const value = self.transaction.tx_key
+			self.valueLayer__transactionKey.Component_SetValue(value)
 		}
 		{ // Payment ID
 			const value = self.transaction.payment_id

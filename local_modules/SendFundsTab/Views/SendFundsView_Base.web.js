@@ -1693,7 +1693,6 @@ class SendFundsView extends View
 			payment_id
 		) {
 			const sendFrom_address = sendFrom_wallet.public_address
-			const mixin = monero_sendingFunds_utils.fixedMixin()
 			const priority = self._selected_simplePriority()
 			//
 			sendFrom_wallet.SendFunds(
@@ -1701,7 +1700,6 @@ class SendFundsView extends View
 				final_amount_Number,
 				sweeping,
 				payment_id,
-				mixin,
 				priority, 
 				function(str) // preSuccess_nonTerminal_statusUpdate_fn
 				{
@@ -1721,7 +1719,9 @@ class SendFundsView extends View
 					sentAmount,
 					final__payment_id,
 					tx_hash,
-					tx_fee
+					tx_fee,
+					tx_key,
+					mixin,
 				) {
 					if (err) {
 						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
@@ -1759,6 +1759,7 @@ class SendFundsView extends View
 							approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
 							// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
 							tx_fee: tx_fee,
+							tx_key: tx_key,
 							//
 							payment_id: final__payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
 							//

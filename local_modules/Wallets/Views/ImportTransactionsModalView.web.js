@@ -464,7 +464,6 @@ class ImportTransactionsModalView extends View
 			amount_Number,
 			false, // is not a sweep tx
 			payment_id,
-			monero_sendingFunds_utils.fixedMixin(),
 			monero_sendingFunds_utils.default_priority(),
 			function(str) // preSuccess_nonTerminal_statusUpdate_fn
 			{
@@ -484,7 +483,9 @@ class ImportTransactionsModalView extends View
 				sentAmount,
 				final__payment_id,
 				tx_hash,
-				tx_fee
+				tx_fee,
+				tx_key,
+				mixin,
 			) {
 				if (err) {
 					_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
@@ -505,7 +506,7 @@ class ImportTransactionsModalView extends View
 				setTimeout(
 					function()
 					{
-						sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+						wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
 					}
 				)
 			}
