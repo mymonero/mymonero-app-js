@@ -34,7 +34,6 @@ const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
 //
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
-const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
 const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
@@ -306,38 +305,35 @@ class Wallet extends EventEmitter
 		self.swatch = swatch || ""
 		//
 		self.mnemonicString = mnemonicString // even though we re-derive the mnemonicString on success, this is being set here so as to prevent the bug where it gets lost when changing the API server and a reboot w/mnemonicSeed occurs
-		// we'll grab the mnemonic_language in a sec
+		// we'll grab the mnemonic_language in a sec:
 		//
-		monero_wallet_utils.SeedAndKeysFromMnemonic(
-			mnemonicString,
-			self.context.nettype,
-			function(err, mnemonic_language, seed, keys)
-			{
-				if (err) {
-					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
-					return
-				}
-				if (typeof mnemonic_language == 'undefined' || !mnemonic_language) {
-					self.__trampolineFor_failedToBootWith_fnAndErr(fn, "Unknown mnemonic language")
-					return
-				}
-				self.mnemonic_wordsetName = mnemonic_language;
-				//
-				const address = keys.public_addr
-				const view_key__private = keys.view.sec
-				const spend_key__private = keys.spend.sec
-				const wasAGeneratedWallet = false
-				self._boot_byLoggingIn(
-					address,
-					view_key__private,
-					spend_key__private,
-					seed,
-					wasAGeneratedWallet,
-					persistEvenIfLoginFailed_forServerChange,
-					fn
-				)
+		var ret;
+		try {
+			ret = monero_utils.seed_and_keys_from_mnemonic(
+				mnemonicString,
+				self.context.nettype
+			);
+		} catch (e) {
+			console.error("Invalid mnemonic!");
+			self.__trampolineFor_failedToBootWith_fnAndErr(fn, e)
+			return
+		}
+		{
+			if (typeof ret.mnemonic_language == 'undefined' || !ret.mnemonic_language) {
+				self.__trampolineFor_failedToBootWith_fnAndErr(fn, "Unknown mnemonic language")
+				return
 			}
-		)
+			self.mnemonic_wordsetName = ret.mnemonic_language;
+		}
+		self._boot_byLoggingIn(
+			ret.address_string,
+			ret.sec_viewKey_string,
+			ret.sec_spendKey_string,
+			ret.sec_seed_string,
+			false, // wasAGeneratedWallet,
+			persistEvenIfLoginFailed_forServerChange,
+			fn
+		);
 	}
 	Boot_byLoggingIn_existingWallet_withAddressAndKeys(
 		persistencePassword,
@@ -427,7 +423,7 @@ class Wallet extends EventEmitter
 				}
 				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
 				console.log("Rederiving mnemonic seed from account seed as mnemonic was not persisted - this probably occurred after app relaunched but wallet needed to be reconstituted")
-				const seedAsMnemonic = monero_wallet_utils.MnemonicStringFromSeed( // TODO: possibly just call straight into monero_utils given redundancy of wrapper
+				const seedAsMnemonic = monero_utils.mnemonic_from_seed(
 					reconstitutionDescription.account_seed, 
 					reconstitutionDescription.mnemonic_wordsetName
 				)
@@ -609,8 +605,9 @@ class Wallet extends EventEmitter
 			if (typeof self.account_seed === 'undefined' || self.account_seed === null || self.account_seed == "") {
 				console.warn("⚠️  Wallet initialized without an account_seed.")
 				self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
-			} else {
-				const derived_mnemonicString = monero_wallet_utils.MnemonicStringFromSeed(self.account_seed, self.mnemonic_wordsetName)
+			} else { 
+				// TODO: move this to -before- the initial saveToDisk()
+				const derived_mnemonicString = monero_utils.mnemonic_from_seed(self.account_seed, self.mnemonic_wordsetName)
 				if (self.mnemonicString != null && typeof self.mnemonicString != 'undefined') {
 					const areMnemonicsEqual = monero_utils.are_equal_mnemonics(
 						self.mnemonicString,
@@ -675,99 +672,90 @@ class Wallet extends EventEmitter
 		//
 		self.isLoggingIn = true
 		//
-		monero_wallet_utils.VerifiedComponentsForLogIn(
+		var ret;
+		try {
+			ret = monero_utils.validate_components_for_login(
+				address,
+				view_key,
+				sec_spendKey_orUndef || "", // expects string
+				seed_orUndefined || "", // expects string
+				self.context.nettype
+			);
+		} catch (e) {
+			return {
+				err_str: typeof e === "string" ? e : "" + e
+			};
+		}
+		if (ret.isValid == false) { // actually don't think we're expecting this..
+			self.__trampolineFor_failedToBootWith_fnAndErr(fn, "Invalid input")
+			return
+		}
+		//
+		// record these properties regardless of whether we are about to error on login
+		self.public_address = address;
+		if (seed_orUndefined === "") {
+			throw "_boot_byLoggingIn passed an empty string for a seed; pass undefined or seed."
+		}
+		self.account_seed = seed_orUndefined;
+		self.public_keys =
+		{
+			view: ret.pub_viewKey_string,
+			spend: ret.pub_spendKey_string
+		};
+		self.private_keys = 
+		{
+			view: view_key,
+			spend: sec_spendKey_orUndef
+		};
+		self.isInViewOnlyMode = ret.isInViewOnlyMode; // should be true "if(spend_key__orZero)"
+		self.local_wasAGeneratedWallet = wasAGeneratedWallet; // for regeneration purposes later
+		//
+		self.context.hostedMoneroAPIClient.LogIn(
 			address,
-			self.context.nettype,
 			view_key,
-			sec_spendKey_orUndef,
-			seed_orUndefined,
-			function(
-				err,
-				public_keys,
-				isInViewOnlyMode
-			) {
-				if (err) {
-					if (persistEvenIfLoginFailed_forServerChange) {
-						throw "Only expecting already-persisted wallets to have had persistEvenIfLoginFailed_forServerChange=true but components-for-login appear to no longer be valid with error" + err 
+			wasAGeneratedWallet,
+			function(login__err, new_address, received__generated_locally, start_height)
+			{
+				self.isLoggingIn = false
+				self.isLoggedIn = login__err == null
+				self.login__new_address = new_address
+				self.login__generated_locally = received__generated_locally // now update this b/c the server may have pre-existing information
+				self.account_scan_start_height = start_height // is actually the same thing - we should save this here so we can use it when calculating whether to show the import btn
+				//
+				self.regenerate_shouldDisplayImportAccountOption() // now this can be called
+				//
+				const shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
+				if (login__err) {
+					if (shouldExitOnLoginError == true) {
+						self.__trampolineFor_failedToBootWith_fnAndErr(fn, login__err)
+						//
+						return
+					} else {
+						// not returning here allows us to continue with the above-set login info to call
+						// 'saveToDisk(…)' when this call to log in is coming from a wallet
+						// reboot. reason is that we expect all such wallets to be valid monero
+						// wallets if they are able to have been rebooted.
 					}
-					self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
-					return
 				}
-				__proceedTo_loginViaHostedAPI(
-					seed_orUndefined,
-					public_keys,
-					isInViewOnlyMode
+				//
+				self.saveToDisk(
+					function(save__err)
+					{
+						if (save__err) {
+							self.__trampolineFor_failedToBootWith_fnAndErr(fn, save__err)
+							return
+						}
+						if (shouldExitOnLoginError == false && login__err) {
+							// if we are attempting to re-boot the wallet, but login failed
+							self.__trampolineFor_failedToBootWith_fnAndErr(fn, login__err)  // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
+							return
+						} else { // it's actually a success
+							self._trampolineFor_successfullyBooted(fn)
+						}
+					}
 				)
 			}
 		)
-		function __proceedTo_loginViaHostedAPI(
-			account_seed,  // these arguments only get passed through
-			public_keys,  // so they can be set in one place below
-			isInViewOnlyMode
-		) {
-			//
-			// record these properties regardless of whether we are about to error on login
-			self.public_address = address
-			self.account_seed = account_seed
-			if (self.account_seed === "") {
-				throw "__proceedTo_loginViaHostedAPI was passed empty string for account_seed"
-			}
-			self.public_keys = public_keys
-			self.private_keys = 
-			{
-				view: view_key,
-				spend: sec_spendKey_orUndef
-			};
-			self.isInViewOnlyMode = isInViewOnlyMode
-			self.local_wasAGeneratedWallet = wasAGeneratedWallet // for regeneration purposes later
-			//
-			self.context.hostedMoneroAPIClient.LogIn(
-				address,
-				view_key,
-				wasAGeneratedWallet,
-				function(login__err, new_address, received__generated_locally, start_height)
-				{
-					self.isLoggingIn = false
-					self.isLoggedIn = login__err == null
-					self.login__new_address = new_address
-					self.login__generated_locally = received__generated_locally // now update this b/c the server may have pre-existing information
-					self.account_scan_start_height = start_height // is actually the same thing - we should save this here so we can use it when calculating whether to show the import btn
-					//
-					self.regenerate_shouldDisplayImportAccountOption() // now this can be called
-					//
-					const shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
-					if (login__err) {
-						if (shouldExitOnLoginError == true) {
-							self.__trampolineFor_failedToBootWith_fnAndErr(fn, login__err)
-							//
-							return
-						} else {
-							// not returning here allows us to continue with the above-set login info to call
-							// 'saveToDisk(…)' when this call to log in is coming from a wallet
-							// reboot. reason is that we expect all such wallets to be valid monero
-							// wallets if they are able to have been rebooted.
-						}
-					}
-					//
-					self.saveToDisk(
-						function(save__err)
-						{
-							if (save__err) {
-								self.__trampolineFor_failedToBootWith_fnAndErr(fn, save__err)
-								return
-							}
-							if (shouldExitOnLoginError == false && login__err) {
-								// if we are attempting to re-boot the wallet, but login failed
-								self.__trampolineFor_failedToBootWith_fnAndErr(fn, login__err)  // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
-								return
-							} else { // it's actually a success
-								self._trampolineFor_successfullyBooted(fn)
-							}
-						}
-					)
-				}
-			)
-		}
 	}
 	regenerate_shouldDisplayImportAccountOption()
 	{

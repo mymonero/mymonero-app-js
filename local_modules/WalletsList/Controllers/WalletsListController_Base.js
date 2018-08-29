@@ -31,7 +31,6 @@
 const async = require('async')
 //
 const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
-const monero_wallet_utils = require('../../mymonero_core_js/monero_utils/monero_wallet_utils')
 //
 const ListBaseController = require('../../Lists/Controllers/ListBaseController')
 //
