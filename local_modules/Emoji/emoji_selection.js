@@ -31,24 +31,6 @@
 const Emojis = require('./emoji_set').Emojis
 const numberOf_Emojis = Emojis.length
 //
-function randomFloat_unit()
-{ // https://stackoverflow.com/questions/34575635/cryptographically-secure-float?answertab=oldest#tab-top
-	// I've produced this function to replace Math.random, which we are black-holing to prevent emscripten from ever being able to call it (not that it is)
-	let buffer = new ArrayBuffer(8); // A buffer with just the right size to convert to Float64
-	let ints = new Int8Array(buffer); // View it as an Int8Array and fill it with 8 random ints
-	window.crypto.getRandomValues(ints);
-	//
-	// Set the sign (ints[7][7]) to 0 and the
-	// exponent (ints[7][6]-[6][5]) to just the right size 
-	// (all ones except for the highest bit)
-	ints[7] = 63;
-	ints[6] |= 0xf0;
-	//
-	// Now view it as a Float64Array, and read the one float from it
-	let float = new DataView(buffer).getFloat64(0, true) - 1;
-	//
-	return float; 
-} 
 //
 function EmojiWhichIsNotAlreadyInUse(inUseEmojis)
 {
@@ -60,7 +42,7 @@ function EmojiWhichIsNotAlreadyInUse(inUseEmojis)
 		}
 	}
 	console.warn("⚠️  Ran out of emojis to select in EmojiWhichIsNotAlreadyInUse")
-	const indexOf_random_emoji = Math.floor(randomFloat_unit() * numberOf_Emojis)
+	const indexOf_random_emoji = Math.floor(Math.random() * numberOf_Emojis)
 	var random_emoji = Emojis[indexOf_random_emoji]
 	//
 	return random_emoji
