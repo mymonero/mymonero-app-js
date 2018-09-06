@@ -62,68 +62,72 @@ window.BootApp = function()
 	})
 	//
 	// context
-	var isHorizontalBar = isMobile
-	const context = require('../Models/index_context.browser').NewHydratedContext({
-		nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
-		app: app,
-		isDebug: isDebug,
-		isLiteApp: true, // used sparingly for to disable (but not redact) functionality
-		isRunningInBrowser: true, // categorically
-		isMobile: isMobile,
-		Cordova_isMobile: false, // (this can be renamed or maybe deprecated)
-		crossPlatform_appBundledIndexRelativeAssetsRootPath: "",
-		crossPlatform_indexContextRelativeAssetsRootPathSuffix: "../../", // b/c index_context is in MainWindow/Views; must end up /
-		platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this but it works
-		TabBarView_thickness: isHorizontalBar ? 48 : 79,
-		rootViewFooterHeight: 32,
-		TabBarView_isHorizontalBar: isHorizontalBar,
-		ThemeController_isMobileBrowser: isMobile == true,
-		Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
-		Emoji_renderWithNativeEmoji: isMobile == true, // b/c this is a browser, we could be on desktop, i.e. w/o guaranteed native emoji support
-		// TODO: detect if Mac … if so, render w/o native emoji (need holistic fallback solution though - see Gitlab post referenced by https://github.com/mymonero/mymonero-app-js/issues/194)
-		//
-		appDownloadLink_domainAndPath: "mymonero.com",
-		Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
-		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
-		Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true,
-		CommonComponents_Forms_scrollToInputOnFocus: isMobile === true
-	})
-	window.MyMonero_context = context
-	//
-	if (isMobile == false) { // then we don't have guaranteed native emoji support
-		{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
-			const emoji_web = require('../../Emoji/emoji_web')
-			emoji_web.PreLoadAndSetUpEmojiOne(context)
-		}
-	}
-	{ // configure native UI elements
-		document.addEventListener("touchstart", function(){}, true) // to allow :active styles to work in your CSS on a page in Mobile Safari:
-		//
-		if (isMobile) {
-			// disable tap -> click delay on mobile browsers
-			var attachFastClick = require('fastclick')
-			attachFastClick.attach(document.body)
+	var isHorizontalBar = isMobile;
+	require('../../mymonero_core_js/monero_utils/monero_utils').then(function(monero_utils)
+	{
+		const context = require('../Models/index_context.browser').NewHydratedContext({
+			nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
+			app: app,
+			isDebug: isDebug,
+			isLiteApp: true, // used sparingly for to disable (but not redact) functionality
+			isRunningInBrowser: true, // categorically
+			isMobile: isMobile,
+			Cordova_isMobile: false, // (this can be renamed or maybe deprecated)
+			crossPlatform_appBundledIndexRelativeAssetsRootPath: "",
+			crossPlatform_indexContextRelativeAssetsRootPathSuffix: "../../", // b/c index_context is in MainWindow/Views; must end up /
+			platformSpecific_RootTabBarAndContentView: require('./RootTabBarAndContentView.browser.web'), // slightly messy place to put this but it works
+			TabBarView_thickness: isHorizontalBar ? 48 : 79,
+			rootViewFooterHeight: 32,
+			TabBarView_isHorizontalBar: isHorizontalBar,
+			ThemeController_isMobileBrowser: isMobile == true,
+			Tooltips_nonHoveringBehavior: isMobile == true, // be able to dismiss on clicks etc
+			Emoji_renderWithNativeEmoji: isMobile == true, // b/c this is a browser, we could be on desktop, i.e. w/o guaranteed native emoji support
+			// TODO: detect if Mac … if so, render w/o native emoji (need holistic fallback solution though - see Gitlab post referenced by https://github.com/mymonero/mymonero-app-js/issues/194)
 			//
-			// when window resized on mobile (i.e. possibly when device rotated - 
-			// though we don't support that yet
-			// if(/Android/.test(navigator.appVersion)) {
-			const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
-			window.addEventListener("resize", function()
-			{
-				console.log("💬  Window resized")
-				commonComponents_forms.ScrollCurrentFormElementIntoView()
-			})
-			// }
+			appDownloadLink_domainAndPath: "mymonero.com",
+			Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
+			HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
+			Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true,
+			CommonComponents_Forms_scrollToInputOnFocus: isMobile === true,
+			monero_utils: monero_utils
+		})
+		window.MyMonero_context = context
+		//
+		if (isMobile == false) { // then we don't have guaranteed native emoji support
+			{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
+				const emoji_web = require('../../Emoji/emoji_web')
+				emoji_web.PreLoadAndSetUpEmojiOne(context)
+			}
 		}
-	}
-	{ // root view
-		const RootView = require('../Views/RootView.Lite.web') // electron uses .web files as it has a web DOM
-		const rootView = new RootView({}, context) // hang onto reference
-		rootView.superview = null // just to be explicit; however we will set a .superlayer
-		// manually attach the rootView to the DOM and specify view's usual managed reference(s)
-		const superlayer = document.body
-		rootView.superlayer = superlayer
-		superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
-	}
+		{ // configure native UI elements
+			document.addEventListener("touchstart", function(){}, true) // to allow :active styles to work in your CSS on a page in Mobile Safari:
+			//
+			if (isMobile) {
+				// disable tap -> click delay on mobile browsers
+				var attachFastClick = require('fastclick')
+				attachFastClick.attach(document.body)
+				//
+				// when window resized on mobile (i.e. possibly when device rotated - 
+				// though we don't support that yet
+				// if(/Android/.test(navigator.appVersion)) {
+				const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+				window.addEventListener("resize", function()
+				{
+					console.log("💬  Window resized")
+					commonComponents_forms.ScrollCurrentFormElementIntoView()
+				})
+				// }
+			}
+		}
+		{ // root view
+			const RootView = require('../Views/RootView.Lite.web') // electron uses .web files as it has a web DOM
+			const rootView = new RootView({}, context) // hang onto reference
+			rootView.superview = null // just to be explicit; however we will set a .superlayer
+			// manually attach the rootView to the DOM and specify view's usual managed reference(s)
+			const superlayer = document.body
+			rootView.superlayer = superlayer
+			superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
+		}
+	});
 }
 window.BootApp()

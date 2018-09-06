@@ -114,7 +114,7 @@ class SendFundsView extends SendFundsView_Base
 		//
 		var requestPayload;
 		try {
-			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromPossibleRequestURIString(possibleUriString, self.context.nettype)
+			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromPossibleRequestURIString(possibleUriString, self.context.nettype, self.context.monero_utils)
 		} catch (errStr) {
 			if (errStr) {
 				self.validationMessageLayer.SetValidationError("Unable to decode that URL: " + errStr)

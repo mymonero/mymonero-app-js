@@ -29,7 +29,8 @@
 "use strict"
 //
 const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
-const monero_utils = require('../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
+// ^-- TODO: remove this
+//
 const openalias_utils = require('./openalias_utils')
 //
 const currency_openAliasPrefix = monero_config.openAliasPrefix
@@ -48,6 +49,7 @@ function ResolvedMoneroAddressInfoFromOpenAliasAddress(
 	openAliasAddress,
 	txtRecordResolver, // see "./TXTResolver*.js"
 	nettype,
+	monero_utils,
 	fn
 	// fn: (
 	// 	err,

@@ -30,7 +30,6 @@
 //
 const async = require('async')
 //
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 //
 const ListBaseController = require('../../Lists/Controllers/ListBaseController')
 //
@@ -297,7 +296,7 @@ class WalletsListController extends ListBaseController
 						if (!wallet.mnemonicString || typeof wallet.mnemonicString === 'undefined') {
 							continue // TODO: solve limitation of this code; how to check if wallet with same address (but no mnemonic) was already added?
 						}
-						if (monero_utils.are_equal_mnemonics(mnemonicString, wallet.mnemonicString)) {
+						if (self.context.monero_utils.are_equal_mnemonics(mnemonicString, wallet.mnemonicString)) {
 							// simply return existing wallet
 							fn(null, wallet, true) // wasWalletAlreadyInserted: true
 							return

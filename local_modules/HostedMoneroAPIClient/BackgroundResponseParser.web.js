@@ -31,6 +31,7 @@
 // In the future this could implement web workers
 const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
+const monero_utils_promise = require('../mymonero_core_js/monero_utils/monero_utils')
 //
 class BackgroundResponseParser
 {
@@ -48,17 +49,21 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		response_parser_utils.Parsed_AddressInfo__keyImageManaged(
-			data,
-			address,
-			view_key__private,
-			spend_key__public,
-			spend_key__private,
-			function(err, returnValuesByKey)
-			{
-				fn(err, returnValuesByKey)
-			}
-		)
+		monero_utils_promise.then(function(monero_utils)
+		{
+			response_parser_utils.Parsed_AddressInfo__keyImageManaged(
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private,
+				monero_utils,
+				function(err, returnValuesByKey)
+				{
+					fn(err, returnValuesByKey)
+				}
+			)
+		})
 	}
 	Parsed_AddressTransactions(
 		data,
@@ -68,17 +73,21 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		response_parser_utils.Parsed_AddressTransactions__keyImageManaged(
-			data,
-			address,
-			view_key__private,
-			spend_key__public,
-			spend_key__private,
-			function(err, returnValuesByKey)
-			{
-				fn(err, returnValuesByKey)
-			}
-		)
+		monero_utils_promise.then(function(monero_utils)
+		{
+			response_parser_utils.Parsed_AddressTransactions__keyImageManaged(
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private,
+				monero_utils,
+				function(err, returnValuesByKey)
+				{
+					fn(err, returnValuesByKey)
+				}
+			)
+		})
 	}
 	Parsed_UnspentOuts(
 		data,
@@ -88,17 +97,21 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		response_parser_utils.Parsed_UnspentOuts__keyImageManaged(
-			data,
-			address,
-			view_key__private,
-			spend_key__public,
-			spend_key__private,
-			function(err, returnValuesByKey)
-			{
-				fn(err, returnValuesByKey)
-			}
-		)
+		monero_utils_promise.then(function(monero_utils)
+		{
+			response_parser_utils.Parsed_UnspentOuts__keyImageManaged(
+				data,
+				address,
+				view_key__private,
+				spend_key__public,
+				spend_key__private,
+				monero_utils,
+				function(err, returnValuesByKey)
+				{
+					fn(err, returnValuesByKey)
+				}
+			)
+		})
 	}
 	//
 	DeleteManagedKeyImagesForWalletWith(

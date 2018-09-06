@@ -149,7 +149,8 @@ var context_object_instantiation_descriptions =
 function NewHydratedContext(
 	app, 
 	menuController,
-	urlOpeningController
+	urlOpeningController,
+	monero_utils
 ) {
 	var initialContext =
 	{
@@ -165,7 +166,8 @@ function NewHydratedContext(
 		rootViewFooterHeight: 0, // because we're not implementing any footer in Desktop mode
 		TabBarView_isHorizontalBar: false,
 		appDownloadLink_domainAndPath: "mymonero.com",
-		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development'
+		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
+		monero_utils: monero_utils
 	}
 	// required options (which can only be obtained with `app`, etc.)
 	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()

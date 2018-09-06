@@ -47,7 +47,6 @@ const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/m
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 //
 const jsQR = require('jsqr')
@@ -1511,7 +1510,7 @@ class SendFundsView extends View
 				// then it's an XMR addr of some kind
 				var address__decode_result; 
 				try {
-					address__decode_result = monero_utils.decode_address(enteredAddressValue, self.context.nettype)
+					address__decode_result = self.context.monero_utils.decode_address(enteredAddressValue, self.context.nettype)
 				} catch (e) {
 					console.warn("Couldn't decode as a Monero address.", e)
 					_trampolineToReturnWithValidationErrorString("Please enter a valid Monero address.") // this will re-enable submit btn etc
@@ -1523,7 +1522,7 @@ class SendFundsView extends View
 				} else {
 					isEnteredValue_integratedAddress = false
 				}
-				isEnteredValue_subAddress = isEnteredValue_integratedAddress == false ? monero_utils.is_subaddress(enteredAddressValue, self.context.nettype) : false
+				isEnteredValue_subAddress = isEnteredValue_integratedAddress == false ? self.context.monero_utils.is_subaddress(enteredAddressValue, self.context.nettype) : false
 			} else { // then it /is/ an OA addr
 				isEnteredValue_integratedAddress = false // important to set
 				isEnteredValue_subAddress = false
@@ -1575,7 +1574,7 @@ class SendFundsView extends View
 					}
 					// construct integrated address
 					let overwritten__target_address = target_address;
-					target_address = monero_utils.new__int_addr_from_addr_and_short_pid(
+					target_address = self.context.monero_utils.new__int_addr_from_addr_and_short_pid(
 						overwritten__target_address, // the monero one
 						payment_id, // short pid
 						self.context.nettype
@@ -2021,7 +2020,7 @@ class SendFundsView extends View
 		if (isOAAddress !== true) {
 			var address__decode_result; 
 			try {
-				address__decode_result = monero_utils.decode_address(enteredPossibleAddress, self.context.nettype)
+				address__decode_result = self.context.monero_utils.decode_address(enteredPossibleAddress, self.context.nettype)
 			} catch (e) {
 				console.warn("Couldn't decode as a Monero address.", e)
 				self.isResolvingSendTarget = false
@@ -2185,7 +2184,7 @@ class SendFundsView extends View
 		//
 		var requestPayload;
 		try {
-			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromPossibleRequestURIString(possibleUriString, self.context.nettype)
+			requestPayload = monero_requestURI_utils.New_ParsedPayload_FromPossibleRequestURIString(possibleUriString, self.context.nettype, self.context.monero_utils)
 		} catch (errStr) {
 			if (errStr) {
 				self.validationMessageLayer.SetValidationError("Unable to use the result of decoding that QR code: " + errStr)

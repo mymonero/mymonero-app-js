@@ -35,7 +35,6 @@ const Emojis = require('../../Emoji/emoji_set').Emojis
 const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const contact_persistence_utils = require('./contact_persistence_utils')
 //
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 //
 const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
@@ -294,7 +293,7 @@ class Contact extends EventEmitter
 			return false
 		}
 		// TODO: how to cache this? would need to invalidate every time .address is touched
-		const address__decode_result = monero_utils.decode_address(address, self.context.nettype) // just letting it throw
+		const address__decode_result = self.context.monero_utils.decode_address(address, self.context.nettype) // just letting it throw
 		const integratedAddress_paymentId = address__decode_result.intPaymentId
 		const isIntegratedAddress = integratedAddress_paymentId ? true : false // would like this test to be a little more rigorous
 		//
@@ -323,11 +322,11 @@ class Contact extends EventEmitter
 		if (address == null || address == "" || typeof address == "undefined") {
 			return null; // probably not resolved yet…… guess don't show any hypothetical derived int addr for now
 		}
-		if (monero_utils.is_subaddress(address, self.context.nettype)) {
+		if (self.context.monero_utils.is_subaddress(address, self.context.nettype)) {
 			return null; // integrated addr must not be generated for subaddrs
 		}
 		// now we know we have a std xmr addr and a short pid
-		let int_addr = monero_utils.new__int_addr_from_addr_and_short_pid(
+		let int_addr = self.context.monero_utils.new__int_addr_from_addr_and_short_pid(
 			address,
 			payment_id,
 			self.context.nettype

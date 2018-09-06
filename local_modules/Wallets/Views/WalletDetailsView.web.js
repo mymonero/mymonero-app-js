@@ -46,7 +46,6 @@ const TransactionDetailsView = require("./TransactionDetailsView.web")
 const ImportTransactionsModalView = require('./ImportTransactionsModalView.web')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
-let monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 //
 class WalletDetailsView extends View
 {

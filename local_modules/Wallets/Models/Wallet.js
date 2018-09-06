@@ -33,7 +33,6 @@ const EventEmitter = require('events')
 const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
 //
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
@@ -178,7 +177,7 @@ class Wallet extends EventEmitter
 			// case II: user is inputting address + view & spend keys
 			// case III: we're creating a new wallet
 			try {
-				const ret = monero_utils.newly_created_wallet(
+				const ret = self.context.monero_utils.newly_created_wallet(
 					currentLocale,
 					self.context.nettype
 				);
@@ -309,7 +308,7 @@ class Wallet extends EventEmitter
 		//
 		var ret;
 		try {
-			ret = monero_utils.seed_and_keys_from_mnemonic(
+			ret = self.context.monero_utils.seed_and_keys_from_mnemonic(
 				mnemonicString,
 				self.context.nettype
 			);
@@ -423,7 +422,7 @@ class Wallet extends EventEmitter
 				}
 				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
 				console.log("Rederiving mnemonic seed from account seed as mnemonic was not persisted - this probably occurred after app relaunched but wallet needed to be reconstituted")
-				const seedAsMnemonic = monero_utils.mnemonic_from_seed(
+				const seedAsMnemonic = self.context.monero_utils.mnemonic_from_seed(
 					reconstitutionDescription.account_seed, 
 					reconstitutionDescription.mnemonic_wordsetName
 				)
@@ -607,9 +606,9 @@ class Wallet extends EventEmitter
 				self.wasInitializedWith_addrViewAndSpendKeysInsteadOfSeed = true
 			} else { 
 				// TODO: move this to -before- the initial saveToDisk()
-				const derived_mnemonicString = monero_utils.mnemonic_from_seed(self.account_seed, self.mnemonic_wordsetName)
+				const derived_mnemonicString = self.context.monero_utils.mnemonic_from_seed(self.account_seed, self.mnemonic_wordsetName)
 				if (self.mnemonicString != null && typeof self.mnemonicString != 'undefined') {
-					const areMnemonicsEqual = monero_utils.are_equal_mnemonics(
+					const areMnemonicsEqual = self.context.monero_utils.are_equal_mnemonics(
 						self.mnemonicString,
 						derived_mnemonicString
 					)
@@ -674,7 +673,7 @@ class Wallet extends EventEmitter
 		//
 		var ret;
 		try {
-			ret = monero_utils.validate_components_for_login(
+			ret = self.context.monero_utils.validate_components_for_login(
 				address,
 				view_key,
 				sec_spendKey_orUndef || "", // expects string

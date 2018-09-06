@@ -79,6 +79,7 @@ class OpenAliasResolver extends EventEmitter
 			openAliasAddress,
 			self.txtRecordResolver,
 			self.context.nettype,
+			self.context.monero_utils,
 			function(
 				err,
 				moneroReady_address,

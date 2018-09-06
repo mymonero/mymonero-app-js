@@ -32,7 +32,6 @@ const ContactFormView = require('../../Contacts/Views/ContactFormView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 //
-const monero_utils = require('../../mymonero_core_js/monero_utils/monero_cryptonote_utils_instance')
 const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
 //
 class EditContactFromContactsTabView extends ContactFormView
@@ -178,7 +177,7 @@ class EditContactFromContactsTabView extends ContactFormView
 			return
 		}
 		if (typeof paymentID !== 'undefined' && paymentID) {
-			if (monero_utils.is_subaddress(address, self.context.nettype)) { // paymentID disallowed with subaddress
+			if (self.context.monero_utils.is_subaddress(address, self.context.nettype)) { // paymentID disallowed with subaddress
 				self.validationMessageLayer.SetValidationError("Payment IDs cannot be used with subaddresses.")
 				return
 			}
@@ -202,7 +201,7 @@ class EditContactFromContactsTabView extends ContactFormView
 		if (openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) {
 			var address__decode_result; 
 			try {
-				address__decode_result = monero_utils.decode_address(address, self.context.nettype)
+				address__decode_result = self.context.monero_utils.decode_address(address, self.context.nettype)
 			} catch (e) {
 				__reEnableForm()
 				self.validationMessageLayer.SetValidationError("Please enter a valid Monero address") // not using the error here cause it can be pretty unhelpful to the lay user
@@ -214,12 +213,12 @@ class EditContactFromContactsTabView extends ContactFormView
 				paymentID = integratedAddress_paymentId // use this one instead
 				self.paymentIDInputLayer.value = paymentID
 			} else { // not an integrated addr - normal wallet addr or subaddress
-				if (monero_utils.is_subaddress(address, self.context.nettype)) { // paymentID disallowed with subaddress
+				if (self.context.monero_utils.is_subaddress(address, self.context.nettype)) { // paymentID disallowed with subaddress
 					paymentID = undefined
 					self.paymentIDInputLayer.value = ""
 				} else { // normal wallet address
 					if (paymentID === "" || typeof paymentID === 'undefined') { // if no existing payment ID
-						paymentID = monero_utils.new_payment_id() // generate new one for them
+						paymentID = self.context.monero_utils.new_payment_id() // generate new one for them
 						self.paymentIDInputLayer.value = paymentID
 					} else { // just use/allow entered paymentID
 					}
