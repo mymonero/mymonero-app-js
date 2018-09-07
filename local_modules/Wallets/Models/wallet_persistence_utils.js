@@ -75,7 +75,7 @@ function HydrateInstance(
 	self.public_keys = plaintextDocument.public_keys
 	self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 	//
-	self.transactions = plaintextDocument.transactions // no || [] because we always persist at least []
+	self.transactions = plaintextDocument.transactions
 	self.transactions.forEach(
 		function(tx, i) { // we must fix up what JSON stringifying did to the data
 			tx.timestamp = new Date(tx.timestamp)

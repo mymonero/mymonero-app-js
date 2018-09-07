@@ -888,7 +888,7 @@ class WalletDetailsView extends View
 						div.style.boxSizing = "border-box"
 						div.style.padding = "3px 41px 0 0"
 						div.style.color = "#6B696B"
-						div.innerHTML = `${ tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED" }`
+						div.innerHTML = `${ tx.isFailed ? "REJECTED" : (tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED") }`
 					}
 				}
 			)

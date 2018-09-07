@@ -110,10 +110,11 @@ class TransactionDetailsView extends View
 		{
 			self._addTableFieldLayer_date()
 			self._addTableFieldLayer_amountsFeesAndTotals()
-			self._addTableFieldLayer_ringsize()
 			self._addTableFieldLayer_transactionHash()
 			self._addTableFieldLayer_transactionKey()
+			self._addTableFieldLayer_ringsize()
 			self._addTableFieldLayer_paymentID()
+			self._addTableFieldLayer_to();
 		}
 		self.layer.appendChild(containerLayer)
 		// self.DEBUG_BorderChildLayers()
@@ -211,7 +212,7 @@ class TransactionDetailsView extends View
 	_addTableFieldLayer_transactionHash()
 	{
 		const self = this
-		const fieldLabelTitle = "Transaction Hash"
+		const fieldLabelTitle = "Transaction ID"
 		const valueToDisplayIfValueNil = "N/A"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
 			self.context,
@@ -228,14 +229,15 @@ class TransactionDetailsView extends View
 	_addTableFieldLayer_transactionKey()
 	{
 		const self = this
-		const fieldLabelTitle = "Transaction Secret Key"
+		const fieldLabelTitle = "Secret Key"
 		const valueToDisplayIfValueNil = "Unknown"
 		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
 			self.context,
 			fieldLabelTitle, 
 			"", // for now
 			self.context.pasteboard, 
-			valueToDisplayIfValueNil
+			valueToDisplayIfValueNil,
+			false // not truncated - functions and looks better
 		)
 		self.valueLayer__transactionKey = div
 		const labelLayer = div.Component_GetLabelLayer()
@@ -255,6 +257,24 @@ class TransactionDetailsView extends View
 			valueToDisplayIfValueNil
 		)
 		self.valueLayer__paymentID = div
+		const labelLayer = div.Component_GetLabelLayer()
+		self.___styleLabelLayerAsFieldHeader(labelLayer)
+		self.tableSection_containerLayer.appendChild(div)
+	}
+	_addTableFieldLayer_to()
+	{
+		const self = this
+		const fieldLabelTitle = "To"
+		const valueToDisplayIfValueNil = "Unknown"
+		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+			self.context,
+			fieldLabelTitle, 
+			"", // for now
+			self.context.pasteboard, 
+			valueToDisplayIfValueNil,
+			false // it looks weird to have truncated fields next to non-truncated fields, presently
+		);
+		self.valueLayer__to = div
 		const labelLayer = div.Component_GetLabelLayer()
 		self.___styleLabelLayerAsFieldHeader(labelLayer)
 		self.tableSection_containerLayer.appendChild(div)
@@ -334,7 +354,9 @@ class TransactionDetailsView extends View
 			var valueString;
 			const transaction = self.transaction
 			if (transaction && typeof transaction !== 'undefined') {
-				if (transaction.isConfirmed !== true) {
+				if (transaction.isFailed) {
+					valueString = "REJECTED"
+				} else if (transaction.isConfirmed !== true) {
 					valueString = "PENDING"
 				} else {
 					valueString = "CONFIRMED"
@@ -415,10 +437,17 @@ class TransactionDetailsView extends View
 			const value = dateString
 			self.tableFieldLayer__date.Component_SetValue(value)
 		}
+		const isOutgoing = self.transaction.approx_float_amount < 0
+		if (isOutgoing) {
+			self.valueLayer__to.Component_SetValue(self.transaction.target_address) // in case we have it
+			self.valueLayer__to.style.display = "block"
+		} else {
+			self.valueLayer__to.style.display = "none"
+		}
 		{ // Total
 			const value = self.transaction.approx_float_amount
 			var color;
-			if (value < 0) {
+			if (isOutgoing) {
 				color = "#F97777"
 			} else {
 				color = "#FCFBFC"
@@ -434,9 +463,12 @@ class TransactionDetailsView extends View
 			const value = self.transaction.hash
 			self.valueLayer__transactionHash.Component_SetValue(value)
 		}
-		{
+		if (isOutgoing) { // outgoing .. we might have own tx key
 			const value = self.transaction.tx_key
 			self.valueLayer__transactionKey.Component_SetValue(value)
+			self.valueLayer__transactionKey.style.display = "block"
+		} else {
+			self.valueLayer__transactionKey.style.display = "none"
 		}
 		{ // Payment ID
 			const value = self.transaction.payment_id

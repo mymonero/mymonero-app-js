@@ -486,11 +486,13 @@ class ImportTransactionsModalView extends View
 				tx_fee,
 				tx_key,
 				mixin,
+				mockedTransaction
 			) {
 				if (err) {
 					_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 					return
 				}
+				//
 				self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
 				// finally, clean up form 
 				setTimeout(

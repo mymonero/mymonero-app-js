@@ -123,15 +123,21 @@ class SendFundsView extends SendFundsView_Base
 		}
 		self._shared_havingClearedForm_didPickRequestPayloadForAutofill(requestPayload)
 	}
-	__didSendWithPickedContact(pickedContact_orNull, mockedTransaction)
-	{
+	__didSendWithPickedContact(
+		pickedContact_orNull, 
+		enteredAddressValue_orNull, 
+		resolvedAddress_orNull, 
+		mockedTransaction
+	) {
 		const self = this;
 		if (pickedContact_orNull === null) { // so they're going with a custom addr
 			setTimeout(
 				function()
 				{
 					const view = new AddContactFromSendTabView({
-						mockedTransaction: mockedTransaction
+						mockedTransaction: mockedTransaction,
+						enteredAddressValue_orNull: enteredAddressValue_orNull, 
+						resolvedAddress_orNull: resolvedAddress_orNull,
 					}, self.context)
 					const navigationView = new StackAndModalNavigationView({}, self.context)
 					navigationView.SetStackViews([ view ])

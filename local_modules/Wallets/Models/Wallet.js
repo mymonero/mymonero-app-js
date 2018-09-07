@@ -38,6 +38,7 @@ const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/m
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
+const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
 //
 const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const wallet_persistence_utils = require('./wallet_persistence_utils')
@@ -222,6 +223,7 @@ class Wallet extends EventEmitter
 		self.hasBeenTornDown = true
 		console.log("♻️  Tearing down Wallet", self._id)
 		self._tearDown_polling()
+		self._stopTimer__localTxCleanupJob()
 		//
 		// and be sure to delete the managed key image cache
 		self.context.backgroundAPIResponseParser.DeleteManagedKeyImagesForWalletWith(self.public_address, function() {})
@@ -631,6 +633,8 @@ class Wallet extends EventEmitter
 			self.emit(self.EventName_booted())
 		}
 		{
+			self.__do_localTxCleanupJob();
+			self._startTimer__localTxCleanupJob() // mark dropped txs as dead
 			self._atRuntime_setup_hostPollingController() // instantiate (and kick off) polling controller
 		}
 	}
@@ -646,6 +650,51 @@ class Wallet extends EventEmitter
 		}
 		let context = self.context
 		self.hostPollingController = new WalletHostPollingController(options, context)
+	}
+	_stopTimer__localTxCleanupJob()
+	{
+		const self = this
+		// console.log("💬  Clearing polling intervalTimeout.")
+		clearInterval(self.intervalTimeout)
+		self.intervalTimeout = null
+	}
+	_startTimer__localTxCleanupJob()
+	{
+		const self = this
+		// it would be cool to change the sync polling interval to faster while any transactions are pending confirmation, then dial it back while passively waiting
+		self.localTxCleanupJob__intervalTimer = setInterval(function()
+		{
+			self.__do_localTxCleanupJob()
+		}, 60 * 1000 /*ms*/) // every minute?
+	}
+	__do_localTxCleanupJob()
+	{
+		const self = this;
+		var didChangeAny = false;
+		const oneDayAndABit_ms = 60 * 60 * (24 + 1/*bit=1hr*/) * 1000;/*ms time*/ // and a bit to avoid possible edge cases
+		const timeNow = (new Date()).getTime();
+		const n_transactions = (self.transactions || []).length;
+		for (let i = 0 ; i < n_transactions ; i++) {
+			const existing_tx = self.transactions[i];
+			const msSinceCreation = timeNow - existing_tx.timestamp.getTime()
+			if (msSinceCreation < 0) {
+				throw "Expected non-negative msSinceCreation"
+			}
+			if (msSinceCreation > oneDayAndABit_ms) {
+				if (self.IsTransactionConfirmed(existing_tx) == false
+					|| existing_tx.mempool == true) {
+					if (existing_tx.isFailed != true/*already*/) { 
+						console.log("Marking transaction as dead: ", existing_tx)
+						//
+						didChangeAny = true;
+						existing_tx.isFailed = true;  // this flag does not need to get preserved on existing_txs when overwritten by an incoming_tx because if it's returned by the server, it can't be dead
+					}
+				}
+			}
+		}
+		if (didChangeAny) {
+			self.saveToDisk(function(err) {});
+		}
 	}
 	__trampolineFor_failedToBootWith_fnAndErr(fn, err)
 	{
@@ -953,16 +1002,23 @@ class Wallet extends EventEmitter
 		const stateCachedTransactions = [] // to finalize
 		const transactions_length = transactions.length
 		for (let i = 0 ; i < transactions_length ; i++) {
-			const transaction = transactions[i]
-			const shallowCopyOf_transaction = extend({}, transaction)
-			shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
-			shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
-			shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
-			//
-			stateCachedTransactions.push(shallowCopyOf_transaction)
+			stateCachedTransactions.push(self.New_StateCachedTransaction(transactions[i]))
 		}
 		//
 		return stateCachedTransactions
+	}
+	New_StateCachedTransaction(transaction)
+	{
+		const self = this
+		const shallowCopyOf_transaction = extend({}, transaction)
+		shallowCopyOf_transaction.isConfirmed = self.IsTransactionConfirmed(transaction)
+		shallowCopyOf_transaction.isUnlocked = self.IsTransactionUnlocked(transaction)
+		shallowCopyOf_transaction.lockedReason = self.TransactionLockedReason(transaction)
+		if (shallowCopyOf_transaction.isConfirmed && shallowCopyOf_transaction.isFailed) {
+			// throw "Unexpected isFailed && isConfirmed"
+		}
+		//
+		return shallowCopyOf_transaction;
 	}
 	//
 	IsAccountCatchingUp()
@@ -1084,12 +1140,12 @@ class Wallet extends EventEmitter
 		//		err?,
 		//		currencyReady_targetDescription_address?,
 		//		sentAmount?,
-		//		targetDescription_domain_orNone?,
 		//		final__payment_id?,
 		//		tx_hash?,
 		//		tx_fee?,
 		//		tx_key?,
 		// 		mixin?,
+		//		mockedTransaction?
 		// )
 	) {
 		const self = this
@@ -1112,28 +1168,57 @@ class Wallet extends EventEmitter
 		function __trampolineFor_success(
 			currencyReady_targetDescription_address,
 			sentAmount,
-			targetDescription_domain_orNone,
 			final__payment_id,
 			tx_hash,
 			tx_fee,
 			tx_key,
-			mixin,
+			mixin
 		) {
 			___aTrampolineForFnWasCalled()
 			//
-			console.log("✅  Successfully sent funds.")
+			const mockedTransaction = 
+			{
+				hash: tx_hash,
+				mixin: "" + mixin,
+				coinbase: false,
+				mempool: true, // is that correct?
+				//
+				isJustSentTransaction: true, // this is set back to false once the server reports the tx's existence
+				timestamp: new Date(), // faking
+				//
+				unlock_time: 0,
+				//
+				// height: null, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
+				//
+				total_sent: "" + (sentAmount * Math.pow(10, monero_config.coinUnitPlaces)), // TODO: is this correct? and do we need to mock this?
+				total_received: "0",
+				//
+				approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
+				// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
+				//
+				payment_id: final__payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
+				//
+				// info we can only preserve locally
+				tx_fee: tx_fee,
+				tx_key: tx_key,
+				target_address: target_address, // only we here are saying it's the target
+			};
 			//
 			fn(
 				null,
 				currencyReady_targetDescription_address,
 				sentAmount,
-				targetDescription_domain_orNone,
 				final__payment_id,
 				tx_hash,
 				tx_fee,
 				tx_key,
 				mixin,
+				mockedTransaction
 			)
+			//
+			// manually insert .. and subsequent fetches from the server will be 
+			// diffed against this, preserving the tx_fee, tx_key, target_address...
+			self._manuallyInsertTransactionRecord(mockedTransaction);
 		}
 		function __trampolineFor_err_withErr(err)
 		{
@@ -1199,7 +1284,6 @@ class Wallet extends EventEmitter
 				function() { __proceed() }
 			)
 		}
-
 	}
 	//
 	// Runtime - Imperatives - Manual refresh
@@ -1326,7 +1410,37 @@ class Wallet extends EventEmitter
 			}
 		)
 	}
-
+	_manuallyInsertTransactionRecord(transaction)
+	{
+		const self = this
+		//
+		const oldTransactions = self.transactions;
+		const newTransactions = []; // constructing a new array so we preserve the old one
+		newTransactions.push(transaction);
+		for (var i = 0 ; i < oldTransactions.length ; i++) {
+			newTransactions.push(oldTransactions[i]);
+		}
+		self.transactions = newTransactions;
+		//
+		self.saveToDisk(
+			function(err)
+			{
+				if (!err) {
+					// notify/yield
+					if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
+						self.options.didReceiveUpdateToAccountTransactions()
+					}
+					self.___didReceiveActualChangeTo_transactionsList(
+						1, // numberOfTransactionsAdded, 
+						newTransactions, 
+						oldTransactions
+					)
+				} else {
+					// try to save again? 
+				}
+			}
+		)
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private - WalletHostPollingController delegation fns
@@ -1494,7 +1608,6 @@ class Wallet extends EventEmitter
 		//
 		// 
 		var transactionsList_didActuallyChange = false // we'll see if anything actually changed and only emit if so
-		var finalized_transactions = []
 		// We will construct the txs from the incoming txs here as follows.
 		// Doing this allows us to selectively preserve already-cached info.
 		var numberOfTransactionsAdded = 0
@@ -1502,49 +1615,89 @@ class Wallet extends EventEmitter
 		const existing_transactions = self.transactions || []
 		const self_transactions_length = existing_transactions.length
 		const incoming_transactions_length = transactions.length
+		//
+		// Always make sure to construct new array so we have the old set
+		const txs_by_hash = {};
+		for (let i = 0 ; i < self_transactions_length ; i++) {
+			const existing_tx = self.transactions[i];
+			delete existing_tx["id"]; // not expecting an id but just in case .. so we don't break diffing
+			txs_by_hash[existing_tx.hash] = existing_tx; // start with old one
+		}
 		for (let i = 0 ; i < incoming_transactions_length ; i++) {
-			const incoming_tx = transactions[i]
-			delete incoming_tx["id"] // because this field changes while sending funds, even though hash stays the same, 
+			const incoming_tx = transactions[i];
+			delete incoming_tx["id"]; // because this field changes while sending funds, even though hash stays the same, 
 			// and because we don't want `id` messing with our ability to diff. so we're not even going to try to store this
-			
-			var isNewTransaction = false // let's see……
-			var didFindIncomingTxIdInExistingTxs = false // let's see…
-			for (let j = 0 ; j < self_transactions_length ; j++) {
-				// search for tx with same id in existing list to check if tx actually new. if not actually new, do diff to check if change received in update
-				const existing_tx = existing_transactions[j]
-				if (existing_tx.hash === incoming_tx.hash) { // already known tx; diff
-					didFindIncomingTxIdInExistingTxs = true
-					const existing_same_tx = existing_tx
-					delete existing_same_tx["id"] // we are deleting `id` here even though on a completely fresh import, according to this code, since we say finalized_tx=incoming_tx, we should never technically have a defined `id` in any existing_tx... but this is done here not only for explicit clarity but to preclude a false positive on a diff (areObjectsEqual below) in case any old data is present (which it is probably only likely to be at around the time of writing this :))
-					//
-					// unfortunately this is possibly going to be true if everything is the same except for the id field
-					// but technically it's an 'update'…… even though the id change should be opaque to the client
-					if (areObjectsEqual(incoming_tx, existing_same_tx) === false) {
-						transactionsList_didActuallyChange = true // this is likely to happen if tx.height changes while pending confirmation
-						// console.log("incoming_tx is not the same as existing_tx")
-						// console.log("incoming_tx" , incoming_tx)
-						// console.log("existing_same_tx" , existing_same_tx)
-					}
-					break // no need to keep looking
-				}
-			}
-			if (didFindIncomingTxIdInExistingTxs !== true) { // then we have a new tx
-				// console.log("a tx added")
+			const existing_tx = txs_by_hash[incoming_tx.hash];
+			const isNewTransaction = existing_tx == null || typeof existing_tx === 'undefined'
+			var finalized_incoming_tx = incoming_tx;
+			// ^- If any existing tx is also in incoming txs, this will cause 
+			// the (correct) deletion of e.g. isJustSentTransaction=true.
+			if (isNewTransaction) { // This is generally now only going to be hit when new incoming txs happen - or outgoing txs done on other logins
 				transactionsList_didActuallyChange = true
 				numberOfTransactionsAdded += 1
-				isNewTransaction = true // NOTE: we set isNewTransaction=true so we can push the finalized tx to newTransactions below
+			} else {
+				const existing_same_tx = existing_tx;
+				if (existing_same_tx == null) {
+					throw "expected existing_same_tx when didFindIncomingTxIdInExistingTxs=false"
+				}
+				if (areObjectsEqual(incoming_tx, existing_same_tx) === false) {
+					transactionsList_didActuallyChange = true // this is likely to happen if tx.height changes while pending confirmation
+				}
+				//
+				// Check if existing tx has any cached info which we 
+				// want to bring into the finalized_tx before setting;
+				if (existing_same_tx.tx_key && typeof existing_same_tx.tx_key !== 'undefined') {
+					finalized_incoming_tx.tx_key = existing_same_tx.tx_key;
+				}
+				if (existing_same_tx.target_address && typeof existing_same_tx.target_address !== 'undefined') {
+					finalized_incoming_tx.target_address = existing_same_tx.target_address;
+				}
+				if (existing_same_tx.tx_fee && typeof existing_same_tx.tx_fee !== 'undefined') {
+					finalized_incoming_tx.tx_fee = existing_same_tx.tx_fee;
+				}
+				if (typeof incoming_tx.payment_id == 'undefined' || !incoming_tx.payment_id || incoming_tx.payment_id == "") {
+					if (existing_same_tx.payment_id && typeof existing_same_tx.payment_id != 'undefined') {
+						finalized_incoming_tx.payment_id = existing_same_tx.payment_id; // if the tx lost it.. say, while it's being scanned, keep pid
+					}
+				}
+				if (typeof incoming_tx.mixin == 'undefined' || !incoming_tx.mixin || incoming_tx.mixin == "" || incoming_tx.mixin === 0) {
+					if (existing_same_tx.mixin && typeof existing_same_tx.mixin != 'undefined' && existing_same_tx.mixin != 0) {
+						finalized_incoming_tx.mixin = existing_same_tx.mixin; // if the tx lost it.. say, while it's being scanned, keep mixin
+					}
+				}
+				//
+				// We could probably check if the existing_same_tx has a 
+				// negative amount and the incoming_tx has a positive amount and 
+				// then cause the existing_tx to use the negative amount ... but 
+				// those criteria are too loose, and the potential for incorrect 
+				// behavior too great imo.
 			}
-			//
-			const finalized_tx = incoming_tx // setting incoming_tx as based instead of existing_tx, if any, so we allow the server to give us updates to transactions with ids we already know about
-			// TODO: now finalize tx if necessary here... (e.g. check if existing tx has any cached info we want to bring into the finalized_tx before setting)
-			//
-			// now that actually finalized, accumulate:
-			finalized_transactions.push(finalized_tx) 
-			if (isNewTransaction === true) { // we break this out until here instead
-			// of putting above so we have the actually finalized_tx to push to newTransactions
-				newTransactions.push(finalized_tx)
+			// always overwrite existing ones:
+			txs_by_hash[incoming_tx.hash] = finalized_incoming_tx; // the finalized tx
+			if (isNewTransaction) { // waiting so we have the finalized incoming_tx obj
+				newTransactions.push(finalized_incoming_tx)
 			}
 		}
+		//
+		var finalized_transactions = [];
+		const hashes = Object.keys(txs_by_hash);
+		const n_hashes = hashes.length
+		for (let i = 0 ; i < n_hashes ; i++) {
+			const final_tx = txs_by_hash[hashes[i]];
+			final_tx.timestamp = typeof final_tx.timestamp === 'string' ? new Date(final_tx.timestamp) : final_tx.timestamp;
+			if (Object.prototype.toString.call(final_tx.timestamp) !== '[object Date]') {
+				throw "Expected tx obj to have Date timestamp by now";
+			}
+			finalized_transactions.push(final_tx);
+		}
+		finalized_transactions.sort(function(a, b) 
+		{
+			// there are no ids here for sorting so we'll use timestamp
+			// and .mempool can mess with user's expectation of tx sorting
+			// when .isFailed is involved, so just going with a simple sort here
+			return b.timestamp - a.timestamp;
+		});
+		//
 		self.transactions = finalized_transactions
 		//
 		var wasFirstFetchOf_transactions = false
@@ -1574,6 +1727,8 @@ class Wallet extends EventEmitter
 						self.regenerate_shouldDisplayImportAccountOption() // heights may have changed
 						self.___didReceiveActualChangeTo_heights()
 					}
+				} else {
+					// try again?
 				}
 			}
 		)

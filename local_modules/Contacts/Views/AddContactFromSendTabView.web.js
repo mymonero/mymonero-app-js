@@ -45,7 +45,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 			}
 		}
 		{
-			self.enteredAddressValue = self.mockedTransaction.enteredAddressValue
+			self.enteredAddressValue = self.options.enteredAddressValue_orNull
 			self.is_enteredAddressValue_OAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(self.enteredAddressValue)
 			if (self.is_enteredAddressValue_OAAddress === false) {
 				try {
@@ -203,7 +203,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		const self = this
 		if (self.is_enteredAddressValue_OAAddress) {
-			const resolvedAddress = self.mockedTransaction.resolvedAddress
+			const resolvedAddress = self.options.resolvedAddress_orNull
 			if (!resolvedAddress) {
 				throw "resolvedAddress was nil despite is_enteredAddressValue_OAAddress"
 			}

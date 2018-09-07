@@ -1721,62 +1721,24 @@ class SendFundsView extends View
 					tx_fee,
 					tx_key,
 					mixin,
+					mockedTransaction
 				) {
 					if (err) {
 						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 						return
 					}
-					// console.log(
-					// 	"SENT",
-					// 	currencyReady_targetDescription_address,
-					// 	sentAmount,
-					// 	"final__payment_id:", final__payment_id,
-					// 	"payment_id:", payment_id,
-					// 	tx_hash,
-					// 	tx_fee
-					// )
-					var mockedTransaction; // defined out here cause we use it below
 					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-						mockedTransaction =
-						{
-							hash: tx_hash,
-							mixin: "" + mixin,
-							coinbase: false,
-							//
-							isConfirmed: false, // important
-							isJustSentTransaction: true, // this is only used here
-							timestamp: "" + (new Date()), // faking
-							//
-							isUnlocked: true, // TODO: not sure if this is correct
-							unlock_time: 0,
-							lockedReason: "Transaction is unlocked",
-							// height: 1228823,
-							//
-							total_sent: "" + (sentAmount * Math.pow(10, monero_config.coinUnitPlaces)), // TODO: is this correct? and do we need to mock this?
-							total_received: "0",
-							//
-							approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
-							// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
-							tx_fee: tx_fee,
-							tx_key: tx_key,
-							//
-							payment_id: final__payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
-							//
-							target_address: target_address, // only we here are saying it's the target
-							//
-							contact: hasPickedAContact ? self.pickedContact : null,
-							//
-							// values just in case they're needed; some are
-							enteredAddressValue: enteredAddressValue_exists ? enteredAddressValue : null,
-							resolvedAddress: resolvedAddress_exists ? resolvedAddress : null,
-							resolvedPaymentID: resolvedPaymentID_exists ? resolvedPaymentID : null,
-							manuallyEnteredPaymentID: manuallyEnteredPaymentID_exists ? manuallyEnteredPaymentID : null
-						}
-						self.pushDetailsViewFor_transaction(sendFrom_wallet, mockedTransaction)
+						const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
+						self.pushDetailsViewFor_transaction(sendFrom_wallet, stateCachedTransaction);
 					}
 					{
 						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-						self.__didSendWithPickedContact(this_pickedContact, mockedTransaction);
+						self.__didSendWithPickedContact(
+							this_pickedContact, 
+							enteredAddressValue_exists ? enteredAddressValue : null, 
+							resolvedAddress_exists ? resolvedAddress : null,
+							mockedTransaction
+						);
 					}
 					{ // finally, clean up form
 						setTimeout(
@@ -1808,8 +1770,7 @@ class SendFundsView extends View
 	pushDetailsViewFor_transaction(
 		sentFrom_wallet, 
 		transaction
-	)
-	{
+	) {
 		const self = this
 		const _cmd = "pushDetailsViewFor_transaction"
 		if (self.current_transactionDetailsView !== null) {
@@ -2450,8 +2411,12 @@ class SendFundsView extends View
 	}
 	//
 	// Delegation - Internal - Overridable
-	__didSendWithPickedContact(pickedContact_orNull, mockedTransaction)
-	{
+	__didSendWithPickedContact(
+		pickedContact_orNull, 
+		enteredAddressValue_orNull, 
+		resolvedAddress_orNull,
+		mockedTransaction
+	) {
 		// overridable
 	}
 	//
