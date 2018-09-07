@@ -161,9 +161,9 @@ Contributors to each release are credited in release notes.
 
 ### Core Contributors
 
-* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Repo maintainer; Lead app developer; MyMonero partner
+* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Lead maintainer; MyMonero lead
 
-* 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero partner; Monero core team member
+* 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
 
 * 😎 `vtnerd` ([Lee Clagett](https://github.com/vtnerd)) Lead back-end developer
 
