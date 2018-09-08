@@ -654,9 +654,9 @@ class Wallet extends EventEmitter
 	_stopTimer__localTxCleanupJob()
 	{
 		const self = this
-		// console.log("💬  Clearing polling intervalTimeout.")
-		clearInterval(self.intervalTimeout)
-		self.intervalTimeout = null
+		// console.log("💬  Clearing polling localTxCleanupJob__intervalTimer.")
+		clearInterval(self.localTxCleanupJob__intervalTimer)
+		self.localTxCleanupJob__intervalTimer = null
 	}
 	_startTimer__localTxCleanupJob()
 	{
