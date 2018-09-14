@@ -212,7 +212,7 @@ class SendFundsView extends View
 			self._setup_form_field_priority()
 			//
 			// initial config
-			self.context.settingsController._executeWhenBooted( // wait for boot for this
+			self.context.settingsController.executeWhenBooted( // wait for boot for this
 				function()
 				{
 					self._givenBootedSettingsController_setCcySelectLayer_initialValue() // to get display ccy

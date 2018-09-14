@@ -42,7 +42,8 @@ let k_defaults_record =
 	invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: false,
 	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR, // default
 	authentication_requireWhenSending: true,
-	authentication_requireWhenDisclosingWalletSecrets: true
+	authentication_requireWhenDisclosingWalletSecrets: true,
+	autoInstallUpdateEnabled: true 
 }
 //
 class SettingsController extends EventEmitter
@@ -118,6 +119,11 @@ class SettingsController extends EventEmitter
 			} else {
 				self.authentication_requireWhenDisclosingWalletSecrets = record_doc.authentication_requireWhenDisclosingWalletSecrets 
 			}
+			if (typeof record_doc.autoInstallUpdateEnabled == 'undefined' || record_doc.autoInstallUpdateEnabled == null) {
+				self.autoInstallUpdateEnabled = k_defaults_record.autoInstallUpdateEnabled
+			} else {
+				self.autoInstallUpdateEnabled = record_doc.autoInstallUpdateEnabled
+			}
 			//
 			self._setBooted() // all done!
 		}
@@ -163,10 +169,18 @@ class SettingsController extends EventEmitter
 	{
 		return "EventName_settingsChanged_authentication_requireWhenDisclosingWalletSecrets"
 	}
+	EventName_settingsChanged_autoInstallUpdateEnabled()
+	{
+		return "EventName_settingsChanged_autoInstallUpdateEnabled"
+	}
 	//
 	AppTimeoutNeverValue()
 	{
 		return -1
+	}
+	defaultValue__autoInstallUpdateEnabled()
+	{
+		return k_defaults_record.autoInstallUpdateEnabled
 	}
 	//
 	//
@@ -177,7 +191,7 @@ class SettingsController extends EventEmitter
 		fn // (err?) -> Void
 	) {
 		const self = this
-		self._executeWhenBooted(
+		self.executeWhenBooted(
 			function()
 			{
 				const valueKeys = Object.keys(valuesByKey)
@@ -186,6 +200,7 @@ class SettingsController extends EventEmitter
 				var didUpdate_displayCcySymbol = false
 				var didUpdate_authentication_requireWhenSending = false
 				var didUpdate_authentication_requireWhenDisclosingWalletSecrets = false
+				var didUpdate_autoInstallUpdateEnabled = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
@@ -199,6 +214,8 @@ class SettingsController extends EventEmitter
 							didUpdate_authentication_requireWhenSending = true
 						} else if (valueKey === "authentication_requireWhenDisclosingWalletSecrets") {
 							didUpdate_authentication_requireWhenDisclosingWalletSecrets = true
+						} else if (valueKey == "autoInstallUpdateEnabled") {
+							didUpdate_autoInstallUpdateEnabled = true
 						}
 						// NOTE: not checking invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount b/c invisible_ and therefore always set programmatically
 					}
@@ -242,7 +259,13 @@ class SettingsController extends EventEmitter
 									self.EventName_settingsChanged_authentication_requireWhenDisclosingWalletSecrets(), 
 									self.authentication_requireWhenDisclosingWalletSecrets
 								)
-							}							
+							}
+							if (didUpdate_autoInstallUpdateEnabled) {
+								self.emit(
+									self.EventName_settingsChanged_autoInstallUpdateEnabled(),
+									self.autoInstallUpdateEnabled
+								)
+							}
 						}
 						fn(err)
 					}
@@ -252,7 +275,7 @@ class SettingsController extends EventEmitter
 	}
 	//
 	// Runtime - Imperatives - Private - Deferring until booted
-	_executeWhenBooted(fn)
+	executeWhenBooted(fn)
 	{
 		const self = this
 		if (self.hasBooted == true) {
@@ -268,7 +291,7 @@ class SettingsController extends EventEmitter
 	saveToDisk(fn)
 	{
 		const self = this
-		self._executeWhenBooted(
+		self.executeWhenBooted(
 			function()
 			{
 				// console.log("📝  Saving " + CollectionName + " to disk.")
@@ -280,7 +303,8 @@ class SettingsController extends EventEmitter
 					invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount,
 					displayCcySymbol: self.displayCcySymbol,
 					authentication_requireWhenSending: self.authentication_requireWhenSending,
-					authentication_requireWhenDisclosingWalletSecrets: self.authentication_requireWhenDisclosingWalletSecrets
+					authentication_requireWhenDisclosingWalletSecrets: self.authentication_requireWhenDisclosingWalletSecrets,
+					autoInstallUpdateEnabled: self.autoInstallUpdateEnabled
 				}
 				if (self._id === null || typeof self._id === 'undefined') {
 					_proceedTo_insertNewDocument(persistableDocument)

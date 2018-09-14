@@ -37,6 +37,11 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
+		module_path: __dirname + "/../AppUpdates/AppUpdatesController.electron.main",
+		instance_key: "appUpdatesController",
+		options: {}
+	},
+	{
 		module_path: __dirname + "/../URLOpening/URLOpeningController.electron",
 		instance_key: "urlOpeningController",
 		options: {}

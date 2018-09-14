@@ -145,8 +145,8 @@ class MenuController extends MenuController_Abstract
 					label: 'Check for Updates',
 					click: function(menuItem, browserWindow, event)
 					{
-						const { autoUpdater } = require("electron-updater")
-						autoUpdater.checkForUpdatesAndNotify();
+						// Figure it's overcomplicating things to turn the menu item off 
+						self.context.appUpdatesController.manually_checkForUpdates();
 					}
 				},
 				{

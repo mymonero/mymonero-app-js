@@ -28,41 +28,62 @@
 //
 "use strict"
 //
-const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
-setup_utils({
-	reporting_processName: "MainWindow"
-})
+const {ipcRenderer} = require('electron')
 //
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
-require('../../mymonero_core_js/monero_utils/monero_utils').then(function(monero_utils)
-{
-	const renderer_context = require('../Models/index_context.electron.renderer').NewHydratedContext(
-		remote__app,
-		remote__context.menuController, // for UI and app runtime access
-		remote__context.urlOpeningController,
-		remote__context.appUpdatesController,
-		monero_utils
-	)
-	{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
-		const emoji_web = require('../../Emoji/emoji_web')
-		emoji_web.PreLoadAndSetUpEmojiOne(renderer_context)
+class Controller
+{	
+	//
+	// Lifecycle - Initialization
+	constructor(options, context)
+	{
+		const self = this
+		self.options = options
+		self.context = context
+		//
+		self.appUpdatesController = self.context.appUpdatesController // on the main process -- so this will be synchronous IPC
+		//
+		self.setup()
 	}
-	const options = {}
-	const rootView = new RootView(options, renderer_context)
-	rootView.superview = null // just to be explicit; however we will set a .superlayer
-	{ // now manually attach the rootView to the DOM and specify view's usual managed reference(s)
-		const superlayer = document.body
-		rootView.superlayer = superlayer
-		superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
+	setup()
+	{
+		const self = this
+		//
+		self.setupWith_settingsController()
+	}
+	setupWith_settingsController()
+	{
+		const self = this
+		const controller = self.context.settingsController
+		controller.executeWhenBooted(
+			function()
+			{
+				self.call_menuController_IPCMethod_ViewOfSettingsUpdated()
+			}
+		)
+		controller.on(
+			controller.EventName_settingsChanged_autoInstallUpdateEnabled(),
+			function()
+			{
+				self.call_menuController_IPCMethod_ViewOfSettingsUpdated()
+			}
+		)
 	}
 	//
-	// setup the context menu
-	require('electron-context-menu')({
-		shouldShowMenu: (event, params) => params.isEditable,
-		showInspectElement: false
-	});
-});
+	// Imperatives
+	call_menuController_IPCMethod_ViewOfSettingsUpdated()
+	{
+		const self = this
+		var isEnabled = self.context.settingsController.autoInstallUpdateEnabled
+		if (typeof isEnabled === 'undefined' || isEnabled === null) {
+			isEnabled = false
+			throw "Expected isEnabled != nil" 
+		}
+		ipcRenderer.send(
+			self.appUpdatesController.IPCMethod__ViewOfSettingsUpdated(),
+			{
+				autoInstallUpdateEnabled: isEnabled 
+			}
+		)
+	}
+}
+module.exports = Controller

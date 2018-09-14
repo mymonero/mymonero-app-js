@@ -142,7 +142,12 @@ var context_object_instantiation_descriptions =
 	//
 	{ // Silly as it sounds, this class exists to integrate the main process menuController with event emissions from the renderer side so that integratees can remain able to operate independently.
 		module_path: __dirname + "/../../Menus/MenuControllerController.renderer",
-		instance_key: "menuControllerController", // we/you probably won't need to access this ever though
+		instance_key: "menuControllerController", // probably won't need to access this ever though
+		options: {}
+	},
+	{
+		module_path: __dirname + "/../../AppUpdates/AppUpdatesBridgeToMain.electron.renderer",
+		instance_key: "appUpdatesBridgeToMain", // probably won't need to access this ever though
 		options: {}
 	}
 ]
@@ -150,6 +155,7 @@ function NewHydratedContext(
 	app, 
 	menuController,
 	urlOpeningController,
+	appUpdatesController,
 	monero_utils
 ) {
 	var initialContext =
@@ -157,6 +163,7 @@ function NewHydratedContext(
 		nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
 		app: app,
 		menuController: menuController,
+		appUpdatesController: appUpdatesController,
 		urlOpeningController: urlOpeningController,
 		userDataAbsoluteFilepath: app.getPath('userData'),
 		isDebug: process.env.NODE_ENV === 'development',
