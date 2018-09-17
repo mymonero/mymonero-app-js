@@ -187,6 +187,7 @@ function New_ActionButtonView(
 		layer.style.borderRadius = "3px"
 		{
 			layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			layer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable())
 			view.SetColorType(optl_colorType || "grey")
 		}		
 		layer.style.textDecoration = "none"

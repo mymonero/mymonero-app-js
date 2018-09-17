@@ -84,7 +84,8 @@ function New_GreyButtonView(context)
 	}
 	layer.style.backgroundColor = "#383638"
 	layer.style.color = "#FCFBFC"
-	context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)		
+	context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)
+	layer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable()) // allowing this to be auto-styled as disabled
 	return view
 }
 exports.New_GreyButtonView = New_GreyButtonView

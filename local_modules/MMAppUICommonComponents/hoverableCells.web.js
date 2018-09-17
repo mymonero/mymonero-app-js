@@ -45,6 +45,10 @@ const cssRules =
 	}`,
 	`.hoverable-cell.destructive:not(.disabled):not(.active):not([disabled]):hover {
 		background-color: #F77E7E !important;
+	}`,
+	`.hoverable-cell.disableable[disabled=disabled],
+	 .hoverable-cell.disableable.disabled {
+	 	opacity: 0.5;
 	}`
 ]
 function __injectCSSRules_ifNecessary()
@@ -71,4 +75,9 @@ exports.ClassFor_RedCell = function()
 {
 	__injectCSSRules_ifNecessary()
 	return "destructive"
+}
+exports.ClassFor_Disableable = function()
+{
+	__injectCSSRules_ifNecessary() 
+	return "disableable"
 }

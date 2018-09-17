@@ -481,6 +481,7 @@ class SettingsView extends View
 				{ // hover effects/classes
 					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
 					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable())
 				}
 				//
 				// observation
@@ -723,6 +724,7 @@ class SettingsView extends View
 			const walletsExist = self.context.walletsListController.records.length > 0
 			self.appTimeoutRangeInputView.SetEnabled(true)
 			self.displayCcySelectLayer.disabled = false
+			self.displayCcySelectLayer.classList.remove("disabled")
 			self.deleteEverything_buttonView.SetEnabled(walletsExist) // cause this is actually the 'log out' btn
 		} else {
 			if (passwordController.hasUserSavedAPassword !== true) {
@@ -733,6 +735,7 @@ class SettingsView extends View
 					self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 				}
 				self.displayCcySelectLayer.disabled = true
+				self.displayCcySelectLayer.classList.add("disabled")
 				self.appTimeoutRangeInputView.SetEnabled(false) 
 				self.requireWhenSending_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
@@ -747,6 +750,7 @@ class SettingsView extends View
 					self.serverURLInputLayer.disabled = true
 				}
 				self.displayCcySelectLayer.disabled = true
+				self.displayCcySelectLayer.classList.add("disabled")
 				self.appTimeoutRangeInputView.SetEnabled(false)
 				self.requireWhenSending_switchView.SetEnabled(false) // "
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // "
@@ -760,6 +764,7 @@ class SettingsView extends View
 					self.serverURLInputLayer.disabled = false
 				}
 				self.displayCcySelectLayer.disabled = false
+				self.displayCcySelectLayer.classList.remove("disabled")
 				self.appTimeoutRangeInputView.SetEnabled(true)
 				self.requireWhenSending_switchView.SetEnabled(true)
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(true)
