@@ -112,6 +112,12 @@ const cssRules =
 		position: absolute;
 		content: "";
 	}`,
+	`.switch.disabled {
+		cursor: default;
+	}`,
+	`.switch.disabled label {
+		opacity: 0.5;
+	}`
 ]
 function __injectCSSRules_ifNecessary()
 {
@@ -191,6 +197,11 @@ function New_fieldValue_switchToggleView(params, context)
 	view.SetEnabled = function(isEnabled)
 	{
 		input.disabled = isEnabled ? undefined : true
+		if (isEnabled) {
+			containerLayer.classList.remove("disabled")
+		} else {
+			containerLayer.classList.add("disabled")
+		}
 	}
 	//
 	containerLayer.onclick = function()
