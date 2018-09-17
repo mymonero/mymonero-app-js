@@ -734,7 +734,7 @@ class SettingsView extends View
 				self.requireWhenSending_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
 				self.deleteEverything_buttonView.SetEnabled(false)
-				self.autoInstallUpdateEnabled_switchView.SetEnabled(false)
+				// self.autoInstallUpdateEnabled_switchView.SetEnabled(true) // this should remain enabled
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
 				if (self.changePasswordButtonView) {
@@ -748,7 +748,7 @@ class SettingsView extends View
 				self.requireWhenSending_switchView.SetEnabled(false) // "
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // "
 				self.deleteEverything_buttonView.SetEnabled(false)
-				self.autoInstallUpdateEnabled_switchView.SetEnabled(false) // "
+				// self.autoInstallUpdateEnabled_switchView.SetEnabled(true) // this should remain enabled
 			} else { // has entered PW - unlock
 				if (self.changePasswordButtonView) {
 					self.changePasswordButtonView.SetEnabled(true)
@@ -761,7 +761,7 @@ class SettingsView extends View
 				self.requireWhenSending_switchView.SetEnabled(true)
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(true)
-				self.autoInstallUpdateEnabled_switchView.SetEnabled(true)
+				// self.autoInstallUpdateEnabled_switchView.SetEnabled(true) // this should remain enabled
 			}
 			// we only have password authentication in the Full app
 			self.requireWhenSending_switchView.setChecked(
