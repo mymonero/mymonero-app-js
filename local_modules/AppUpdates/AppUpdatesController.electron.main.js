@@ -144,6 +144,9 @@ class Controller extends EventEmitter
 		})
 		autoUpdater.on('update-downloaded', function(event, releaseNotes, releaseName)
 		{
+			//
+			self.dateAnUpdateLastDownloadedDuringRun = new Date()
+			//
 			if (autoUpdater.autoDownload && self.lastCheckWasManuallyInitiated != true) {
 				if (autoUpdater.autoInstallOnAppQuit != true) {
 					console.warn("Unexpected autoUpdater.autoDownload && !autoUpdater.autoInstallOnAppQuit")
@@ -161,23 +164,23 @@ class Controller extends EventEmitter
 				// should remain compatible with self.lastCheckWasManuallyInitiated == true 
 				// as well, i.e. 'the app must quit' rather than 'will install automatically 
 				// on quit' (... which is mediated by autoUpdater.autoInstallOnAppQuit)
-				const cancelButtonTitle = 'Later'
-				const defaultButtonTitle = 'Install'
+				const laterButtonTitle = 'Later'
+				const installButtonTitle = 'Install'
 				const releaseNotesButtonTitle = 'Release Notes'
-				const buttonTitles = [ defaultButtonTitle, cancelButtonTitle, releaseNotesButtonTitle ]
-				const defaultButtonIndex = buttonTitles.indexOf(defaultButtonTitle)
-				const cancelButtonIndex = buttonTitles.indexOf(cancelButtonTitle)
+				const buttonTitles = [ installButtonTitle, laterButtonTitle, releaseNotesButtonTitle ]
+				const installButtonIndex = buttonTitles.indexOf(installButtonTitle)
+				const laterButtonIndex = buttonTitles.indexOf(laterButtonTitle)
 				const releaseNotesButtonTitleIndex = buttonTitles.indexOf(releaseNotesButtonTitle)
 				dialog.showMessageBox({
 					type: 'info',
 					title: 'Updates Ready to Install',
 					message: 'The new MyMonero version has been downloaded. The app must quit to install the update.',
 					icon: pathTo_iconImage_png,
-					defaultId: defaultButtonIndex,
-					cancelId: cancelButtonIndex,
+					defaultId: installButtonIndex,
+					cancelId: laterButtonIndex,
 					buttons: buttonTitles,
 				}, function(response) {
-					if (response === defaultButtonIndex) {
+					if (response === installButtonIndex) {
 						setImmediate(function()
 						{
 							autoUpdater.quitAndInstall()
@@ -200,11 +203,23 @@ class Controller extends EventEmitter
 			const autoCheck = function()
 			{
 				if (typeof self.lastManuallyCheckInitiationDate !== 'undefined' && self.lastManuallyCheckInitiationDate) {
-					const sSinceLastManualCheck = ((new Date() - self.lastManuallyCheckInitiationDate)/1000);
+					const sSinceLastManualCheck = (new Date() - self.lastManuallyCheckInitiationDate) / 1000;
 					if (sSinceLastManualCheck < 60 * 5) { // 5 mins
-						console.warn("Skipping checking for updates since last check was manually initiated less than 5 mins ago.")
+						const msg = "Skipping checking for updates since last check was manually initiated less than 5 mins ago."
+						console.warn(msg)
+						autoUpdater.logger.info(msg)
 						return
 					} // otherwise we'll get an immediate check for update after the user goes through the dialogs from an update check, if the user hits 'check' right after launching the app
+				}
+				if (typeof self.dateAnUpdateLastDownloadedDuringRun !== 'undefined' && self.dateAnUpdateLastDownloadedDuringRun) {
+					const sSinceLastUpdateDownloaded = (new Date() - self.dateAnUpdateLastDownloadedDuringRun) / 1000;
+					if (sSinceLastUpdateDownloaded < 60 * 30) { // give them 30 mins before we show the dialog again
+						// this is done here because the alternative would be trying to detect the version that was downloaded but not installed yet .. then probably just not display the alert again if we've downloaded it but they hit install later ... if they had alternatively hit 'release notes' then the user might actually want the reminder .. plus another update may have come out since then .. which would arguably be likely to be critical
+						const msg = "Update was already downloaded recently.. Deferring update check until later"
+						console.warn(msg)
+						autoUpdater.logger.info(msg)
+						return;
+					}
 				}
 				self.checkForUpdates(false)
 			}
