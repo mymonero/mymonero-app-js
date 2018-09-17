@@ -145,8 +145,18 @@ class MenuController extends MenuController_Abstract
 					label: 'Check for Updates',
 					click: function(menuItem, browserWindow, event)
 					{
-						// Figure it's overcomplicating things to turn the menu item off 
+						const isLinux = /linux/.test(process.platform)
+						if (isLinux) { // linux has no support for updates in the app afaik so this is redirected to the downloads page - the user is advised to update via their pkg mgmt system - can that be integrated?
+							const shell = require('electron').shell
+							shell.openExternal( // maybe share this constant with AppUpdatesController.electron.main and anything else that may need it in the future but file it under 'releases' and not 'release notes' despite its usage in AppUpdatesC
+								"https://github.com/mymonero/mymonero-app-js/releases"
+							)
+							return;
+						}
+						// Figure it's overcomplicating things to toggle the menu item interactivity
+						//
 						self.context.appUpdatesController.manually_checkForUpdates();
+
 					}
 				},
 				{

@@ -31,16 +31,23 @@
 const EventEmitter = require('events')
 const { Notification, dialog, ipcMain } = require("electron")
 //
-var autoUpdater;
+const isLinux = typeof process.platform !== 'undefined' && process.platform && /linux/.test(process.platform)
+const isAutoUpdaterSupported = isLinux == false
+//
 const useMockedAutoUpdater = false && process.env.NODE_ENV === 'development'
+var autoUpdater = null;
 if (useMockedAutoUpdater) { // `false &&` means don't do it even in dev mode
 	const MockedUpdater = require('./MockedUpdater.electron.main.dev')
 	autoUpdater = new MockedUpdater()
 } else {
-	autoUpdater = require("electron-updater").autoUpdater
+	if (isAutoUpdaterSupported) { // because there's no support under linux, we might as well not include it
+		autoUpdater = require("electron-updater").autoUpdater
+	}
 }
-autoUpdater.autoDownload = false; // No sneaking updates in if Pref has it turned off
-autoUpdater.autoInstallOnAppQuit = false; // This also gets managed
+if (autoUpdater) {
+	autoUpdater.autoDownload = false; // No sneaking updates in if Pref has it turned off
+	autoUpdater.autoInstallOnAppQuit = false; // This also gets managed
+}
 //
 const path = require("path")
 const absPathTo_localModules = path.join(__dirname, '..')
@@ -60,6 +67,13 @@ class Controller extends EventEmitter
 	setup()
 	{
 		const self = this
+		//
+		if (autoUpdater == null) {
+			if (isAutoUpdaterSupported) {
+				throw "Illegal autoUpdater=null && isAutoUpdaterSupported"
+			}
+			return; // nothing to do
+		}
 		//
 		const log = require('electron-log');
 		autoUpdater.logger = log;
@@ -238,6 +252,9 @@ class Controller extends EventEmitter
 	set_autoUpdateInstallEnabled(to_isEnabled)
 	{
 		const self = this
+		if (autoUpdater == null) {
+			throw "The app should disallow calling set_autoUpdateInstallEnabled(…) while autoUpdater is legally null."
+		}
 		autoUpdater.autoDownload = to_isEnabled;
 		autoUpdater.autoInstallOnAppQuit = to_isEnabled;
 		// These get picked up by the autoUpdater again when its checkForUpdates() is called
@@ -250,6 +267,9 @@ class Controller extends EventEmitter
 	checkForUpdates(isManuallyInitiated)
 	{
 		const self = this
+		if (autoUpdater == null) {
+			throw "The app should disallow calling checkForUpdates(…) while autoUpdater is legally null."
+		}
 		{ 
 			isManuallyInitiated = isManuallyInitiated == true ? true : false
 		}

@@ -108,7 +108,10 @@ class SettingsView extends View
 				self._setup_form_field_serverURL()
 			}
 			if (self.context.isLiteApp != true) {
-				self._setup_form_field_appUpdates()
+				const isLinux = typeof process.platform !== 'undefined' && process.platform && /linux/.test(process.platform)
+				if (isLinux != true) { // because there is no software update support under linux (yet) .. TODO: possibly just encode this under a self.context.appHasSoftwareUpdateSupport so we can switch it in one place
+					self._setup_form_field_appUpdates()
+				}
 			}
 			self._setup_deleteEverythingButton()
 			//
@@ -734,7 +737,7 @@ class SettingsView extends View
 				self.requireWhenSending_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
 				self.deleteEverything_buttonView.SetEnabled(false)
-				// self.autoInstallUpdateEnabled_switchView.SetEnabled(true) // this should remain enabled
+				// 'auto-install updates' this should remain enabled
 			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
 				// however, user should never be able to see the settings view in this state
 				if (self.changePasswordButtonView) {
@@ -748,7 +751,7 @@ class SettingsView extends View
 				self.requireWhenSending_switchView.SetEnabled(false) // "
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // "
 				self.deleteEverything_buttonView.SetEnabled(false)
-				// self.autoInstallUpdateEnabled_switchView.SetEnabled(true) // this should remain enabled
+				// 'auto-install updates' this should remain enabled
 			} else { // has entered PW - unlock
 				if (self.changePasswordButtonView) {
 					self.changePasswordButtonView.SetEnabled(true)
@@ -761,7 +764,7 @@ class SettingsView extends View
 				self.requireWhenSending_switchView.SetEnabled(true)
 				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(true)
 				self.deleteEverything_buttonView.SetEnabled(true)
-				// self.autoInstallUpdateEnabled_switchView.SetEnabled(true) // this should remain enabled
+				// 'auto-install updates' this should remain enabled
 			}
 			// we only have password authentication in the Full app
 			self.requireWhenSending_switchView.setChecked(
@@ -774,11 +777,13 @@ class SettingsView extends View
 				true, // squelch_changed_fn_emit - or we'd get redundant saves
 				true // setWithoutShouldToggle - or we get asked to auth
 			)
-			self.autoInstallUpdateEnabled_switchView.setChecked(
-				self.context.settingsController.autoInstallUpdateEnabled,
-				true, // squelch_changed_fn_emit - or we'd get redundant saves
-				true // setWithoutShouldToggle - or we get asked to auth
-			)
+			if (typeof self.autoInstallUpdateEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
+				self.autoInstallUpdateEnabled_switchView.setChecked(
+					self.context.settingsController.autoInstallUpdateEnabled,
+					true, // squelch_changed_fn_emit - or we'd get redundant saves
+					true // setWithoutShouldToggle - or we get asked to auth
+				)
+			}
 		}
 		{
 			if (self.serverURLInputLayer) {
