@@ -32,11 +32,12 @@ const EventEmitter = require('events')
 const { Notification, dialog, ipcMain } = require("electron")
 //
 var autoUpdater;
-if (process.env.NODE_ENV === 'development') {
+const useMockedAutoUpdater = false && process.env.NODE_ENV === 'development'
+if (useMockedAutoUpdater) { // `false &&` means don't do it even in dev mode
 	const MockedUpdater = require('./MockedUpdater.electron.main.dev')
 	autoUpdater = new MockedUpdater()
 } else {
-	autoUpdater = require("electron-updater")
+	autoUpdater = require("electron-updater").autoUpdater
 }
 autoUpdater.autoDownload = false; // No sneaking updates in if Pref has it turned off
 autoUpdater.autoInstallOnAppQuit = false; // This also gets managed
