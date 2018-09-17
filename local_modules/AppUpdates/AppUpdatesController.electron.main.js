@@ -190,7 +190,6 @@ class Controller extends EventEmitter
 								"https://github.com/mymonero/mymonero-app-js/releases"
 							)
 						})
-					} else {
 					}
 				})
 				self.__didFinishUpdatesCheck() // clean up state and emit
