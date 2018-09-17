@@ -113,7 +113,7 @@ class MainWindowController
 		}
 		const isWin = /^win/.test(process.platform)
 		const isLinux = /linux/.test(process.platform)
-		if (isLinux) {
+		if (isLinux) { // TODO: improve with 'path'
 			var mutable_pathTo_localModules_components = __dirname.split('/')
 			mutable_pathTo_localModules_components.pop() // ../
 			mutable_pathTo_localModules_components.pop() // ../

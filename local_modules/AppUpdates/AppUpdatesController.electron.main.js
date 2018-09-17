@@ -41,6 +41,9 @@ if (process.env.NODE_ENV === 'development') {
 autoUpdater.autoDownload = false; // No sneaking updates in if Pref has it turned off
 autoUpdater.autoInstallOnAppQuit = false; // This also gets managed
 //
+const path = require("path")
+const absPathTo_localModules = path.join(__dirname, '..')
+const pathTo_iconImage_png = absPathTo_localModules + "/electron_main/Resources/icons/icon.png"
 //
 class Controller extends EventEmitter
 {
@@ -77,8 +80,8 @@ class Controller extends EventEmitter
 				dialog.showErrorBox("MyMonero Software Update Error", err_msg);
 			} else {
 				const note = new Notification({
-					title: "Error checking for MyMonero updates",
-					body: err_msg
+					title: "Error fetching MyMonero updates",
+					body: err_msg,
 				})
 				note.show()
 			}
@@ -92,6 +95,9 @@ class Controller extends EventEmitter
 				dialog.showMessageBox({
 					type: 'info',
 					title: 'Found Update',
+					icon: pathTo_iconImage_png,
+					cancelId: 1,
+					defaultId: 0,
 					message: 'MyMonero found a software update. Do you want to download it now?',
 					buttons: ['Download', 'Cancel']
 				}, function(buttonIndex)
@@ -109,6 +115,7 @@ class Controller extends EventEmitter
 			if (self.lastCheckWasManuallyInitiated == true) {
 				dialog.showMessageBox({
 					title: 'No Update Available',
+					icon: pathTo_iconImage_png,
 					message: 'Current version is up-to-date.'
 				})
 			}
@@ -125,22 +132,40 @@ class Controller extends EventEmitter
 				}
 				const note = new Notification({
 					title: "A new update is ready to install",
-					body: `New MyMonero version is downloaded and will be automatically installed on exit`
+					body: `New MyMonero version is downloaded and will be automatically installed on exit`,
 				})
 				note.show()
 			} else {
 				// This dialog is primarily for non-autodownload ..
 				// but the copy should remain compatible with self.lastCheckWasManuallyInitiated == true as well, i.e. 'the app must restart' rather than 'will install automatically on restart' 
+				const cancelButtonTitle = 'Later'
+				const defaultButtonTitle = 'Restart'
+				const releaseNotesButtonTitle = 'Release Notes'
+				const buttonTitles = [ defaultButtonTitle, cancelButtonTitle, releaseNotesButtonTitle ]
+				const defaultButtonIndex = buttonTitles.indexOf(defaultButtonTitle)
+				const cancelButtonIndex = buttonTitles.indexOf(cancelButtonTitle)
+				const releaseNotesButtonTitleIndex = buttonTitles.indexOf(releaseNotesButtonTitle)
 				dialog.showMessageBox({
 					type: 'info',
-					title: 'Install Updates',
+					title: 'Updates Ready to Install',
 					message: 'The new MyMonero version has been downloaded. The app must restart to install the update.',
-					buttons: ['Restart', 'Later'],
+					icon: pathTo_iconImage_png,
+					defaultId: defaultButtonIndex,
+					cancelId: cancelButtonIndex,
+					buttons: buttonTitles,
 				}, function(response) {
-					if (response === 0) {
+					if (response === defaultButtonIndex) {
 						setImmediate(function()
 						{
 							autoUpdater.quitAndInstall()
+						})
+					} else if (response === releaseNotesButtonTitleIndex) {
+						setImmediate(function()
+						{
+							const shell = require('electron').shell
+							shell.openExternal(
+								"https://github.com/mymonero/mymonero-app-js/releases"
+							)
 						})
 					}
 				})
@@ -149,13 +174,24 @@ class Controller extends EventEmitter
 		})
 		function _observedReady()
 		{
+			const autoCheck = function()
+			{
+				if (typeof self.lastManuallyCheckInitiationDate !== 'undefined' && self.lastManuallyCheckInitiationDate) {
+					const sSinceLastManualCheck = ((new Date() - self.lastManuallyCheckInitiationDate)/1000);
+					if (sSinceLastManualCheck < 60 * 5) { // 5 mins
+						console.warn("Skipping checking for updates since last check was manually initiated less than 5 mins ago.")
+						return
+					} // otherwise we'll get an immediate check for update after the user goes through the dialogs from an update check, if the user hits 'check' right after launching the app
+				}
+				self.checkForUpdates(false)
+			}
 			setTimeout(function()
 			{
-				self.checkForUpdates(false)
+				autoCheck()
 			}, 1000 * 10) // 10s later - after the UI has loaded and after the PW has been entered 
 			setInterval(function()
 			{ 
-				autoUpdater.checkForUpdates()
+				autoCheck()
 			}, 1000 * 60 * 10) // every 10 mins
 		}
 		if (self.context.app.isReady()) {
@@ -209,6 +245,7 @@ class Controller extends EventEmitter
 		}
 		if (isManuallyInitiated) { // always flip current state to true for redundant calls
 			self.lastCheckWasManuallyInitiated = true
+			self.lastManuallyCheckInitiationDate = new Date()
 		}
 		autoUpdater.checkForUpdates();
 	}

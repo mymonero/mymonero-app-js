@@ -109,7 +109,7 @@ class MockedUpdater extends EventEmitter
 		//
 		if (self.autoInstallOnAppQuit) {
 			// nothing to actually do here - the real impl sets a hook to doInstall on 'quit'
-			console.log("will install on quit")
+			console.log("Update downloaded .. will install on quit")
 		}
 	}
 	//
