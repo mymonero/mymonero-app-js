@@ -60,12 +60,10 @@ class Controller extends EventEmitter
 	setup()
 	{
 		const self = this
-		// if (process.env.NODE_ENV === 'development') {
-		// TODO: allow update logging in production??
-		// const log = require('electron-log');
-		// autoUpdater.logger = log;
-		// autoUpdater.logger.transports.file.level = 'info';
-		// }
+		//
+		const log = require('electron-log');
+		autoUpdater.logger = log;
+		autoUpdater.logger.transports.file.level = 'info';
 		//
 		self.set_autoUpdateInstallEnabled(false) // just to make it clear we're starting with 'off'
 		// ... when the settings controller boots, we will read the value that's there.
@@ -91,7 +89,15 @@ class Controller extends EventEmitter
 		autoUpdater.on('update-available', function()
 		{
 			if (autoUpdater.autoDownload) {
-				// no need to say anything yet - we will do later
+				if (self.lastCheckWasManuallyInitiated) { 
+					const note = new Notification({
+						title: "Downloading Update",
+						body: "MyMonero is downloading an update that it found.",
+					})
+					note.show()
+				} else {
+					// no need to say anything yet - we will do later
+				}
 			} else {
 				dialog.showMessageBox({
 					type: 'info',
@@ -137,10 +143,12 @@ class Controller extends EventEmitter
 				})
 				note.show()
 			} else {
-				// This dialog is primarily for non-autodownload ..
-				// but the copy should remain compatible with self.lastCheckWasManuallyInitiated == true as well, i.e. 'the app must restart' rather than 'will install automatically on restart' 
+				// This dialog was initially for non-autodownload, but the copy 
+				// should remain compatible with self.lastCheckWasManuallyInitiated == true 
+				// as well, i.e. 'the app must quit' rather than 'will install automatically 
+				// on quit' (... which is mediated by autoUpdater.autoInstallOnAppQuit)
 				const cancelButtonTitle = 'Later'
-				const defaultButtonTitle = 'Restart'
+				const defaultButtonTitle = 'Install'
 				const releaseNotesButtonTitle = 'Release Notes'
 				const buttonTitles = [ defaultButtonTitle, cancelButtonTitle, releaseNotesButtonTitle ]
 				const defaultButtonIndex = buttonTitles.indexOf(defaultButtonTitle)
@@ -149,7 +157,7 @@ class Controller extends EventEmitter
 				dialog.showMessageBox({
 					type: 'info',
 					title: 'Updates Ready to Install',
-					message: 'The new MyMonero version has been downloaded. The app must restart to install the update.',
+					message: 'The new MyMonero version has been downloaded. The app must quit to install the update.',
 					icon: pathTo_iconImage_png,
 					defaultId: defaultButtonIndex,
 					cancelId: cancelButtonIndex,
@@ -168,6 +176,7 @@ class Controller extends EventEmitter
 								"https://github.com/mymonero/mymonero-app-js/releases"
 							)
 						})
+					} else {
 					}
 				})
 				self.__didFinishUpdatesCheck() // clean up state and emit
