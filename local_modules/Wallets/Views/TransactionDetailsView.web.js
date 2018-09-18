@@ -437,13 +437,13 @@ class TransactionDetailsView extends View
 			const value = dateString
 			self.tableFieldLayer__date.Component_SetValue(value)
 		}
-		const isOutgoing = self.transaction.approx_float_amount < 0
-		if (isOutgoing) {
+		if (typeof self.transaction.target_address !== 'undefined' && self.transaction.target_address) {
 			self.valueLayer__to.Component_SetValue(self.transaction.target_address) // in case we have it
 			self.valueLayer__to.style.display = "block"
 		} else {
 			self.valueLayer__to.style.display = "none"
 		}
+		const isOutgoing = self.transaction.approx_float_amount < 0
 		{ // Total
 			const value = self.transaction.approx_float_amount
 			var color;
@@ -463,7 +463,7 @@ class TransactionDetailsView extends View
 			const value = self.transaction.hash
 			self.valueLayer__transactionHash.Component_SetValue(value)
 		}
-		if (isOutgoing) { // outgoing .. we might have own tx key
+		if (typeof self.transaction.tx_key !== 'undefined' && self.transaction.tx_key) { // outgoing .. we might have own tx key
 			const value = self.transaction.tx_key
 			self.valueLayer__transactionKey.Component_SetValue(value)
 			self.valueLayer__transactionKey.style.display = "block"
