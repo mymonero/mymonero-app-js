@@ -289,15 +289,15 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 	_userSelectedNextButton()
 	{
 		const self = this 
-		self.context.walletsListController.CreateNewWallet_NoBootNoListAdd(
+		self.wizardController.GenerateAndUseNewWallet(
 			function(err, walletInstance)
 			{
 				if (err) {
 					throw err
 				}
-				self.wizardController.walletInstance = walletInstance
 				self.wizardController.ProceedToNextStep()
 			}
+			// not specifying a locale here
 		)
 	}
 	//

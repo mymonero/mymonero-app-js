@@ -31,6 +31,9 @@
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
+//
+const mnemonic_languages = require('../../mymonero_core_js/cryptonote_utils/mnemonic_languages')
 //
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
@@ -82,6 +85,113 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.innerHTML = text
 			self.layer.appendChild(layer)
 		}
+		self._setup_form_field_language()
+	}
+	_setup_form_field_language()
+	{
+		const self = this
+		let selectLayer_w = 142
+		let selectLayer_h = 32
+		//
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("LANGUAGE", self.context)
+			div.appendChild(labelLayer)
+			//
+			let selectContainerLayer = document.createElement("div")
+			selectContainerLayer.style.position = "relative" // to container pos absolute
+			selectContainerLayer.style.left = "0"
+			selectContainerLayer.style.top = "0"
+			selectContainerLayer.style.width = selectLayer_w+"px"
+			selectContainerLayer.style.height =selectLayer_h+"px"
+			//
+			let selectLayer = document.createElement("select")
+			{
+				const currentValue = mnemonic_languages.compatible_code_from_locale(self.wizardController.currentWalletUsedLocaleCode)
+				let values = mnemonic_languages.supported_short_codes
+				let descriptions = mnemonic_languages.mnemonic_languages
+				let numberOf_values = values.length
+				for (var i = 0 ; i < numberOf_values ; i++) {
+					let value = values[i]
+					const optionLayer = document.createElement("option")
+					if (currentValue === value) {
+						optionLayer.selected = "selected"
+					}
+					optionLayer.style.textAlign = "center"
+					optionLayer.value = value
+					optionLayer.innerText = `${descriptions[i]}`// (${value})`
+					selectLayer.appendChild(optionLayer)
+				}
+			}
+			self.languageSelectLayer = selectLayer
+			{
+				// selectLayer.style.textAlign = "center"
+				// selectLayer.style.textAlignLast = "center"
+				selectLayer.style.outline = "none"
+				selectLayer.style.color = "#FCFBFC"
+				selectLayer.style.backgroundColor = "#383638"
+				selectLayer.style.width = selectLayer_w+"px"
+				selectLayer.style.height =selectLayer_h+"px"
+				selectLayer.style.border = "0"
+				selectLayer.style.padding = "0"
+				selectLayer.style.borderRadius = "3px"
+				selectLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
+				selectLayer.style.webkitAppearance = "none" // apparently necessary in order to activate the following style.border…Radius
+				selectLayer.style.MozAppearance = "none"
+				selectLayer.style.msAppearance = "none"
+				selectLayer.style.appearance = "none"
+				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+					selectLayer,
+					true // bright content, dark bg
+				)
+				selectLayer.style.textIndent = "11px"
+				{ // hover effects/classes
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+				}
+				//
+				// observation
+				selectLayer.addEventListener(
+					"change", 
+					function()
+					{
+						self.wizardController.GenerateAndUseNewWallet(
+							function(err, walletInstance)
+							{
+								if (err) {
+									throw err
+								}
+								self._reconfigureMnemonicDisplay()
+							},
+							self.languageSelectLayer.value // specifying the code they've selected
+						)
+					}
+				)
+			}
+			selectContainerLayer.appendChild(selectLayer)
+			{
+				const layer = document.createElement("div")
+				self.disclosureArrowLayer = layer
+				layer.style.pointerEvents = "none" // mustn't intercept pointer events
+				layer.style.border = "none"
+				layer.style.position = "absolute"
+				const w = 10
+				const h = 8
+				let top = Math.ceil((selectLayer_h - h)/2)
+				layer.style.width = w+"px"
+				layer.style.height = h+"px"
+				layer.style.right = "13px"
+				layer.style.top = top+"px"
+				layer.style.zIndex = "100" // above options_containerView 
+				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundRepeat = "no-repeat"
+				layer.style.backgroundPosition = "center"
+				layer.style.backgroundSize = w+"px "+ h+"px"
+				selectContainerLayer.appendChild(layer)			
+			}
+			div.appendChild(selectContainerLayer)
+		}
+		self.layer.appendChild(div)
 	}
 	_setup_startObserving()
 	{
@@ -168,6 +278,20 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 		return view
 	}
 	//
+	// Imperative
+	_reconfigureMnemonicDisplay()
+	{
+		const self = this
+		const mnemonicString = self._lookup_wizardWalletMnemonicString()
+		self.mnemonicTextDisplayView.layer.innerHTML = mnemonicString
+	}
+	_reconfigureLanguageSelect()
+	{
+		const self = this
+		const currentValue = mnemonic_languages.compatible_code_from_locale(self.wizardController.currentWalletUsedLocaleCode)
+		self.languageSelectLayer.value = currentValue
+	}
+	//
 	//
 	// Runtime - Delegation - Interactions
 	//
@@ -200,9 +324,9 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 		if (typeof self.hasAppearedOnce === 'undefined' || self.hasAppearedOnce !== true) {
 			self.hasAppearedOnce = true
 		} else { // reconfig, i.e. on a 'back' cause we may have a new wallet instance generated by successors' "Start over"
-			const mnemonicString = self._lookup_wizardWalletMnemonicString()
-			self.mnemonicTextDisplayView.layer.innerHTML = mnemonicString
-		}		
+			self._reconfigureMnemonicDisplay()
+			self._reconfigureLanguageSelect() // since the wallet was regenerated, the wizard may actually have changed its language, though we don't expect it
+		}
 	}
 }
 module.exports = CreateWallet_InformOfMnemonic_View

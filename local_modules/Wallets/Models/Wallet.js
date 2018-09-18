@@ -165,13 +165,8 @@ class Wallet extends EventEmitter
 			self.successfullyInitialized_cb();
 			return;
 		}
-		self.context.locale.Locale(function(err, currentLocale)
+		function _createWithLocale(currentLocale/*TODO rename*/)
 		{
-			if (err) {
-				console.error("Error obtaining locale.")
-				self.failedToInitialize_cb(err)
-				throw err
-			}
 			//
 			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
 			// case I: user is inputting mnemonic string
@@ -209,6 +204,19 @@ class Wallet extends EventEmitter
 			//
 			// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
 			self.successfullyInitialized_cb()
+		}
+		if (self.options.locale_code && typeof self.options.locale_code !== 'undefined') {
+			_createWithLocale(self.options.locale_code);
+			return
+		} 
+		self.context.locale.Locale(function(err, currentLocale)
+		{
+			if (err) {
+				console.error("Error obtaining locale.")
+				self.failedToInitialize_cb(err)
+				throw err
+			}
+			_createWithLocale(currentLocale)
 		});
 	}
 

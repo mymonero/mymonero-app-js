@@ -419,18 +419,16 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 	__didSelect_actionButton__startOver()
 	{
 		const self = this
-		// generatae new wallet
-		self.context.walletsListController.CreateNewWallet_NoBootNoListAdd(
+		self.wizardController.GenerateAndUseNewWallet(
 			function(err, walletInstance)
 			{
 				if (err) {
 					throw err
 				}
-				// then update wizard
-				self.wizardController.walletInstance = walletInstance
 				// then go back
 				self.navigationController.PopView(true) // state will be managed for us by navigationView_viewIsBeingPoppedFrom
-			}
+			},
+			self.wizardController.currentWalletUsedLocaleCode // so they end up with the same language
 		)
 	}
 	//

@@ -192,9 +192,9 @@ class WalletsListController extends ListBaseController
 	// Booted - Imperatives - Public - Wallets list
 	//
 	CreateNewWallet_NoBootNoListAdd(
-		fn // fn: (err: Error?, walletInstance: Wallet) -> Void
-	)
-	{ // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
+		fn, // fn: (err: Error?, walletInstance: Wallet) -> Void
+		optl_locale_code
+	) { // call this first, then call WhenBooted_ObtainPW_AddNewlyGeneratedWallet
 		const self = this
 		const context = self.context
 		const options =
@@ -216,6 +216,9 @@ class WalletsListController extends ListBaseController
 			didReceiveUpdateToAccountTransactions: function()
 			{ // TODO: bubble? have to know it's in list first
 			}
+		}
+		if (optl_locale_code && typeof optl_locale_code !== 'undefined') {
+			options.locale_code = optl_locale_code
 		}
 		const wallet = new Wallet(options, context)
 	}	

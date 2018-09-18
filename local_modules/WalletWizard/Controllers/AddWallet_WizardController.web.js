@@ -292,6 +292,43 @@ class AddWallet_WizardController
 		)
 	}
 	//
+	// Convenience - Generating new wallet
+	GenerateAndUseNewWallet(
+		fn,
+		optl_locale_code
+	) {
+		const self = this
+		function _with(locale_code)
+		{
+			self.context.walletsListController.CreateNewWallet_NoBootNoListAdd(
+				function(err, walletInstance)
+				{
+					if (err) {
+						fn(err)
+						return
+					}
+					self.currentWalletUsedLocaleCode = locale_code // so it can be accessed by consumers
+					self.walletInstance = walletInstance
+					fn()
+				},
+				locale_code
+			)
+		}
+		if (optl_locale_code && typeof optl_locale_code != 'undefined') {
+			_with(optl_locale_code)
+		} else {
+			self.context.locale.Locale(function(err, currentLocale)
+			{
+				if (err) {
+					throw err
+				}
+				_with(currentLocale)
+			});
+		}
+	}
+
+
+	//
 	// Runtime - Delegation
 	_fromScreen_userPickedCancel()
 	{
