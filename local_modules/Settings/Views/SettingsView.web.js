@@ -383,17 +383,17 @@ class SettingsView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("APP", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SOFTWARE UPDATES", self.context)
 			div.appendChild(labelLayer)
 			{
 				const switchView = commonComponents_switchToggles.New_fieldValue_switchToggleView({
-					note: "Auto-install software updates",
+					note: "Download automatically",
 					border: true,
 					changed_fn: function(isChecked)
 					{
 						self.context.settingsController.Set_settings_valuesByKey(
 							{
-								autoInstallUpdateEnabled: isChecked
+								autoDownloadUpdatesEnabled: isChecked
 							},
 							function(err)
 							{
@@ -430,7 +430,7 @@ class SettingsView extends View
 					}
 				}, self.context)  
 				div.appendChild(switchView.layer)
-				self.autoInstallUpdateEnabled_switchView = switchView
+				self.autoDownloadUpdatesEnabled_switchView = switchView
 			}
 		}
 		self.form_containerLayer.appendChild(div)
@@ -782,9 +782,9 @@ class SettingsView extends View
 				true, // squelch_changed_fn_emit - or we'd get redundant saves
 				true // setWithoutShouldToggle - or we get asked to auth
 			)
-			if (typeof self.autoInstallUpdateEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
-				self.autoInstallUpdateEnabled_switchView.setChecked(
-					self.context.settingsController.autoInstallUpdateEnabled,
+			if (typeof self.autoDownloadUpdatesEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
+				self.autoDownloadUpdatesEnabled_switchView.setChecked(
+					self.context.settingsController.autoDownloadUpdatesEnabled,
 					true, // squelch_changed_fn_emit - or we'd get redundant saves
 					true // setWithoutShouldToggle - or we get asked to auth
 				)

@@ -61,7 +61,7 @@ class Controller
 			}
 		)
 		controller.on(
-			controller.EventName_settingsChanged_autoInstallUpdateEnabled(),
+			controller.EventName_settingsChanged_autoDownloadUpdatesEnabled(),
 			function()
 			{
 				self.call_menuController_IPCMethod_ViewOfSettingsUpdated()
@@ -73,7 +73,7 @@ class Controller
 	call_menuController_IPCMethod_ViewOfSettingsUpdated()
 	{
 		const self = this
-		var isEnabled = self.context.settingsController.autoInstallUpdateEnabled
+		var isEnabled = self.context.settingsController.autoDownloadUpdatesEnabled
 		if (typeof isEnabled === 'undefined' || isEnabled === null) {
 			isEnabled = false
 			throw "Expected isEnabled != nil" 
@@ -81,7 +81,7 @@ class Controller
 		ipcRenderer.send(
 			self.appUpdatesController.IPCMethod__ViewOfSettingsUpdated(),
 			{
-				autoInstallUpdateEnabled: isEnabled 
+				autoDownloadUpdatesEnabled: isEnabled 
 			}
 		)
 	}

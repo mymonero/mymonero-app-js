@@ -247,11 +247,11 @@ class Controller extends EventEmitter
 			self.IPCMethod__ViewOfSettingsUpdated(), 
 			function(event, params)
 			{
-				const autoInstallUpdateEnabled = params.autoInstallUpdateEnabled
+				const autoDownloadUpdatesEnabled = params.autoDownloadUpdatesEnabled
 				// Called on SettingsController boot and on field toggles.
 				// This will also get called on a DeleteEverything.
 				// When app gets locked down we don't need to set autoupdate to off because if it's set to on, it's ok to allow autoupdate even if the app is locked
-				self.set_autoUpdateInstallEnabled(autoInstallUpdateEnabled)
+				self.set_autoUpdateInstallEnabled(autoDownloadUpdatesEnabled)
 			}
 		);
 	}
