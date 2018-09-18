@@ -32,7 +32,7 @@ const EventEmitter = require('events')
 const { Notification, dialog, ipcMain } = require("electron")
 //
 const isLinux = typeof process.platform !== 'undefined' && process.platform && /linux/.test(process.platform)
-const isAutoUpdaterSupported = isLinux == false
+const isAutoUpdaterSupported = isLinux == false && process.env.NODE_ENV !== 'development' // no support in either case .. in the latter we need a dev yaml file in the asar and I'm just turning it off here to avoid contributor confusion at the error which pops up in the file's absence
 //
 const useMockedAutoUpdater = false && process.env.NODE_ENV === 'development'
 var autoUpdater = null;
