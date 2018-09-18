@@ -547,7 +547,7 @@ class WalletDetailsView extends View
 	tearDownAnySpawnedReferencedPresentedViews()
 	{
 		const self = this
-		if (self.current_transactionDetailsView !== null) {
+		if (self.current_transactionDetailsView !== null && typeof self.current_transactionDetailsView !== 'undefined') {
 			self.current_transactionDetailsView.TearDown()
 			self.current_transactionDetailsView = null
 		}
@@ -671,6 +671,30 @@ class WalletDetailsView extends View
 			}
 		)
 		return view
+	}
+	//
+	// Accessors - Wallet - Transforms - TODO: move these to the wallet, esp for libapp
+	_wallet_bootFailed()
+	{
+		const self = this
+		const wallet = self.wallet
+		const bootFailed = wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true
+		//
+		return bootFailed
+	}
+	_wallet_shouldShowImportTxsBtn()
+	{
+		const self = this
+		const wallet = self.wallet
+		const wallet_bootFailed = self._wallet_bootFailed()
+		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true && wallet_bootFailed == false
+		if (wallet.HasEverFetched_transactions() !== false) {
+			const stateCachedTransactions = wallet.New_StateCachedTransactions()
+			if (stateCachedTransactions.length > 0) {
+				shouldShow_importTxsBtn = false
+			}
+		}
+		return shouldShow_importTxsBtn
 	}
 	//
 	//
@@ -895,21 +919,14 @@ class WalletDetailsView extends View
 		}
 		layer_transactions.appendChild(listContainerLayer)
 	}
+	//
 	_configureUIWithWallet__heightsAndImportAndFetchingState()
 	{
 		const self = this
 		const wallet = self.wallet
 		const transactionsListLayerContainerLayer = self.transactionsListLayerContainerLayer
-		const wallet_bootFailed = wallet.didFailToInitialize_flag == true || wallet.didFailToBoot_flag == true
-		var shouldShow_importTxsBtn = wallet.shouldDisplayImportAccountOption == true && wallet_bootFailed == false
-		{ // to finalize
-			if (wallet.HasEverFetched_transactions() !== false) {
-				const stateCachedTransactions = wallet.New_StateCachedTransactions()
-				if (stateCachedTransactions.length > 0) {
-					shouldShow_importTxsBtn = false
-				}
-			}
-		}
+		const wallet_bootFailed = self._wallet_bootFailed()
+		var shouldShow_importTxsBtn = self._wallet_shouldShowImportTxsBtn()
 		if (shouldShow_importTxsBtn) {
 			if (!self.importTransactionsButtonView || typeof self.importTransactionsButtonView === 'undefined') {
 				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
@@ -1032,6 +1049,21 @@ class WalletDetailsView extends View
 			self.noTransactions_emptyStateView.layer.style.height = self.catchingUpProgressAndActivityIndicatorView ? "254px" : "276px"
 		}
 	}
+	_ifNecessary_autoPresent_importTxsModal_afterS(afterS)
+	{
+		const self = this
+		// If this is the first time after logging in that we're displaying the import txs modal,
+		// then auto-display it for the user so they don't have to know to click on the button
+		if (self.hasEverAutomaticallyDisplayedImportModal !== true) {
+			if (self._wallet_shouldShowImportTxsBtn()) {
+				self.hasEverAutomaticallyDisplayedImportModal = true; // immediately, in case login and viewDidAppear race
+				setTimeout(function()
+				{
+					self._present_importTransactionsModal()
+				}, afterS * 1000)
+			}
+		}
+	}
 	//
 	//
 	// Runtime - Imperatives - Changing specific elements of the UI 
@@ -1116,6 +1148,8 @@ class WalletDetailsView extends View
 			throw "WalletDetailsView/viewDidAppear: self.wallet=nil"
 		}
 		self.wallet.requestFromUI_manualRefresh()
+		//
+		self._ifNecessary_autoPresent_importTxsModal_afterS(1)
 	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
 	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad
@@ -1146,7 +1180,10 @@ class WalletDetailsView extends View
 		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
 		self._configureUIWithWallet__heightsAndImportAndFetchingState()
+		//
+		self._ifNecessary_autoPresent_importTxsModal_afterS(1)
 	}
+	//
 	_wallet_failedToLogIn()
 	{
 		const self = this
@@ -1154,6 +1191,7 @@ class WalletDetailsView extends View
 		self._configureUIWithWallet__balance()
 		self._configureUIWithWallet__transactions()
 		self._configureUIWithWallet__heightsAndImportAndFetchingState()
+		self.hasEverAutomaticallyDisplayedImportModal = undefined // think we might as well un-set this here - i.e. on a 'log out'
 	}
 	//
 	wallet_EventName_walletLabelChanged()
