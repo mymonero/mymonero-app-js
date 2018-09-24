@@ -32,7 +32,6 @@ const async = require('async')
 //
 const JSBigInt = require('../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
 const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
-const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const net_service_utils = require('../mymonero_core_js/hostAPI/net_service_utils')
 //
 const config__MyMonero = require('./config__MyMonero')
