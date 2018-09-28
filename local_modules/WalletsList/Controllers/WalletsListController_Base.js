@@ -486,20 +486,6 @@ class WalletsListController extends ListBaseController
 		}
 	}
 	//
-	// Runtime - Imperatives - Rebooting
-	reboot(
-		persistencePassword,
-		walletInstance,
-		specific_reconstitutionDescription // may be nil
-	)
-	{
-		const self = this
-		walletInstance.Reboot(
-			persistencePassword,
-			specific_reconstitutionDescription
-		)
-	}
-	//
 	// Delegation - Events
 	settingsChanged_specificAPIAddressURLAuthority()
 	{
@@ -519,92 +505,17 @@ class WalletsListController extends ListBaseController
 		if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
 			throw "App expected password to exist as wallets exist"
 		}
-		const walletsToDelete = [] // will construct another copy so that we can mutate records while enumerating
-		const reconstitutionDescriptions = []
-		{
-			const numberOf_walletsToDelete = self.records.length
-			for (var i = 0 ; i < numberOf_walletsToDelete ; i++) {
-				const wallet = self.records[i]
-				walletsToDelete.push(wallet)
-				//
-				const reconstitutionDescription = wallet.New_reconstitutionDescriptionForReLogIn()
-				reconstitutionDescriptions.push(reconstitutionDescription)
+		self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
+			function(obtainedPasswordString, userSelectedTypeOfPassword)
+			{
+				const numberOf_walletsToDelete = self.records.length
+				for (var i = 0 ; i < numberOf_walletsToDelete ; i++) {
+					const wallet = self.records[i]
+					wallet.logOutAndSaveThenLogBackIn(obtainedPasswordString)
+				}
+				self.__listUpdated_records()
 			}
-		}
-		{
-			async.each(
-				walletsToDelete, // the constructed copy of self.records
-				function(wallet, cb)
-				{
-					self.givenBooted_DeleteRecord(
-						wallet,
-						function(err)
-						{
-							cb(err)
-						}
-					)
-				},
-				function(err)
-				{
-					if (err) {
-						throw err  // at least it will be removed from the list for now. if it appears when the app boots again, at least it will attempt to log in. maybe dedupe wallets on launch? probably not a good idea.
-					}
-					_proceed_havingDeletedWallets()
-				}
-			)
-		}
-		function _proceed_havingDeletedWallets()
-		{
-			self.records = [] // free old wallets, now that we have deleted them after obtaining their reconstitutionDescriptions
-			//
-			self.context.passwordController.WhenBootedAndPasswordObtained_PasswordAndType( // this will block until we have access to the pw
-				function(obtainedPasswordString, userSelectedTypeOfPassword)
-				{
-					async.each(
-						reconstitutionDescriptions,
-						function(reconstitutionDescription, cb)
-						{
-							const options =
-							{
-								failedToInitialize_cb: function(err, walletInstance)
-								{
-									cb(err)
-								},
-								successfullyInitialized_cb: function(walletInstance)
-								{
-									self.records.push(walletInstance) // preserves ordering
-									self.overridable_startObserving_record(walletInstance)
-									// ^- appending immediately so we don't have to wait for success before updating
-									//
-									// now boot (aka login)
-									self.reboot(
-										obtainedPasswordString,
-										walletInstance,
-										reconstitutionDescription // important to pass this, b/c the wallet instance has no information on it right now!
-									)
-									//
-									cb() // must call
-								}
-							}
-							const wallet = new Wallet(options, self.context)
-						},
-						function(err)
-						{
-							if (err) {
-								throw err
-							}
-							self.overridable_sortRecords(
-								function()
-								{
-									self.__listUpdated_records()
-									// ^-- so control can be passed back before all observers of notification handle their work - which is done synchronously
-								}
-							)
-						}
-					)
-				}
-			)
-		}
+		)
 	}
 }
 module.exports = WalletsListController

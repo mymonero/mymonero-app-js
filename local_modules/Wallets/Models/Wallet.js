@@ -229,12 +229,28 @@ class Wallet extends EventEmitter
 	{
 		const self = this
 		self.hasBeenTornDown = true
-		console.log("♻️  Tearing down Wallet", self._id)
+		self.tearDownRuntime()
+	}
+	tearDownRuntime()
+	{
+		const self = this
+		self.isLoggingIn = false
 		self._tearDown_polling()
 		self._stopTimer__localTxCleanupJob()
 		//
 		// and be sure to delete the managed key image cache
 		self.context.backgroundAPIResponseParser.DeleteManagedKeyImagesForWalletWith(self.public_address, function() {})
+	}
+	abortAnyLogInRequest()
+	{ // acct info
+		const self = this
+		let req = self.requestHandle_for_logIn
+		if (typeof req !== 'undefined' && req !== null) {
+			console.log("💬  Aborting running login request")
+			req.abort()
+		}
+		self.requestHandle_for_logIn = null
+		self.isLoggingIn = false // set synchronously
 	}
 	_tearDown_polling()
 	{
@@ -379,69 +395,6 @@ class Wallet extends EventEmitter
 			)
 		}
 	}
-	Boot_byLoggingIn_existingWallet_withReconstitutionDescription(
-		persistencePassword,
-		reconstitutionDescription,
-		persistEvenIfLoginFailed_forServerChange,
-		fn // (err?) -> Void
-	) {
-		const self = this
-		function _proceedTo_login(mnemonicString_orNil)
-		{
-			if (mnemonicString_orNil != null && typeof mnemonicString_orNil != 'undefined') {
-				const mnemonicString = mnemonicString_orNil
-				self.Boot_byLoggingIn_existingWallet_withMnemonic(
-					persistencePassword,
-					reconstitutionDescription.walletLabel,
-					reconstitutionDescription.swatch,
-					mnemonicString,
-					persistEvenIfLoginFailed_forServerChange,
-					fn
-				)
-			} else {
-				if (self.account_seed != null && typeof self.account_seed != "undefined") {
-					throw "expected nil self.account_seed"
-				}
-				if (!reconstitutionDescription.private_keys.view || typeof reconstitutionDescription.private_keys.view == "undefined") {
-					throw "expected nil reconstitutionDescription.private_keys.view"
-				}
-				if (!reconstitutionDescription.private_keys.spend || typeof reconstitutionDescription.private_keys.spend == "undefined") {
-					throw "expected nil reconstitutionDescription.private_keys.spend"
-				}
-				self.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
-					persistencePassword,
-					reconstitutionDescription.walletLabel,
-					reconstitutionDescription.swatch,
-					reconstitutionDescription.public_address,
-					reconstitutionDescription.private_keys.view,
-					reconstitutionDescription.private_keys.spend,
-					persistEvenIfLoginFailed_forServerChange,
-					fn
-				)
-			}
-		}
-		const hasMnemonicString = reconstitutionDescription.mnemonicString != null && typeof reconstitutionDescription.mnemonicString != 'undefined'
-		const hasAccountSeed = reconstitutionDescription.account_seed != null && typeof reconstitutionDescription.account_seed != 'undefined'
-		if (hasMnemonicString == false) {
-			if (hasAccountSeed == true) {
-				if (reconstitutionDescription.account_seed == "") {
-					throw "Found empty string at reconstitutionDescription.account_seed"
-				}
-				if (reconstitutionDescription.mnemonic_wordsetName == null || typeof reconstitutionDescription.mnemonic_wordsetName == 'undefined') {
-					throw "missing mnemonic_wordsetName" // not expecting this as we set a default 
-				}
-				// re-derive mnemonic string from account seed so we don't lose mnemonicSeed 
-				console.log("Rederiving mnemonic seed from account seed as mnemonic was not persisted - this probably occurred after app relaunched but wallet needed to be reconstituted")
-				const seedAsMnemonic = self.context.monero_utils.mnemonic_from_seed(
-					reconstitutionDescription.account_seed, 
-					reconstitutionDescription.mnemonic_wordsetName
-				)
-				_proceedTo_login(seedAsMnemonic)
-				return
-			}
-		}
-		_proceedTo_login(reconstitutionDescription.mnemonicString)
-	}
 	
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -557,52 +510,112 @@ class Wallet extends EventEmitter
 				console.log("Wallet which was unable to log in was loaded. Attempting to reboot.")
 				//
 				// going to treat this as a wallet which was saved but which failed to log in
-				self.Reboot(
-					persistencePassword, // it'd be nice to do away with this just in case, e.g. the pw is changed while logging in (unlikely, but a real risk)
-					null // function will extract a reconstitutionDescription from the wallet
-				)
+				self.logOutAndSaveThenLogBackIn(persistencePassword)
 				//
-				// and importantly, we must call 'fn' here! otherwise list update notification will not occur, et al
-				// and the reason we must call it manually is that we are not waiting for login to say we've finished with 'Boot_decryptingExistingInitDoc'
-				// and that we also don't actually care if it errors here, basically since that will be broadcast to listener anyway
 				fn()
 			}
 		}
 	}
 	//
-	// Runtime - Imperatives - Rebooting
-	Reboot(
-		persistencePassword,
-		specific_reconstitutionDescription // may be nil
-	) {
+	// Runtime - Imperatives - Rebooting / Debooting
+	deBoot()
+	{
 		const self = this
-		if (self.isBooted == true) {
-			throw "wallet.isBooted == true"
+		let old__total_received = self.total_received
+		let old__total_sent = self.total_sent
+		let old__locked_balance = self.locked_balance
+		let old__spent_outputs = self.spent_outputs
+		let old__transactions = self.transactions
+		{
+			self.tearDownRuntime() // stop any requests, etc
 		}
-		if (self.isLoggedIn == true) {
-			throw "wallet.isLoggedIn == true"
+		{
+			// important flags to clear:
+			self.isLoggedIn = false
+			self.didFailToBoot_flag = false
+			self.didFailToBoot_errOrNil = null
+			self.isBooted = false
+			//
+			self.total_received = undefined
+			self.total_sent = undefined
+			self.locked_balance = undefined
+			//
+			self.account_scanned_tx_height = undefined
+			self.account_scanned_height = undefined
+			self.account_scanned_block_height = undefined
+			self.account_scan_start_height = undefined
+			self.transaction_height = undefined
+			self.blockchain_height = undefined
+			//
+			self.spent_outputs = undefined
+			self.transactions = undefined
+			//
+			self.dateThatLast_fetchedAccountInfo = undefined
+			self.dateThatLast_fetchedAccountTransactions = undefined
 		}
-		//
-		var reconstitutionDescription;
-		if (specific_reconstitutionDescription == null) {
-			if (self.walletLabel == null || typeof self.walletLabel === "undefined") { // just one of the things we would definitely expect on the wallet if this is the case
-				throw "nil wallet.walletLabel"
+		{
+			self.___didReceiveActualChangeTo_balance(
+				old__total_received,
+				old__total_sent,
+				old__locked_balance
+			)
+			self.___didReceiveActualChangeTo_spentOutputs(old__spent_outputs)
+			self.___didReceiveActualChangeTo_heights()
+			if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
+				self.options.didReceiveUpdateToAccountTransactions()
 			}
-			reconstitutionDescription = self.New_reconstitutionDescriptionForReLogIn()
+			self.___didReceiveActualChangeTo_transactionsList(
+				0, // numberOfTransactionsAdded, 
+				[], // newTransactions
+				old__transactions // oldTransactions
+			)
+			self.regenerate_shouldDisplayImportAccountOption()
+		}
+		self.saveToDisk(function(err)
+		{
+			if (err) {
+				console.log("Error while saving during a deBoot(): " + err)
+			}
+		});
+	}
+	logOutAndSaveThenLogBackIn(persistencePassword)
+	{
+		const self = this
+		const fn = function(err)
+		{
+			if (err) {
+				console.log("❌  Error while trying to log back in:", err)
+			} else {
+				console.log("✅  Logged back in")
+			}
+		}
+		if (self.isLoggedIn || self.isBooted || self.didFailToBoot_flag) {
+			self.deBoot()
+		}
+		if (self.mnemonicString != null && typeof self.mnemonicString != 'undefined') {
+			self.Boot_byLoggingIn_existingWallet_withMnemonic(
+				persistencePassword,
+				self.walletLabel,
+				self.swatch,
+				self.mnemonicString,
+				true, // persistEvenIfLoginFailed_forServerChange,
+				fn
+			)
 		} else {
-			reconstitutionDescription = specific_reconstitutionDescription
-		}
-		self.Boot_byLoggingIn_existingWallet_withReconstitutionDescription(
-			persistencePassword,
-			reconstitutionDescription,
-			true, // IS forServerChange
-			function(err)
-			{
-				if (err) {
-					// it's ok if we get an error here b/c it will be displayed as a failed-to-boot wallet in the table view
-				}
+			if (self.account_seed != null && typeof self.account_seed != "undefined") {
+				throw "expected nil self.account_seed"
 			}
-		)
+			self.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
+				persistencePassword,
+				self.walletLabel,
+				self.swatch,
+				self.public_address,
+				self.private_keys.view,
+				self.private_keys.spend,
+				true, // persistEvenIfLoginFailed_forServerChange,
+				fn
+			)
+		}
 	}
 	//
 	// Runtime - Imperatives - Private - Booting
@@ -726,6 +739,7 @@ class Wallet extends EventEmitter
 	) {
 		const self = this
 		//
+		self.abortAnyLogInRequest()
 		self.isLoggingIn = true
 		//
 		var ret;
@@ -766,12 +780,14 @@ class Wallet extends EventEmitter
 		self.isInViewOnlyMode = ret.isInViewOnlyMode; // should be true "if(spend_key__orZero)"
 		self.local_wasAGeneratedWallet = wasAGeneratedWallet; // for regeneration purposes later
 		//
-		self.context.hostedMoneroAPIClient.LogIn(
+		self.requestHandle_for_logIn = self.context.hostedMoneroAPIClient.LogIn(
 			address,
 			view_key,
 			wasAGeneratedWallet,
 			function(login__err, new_address, received__generated_locally, start_height)
 			{
+				self.requestHandle_for_logIn = null // free
+				//
 				self.isLoggingIn = false
 				self.isLoggedIn = login__err == null
 				self.login__new_address = new_address
@@ -1117,20 +1133,7 @@ class Wallet extends EventEmitter
 		//
 		return "Wallet with _id " + self._id + " named " + self.walletLabel + ", Balance:" + self.Balance_FormattedString()
 	}
-	New_reconstitutionDescriptionForReLogIn()
-	{
-		const self = this
-		return {
-			walletLabel: self.walletLabel,
-			swatch: self.swatch,
-			//
-			mnemonic_wordsetName: self.mnemonic_wordsetName, // be sure this is supplied if account_seed is not nil but mnemonicSeed is nil so mnemonicString can be rederived
-			mnemonicString: self.mnemonicString,
-			account_seed: self.account_seed,
-			private_keys: self.private_keys,
-			public_address: self.public_address
-		}
-	}
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Sending funds
