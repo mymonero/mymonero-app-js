@@ -110,11 +110,11 @@ class TransactionDetailsView extends View
 		{
 			self._addTableFieldLayer_date()
 			self._addTableFieldLayer_amountsFeesAndTotals()
+			self._addTableFieldLayer_to();
+			self._addTableFieldLayer_paymentID()
 			self._addTableFieldLayer_transactionHash()
 			self._addTableFieldLayer_transactionKey()
 			self._addTableFieldLayer_ringsize()
-			self._addTableFieldLayer_paymentID()
-			self._addTableFieldLayer_to();
 		}
 		self.layer.appendChild(containerLayer)
 		// self.DEBUG_BorderChildLayers()
