@@ -117,7 +117,7 @@ class Wallet extends EventEmitter
 		// runtime state initialization
 		self.isBooted = false // you must manually boot the instance
 		self.isLoggingIn = false
-		self.isLoggedIn = true // maybe modified by existing doc
+		self.isLoggedIn = false // may be modified by existing doc
 		//
 		// detecting how to set up instance
 		if (self._id !== null) { // need to look up existing document but do not decrypt & boot
