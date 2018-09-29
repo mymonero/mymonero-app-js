@@ -410,7 +410,7 @@ class TransactionDetailsView extends View
 		} else {
 			self.validationMessageLayer__isLocked.style.display = "none"
 		}
-		if (transaction.isJustSentTransaction === true || transaction.isConfirmed !== true) {
+		if (transaction.isFailed != true && (transaction.isJustSentTransaction === true || transaction.isConfirmed !== true)) {
 			if (self.validationMessageLayer__onItsWay.userHasClosedThisLayer !== true) {
 				self.validationMessageLayer__onItsWay.style.display = "block"
 			} else {
