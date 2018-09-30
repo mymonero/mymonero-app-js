@@ -326,8 +326,6 @@ class AddWallet_WizardController
 			});
 		}
 	}
-
-
 	//
 	// Runtime - Delegation
 	_fromScreen_userPickedCancel()
