@@ -1187,6 +1187,11 @@ class Wallet extends EventEmitter
 		) {
 			___aTrampolineForFnWasCalled()
 			//
+			let total_sent__JSBigInt = sentAmount.add(tx_fee)
+			let total_sent__atomicUnitString = total_sent__JSBigInt.toString()
+			let total_sent__floatString = monero_amount_format_utils.formatMoney(total_sent__JSBigInt) 
+			let total_sent__float = parseFloat(total_sent__floatString)
+			//
 			const mockedTransaction = 
 			{
 				hash: tx_hash,
@@ -1201,10 +1206,10 @@ class Wallet extends EventEmitter
 				//
 				// height: null, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
 				//
-				total_sent: "" + (sentAmount * Math.pow(10, monero_config.coinUnitPlaces)), // TODO: is this correct? and do we need to mock this?
+				total_sent: new JSBigInt(total_sent__atomicUnitString),
 				total_received: "0",
 				//
-				approx_float_amount: -1 * sentAmount, // -1 cause it's outgoing
+				approx_float_amount: -1 * total_sent__float, // -1 cause it's outgoing
 				// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
 				//
 				payment_id: final__payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
@@ -1214,18 +1219,7 @@ class Wallet extends EventEmitter
 				tx_key: tx_key,
 				target_address: target_address, // only we here are saying it's the target
 			};
-			//
-			fn(
-				null,
-				currencyReady_targetDescription_address,
-				sentAmount,
-				final__payment_id,
-				tx_hash,
-				tx_fee,
-				tx_key,
-				mixin,
-				mockedTransaction
-			)
+			fn(null, mockedTransaction)
 			//
 			// manually insert .. and subsequent fetches from the server will be 
 			// diffed against this, preserving the tx_fee, tx_key, target_address...

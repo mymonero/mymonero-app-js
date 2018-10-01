@@ -479,13 +479,6 @@ class ImportTransactionsModalView extends View
 			},
 			function(
 				err,
-				currencyReady_targetDescription_address,
-				sentAmount,
-				final__payment_id,
-				tx_hash,
-				tx_fee,
-				tx_key,
-				mixin,
 				mockedTransaction
 			) {
 				if (err) {
