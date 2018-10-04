@@ -43,7 +43,7 @@ function HydrateInstance(
 	// console.log("plaintextDocument", plaintextDocument)
 	function _isNonNil_dateStr(v)
 	{
-		return v && typeof v !== 'undefined' && v !== ""
+		return v != null && typeof v !== 'undefined' && v !== ""
 	}
 	{
 		const dateStr = plaintextDocument.dateCreated
@@ -57,6 +57,7 @@ function HydrateInstance(
 	self.amountCcySymbol = plaintextDocument.amountCcySymbol
 	self.message = plaintextDocument.message
 	self.description = plaintextDocument.description
+	self.is_displaying_local_wallet = plaintextDocument.is_displaying_local_wallet
 }
 exports.HydrateInstance = HydrateInstance
 //
@@ -93,8 +94,9 @@ function SaveToDisk(
 		amount: self.amount != null && self.amount != "" ? "" + self.amount : self.amount, // storing this as an optional String
 		amountCcySymbol: self.amountCcySymbol,
 		message: self.message || "",
-		description: self.description || ""
-	}	
+		description: self.description || "",
+		is_displaying_local_wallet: self.is_displaying_local_wallet == true ? true : false
+	}
 	persistable_object_utils.write(
 		self.context.string_cryptor__background,
 		self.context.persister,

@@ -120,6 +120,14 @@ class FundsRequestCellContentsView extends View
 		layer.style.wordBreak = "break-word"
 		layer.style.color = "#fcfbfc"
 		layer.style.cursor = "default"
+		// for long names, especially for QR display wallets
+		layer.style.overflow = "hidden"
+		layer.style.textOverflow = "ellipsis"
+		layer.style.display = "-webkit-box"
+		layer.style.webkitBoxOrient = "vertical"
+		layer.style.webkitLineClamp = 2 // number of lines to show
+		layer.style.lineHeight = "16px" // fallback
+		layer.style.maxHeight = "40px" // fallback
 		self.amountLayer = layer
 		self.amountAndSenderContainerLayer.appendChild(layer)
 	}
@@ -171,15 +179,42 @@ class FundsRequestCellContentsView extends View
 		super.TearDown()
 		//
 		const self = this
+		if (self.record == null) { // then we've already prepared for reuse
+			return
+		}
 		self.stopObserving_record()
 		self.record = null
 	}
 	PrepareForReuse()
 	{
 		const self = this
-		//
+		if (self.record == null) { // then we've already prepared for reuse
+			return
+		}
 		self.stopObserving_record()
 		self.record = null
+	}
+	//
+	// Runtime - Accessors 
+	givenRecordAndBootedWLC_toWallet_orNull()
+	{
+		const self = this
+		if (typeof self.record === 'undefined' || self.record == null) {
+			throw "Expected self.record != nil by fundsRequest cell givenBooted_toWallet_orNil()"
+		}
+		const wlc = self.context.walletsListController
+		if (wlc.hasBooted != true) {
+			// throw "Expected wlc to be booted by fundsRequest cell givenBooted_toWallet_orNil()"
+			return null // this actually can happen when tearing down - WLC goes first... but we assume it means self is about to go too
+		}
+		const wallets = wlc.records || []
+		for (let i = 0 ; i < wallets.length ; i++) {
+			const this_w = wallets[i]
+			if (this_w.public_address === self.record.to_address) {
+				return this_w
+			}
+		}
+		return null
 	}
 	//
 	//
@@ -226,12 +261,43 @@ class FundsRequestCellContentsView extends View
 			self.memoLayer.innerHTML = self.record.didFailToBoot_errOrNil ? " " + self.record.didFailToBoot_errOrNil : ""
 			return
 		}
-		if (self.doNotDisplayQRCode != true) {
-			self.qrCode_img.src = fundsRequest.qrCode_imgDataURIString
+		const is_displaying_local_wallet = self.record.is_displaying_local_wallet == true // handle all JS non-true vals
+		var wallet_ifRecordForQRDisplay = null
+		if (is_displaying_local_wallet == true) {
+			const wlc = self.context.walletsListController
+			if (wlc.hasBooted == false) {
+				throw "Expected WLC to have booted by time of FundsRequestCellContentsView _configureUIWithRecord with non nil record"
+			}
+			const n_wallets = wlc.records.length
+			for (let i = 0 ; i < n_wallets ; i++) {
+				const w = wlc.records[i]
+				if (w.public_address === self.record.to_address) {
+					wallet_ifRecordForQRDisplay = w
+					break
+				}
+			}
 		}
-		self.walletIconLayer.ConfigureWithHexColorString(fundsRequest.to_walletHexColorString || "")
+		if (is_displaying_local_wallet) {
+			if (wallet_ifRecordForQRDisplay == null) {
+				throw "Expected to find wallet_ifRecordForQRDisplay when is_displaying_local_wallet"
+			}
+		}
+		//
+		if (self.doNotDisplayQRCode != true) {
+			if (typeof fundsRequest.qrCode_imgDataURIString == 'undefined') {
+				console.warn("qrCode_imgDataURIString still being loaded… waiting for later reconfig")
+			} else {
+				self.qrCode_img.src = fundsRequest.qrCode_imgDataURIString
+			}
+		}
+		const colorHexString = is_displaying_local_wallet ? wallet_ifRecordForQRDisplay.swatch : fundsRequest.to_walletHexColorString
+		self.walletIconLayer.ConfigureWithHexColorString(colorHexString || "")
 		let ccy = fundsRequest.amountCcySymbol || "XMR"
-		self.amountLayer.innerHTML = fundsRequest.amount ? parseFloat("" + fundsRequest.amount) + " "+ccy : "Any amount"
+		if (is_displaying_local_wallet) {
+			self.amountLayer.innerHTML = "Request Monero to \"" + wallet_ifRecordForQRDisplay.walletLabel + "\""// TODO localize
+		} else {
+			self.amountLayer.innerHTML = fundsRequest.amount ? parseFloat("" + fundsRequest.amount) + " "+ccy : "Any amount"
+		}
 		var memoString = fundsRequest.message
 		if (!memoString || memoString.length == "") {
 			memoString = fundsRequest.description || ""
@@ -250,55 +316,62 @@ class FundsRequestCellContentsView extends View
 	startObserving_record()
 	{
 		const self = this
-		
+		const wallet_orNil = self.givenRecordAndBootedWLC_toWallet_orNull()
+		if (wallet_orNil != null) {
+			const wallet = wallet_orNil
+			//
+			self.wallet_EventName_walletSwatchChanged_listenerFunction = function()
+			{
+				self._configureUIWithRecord()
+			}
+			wallet.on(
+				wallet.EventName_walletSwatchChanged(),
+				self.wallet_EventName_walletSwatchChanged_listenerFunction
+			)
+			//
+			self.wallet_EventName_walletLabelChanged_listenerFunction = function()
+			{
+				self._configureUIWithRecord()
+			}
+			wallet.on(
+				wallet.EventName_walletLabelChanged(),
+				self.wallet_EventName_walletLabelChanged_listenerFunction
+			)
+		}
 	}
 	stopObserving_record()
 	{
 		const self = this
+		function doesListenerFunctionExist(fn)
+		{
+			if (typeof fn !== 'undefined' && fn !== null) {
+				return true
+			}
+			return false
+		}
+		const wallet_orNil = self.givenRecordAndBootedWLC_toWallet_orNull()
+		if (doesListenerFunctionExist(self.wallet_EventName_walletSwatchChanged_listenerFunction)) {
+			if (wallet_orNil == null) {
+				// throw "Listener function exists but wallet not found" // this will leak the observer handler
+				// commented b/c reason mentioned in givenRecordAndBootedWLC_toWallet_orNull
+			} else {
+				wallet_orNil.removeListener(
+					wallet_orNil.EventName_walletSwatchChanged(),
+					self.wallet_EventName_walletSwatchChanged_listenerFunction
+				)
+			}
+		}
+		if (doesListenerFunctionExist(self.wallet_EventName_walletLabelChanged_listenerFunction)) {
+			if (wallet_orNil == null) {
+				// throw "Listener function exists but wallet not found" // this will leak the observer handler
+				// commented b/c reason mentioned in givenRecordAndBootedWLC_toWallet_orNull
+			} else {
+				wallet_orNil.removeListener(
+					wallet_orNil.EventName_walletLabelChanged(),
+					self.wallet_EventName_walletLabelChanged_listenerFunction
+				)
+			}
+		}
 	}
-	
-	// startObserving_wallet()
-	// {
-	// 	const self = this
-	// 	if (!self.wallet) {
-	// 		return
-	// 	}
-	// 	if (typeof self.wallet === 'undefined' || self.wallet === null) {
-	// 		throw "wallet undefined in start observing"
-	// 		return
-	// 	}
-	// 	// here, we're going to store a bunch of functions as instance properties
-	// 	// because if we need to stopObserving we need to have access to the listener fns
-	// 	//
-	// 	// wallet swatch
-	// 	self.wallet_EventName_walletSwatchChanged_listenerFunction = function()
-	// 	{
-	// 		self._configureUIWithWallet__color()
-	// 	}
-	// 	self.wallet.on(
-	// 		self.wallet.EventName_walletSwatchChanged(),
-	// 		self.wallet_EventName_walletSwatchChanged_listenerFunction
-	// 	)
-	// }
-	// stopObserving_wallet()
-	// {
-	// 	const self = this
-	// 	if (typeof self.wallet === 'undefined' || !self.wallet) {
-	// 		return
-	// 	}
-	// 	function doesListenerFunctionExist(fn)
-	// 	{
-	// 		if (typeof fn !== 'undefined' && fn !== null) {
-	// 			return true
-	// 		}
-	// 		return false
-	// 	}
-	// 	if (doesListenerFunctionExist(self.wallet_EventName_walletSwatchChanged_listenerFunction) === true) {
-	// 		self.wallet.removeListener(
-	// 			self.wallet.EventName_walletSwatchChanged(),
-	// 			self.wallet_EventName_walletSwatchChanged_listenerFunction
-	// 		)
-	// 	}
-	// }
 }
 module.exports = FundsRequestCellContentsView

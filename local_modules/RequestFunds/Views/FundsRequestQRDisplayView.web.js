@@ -35,7 +35,7 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
 //
-class FundsRequestQRDisplayModalView extends View
+class FundsRequestQRDisplayView extends View
 {
 	constructor(options, context)
 	{
@@ -43,18 +43,23 @@ class FundsRequestQRDisplayModalView extends View
 		//
 		const self = this 
 		{
-			self.initializing__fundsRequest = options.fundsRequest || null
+			const fundsRequest = options.fundsRequest || options.record // calling this `record` for now to standardize interface
+			if (typeof fundsRequest === 'undefined' || !fundsRequest) {
+				throw self.constructor.name + " requires a self.options.fundsRequest or self.options.record"
+			}
+			self.initializing__fundsRequest = fundsRequest || null
 		}
 		self.setup()
+	}
+	TearDown()
+	{
+		const self = this
+		super.TearDown()
 	}
 	setup()
 	{
 		const self = this
-		{
-			self.isSubmitButtonDisabled = false
-		}
-		self.setup_views()
-		
+		self.setup_views()		
 	}
 	setup_views()
 	{
@@ -158,6 +163,9 @@ class FundsRequestQRDisplayModalView extends View
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
+		if (self.initializing__fundsRequest.is_displaying_local_wallet == true) {
+			return null // it's pushed onto a stack instead
+		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context, "Done")
 		self.leftBarButtonView = view
 		const layer = view.layer
@@ -194,4 +202,4 @@ class FundsRequestQRDisplayModalView extends View
 		}
 	}
 }
-module.exports = FundsRequestQRDisplayModalView
+module.exports = FundsRequestQRDisplayView

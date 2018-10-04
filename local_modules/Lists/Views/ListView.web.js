@@ -251,13 +251,14 @@ class ListView extends View
 	{
 		return false // default behavior no, but you can override and return true to get this
 	}
-	overridable_recordDetailsViewClass()
+	overridable_recordDetailsViewClass(record)
 	{
 		return View
 	}
-	pushRecordDetailsView(record)
+	pushRecordDetailsView(record, optl_animated)
 	{
 		const self = this
+		const animated = optl_animated == false ? false : true // default true
 		if (self.current_recordDetailsView !== null) {
 			// Commenting this throw as we are going to use this as the official way to lock this function,
 			// e.g. if the user is double-clicking on a cell to push a details view
@@ -278,12 +279,9 @@ class ListView extends View
 			{
 				record: record
 			}
-			const DetailsViewClass = self.overridable_recordDetailsViewClass()
+			const DetailsViewClass = self.overridable_recordDetailsViewClass(record)
 			const view = new DetailsViewClass(options, self.context)
-			navigationController.PushView(
-				view, 
-				true // animated
-			)
+			navigationController.PushView(view, animated)
 			// PS: AFAIK, since this is JS, we have to manage the view lifecycle (specifically, teardown) so
 			// we take responsibility to make sure its TearDown gets called. The lifecycle of the view is approximated
 			// by tearing it down on self.viewDidAppear() below and on TearDown() (although since this is so far only used as a root stackView in tabs, the latter, TearDown(), ought not to happen)

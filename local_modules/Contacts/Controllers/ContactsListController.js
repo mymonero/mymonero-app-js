@@ -73,7 +73,7 @@ class ContactsListController extends ListBaseController
 			forOverrider_instance_didBoot_fn(null, returnedInstance) // no err
 		}
 	}
-	overridable_sortRecords(fn) // () -> Void; we must call this!
+	overridable_finalizeAndSortRecords(fn) // () -> Void; we must call this!
 	{
 		const self = this
 		// do not call on `super` of fn could be called redundantly

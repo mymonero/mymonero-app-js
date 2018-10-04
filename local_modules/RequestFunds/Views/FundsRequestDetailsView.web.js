@@ -33,7 +33,7 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
-const FundsRequestQRDisplayModalView = require('./FundsRequestQRDisplayModalView.web')
+const FundsRequestQRDisplayView = require('./FundsRequestQRDisplayView.web')
 //
 class FundsRequestDetailsView extends View
 {
@@ -180,7 +180,7 @@ class FundsRequestDetailsView extends View
 					{
 						e.preventDefault()
 						{
-							const view = new FundsRequestQRDisplayModalView({
+							const view = new FundsRequestQRDisplayView({
 								fundsRequest: self.fundsRequest
 							}, self.context)
 							const navigationView = new StackAndModalNavigationView({}, self.context)

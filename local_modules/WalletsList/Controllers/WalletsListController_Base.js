@@ -113,7 +113,7 @@ class WalletsListController extends ListBaseController
 	{
 		return true
 	}
-	overridable_sortRecords(fn) // () -> Void; must call this!
+	overridable_finalizeAndSortRecords(fn) // () -> Void; must call this!
 	{
 		const self = this
 		// do not call on `super` of fn could be called redundantly

@@ -188,8 +188,7 @@ class StackNavigationView extends View
 	PushView(
 		stackView,
 		isAnimated_orTrue // defaults to true if you don't pass anything here
-	)
-	{
+	) {
 		const self = this
 		if (stackView === null || typeof stackView === 'undefined') {
 			throw "StackNavigationView asked to PushView nil stackView"
@@ -301,8 +300,7 @@ class StackNavigationView extends View
 	PopView(
 		isAnimated_orTrue,
 		fn
-	)
-	{
+	) {
 		fn = fn || function(err) {}
 		const self = this
 		if (self.stackViews.length == 0) {
@@ -332,8 +330,7 @@ class StackNavigationView extends View
 	PopToRootView(
 		isAnimated_orTrue,
 		fn
-	)
-	{
+	) {
 		fn = fn || function(err) {}
 		const self = this
 		if (self.stackViews.length == 0) {
@@ -361,16 +358,10 @@ class StackNavigationView extends View
 		indexOf_to_stackView, // this is asked for so don't have to search the list
 		isAnimated_orTrue,
 		fn
-	)
-	{
+	) {
 		fn = fn || function(err) {}
 		const self = this
-		const isAnimated = 
-			isAnimated_orTrue === true
-				|| typeof isAnimated_orTrue === 'undefined' 
-				|| isAnimated_orTrue == null 
-			? true /* default true */ 
-			: false
+		const isAnimated = isAnimated_orTrue == false ? false : true
 		if (to_stackView === null || typeof to_stackView === 'undefined') {
 			const errStr = "StackNavigationView asked to PopToView nil to_stackView"
 			const err = new Error(errStr)
@@ -521,11 +512,13 @@ class StackNavigationView extends View
 	TabBarAndContentView_tabBarItemForThisContentViewWasDoubleSelected()
 	{
 		const self = this
+		// TODO: maybe tell root view here that it was popped to after being told to reset all state - so it can clear references
 		self.PopToRootView()
 	}
 	TabBarAndContentView_wasToldToResetAllTabContentViewsToRootState(isAnimated)
 	{
 		const self = this
+		// TODO: maybe tell root view here that it was popped to after being told to reset all state - so it can clear references
 		self.PopToRootView(isAnimated)
 	}
 }

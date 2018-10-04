@@ -54,14 +54,23 @@ class ListBaseController extends EventEmitter
 	{
 		const self = this
 		optlFn = optlFn || function() {}
-		{
-			self._setBooted()
-		}
-		setTimeout(function()
-		{ // on next tick to avoid instantiator missing this
-			self.emit(self.EventName_booted())
-			optlFn()
-		})
+		//
+		self.overridable_finalizeAndSortRecords(
+			function()
+			{
+				self._setBooted()
+
+				setTimeout(function()
+				{ // on next tick to avoid instantiator missing this
+					self.emit(self.EventName_booted())
+					//
+					self.__listUpdated_records() // emit after booting so this becomes an at-runtime emission
+					// and note this is being emitted every time we boot despite maybe having no records because the sort function is now allowed to also finalize list contents
+					//
+					optlFn()
+				})
+			}
+		)
 	}
 	_setup_didFailToBootWithError(err)
 	{
@@ -81,7 +90,20 @@ class ListBaseController extends EventEmitter
 	_tryToBoot()
 	{
 		const self = this
-		self._setup_fetchAndReconstituteExistingRecords()
+		function _proceed()
+		{
+			self._setup_fetchAndReconstituteExistingRecords()
+		}
+		if (self.deferBootUntilFnCb != null && typeof self.deferBootUntilFnCb !== 'undefined') {
+			self.deferBootUntilFnCb(function(err) {
+				if (err) {
+					throw err
+				}
+				_proceed()
+			})
+		} else {
+			_proceed()
+		}
 	}
 	_setBooted()
 	{
@@ -204,15 +226,7 @@ class ListBaseController extends EventEmitter
 						self._setup_didFailToBootWithError(err)
 						return
 					}
-					self.overridable_sortRecords(
-						function()
-						{
-							self._setup_didBoot(function()
-							{ // in cb to ensure serialization of calls
-								self.__listUpdated_records() // emit after booting so this becomes an at-runtime emission
-							})
-						}
-					)
+					self._setup_didBoot()
 				}
 			)
 		}
@@ -236,7 +250,7 @@ class ListBaseController extends EventEmitter
 		const self = this
 		throw `[${self.constructor.name}/override_booting_reconstituteRecordInstanceOptionsWithBase]: You must implement this method and call at least one of the appropriate callbacks.`
 	}
-	overridable_sortRecords(fn) // () -> Void
+	overridable_finalizeAndSortRecords(fn) // () -> Void
 	{ // do not call super or fn could be called twice - unless you want to call super to return (which might not be advisable as the behavior of this `super` fn is not defined/guaranted to call fn for you)
 		const self = this
 		fn() // overriders must call this
@@ -376,8 +390,7 @@ class ListBaseController extends EventEmitter
 	//
 	_new_idsOfPersistedRecords(
 		fn // (err?, ids?) -> Void
-	)
-	{
+	) {
 		const self = this
 		self.context.persister.IdsOfAllDocuments(
 			self.override_CollectionName(),
@@ -480,18 +493,37 @@ class ListBaseController extends EventEmitter
 		fn
 	) {
 		const self = this
+		self.givenBooted_deleteRecord_noListUpdating(
+			recordInstance,
+			fn,
+			function() {
+				self.records.splice(indexOfRecord, 1) // pre-emptively remove the record from the list
+			},
+			function() {
+				self.__listUpdated_records() // ensure delegate notified
+			}
+		)
+	}
+	givenBooted_deleteRecord_noListUpdating(
+		recordInstance,
+		done_fn,
+		optl_didStopObserving_fn,
+		optl_didEmitDeletedRecord_fn
+	) {
+		const self = this
+		//
+		const didStopObserving_fn = optl_didStopObserving_fn || function() {}
+		const didEmitDeletedRecord_fn = optl_didEmitDeletedRecord_fn || function() {}
 		//
 		recordInstance.TearDown() // stop polling, etc -- important.
-		//
 		self.overridable_stopObserving_record(recordInstance) // important
-		self.records.splice(indexOfRecord, 1) // pre-emptively remove the record from the list
+		didStopObserving_fn()
 		self.emit(self.EventName_deletedRecordWithId(), recordInstance._id)
-		self.__listUpdated_records() // ensure delegate notified
-		//
+		didEmitDeletedRecord_fn()
 		recordInstance.Delete(
 			function(err)
 			{
-				fn(err)
+				done_fn(err)
 			}
 		)
 	}
@@ -520,17 +552,22 @@ class ListBaseController extends EventEmitter
 	_atRuntime__record_wasSuccessfullySetUpAfterBeingAdded(recordInstance)
 	{
 		const self = this
-		self.records.unshift(recordInstance) // so we add it to the top
-		self.overridable_startObserving_record(recordInstance)
+		self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded_noSortNoListUpdated(recordInstance)
 		//
-		if (self.overridable_shouldSortOnEveryRecordAdditionAtRuntime()) {
-			self.overridable_sortRecords(function()
+		if (self.overridable_shouldSortOnEveryRecordAdditionAtRuntime()) { // this is no longer used
+			self.overridable_finalizeAndSortRecords(function()
 			{
 				self.__listUpdated_records()
 			})
 		} else {
 			self.__listUpdated_records()
 		}
+	}
+	_atRuntime__record_wasSuccessfullySetUpAfterBeingAdded_noSortNoListUpdated(recordInstance)
+	{ 
+		const self = this
+		self.records.push(recordInstance) 
+		self.overridable_startObserving_record(recordInstance)
 	}
 	overridable_shouldSortOnEveryRecordAdditionAtRuntime()
 	{

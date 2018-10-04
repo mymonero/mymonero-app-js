@@ -56,7 +56,7 @@ class ContactsListView extends ListView
 	{
 		return true
 	}
-	overridable_recordDetailsViewClass()
+	overridable_recordDetailsViewClass(record)
 	{
 		return ContactDetailsView
 	}

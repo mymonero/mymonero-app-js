@@ -126,6 +126,8 @@ class FundsRequest extends EventEmitter
 			self.payment_id = self.options.payment_id
 			self.message = self.options.message
 			self.description = self.options.description
+			//
+			self.is_displaying_local_wallet = self.options.is_displaying_local_wallet // if it exists
 		}
 		self.saveToDisk(
 			function(err)

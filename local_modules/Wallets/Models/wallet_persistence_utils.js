@@ -49,7 +49,7 @@ function HydrateInstance(
 	if (typeof plaintextDocument.local_wasAGeneratedWallet !== 'undefined') {
 		self.local_wasAGeneratedWallet = plaintextDocument.local_wasAGeneratedWallet
 	}
-	function _isNonNil_dateStr(v) { return v && typeof v !== 'undefined' && v !== "" }
+	function _isNonNil_dateStr(v) { return v != null && typeof v !== 'undefined' && v !== "" }
 	{
 		const dateStr = plaintextDocument.dateThatLast_fetchedAccountInfo
 		self.dateThatLast_fetchedAccountInfo = _isNonNil_dateStr(dateStr) ? new Date(dateStr) : null 
