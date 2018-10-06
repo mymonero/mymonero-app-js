@@ -1080,6 +1080,13 @@ class Wallet extends EventEmitter
 		let self = this
 		return parseFloat(self.Balance_FormattedString()) // is this appropriate and safe?
 	}
+	UnlockedBalance_JSBigInt()
+	{
+		const self = this
+		return self.Balance_JSBigInt().subtract(
+			self.locked_balance || new JSBigInt(0)
+		)
+	}
 	LockedBalance_JSBigInt()
 	{
 		let self = this
@@ -1101,6 +1108,40 @@ class Wallet extends EventEmitter
 	{
 		let self = this
 		return parseFloat(self.LockedBalance_FormattedString()) // is this appropriate and safe?
+	}
+	AmountPending_JSBigInt()
+	{
+		const self = this
+		const transactions = self.transactions || []
+		const stateCachedTransactions = [] // to finalize
+		const transactions_length = transactions.length
+		var amount = new JSBigInt(0)
+		for (let i = 0 ; i < transactions_length ; i++) {
+			const transaction = transactions[i]
+			const isConfirmed = self.IsTransactionConfirmed(transaction)
+			if (isConfirmed != true) {
+				if (transaction.isFailed != true) { // just filtering these out
+					// now, adding both of these (positive) values to contribute to the total
+					const sent = typeof transaction.total_sent == 'string' ? new JSBigInt(transaction.total_sent) : transaction.total_sent ? transaction.total_sent : new JSBigInt(0)
+					const received = typeof transaction.total_received == 'string' ? new JSBigInt(transaction.total_received) : transaction.total_received ? transaction.total_received : new JSBigInt(0)
+					const abs_mag = sent.subtract(received).abs()
+					amount = amount.add(abs_mag)
+				}
+			}
+		}
+		return amount
+	}
+	AmountPending_FormattedString()
+	{ // provided for convenience mainly so consumers don't have to require monero_utils
+		let self = this
+		let balance_JSBigInt = self.AmountPending_JSBigInt()
+		//
+		return monero_amount_format_utils.formatMoney(balance_JSBigInt) 
+	}
+	AmountPending_DoubleNumber()
+	{
+		let self = this
+		return parseFloat(self.AmountPending_FormattedString()) // is this appropriate and safe?
 	}
 	HasLockedFunds()
 	{
@@ -1207,7 +1248,7 @@ class Wallet extends EventEmitter
 				// height: null, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
 				//
 				total_sent: new JSBigInt(total_sent__atomicUnitString),
-				total_received: "0",
+				total_received: new JSBigInt("0"),
 				//
 				approx_float_amount: -1 * total_sent__float, // -1 cause it's outgoing
 				// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)

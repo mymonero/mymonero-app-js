@@ -99,7 +99,9 @@ class WalletsSelectView extends ListCustomSelectView
 		options.cellContentsView_init_baseOptions = // optl but set here for things like icon_sizeClass
 		{
 			icon_sizeClass: commonComponents_walletIcons.SizeClasses.Medium32,
-			wantsHoverable: _fromContext_wantsHoverAndSelectable(context)
+			wantsHoverable: _fromContext_wantsHoverAndSelectable(context),
+			wantsNoSecondaryBalances: true,
+			wantsOnlySpendableBalance: true // this could be changed to false for e.g. the creatfundsrequestform
 		}
 		super(options, context)
 	}

@@ -79,6 +79,8 @@ function HydrateInstance(
 	self.transactions.forEach(
 		function(tx, i) { // we must fix up what JSON stringifying did to the data
 			tx.timestamp = new Date(tx.timestamp)
+			tx.total_sent = new JSBigInt(tx.total_sent || 0)
+			tx.total_received = new JSBigInt(tx.total_received || 0)
 		}
 	)
 	//
@@ -152,6 +154,14 @@ function SaveToDisk(
 		self.dateWalletFirstSavedLocally = new Date()
 	}
 	//
+	const transactions = self.transactions || []
+	transactions.forEach(
+		function(tx, i) { 
+			tx.total_sent = tx.total_sent.toString()
+			tx.total_received = tx.total_received.toString()
+		}
+	)
+	//
 	const plaintextDocument =
 	{
 		walletLabel: self.walletLabel,
@@ -171,7 +181,7 @@ function SaveToDisk(
 		//
 		isInViewOnlyMode: self.isInViewOnlyMode,
 		//
-		transactions: self.transactions || [], 
+		transactions: transactions, 
 		heights: heights,
 		totals: totals,
 		spent_outputs: self.spent_outputs || [] // maybe not fetched yet

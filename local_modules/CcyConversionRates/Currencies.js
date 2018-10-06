@@ -29,6 +29,8 @@
 "use strict"
 //
 let monero_config = require('../mymonero_core_js/monero_utils/monero_config')
+let monero_amount_format_utils = require('../mymonero_core_js/monero_utils/monero_amount_format_utils')
+const JSBigInt = require('../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 //
 let ccySymbolsByCcy = exports.ccySymbolsByCcy = 
 {
@@ -179,7 +181,7 @@ let rounded_ccyConversionRateCalculated_moneroAmountNumber
 	//
 	return truncated_amount
 }
-exports.displayUnitsRounded_amountInCurrency = function( // Note: __DISPLAY__ units
+const displayUnitsRounded_amountInCurrency = exports.displayUnitsRounded_amountInCurrency = function( // Note: __DISPLAY__ units
 	CcyConversionRates_Controller_shared,
 	ccySymbol,
 	moneroAmountNumber // NOTE: 'Double' JS Number, not JS BigInt
@@ -201,4 +203,40 @@ exports.displayUnitsRounded_amountInCurrency = function( // Note: __DISPLAY__ un
 	let truncated_amount = roundTo(raw_ccyConversionRateApplied_amountNumber, currency_unitsForDisplay) // must be truncated for display purposes
 	//
 	return truncated_amount
+}
+//
+exports.displayStringComponentsFrom = function(
+	CcyConversionRates_Controller_shared,
+	xmr_amount_JSBigInt, 
+	displayCcySymbol
+) {
+	let XMR = ccySymbolsByCcy.XMR
+	const xmr_amount_str = monero_amount_format_utils.formatMoney(xmr_amount_JSBigInt)
+	if (displayCcySymbol != XMR) {
+		// TODO: using doubles here is not very good, and must be replaced with JSBigInts to support small amounts
+		const xmr_amount_double = parseFloat(xmr_amount_str)
+		//
+		let displayCurrencyAmountDouble_orNull = displayUnitsRounded_amountInCurrency( 
+			CcyConversionRates_Controller_shared,
+			displayCcySymbol,
+			xmr_amount_double
+		)
+		if (displayCurrencyAmountDouble_orNull != null) { // rate is ready
+			let displayCurrencyAmountDouble = displayCurrencyAmountDouble_orNull
+			let displayFormattedAmount = nonAtomicCurrency_formattedString(
+				displayCurrencyAmountDouble,
+				displayCcySymbol
+			)
+			return { 
+				amt_str: displayFormattedAmount, 
+				ccy_str: displayCcySymbol 
+			}
+		} else {
+			// rate is not ready, so wait for it by falling through to display XMR:
+		}
+	}
+	return { 
+		amt_str: xmr_amount_str, 
+		ccy_str: XMR
+	} // special case
 }

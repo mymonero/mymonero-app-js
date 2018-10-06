@@ -40,7 +40,10 @@ class WalletsListCellView extends ListCellView
 		const self = this
 		{ // self.cellContentsView: set this up /before/ calling _cmd on super
 			// so that it's avail in overridable_layerToObserveForTaps
-			const view = new WalletCellContentsView({}, self.context)
+			const view = new WalletCellContentsView({
+				wantsNoSecondaryBalances: false, // we do want secondary balances, specifically, here
+				wantsOnlySpendableBalance: false // just to be explicit, when there are no secondary balances, display the whole balance
+			}, self.context)
 			self.cellContentsView = view
 			// though this `add…` could be deferred til after…
 			self.addSubview(view)

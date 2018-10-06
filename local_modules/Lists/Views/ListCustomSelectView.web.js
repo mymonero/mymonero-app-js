@@ -30,7 +30,6 @@
 //
 const Views__cssRules = require('../../Views/cssRules.web')
 const CustomSelectView = require('../../SelectView/CustomSelectView.web')
-const WalletCellContentsView = require('../../Wallets/Views/WalletCellContentsView.web')
 //
 const NamespaceName = "ListCustomSelectView"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName

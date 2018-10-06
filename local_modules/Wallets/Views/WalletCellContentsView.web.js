@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
@@ -43,6 +44,8 @@ class WalletCellContentsView extends View
 		//
 		const self = this
 		self.wantsHoverable = self.options.wantsHoverable === false ? false : true; // default true
+		self.wantsNoSecondaryBalances = self.options.wantsNoSecondaryBalances == true ? true : false // default false
+		self.wantsOnlySpendableBalance = self.options.wantsOnlySpendableBalance == false ? false : true // default true
 		self.icon_sizeClass = self.options.icon_sizeClass || commonComponents_walletIcons.SizeClasses.Large48
 		self.setup()
 	}
@@ -282,6 +285,22 @@ class WalletCellContentsView extends View
 		self._configureUIWithWallet__labels()
 		self._configureUIWithWallet__color()
 	}
+	__primaryBalanceLabelText()
+	{
+		const self = this
+		var amount_JSBigInt;
+		if (self.options.wantsOnlySpendableBalance == true) {
+			amount_JSBigInt = self.wallet.UnlockedBalance_JSBigInt() // TODO: once actual spendable balance can be obtained, show that here instead
+		} else {
+			amount_JSBigInt = self.wallet.Balance_JSBigInt()
+		}
+		const balance_displayStrComponents = Currencies.displayStringComponentsFrom( // this converts to whatever ccy they have selected
+			self.context.CcyConversionRates_Controller_shared,
+			amount_JSBigInt,
+			self.context.settingsController.displayCcySymbol
+		)
+		return balance_displayStrComponents.amt_str+"&nbsp;"+balance_displayStrComponents.ccy_str
+	}
 	_configureUIWithWallet__labels()
 	{
 		const self = this
@@ -303,72 +322,36 @@ class WalletCellContentsView extends View
 			} else if (wallet.HasEverFetched_accountInfo() === false) {
 				descriptionLayer_innerHTML = "Loading…"
 			} else {
-				let hasLockedFunds = wallet.HasLockedFunds()
-				//
-				var finalizable_displayCurrency = self.context.settingsController.displayCcySymbol
-				var finalizable_balanceAmountDouble = wallet.Balance_DoubleNumber() // to finalize…
-				var finalizable_lockedBalanceAmountDouble_orNull = hasLockedFunds ? wallet.LockedBalance_DoubleNumber() : null // to finalize…
-				//
-				let XMR = Currencies.ccySymbolsByCcy.XMR
-				if (finalizable_displayCurrency != XMR) {
-					if (finalizable_displayCurrency == XMR) {
-						throw "Unexpected displayCurrency=.XMR"
-					}
-					let converted_balanceAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
-						self.context.CcyConversionRates_Controller_shared,
-						finalizable_displayCurrency,
-						finalizable_balanceAmountDouble
-					)
-					let converted_lockedBalanceAmountDouble_orNull = hasLockedFunds ? Currencies.displayUnitsRounded_amountInCurrency(
-						self.context.CcyConversionRates_Controller_shared,
-						finalizable_displayCurrency,
-						finalizable_lockedBalanceAmountDouble_orNull // we'll say this is non-nil here bc hasLockedFunds=true
-					) : null
-					if (converted_balanceAmountDouble_orNull != null) {
-						finalizable_balanceAmountDouble = converted_balanceAmountDouble_orNull // use converted, non-xmr amount
-						finalizable_lockedBalanceAmountDouble_orNull = converted_lockedBalanceAmountDouble_orNull // use converted, non-xmr amount
-					} else {
-						finalizable_displayCurrency = XMR // and - special case - revert currency to .xmr while waiting on ccyConversion rate
-					}
-				}
-				//
-				let final_balanceAmountDouble = finalizable_balanceAmountDouble
-				let final_lockedBalanceAmountDouble = finalizable_lockedBalanceAmountDouble_orNull
-				let final_displayCcySymbol = finalizable_displayCurrency
-				//
-				var final_balanceAmountString;
-				var final_lockedBalanceAmountString_orNull;
-				if (final_displayCcySymbol == XMR) {
-					var final_balance_moneroAmount = monero_amount_format_utils.parseMoney(
-						""+final_balanceAmountDouble // Double -> String - display formatting not required
-					) 
-					final_balanceAmountString = monero_amount_format_utils.formatMoney(final_balance_moneroAmount)
-					if (hasLockedFunds) {
-						var final_lockedBalance_moneroAmount = monero_amount_format_utils.parseMoney(
-							""+final_lockedBalanceAmountDouble // Double -> String
-						)
-						final_lockedBalanceAmountString_orNull = monero_amount_format_utils.formatMoney(final_lockedBalance_moneroAmount)
-					}
+				if (self.wantsNoSecondaryBalances) {
+					descriptionLayer_innerHTML = self.__primaryBalanceLabelText()
 				} else {
-					final_balanceAmountString = Currencies.nonAtomicCurrency_formattedString(
-						final_balanceAmountDouble,
-						final_displayCcySymbol
-					)
+					descriptionLayer_innerHTML = ""
+					//
+					const hasLockedFunds = wallet.HasLockedFunds()
+					const amountPending_JSBigInt = wallet.AmountPending_JSBigInt()
+					const hasPendingFunds = amountPending_JSBigInt.compare(0) > 0
 					if (hasLockedFunds) {
-						final_lockedBalanceAmountString_orNull = Currencies.nonAtomicCurrency_formattedString(
-							final_lockedBalanceAmountDouble,
-							final_displayCcySymbol
+						const displayStrComponents = Currencies.displayStringComponentsFrom(
+							self.context.CcyConversionRates_Controller_shared,
+							wallet.LockedBalance_JSBigInt(),
+							self.context.settingsController.displayCcySymbol
 						)
+						descriptionLayer_innerHTML += `${displayStrComponents.amt_str}&nbsp;${displayStrComponents.ccy_str}&nbsp;locked`
+					}
+					var final_pendingBalanceAmountString_orNull;
+					if (hasPendingFunds) {
+						const displayStrComponents = Currencies.displayStringComponentsFrom(
+							self.context.CcyConversionRates_Controller_shared,
+							amountPending_JSBigInt,
+							self.context.settingsController.displayCcySymbol
+						)
+						descriptionLayer_innerHTML += (hasLockedFunds ? "; " : "") + `${displayStrComponents.amt_str}&nbsp;${displayStrComponents.ccy_str}&nbsp;pending`
+					}
+					const hasAnySecondaryBalances = hasPendingFunds || hasLockedFunds
+					if (hasAnySecondaryBalances == false) { 
+						descriptionLayer_innerHTML = self.__primaryBalanceLabelText()
 					}
 				}
-				//
-				descriptionLayer_innerHTML = final_balanceAmountString+" "+final_displayCcySymbol
-				var isOnNewLine = false
-				if (hasLockedFunds) {
-					isOnNewLine = true
-					descriptionLayer_innerHTML += ` (${final_lockedBalanceAmountString_orNull} locked)`
-				}
-				// TODO: pending amount
 			}
 		}
 		self.descriptionLayer.innerHTML = descriptionLayer_innerHTML

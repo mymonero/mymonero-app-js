@@ -29,6 +29,7 @@
 "use strict"
 //
 const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
+const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 //
 const View = require('../../Views/View.web')
 //
@@ -82,6 +83,7 @@ class WalletDetailsView extends View
 		const self = this
 		self._setup_self_layer()
 		self._setup_balanceLabelView()
+		self._setup_secondaryBalancesLabelLayer()
 		self._setup_account_InfoDisclosingView()
 		if (self.context.isLiteApp !== true) {
 			self._setup_sendReceive_actionButtons()
@@ -168,42 +170,18 @@ class WalletDetailsView extends View
 		}
 		view.SetBalanceWithWallet = function(wallet)
 		{ 
-			let XMR = Currencies.ccySymbolsByCcy.XMR
-			//
 			var finalized_main_string = ""
 			var finalized_secondarySection_string = ""
-			var mutable_displayCcySymbol = self.context.settingsController.displayCcySymbol
-			{
-				if (mutable_displayCcySymbol != XMR) {
-					let balance_monero_doubleNumber = wallet.Balance_DoubleNumber()
-					let displayCurrencyAmountDouble_orNull = Currencies.displayUnitsRounded_amountInCurrency( 
-						self.context.CcyConversionRates_Controller_shared,
-						mutable_displayCcySymbol,
-						balance_monero_doubleNumber
-					)
-					if (displayCurrencyAmountDouble_orNull == null) {
-						mutable_displayCcySymbol = XMR 
-						// rate is not ready, so wait to fall through to display XMR 
-					} else { 
-						// rate is ready
-						let final_displayCcySymbol = mutable_displayCcySymbol
-						let displayCurrencyAmountDouble = displayCurrencyAmountDouble_orNull
-						let displayFormattedAmount = Currencies.nonAtomicCurrency_formattedString(
-							displayCurrencyAmountDouble,
-							mutable_displayCcySymbol
-						)
-						finalized_main_string = displayFormattedAmount
-						finalized_secondarySection_string = "&nbsp;" + final_displayCcySymbol // special case
-					}
-				}
-			}
+			const amount_displayStringComponents = Currencies.displayStringComponentsFrom( // this converts to whatever ccy they have selected
+				self.context.CcyConversionRates_Controller_shared,
+				wallet.Balance_JSBigInt(),
+				self.context.settingsController.displayCcySymbol
+			)
+			const displayCcySymbol = amount_displayStringComponents.ccy_str
+			const amt_str = amount_displayStringComponents.amt_str
 			// now check if the ccy is /still/ XMR…
-			let final_displayCcySymbol = mutable_displayCcySymbol
-			if (final_displayCcySymbol == XMR) { 
+			if (displayCcySymbol == Currencies.ccySymbolsByCcy.XMR) { 
 				// NOTE: checking if ccy is XMR again to catch displayCurrencyAmountDouble_orNull=null fallthrough case from alt display ccy 
-				if (finalized_main_string != "") {
-					throw "final_displayCcySymbol=XMR but finalized_main_string unexpectedly != its initial value"
-				}
 				const raw_balanceString = wallet.Balance_FormattedString()
 				const coinUnitPlaces = monero_config.coinUnitPlaces
 				const raw_balanceString__components = raw_balanceString.split(".")
@@ -226,10 +204,28 @@ class WalletDetailsView extends View
 				} else {
 					throw "Couldn't parse formatted balance string."
 				}
+			} else {
+				finalized_main_string = amt_str
+				finalized_secondarySection_string = "&nbsp;" + displayCcySymbol // special case
 			}
 			mainLabelSpan.innerHTML = finalized_main_string
 			secondarySectionLabelSpan.innerHTML = finalized_secondarySection_string
 		}
+	}
+	_setup_secondaryBalancesLabelLayer()
+	{
+		const self = this
+		const layer = document.createElement("span")
+		self.secondaryBalancesLabelLayer = layer
+		layer.style.position = "relative"
+		layer.style.display = "none"
+		layer.style.width = "auto"
+		layer.style.padding = "12px 6px 0 6px" // 0 btm b/c it already exists
+		layer.style.textAlign = "left"
+		layer.style.color = "#9E9C9E"
+		self.context.themeController.StyleLayer_FontAsMiddlingRegularMonospace(layer)
+		//
+		self.layer.appendChild(layer)
 	}
 	_new_fieldBaseView(entitled, isTruncatedPreviewForm, isSecretData)
 	{
@@ -741,6 +737,46 @@ class WalletDetailsView extends View
 		} else {
 			self.balanceLabelView.SetBalanceWithWallet(wallet)
 		}
+		// hopefully these will be able to handle small enough values .. maybe switch to BigInt w/o doubles .. but fwiw they are just for display
+		let XMR = Currencies.ccySymbolsByCcy.XMR
+		const amountPending_JSBigInt = wallet.AmountPending_JSBigInt()
+		const hasPendingAmount = amountPending_JSBigInt.compare(0) > 0
+		const amountLocked_JSBigInt = wallet.locked_balance || new JSBigInt(0)
+		const hasLockedAmount = amountLocked_JSBigInt.compare(0) > 0
+		const secondaryBalancesLabelVisible = hasPendingAmount == true || hasLockedAmount == true 
+		if (secondaryBalancesLabelVisible) {
+			var secondaryBalancesLabelText = ""
+			if (hasPendingAmount) {
+				if (secondaryBalancesLabelText != "") {
+					secondaryBalancesLabelText += " "
+				}
+				const amount_displayStringComponents = Currencies.displayStringComponentsFrom( // this converts to whatever ccy they have selected
+					self.context.CcyConversionRates_Controller_shared,
+					amountPending_JSBigInt,
+					self.context.settingsController.displayCcySymbol
+				)
+				secondaryBalancesLabelText += amount_displayStringComponents.amt_str + "&nbsp;" + amount_displayStringComponents.ccy_str + "&nbsp;" + "pending"
+			}
+			if (hasLockedAmount) {
+				if (secondaryBalancesLabelText != "") {
+					secondaryBalancesLabelText += "; "
+				}
+				const amount_displayStringComponents = Currencies.displayStringComponentsFrom( // this converts to whatever ccy they have selected
+					self.context.CcyConversionRates_Controller_shared,
+					amountLocked_JSBigInt,
+					self.context.settingsController.displayCcySymbol
+				)
+				secondaryBalancesLabelText += amount_displayStringComponents.amt_str + "&nbsp;" + amount_displayStringComponents.ccy_str + "&nbsp;" + "locked"
+			}
+			if (secondaryBalancesLabelText === "") {
+				throw "Expected non zero secondaryBalancesLabelText by this point"
+			}
+			self.secondaryBalancesLabelLayer.innerHTML = secondaryBalancesLabelText
+			self.secondaryBalancesLabelLayer.style.display = "block"
+		} else {
+			self.secondaryBalancesLabelLayer.style.display = "none"
+			self.secondaryBalancesLabelLayer.innerHTML = "" // might as well clear it 
+		}
 	}
 	_configureUIWithWallet__transactions()
 	{
@@ -1212,6 +1248,7 @@ class WalletDetailsView extends View
 	wallet_EventName_transactionsChanged()
 	{
 		const self = this
+		self._configureUIWithWallet__balance() // adding this b/c it updates the secondaryBalances label which relies on txs
 		self._configureUIWithWallet__transactions()
 	}
 	wallet_EventName_heightsUpdated()
