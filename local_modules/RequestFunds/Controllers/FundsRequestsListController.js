@@ -191,7 +191,7 @@ class FundsRequestsListController extends ListBaseController
 				} else {
 					// leaving these behind - but they must be deleted or they will stack up in the app/user docs dir
 					console.log("Dropping request because wallet was removed: ", record)
-					self.givenBooted_deleteRecord_noListUpdating(record, function(err) {})
+					self.givenBooted_deleteRecord_noListUpdatedEmit(record, function(err) {})
 				}
 			} else {
 				readyToSort_records.push(record)

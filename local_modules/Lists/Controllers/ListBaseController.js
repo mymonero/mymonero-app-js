@@ -493,7 +493,7 @@ class ListBaseController extends EventEmitter
 		fn
 	) {
 		const self = this
-		self.givenBooted_deleteRecord_noListUpdating(
+		self.givenBooted_deleteRecord_noListUpdatedEmit(
 			recordInstance,
 			fn,
 			function() {
@@ -504,7 +504,7 @@ class ListBaseController extends EventEmitter
 			}
 		)
 	}
-	givenBooted_deleteRecord_noListUpdating(
+	givenBooted_deleteRecord_noListUpdatedEmit(
 		recordInstance,
 		done_fn,
 		optl_didStopObserving_fn,
