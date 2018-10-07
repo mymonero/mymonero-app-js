@@ -747,9 +747,6 @@ class WalletDetailsView extends View
 		if (secondaryBalancesLabelVisible) {
 			var secondaryBalancesLabelText = ""
 			if (hasPendingAmount) {
-				if (secondaryBalancesLabelText != "") {
-					secondaryBalancesLabelText += " "
-				}
 				const amount_displayStringComponents = Currencies.displayStringComponentsFrom( // this converts to whatever ccy they have selected
 					self.context.CcyConversionRates_Controller_shared,
 					amountPending_JSBigInt,
