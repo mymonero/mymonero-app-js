@@ -58,6 +58,9 @@ function StartAlertingExceptions()
 			var errStr = "An unexpected application error occurred.\n\nPlease let us know of ";
 			if (error) {
 				errStr += "the following error message as it could be a bug:\n\n"+ error.toString()
+				if (error.stack) {
+					errStr += "\n\n" + error.stack
+				}
 			} else {
 				errStr += "this issue as it could be a bug."
 			}
