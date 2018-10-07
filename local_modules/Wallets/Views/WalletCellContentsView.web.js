@@ -299,7 +299,11 @@ class WalletCellContentsView extends View
 			amount_JSBigInt,
 			self.context.settingsController.displayCcySymbol
 		)
-		return balance_displayStrComponents.amt_str+"&nbsp;"+balance_displayStrComponents.ccy_str
+		if (self.options.wantsOnlySpendableBalance == true && self.wallet.HasLockedFunds()) {
+			return balance_displayStrComponents.amt_str+"&nbsp;"+balance_displayStrComponents.ccy_str+" unlocked"
+		} else {
+			return balance_displayStrComponents.amt_str+"&nbsp;"+balance_displayStrComponents.ccy_str
+		}
 	}
 	_configureUIWithWallet__labels()
 	{
@@ -330,22 +334,21 @@ class WalletCellContentsView extends View
 					const hasLockedFunds = wallet.HasLockedFunds()
 					const amountPending_JSBigInt = wallet.AmountPending_JSBigInt()
 					const hasPendingFunds = amountPending_JSBigInt.compare(0) > 0
-					if (hasLockedFunds) {
-						const displayStrComponents = Currencies.displayStringComponentsFrom(
-							self.context.CcyConversionRates_Controller_shared,
-							wallet.LockedBalance_JSBigInt(),
-							self.context.settingsController.displayCcySymbol
-						)
-						descriptionLayer_innerHTML += `${displayStrComponents.amt_str}&nbsp;${displayStrComponents.ccy_str}&nbsp;locked`
-					}
-					var final_pendingBalanceAmountString_orNull;
 					if (hasPendingFunds) {
 						const displayStrComponents = Currencies.displayStringComponentsFrom(
 							self.context.CcyConversionRates_Controller_shared,
 							amountPending_JSBigInt,
 							self.context.settingsController.displayCcySymbol
 						)
-						descriptionLayer_innerHTML += (hasLockedFunds ? "; " : "") + `${displayStrComponents.amt_str}&nbsp;${displayStrComponents.ccy_str}&nbsp;pending`
+						descriptionLayer_innerHTML += `${displayStrComponents.amt_str}&nbsp;${displayStrComponents.ccy_str}&nbsp;pending`
+					}
+					if (hasLockedFunds) {
+						const displayStrComponents = Currencies.displayStringComponentsFrom(
+							self.context.CcyConversionRates_Controller_shared,
+							wallet.LockedBalance_JSBigInt(),
+							self.context.settingsController.displayCcySymbol
+						)
+						descriptionLayer_innerHTML += (descriptionLayer_innerHTML != "" ? "; " : "") + `${displayStrComponents.amt_str}&nbsp;${displayStrComponents.ccy_str}&nbsp;locked`
 					}
 					const hasAnySecondaryBalances = hasPendingFunds || hasLockedFunds
 					if (hasAnySecondaryBalances == false) { 
