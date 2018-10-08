@@ -79,8 +79,43 @@ function HydrateInstance(
 	self.transactions.forEach(
 		function(tx, i) { // we must fix up what JSON stringifying did to the data
 			tx.timestamp = new Date(tx.timestamp)
-			tx.total_sent = new JSBigInt(tx.total_sent || 0)
-			tx.total_received = new JSBigInt(tx.total_received || 0)
+			// the following has both parsing from string (correct) and migration from (incorrect) previous JSON serializations of the bigint obj from pre 1.1.0 rc3
+			{
+				let val = tx.total_sent
+				if (val != "" && val != null && typeof val !== 'undefined') {
+					if (typeof val == 'string') {
+						tx.total_sent = new JSBigInt(val)
+					} else if (typeof val == 'object') {
+						if (typeof val._d === 'undefined' || val._d == null
+							|| typeof val._s === 'undefined' || val._s == null) {
+							throw "Couldn't parse saved tx.total_sent: " + val
+						}
+						tx.total_sent = new JSBigInt(val._d, val._s, JSBigInt.CONSTRUCT)
+					} else {
+						throw "Couldn't parse saved tx.total_sent: " + tx.total_sent
+					}
+				} else {
+					tx.total_sent = new JSBigInt(0)
+				}
+			}
+			{
+				let val = tx.total_received
+				if (val != "" && val != null && typeof val !== 'undefined') {
+					if (typeof val == 'string') {
+						tx.total_received = new JSBigInt(val)
+					} else if (typeof val == 'object') {
+						if (typeof val._d === 'undefined' || val._d == null
+							|| typeof val._s === 'undefined' || val._s == null) {
+							throw "Couldn't parse saved tx.total_sent: " + val
+						}
+						tx.total_received = new JSBigInt(val._d, val._s, JSBigInt.CONSTRUCT)
+					} else {
+						throw "Couldn't parse saved tx.total_sent: " + tx.total_sent
+					}
+				} else {
+					tx.total_received = new JSBigInt(0)
+				}
+			}
 		}
 	)
 	//
