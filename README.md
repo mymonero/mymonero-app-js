@@ -130,7 +130,7 @@ Suggestions and feedback are very welcome!
 
 ### Developing
 
-If you have an improvement to the MyMonero downloadable JS app and would like to have your code considered for usage in the production MyMonero app, we'll be happy to review [pull requests](https://help.github.com/articles/about-pull-requests/). Contributors of merged PRs will be credited in the app's release notes.
+If you have an improvement to the codebase and would like to have your code shipped in the production MyMonero app, please submit a [pull request](https://help.github.com/articles/about-pull-requests/), even if it's still a WIP. We try to credit all contributors in app release notes.
 
 Before contributing, please spend a few moments scanning the [technology notes](./docs/TECHNOLOGY.md) to learn about libraries used, reasons behind some architectural choices, and more.
 
