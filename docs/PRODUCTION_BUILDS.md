@@ -30,6 +30,6 @@ Then within the docker machine:
 
 1. `npm install`
 
-2. `DEBUG=electron-builder npm run-script dist-w`
+2. `bin/build_and_pack__win` -OR- `DEBUG=electron-builder npm run-script dist-w`
 
 The Windows build products will be in the shared `dist` directory.
