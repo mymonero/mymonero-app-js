@@ -64,13 +64,12 @@ const {/*crashReporter, */app} = require('electron')
 	module.exports = context
 	global.context = context
 }
-var shouldQuit = app.makeSingleInstance( // ensure only one instance of the app can be run... not only for UX reasons but so we don't get any conditions which might mess with db sanity
-	function(argv, workingDirectory)
-	{ // Single instance context being passed control when user attempted to launch duplicate instance. Emit event so that main window may be focused
-		app.emit('launched-duplicatively', argv) // custom event
-	}
-)
-if (shouldQuit) { // would be true if this is a duplicative app instance
+var gotLock = app.requestSingleInstanceLock() // ensure only one instance of the app can be run... not only for UX reasons but so we don't get any conditions which might mess with db consistency
+app.on('second-instance', function(argv, workingDirectory)
+{ // Single instance context being passed control when user attempted to launch duplicate instance. Emit event so that main window may be focused
+	app.emit('launched-duplicatively', argv) // custom event
+})
+if (gotLock == false) { // would be true if this is a duplicative app instance
 	console.log("💬  Will quit as app should be single-instance.")
 	app.quit()
 	return
