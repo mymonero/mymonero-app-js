@@ -83,6 +83,7 @@ class Controller extends EventEmitter
 		// ... when the settings controller boots, we will read the value that's there.
 		// that toggle will be on by default but this implementation respects the Pref before app unlock
 		//
+		var nonManualErrorNote_shownNTimes = 0;
 		autoUpdater.on('error', function(error)
 		{
 			const err_msg = error 
@@ -92,11 +93,17 @@ class Controller extends EventEmitter
 				// only show dialog for error if auto-updates are off OR self.lastCheckWasManuallyInitiated == true
 				dialog.showErrorBox("MyMonero Software Update Error", err_msg);
 			} else {
-				const note = new Notification({
-					title: "Error fetching MyMonero updates",
-					body: err_msg,
-				})
-				note.show()
+				if (nonManualErrorNote_shownNTimes < 2) {
+					// ^--- I considered a number of other solutions the problem of notification pile-up when network not reachable such as observing when notifications were closed and so not showing them if the previous specific one hadn't been closed, but the close event is not guaranteed.
+					// Showing the error here is more of a convenience, since it's in cases that aren't manually initiated. So I'll just limit it to a reasonable 2 such error notifications per app session until a better solution is derived.
+					const note = new Notification({
+						title: "Error fetching MyMonero updates",
+						body: err_msg,
+					})
+					note.show()
+					//
+					nonManualErrorNote_shownNTimes += 1;
+				}
 			}
 			self.__didFinishUpdatesCheck() // clean up state and emit
 		})
