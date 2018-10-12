@@ -135,6 +135,10 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 			"Use it like an actual wallet",
 			"For keeping large amounts long-term, make a cold-storage wallet instead."
 		])
+		list.push([
+			"There are more private options",
+			"Use your own server address in settings or a different wallet for sensative transactions."
+		])
 		return list
 	}
 	_new_acceptCheckboxButtonView()
