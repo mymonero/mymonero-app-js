@@ -37,7 +37,6 @@ const monero_txParsing_utils = require('../../mymonero_core_js/monero_utils/mone
 const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
-const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
 const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
 //
 const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
@@ -1311,7 +1310,6 @@ class Wallet extends EventEmitter
 				self.private_keys,
 				self.public_keys,
 				self.context.hostedMoneroAPIClient,
-				monero_openalias_utils,
 				payment_id,
 				simple_priority,
 				function(code) { // preSuccess_nonTerminal_statusUpdate_fn
