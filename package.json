@@ -34,6 +34,7 @@
       "!**/*.cordova.*",
       "!**/*.Lite.*",
       "!**/local_modules/**/package.json",
+      "!**/local_modules/**/package-lock.json",
       "!**/tests/*",
       "!**/*.spec.js",
       "!local_modules/mymonero_core_js/tests/**",

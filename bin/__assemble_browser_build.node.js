@@ -47,7 +47,7 @@ const doNotCopyOrEnterFilepathsMatching =
 	/README\.md/,
 	/CMakeLists\.txt/, 
 	/package\.json/, 
-	/package\.json/, 
+	/package-lock\.json/, 
 	/^\.prettier*/, 
 	/yarn\.lock/, 
 	/^tests$/i,
