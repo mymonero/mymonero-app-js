@@ -1064,7 +1064,9 @@ class Wallet extends EventEmitter
 			total_sent = new JSBigInt(0) // patch up to avoid crash as this doesn't need to be fatal
 		}
 		const balance_JSBigInt = total_received.subtract(total_sent)
-		//
+		if (balance_JSBigInt.compare(0) < 0) {
+			return new JSBigInt(0)
+		}
 		return balance_JSBigInt
 	}
 	Balance_FormattedString()
@@ -1082,9 +1084,13 @@ class Wallet extends EventEmitter
 	UnlockedBalance_JSBigInt()
 	{
 		const self = this
-		return self.Balance_JSBigInt().subtract(
+		const difference = self.Balance_JSBigInt().subtract(
 			self.locked_balance || new JSBigInt(0)
 		)
+		if (difference.compare(0) < 0) {
+			return new JSBigInt(0)
+		}
+		return difference
 	}
 	LockedBalance_JSBigInt()
 	{
