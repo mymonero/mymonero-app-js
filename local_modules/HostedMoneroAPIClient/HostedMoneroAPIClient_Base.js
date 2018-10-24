@@ -356,15 +356,13 @@ class HostedMoneroAPIClient_Base
 						fn(err)
 						return
 					}
-					const per_kb_fee__String = returnValuesByKey.per_kb_fee
-					if (per_kb_fee__String == null || per_kb_fee__String == "" || typeof per_kb_fee__String === 'undefined') {
+					if (!returnValuesByKey.per_byte_fee__string || typeof returnValuesByKey.per_byte_fee__string === 'undefined') {
 						throw "Unexpected / missing per_kb_fee"
 					}
 					fn(
 						err, // no error
-						returnValuesByKey.unspentOutputs, // TODO: remove this
 						returnValuesByKey.unspentOutputs, 
-						new JSBigInt(per_kb_fee__String)
+						returnValuesByKey.per_byte_fee__string
 					)
 				}
 			)
