@@ -362,8 +362,8 @@ class HostedMoneroAPIClient_Base
 					}
 					fn(
 						err, // no error
-						returnValuesByKey.unspentOutputs,
-						returnValuesByKey.unusedOuts,
+						returnValuesByKey.unspentOutputs, // TODO: remove this
+						returnValuesByKey.unspentOutputs, 
 						new JSBigInt(per_kb_fee__String)
 					)
 				}

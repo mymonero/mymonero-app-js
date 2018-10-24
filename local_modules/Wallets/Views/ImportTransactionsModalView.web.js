@@ -461,7 +461,7 @@ class ImportTransactionsModalView extends View
 		const sendFrom_address = wallet.public_address
 		wallet.SendFunds(
 			target_address,
-			amount_Number,
+			"" + amount_Number, // TODO: do away with JS-land number ops
 			false, // is not a sweep tx
 			payment_id,
 			monero_sendingFunds_utils.default_priority(),

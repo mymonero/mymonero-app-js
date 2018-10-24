@@ -1186,7 +1186,7 @@ class Wallet extends EventEmitter
 
 	SendFunds(
 		target_address, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
-		amount, // number
+		amount, // string
 		isSweepTx, // when true, amount will be ignored
 		payment_id,
 		simple_priority,

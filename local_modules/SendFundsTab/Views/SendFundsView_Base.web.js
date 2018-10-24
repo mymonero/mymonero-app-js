@@ -934,7 +934,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		const estimatedNetworkFee_JSBigInt = new JSBigInt(self.context.monero_utils.estimated_tx_network_fee(
-			"187000000", // TODO: grab this from polling request for dynamic per kb fee
+			"25190000", // TODO: grab this from polling request for dynamic per kb fee
 			self._selected_simplePriority()
 		))
 		const estimatedTotalFee_JSBigInt = estimatedNetworkFee_JSBigInt // no tx hosting service fee
@@ -1695,7 +1695,7 @@ class SendFundsView extends View
 			//
 			sendFrom_wallet.SendFunds(
 				target_address,
-				final_amount_Number,
+				"" + final_amount_Number, // TODO: do away with JS-land number operations
 				sweeping,
 				payment_id,
 				priority, 
