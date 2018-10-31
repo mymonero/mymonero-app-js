@@ -160,7 +160,11 @@ function New_AmountInputFieldPKG(
 		// TODO: move these into class + css rules
 		//
 		let selectLayer = ccySelectLayer
-		selectLayer.style.textIndent = (4 + ccySelect_label_margin_left) + "px" // left align text not desired bc of disclosure arrow
+		var textIndent_px = (4 + ccySelect_label_margin_left)
+		if (typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+			textIndent_px -= 8
+		}
+		selectLayer.style.textIndent = textIndent_px + "px" // left align text not desired bc of disclosure arrow
 		// selectLayer.style.outline = "none" // actually going to leave outline enabled for now for accessibility purposes 
 		selectLayer.style.color = "#DFDEDF"
 		selectLayer.style.backgroundColor = "rgba(80, 74, 80, 0.55)"
