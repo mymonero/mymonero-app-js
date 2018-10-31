@@ -128,6 +128,9 @@ window.BootApp = function()
 			rootView.superlayer = superlayer
 			superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
 		}
+	}).catch(function(e)
+	{
+		throw e
 	});
 }
 window.BootApp()

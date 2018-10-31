@@ -54,9 +54,10 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^bin$/,
 	/^src$/, // no CPP!!
 	/^(.*)\.jam$/,
-	/\.child\./, // slightly ambiguous but we don't want these as
+	/\.child\./, // slightly ambiguous but we don't want these as they're for electron child processes
 	//
-	/\.js$/ // funny enough, we can actually just ignore all JS files here - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us
+	// v----- This is in fact a valid regex to node.js - eslint has trouble parsing the negative lookbehind to match paths which don't end in .asm.js
+	/^.*(?<!\.asm)\.js$/ // funny enough, we can actually just ignore all JS files here (except the .asm.js file which gets loaded by the JS similar to the wasm) - because we're using browserify/webpack to analyze the dependency graph and bundle our JS for us
 ]
 const relativePathTo_assembledWWWDirectory = "browser_build"
 const indexHTMLFileToPutAtRoot_filepathPrefixInWWW = "MainWindow/Views/index.browser.html"

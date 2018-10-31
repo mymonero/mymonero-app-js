@@ -76,7 +76,15 @@ module.exports =
 			},
 			{
 				test: /\.js$/,
-				exclude: path.join(__dirname, 'node_modules'),
+				exclude: {
+					test: [
+						path.join(__dirname, 'node_modules')
+					],
+					exclude: [
+						'monero_utils/MyMoneroCoreCpp_ASMJS.asm.js',
+						'monero_utils/MyMoneroCoreCpp_ASMJS.wasm'
+					]
+				},
 				use: [
 					{
 						loader: 'babel-loader',

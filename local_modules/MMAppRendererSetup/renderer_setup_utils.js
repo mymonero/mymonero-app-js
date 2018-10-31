@@ -70,12 +70,16 @@ function StartAlertingExceptions()
 }
 exports.StartAlertingExceptions = StartAlertingExceptions
 //
-function HardenRuntime()
+function HardenRuntime(options)
 {
-	// disable eval
-	window.eval = global.eval = function()
-	{
-		throw new Error("MyMonero does not support window.eval() for security reasons.")
+	options = options || {}
+	const isBrowserBuild = options.isBrowserBuild == true
+	//
+	if (isBrowserBuild != true ) {// we used to disable eval for browser builds as well but now use it there when fallback to asmjs is needed
+		window.eval = global.eval = function()
+		{
+			throw new Error("MyMonero does not support window.eval() for security reasons.")
+		}
 	}
 }
 exports.HardenRuntime = HardenRuntime
