@@ -477,7 +477,11 @@ class SettingsView extends View
 					selectLayer,
 					true // bright content, dark bg
 				)
-				selectLayer.style.textIndent = "11px"
+				if (typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+					selectLayer.style.textIndent = "4px"
+				} else {
+					selectLayer.style.textIndent = "11px"
+				}
 				{ // hover effects/classes
 					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
 					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())

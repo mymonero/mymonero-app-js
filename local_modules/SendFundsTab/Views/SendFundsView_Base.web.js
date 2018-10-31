@@ -547,7 +547,7 @@ class SendFundsView extends View
 					true // bright content, dark bg
 				)
 				if (typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-					selectLayer.style.textIndent = "5px"
+					selectLayer.style.textIndent = "4px"
 				} else {
 					selectLayer.style.textIndent = "11px"
 				}
