@@ -38,7 +38,7 @@ const remote__app = remote__electron.app
 const remote__context = remote__electron.getGlobal("context")
 //
 const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
-require('../../mymonero_core_js/monero_utils/monero_utils').then(function(monero_utils)
+require('../../mymonero_core_js/monero_utils/monero_utils')({}).then(function(monero_utils)
 {
 	const renderer_context = require('../Models/index_context.electron.renderer').NewHydratedContext(
 		remote__app,

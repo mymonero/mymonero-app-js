@@ -37,7 +37,7 @@ if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
 //
 const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
-const monero_utils_promise = require('../mymonero_core_js/monero_utils/monero_utils')
+const monero_utils_promise = require('../mymonero_core_js/monero_utils/monero_utils')({})
 //
 // Declaring tasks:
 //
