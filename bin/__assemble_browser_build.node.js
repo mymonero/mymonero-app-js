@@ -32,8 +32,7 @@ const packageAssembly_utils = require('./shared/packageAssembly_utils.node')
 //
 const doNotCopyOrEnterFilepathsMatching =
 [
-	// Lite app does not include Contacts and FundsRequests
-	/\/(Contacts|RequestFunds)/,
+	/\/(Contacts|RequestFunds)/, // Lite app does not include Contacts and FundsRequests
 	/actionButton_iconImage__(useCamera|chooseFile)/,
 	//
 	/^\.DS_Store$/,
@@ -43,6 +42,9 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^\.eslint/,
 	/\.electron\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
 	/^electron_/,
+	/mymonero_core_js\/build/, // obviously do not want anything within this
+	/mymonero_core_js\/node_modules/, // all of these are dev dependencies, so we don't want them
+	/node_modules\/electron/, // no reason we'd want this
 	/LICENSE\.txt/,
 	/README\.md/,
 	/CMakeLists\.txt/, 
