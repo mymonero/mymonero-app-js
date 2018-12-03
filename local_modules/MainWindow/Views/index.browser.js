@@ -63,7 +63,7 @@ window.BootApp = function()
 	//
 	// context
 	var isHorizontalBar = isMobile;
-	require('../../mymonero_core_js/monero_utils/monero_utils')({}).then(function(monero_utils)
+	require('../../mymonero_core_js/monero_utils/MyMoneroCoreBridge')({}).then(function(coreBridge_instance) // we can just use this directly in the browser version
 	{
 		const context = require('../Models/index_context.browser').NewHydratedContext({
 			nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
@@ -89,7 +89,7 @@ window.BootApp = function()
 			HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
 			Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true,
 			CommonComponents_Forms_scrollToInputOnFocus: isMobile === true,
-			monero_utils: monero_utils
+			monero_utils: coreBridge_instance
 		})
 		window.MyMonero_context = context
 		//

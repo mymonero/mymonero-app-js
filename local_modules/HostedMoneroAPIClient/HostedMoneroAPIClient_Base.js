@@ -305,175 +305,76 @@ class HostedMoneroAPIClient_Base
 	
 	//
 	// Getting outputs for sending funds
-	UnspentOuts(
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		mixinNumber,
-		sweeping,
-		fn
-	) { // -> RequestHandle
+	UnspentOuts(req_params, fn)
+	{ // -> RequestHandle
 		const self = this
-		mixinNumber = parseInt(mixinNumber) // jic
-		//
-		const endpointPath = 'get_unspent_outs'
-		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
-		parameters.amount = '0'
-		parameters.mixin = mixinNumber
-		parameters.use_dust = true // Client now filters unmixable by dustthreshold amount (unless sweeping) + non-rct 
-		parameters.dust_threshold = monero_config.dustThreshold.toString()
 		net_service_utils.AddUserAgentParamters(
-			parameters,
+			req_params,
 			self.appUserAgent_product, 
 			self.appUserAgent_version
 		)
 		const requestHandle = net_service_utils.HTTPRequest(
 			self.request,
 			self._new_apiAddress_authority(),
-			endpointPath,
-			parameters,
+			'get_unspent_outs',
+			req_params,
 			function(err, data)
 			{
-				if (err) {
-					fn(err)
-					return
-				}
-				__proceedTo_parseAndCallBack(data)
+				fn(err ? err.toString() : null, data)
 			}
 		)
-		function __proceedTo_parseAndCallBack(data)
-		{
-			self.context.backgroundAPIResponseParser.Parsed_UnspentOuts(
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private,
-				function(err, returnValuesByKey)
-				{
-					if (err) {
-						fn(err)
-						return
-					}
-					if (!returnValuesByKey.per_byte_fee__string || typeof returnValuesByKey.per_byte_fee__string === 'undefined') {
-						throw "Unexpected / missing per_kb_fee"
-					}
-					fn(
-						err, // no error
-						returnValuesByKey.unspentOutputs, 
-						returnValuesByKey.per_byte_fee__string
-					)
-				}
-			)
-		}
 		return requestHandle
 	}
-	RandomOuts(
-		using_outs,
-		mixinNumber,
-		fn
-	) { // -> RequestHandle
+	RandomOuts(req_params, fn)
+	{ // -> RequestHandle
 		const self = this
-		//
-		mixinNumber = parseInt(mixinNumber)
-		if (mixinNumber < 0 || isNaN(mixinNumber)) {
-			const errStr = "Invalid mixin - must be >= 0"
-			const err = new Error(errStr)
-			fn(err)
-			return
-		}
-		//
-		var amounts = [];
-		for (var l = 0; l < using_outs.length; l++) {
-			amounts.push(using_outs[l].rct ? "0" : using_outs[l].amount.toString())
-		}
-		//
-		const endpointPath = 'get_random_outs'
-		var parameters =
-		{
-			amounts: amounts,
-			count: mixinNumber + 1 // Add one to mixin so we can skip real output key if necessary
-		}
 		net_service_utils.AddUserAgentParamters(
-			parameters,
+			req_params,
 			self.appUserAgent_product, 
 			self.appUserAgent_version
 		)
 		const requestHandle = net_service_utils.HTTPRequest(
 			self.request,
 			self._new_apiAddress_authority(),
-			endpointPath,
-			parameters,
+			'get_random_outs',
+			req_params,
 			function(err, data)
 			{
-				if (err) {
-					fn(err)
-					return
-				}
-				__proceedTo_parseAndCallBack(data)
+				fn(err ? err.toString() : null, data)
 			}
 		)
-		function __proceedTo_parseAndCallBack(data)
-		{
-			// console.log("debug: info: random outs: data", data)
-			const amount_outs = data.amount_outs
-			// yield
-			fn(
-				null, // no error
-				amount_outs
-			)
-		}
 		return requestHandle
 	}
 	//
 	// Runtime - Imperatives - Public - Sending funds
-	SubmitSerializedSignedTransaction(
-		address,
-		view_key__private,
-		serializedSignedTx,
-		fn // (err?) -> RequestHandle
-	)
+	SubmitRawTx(req_params, fn)
 	{
 		const self = this
 		// just a debug feature:
 		if (self.context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess === true) {
 			if (self.context.isDebug === true) {
 				console.warn("⚠️  WARNING: Mocking that SubmitSerializedSignedTransaction returned a success response w/o having hit the server.")
-				fn(null)
+				fn(null, {})
 				return
 			} else {
 				throw `[${self.constructor.name}/SubmitSerializedSignedTransaction]: context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess was true despite isDebug not being true. Set back to false for production build.`
 			}
 		}
-		// actual implementation:
-		const endpointPath = 'submit_raw_tx'
-		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
-		parameters.tx = serializedSignedTx
 		net_service_utils.AddUserAgentParamters(
-			parameters,
+			req_params,
 			self.appUserAgent_product, 
 			self.appUserAgent_version
 		)
 		const requestHandle = net_service_utils.HTTPRequest(
 			self.request,
 			self._new_apiAddress_authority(),
-			endpointPath,
-			parameters,
+			'submit_raw_tx',
+			req_params,
 			function(err, data)
 			{
-				if (err) {
-					fn(err)
-					return
-				}
-				__proceedTo_parseAndCallBack(data)
+				fn(err ? err.toString() : null, data)
 			}
 		)
-		function __proceedTo_parseAndCallBack(data)
-		{
-			// console.log("debug: info: submit_raw_tx: data", data)
-			fn(null)
-		}
 		return requestHandle
 	}
 }

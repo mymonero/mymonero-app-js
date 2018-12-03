@@ -37,7 +37,7 @@ if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
 //
 const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
-const monero_utils_promise = require('../mymonero_core_js/monero_utils/monero_utils')({})
+const coreBridge_promise = require('../mymonero_core_js/monero_utils/MyMoneroCoreBridge')({});
 //
 // Declaring tasks:
 //
@@ -55,7 +55,7 @@ const tasksByName =
 		spend_key__private
 	) {
 		// console.time("Parsed_AddressInfo: " + taskUUID)
-		monero_utils_promise.then(function(monero_utils)
+		coreBridge_promise.then(function(coreBridge_instance)
 		{
 			response_parser_utils.Parsed_AddressInfo__keyImageManaged(
 				// key-image-managed - be sure to call DeleteManagedKeyImagesForWalletWith when you're done with them
@@ -64,7 +64,7 @@ const tasksByName =
 				view_key__private,
 				spend_key__public,
 				spend_key__private,
-				monero_utils,
+				coreBridge_instance,
 				function(err, returnValuesByKey)
 				{
 					// console.timeEnd("Parsed_AddressInfo: " + taskUUID)
@@ -83,7 +83,7 @@ const tasksByName =
 		spend_key__private
 	) {
 		// console.time("Parsed_AddressTransactions: " + taskUUID)
-		monero_utils_promise.then(function(monero_utils)
+		coreBridge_promise.then(function(coreBridge_instance)
 		{
 			response_parser_utils.Parsed_AddressTransactions__keyImageManaged(
 				// key-image-managed - be sure to call DeleteManagedKeyImagesForWalletWith when you're done with them
@@ -92,7 +92,7 @@ const tasksByName =
 				view_key__private,
 				spend_key__public,
 				spend_key__private,
-				monero_utils,
+				coreBridge_instance,
 				function(err, returnValuesByKey)
 				{
 					// console.timeEnd("Parsed_AddressTransactions: " + taskUUID)
@@ -100,34 +100,6 @@ const tasksByName =
 				}
 			)
 		});
-	},
-	Parsed_UnspentOuts: function(
-		taskUUID,
-		//
-		data,
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private
-	) {
-		// console.time("Parsed_UnspentOuts: " + taskUUID)
-		monero_utils_promise.then(function(monero_utils)
-		{
-			response_parser_utils.Parsed_UnspentOuts__keyImageManaged(
-				// key-image-managed - be sure to call DeleteManagedKeyImagesForWalletWith when you're done with them
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private,
-				monero_utils,
-				function(err, returnValuesByKey)
-				{
-					// console.timeEnd("Parsed_UnspentOuts: " + taskUUID)
-					child_ipc.CallBack(taskUUID, err, returnValuesByKey)
-				}
-			)
-		})
 	},
 	//
 	// Imperatives

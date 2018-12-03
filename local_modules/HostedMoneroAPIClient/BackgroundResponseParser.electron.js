@@ -88,27 +88,6 @@ class BackgroundResponseParser extends BackgroundTaskExecutor
 			]
 		)
 	}
-	Parsed_UnspentOuts(
-		data,
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		fn //: (err?, returnValuesByKey?) -> Void
-	) {
-		const self = this
-		self.executeBackgroundTaskNamed(
-			'Parsed_UnspentOuts',
-			fn, // fn goes as second arg
-			[
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private,
-			]
-		)
-	}
 	//
 	// Imperatives
 	DeleteManagedKeyImagesForWalletWith(

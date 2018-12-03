@@ -30,7 +30,7 @@
 //
 const SendFundsView_Base = require('./SendFundsView_Base.web')
 const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
-const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
+const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
 const AddContactFromSendTabView = require('../../Contacts/Views/AddContactFromSendTabView.web')
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 //

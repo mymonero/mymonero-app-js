@@ -34,7 +34,7 @@ const commonComponents_activityIndicators = require('../../MMAppUICommonComponen
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
 const jsQR = require('jsqr')
-const monero_requestURI_utils = require('../../mymonero_core_js/monero_utils/monero_requestURI_utils')
+const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
 //
 //
 class AddContactView extends ContactFormView

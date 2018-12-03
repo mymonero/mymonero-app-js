@@ -26,43 +26,28 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-"use strict"
+// This file is here merely to share configuration
 //
-const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
-setup_utils({
-	reporting_processName: "MainWindow"
-})
-//
-const remote__electron = require('electron').remote
-const remote__app = remote__electron.app
-const remote__context = remote__electron.getGlobal("context")
-//
-const RootView = require('./RootView.Full.web') // electron uses .web files as it has a web DOM
-require('../../MoneroUtils/monero_utils.electron.web')({}).then(function(monero_utils)
-{
-	const renderer_context = require('../Models/index_context.electron.renderer').NewHydratedContext(
-		remote__app,
-		remote__context.menuController, // for UI and app runtime access
-		remote__context.urlOpeningController,
-		remote__context.appUpdatesController,
-		monero_utils
-	)
-	{ // since we're using emoji, now that we have the context, we can call PreLoadAndSetUpEmojiOne
-		const emoji_web = require('../../Emoji/emoji_web')
-		emoji_web.PreLoadAndSetUpEmojiOne(renderer_context)
-	}
-	const options = {}
-	const rootView = new RootView(options, renderer_context)
-	rootView.superview = null // just to be explicit; however we will set a .superlayer
-	{ // now manually attach the rootView to the DOM and specify view's usual managed reference(s)
-		const superlayer = document.body
-		rootView.superlayer = superlayer
-		superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
-	}
-	//
-	// setup the context menu
-	require('electron-context-menu')({
-		shouldShowMenu: (event, params) => params.isEditable,
-		showInspectElement: false
-	});
-});
+exports.bridgedFn_names =
+[
+	"is_subaddress",
+	"is_integrated_address",
+	"new_payment_id",
+	"new__int_addr_from_addr_and_short_pid",
+	"decode_address",
+	"newly_created_wallet",
+	"are_equal_mnemonics",
+	"mnemonic_from_seed",
+	"seed_and_keys_from_mnemonic",
+	"validate_components_for_login",
+	"address_and_keys_from_seed",
+	"generate_key_image",
+	"generate_key_derivation",
+	"derive_public_key",
+	"derive_subaddress_public_key",
+	"decodeRct",
+	"estimate_rct_tx_size",
+	"calculate_fee",
+	"estimated_tx_network_fee",
+	// "async__send_funds", // this is not to be bridged via synch IPC since it requires async bridging
+];

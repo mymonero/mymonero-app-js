@@ -31,7 +31,7 @@
 // In the future this could implement web workers
 const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
-const monero_utils_promise = require('../mymonero_core_js/monero_utils/monero_utils')({})
+const coreBridge_promise = require('../mymonero_core_js/monero_utils/MyMoneroCoreBridge')({});
 //
 class BackgroundResponseParser
 {
@@ -49,7 +49,7 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		monero_utils_promise.then(function(monero_utils)
+		coreBridge_promise.then(function(coreBridge_instance)
 		{
 			response_parser_utils.Parsed_AddressInfo__keyImageManaged(
 				data,
@@ -57,7 +57,7 @@ class BackgroundResponseParser
 				view_key__private,
 				spend_key__public,
 				spend_key__private,
-				monero_utils,
+				coreBridge_instance,
 				function(err, returnValuesByKey)
 				{
 					fn(err, returnValuesByKey)
@@ -73,7 +73,7 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		monero_utils_promise.then(function(monero_utils)
+		coreBridge_promise.then(function(coreBridge_instance)
 		{
 			response_parser_utils.Parsed_AddressTransactions__keyImageManaged(
 				data,
@@ -81,31 +81,7 @@ class BackgroundResponseParser
 				view_key__private,
 				spend_key__public,
 				spend_key__private,
-				monero_utils,
-				function(err, returnValuesByKey)
-				{
-					fn(err, returnValuesByKey)
-				}
-			)
-		})
-	}
-	Parsed_UnspentOuts(
-		data,
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		fn //: (err?, returnValuesByKey?) -> Void
-	) {
-		monero_utils_promise.then(function(monero_utils)
-		{
-			response_parser_utils.Parsed_UnspentOuts__keyImageManaged(
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private,
-				monero_utils,
+				coreBridge_instance,
 				function(err, returnValuesByKey)
 				{
 					fn(err, returnValuesByKey)

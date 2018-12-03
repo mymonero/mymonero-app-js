@@ -1214,80 +1214,25 @@ class Wallet extends EventEmitter
 			fn(err)
 			return
 		}
+		var parsed_sending_amount_string; // possibly need this ; here for the JS parser
+		if (isSweepTx) {
+			parsed_sending_amount_string = "0"
+		} else {
+			try {
+				parsed_sending_amount_string = monero_amount_format_utils.parseMoney(amount).toString();
+			} catch (e) {
+				const errStr = "Please enter a valid amount."
+				const err = new Error(errStr)
+				console.error(errStr)
+				fn(err)
+			}
+		}
 		self.isSendingFunds = true
 		//
 		// now that we've done that, we can ask the user idle controller to disable user idle until we're done with this - cause it's not something we want to have interrupted by the user idle controller tearing everything down!!
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
 		//
-		// some callback trampoline function declarations…
-		// these are important for resetting self's state,
-		// which is done in ___aTrampolineForFnWasCalled below
-		function __trampolineFor_success(
-			currencyReady_targetDescription_address,
-			sentAmount,
-			final__payment_id,
-			tx_hash,
-			tx_fee,
-			tx_key,
-			mixin
-		) {
-			___aTrampolineForFnWasCalled()
-			//
-			let total_sent__JSBigInt = sentAmount.add(tx_fee)
-			let total_sent__atomicUnitString = total_sent__JSBigInt.toString()
-			let total_sent__floatString = monero_amount_format_utils.formatMoney(total_sent__JSBigInt) 
-			let total_sent__float = parseFloat(total_sent__floatString)
-			//
-			const mockedTransaction = 
-			{
-				hash: tx_hash,
-				mixin: "" + mixin,
-				coinbase: false,
-				mempool: true, // is that correct?
-				//
-				isJustSentTransaction: true, // this is set back to false once the server reports the tx's existence
-				timestamp: new Date(), // faking
-				//
-				unlock_time: 0,
-				//
-				// height: null, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
-				//
-				total_sent: new JSBigInt(total_sent__atomicUnitString),
-				total_received: new JSBigInt("0"),
-				//
-				approx_float_amount: -1 * total_sent__float, // -1 cause it's outgoing
-				// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
-				//
-				payment_id: final__payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
-				//
-				// info we can only preserve locally
-				tx_fee: tx_fee,
-				tx_key: tx_key,
-				target_address: target_address, // only we here are saying it's the target
-			};
-			fn(null, mockedTransaction)
-			//
-			// manually insert .. and subsequent fetches from the server will be 
-			// diffed against this, preserving the tx_fee, tx_key, target_address...
-			self._manuallyInsertTransactionRecord(mockedTransaction);
-		}
-		function __trampolineFor_err_withErr(err)
-		{
-			___aTrampolineForFnWasCalled()
-			//
-			console.error(err)
-			fn(err)
-		}
-		function __trampolineFor_canceled_fn()
-		{
-			___aTrampolineForFnWasCalled()
-			canceled_fn()
-		}
-		function __trampolineFor_err_withStr(errStr)
-		{
-			__trampolineFor_err_withErr(new Error(errStr))
-		}
-		function ___aTrampolineForFnWasCalled()
+		function ___aTerminalCBWasCalled()
 		{ // private - no need to call this yourself unless you're writing a trampoline function
 			// Note: This function is to be called before you call fn() anywhere - so we can do critical things like unlocking this method and re-enabling user idle
 			self.isSendingFunds = false
@@ -1298,7 +1243,7 @@ class Wallet extends EventEmitter
 		let statusUpdate_messageBase = isSweepTx ? `Sending wallet balance…` : `Sending ${amount} XMR…`
 		function ___do_statusUpdate(code)
 		{
-			let suffix = monero_sendingFunds_utils.SendFunds_ProcessStep_MessageSuffix[code]
+			let suffix = monero_sendingFunds_utils.SendFunds_ProcessStep_MessageSuffix[code] // this is kept in JS rather than C++ to allow for localization via the same mechanism as the rest of the app
 			preSuccess_nonTerminal_statusUpdate_fn(
 				statusUpdate_messageBase + " " + suffix, // TODO: localize concatenation
 				code
@@ -1307,30 +1252,99 @@ class Wallet extends EventEmitter
 		preSuccess_nonTerminal_statusUpdate_fn(statusUpdate_messageBase)
 		function __proceed()
 		{
-			monero_sendingFunds_utils.SendFunds(
-				target_address,
-				self.context.nettype,
-				amount,
-				isSweepTx,
-				self.public_address,
-				self.private_keys,
-				self.public_keys,
-				self.context.hostedMoneroAPIClient,
-				payment_id,
-				simple_priority,
-				function(code) { // preSuccess_nonTerminal_statusUpdate_fn
-					___do_statusUpdate(code)
+			var args = 
+			{
+				to_address_string: target_address,
+				nettype: self.context.nettype,
+				sending_amount: parsed_sending_amount_string,
+				is_sweeping: isSweepTx,
+				from_address_string: self.public_address,
+				sec_viewKey_string: self.private_keys.view,
+				sec_spendKey_string: self.private_keys.spend,
+				pub_spendKey_string: self.public_keys.spend,
+				// unlock_time not included - will be set to 0 anyway
+				priority: simple_priority,
+				status_update_fn: function(params)
+				{ // preSuccess_nonTerminal_statusUpdate_fn
+					___do_statusUpdate(parseInt(""+params.code))
 				},
-				__trampolineFor_success,
-				__trampolineFor_err_withErr
-			)
+				success_fn: function(params)
+				{
+					___aTerminalCBWasCalled()
+					//
+					let total_sent__JSBigInt = new JSBigInt(params.total_sent)
+					let total_sent__atomicUnitString = total_sent__JSBigInt.toString()
+					let total_sent__floatString = monero_amount_format_utils.formatMoney(total_sent__JSBigInt) 
+					let total_sent__float = parseFloat(total_sent__floatString)
+					//
+					const mockedTransaction = 
+					{
+						hash: params.tx_hash,
+						mixin: "" + params.mixin,
+						coinbase: false,
+						mempool: true, // is that correct?
+						//
+						isJustSentTransaction: true, // this is set back to false once the server reports the tx's existence
+						timestamp: new Date(), // faking
+						//
+						unlock_time: 0,
+						//
+						// height: null, // mocking the initial value -not- to exist (rather than to erroneously be 0) so that isconfirmed -> false
+						//
+						total_sent: total_sent__JSBigInt,
+						total_received: new JSBigInt("0"),
+						//
+						approx_float_amount: -1 * total_sent__float, // -1 cause it's outgoing
+						// amount: new JSBigInt(sentAmount), // not really used (note if you uncomment, import JSBigInt)
+						//
+						payment_id: params.final_payment_id, // b/c `payment_id` may be nil of short pid was used to fabricate an integrated address
+						//
+						// info we can only preserve locally
+						tx_fee: new JSBigInt(params.used_fee),
+						tx_key: params.tx_key,
+						target_address: target_address, // only we here are saying it's the target
+					};
+					fn(null, mockedTransaction)
+					//
+					// manually insert .. and subsequent fetches from the server will be 
+					// diffed against this, preserving the tx_fee, tx_key, target_address...
+					self._manuallyInsertTransactionRecord(mockedTransaction);
+				},
+				error_fn: function(params)
+				{
+					___aTerminalCBWasCalled()
+					//
+					const err = new Error(params.err_msg)
+					console.error(err)
+					fn(err)
+				},
+				get_unspent_outs_fn: function(req_params, cb)
+				{
+					self.context.hostedMoneroAPIClient.UnspentOuts(req_params, cb)
+				},
+				get_random_outs_fn: function(req_params, cb)
+				{
+					self.context.hostedMoneroAPIClient.RandomOuts(req_params, cb)
+				},
+				submit_raw_tx_fn: function(req_params, cb)
+				{
+					self.context.hostedMoneroAPIClient.SubmitRawTx(req_params, cb)
+				}
+			}
+			if (typeof payment_id !== 'undefined' && payment_id) {
+				args.payment_id_string = payment_id
+			}
+			self.context.monero_utils.async__send_funds(args)
 		}
 		if (self.context.settingsController.authentication_requireWhenSending == false) {
 			__proceed()
 		} else {
 			self.context.passwordController.Initiate_VerifyUserAuthenticationForAction(
 				"Authenticate",
-				function() { __trampolineFor_canceled_fn() },
+				function() { 
+					___aTerminalCBWasCalled()
+					canceled_fn()
+				},
 				function() { __proceed() }
 			)
 		}
