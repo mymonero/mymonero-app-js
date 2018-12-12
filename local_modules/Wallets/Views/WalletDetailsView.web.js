@@ -243,7 +243,7 @@ class WalletDetailsView extends View
 			self.context.pasteboard,
 			"N/A",
 			isTruncatedPreviewForm == true ? true : false,
-			isSecretData
+			false // isSecretData - NOTE: I have re-enabled copy on secret data for usability purposes
 		)
 		layer.appendChild(fieldContainerLayer)
 		//

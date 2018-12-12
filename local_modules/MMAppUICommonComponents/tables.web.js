@@ -554,7 +554,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 		)
 	}
 	var valueLayer = New_fieldValue_labelLayer("" + valueToDisplay, context)
-	if (canSupportCopyButton == false) {
+	if (isSecretData == false) { // changed from 'canSupportCopyButton' b/c even if the copy button is allowed, users may expect they can select the text
 		// if (isSecretData == false) { // only if this is not secret data
 		// ^-- commented for now b/c users want to be able to copy it
 		valueLayer.style.userSelect = "all" // must allow copying, cause we're not displaying the COPY button 
