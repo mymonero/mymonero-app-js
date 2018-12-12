@@ -48,6 +48,7 @@ const ImportTransactionsModalView = require('./ImportTransactionsModalView.web')
 const FundsRequestQRDisplayView = require('../../RequestFunds/Views/FundsRequestQRDisplayView.web')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
+const monero_amount_format_utils = require("../../mymonero_core_js/monero_utils/monero_amount_format_utils");
 //
 class WalletDetailsView extends View
 {
@@ -899,7 +900,9 @@ class WalletDetailsView extends View
 						div.style.color = tx.approx_float_amount < 0 ? "#F97777" : "#FCFBFC"
 						//
 						// div.style.webkitUserSelect = "all" // decided to comment this because it interferes with cell click
-						div.innerHTML = tx.approx_float_amount
+						const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
+						const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
+						div.innerHTML = monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
 					}
 					{ // Date
 						const div = document.createElement("div")

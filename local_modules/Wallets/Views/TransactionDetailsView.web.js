@@ -32,6 +32,8 @@ const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const monero_amount_format_utils = require("../../mymonero_core_js/monero_utils/monero_amount_format_utils");
+const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 //
 class TransactionDetailsView extends View
 {
@@ -341,9 +343,11 @@ class TransactionDetailsView extends View
 	Navigation_Title()
 	{
 		const self = this
-		const transaction = self.transaction
 		//
-		return transaction.approx_float_amount || ""
+		const tx = self.transaction
+		const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
+		const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
+		return monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
 	}
 	Navigation_New_RightBarButtonView()
 	{
@@ -445,7 +449,10 @@ class TransactionDetailsView extends View
 		}
 		const isOutgoing = self.transaction.approx_float_amount < 0
 		{ // Total
-			const value = self.transaction.approx_float_amount
+			const tx = self.transaction
+			const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
+			const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
+			const value = monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
 			var color;
 			if (isOutgoing) {
 				color = "#F97777"
