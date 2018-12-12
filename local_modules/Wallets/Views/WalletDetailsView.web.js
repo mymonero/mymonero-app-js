@@ -752,7 +752,7 @@ class WalletDetailsView extends View
 					amountPending_JSBigInt,
 					self.context.settingsController.displayCcySymbol
 				)
-				secondaryBalancesLabelText += amount_displayStringComponents.amt_str + "&nbsp;" + amount_displayStringComponents.ccy_str + "&nbsp;" + "pending"
+				secondaryBalancesLabelText += amount_displayStringComponents.amt_str + "&nbsp;" + "pending"
 			}
 			if (hasLockedAmount) {
 				if (secondaryBalancesLabelText != "") {
@@ -763,7 +763,7 @@ class WalletDetailsView extends View
 					amountLocked_JSBigInt,
 					self.context.settingsController.displayCcySymbol
 				)
-				secondaryBalancesLabelText += amount_displayStringComponents.amt_str + "&nbsp;" + amount_displayStringComponents.ccy_str + "&nbsp;" + "locked"
+				secondaryBalancesLabelText += amount_displayStringComponents.amt_str + "&nbsp;" + "locked"
 			}
 			if (secondaryBalancesLabelText === "") {
 				throw "Expected non zero secondaryBalancesLabelText by this point"
