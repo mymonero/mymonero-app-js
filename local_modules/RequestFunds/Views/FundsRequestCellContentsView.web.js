@@ -294,7 +294,7 @@ class FundsRequestCellContentsView extends View
 		self.walletIconLayer.ConfigureWithHexColorString(colorHexString || "")
 		let ccy = fundsRequest.amountCcySymbol || "XMR"
 		if (is_displaying_local_wallet) {
-			self.amountLayer.innerHTML = "Request Monero to \"" + wallet_ifRecordForQRDisplay.walletLabel + "\""// TODO localize
+			self.amountLayer.innerHTML = "To \"" + wallet_ifRecordForQRDisplay.walletLabel + "\""// TODO localize
 		} else {
 			self.amountLayer.innerHTML = fundsRequest.amount ? parseFloat("" + fundsRequest.amount) + " "+ccy : "Any amount"
 		}
