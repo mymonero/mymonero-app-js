@@ -45,6 +45,7 @@ const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosin
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 const TransactionDetailsView = require("./TransactionDetailsView.web")
 const ImportTransactionsModalView = require('./ImportTransactionsModalView.web')
+const FundsRequestQRDisplayView = require('../../RequestFunds/Views/FundsRequestQRDisplayView.web')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
 //
@@ -69,6 +70,7 @@ class WalletDetailsView extends View
 		{ // zeroing / initialization
 			self.current_transactionDetailsView = null
 			self.currentlyPresented_AddContactView = null // zeroing
+			self.currentlyPresented_qrDisplayView = null
 		}
 		self._setup_views()
 		self._setup_startObserving()
@@ -357,7 +359,22 @@ class WalletDetailsView extends View
 			false,
 			function(layer, e)
 			{
-				self.context.walletAppCoordinator.Trigger_receiveFundsAtWallet(self.wallet)
+				const requestForWallet = self.context.fundsRequestsListController.records.find(function(r) { // we'll just assume this is booted as well by now
+					return r.is_displaying_local_wallet == true && r.to_address === self.wallet.public_address
+				})
+				if (typeof requestForWallet === 'undefined') {
+					throw "Expected requestForWallet to be non nil"
+				}
+				//
+				// hook into existing push functionality to get stuff like reference tracking
+				const view = new FundsRequestQRDisplayView({
+					fundsRequest: requestForWallet,
+					presentedModally: true
+				}, self.context)
+				self.currentlyPresented_qrDisplayView = view
+				const navigationView = new StackAndModalNavigationView({}, self.context)
+				navigationView.SetStackViews([ view ])
+				self.navigationController.PresentView(navigationView, true)
 			},
 			self.context,
 			undefined,
@@ -555,6 +572,10 @@ class WalletDetailsView extends View
 		if (self.currentlyPresented_ImportTransactionsModalView !== null && typeof self.currentlyPresented_ImportTransactionsModalView !== 'undefined') {
 			self.currentlyPresented_ImportTransactionsModalView.TearDown() // might not be necessary but method guards itself
 			self.currentlyPresented_ImportTransactionsModalView = null // must zero again and should free
+		}
+		if (self.currentlyPresented_qrDisplayView !== null && typeof self.currentlyPresented_qrDisplayView !== 'undefined') {
+			self.currentlyPresented_qrDisplayView.TearDown() // might not be necessary but method guards itself
+			self.currentlyPresented_qrDisplayView = null // must zero again and should free
 		}
 	}
 	_stopObserving()

@@ -147,13 +147,6 @@ class RootTabBarAndContentView extends TabBarAndContentView
 				}
 			)
 			emitter.on(
-				emitter.EventName_willTrigger_receiveFundsAtWallet(),
-				function()
-				{
-					self.selectTab_requestFunds()
-				}
-			)
-			emitter.on(
 				emitter.EventName_willTrigger_sendFundsFromWallet(),
 				function()
 				{

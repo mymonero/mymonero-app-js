@@ -49,6 +49,7 @@ class FundsRequestQRDisplayView extends View
 			}
 			self.initializing__fundsRequest = fundsRequest || null
 		}
+		self.presentedModally = options.presentedModally == true ? true : false
 		self.setup()
 	}
 	TearDown()
@@ -163,7 +164,7 @@ class FundsRequestQRDisplayView extends View
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
-		if (self.initializing__fundsRequest.is_displaying_local_wallet == true) {
+		if (self.initializing__fundsRequest.is_displaying_local_wallet == true && self.presentedModally != true) {
 			return null // it's pushed onto a stack instead
 		}
 		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context, "Done")

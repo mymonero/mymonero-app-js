@@ -181,7 +181,8 @@ class FundsRequestDetailsView extends View
 						e.preventDefault()
 						{
 							const view = new FundsRequestQRDisplayView({
-								fundsRequest: self.fundsRequest
+								fundsRequest: self.fundsRequest,
+								presentedModally: true
 							}, self.context)
 							const navigationView = new StackAndModalNavigationView({}, self.context)
 							navigationView.SetStackViews([ view ])

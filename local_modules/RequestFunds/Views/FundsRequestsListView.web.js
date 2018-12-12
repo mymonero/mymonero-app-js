@@ -114,44 +114,6 @@ class FundsRequestsListView extends ListView
 					)
 				}
 			)
-			emitter.on(
-				emitter.EventName_didTrigger_receiveFundsAtWallet(), // observe 'did' so we're guaranteed to already be on right tab
-				function(wallet)
-				{
-					// pop all presented back to root view before presentation ... unless the view is already showing!
-
-					const hasTopModalView = typeof self.navigationController.topModalView != 'undefined' && self.navigationController.topModalView != null
-					const hasCurrentRecordDetailsView = self.current_recordDetailsView != null
-					const recordDetailsViewIsQRDisplayView = hasCurrentRecordDetailsView && (self.current_recordDetailsView instanceof FundsRequestQRDisplayView);
-					const recordDetailsViewIsSameRecordView = recordDetailsViewIsQRDisplayView && self.current_recordDetailsView.initializing__fundsRequest.to_address == wallet.public_address && self.current_recordDetailsView.initializing__fundsRequest.is_displaying_local_wallet == true
-					const isNothingToDo = !hasTopModalView && recordDetailsViewIsSameRecordView
-					if (isNothingToDo) {
-						console.log("Already displaying that wallet's QR display view")
-						return
-					}
-					// animation *is* cool and makes some sense for this here (allows user to 
-					// track unwinding of existing state) but since the state isn't critical, the 
-					// UX appears to be better if we just instantly dismiss and present
-					self.navigationController.DismissModalViewsToView(
-						null, 
-						false/*isAnimated*/, 
-						function(err)
-						{
-							self.navigationController.PopToRootView( // essential for the case they're viewing a request…
-								false, // animated
-								function(err)
-								{
-									setTimeout(function()
-									{
-										// note we don't need to call tearDownAnySpawnedReferencedPresentedViews here because they get called via ListView.web
-										self.presentQRDisplayDetailsViewForRequest_withWallet(wallet)
-									}, 250) // this is to give the references time to settle down and prevent any racing that may occur to to dismissal leading to references being torn down... the delay should be largely unnoticeable and could even serve to lessen confusion about the UI changing to another tab suddenly ... at testing it was found that 200 was sufficient but i want to increase it for safety and because it can also be slightly better UX
-								}
-							)
-						}
-					)
-				}
-			)
 		}
 	}
 	TearDown()
@@ -259,20 +221,6 @@ class FundsRequestsListView extends ListView
 		if (atWallet && typeof atWallet !== 'undefined') {
 			self.currentlyPresented_CreateRequestFormView.AtRuntime_reconfigureWith_atWallet(atWallet)
 		}
-	}
-	//
-	presentQRDisplayDetailsViewForRequest_withWallet(wallet)
-	{
-		const self = this
-		const requestForWallet = self.listController.records.find(function(r) {
-			return r.is_displaying_local_wallet == true && r.to_address === wallet.public_address
-		})
-		if (typeof requestForWallet === 'undefined') {
-			throw "Expected requestForWallet to be non nil"
-		}
-		//
-		// hook into existing push functionality to get stuff like reference tracking
-		self.pushRecordDetailsView(requestForWallet, true/*animated*/)
 	}
 	//
 	// Runtime - Delegation - UI building
