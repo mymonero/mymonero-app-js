@@ -1031,7 +1031,7 @@ class SendFundsView extends View
 		}
 		let final_formattedAmountString = finalizable_formattedAmountString
 		let final_ccySymbol = finalizable_ccySymbol
-		let displayString = `+ ${final_formattedAmountString} ${final_ccySymbol} EST. NETWORK FEE`
+		let displayString = `+ ${final_formattedAmountString} ${final_ccySymbol} EST. FEE`
 		//
 		return displayString
 	}
