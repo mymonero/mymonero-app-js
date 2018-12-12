@@ -353,7 +353,7 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Receive At", 
+			"Deposit", 
 			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Wallets/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
 			// TODO?: borrowing another module's asset. sort of bad
 			false,
@@ -387,7 +387,7 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Send From", 
+			"Send", 
 			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Wallets/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
 			true,
 			function(layer, e)
