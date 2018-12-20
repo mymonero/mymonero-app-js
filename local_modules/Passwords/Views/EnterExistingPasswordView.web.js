@@ -141,24 +141,47 @@ class EnterExistingPasswordView extends View
 			layer.type = "password"
 			layer.style.webkitAppRegion = "no-drag"
 			layer.style.height = "32px"
+			function __updateRightBarButtonSubmittableByLayerContent()
+			{
+				const value = layer.value
+				var submitEnabled; // TODO: factor this ala set_needsUpdate with canEnable etc
+				if (typeof value === 'undefined' || value === null || value === "") {
+					submitEnabled = false
+				} else {
+					submitEnabled = true
+				}
+				// v--- we're assuming we've been added to the nav C by any keyup
+				self.navigationController.navigationBarView.rightBarButtonView.SetEnabled(submitEnabled)
+				//
+				return submitEnabled;
+			}
 			layer.addEventListener(
 				"keyup",
 				function(event)
 				{
-					const value = layer.value
-					var submitEnabled; // TODO: factor this ala set_needsUpdate with canEnable etc
-					if (typeof value === 'undefined' || value === null || value === "") {
-						submitEnabled = false
-					} else {
-						submitEnabled = true
-					}
-					// v--- we're assuming we've been added to the nav C by any keyup
-					self.navigationController.navigationBarView.rightBarButtonView.SetEnabled(submitEnabled)
+					const submitEnabled = __updateRightBarButtonSubmittableByLayerContent()
 					if (submitEnabled) {
 						if (event.keyCode === 13) {
 							self._tryToSubmitForm()
 						}
 					}
+				}
+			)
+			layer.addEventListener(
+				"change",
+				function(event)
+				{
+					console.log("change")
+					__updateRightBarButtonSubmittableByLayerContent()
+				}
+			)
+			layer.addEventListener(
+				"paste",
+				function(event)
+				{
+					setTimeout(function() {
+						__updateRightBarButtonSubmittableByLayerContent()
+					}, 300) // wait a little because value seems not to be readable otherwise
 				}
 			)
 			containerLayer.appendChild(layer)

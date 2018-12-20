@@ -108,6 +108,15 @@ class EnterNewPasswordView extends View
 					self.APasswordFieldInput_did_keyup(event)
 				}
 			)
+			layer.addEventListener(
+				"paste",
+				function(event)
+				{
+					setTimeout(function() {
+						self.APasswordFieldInput_did_keyup(event)
+					}, 300) // wait a little because value seems not to be readable otherwise
+				}
+			)
 			div.appendChild(layer)
 			//
 			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
@@ -139,6 +148,15 @@ class EnterNewPasswordView extends View
 				function(event)
 				{
 					self.APasswordFieldInput_did_keyup(event)
+				}
+			)
+			layer.addEventListener(
+				"paste",
+				function(event)
+				{
+					setTimeout(function() {
+						self.APasswordFieldInput_did_keyup(event)
+					}, 300) // wait a little because value seems not to be readable otherwise
 				}
 			)
 			div.appendChild(layer)
@@ -339,7 +357,7 @@ class EnterNewPasswordView extends View
 	APasswordFieldInput_did_keyup(e)
 	{
 		const self = this
-		if (event.keyCode === 13) {
+		if (e.keyCode === 13) {
 			if (self.navigationController.navigationBarView.rightBarButtonView.isEnabled !== false) {
 				self._tryToSubmitForm()
 			}
