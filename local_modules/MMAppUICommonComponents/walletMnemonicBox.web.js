@@ -114,8 +114,8 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 	layer.style.fontSize = "13px"
 	layer.style.marginBottom = "23px"
 	layer.style.color = "#9e9c9e"
-	layer.style.userSelect = "none" // disable selection here to disallow copying
-	layer.style.webkitUserSelect = "none" // disable selection here to disallow copying
+	layer.style.userSelect = "all" // decided to allow copying 
+	layer.style.webkitUserSelect = "all" // decided to allow copying 
 	layer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
 	layer.innerHTML = mnemonicString
 	//
