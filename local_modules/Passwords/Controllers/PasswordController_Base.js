@@ -118,8 +118,7 @@ class PasswordController_Base extends EventEmitter
 		function _proceedTo_loadStateFromModel(
 			hasUserSavedAPassword,
 			passwordModel_doc
-		)
-		{
+		) {
 			self.hasUserSavedAPassword = hasUserSavedAPassword
 			//
 			self._id = passwordModel_doc._id || undefined
@@ -577,7 +576,6 @@ class PasswordController_Base extends EventEmitter
 				customNavigationBarTitle_orNull,
 				function(didCancel_orNil, validationErr_orNil, entered_existingPassword)
 				{
-
 					if (validationErr_orNil != null) { // takes precedence over cancel
 						self.unguard_getNewOrExistingPassword()
 						self.emit(self.EventName_errorWhileAuthorizingForAppAction(), validationErr_orNil)

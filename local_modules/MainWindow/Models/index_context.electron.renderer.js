@@ -139,6 +139,11 @@ var context_object_instantiation_descriptions =
 		instance_key: "walletAppCoordinator",
 		options: {}
 	},
+	{
+		module_path: __dirname + "/../../URLOpening/URLOpeningCoordinator.web",
+		instance_key: "urlOpeningCoordinator",
+		options: {}
+	},
 	//
 	{ // Silly as it sounds, this class exists to integrate the main process menuController with event emissions from the renderer side so that integratees can remain able to operate independently.
 		module_path: __dirname + "/../../Menus/MenuControllerController.renderer",

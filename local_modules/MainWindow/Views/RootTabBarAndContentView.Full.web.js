@@ -52,23 +52,11 @@ class RootTabBarAndContentView_Full extends RootTabBarAndContentView_Base
 			)
 		}
 		{ // urlOpeningController
-			const controller = self.context.urlOpeningController
+			const controller = self.context.urlOpeningCoordinator
 			controller.on(
-				controller.EventName_ReceivedURLToOpen_FundsRequest(),
+				controller.EventName_TimeToHandleReceivedMoneroRequestURL(),
 				function(url)
 				{
-					if (self.context.passwordController.HasUserEnteredValidPasswordYet() === false) {
-						console.log("User hasn't entered valid pw yet")
-						return false
-					}
-					if (self.context.passwordController.IsUserChangingPassword() === true) {
-						console.log("User is changing pw.")
-						return false
-					}
-					if (!self.context.walletsListController.records || self.context.walletsListController.records.length == 0) {
-						console.log("No wallets.")
-						return false
-					}
 					self.selectTab_sendFunds()
 				}
 			)

@@ -266,6 +266,7 @@ class TabBarAndContentView extends View
 		}
 		const buttonView_forIndex = self._tabBarItemButtonViews[index]
 		if (buttonView_forIndex.isEnabled == false) {
+			alert("DISABLED")
 			console.warn("Asked to SelectTabBarItemAtIndex(index) but it was disabled.")
 			return
 		}		
