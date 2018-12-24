@@ -779,6 +779,10 @@ class Wallet extends EventEmitter
 		self.isInViewOnlyMode = ret.isInViewOnlyMode; // should be true "if(spend_key__orZero)"
 		self.local_wasAGeneratedWallet = wasAGeneratedWallet; // for regeneration purposes later
 		//
+		{ // this state must be reset after a failure or the wallet will appear to not have logged in successfully despite success
+			self.didFailToBoot_flag = false
+			self.didFailToBoot_errOrNil = null
+		}
 		self.requestHandle_for_logIn = self.context.hostedMoneroAPIClient.LogIn(
 			address,
 			view_key,
