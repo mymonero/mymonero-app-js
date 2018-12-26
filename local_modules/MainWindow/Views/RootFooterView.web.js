@@ -51,33 +51,44 @@ class RootFooterView extends View
 		const importantLink_colorValue = "#11bbec"
 
 		//
-		self.layer.appendChild(self._new_linkButtonLayerElement("Home", primaryUtilityLink_colorValue, function()
+		self.layer.appendChild(self._new_linkButtonLayerElement("Home", primaryUtilityLink_colorValue, function(e)
 		{
+			e.preventDefault()
 			window.open('https://www.mymonero.com/', '_blank') // new tab
+			return false;
 		}))
-		self.layer.appendChild(self._new_linkButtonLayerElement("Privacy", utilityLink_colorValue, function()
+		self.layer.appendChild(self._new_linkButtonLayerElement("Privacy", utilityLink_colorValue, function(e)
 		{
+			e.preventDefault()
 			window.open('https://www.mymonero.com/#/privacy-policy', '_blank') // new tab
+			return false;
 		}))
-		self.layer.appendChild(self._new_linkButtonLayerElement("Terms", utilityLink_colorValue, function()
+		self.layer.appendChild(self._new_linkButtonLayerElement("Terms", utilityLink_colorValue, function(e)
 		{
+			e.preventDefault()
 			window.open('https://www.mymonero.com/#/terms', '_blank') // new tab
+			return false;
 		}))
 		//
 		{
-			const buttonLayer = self._new_linkButtonLayerElement("Support", importantLink_colorValue, function()
+			const buttonLayer = self._new_linkButtonLayerElement("Support", importantLink_colorValue, function(e)
 			{
-				window.Intercom('show')
+				e.preventDefault()
+				window.open("https://mymonero.com:4000/?open_support=1", "_blank")
+				// shift to this when support can be brought directly back in:
+				// window.Intercom('show')
+				// previous:
 				// window.Intercom('update', {
 				// 	hide_default_launcher: false
 				// })
+				return false;
 			})
 			buttonLayer.style.float = "right"
 			buttonLayer.style.marginRight = "24px"
 			self.layer.appendChild(buttonLayer)
 		}
 	}
-	_new_linkButtonLayerElement(title, colorValue, action_fn)
+	_new_linkButtonLayerElement(title, colorValue, click_handler_fn)
 	{
 		const self = this
 		//
@@ -116,12 +127,7 @@ class RootFooterView extends View
 		// 	a.style.textDecoration = "none"
 		// 	mouseLeave_fn()
 		// })
-		a.addEventListener("click", function(e)
-		{
-			e.preventDefault()
-			action_fn()
-			return false
-		})
+		a.addEventListener("click", click_handler_fn)
 		//
 		return a
 	}
