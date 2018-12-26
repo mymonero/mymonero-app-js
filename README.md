@@ -103,6 +103,8 @@ Please don't use the Issues tracker for general support or inquiries. You can al
 
 If you're testing a pre-release version of this app and need to verify its behavior in production mode or want to obtain an installable release bundle, see [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md).
 
+If you want to run the browser build which is provided in the releases, simply unzip it, `cd` into the browser_build directory, then run `python -m SimpleHTTPServer 9100` (replacing the port with one of your choice if needed).
+
 
 ## Running in Development Mode
 
@@ -116,8 +118,7 @@ If you're testing a pre-release version of this app and need to verify its behav
 
 `bin/start_dev_browser`
 
-*Note:* If your system does not have the `open` command as is found on MacOS, then this command will fail at the last step to open `browser_build/index.html`. So after running the `start_dev` command, simply open `index.html` in your browser of choice.
-
+*Note:* This will run the command `python -m SimpleHTTPServer 9100` to serve `./browser_build`.
 
 ## Contributing
 
