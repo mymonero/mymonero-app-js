@@ -57,7 +57,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self._setup_form_walletAddrAndKeysFields()
 			self._setup_form_toggleLoginModeLayer()		
 		}
-		{
+		if (self.context.isLiteApp != true) {
 			self._setup_form_walletNameField()
 			self._setup_form_walletSwatchField()
 		}
@@ -387,11 +387,17 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	lookup__walletName()
 	{
 		const self = this
+		if (self.context.isLiteApp == true) {
+			return self.context.walletsListController.LiteAppWalletName()
+		}
 		return self.walletNameInputLayer.value
 	}
 	lookup__colorHexString()
 	{
 		const self = this
+		if (self.context.isLiteApp == true) {
+			return self.context.walletsListController.LiteAppWalletSwatchColor()
+		}
 		return self.walletColorPickerInputView.Component_Value()
 	}
 	lookup__mnemonicSeed()
@@ -483,8 +489,12 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(false)
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(false)
-			self.walletColorPickerInputView.SetEnabled(false)
-			self.walletNameInputLayer.disabled = true
+			if (self.walletColorPickerInputView) {
+				self.walletColorPickerInputView.SetEnabled(false)
+			}
+			if (self.walletNameInputLayer) {
+				self.walletNameInputLayer.disabled = true
+			}
 			self.mnemonicTextAreaView.layer.disabled = true
 			self.addrTextAreaView.layer.disabled = true
 			self.viewKeyTextAreaView.layer.disabled = true
@@ -508,8 +518,12 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.navigationController.navigationBarView.leftBarButtonView.SetEnabled(true)
 			//
 			self.toggleLoginModeButtonATagLayerView.SetEnabled(true)
-			self.walletColorPickerInputView.SetEnabled(true)
-			self.walletNameInputLayer.disabled = undefined
+			if (self.walletColorPickerInputView) {
+				self.walletColorPickerInputView.SetEnabled(true)
+			}
+			if (self.walletNameInputLayer) {
+				self.walletNameInputLayer.disabled = undefined
+			}
 			self.mnemonicTextAreaView.layer.disabled = undefined
 			self.addrTextAreaView.layer.disabled = undefined
 			self.viewKeyTextAreaView.layer.disabled = undefined

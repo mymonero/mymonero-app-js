@@ -169,11 +169,12 @@ class BaseView_Wallet_MetaInfo extends BaseView_AWalletWizardScreen
 	_overridable_canEnableSubmitButton()
 	{
 		const self = this
-		const walletName = self.walletNameInputLayer.value
-		if (walletName.length == 0 || !walletName) {
-			return false
-		}
-		
+		if (self.walletNameInputLayer) { // it may be nil, e.g. in the lite app
+			const walletName = self.walletNameInputLayer.value
+			if (walletName.length == 0 || !walletName) {
+				return false
+			}
+		}		
 		return true
 	}
 	//

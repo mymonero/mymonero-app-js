@@ -36,6 +36,7 @@ const ListBaseController = require('../../Lists/Controllers/ListBaseController')
 const Wallet = require('../../Wallets/Models/Wallet')
 const wallet_persistence_utils = require('../../Wallets/Models/wallet_persistence_utils')
 //
+const blue_hexColorString = "#00C6FF"
 const hexColorStrings = 
 [
 	"#6B696B", // dark grey
@@ -45,7 +46,7 @@ const hexColorStrings =
 	"#F97777", // salmon/red
 	"#EB8316", // orange
 	"#EACF12", // yellow
-	"#00C6FF" // blue
+	blue_hexColorString // blue
 ]
 //
 class WalletsListController extends ListBaseController
@@ -177,6 +178,10 @@ class WalletsListController extends ListBaseController
 	All_SwatchHexColorStrings()
 	{
 		return hexColorStrings
+	}
+	BlueSwatchHexColorString()
+	{
+		return blue_hexColorString
 	}
 	IsSwatchHexColorStringADarkColor(hexColorString)
 	{

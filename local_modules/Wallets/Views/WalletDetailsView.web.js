@@ -666,6 +666,9 @@ class WalletDetailsView extends View
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
+		if (self.context.isLiteApp == true) {
+			return null // no need for this screen - although the log out button is nice
+		}
 		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
 		const layer = view.layer
 		layer.addEventListener(

@@ -54,33 +54,6 @@ const StaticCacheForBundling_WizardTaskStepScreenViewModules_byViewFilename =
 	"CreateWallet_Instructions_View.web": 		require("../Views/CreateWallet_Instructions_View.web"),
 	"CreateWallet_InformOfMnemonic_View.web": 	require("../Views/CreateWallet_InformOfMnemonic_View.web"),
 	"CreateWallet_ConfirmMnemonic_View.web": 	require("../Views/CreateWallet_ConfirmMnemonic_View.web")
-} 
-const WizardTask_ModeStepNamesByIdxStr_ByTaskModeName =
-{
-	FirstTime_CreateWallet: {
-		"0": "MetaInfo",
-		"1": "Instructions",
-		"2": "InformOfMnemonic",
-		"3": "ConfirmMnemonic"
-	},
-	FirstTime_UseExisting: {
-		"0": "MetaInfo"
-	},
-	//
-	PickCreateOrUseExisting: {
-		"0": "Landing", // only one screen before we patch to…
-	},
-	AfterPick_CreateWallet: {
-		"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
-		"1": "MetaInfo",
-		"2": "Instructions",
-		"3": "InformOfMnemonic",
-		"4": "ConfirmMnemonic"
-	},
-	AfterPick_UseExisting: {
-		"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
-		"1": "MetaInfo"
-	}
 }
 //
 class AddWallet_WizardController
@@ -100,6 +73,54 @@ class AddWallet_WizardController
 		{
 			self.current_wizardTaskModeName = null
 			self.initial_wizardTaskModeName = null
+		}
+		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName = {}
+		if (self.context.isLiteApp != true) {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_CreateWallet = 
+			{
+				"0": "MetaInfo",
+				"1": "Instructions",
+				"2": "InformOfMnemonic",
+				"3": "ConfirmMnemonic"
+			}
+		} else {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_CreateWallet = 
+			{
+				"0": "Instructions",
+				"1": "InformOfMnemonic",
+				"2": "ConfirmMnemonic"
+			}
+		}
+		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_UseExisting =
+		{
+			"0": "MetaInfo"
+		}
+		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.PickCreateOrUseExisting = 
+		{
+			"0": "Landing", // only one screen before we patch to…
+		}
+		if (self.context.isLiteApp != true) {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_CreateWallet =
+			{
+				"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+				"1": "MetaInfo",
+				"2": "Instructions",
+				"3": "InformOfMnemonic",
+				"4": "ConfirmMnemonic"
+			}
+		} else {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_CreateWallet =
+			{
+				"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+				"1": "Instructions",
+				"2": "InformOfMnemonic",
+				"3": "ConfirmMnemonic"
+			}
+		}
+		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_UseExisting =
+		{
+			"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+			"1": "MetaInfo"
 		}
 	}
 	//
@@ -145,7 +166,7 @@ class AddWallet_WizardController
 		if (self.current_wizardTaskModeName == null || typeof self.current_wizardTaskModeName === 'undefined') {
 			throw "asked for _current_wizardTaskMode_stepNamesByIdxStr while self.current_wizardTaskModeName nil"
 		}
-		const steps = WizardTask_ModeStepNamesByIdxStr_ByTaskModeName[self.current_wizardTaskModeName]
+		const steps = self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName[self.current_wizardTaskModeName]
 		//
 		return steps
 	}

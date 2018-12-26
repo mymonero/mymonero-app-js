@@ -260,6 +260,28 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		self._configureInteractivityOfNextButton() // will be disabled on first push - but not necessarily on hitting Back
 		return view
 	}
+	Navigation_New_LeftBarButtonView()
+	{
+		const self = this
+		if (self.context.isLiteApp != true) {
+			return null // we want null or maybe a back button
+		}
+		// we need a cancel button
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const layer = view.layer
+		layer.addEventListener(
+			"click",
+			function(e)
+			{
+				e.preventDefault()
+				if (view.isEnabled !== false) {
+					self.wizardController._fromScreen_userPickedCancel()
+				}
+				return false
+			}
+		)
+		return view
+	}
 	//
 	//
 	// Runtime - Imperatives - Submit button enabled state
@@ -296,6 +318,10 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 	_userSelectedNextButton()
 	{
 		const self = this 
+		if (self.context.isLiteApp == true) { // must be set manually since we do not show the meta-info screen for this
+			self.wizardController.walletMeta_name = self.context.walletsListController.LiteAppWalletName()
+			self.wizardController.walletMeta_colorHexString = self.context.walletsListController.LiteAppWalletSwatchColor() // possibly change this to random color at some point
+		}
 		self.wizardController.GenerateAndUseNewWallet(
 			function(err, walletInstance)
 			{
