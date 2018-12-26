@@ -118,6 +118,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 	}
 	_new_messages_titlesAndParagraphs()
 	{
+		const self = this
 		const list = []
 		list.push([
 			"Creating a wallet",
@@ -125,7 +126,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		])
 		list.push([
 			"Write down your mnemonic", 
-			"It's the only way to regain access to your funds if you delete the app."
+			"It's the only way to regain access, and <span style='text-decoration: underline;'>it's never sent to the server!</span>"
 		])
 		list.push([
 			"Keep it secret and safe",
@@ -133,8 +134,14 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		])
 		list.push([
 			"Use it like an actual wallet",
-			"For larger amounts and enhanced privacy, make a cold-storage wallet or set your own server in Preferences."
+			"For large amounts and better privacy, make a cold-storage wallet or set your own server in Preferences."
 		])
+		if (self.context.isLiteApp == true) {
+			list.push([
+				"Web browsers are insecure",
+				"The convenience of MyMonero for web comes at a security cost. <a href='https://mymonero.com' target='_blank' style='color: #11bbec; cursor: pointer; -webkit-user-select: none; text-decoration: none;'>Download the desktop or mobile app</a>."
+			])
+		}
 		return list
 	}
 	_new_acceptCheckboxButtonView()
