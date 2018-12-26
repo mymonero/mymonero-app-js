@@ -133,6 +133,11 @@ function NewHydratedContext(initialContext)
 			module: require("../../WalletAppCoordinator/WalletAppCoordinator"),
 			instance_key: "walletAppCoordinator",
 			options: {}
+		},
+		{
+			module: require("../Controllers/ExceptionAlerting.browser.web.js"),
+			instance_key: "exceptionAlerting",
+			options: {}
 		}
 	]	
 	//
