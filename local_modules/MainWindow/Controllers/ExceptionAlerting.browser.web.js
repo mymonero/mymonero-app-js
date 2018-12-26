@@ -150,12 +150,12 @@ class ExceptionAlerting
 			return // most likely an error from webflow - can skip erroring these ; TODO: remove this when removing webflow
 		}
 		if (typeof message !== 'undefined' && message && message !== "") {
-			self.doToastMessage("Unhandled error. Please inform MyMonero Support of this message: " + message);
+			self.doToastMessage("Unhandled error. Please inform MyMonero Support of this message: " + message, message);
 		} else {
-			self.doToastMessage("Unrecognized error occured. Please contact Support with steps and browser informations.")
+			self.doToastMessage("Unrecognized error occured. Please contact Support with steps and browser informations.", undefined)
 		}
 	}
-	doToastMessage(message)
+	doToastMessage(message, raw_message)
 	{
 		var el = document.createElement("div")
 		el.classList.add("exceptiontoast")
@@ -169,6 +169,12 @@ class ExceptionAlerting
 				el.classList.remove("show") // just so we can get the visibility:hidden in place -- probably not necessary
 				el.parentNode.removeChild(el)
 			}, finalRemoveDelay_s * 1000);
+		})
+		setTimeout(function()
+		{
+			window.ga('send', 'exception', {
+				'exDescription': raw_message ? raw_message : 'undefined'
+			});
 		})
 	}
 }
