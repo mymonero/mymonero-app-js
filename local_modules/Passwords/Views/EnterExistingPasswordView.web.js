@@ -171,7 +171,6 @@ class EnterExistingPasswordView extends View
 				"change",
 				function(event)
 				{
-					console.log("change")
 					__updateRightBarButtonSubmittableByLayerContent()
 				}
 			)

@@ -274,7 +274,7 @@ class WalletsListView extends ListView
 		// so we update to return no right bar btn when there are no wallets as we show empty state action bar
 		self.navigationController.SetNavigationBarButtonsNeedsUpdate() // no animation
 		self.navigationController.SetNavigationBarTitleNeedsUpdate() // because it's derived from whether there are wallets
-		const isEmptyVisible = records.length === 0 && (self.context.passwordController.hasUserSavedAPassword == false || self.context.passwordController.HasUserEnteredValidPasswordYet())
+		const isEmptyVisible = records.length === 0 // This has been removed despite commit 490b69f6 bc it causes the empty/landing screen to be invisible when no records are present throughout the entire app (nothing to trigger PW entry) … I'm unable to reproduce what that commit was really fixing (showing the empty screen under pw entry on lock-down) : && (self.context.passwordController.hasUserSavedAPassword == false || self.context.passwordController.HasUserEnteredValidPasswordYet())
 		// ^-- passwordController state checked to avoid improperly showing empty screen when no records loaded but pw not yet entered
 		{
 			self.emptyStateContainerView.SetVisible(isEmptyVisible)
