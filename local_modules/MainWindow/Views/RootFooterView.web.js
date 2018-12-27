@@ -74,7 +74,7 @@ class RootFooterView extends View
 			const buttonLayer = self._new_linkButtonLayerElement("Support", importantLink_colorValue, function(e)
 			{
 				e.preventDefault()
-				window.open("https://mymonero.com:4000/?open_support=1", "_blank")
+				window.open("https://mymonero.com/?open_support=1", "_blank")
 				// shift to this when support can be brought directly back in:
 				// window.Intercom('show')
 				// previous:
