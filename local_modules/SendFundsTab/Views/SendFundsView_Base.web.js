@@ -265,12 +265,6 @@ class SendFundsView extends View
 		const div = pkg.containerLayer
 		div.style.paddingTop = "2px"
 		const labelLayer = pkg.labelLayer
-		{
-			const tooltipText = `Ring size value set to<br/>Monero default of ${monero_sendingFunds_utils.fixedRingsize()}.`
-			const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-			const layer = view.layer
-			labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
-		}
 		labelLayer.style.marginTop = "0"
 		self.amountInputLayer = pkg.valueLayer
 		self.amountInputLayer.addEventListener(
