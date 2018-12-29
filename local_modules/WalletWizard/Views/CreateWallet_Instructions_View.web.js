@@ -130,7 +130,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		])
 		list.push([
 			"Keep it secret and safe",
-			"If you save it to an insecure location, it may be viewable by other apps."
+			"If you save it to an insecure location, copy, screenshot, or email it, it may be viewable by other apps."
 		])
 		list.push([
 			"Use it like an actual wallet",
