@@ -158,7 +158,7 @@ class FundsRequestsListView extends ListView
 	//
 	Navigation_Title()
 	{
-		return "Monero Requests"
+		return "Receive Monero"
 	}
 	Navigation_New_RightBarButtonView()
 	{
