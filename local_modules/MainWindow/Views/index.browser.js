@@ -128,6 +128,10 @@ window.BootApp = function()
 			rootView.superlayer = superlayer
 			superlayer.appendChild(rootView.layer) // the `layer` is actually the DOM element
 		}
+		{ // and remove the loader (possibly fade this out)
+			const el = document.getElementById("loading-spinner")
+			el.parentNode.removeChild(el)
+		}
 	}).catch(function(e)
 	{
 		throw e
