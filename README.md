@@ -24,7 +24,7 @@
 
 See `LICENSE.txt` for license.
 
-All app source code and assets copyright © 2014-2018 by MyMonero. All rights reserved.
+All app source code and assets copyright © 2014-2019 by MyMonero. All rights reserved.
 
 
 ## Downloads
