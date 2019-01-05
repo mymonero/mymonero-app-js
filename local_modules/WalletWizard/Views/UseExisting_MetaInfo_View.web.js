@@ -104,6 +104,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					self.AWalletFieldInput_did_keyup(event) // defined on super
 				}
 			)
+			view.layer.addEventListener(
+				"change",
+				function(event)
+				{
+					self.AWalletFieldInput_did_keyup(event) // defined on super
+				}
+			)
+			view.layer.addEventListener(
+				"paste",
+				function(event)
+				{
+					setTimeout(function() {
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}, 300) // wait a little because value seems not to be readable otherwise
+				}
+			)
 		}
 		self.walletMnemonicField_layer = div
 		self.form_containerLayer.appendChild(div)
@@ -148,6 +164,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 						self.AWalletFieldInput_did_keyup(event) // defined on super
 					}
 				)
+				view.layer.addEventListener(
+					"change",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"paste",
+					function(event)
+					{
+						setTimeout(function() {
+							self.AWalletFieldInput_did_keyup(event) // defined on super
+						}, 300) // wait a little because value seems not to be readable otherwise
+					}
+				)
 			}
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
@@ -186,6 +218,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 						self.AWalletFieldInput_did_keyup(event) // defined on super
 					}
 				)
+				view.layer.addEventListener(
+					"change",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"paste",
+					function(event)
+					{
+						setTimeout(function() {
+							self.AWalletFieldInput_did_keyup(event) // defined on super
+						}, 300) // wait a little because value seems not to be readable otherwise
+					}
+				)
 			}
 			self.addrAndKeysFieldsContainerLayer.appendChild(div)
 		}
@@ -222,6 +270,22 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					function(event)
 					{
 						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"change",
+					function(event)
+					{
+						self.AWalletFieldInput_did_keyup(event) // defined on super
+					}
+				)
+				view.layer.addEventListener(
+					"paste",
+					function(event)
+					{
+						setTimeout(function() {
+							self.AWalletFieldInput_did_keyup(event) // defined on super
+						}, 300) // wait a little because value seems not to be readable otherwise
 					}
 				)
 			}
