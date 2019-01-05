@@ -559,6 +559,8 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 		// ^-- commented for now b/c users want to be able to copy it
 		valueLayer.style.userSelect = "all" // must allow copying, cause we're not displaying the COPY button 
 		valueLayer.style.webkitUserSelect = "all" 
+		valueLayer.style.mozUserSelect = "all"
+		valueLayer.style.msUserSelect = "all"
 		// }
 	}
 	if (isTruncatedPreviewForm == false) {

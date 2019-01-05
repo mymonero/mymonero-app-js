@@ -116,6 +116,8 @@ function New_MnemonicTextDisplayView(mnemonicString, context)
 	layer.style.color = "#9e9c9e"
 	layer.style.userSelect = "all" // decided to allow copying 
 	layer.style.webkitUserSelect = "all" // decided to allow copying 
+	layer.style.mozUserSelect = "all" // decided to allow copying 
+	layer.style.msUserSelect = "all" // decided to allow copying 
 	layer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
 	layer.innerHTML = mnemonicString
 	//
