@@ -214,10 +214,18 @@ class WalletsListView extends ListView
 	Navigation_Title()
 	{
 		const self = this
-		if (!self.listController.records || !self.listController.records.length) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
-			return "MyMonero"
+		if (self.context.isLiteApp == true) { // should come before check for 0 wallets
+			const logo_w = 30
+			const logo_h = 20
+			var backgroundCSS = "background-image: url(\""
+				+ self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath
+				+ "MainWindow/Resources/www_logo@3x.png\");"
+			backgroundCSS += `background-size: ${logo_w}px ${logo_h}px;`
+			backgroundCSS += `background-position: 0 10px;`
+			backgroundCSS += `background-repeat: no-repeat;`
+			return `<a href="https://mymonero.com" target="_blank" style="text-decoration: none; color: rgb(252, 251, 252); "><span style='width: ${logo_w}px; height: ${logo_h}px; display: inline-block; margin-right: 6px;'><span style='width: 30px; height: 30px; display: inline-block; ${backgroundCSS}'>&nbsp;</span></span>MyMonero</a>`
 		}
-		if (self.context.isLiteApp == true) {
+		if (!self.listController.records || !self.listController.records.length) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return "MyMonero"
 		}
 		return "Wallets"
