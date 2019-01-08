@@ -283,7 +283,7 @@ class WalletDetailsView extends View
 			//
 			const mnemonicSeed_fieldView = self._new_fieldBaseView("Secret Mnemonic", false, true)
 			self.mnemonicSeed_fieldView = mnemonicSeed_fieldView
-			mnemonicSeed_fieldView.SetWordBreakMode("break-word")
+			mnemonicSeed_fieldView.SetWordBreakMode("normal")
 			disclosedView.addSubview(mnemonicSeed_fieldView)
 		}
 		const infoDisclosingView = new InfoDisclosingView({
