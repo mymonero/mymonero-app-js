@@ -45,7 +45,12 @@
       "!local_modules/mymonero_core_js/src/**",
       "!**/*.browser.*",
       "!**/favicon*.png",
-      "!**/favicon*.ico"
+      "!**/favicon*.ico",
+      "!**/mstile*.png",
+      "!**/apple-touch-icon.png",
+      "!**/android-chrome*.png",
+      "!**/browserconfig.xml",
+      "!local_modules/MainWindow/Resources/favicon/manifest.json"
     ],
     "publish": [
       {
