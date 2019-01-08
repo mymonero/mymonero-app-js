@@ -32,7 +32,6 @@ const packageAssembly_utils = require('./shared/packageAssembly_utils.node')
 //
 const doNotCopyOrEnterFilepathsMatching =
 [
-	/\/(Contacts|RequestFunds)/, // Lite app does not include Contacts and FundsRequests
 	/actionButton_iconImage__(useCamera|chooseFile)/,
 	//
 	/^\.DS_Store$/,

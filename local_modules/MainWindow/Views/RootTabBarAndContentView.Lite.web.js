@@ -53,6 +53,18 @@ class RootTabBarAndContentView_Lite extends RootTabBarAndContentView_Base
 			const view = new SendTabContentView(options, context)
 			self.sendTabContentView = view
 		}
+		{
+			const options = {}
+			const RequestTabContentView = require('../../RequestFunds/Views/RequestTabContentView.Lite.web')
+			const view = new RequestTabContentView(options, context)
+			self.requestTabContentView = view
+		}
+		{
+			const options = {}
+			const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.Lite.web')
+			const view = new ContactsTabContentView(options, context)
+			self.contactsTabContentView = view
+		}
 		{ // SettingsView
 			const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
 			const view = new SettingsTabContentView({}, context)
@@ -62,6 +74,8 @@ class RootTabBarAndContentView_Lite extends RootTabBarAndContentView_Base
 			[
 				self.walletsTabContentView,
 				self.sendTabContentView,
+				self.requestTabContentView,
+				self.contactsTabContentView,
 				self.settingsTabContentView
 			]
 		)

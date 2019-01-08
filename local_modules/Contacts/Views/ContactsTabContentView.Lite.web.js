@@ -28,9 +28,10 @@
 //
 "use strict"
 //
-const RequestTabContentView_Base = require('./RequestTabContentView_Base.web')
+const ContactsTabContentView_Base = require('./ContactsTabContentView_Base.web')
+const ContactsDownloadAppEmptyScreenView = require('./ContactsDownloadAppEmptyScreenView.Lite.web')
 //
-class RequestTabContentView extends RequestTabContentView_Base
+class ContactsTabContentView extends ContactsTabContentView_Base
 {
 	constructor(options, context)
 	{
@@ -39,20 +40,14 @@ class RequestTabContentView extends RequestTabContentView_Base
 	setup()
 	{
 		super.setup() // we must call on super
+		//
 		const self = this
-		{ // walletsListView
-			const options = {}
-			const FundsRequestsListView = require('./FundsRequestsListView.web')
-			const view = new FundsRequestsListView(options, self.context)
-			self.fundsRequestsListView = view
-		}
-		{
-			self.SetStackViews(
-				[
-					self.fundsRequestsListView
-				]
-			)
-		}
+		const view = new ContactsDownloadAppEmptyScreenView({}, self.context)
+		self.SetStackViews(
+			[
+				view
+			]
+		)
 	}
 }
-module.exports = RequestTabContentView
+module.exports = ContactsTabContentView

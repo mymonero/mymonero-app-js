@@ -29,6 +29,7 @@
 "use strict"
 //
 const RequestTabContentView_Base = require('./RequestTabContentView_Base.web')
+const RequestsDownloadAppEmptyScreenView = require('./RequestsDownloadAppEmptyScreenView.Lite.web')
 //
 class RequestTabContentView extends RequestTabContentView_Base
 {
@@ -38,21 +39,15 @@ class RequestTabContentView extends RequestTabContentView_Base
 	}
 	setup()
 	{
-		super.setup() // we must call on super
 		const self = this
-		{ // walletsListView
-			const options = {}
-			const FundsRequestsListView = require('./FundsRequestsListView.web')
-			const view = new FundsRequestsListView(options, self.context)
-			self.fundsRequestsListView = view
-		}
-		{
-			self.SetStackViews(
-				[
-					self.fundsRequestsListView
-				]
-			)
-		}
+		super.setup() // we must call on super
+		//
+		const view = new RequestsDownloadAppEmptyScreenView({}, self.context)
+		self.SetStackViews(
+			[
+				view
+			]
+		)
 	}
 }
 module.exports = RequestTabContentView
