@@ -159,7 +159,7 @@ class Wallet extends EventEmitter
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false
 		self.wallet_currency = self.options.wallet_currency || wallet_currencies.xmr // default
-		if (self.options.generateNewWallet === false) { // if not generating new mnemonic seed -- which we will pick this up later in the corresponding Boot_*
+		if (self.options.generateNewWallet !== true) { // if not generating new mnemonic seed -- which we will pick this up later in the corresponding Boot_*
 			// First, for now, pre-boot, we'll simply await boot - no need to create a document yet
 			self.successfullyInitialized_cb();
 			return;
