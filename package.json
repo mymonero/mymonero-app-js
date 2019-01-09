@@ -2,7 +2,7 @@
   "name": "MyMonero",
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": "https://github.com/mymonero/mymonero-app-js",
   "private": false,
@@ -50,7 +50,8 @@
       "!**/apple-touch-icon.png",
       "!**/android-chrome*.png",
       "!**/browserconfig.xml",
-      "!local_modules/MainWindow/Resources/favicon/manifest.json"
+      "!local_modules/MainWindow/Resources/favicon/manifest.json",
+      "!local_modules/MainWindow/Resources/www_logo@3x.png"
     ],
     "publish": [
       {
