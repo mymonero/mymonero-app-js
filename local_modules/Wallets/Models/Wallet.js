@@ -38,6 +38,7 @@ const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/m
 const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
 const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
 const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
+const mnemonic_languages = require('../../mymonero_core_js/cryptonote_utils/mnemonic_languages')
 //
 const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const wallet_persistence_utils = require('./wallet_persistence_utils')
@@ -166,6 +167,10 @@ class Wallet extends EventEmitter
 		}
 		function _createWithLocale(currentLocale/*TODO rename*/)
 		{
+			var compatibleLocaleCode = mnemonic_languages.compatible_code_from_locale(currentLocale)
+			if (compatibleLocaleCode == null) {
+				compatibleLocaleCode = "en" // fall back to English
+			}
 			//
 			// NOTE: the wallet needs to be imported to the hosted API (e.g. MyMonero) for the hosted API stuff to work
 			// case I: user is inputting mnemonic string
@@ -173,7 +178,7 @@ class Wallet extends EventEmitter
 			// case III: we're creating a new wallet
 			try {
 				const ret = self.context.monero_utils.newly_created_wallet(
-					currentLocale,
+					compatibleLocaleCode,
 					self.context.nettype
 				);
 				self.mnemonic_wordsetName = ret.mnemonic_language;  // newly_created_wallet converts locale language code to mnemonic language for us
