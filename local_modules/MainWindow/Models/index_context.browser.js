@@ -83,7 +83,9 @@ function NewHydratedContext(initialContext)
 		{
 			module: require("../../HostedMoneroAPIClient/BackgroundResponseParser.web"),
 			instance_key: "backgroundAPIResponseParser",
-			options: {}
+			options: {
+				coreBridge_instance: initialContext.monero_utils // the same as coreBridge_instance
+			}
 		},
 		{
 			module: require("../../HostedMoneroAPIClient/HostedMoneroAPIClient.Lite"),

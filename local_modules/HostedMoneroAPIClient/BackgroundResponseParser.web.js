@@ -31,12 +31,16 @@
 // In the future this could implement web workers
 const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
 const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
-const coreBridge_promise = require('../mymonero_core_js/monero_utils/MyMoneroCoreBridge')({});
 //
 class BackgroundResponseParser
 {
 	constructor(options, context)
 	{
+		if (typeof options.coreBridge_instance == 'undefined' || options.coreBridge_instance == null) {
+			throw "BackgroundResponseParser.web expected options.coreBridge_instance"
+		}
+		const self = this
+		self.coreBridge_instance = options.coreBridge_instance
 	}
 	//
 	// Runtime - Accessors - Interface
@@ -49,21 +53,19 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		coreBridge_promise.then(function(coreBridge_instance)
-		{
-			response_parser_utils.Parsed_AddressInfo__keyImageManaged(
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private,
-				coreBridge_instance,
-				function(err, returnValuesByKey)
-				{
-					fn(err, returnValuesByKey)
-				}
-			)
-		})
+		const self = this
+		response_parser_utils.Parsed_AddressInfo__keyImageManaged(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			self.coreBridge_instance,
+			function(err, returnValuesByKey)
+			{
+				fn(err, returnValuesByKey)
+			}
+		)
 	}
 	Parsed_AddressTransactions(
 		data,
@@ -73,21 +75,19 @@ class BackgroundResponseParser
 		spend_key__private,
 		fn //: (err?, returnValuesByKey?) -> Void
 	) {
-		coreBridge_promise.then(function(coreBridge_instance)
-		{
-			response_parser_utils.Parsed_AddressTransactions__keyImageManaged(
-				data,
-				address,
-				view_key__private,
-				spend_key__public,
-				spend_key__private,
-				coreBridge_instance,
-				function(err, returnValuesByKey)
-				{
-					fn(err, returnValuesByKey)
-				}
-			)
-		})
+		const self = this
+		response_parser_utils.Parsed_AddressTransactions__keyImageManaged(
+			data,
+			address,
+			view_key__private,
+			spend_key__public,
+			spend_key__private,
+			self.coreBridge_instance,
+			function(err, returnValuesByKey)
+			{
+				fn(err, returnValuesByKey)
+			}
+		)
 	}
 	//
 	DeleteManagedKeyImagesForWalletWith(
