@@ -103,6 +103,10 @@ class FundsRequestQRDisplayView extends View
 		layer.style.paddingBottom = "10px" // for spacing
 		layer.style.color = "#9E9C9E"
 		layer.style.fontSize = "13px"
+		layer.style.webkitUserSelect = "all"
+		layer.style.MozUserSelect = "all"
+		layer.style.msUserSelect = "all"
+		layer.style.userSelect = "all"
 		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		var innerHTML = ""
 		{
@@ -110,17 +114,6 @@ class FundsRequestQRDisplayView extends View
 			let amount = self.initializing__fundsRequest.amount
 			let amountCcySymbol = self.initializing__fundsRequest.amountCcySymbol || Currencies.ccySymbolsByCcy.XMR
 			let to_address = self.initializing__fundsRequest.to_address
-			var middleTruncatedString = function(fullStr, numFrontChars, numEndChars, separator)
-			{
-				separator = separator || '...';
-				//
-				if (fullStr.length <= (numFrontChars.length + numEndChars.length)) {
-					return fullStr;
-				}
-				return fullStr.substr(0, numFrontChars) + 
-					separator + 
-					fullStr.substr(fullStr.length - numEndChars);
-			};
 			innerHTML = "Scan this code to send "
 			if (amount) {
 				innerHTML += amount + " " + amountCcySymbol
@@ -131,9 +124,9 @@ class FundsRequestQRDisplayView extends View
 				innerHTML += "Monero"
 			}
 			if (payment_id != null && payment_id != "" && typeof payment_id !== "undefined") {
-				innerHTML += " with payment ID " + middleTruncatedString(payment_id, 10, 6, "…")
+				innerHTML += " with payment ID " + payment_id
 			}
-			innerHTML += " to " + middleTruncatedString(to_address, 10, 6, "…")
+			innerHTML += " to " + to_address
 			innerHTML += "."
 		}
 		layer.innerHTML = innerHTML
@@ -143,17 +136,74 @@ class FundsRequestQRDisplayView extends View
 	_setup_qrCodeImageLayer()
 	{
 		const self = this
+		const container = document.createElement('div')
+		container.style.width = "66%"
+		container.style.height = "auto"
+		container.style.maxWidth = "380px"
+		container.style.display = "inline-block" // margin: '0 auto' didn't work
+		container.style.margin = "0"
+		//
 		let imgDataURIString = self.initializing__fundsRequest.qrCode_imgDataURIString
+
+		{ // right
+			const buttonLayer = commonComponents_tables.New_customButton_aLayer(
+				self.context, 
+				"SAVE",
+				true, // isEnabled, defaulting to true on undef
+				function()
+				{
+					buttonLayer.Component_SetEnabled(false)
+					self.context.userIdleInWindowController.TemporarilyDisable_userIdle() // TODO: this is actually probably a bad idea - remove this and ensure that file picker canceled on app teardown
+					// ^ so we don't get torn down while dialog open
+					function __trampolineFor_didFinish()
+					{ // ^ essential we call this from now on if we are going to finish with this codepath / exec control
+						buttonLayer.Component_SetEnabled(true)
+						self.context.userIdleInWindowController.ReEnable_userIdle()
+					}
+					self.context.filesystemUI.PresentDialogToSaveBase64ImageStringAsImageFile(
+						imgDataURIString,
+						"Save Monero Request",
+						"Monero request",
+						function(err)
+						{
+							if (err) {
+								const errString = err.message 
+									? err.message 
+									: err.toString() 
+										? err.toString() 
+										: ""+err
+								navigator.notification.alert(
+									errString, 
+									function() {}, // nothing to do 
+									"Error", 
+									"OK"
+								)
+								__trampolineFor_didFinish()
+								return
+							}
+							// console.log("Downloaded QR code")
+							__trampolineFor_didFinish() // re-enable idle timer
+						}
+					)
+				}
+			);
+			buttonLayer.style.float = "right"
+			buttonLayer.style.marginRight = "0"
+			buttonLayer.style.marginBottom = "11px"
+			container.appendChild(buttonLayer)
+		}
+		container.appendChild(commonComponents_tables.New_clearingBreakLayer())
+
 		const layer = commonComponents_tables.New_fieldValue_base64DataImageLayer(
 			imgDataURIString, 
 			self.context
 		)
-		layer.style.width = "66%"
+		layer.style.width = "100%"
 		layer.style.height = "auto"
-		layer.style.maxWidth = "380px"
-		layer.style.display = "inline-block" // margin: '0 auto' didn't work
 		layer.style.margin = "0"
-		self.layer.appendChild(layer)
+
+		container.appendChild(layer)
+		self.layer.appendChild(container)
 	}
 	//
 	// Runtime - Accessors - Navigation
