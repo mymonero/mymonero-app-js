@@ -442,7 +442,7 @@ class SendFundsView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.display = "none" // initial
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ENTER PAYMENT ID OR&nbsp;", self.context)
 			labelLayer.style.marginTop = "4px"
 			labelLayer.style.width = "auto"
 			labelLayer.style.display = "inline-block"
@@ -450,7 +450,7 @@ class SendFundsView extends View
 			div.appendChild(labelLayer)
 			{
 				const generateButtonView = commonComponents_tables.New_clickableLinkButtonView(
-					"Generate", 
+					"GENERATE ONE", 
 					self.context, 
 					function()
 					{
@@ -460,8 +460,6 @@ class SendFundsView extends View
 				const generateButtonView_layer = generateButtonView.layer
 				generateButtonView_layer.style.margin = "4px 9px 0 0" 
 				generateButtonView_layer.style.display = "inline-block"
-				generateButtonView_layer.style.float = "right"
-				generateButtonView_layer.style.clear = "none"
 				div.appendChild(generateButtonView_layer)
 			}
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
