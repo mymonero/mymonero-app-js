@@ -319,10 +319,17 @@ class MenuController extends MenuController_Abstract
 					type: 'separator'
 				},
 				{
+					label: 'Help Center',
+					click: function(menuItem, browserWindow, event)
+					{
+						shell.openExternal('https://intercom.help/mymonero')
+					}
+				},
+				{
 					label: 'Support',
 					click: function(menuItem, browserWindow, event)
 					{
-						shell.openExternal('https://mymonero.com/#/support')
+						shell.openExternal('https://mymonero.com/?open_support=1')
 					}
 				},
 				{
@@ -332,14 +339,14 @@ class MenuController extends MenuController_Abstract
 					label: 'Privacy Policy',
 					click: function(menuItem, browserWindow, event)
 					{
-						shell.openExternal('https://mymonero.com/#/privacy-policy')
+						shell.openExternal('https://mymonero.com/privacy')
 					}
 				},
 				{
 					label: 'Terms of Use',
 					click: function(menuItem, browserWindow, event)
 					{
-						shell.openExternal('https://mymonero.com/#/terms')
+						shell.openExternal('https://mymonero.com/terms')
 					}
 				}
 			]
