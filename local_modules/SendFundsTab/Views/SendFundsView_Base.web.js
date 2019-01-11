@@ -444,8 +444,26 @@ class SendFundsView extends View
 		{
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("PAYMENT ID", self.context)
 			labelLayer.style.marginTop = "4px"
+			labelLayer.style.width = "auto"
+			labelLayer.style.display = "inline-block"
+			labelLayer.style.float = "left"
 			div.appendChild(labelLayer)
-			//
+			{
+				const generateButtonView = commonComponents_tables.New_clickableLinkButtonView(
+					"Generate", 
+					self.context, 
+					function()
+					{
+						self.manualPaymentIDInputLayer.value = self.context.monero_utils.new_payment_id()
+					}
+				)
+				const generateButtonView_layer = generateButtonView.layer
+				generateButtonView_layer.style.margin = "4px 9px 0 0" 
+				generateButtonView_layer.style.display = "inline-block"
+				generateButtonView_layer.style.float = "right"
+				generateButtonView_layer.style.clear = "none"
+				div.appendChild(generateButtonView_layer)
+			}
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "A specific payment ID"
 			})
