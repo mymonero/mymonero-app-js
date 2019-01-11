@@ -549,7 +549,7 @@ class ImportTransactionsModalView extends View
 					{
 						self.informationalHeaderLayer.innerHTML = `This requires a one-time import fee of ${raw_formattedMoney} XMR`
 						//
-						const tooltipText = `Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process places heavy load on the server, import is triggered by sending a fee with the specific payment ID below to the server at e.g. ${self.approximate_importOAAddress}.`
+						const tooltipText = `Importing your wallet means the server will scan the entire Monero blockchain for your wallet's past transactions, then stay up-to-date.<br/><br/>As this process places heavy load on the server, import is triggered by sending a fee (e.g. from the original wallet) with the specific payment ID below to the server at e.g. ${self.approximate_importOAAddress}.`
 						const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
 						const layer = view.layer
 						self.informationalHeaderLayer.appendChild(layer) // we can append straight to layer as we don't ever change its innerHTML after this
