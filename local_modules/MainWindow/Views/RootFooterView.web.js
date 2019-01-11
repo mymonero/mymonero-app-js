@@ -60,13 +60,13 @@ class RootFooterView extends View
 		self.layer.appendChild(self._new_linkButtonLayerElement("Privacy", utilityLink_colorValue, function(e)
 		{
 			e.preventDefault()
-			window.open('https://www.mymonero.com/#/privacy-policy', '_blank') // new tab
+			window.open('https://www.mymonero.com/privacy', '_blank') // new tab
 			return false;
 		}))
 		self.layer.appendChild(self._new_linkButtonLayerElement("Terms", utilityLink_colorValue, function(e)
 		{
 			e.preventDefault()
-			window.open('https://www.mymonero.com/#/terms', '_blank') // new tab
+			window.open('https://www.mymonero.com/terms', '_blank') // new tab
 			return false;
 		}))
 		//
@@ -84,7 +84,7 @@ class RootFooterView extends View
 				return false;
 			})
 			buttonLayer.style.float = "right"
-			buttonLayer.style.marginRight = "24px"
+			buttonLayer.style.marginRight = "42px"
 			self.layer.appendChild(buttonLayer)
 		}
 	}
@@ -102,7 +102,7 @@ class RootFooterView extends View
 		a.style.userSelect = "none"
 		self.context.themeController.StyleLayer_FontAsSmallRegularSansSerif(a)
 		a.style.webkitTapHighlightColor = "rgba(0,0,0,0)" 
-		a.style.margin = "0 8px 0 24px"
+		a.style.margin = "0 8px 0 42px"
 		a.style.lineHeight = self.layer.style.height 
 		a.style.height = self.layer.style.height 
 		a.style.display = "inline-block"
