@@ -51,15 +51,15 @@ class WalletsListController extends WalletsListController_Base
 	//
 	//
 	CreateNewWallet_NoBootNoListAdd(
-		fn // fn: (err: Error?, walletInstance: Wallet) -> Void
-	)
-	{
+		fn, // fn: (err: Error?, walletInstance: Wallet) -> Void
+		optl_locale_code
+	) {
 		const self = this
 		if (self.records.length > 0) {
 			fn(new Error("Browser app only supports one wallet at a time"))
 			return
 		}
-		super.CreateNewWallet_NoBootNoListAdd(fn)
+		super.CreateNewWallet_NoBootNoListAdd(fn, optl_locale_code)
 	}	
 	WhenBooted_ObtainPW_AddNewlyGeneratedWallet(
 		walletInstance,
@@ -67,8 +67,7 @@ class WalletsListController extends WalletsListController_Base
 		swatch,
 		fn, // fn: (err: Error?, walletInstance: Wallet) -> Void
 		optl__userCanceledPasswordEntry_fn
-	)
-	{
+	) {
 		const self = this
 		if (self.records.length > 0) {
 			fn(new Error("Browser app only supports one wallet at a time"))
