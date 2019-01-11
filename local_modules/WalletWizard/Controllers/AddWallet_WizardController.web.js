@@ -28,6 +28,8 @@
 //
 "use strict"
 //
+const mnemonic_languages = require('../../mymonero_core_js/cryptonote_utils/mnemonic_languages')
+//
 const WizardTask_Modes =
 {
 	FirstTime_CreateWallet: "FirstTime_CreateWallet",
@@ -319,8 +321,12 @@ class AddWallet_WizardController
 		optl_locale_code
 	) {
 		const self = this
-		function _with(locale_code)
+		function _with(raw__locale_code)
 		{
+			var compatibleLocaleCode = mnemonic_languages.compatible_code_from_locale(raw__locale_code)
+			if (compatibleLocaleCode == null) {
+				compatibleLocaleCode = "en" // fall back to English
+			}
 			self.context.walletsListController.CreateNewWallet_NoBootNoListAdd(
 				function(err, walletInstance)
 				{
@@ -328,11 +334,11 @@ class AddWallet_WizardController
 						fn(err)
 						return
 					}
-					self.currentWalletUsedLocaleCode = locale_code // so it can be accessed by consumers
+					self.currentWalletUsedLocaleCode = compatibleLocaleCode // so it can be accessed by consumers
 					self.walletInstance = walletInstance
 					fn()
 				},
-				locale_code
+				compatibleLocaleCode
 			)
 		}
 		if (optl_locale_code && typeof optl_locale_code != 'undefined') {
