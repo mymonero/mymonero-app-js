@@ -701,20 +701,24 @@ class Wallet extends EventEmitter
 		const n_transactions = (self.transactions || []).length;
 		for (let i = 0 ; i < n_transactions ; i++) {
 			const existing_tx = self.transactions[i];
-			const msSinceCreation = timeNow - existing_tx.timestamp.getTime()
-			if (msSinceCreation < 0) {
-				throw "Expected non-negative msSinceCreation"
-			}
-			if (msSinceCreation > oneDayAndABit_ms) {
-				if (self.IsTransactionConfirmed(existing_tx) == false
-					|| existing_tx.mempool == true) {
-					if (existing_tx.isFailed != true/*already*/) { 
-						console.log("Marking transaction as dead: ", existing_tx)
-						//
-						didChangeAny = true;
-						existing_tx.isFailed = true;  // this flag does not need to get preserved on existing_txs when overwritten by an incoming_tx because if it's returned by the server, it can't be dead
+			if (typeof existing_tx.timestamp !== 'undefined' && existing_tx.timestamp) {
+				const msSinceCreation = timeNow - existing_tx.timestamp.getTime()
+				if (msSinceCreation < 0) {
+					throw "Expected non-negative msSinceCreation"
+				}
+				if (msSinceCreation > oneDayAndABit_ms) {
+					if (self.IsTransactionConfirmed(existing_tx) == false
+						|| existing_tx.mempool == true) {
+						if (existing_tx.isFailed != true/*already*/) { 
+							console.log("Marking transaction as dead: ", existing_tx)
+							//
+							didChangeAny = true;
+							existing_tx.isFailed = true;  // this flag does not need to get preserved on existing_txs when overwritten by an incoming_tx because if it's returned by the server, it can't be dead
+						}
 					}
 				}
+			} else {
+				console.warn("Expected non-nil existing_tx.timestamp")
 			}
 		}
 		if (didChangeAny) {
