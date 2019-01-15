@@ -666,17 +666,34 @@ class WalletDetailsView extends View
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
-		if (self.context.isLiteApp == true) {
-			return null // no need for this screen - although the log out button is nice
-		}
 		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
+		if (self.context.isLiteApp == true) {
+			view.layer.innerHTML = "Log&nbsp;Out"
+			view.layer.style.width = "64px"
+		}
 		const layer = view.layer
 		layer.addEventListener(
 			"click",
 			function(e)
 			{
 				e.preventDefault()
-				{ // v--- self.navigationController because self is presented packaged in a StackNavigationView				
+				if (self.context.isLiteApp == true) {
+					self.context.windowDialogs.PresentQuestionAlertDialogWith(
+						'Log out?',
+						'Are you sure you want to log out?',
+						'Log Out',
+						'Cancel',
+						function(err, didChooseYes)
+						{
+							if (err) {
+								throw err
+							}
+							if (didChooseYes) {
+								self.context.passwordController.InitiateDeleteEverything(function(err) {})
+							}
+						}
+					)
+				} else { // v--- self.navigationController because self is presented packaged in a StackNavigationView
 					const EditWalletView = require('./EditWalletView.web')
 					const view = new EditWalletView({
 						wallet: self.wallet
