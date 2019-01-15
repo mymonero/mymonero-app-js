@@ -32,6 +32,7 @@ const View = require('../Views/View.web')
 const Views__cssRules = require('../Views/cssRules.web')
 //
 const activityIndicators = require('./activityIndicators.web')
+const commonComponents_forms = require('./forms.web')
 //
 const NamespaceName = "Tables"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
@@ -506,6 +507,8 @@ function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVi
 		} else {
 			closeBtnLayer.style.display = "block"
 			layer.classList.add("wantsCloseButton")
+			//
+			commonComponents_forms._shared_scrollConformingElementIntoView(layer) // so that it becomes visible - sometimes users on mobile browsers miss this
 		}
 	}
 	layer.ClearAndHideMessage = function()
