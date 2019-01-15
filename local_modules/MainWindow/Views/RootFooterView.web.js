@@ -49,48 +49,55 @@ class RootFooterView extends View
 		const primaryUtilityLink_colorValue = "rgb(250, 246, 250)"
 		const utilityLink_colorValue = "rgb(140, 136, 140)"
 		const importantLink_colorValue = "#11bbec"
-
+		const table = document.createElement("table")
+		table.style.border = "none"
+		table.style.padding = "0"
+		table.style.margin = "0"
+		table.style.width = "100%"
+		table.style.maxWidth = "400px"
+		const tr = document.createElement("tr")
+		table.appendChild(tr)
+		layer.appendChild(table)
 		//
-		self.layer.appendChild(self._new_linkButtonLayerElement("Home", primaryUtilityLink_colorValue, function(e)
+		tr.appendChild(self._new_linkButtonLayerElement("Home", primaryUtilityLink_colorValue, function(e)
 		{
 			e.preventDefault()
 			window.open('https://www.mymonero.com/', '_blank') // new tab
 			return false;
 		}))
-		self.layer.appendChild(self._new_linkButtonLayerElement("Privacy", utilityLink_colorValue, function(e)
+		tr.appendChild(self._new_linkButtonLayerElement("Privacy", utilityLink_colorValue, function(e)
 		{
 			e.preventDefault()
 			window.open('https://www.mymonero.com/privacy', '_blank') // new tab
 			return false;
 		}))
-		self.layer.appendChild(self._new_linkButtonLayerElement("Terms", utilityLink_colorValue, function(e)
+		tr.appendChild(self._new_linkButtonLayerElement("Terms", utilityLink_colorValue, function(e)
 		{
 			e.preventDefault()
 			window.open('https://www.mymonero.com/terms', '_blank') // new tab
 			return false;
 		}))
-		//
+		tr.appendChild(self._new_linkButtonLayerElement("Support", importantLink_colorValue, function(e)
 		{
-			const buttonLayer = self._new_linkButtonLayerElement("Support", importantLink_colorValue, function(e)
-			{
-				e.preventDefault()
-				window.open("https://mymonero.com/?open_support=1", "_blank")
-				// shift to this when support can be brought directly back in:
-				// window.Intercom('show')
-				// previous:
-				// window.Intercom('update', {
-				// 	hide_default_launcher: false
-				// })
-				return false;
-			})
-			buttonLayer.style.float = "right"
-			buttonLayer.style.marginRight = "42px"
-			self.layer.appendChild(buttonLayer)
-		}
+			e.preventDefault()
+			window.open("https://mymonero.com/?open_support=1", "_blank")
+			// shift to this when support can be brought directly back in:
+			// window.Intercom('show')
+			// previous:
+			// window.Intercom('update', {
+			// 	hide_default_launcher: false
+			// })
+			return false;
+		}))
 	}
 	_new_linkButtonLayerElement(title, colorValue, click_handler_fn)
 	{
 		const self = this
+		//
+		const td = document.createElement("td")
+		td.style.maxWdth = "80px"
+		td.width = "25%"
+		td.align = "center"
 		//
 		const a = document.createElement("a")
 		a.innerHTML = `<span>${title}</span>`
@@ -102,34 +109,17 @@ class RootFooterView extends View
 		a.style.userSelect = "none"
 		self.context.themeController.StyleLayer_FontAsSmallRegularSansSerif(a)
 		a.style.webkitTapHighlightColor = "rgba(0,0,0,0)" 
-		a.style.margin = "0 8px 0 42px"
-		a.style.lineHeight = self.layer.style.height 
-		a.style.height = self.layer.style.height 
+		a.style.margin = "0"
+		a.style.width = "auto"
+		a.style.maxWidth = "82px"
+		a.style.lineHeight = "28px"
+		a.style.height = "32px"
 		a.style.display = "inline-block"
-		// a.style.width = "auto"
-		// a.style.display = "block"
-		// a.style.clear = "both"
-
-		// a.addEventListener("mouseenter", function()
-		// {
-		// 	if (view.isEnabled !== false) {
-		// 		a.style.textDecoration = "underline"
-		// 	} else {
-		// 		a.style.textDecoration = "none"
-		// 	}
-		// 	if (view.isEnabled !== false) {
-		// 		mouseEnter_fn()
-		// 	}
-		// })
-		// a.addEventListener("mouseleave", function()
-		// {	// note going to check enabled here cause mouseleave may be needed
-		// 	// to reset element to its neutral state after having been deactivated
-		// 	a.style.textDecoration = "none"
-		// 	mouseLeave_fn()
-		// })
+		a.style.padding = "0"
 		a.addEventListener("click", click_handler_fn)
+		td.appendChild(a)
 		//
-		return a
+		return td
 	}
 }
 module.exports = RootFooterView
