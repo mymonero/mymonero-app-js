@@ -386,7 +386,7 @@ class SendFundsView extends View
 			fieldContainerLayer.style.display = "none" // initial state
 			{
 				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("MONERO ADDRESS", self.context)
-				labelLayer.style.marginTop = "6px" // instead of 15
+				labelLayer.style.marginTop = "12px" // instead of 15
 				fieldContainerLayer.appendChild(labelLayer)
 				//
 				const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar("", self.context) // zero val for now
@@ -442,13 +442,17 @@ class SendFundsView extends View
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.display = "none" // initial
 		{
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ENTER PAYMENT ID OR&nbsp;", self.context)
-			labelLayer.style.marginTop = "4px"
-			labelLayer.style.width = "auto"
-			labelLayer.style.display = "inline-block"
-			labelLayer.style.float = "left"
-			div.appendChild(labelLayer)
+			const labelRowContainer = document.createElement("div")
+			labelRowContainer.style.margin = "0 0 8px 0" 
 			{
+				const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("ENTER PAYMENT ID OR&nbsp;", self.context)
+				labelLayer.style.marginTop = "0"
+				labelLayer.style.marginBottom = "0"
+				labelLayer.style.width = "auto"
+				labelLayer.style.display = "inline"
+				labelLayer.style.float = "none"
+				labelRowContainer.appendChild(labelLayer)
+				//
 				const generateButtonView = commonComponents_tables.New_clickableLinkButtonView(
 					"GENERATE ONE", 
 					self.context, 
@@ -458,10 +462,14 @@ class SendFundsView extends View
 					}
 				)
 				const generateButtonView_layer = generateButtonView.layer
-				generateButtonView_layer.style.margin = "4px 9px 0 0" 
-				generateButtonView_layer.style.display = "inline-block"
-				div.appendChild(generateButtonView_layer)
+				generateButtonView_layer.style.margin = "0" 
+				generateButtonView_layer.style.display = "inline"
+				generateButtonView_layer.style.float = "none"
+				generateButtonView_layer.style.clear = "none"
+				labelRowContainer.appendChild(generateButtonView_layer)
 			}
+			div.appendChild(labelRowContainer)
+			//
 			const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
 				placeholderText: "A specific payment ID"
 			})
