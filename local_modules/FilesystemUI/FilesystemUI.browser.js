@@ -28,28 +28,29 @@
 //
 "use strict"
 //
-class FilesystemUI_Abstract
+const FilesystemUI_Abstract = require('./FilesystemUI_Abstract')
+//
+class FilesytemUI extends FilesystemUI_Abstract
 {
 	constructor(options, context)
 	{
-		const self = this
-		{
-			self.options = options
-			self.context = context
-		}
+		super(options, context)
 	}
 	//
 	//
+	// Runtime - Accessors - Lookups - IPC - Main window
+	//
+	
+	//
+	//
 	// Runtime - Imperatives - Dialogs - Save
-	// 
 	PresentDialogToSaveBase64ImageStringAsImageFile(
 		imgData_base64String,
+		title,
+		defaultFilename_sansExt,
 		fn // (err?) -> Void
 	) {
-		const self = this
-		const errStr = "Override PresentDialogToSaveBase64ImageStringAsImageFile in " + self.constructor.name
-		fn(new Error(errStr))
-		throw errStr // to break development builds
+		alert("Code fault: PresentDialogToSaveBase64ImageStringAsImageFile not yet implemented")
 	}
 	PresentDialogToSaveTextFile(
 		contentString, 
@@ -57,25 +58,32 @@ class FilesystemUI_Abstract
 		defaultFilename_sansExt,
 		ext,
 		fn,
-		optl_uriContentPrefix // this can be undefined for electron since we're saving the file directly
+		optl_uriContentPrefix
 	) {
-		const self = this
-		const errStr = "Override PresentDialogToSaveTextFile in " + self.constructor.name
-		fn(new Error(errStr))
-		throw errStr // to break development builds
+		if (typeof optl_uriContentPrefix == 'undefined' || !optl_uriContentPrefix) {
+			throw "PresentDialogToSaveTextFile expected optl_uriContentPrefix"
+		}
+		const uriContent = optl_uriContentPrefix + contentString;
+		var encodedUri = encodeURI(uriContent);
+		var link = document.createElement("a");
+		link.style.visibility = "hidden"
+		link.setAttribute("href", encodedUri);
+		link.setAttribute("download", `${defaultFilename_sansExt}.${ext}`);
+		document.body.appendChild(link); // Required for FF
+		//
+		link.click(); 
+		//
+		link.parentNode.removeChild(link);
 	}
 	//
 	//
 	// Runtime - Imperatives - Dialogs - Open
 	//
 	PresentDialogToOpenOneImageFile(
+		title,
 		fn // (err?, absoluteFilePath?) -> Void
-	)
-	{
-		const self = this
-		const errStr = "Override PresentDialogToOpenOneImageFile in " + self.constructor.name
-		fn(new Error(errStr))
-		throw errStr // to break development builds
+	) {
+		alert("Code fault: PresentDialogToOpenOneImageFile not yet implemented")
 	}
 }
-module.exports = FilesystemUI_Abstract
+module.exports = FilesytemUI

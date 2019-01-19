@@ -46,14 +46,12 @@ class FilesytemUI extends FilesystemUI_Abstract
 	//
 	//
 	// Runtime - Imperatives - Dialogs - Save
-	// 
 	PresentDialogToSaveBase64ImageStringAsImageFile(
 		imgData_base64String,
 		title,
 		defaultFilename_sansExt,
 		fn // (err?) -> Void
-	)
-	{
+	) {
 		const self = this
 		//
 		var ext = imgData_base64String.split(';')[0].match(/jpeg|png|gif/)[0]
@@ -97,6 +95,49 @@ class FilesytemUI extends FilesystemUI_Abstract
 			}
 		)
 	}
+	PresentDialogToSaveTextFile(
+		contentString, 
+		title,
+		defaultFilename_sansExt,
+		ext,
+		fn,
+		optl_uriContentPrefix // this can be undefined for electron since we're saving the file directly
+	) {
+		var buffer = new Buffer(contentString, 'utf8')
+		const extensions = [ ext ]
+		const remote = require('electron').remote
+		const dialog = remote.dialog
+		const electronWindow = remote.getCurrentWindow()
+		const options = 
+		{
+			title: title || "Save File",
+			defaultPath: `${defaultFilename_sansExt || "file"}.${ext}`,
+			filters: [
+				{ name: 'CSVs', extensions: [ ext ] },
+			]
+		}
+		dialog.showSaveDialog(
+			electronWindow,
+			options,
+			function(path)
+			{
+				if (path === undefined){
+					console.log("No path. Canceled?")
+					fn(null)
+					return
+				}
+				console.log("Saving to path", path)
+				fs.writeFile(
+					path,
+					buffer,
+					function(err)
+					{
+						fn(err)
+					}
+				)
+			}
+		)
+	}
 	//
 	//
 	// Runtime - Imperatives - Dialogs - Open
@@ -104,8 +145,7 @@ class FilesytemUI extends FilesystemUI_Abstract
 	PresentDialogToOpenOneImageFile(
 		title,
 		fn // (err?, absoluteFilePath?) -> Void
-	)
-	{
+	) {
 		const self = this
 		//
 		const remote = require('electron').remote
