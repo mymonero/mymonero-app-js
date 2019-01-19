@@ -410,10 +410,6 @@ class WalletDetailsView extends View
 		transactionsListLayerContainerLayer.style.position = "relative"
 		transactionsListLayerContainerLayer.style.left = "0"
 		transactionsListLayerContainerLayer.style.top = "0"
-		transactionsListLayerContainerLayer.style.userSelect ="all"
-		transactionsListLayerContainerLayer.style.mozUserSelect ="all"
-		transactionsListLayerContainerLayer.style.webkitUserSelect ="all"
-		transactionsListLayerContainerLayer.style.msUserSelect ="all"
 		self.transactionsListLayerContainerLayer = transactionsListLayerContainerLayer
 		self.layer.appendChild(transactionsListLayerContainerLayer)
 		//
@@ -724,6 +720,20 @@ class WalletDetailsView extends View
 		//
 		return bootFailed
 	}
+	_wallet_shouldShowExportCSVBtn()
+	{
+		const self = this
+		if (self._wallet_bootFailed()) {
+			return false
+		}
+		if (self.wallet.HasEverFetched_transactions() !== true) {
+			return false
+		}
+		if (self.wallet.New_StateCachedTransactions().length == 0) {
+			return false
+		}
+		return true
+	}
 	_wallet_shouldShowImportTxsBtn()
 	{
 		const self = this
@@ -861,7 +871,7 @@ class WalletDetailsView extends View
 		}
 		const listContainerLayer = document.createElement("div")
 		self.transactions_listContainerLayer = listContainerLayer
-		listContainerLayer.style.margin = `16px 0 40px 0` // when we add 'Load more' btn, 40->16
+		listContainerLayer.style.margin = `16px 0 16px 0`
 		listContainerLayer.style.background = "#383638"
 		if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
 			listContainerLayer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
@@ -1034,6 +1044,7 @@ class WalletDetailsView extends View
 				if (self.importTransactionsButtonView.layer.parentNode) {
 					self.importTransactionsButtonView.layer.parentNode.removeChild(self.importTransactionsButtonView.layer)
 				}
+				self.importTransactionsButtonView = null
 			}
 		}
 		var shouldShowActivityIndicator = 
@@ -1122,6 +1133,30 @@ class WalletDetailsView extends View
 			}
 		}
 		self.__configure_noTransactions_emptyStateView_height()
+		//
+		if (self._wallet_shouldShowExportCSVBtn()) {
+			if (!self.exportCSVButtonView || typeof self.exportCSVButtonView === 'undefined') {
+				const buttonView = commonComponents_tables.New_clickableLinkButtonView(
+					"EXPORT CSV",
+					self.context, 
+					function()
+					{
+						self._exportTransactionsCSV()
+					}
+				)
+				buttonView.layer.style.marginBottom = "24px"
+				self.exportCSVButtonView = buttonView
+				// this is ~insertAfter:
+				self.transactionsListLayerContainerLayer.appendChild(buttonView.layer);
+			}
+		} else {
+			if (self.exportCSVButtonView) {
+				if (self.exportCSVButtonView.layer.parentNode) {
+					self.exportCSVButtonView.layer.parentNode.removeChild(self.exportCSVButtonView.layer)
+				}
+				self.exportCSVButtonView = null
+			}
+		}
 	}
 	__configure_noTransactions_emptyStateView_height()
 	{
@@ -1206,6 +1241,70 @@ class WalletDetailsView extends View
 		const navigationView = new StackAndModalNavigationView({}, self.context)
 		navigationView.SetStackViews([ view ])
 		self.navigationController.PresentView(navigationView, true)
+	}
+	//
+	// Imperatives - Button functions - CSV export
+	_exportTransactionsCSV()
+	{
+		const self = this
+		const wallet_bootFailed = self._wallet_bootFailed()
+		if (wallet_bootFailed) {
+			throw "Expected !wallet_bootFailed"
+		}
+		if (self.wallet.HasEverFetched_transactions() !== true) {
+			throw "Expected true HasEverFetched_transactions"
+		}
+		const stateCachedTransactions = self.wallet.New_StateCachedTransactions()
+		if (stateCachedTransactions.length == 0) {
+			throw "Expected non-zero num transactions"
+		}
+		const headers = ["date", "amount", "status", "payment_id"];
+		let csvContent = "";
+		csvContent += headers.join(",") + "\r\n"
+		stateCachedTransactions.forEach(
+			function(tx, i)
+			{
+				const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
+				const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
+				const amountString = monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
+				//
+				const date = tx.timestamp // TODO: this in UTC?
+				const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
+					'en-US'/*for now*/, 
+					{ year: 'numeric', month: 'short', day: 'numeric' }
+				).toUpperCase()
+				//
+				const payment_id = `${ tx.payment_id || "" }`
+				const status = `${ tx.isFailed ? "REJECTED" : (tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED") }`
+				//
+				const columns = [ dateString, amountString, status, payment_id ]
+				csvContent += columns.join(",") + "\r\n";
+			}
+		)
+		self.context.filesystemUI.PresentDialogToSaveTextFile(
+			csvContent,
+			"Save CSV",
+			self.wallet.walletLabel || "transactions",
+			"csv",
+			function(err)
+			{
+				if (err) {
+					const errString = err.message 
+						? err.message 
+						: err.toString() 
+							? err.toString() 
+							: ""+err
+					navigator.notification.alert(
+						errString, 
+						function() {}, // nothing to do 
+						"Error", 
+						"OK"
+					)
+					return
+				}
+			},
+			"data:text/csv;charset=utf-8,"
+		)
 	}
 	//
 	//

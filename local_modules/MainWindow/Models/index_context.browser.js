@@ -53,6 +53,11 @@ function NewHydratedContext(initialContext)
 			options: {}
 		},
 		{
+			module: require("../../FilesystemUI/FilesystemUI.browser"),
+			instance_key: "filesystemUI",
+			options: {}
+		},
+		{
 			module: require("../../WindowDialogs/WindowDialogs.browser"),
 			instance_key: "windowDialogs",
 			options: {}
