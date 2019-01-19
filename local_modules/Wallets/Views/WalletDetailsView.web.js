@@ -410,6 +410,10 @@ class WalletDetailsView extends View
 		transactionsListLayerContainerLayer.style.position = "relative"
 		transactionsListLayerContainerLayer.style.left = "0"
 		transactionsListLayerContainerLayer.style.top = "0"
+		transactionsListLayerContainerLayer.style.userSelect ="all"
+		transactionsListLayerContainerLayer.style.mozUserSelect ="all"
+		transactionsListLayerContainerLayer.style.webkitUserSelect ="all"
+		transactionsListLayerContainerLayer.style.msUserSelect ="all"
 		self.transactionsListLayerContainerLayer = transactionsListLayerContainerLayer
 		self.layer.appendChild(transactionsListLayerContainerLayer)
 		//
