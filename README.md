@@ -29,7 +29,7 @@ All app source code and assets copyright © 2014-2019 by MyMonero. All rights re
 
 ## Downloads
 
-Download the latest version from our website at [mymonero.com/app](https://www.mymonero.com/app) or from the Releases tab. *(Coming soon)* 
+Download the latest version from our website at [mymonero.com](https://www.mymonero.com) or from the Releases tab.
 
 Developers and pre-release testers who would like to use and work on the app can run it by obtaining the source and running one of the build commands below.
 
