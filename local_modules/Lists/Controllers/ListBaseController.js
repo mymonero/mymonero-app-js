@@ -315,7 +315,7 @@ class ListBaseController extends EventEmitter
 	_tearDown_records()
 	{
 		const self = this
-		const records = self.records
+		const records = self.records || []
 		const records_length = records.length
 		for (let i = 0 ; i < records_length ; i++) {
 			const record = records[i]
@@ -408,7 +408,7 @@ class ListBaseController extends EventEmitter
 	__recordInstanceAndIndexWithId(_id)
 	{
 		const self = this
-		const records_length = self.records.length
+		const records_length = (self.records||[]).length
 		for (let i = 0 ; i < records_length ; i++) {
 			const record = self.records[i]
 			if (record._id === _id) {
