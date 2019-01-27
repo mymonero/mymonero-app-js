@@ -37,7 +37,7 @@ var crypto = require('crypto');
 var currentVersionCryptorFormatVersion = 3;
 var cryptor_settings = 
 {
-	algorithm: 'aes256',
+	algorithm: 'aes-256-cbc',
 	options: 1, // this gets inserted into the format. should probably be renamed to something more concretely descriptive
 	salt_length: 8,
 	iv_length: 16,
