@@ -105,6 +105,8 @@ class MainWindowController
 				backgroundThrottling: false, // disable powersaving/throttling so that app lock-down 
 				// can actually occur when app is in the background or is minimized
 
+				nodeIntegration: true,
+
 				// the following are currently the default values but stating them here to be explicit…
 				webSecurity: true,
 				allowDisplayingInsecureContent: false, // https content only
