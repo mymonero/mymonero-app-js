@@ -44,7 +44,7 @@ Note that the wallet mnemonic generation in the desktop version is now implement
 
 2. `local_modules/runtime_context` and implementors in `electron_main` and `MainWindow`
 
-3. `local_modules/mymonero_core_js`
+3. `local_modules/mymonero_libapp_js`
 
 
 ### "Store arbitrary encrypted structured data locally"

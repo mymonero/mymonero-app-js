@@ -81,8 +81,14 @@ module.exports =
 						path.join(__dirname, 'node_modules')
 					],
 					exclude: [
-						'monero_utils/MyMoneroCoreCpp_ASMJS.asm.js',
-						'monero_utils/MyMoneroCoreCpp_ASMJS.wasm'
+						'MyMoneroCoreCpp_ASMJS.asm.js',
+						'MyMoneroCoreCpp_ASMJS.wasm',
+						'MyMoneroCoreCpp_WASM.js',
+						'MyMoneroCoreCpp_WASM.wasm',
+						'MyMoneroCoreBridge.js',
+						'MyMoneroCoreBridgeClass.js',
+						'mymonero-core-js/tests',
+						'mymonero_libapp_js/tests',
 					]
 				},
 				use: [

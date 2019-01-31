@@ -58,6 +58,12 @@ for (const i in fn_names) {
 { // IPC async bridging
 	const {ipcMain} = require('electron')
 	const IPCBridge_cb_jump_map = {}
+	ipcMain.on('async__send_funds--authenticate--res_cb', function(event, IPC_arg)
+	{
+		const IPCBridge_call_id = IPC_arg.IPCBridge_call_id;
+		const did_pass = IPC_arg.did_pass
+		IPCBridge_cb_jump_map["async__send_funds--authenticate--res_cb_jump_cb--" + IPCBridge_call_id](did_pass)
+	})
 	ipcMain.on('async__send_funds--get_unspent_outs--res_cb', function(event, IPC_arg)
 	{
 		const IPCBridge_call_id = IPC_arg.IPCBridge_call_id;
@@ -86,6 +92,17 @@ for (const i in fn_names) {
 		}
 		const IPCBridge_call_id = IPC_arg.IPCBridge_call_id;
 		const call_args = IPC_arg.args;
+		call_args.authenticate_fn = function(cb)
+		{
+			IPCBridge_cb_jump_map["async__send_funds--authenticate--res_cb_jump_cb--" + IPCBridge_call_id] = function(did_pass)
+			{
+				cb(did_pass)
+			}
+			event.sender.send('async__send_funds--authenticate_fn', {
+				call_id: IPCBridge_call_id
+			})
+			// wait for return ipcMain.on with the IPCBridge_call_id
+		}
 		call_args.get_unspent_outs_fn = function(req_params, cb)
 		{
 			IPCBridge_cb_jump_map["async__send_funds--get_unspent_outs--res_cb_jump_cb--" + IPCBridge_call_id] = function(err_msg, res)
@@ -122,6 +139,18 @@ for (const i in fn_names) {
 			})
 			// wait for return ipcMain.on with the IPCBridge_call_id
 		}
+		call_args.willBeginSending_fn = function()
+		{
+			event.sender.send('async__send_funds--willBeginSending_fn', {
+				call_id: IPCBridge_call_id
+			})
+		}
+		call_args.canceled_fn = function()
+		{
+			event.sender.send('async__send_funds--canceled_fn', {
+				call_id: IPCBridge_call_id
+			})
+		}
 		call_args.status_update_fn = function(params)
 		{
 			event.sender.send('async__send_funds--status_update_fn', {
@@ -153,7 +182,7 @@ local_fns.isReady = false;
 module.exports = local_fns;
 //
 //
-const coreBridgeLoading_promise = require("../mymonero_core_js/monero_utils/MyMoneroCoreBridge")({asmjs: false}); // false because this will ever only be used where 'remote' is a node instance - which supports wasm
+const coreBridgeLoading_promise = require("../mymonero_libapp_js/libapp_js/MyMoneroLibAppBridge")({asmjs: false}); // false because this will ever only be used where 'remote' is a node instance - which supports wasm
 coreBridgeLoading_promise.then(function(this__coreBridge_instance)
 {
 	coreBridge_instance = this__coreBridge_instance;

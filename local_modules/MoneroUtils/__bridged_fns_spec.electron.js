@@ -42,12 +42,6 @@ exports.bridgedFn_names =
 	"validate_components_for_login",
 	"address_and_keys_from_seed",
 	"generate_key_image",
-	"generate_key_derivation",
-	"derive_public_key",
-	"derive_subaddress_public_key",
-	"decodeRct",
-	"estimate_rct_tx_size",
-	"calculate_fee",
 	"estimated_tx_network_fee",
 	// "async__send_funds", // this is not to be bridged via synch IPC since it requires async bridging
 ];

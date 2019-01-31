@@ -35,9 +35,9 @@ if (typeof reporting_appVersion === 'undefined' || !reporting_appVersion) {
 	throw "BackgroundResponseParser.electron.child.js requires argv[2] reporting_appVersion"
 }
 //
-const response_parser_utils = require('../mymonero_core_js/hostAPI/response_parser_utils')
-const monero_keyImage_cache_utils = require('../mymonero_core_js/monero_utils/monero_keyImage_cache_utils')
-const coreBridge_promise = require('../mymonero_core_js/monero_utils/MyMoneroCoreBridge')({});
+const response_parser_utils = require('../mymonero_libapp_js/mymonero-core-js/hostAPI/response_parser_utils')
+const monero_keyImage_cache_utils = require('../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_keyImage_cache_utils')
+const coreBridge_promise = require('../mymonero_libapp_js/libapp_js/MyMoneroLibAppBridge')({});
 //
 // Declaring tasks:
 //

@@ -63,10 +63,10 @@ window.BootApp = function()
 	//
 	// context
 	var isHorizontalBar = isMobile;
-	require('../../mymonero_core_js/monero_utils/MyMoneroCoreBridge')({}).then(function(coreBridge_instance) // we can just use this directly in the browser version
+	require('../../mymonero_libapp_js/libapp_js/MyMoneroLibAppBridge')({}).then(function(coreBridge_instance) // we can just use this directly in the browser version
 	{
 		const context = require('../Models/index_context.browser').NewHydratedContext({
-			nettype: require('../../mymonero_core_js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
+			nettype: require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/nettype').network_type.MAINNET, // critical setting
 			app: app,
 			isDebug: isDebug,
 			isLiteApp: true, // used sparingly for to disable (but not redact) functionality
@@ -86,7 +86,7 @@ window.BootApp = function()
 			//
 			appDownloadLink_domainAndPath: "mymonero.com",
 			Settings_shouldDisplayAboutAppButton: true, // special case - since we don't have a system menu to place it in
-			HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
+			HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false,
 			Views_selectivelyEnableMobileRenderingOptimizations: isMobile === true,
 			CommonComponents_Forms_scrollToInputOnFocus: isMobile === true,
 			monero_utils: coreBridge_instance

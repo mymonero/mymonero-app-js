@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const mnemonic_languages = require('../../mymonero_core_js/cryptonote_utils/mnemonic_languages')
+const mnemonic_languages = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/mnemonic_languages')
 //
 const WizardTask_Modes =
 {

@@ -28,7 +28,7 @@
 //
 "use strict"
 //
-const monero_config = require('../mymonero_core_js/monero_utils/monero_config')
+const monero_config = require('../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
 // ^-- TODO: remove this
 //
 const openalias_utils = require('./openalias_utils')
