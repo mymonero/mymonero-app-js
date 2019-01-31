@@ -43,17 +43,17 @@ const commonComponents_actionButtons = require('../../MMAppUICommonComponents/ac
 //
 const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView.web')
 //
-const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
+const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
-const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
-const monero_config = require('../../mymonero_core_js/monero_utils/monero_config')
-const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
+const monero_paymentID_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_paymentID_utils')
+const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
+const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
 //
 const jsQR = require('jsqr')
 const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
-let JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
+let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
 //
 let rateServiceDomainText = "cryptocompare.com" 
 //
@@ -461,6 +461,7 @@ class SendFundsView extends View
 						self.manualPaymentIDInputLayer.value = self.context.monero_utils.new_payment_id()
 					}
 				)
+				self.generateButtonView = generateButtonView
 				const generateButtonView_layer = generateButtonView.layer
 				generateButtonView_layer.style.margin = "0" 
 				generateButtonView_layer.style.display = "inline"
@@ -1380,6 +1381,7 @@ class SendFundsView extends View
 			self.prioritySelectLayer.disabled = false
 			//
 			self.manualPaymentIDInputLayer.disabled = false
+			self.generateButtonView.SetEnabled(true)
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = false // making sure to re-enable 
 			//
 			if (self.useCamera_buttonView) {
@@ -1412,6 +1414,7 @@ class SendFundsView extends View
 			//
 			self.contactOrAddressPickerLayer.ContactPicker_inputLayer.disabled = true
 			self.manualPaymentIDInputLayer.disabled = true
+			self.generateButtonView.SetEnabled(false)
 		}
 		{
 			self._dismissValidationMessageLayer()
@@ -1428,14 +1431,6 @@ class SendFundsView extends View
 				_trampolineToReturnWithValidationErrorString("Please create a wallet to send Monero.")
 				return
 			}
-			if (wallet.didFailToInitialize_flag) {
-				_trampolineToReturnWithValidationErrorString("Unable to load that wallet.")
-				return
-			}
-			if (wallet.didFailToBoot_flag) {
-				_trampolineToReturnWithValidationErrorString("Unable to log into that wallet.")
-				return
-			}
 		}
 		const sweeping = self.max_buttonView.isMAXToggledOn
 		const raw_amount_String = self.amountInputLayer.value
@@ -1446,7 +1441,7 @@ class SendFundsView extends View
 			}
 		}
 		let selected_ccySymbol = self.ccySelectLayer.Component_selected_ccySymbol()
-		var final_amount_Number = null;
+		var final_XMR_amount_Number = null;
 		if (!sweeping) {
 			let rawInput_amount_Number = +raw_amount_String // turns into Number, apparently
 			if (isNaN(rawInput_amount_Number)) {
@@ -1466,20 +1461,17 @@ class SendFundsView extends View
 				_trampolineToReturnWithValidationErrorString("The amount to send must be greater than zero.")
 				return
 			}
-			final_amount_Number = submittableMoneroAmountDouble
+			final_XMR_amount_Number = submittableMoneroAmountDouble
 		}
 		//
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
 		const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ""
 		const enteredAddressValue_exists = enteredAddressValue !== ""
-		const notPickedContactBut_enteredAddressValue = !hasPickedAContact && enteredAddressValue_exists ? true : false
 		//
-		var target_address = null // to derive…
 		const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ""
 		const resolvedAddress_exists = resolvedAddress !== "" // NOTE: it might be hidden, though!
 		const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === "block"
 		//
-		var payment_id = null
 		const manuallyEnteredPaymentID = self.manualPaymentIDInputLayer.value || ""
 		const manuallyEnteredPaymentID_exists = manuallyEnteredPaymentID !== ""
 		const manuallyEnteredPaymentID_fieldIsVisible = self.manualPaymentIDInputLayer_containerLayer.style.display === "block" // kind of indirect, would be better to encapsulate show/hide & state, maybe
@@ -1498,115 +1490,6 @@ class SendFundsView extends View
 			// "detected" payment id. So the `hasPickedAContact` usage above yields slightly
 			// ambiguity in code and could be improved to encompass request uri pid "forcing"
 		}
-		if (hasPickedAContact) { // we have already re-resolved the payment_id
-			if (self.pickedContact.HasOpenAliasAddress() === true) {
-				payment_id = self.pickedContact.payment_id
-				if (!payment_id || typeof payment_id === 'undefined') {
-					// not throwing - it's ok if this payment has no payment id
-				}
-				// we can just use the cached_OAResolved_XMR_address because in order to have picked this
-				// contact and for the user to hit send, we'd need to have gone through an OA resolve (_didPickContact)
-				target_address = self.pickedContact.cached_OAResolved_XMR_address
-			} else if (self.pickedContact.HasIntegratedAddress() === true) {
-				target_address = self.pickedContact.address // whatever it may be
-				// ^ for integrated addrs, we don't want to extract the payment id and then use the integrated addr as well (TODO: unless we use fluffy's patch?)
-			} else { // non-integrated addr
-				target_address = self.pickedContact.address // whatever it may be
-				// ^ for integrated addrs, we don't want to extract the payment id and then use the integrated addr as well (unless we use fluffy's patch?)
-				payment_id = self.pickedContact.payment_id || null
-			}
-			if (!target_address || typeof target_address === 'undefined') {
-				_trampolineToReturnWithValidationErrorString("Contact unexpectedly lacked XMR address. This may be a bug.")
-				return
-			}
-		} else {
-			if (enteredAddressValue_exists === false) {
-				_trampolineToReturnWithValidationErrorString("Please specify the recipient of this transfer.")
-				return
-			}
-			// address
-			const is_enteredAddressValue_OAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredAddressValue)
-			var isEnteredValue_integratedAddress;
-			var isEnteredValue_subAddress;
-			if (is_enteredAddressValue_OAAddress !== true) {
-				// then it's an XMR addr of some kind
-				var address__decode_result; 
-				try {
-					address__decode_result = self.context.monero_utils.decode_address(enteredAddressValue, self.context.nettype)
-				} catch (e) {
-					console.warn("Couldn't decode as a Monero address.", e)
-					_trampolineToReturnWithValidationErrorString("Please enter a valid Monero address.") // this will re-enable submit btn etc
-					return // just return silently
-				}
-				target_address = enteredAddressValue // then this look like a valid XMR addr
-				if (address__decode_result.intPaymentId) {
-					isEnteredValue_integratedAddress = true
-				} else {
-					isEnteredValue_integratedAddress = false
-				}
-				isEnteredValue_subAddress = isEnteredValue_integratedAddress == false ? self.context.monero_utils.is_subaddress(enteredAddressValue, self.context.nettype) : false
-			} else { // then it /is/ an OA addr
-				isEnteredValue_integratedAddress = false // important to set
-				isEnteredValue_subAddress = false
-				if (!resolvedAddress_fieldIsVisible || !resolvedAddress_exists) {
-					_trampolineToReturnWithValidationErrorString("Couldn't resolve this OpenAlias address.")
-					return
-				}
-				target_address = resolvedAddress
-			}
-			// payment ID:
-			if (isEnteredValue_integratedAddress === true) {
-				payment_id = null
-			} else {
-				if (canUseManualPaymentID) {
-					if (resolvedPaymentID_fieldIsVisible) {
-						throw "canUseManualPaymentID but resolvedPaymentID_fieldIsVisible"
-					}
-					payment_id = manuallyEnteredPaymentID
-					if (monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(payment_id) === false) {
-						// TODO: set validation err on payment ID field (clear that err when we clear the payment ID field)
-						_trampolineToReturnWithValidationErrorString("Please enter a valid payment ID.")
-						return
-					}
-				} else if (resolvedPaymentID_fieldIsVisible) {
-					if (resolvedPaymentID_exists === false) {
-						throw "resolvedPaymentID_fieldIsVisible but !resolvedPaymentID_exists"
-					}
-					payment_id = resolvedPaymentID
-				}
-			}
-			if (isEnteredValue_subAddress && (payment_id && payment_id !== "")) {
-				_trampolineToReturnWithValidationErrorString("Payment IDs cannot be used with subaddresses.")
-				return
-			}
-
-		}
-		{ // final validation / sanitization / transformation
-			if (!target_address) {
-				_trampolineToReturnWithValidationErrorString("Unable to derive a target address for this transfer. This may be a bug.")
-				return
-			}
-			if (payment_id && payment_id != "") { // so, valid by this point
-				if (payment_id.length == 16) { // a short one
-					if (isEnteredValue_integratedAddress == true) {
-						throw "unexpected isEnteredValue_integratedAddress=true" // we'll assume user didn't enter an overriding integrated address
-					}
-					if (isEnteredValue_subAddress == true) { // should never be using a subaddress to make an integrated address
-						throw "unexpected isEnteredValue_subAddress=true"
-					}
-					// construct integrated address
-					let overwritten__target_address = target_address;
-					target_address = self.context.monero_utils.new__int_addr_from_addr_and_short_pid(
-						overwritten__target_address, // the monero one
-						payment_id, // short pid
-						self.context.nettype
-					)
-					//
-					payment_id = null // must now zero this or Send will throw a "pid must be blank with integrated addr"
-					isEnteredValue_integratedAddress = true // should update this
-				}
-			}
-		}
 
 		//
 		// now if using alternate display currency, be sure to ask for terms agreement before doing send
@@ -1618,7 +1501,7 @@ class SendFundsView extends View
 				let message = `Though ${selected_ccySymbol} is selected, the app will send ${Currencies.ccySymbolsByCcy.XMR}. (This is not an exchange.)`
 				message += `\n\n`
 				message += `Rate providers include ${rateServiceDomainText}. Neither accuracy or favorability are guaranteed. Use at your own risk.`
-				let ok_buttonTitle = `Agree and Send ${final_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}`
+				let ok_buttonTitle = `Agree and Send ${final_XMR_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}`
 				let cancel_buttonTitle = "Cancel"
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
 					title, 
@@ -1632,10 +1515,23 @@ class SendFundsView extends View
 						}
 						if (didChooseYes != true) {
 							// user canceled!
-							__currencyConversionRateAppliesAlert_cancel_action_op_fn()
+							_reEnableFormElements()
 							return
 						}
-						__currencyConversionRateAppliesAlert_ok_action_op_fn()
+						// must be sure to save state so alert is now not required until a DeleteEverything
+						self.context.settingsController.Set_settings_valuesByKey(
+							{
+								invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: true
+							},
+							function(err)
+							{
+								if (err) {
+									throw err
+								}
+							}
+						)
+						// and of course proceed
+						__proceedTo_generateSendTransaction()
 					}
 				)
 				//
@@ -1643,7 +1539,7 @@ class SendFundsView extends View
 			} else {
 				// show alert… iff user agrees, write user has agreed to terms and proceed to branch, else bail
 				let title = `Confirm Amount`
-				let message = `Send ${final_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}?`
+				let message = `Send ${final_XMR_amount_Number} ${Currencies.ccySymbolsByCcy.XMR}?`
 				let ok_buttonTitle = `Send`
 				let cancel_buttonTitle = "Cancel"
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
@@ -1658,10 +1554,10 @@ class SendFundsView extends View
 						}
 						if (didChooseYes != true) {
 							// user canceled!
-							__confirmAmountAlert_cancel_action_op_fn()
+							_reEnableFormElements()
 							return
 						}
-						__confirmAmountAlert_ok_action_op_fn()
+						__proceedTo_generateSendTransaction()
 					}
 				)
 				//
@@ -1669,82 +1565,48 @@ class SendFundsView extends View
 			}
 		}
 		// fall through
-		__proceedTo_executeSend()
+		__proceedTo_generateSendTransaction()
 		//
-		function __proceedTo_executeSend()
+		function __proceedTo_generateSendTransaction()
 		{
-			// unlike in iOS, the form is already disabled here in JS
-			__proceedTo_generateSendTransactionWith(
-				wallet, // FROM wallet
-				target_address, // TO address
-				payment_id
-			)
-		}
-		function __currencyConversionRateAppliesAlert_cancel_action_op_fn()
-		{
-			_reEnableFormElements()
-		}
-		function __currencyConversionRateAppliesAlert_ok_action_op_fn()
-		{ // must be sure to save state so alert is now not required until a DeleteEverything
-			self.context.settingsController.Set_settings_valuesByKey(
-				{
-					invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: true
-				},
-				function(err)
-				{
-					if (err) {
-						throw err
-					}
-				}
-			)
-			// and of course proceed
-			__proceedTo_executeSend()
-		}
-		function __confirmAmountAlert_cancel_action_op_fn()
-		{
-			_reEnableFormElements()
-		}
-		function __confirmAmountAlert_ok_action_op_fn()
-		{
-			__proceedTo_executeSend()
-		}
-		function __proceedTo_generateSendTransactionWith(
-			sendFrom_wallet,
-			target_address,
-			payment_id
-		) {
-			const sendFrom_address = sendFrom_wallet.public_address
-			const priority = self._selected_simplePriority()
-			//
-			sendFrom_wallet.SendFunds(
-				target_address,
-				"" + final_amount_Number, // TODO: do away with JS-land number operations
-				sweeping,
-				payment_id,
-				priority, 
+			wallet.SendFunds(
+				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
+				resolvedAddress,
+				manuallyEnteredPaymentID,
+				resolvedPaymentID,
+				hasPickedAContact,
+				resolvedAddress_fieldIsVisible,
+				manuallyEnteredPaymentID_fieldIsVisible,
+				resolvedPaymentID_fieldIsVisible,
+				//
+				hasPickedAContact ? self.pickedContact.payment_id : undefined,
+				hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined,
+				hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined,
+				hasPickedAContact ? self.pickedContact.address : undefined,
+				//
+				"" + final_XMR_amount_Number,
+				sweeping, // when true, amount will be ignored
+				self._selected_simplePriority(),
+				//
 				function(str) // preSuccess_nonTerminal_statusUpdate_fn
 				{
-					self.validationMessageLayer.SetValidationError(
-						str,
-						true/*wantsXButtonHidden*/
-					)
+					self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
 				},
 				function()
 				{ // canceled_fn
 					self._dismissValidationMessageLayer()
 					_reEnableFormElements()
 				},
-				function(
-					err,
-					mockedTransaction
-				) {
+				function(err, mockedTransaction)
+				{
+					console.log("err", err)
 					if (err) {
 						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 						return
 					}
 					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
 						const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
-						self.pushDetailsViewFor_transaction(sendFrom_wallet, stateCachedTransaction);
+						self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
 					}
 					{
 						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
@@ -1770,7 +1632,7 @@ class SendFundsView extends View
 						setTimeout(
 							function()
 							{
-								sendFrom_wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+								wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
 							}
 						)
 					}

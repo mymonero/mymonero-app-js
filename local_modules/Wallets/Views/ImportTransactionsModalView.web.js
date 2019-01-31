@@ -37,8 +37,8 @@ const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltip
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
-const monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
-const monero_sendingFunds_utils = require('../../mymonero_core_js/monero_utils/monero_sendingFunds_utils')
+const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
+const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
 //
 class ImportTransactionsModalView extends View
 {
@@ -366,6 +366,7 @@ class ImportTransactionsModalView extends View
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_SaveButtonView(self.context)
 		self.rightBarButtonView = view
+		self.disable_submitButton()
 		const layer = view.layer
 		layer.innerHTML = "Send"
 		layer.addEventListener(
@@ -449,38 +450,40 @@ class ImportTransactionsModalView extends View
 		}
 		//
 		const wallet = self.walletSelectView.CurrentlySelectedRowItem
-		{
-			if (typeof wallet === 'undefined' || !wallet) {
-				_trampolineToReturnWithValidationErrorString("Please create a wallet to send Monero.")
-				return
-			}
+		if (typeof wallet === 'undefined' || !wallet) {
+			_trampolineToReturnWithValidationErrorString("Please create a wallet to send Monero.")
+			return
 		}
-		const target_address = self.addressInputLayer.value
-		const payment_id = self.manualPaymentIDInputLayer.value
-		const amount_Number = parseFloat(self.amountInputLayer.value)
-		const sendFrom_address = wallet.public_address
 		wallet.SendFunds(
-			target_address,
-			"" + amount_Number, // TODO: do away with JS-land number ops
-			false, // is not a sweep tx
-			payment_id,
+			self.addressInputLayer.value,
+			undefined, // resolvedAddress
+			self.manualPaymentIDInputLayer.value,
+			undefined, // resolvedPaymentID
+			false, // hasPickedAContact
+			false, // resolvedAddress_fieldIsVisible
+			true, // manuallyEnteredPaymentID_fieldIsVisible
+			false, // resolvedPaymentID_fieldIsVisible
+			//
+			undefined, // contact_payment_id
+			undefined, // cached_OAResolved_address
+			undefined, // contact_hasOpenAliasAddress
+			undefined, // contact_address
+			//
+			self.amountInputLayer.value,
+			false, // sweeping
 			monero_sendingFunds_utils.default_priority(),
+			//
 			function(str) // preSuccess_nonTerminal_statusUpdate_fn
 			{
-				self.validationMessageLayer.SetValidationError(
-					str,
-					true/*wantsXButtonHidden*/
-				)
+				self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
 			},
 			function()
 			{ // canceled_fn
 				self._dismissValidationMessageLayer()
 				_reEnableFormElements()
 			},
-			function(
-				err,
-				mockedTransaction
-			) {
+			function(err, mockedTransaction)
+			{
 				if (err) {
 					_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 					return
@@ -536,8 +539,7 @@ class ImportTransactionsModalView extends View
 					payment_address, 
 					import_fee__JSBigInt, 
 					feeReceiptStatus
-				)
-				{
+				) {
 					self.requestHandle_for_importRequestInfoAndStatus = null // reset
 					//
 					if (err) {

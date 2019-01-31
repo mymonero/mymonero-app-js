@@ -29,12 +29,12 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const JSBigInt = require('../../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
+const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
-let monero_amount_format_utils = require('../../mymonero_core_js/monero_utils/monero_amount_format_utils')
+let monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
 //
 class WalletCellContentsView extends View
 {

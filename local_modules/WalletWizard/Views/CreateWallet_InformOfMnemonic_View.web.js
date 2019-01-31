@@ -33,7 +33,7 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
 const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
-const mnemonic_languages = require('../../mymonero_core_js/cryptonote_utils/mnemonic_languages')
+const mnemonic_languages = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/mnemonic_languages')
 //
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //

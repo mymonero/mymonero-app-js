@@ -41,8 +41,22 @@ const doNotCopyOrEnterFilepathsMatching =
 	/^\.eslint/,
 	/\.electron\.(.*)\.?(js|html|css)$/, // e.g. electron.js, electron.renderer.js, electron.child.js
 	/^electron_/,
-	/mymonero_core_js\/build/, // obviously do not want anything within this
-	/mymonero_core_js\/node_modules/, // all of these are dev dependencies, so we don't want them
+	/mymonero-core-js\/build/, // obviously do not want anything within this
+	/mymonero-core-js\/node_modules/, // all of these are dev dependencies, so we don't want them
+	/mymonero_libapp_js\/build/, // obviously do not want anything within this
+	/mymonero_libapp_js\/node_modules/, // all of these are dev dependencies, so we don't want them
+	/mymonero_libapp_js\/tests/,
+	/mymonero_libapp_js\/src/,
+	/mymonero-core-js\/index\.js/,
+	/MyMoneroCoreCpp_ASMJS\.js/,
+	/MyMoneroCoreCpp_ASMJS\.asm\.js/,
+	/MyMoneroCoreCpp_WASM\.js/,
+	/MyMoneroCoreCpp_WASM\.wasm/,
+	/MyMoneroCoreBridge\.js/,
+	/MyMoneroCoreBridgeClass\.js/,
+	/mymonero-core-js\/tests/,
+	/mymonero-core-js\/wallaby/,
+	/mymonero-core-js\/src/,
 	/node_modules\/electron/, // no reason we'd want this
 	/LICENSE\.txt/,
 	/README\.md/,

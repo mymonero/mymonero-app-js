@@ -28,9 +28,9 @@
 
 "use strict"
 //
-let monero_config = require('../mymonero_core_js/monero_utils/monero_config')
-let monero_amount_format_utils = require('../mymonero_core_js/monero_utils/monero_amount_format_utils')
-const JSBigInt = require('../mymonero_core_js/cryptonote_utils/biginteger').BigInteger
+let monero_config = require('../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
+let monero_amount_format_utils = require('../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
+const JSBigInt = require('../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
 //
 let ccySymbolsByCcy = exports.ccySymbolsByCcy = 
 {

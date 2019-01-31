@@ -29,7 +29,7 @@
 "use strict"
 //
 const ContactFormView = require('./ContactFormView.web')
-const monero_paymentID_utils = require('../../mymonero_core_js/monero_utils/monero_paymentID_utils')
+const monero_paymentID_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_paymentID_utils')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 //
