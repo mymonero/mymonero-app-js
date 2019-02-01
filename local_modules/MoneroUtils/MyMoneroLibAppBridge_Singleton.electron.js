@@ -26,59 +26,12 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-"use strict"
+"use strict";
 //
-// Hydrate context
-var context_object_instantiation_descriptions =
-[
-	{
-		module_path: __dirname + "/../Menus/MenuController.electron",
-		instance_key: "menuController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../AppUpdates/AppUpdatesController.electron.main",
-		instance_key: "appUpdatesController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../URLOpening/URLOpeningController.electron",
-		instance_key: "urlOpeningController",
-		options: {}
-	},
-	{
-
-		module_path: __dirname + "/../HostedMoneroAPIClient/BackgroundResponseParser.electron.main",
-		instance_key: "backgroundResponseParser",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../MainWindow/Controllers/MainWindowController.electron.main",
-		instance_key: "mainWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../AboutWindow/Controllers/AboutWindowController.electron.main",
-		instance_key: "aboutWindowController",
-		options: {}
-	},
-	{
-		module_path: __dirname + "/../OpenAlias/TXTResolvingController.electron.main",
-		instance_key: "txtResolvingController",
-		options: {}
-	}
-	/*
-		NOTE: Most of the actual electron application context lives
-		in local_modules/MainWindow/Models/index_context.electron.renderer.js
-	*/
-]
-function NewHydratedContext(app)
-{
-	var initialContext =
-	{
-		app: app
-	}
-
-	return require("../runtime_context/runtime_context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+const globalObject = global;
+const globalPromiseKey = "MyMoneroLibAppBridge_Singleton.electron"
+if (typeof globalObject[globalPromiseKey] === 'undefined' || !globalObject[globalPromiseKey]) {
+	globalObject[globalPromiseKey] = require('../mymonero_libapp_js/libapp_js/MyMoneroLibAppBridge')({asmjs: false})
 }
-module.exports.NewHydratedContext = NewHydratedContext
+//
+module.exports = globalObject[globalPromiseKey];

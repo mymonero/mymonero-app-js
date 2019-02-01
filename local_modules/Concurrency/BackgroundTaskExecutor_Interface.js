@@ -93,8 +93,7 @@ class BackgroundTaskExecutor
 		taskName,
 		fn,
 		args
-	)
-	{
+	) {
 		const self = this
 		const taskUUID = uuidV1()
 		{ // we need to generate taskUUID now to construct arguments so we might as well also hang onto it here instead of putting that within the call to ExecuteWhenBooted
