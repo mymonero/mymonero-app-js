@@ -84,7 +84,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../HostedMoneroAPIClient/BackgroundResponseParser.electron",
+		module_path: __dirname + "/../../HostedMoneroAPIClient/BackgroundResponseParser.electron.renderer",
 		instance_key: "backgroundAPIResponseParser",
 		options: {}
 	},
