@@ -59,6 +59,23 @@ const {/*crashReporter, */app} = require('electron')
 	const appId = "com.mymonero.mymonero-desktop" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
 	app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
 }
+const { dialog } = require("electron")
+process.on(
+	'uncaughtException', 
+	function(error)
+	{
+		var errStr = "Please let us know of ";
+		if (error) {
+			errStr += "the following error message as it could be a bug:\n\n"+ error.toString()
+			if (error.stack) {
+				errStr += "\n\n" + error.stack
+			}
+		} else {
+			errStr += "this issue as it could be a bug."
+		}
+		dialog.showErrorBox("Application Error", errStr);
+	}
+)
 { // Application
 	const context = require('./electron_main_context').NewHydratedContext(app) // electron app can be accessed at context.app; context is injected into instances of classes described in ./electron_main_context.js
 	module.exports = context
