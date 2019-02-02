@@ -1968,7 +1968,6 @@ class SendFundsView extends View
 			return
 		}
 		self.validationMessageLayer.ClearAndHideMessage()  // in case there was a parsing err etc displaying
-		self._clearForm()
 		//
 		const width = 256
 		const height = 256
@@ -2016,7 +2015,6 @@ class SendFundsView extends View
 		const self = this
 		//
 		self.validationMessageLayer.ClearAndHideMessage()  // in case there was a parsing err etc displaying
-		self._clearForm()
 		//
 		self.cancelAny_requestHandle_for_oaResolution()
 		//
@@ -2127,9 +2125,12 @@ class SendFundsView extends View
 				self._displayResolvedPaymentID(payment_id_orNull)
 			} else {
 				self._hideResolvedPaymentID() // jic
-				self.addPaymentIDButtonView.layer.style.display = "block" // show if hiding
-				self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
-				self.manualPaymentIDInputLayer.value = "" 
+				if (typeof self.manualPaymentIDInputLayer.value === 'undefined' || !self.manualPaymentIDInputLayer.value) {
+					// if no pid already in the manual pid field, just be sure to reset the form to its proper state
+					self.addPaymentIDButtonView.layer.style.display = "block" // show if hiding
+					self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // hide if showing
+					self.manualPaymentIDInputLayer.value = "" 
+				}
 			}
 		}
 	}
