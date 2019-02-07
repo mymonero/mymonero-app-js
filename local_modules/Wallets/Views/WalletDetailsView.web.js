@@ -1258,7 +1258,7 @@ class WalletDetailsView extends View
 		if (stateCachedTransactions.length == 0) {
 			throw "Expected non-zero num transactions"
 		}
-		const headers = ["date", "amount", "status", "payment_id"];
+		const headers = ["date", "amount", "status", "tx id", "payment_id"];
 		let csvContent = "";
 		csvContent += headers.join(",") + "\r\n"
 		stateCachedTransactions.forEach(
@@ -1268,16 +1268,10 @@ class WalletDetailsView extends View
 				const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
 				const amountString = monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
 				//
-				const date = tx.timestamp // TODO: this in UTC?
-				const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
-					'en-US'/*for now*/, 
-					{ year: 'numeric', month: 'short', day: 'numeric' }
-				).toUpperCase()
-				//
 				const payment_id = `${ tx.payment_id || "" }`
 				const status = `${ tx.isFailed ? "REJECTED" : (tx.isConfirmed !== true || tx.isUnlocked !== true ? "PENDING" : "CONFIRMED") }`
 				//
-				const columns = [ dateString, amountString, status, payment_id ]
+				const columns = [ tx.timestamp.toISOString(), amountString, status, tx.hash, payment_id ]
 				csvContent += columns.join(",") + "\r\n";
 			}
 		)
