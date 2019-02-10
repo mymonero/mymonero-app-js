@@ -558,10 +558,13 @@ class ImportTransactionsModalView extends View
 					}
 					{
 						self.addressInputLayer.value = payment_address
-						self.copyButtonLayerFor_addressInput.Component_SetValue(payment_address)
-						//
+						if (typeof self.copyButtonLayerFor_addressInput !== 'undefined' && self.copyButtonLayerFor_addressInput) {
+							self.copyButtonLayerFor_addressInput.Component_SetValue(payment_address)
+						}
 						self.manualPaymentIDInputLayer.value = payment_id
-						self.copyButtonLayerFor_paymentID.Component_SetValue(payment_id)
+						if (typeof self.copyButtonLayerFor_paymentID !== 'undefined' && self.copyButtonLayerFor_paymentID) {
+							self.copyButtonLayerFor_paymentID.Component_SetValue(payment_id)
+						}
 						//
 						var amountStr = raw_formattedMoney
 						if (amountStr.indexOf(".") == -1) {
