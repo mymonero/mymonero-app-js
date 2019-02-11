@@ -333,7 +333,7 @@ exports.New_customButton_aLayer = New_customButton_aLayer
 function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_orTrue, pasteboard)
 { // defaults to 'text' content type
 	// state var declarations - hopefully this won't go out of scope? 
-	var runtime_valueToCopy = value__orValuesByContentType
+	var runtime_valueToCopy; // gets set below
 	//
 	const layer = New_customButton_aLayer(
 		context, 
@@ -350,9 +350,23 @@ function New_copyButton_aLayer(context, value__orValuesByContentType, enabled_or
 			}
 		}
 	);
+	layer.classList.add("copy-trigger")
+	function _setValueToCopy(to_value__orValuesByContentType)
+	{
+		runtime_valueToCopy = to_value__orValuesByContentType
+		if (typeof to_value__orValuesByContentType === 'string') {
+			layer.setAttribute("data-clipboard-text", to_value__orValuesByContentType)
+		} else { // since this case doesn't ever get hit in the web wallet, let's go with a (somewhat ungraceful) fallback...
+			for (var key in to_value__orValuesByContentType) { // set the very last value .. which could end up being text, or maybe html.... TODO: if this ever actually gets hit in any cases, this can be fixed up
+				layer.setAttribute("data-clipboard-text", to_value__orValuesByContentType[key])
+			}
+		}
+	}
+	_setValueToCopy(value__orValuesByContentType) // initial
+	//
 	layer.Component_SetValue = function(to_value__orValuesByContentType)
 	{ // defaults to 'text' type
-		runtime_valueToCopy = to_value__orValuesByContentType
+		_setValueToCopy(to_value__orValuesByContentType)
 		if (to_value__orValuesByContentType === "" || typeof to_value__orValuesByContentType === 'undefined' || !to_value__orValuesByContentType) {
 			layer.Component_SetEnabled(false)
 		} else {
@@ -541,7 +555,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	const padding_btm = isTruncatedPreviewForm ? 12 : 19
 	div.style.padding = `15px 0 ${padding_btm}px 0`
 	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
-	const canSupportCopyButton = wantsCopyButton && context.isRunningInBrowser !== true
+	const canSupportCopyButton = wantsCopyButton
 	if (canSupportCopyButton == false) {
 		if (wantsCopyButton && context.isLiteApp !== true) {
 			throw "Expected this to be lite app when unable to support copy button"

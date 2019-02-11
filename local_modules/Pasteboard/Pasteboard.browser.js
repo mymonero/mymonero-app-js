@@ -29,12 +29,15 @@
 "use strict"
 //
 const PasteboardInterface = require('./PasteboardInterface')
+const ClipboardJS = require('./Vendor/clipboard.min.js')
 //
 class Pasteboard extends PasteboardInterface
 {
 	constructor(options, context)
 	{
 		super(options, context)
+		const self = this
+		self.clipboard = new ClipboardJS('.copy-trigger'); // must initialize this - and it will watch the DOM
 	}
 	//
 	IsHTMLCopyingSupported()
@@ -45,25 +48,12 @@ class Pasteboard extends PasteboardInterface
 	CopyString(string, contentType_orText)
 	{
 		const self = this
-		const contentTypes = self.CopyContentTypes()
-		var contentType;
-		if (typeof contentType_orText === 'undefined' || !contentType_orText) {
-			contentType = contentTypes.Text
-		} else {
-			contentType = contentType_orText
-		}
-		console.warn("Not yet supported")
-		throw "TODO"
+		// nothing to do here since we are using ClipboardJS and relying on "data-clipboard-text"
 	}
 	CopyValuesByType(valuesByType)
 	{
 		const self = this
-		const types = Object.keys(valuesByType)
-		for (let i in types) {
-			const type = types[i]
-			const value = valuesByType[type]
-			self.CopyString(value, type)
-		}
+		// nothing to do here since we are using ClipboardJS and relying on "data-clipboard-text"
 	}
 }
 module.exports = Pasteboard
