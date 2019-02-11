@@ -37,6 +37,7 @@
       "!**/local_modules/**/package-lock.json",
       "!**/tests/*",
       "!**/*.spec.js",
+      "!local_modules/Pasteboard/Vendor/clipboard.min.js",
       "!local_modules/mymonero_libapp_js/libapp_js/MyMoneroLibAppCpp_ASMJS.js",
       "!local_modules/mymonero_libapp_js/libapp_js/MyMoneroLibAppCpp_ASMJS.asm.js",
       "!local_modules/mymonero_libapp_js/build",

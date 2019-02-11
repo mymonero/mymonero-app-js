@@ -1175,7 +1175,9 @@ class WalletDetailsView extends View
 				self.hasEverAutomaticallyDisplayedImportModal = true; // immediately, in case login and viewDidAppear race
 				setTimeout(function()
 				{
-					self._present_importTransactionsModal()
+					if (self.wallet.hasBeenTornDown != true) {
+						self._present_importTransactionsModal()
+					}
 				}, afterS * 1000)
 			}
 		}

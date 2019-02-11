@@ -186,7 +186,7 @@ class ImportTransactionsModalView extends View
 		labelLayer.style.marginTop = "0"
 		{
 			self.amountInputLayer = pkg.valueLayer
-			self.amountInputLayer.disabled = true
+			self.amountInputLayer.readonly = true
 			self.__styleInputAsDisabled(self.amountInputLayer)
 		}
 		{
@@ -214,7 +214,7 @@ class ImportTransactionsModalView extends View
 		labelLayer.style.float = "left"
 		labelLayer.style.display = "block"
 		div.appendChild(labelLayer)
-		if (self.context.isRunningInBrowser != true) { // right
+		{ // right
 			// copying both html and plaintext
 			const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 				self.context,
@@ -243,7 +243,7 @@ class ImportTransactionsModalView extends View
 			}
 		)
 		self.addressInputLayer = layer
-		layer.disabled = true
+		layer.readonly = true
 		self.__styleInputAsDisabled(layer)
 		div.appendChild(layer)
 		self.form_containerLayer.appendChild(div)
@@ -259,7 +259,7 @@ class ImportTransactionsModalView extends View
 			labelLayer.style.float = "left"
 			labelLayer.style.display = "block"
 			div.appendChild(labelLayer)
-			if (self.context.isRunningInBrowser != true) { // right
+			{ // right
 				// copying both html and plaintext
 				const buttonLayer = commonComponents_tables.New_copyButton_aLayer(
 					self.context,
