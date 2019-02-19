@@ -90,11 +90,16 @@
       "target": [
         "nsis"
       ],
+      "artifactName": "${productName}.${ext}",
       "legalTrademarks": "Copyright © 2014-2019 MyMonero.",
       "publisherName": "MyMonero Pty Ltd."
     },
     "nsis": {
-      "perMachine": true
+      "perMachine": true,
+      "artifactName": "${productName}.${ext}"
+    },
+    "nsisWeb": {
+        "artifactName": "${productName}.${ext}"
     },
     "linux": {
       "icon": "icon.icns",
