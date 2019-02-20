@@ -90,16 +90,17 @@
       "target": [
         "nsis"
       ],
-      "artifactName": "${productName}.${ext}",
+      "artifactName": "${productName}-${version}.${ext}",
       "legalTrademarks": "Copyright © 2014-2019 MyMonero.",
-      "publisherName": "MyMonero Pty Ltd."
+      "publisherName": null,
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "perMachine": true,
-      "artifactName": "${productName}.${ext}"
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "nsisWeb": {
-        "artifactName": "${productName}.${ext}"
+        "artifactName": "${productName}-${version}.${ext}"
     },
     "linux": {
       "icon": "icon.icns",
