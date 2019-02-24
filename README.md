@@ -48,6 +48,8 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 
 * Desktop: See Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
 
+For example, on Linux the MyMonero wallet stores its data in `~/.config/Electron`.
+
 * Browser: None (no data is saved)
 
 
