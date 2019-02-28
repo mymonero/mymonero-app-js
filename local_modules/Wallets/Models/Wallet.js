@@ -1408,6 +1408,8 @@ class Wallet extends EventEmitter
 			var errStr;
 			if (code === 0 || (typeof code === 'undefined' || code === null)) { // msgProvided
 				errStr = params.err_msg
+			} else if (isNaN(code)) {
+				errStr = "Unexpected NaN err code - please contact support"
 			} else if (code === 11) { // errInServerResponse_withMsg
 				errStr = params.err_msg
 			} else if (code === 12) { // createTransactionCode_balancesProvided
