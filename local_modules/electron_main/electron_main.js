@@ -66,9 +66,14 @@ process.on(
 	{
 		var errStr = "Please let us know of ";
 		if (error) {
-			errStr += "the following error message as it could be a bug:\n\n"+ error.toString()
+			const error_toString = error.toString()
+			errStr += "the following error message as it could be a bug:\n\n"+ error_toString
 			if (error.stack) {
 				errStr += "\n\n" + error.stack
+			}
+			if (error_toString.indexOf("electron-updater") !== -1) {
+				console.error(errStr)
+				return // avoid doing a dialog for this, since electron-updater emits an exception for 'no internet' (a bit excessive), and because we already show errors for those emitted in AppUpdatesController.electron.main.js
 			}
 		} else {
 			errStr += "this issue as it could be a bug."
