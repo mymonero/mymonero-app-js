@@ -2033,14 +2033,22 @@ class SendFundsView extends View
 	{
 		const self = this
 		{
+			var didSetAmountFromRequest = false
 			const amount = requestPayload.amount
 			if (amount !== null && typeof amount !== 'undefined' && amount !== "") {
+				didSetAmountFromRequest = true
 				self.amountInputLayer.value = amount
 			}
 			//
-			const amountCcy = requestPayload.amount_ccy || "XMR"
-			// TODO: validate amountCcy
-			self.ccySelectLayer.value = amountCcy // TODO: possibly to just do this?
+			const amountCcy = requestPayload.amount_ccy // TODO: validate amountCcy
+			if (amountCcy != null && typeof amountCcy !== 'undefined' && amountCcy !== "") {
+				if ((self.amountInputLayer.value == null || self.amountInputLayer.value == "" || typeof self.amountInputLayer.value == 'undefined')
+					|| didSetAmountFromRequest) { // so either the ccy and amount were on the request OR there was a ccy but the amount field was left empty by the user, i.e. we can assume it's ok to modify the ccy since there was one on the request
+					self.ccySelectLayer.value = amountCcy
+				}
+			} else {
+				// otherwise, just keep it as it is …… because if they set it to, e.g. CAD, and there's no ccy on the request, then they might accidentally send the same numerical value in XMR despite having wanted it to be in CAD
+			}
 			//
 			self.set_isSubmittable_needsUpdate()
 			self.set_effectiveAmountLabelLayer_needsUpdate()
