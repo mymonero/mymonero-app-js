@@ -2,7 +2,7 @@
   "name": "MyMonero",
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": "https://github.com/mymonero/mymonero-app-js",
   "private": false,
