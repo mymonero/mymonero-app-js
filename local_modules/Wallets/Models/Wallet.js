@@ -1372,7 +1372,7 @@ class Wallet extends EventEmitter
 				hash: params.tx_hash,
 				mixin: "" + params.mixin,
 				coinbase: false,
-				mempool: true, // is that correct?
+				mempool: true,
 				//
 				isJustSentTransaction: true, // this is set back to false once the server reports the tx's existence
 				timestamp: new Date(), // faking
@@ -1826,11 +1826,14 @@ class Wallet extends EventEmitter
 					}
 				}
 				//
-				// We could probably check if the existing_same_tx has a 
-				// negative amount and the incoming_tx has a positive amount and 
-				// then cause the existing_tx to use the negative amount ... but 
-				// those criteria are too loose, and the potential for incorrect 
-				// behavior too great imo.
+				if (incoming_tx.mempool === true) { // since the server has an issue sending the spent outputs at present, and only sends the (positive) change amount, this is a workaround to always prefer the existing cached tx's amounts rather than the ones sent by the server
+					// NOTE: This will also apply to *incoming* txs just due to the naiveness of the logic
+					finalized_incoming_tx.total_sent = existing_same_tx.total_sent;
+					finalized_incoming_tx.total_received = existing_same_tx.total_received;
+					finalized_incoming_tx.amount = existing_same_tx.amount;
+					finalized_incoming_tx.approx_float_amount = existing_same_tx.approx_float_amount;
+				}
+
 			}
 			// always overwrite existing ones:
 			txs_by_hash[incoming_tx.hash] = finalized_incoming_tx; // the finalized tx
