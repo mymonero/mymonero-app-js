@@ -246,8 +246,9 @@ class FundsRequestDetailsView extends View
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()
 			{ // left
+				const requesteeFirstName = self.fundsRequest.from_fullname.split(" ")[0]
 				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(
-					"Message for Requestee", 
+				 	`Message for ${requesteeFirstName || "Requestee"}`,
 					self.context
 				)
 				labelLayer.style.margin = "0 0 0 15px"
