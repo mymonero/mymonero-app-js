@@ -120,7 +120,7 @@ class Controller extends EventEmitter
 					// no need to say anything yet - we will do later
 				}
 			} else {
-				dialog.showMessageBox({
+				const buttonIndex = dialog.showMessageBoxSync({
 					type: 'info',
 					title: 'Found Update',
 					icon: pathTo_iconImage_png,
@@ -128,14 +128,13 @@ class Controller extends EventEmitter
 					defaultId: 0,
 					message: 'MyMonero found a software update. Do you want to download it now?',
 					buttons: ['Download', 'Cancel']
-				}, function(buttonIndex)
-				{
-					if (buttonIndex === 0) {
-						autoUpdater.downloadUpdate()
-					} else {
-						self.__didFinishUpdatesCheck() // clean up state and emit
-					}
 				})
+				if (buttonIndex === 0) {
+					autoUpdater.downloadUpdate()
+				} else {
+					self.__didFinishUpdatesCheck() // clean up state and emit
+				}
+
 			}
 		})
 		autoUpdater.on('update-not-available', function()
@@ -178,7 +177,7 @@ class Controller extends EventEmitter
 				const installButtonIndex = buttonTitles.indexOf(installButtonTitle)
 				const laterButtonIndex = buttonTitles.indexOf(laterButtonTitle)
 				const releaseNotesButtonTitleIndex = buttonTitles.indexOf(releaseNotesButtonTitle)
-				dialog.showMessageBox({
+				const response = dialog.showMessageBoxSync({
 					type: 'info',
 					title: 'Updates Ready to Install',
 					message: 'The new MyMonero version has been downloaded. The app must quit to install the update.',
@@ -186,22 +185,21 @@ class Controller extends EventEmitter
 					defaultId: installButtonIndex,
 					cancelId: laterButtonIndex,
 					buttons: buttonTitles,
-				}, function(response) {
-					if (response === installButtonIndex) {
-						setImmediate(function()
-						{
-							autoUpdater.quitAndInstall()
-						})
-					} else if (response === releaseNotesButtonTitleIndex) {
-						setImmediate(function()
-						{
-							const shell = require('electron').shell
-							shell.openExternal(
-								"https://github.com/mymonero/mymonero-app-js/releases"
-							)
-						})
-					}
 				})
+				if (response === installButtonIndex) {
+					setImmediate(function()
+					{
+						autoUpdater.quitAndInstall()
+					})
+				} else if (response === releaseNotesButtonTitleIndex) {
+					setImmediate(function()
+					{
+						const shell = require('electron').shell
+						shell.openExternal(
+							"https://github.com/mymonero/mymonero-app-js/releases"
+						)
+					})
+				}
 				self.__didFinishUpdatesCheck() // clean up state and emit
 			}
 		})

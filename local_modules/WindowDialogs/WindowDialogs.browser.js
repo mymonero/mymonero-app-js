@@ -44,8 +44,7 @@ class WindowDialogs extends WindowDialogs_Abstract
 		okButtonTitle,
 		cancelButtonTitle,
 		fn // (err?, didChooseYes?) -> Void
-	)
-	{
+	) {
 		const self = this
 		const trueIfUserClickedOK_notCancel = confirm(message) // add: title, buttons
 		fn(null, trueIfUserClickedOK_notCancel)

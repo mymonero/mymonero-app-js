@@ -73,27 +73,25 @@ class FilesytemUI extends FilesystemUI_Abstract
 				{ name: 'Images', extensions: [ ext ] },
 			]
 		}
-		dialog.showSaveDialog(
+		const path = dialog.showSaveDialogSync(
 			electronWindow,
-			options,
-			function(path)
+			options
+		)
+		if (path === undefined){
+			console.log("No path. Canceled?")
+			fn(null)
+			return
+		}
+		console.log("Saving to path", path)
+		fs.writeFile(
+			path,
+			buffer,
+			function(err)
 			{
-				if (path === undefined){
-					console.log("No path. Canceled?")
-					fn(null)
-					return
-				}
-				console.log("Saving to path", path)
-				fs.writeFile(
-					path,
-					buffer,
-					function(err)
-					{
-						fn(err)
-					}
-				)
+				fn(err)
 			}
 		)
+
 	}
 	PresentDialogToSaveTextFile(
 		contentString, 
@@ -116,27 +114,25 @@ class FilesytemUI extends FilesystemUI_Abstract
 				{ name: 'CSVs', extensions: [ ext ] },
 			]
 		}
-		dialog.showSaveDialog(
+		const path = dialog.showSaveDialogSync(
 			electronWindow,
-			options,
-			function(path)
+			options
+		)
+		if (path === undefined){
+			console.log("No path. Canceled?")
+			fn(null)
+			return
+		}
+		console.log("Saving to path", path)
+		fs.writeFile(
+			path,
+			buffer,
+			function(err)
 			{
-				if (path === undefined){
-					console.log("No path. Canceled?")
-					fn(null)
-					return
-				}
-				console.log("Saving to path", path)
-				fs.writeFile(
-					path,
-					buffer,
-					function(err)
-					{
-						fn(err)
-					}
-				)
+				fn(err)
 			}
 		)
+
 	}
 	//
 	//
@@ -158,27 +154,24 @@ class FilesytemUI extends FilesystemUI_Abstract
 				{ name: 'Images', extensions: [ "png", "jpg", "jpeg" ] },
 			]
 		}
-		dialog.showOpenDialog(
+		const path = dialog.showOpenDialogSync(
 			electronWindow,
-			options,
-			function(path)
-			{
-				if (path === undefined){
-					console.log("No path. Canceled?")
-					fn(null)
-					return
-				}
-				if (typeof path !== 'string') {
-					if (Array.isArray(path)) {
-						path = path[0] // select first
-					} else {
-						throw "Unknown `path` return type " + typeof path + " from showOpenDialog"
-					}
-				}
-				console.log("Open file at path", path)
-				fn(null, path)
-			}
+			options
 		)
+		if (path === undefined){
+			console.log("No path. Canceled?")
+			fn(null)
+			return
+		}
+		if (typeof path !== 'string') {
+			if (Array.isArray(path)) {
+				path = path[0] // select first
+			} else {
+				throw "Unknown `path` return type " + typeof path + " from showOpenDialog"
+			}
+		}
+		console.log("Open file at path", path)
+		fn(null, path)
 	}
 }
 module.exports = FilesytemUI
