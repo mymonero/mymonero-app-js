@@ -48,8 +48,7 @@ class WindowDialogs_Abstract
 		okButtonTitle,
 		cancelButtonTitle,
 		fn // (err?, didChooseYes?) -> Void
-	)
-	{
+	) {
 		const self = this
 		const errStr = "Override PresentQuestionAlertDialogWith in " + self.constructor.name
 		fn(new Error(errStr))

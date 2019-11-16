@@ -46,8 +46,7 @@ class WindowDialogs extends WindowDialogs_Abstract
 		okButtonTitle,
 		cancelButtonTitle,
 		fn // (err?, didChooseYes?) -> Void
-	)
-	{
+	) {
 		const self = this
 		const remote = require('electron').remote
 		const dialog = remote.dialog
@@ -59,11 +58,11 @@ class WindowDialogs extends WindowDialogs_Abstract
 			title: title,
 			message: message
 		}
-		var choice = dialog.showMessageBox(
+		var clickedButtonIdx = dialog.showMessageBoxSync(
 			electronWindow,
 			options
 		)
-		const didChooseYes = choice === 0
+		const didChooseYes = clickedButtonIdx === 0
 		fn(null, didChooseYes)
 	}
 }
