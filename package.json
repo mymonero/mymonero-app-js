@@ -2,7 +2,7 @@
   "name": "MyMonero",
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
-  "version": "1.1.12",
+  "version": "1.1.13",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": "https://github.com/mymonero/mymonero-app-js",
   "private": false,
@@ -118,10 +118,10 @@
     ]
   },
   "engines": {
-    "node": "7.4.0"
+    "node": "12.4.0"
   },
   "dependencies": {
-    "async": "^3.1.0",
+    "async": "3.1.0",
     "electron-context-menu": "0.15.1",
     "electron-log": "3.0.9",
     "electron-updater": "4.2.0",
@@ -142,7 +142,7 @@
     "electron-packager": "14.1.0",
     "eslint": "5.6.0",
     "request": "2.88.0",
-    "sharp": "0.20.8",
+    "sharp": "0.22.1",
     "webpack": "4.19.1",
     "webpack-cli": "3.1.0",
     "webpack-merge": "4.1.4",
