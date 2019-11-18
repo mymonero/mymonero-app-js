@@ -9,7 +9,7 @@
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
     "start": "electron ./local_modules/electron_main/electron_main.js",
-    "start-dev": "NODE_ENV=development electron ./local_modules/electron_main/electron_main.js",
+    "start-dev": "NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
     "dist-m": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m -p never",
     "dist-w": "electron-builder -w -p never --ia32 --x64",
     "dist-l": "electron-builder -l -p never",
