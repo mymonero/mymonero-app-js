@@ -56,9 +56,8 @@ module.exports =
 		colors: true
 	},
 	plugins: [
-        // Fixes warning in moment locales require
-        //   Module not found: Error: Can't resolve './locale' in ...
-        new webpack.IgnorePlugin(/\.\/locale$/)
+		// to fix warning from locales require in moment, "Module not found: Error: Can't resolve './locale/"
+		new webpack.IgnorePlugin(/\.\/locale$/)
     ],
 	module: {
 		rules: [
