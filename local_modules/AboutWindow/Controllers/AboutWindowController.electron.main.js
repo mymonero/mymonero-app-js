@@ -69,6 +69,7 @@ class AboutWindowController
 			titleBarStyle: "hiddenInset",
 			webPreferences: { // these are all currently the default values but stating them here to be explicit…
 				webSecurity: true, // sets allowDisplayingInsecureContent and allowRunningInsecureContent to true
+				nodeIntegration: true, // to support require et al
 				allowDisplayingInsecureContent: false, // https content only
 				allowRunningInsecureContent: false // html/js/css from https only
 			}
