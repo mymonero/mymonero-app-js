@@ -28,6 +28,7 @@
 //
 "use strict"
 //
+const webpack = require('webpack')
 const path = require('path')
 //
 module.exports = 
@@ -54,6 +55,11 @@ module.exports =
 	stats: {
 		colors: true
 	},
+	plugins: [
+        // Fixes warning in moment locales require
+        //   Module not found: Error: Can't resolve './locale' in ...
+        new webpack.IgnorePlugin(/\.\/locale$/)
+    ],
 	module: {
 		rules: [
 			{
@@ -78,17 +84,17 @@ module.exports =
 				test: /\.js$/,
 				exclude: {
 					test: [
-						path.join(__dirname, 'node_modules')
+						path.join(__dirname, 'node_modules'),
+						/MyMoneroCoreCpp_ASMJS\.asm\.js/,
+						/MyMoneroCoreCpp_ASMJS\.wasm/,
+						/MyMoneroCoreCpp_WASM\.js/,
+						/MyMoneroCoreCpp_WASM\.wasm/,
+						/MyMoneroCoreBridge\.js/,
+						/MyMoneroCoreBridgeClass\.js/
 					],
 					exclude: [
-						'MyMoneroCoreCpp_ASMJS.asm.js',
-						'MyMoneroCoreCpp_ASMJS.wasm',
-						'MyMoneroCoreCpp_WASM.js',
-						'MyMoneroCoreCpp_WASM.wasm',
-						'MyMoneroCoreBridge.js',
-						'MyMoneroCoreBridgeClass.js',
-						'mymonero-core-js/tests',
-						'mymonero_libapp_js/tests',
+						path.resolve(__dirname, 'mymonero-core-js/tests'),
+						path.resolve(__dirname, 'mymonero_libapp_js/tests'),
 					]
 				},
 				use: [
