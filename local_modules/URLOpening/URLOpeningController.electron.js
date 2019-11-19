@@ -87,7 +87,8 @@ class URLOpeningController extends URLOpeningController_Abstract
 		{
 			const {dialog} = require('electron')
 			dialog.showMessageBox({
-				"message": "Sorry, that does not appear to be a valid Monero URL."
+				buttons: [ 'OK' ],
+				message: "Sorry, that does not appear to be a valid Monero URL."
 			})
 		}
 		if (self.context.app.isReady()) {
