@@ -20,6 +20,7 @@
     "copyright": "Copyright © 2014-2019 MyMonero/",
     "asar": true,
     "forceCodeSigning": false,
+    "afterPack": "./build-afterPack.js",
     "files": [
       "local_modules/**/*.{js,json,wasm}",
       "local_modules/**/*.{png,icns,ico,otf,ttf}",
