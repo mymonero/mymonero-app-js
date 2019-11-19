@@ -143,7 +143,8 @@ class Controller extends EventEmitter
 				dialog.showMessageBox({
 					title: 'No Update Available',
 					icon: pathTo_iconImage_png,
-					message: 'Current version is up-to-date.'
+					message: 'Current version is up-to-date.',
+					buttons: [ 'OK' ]
 				})
 			}
 			self.__didFinishUpdatesCheck() // clean up state and emit
