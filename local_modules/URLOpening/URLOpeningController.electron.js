@@ -106,7 +106,7 @@ class URLOpeningController extends URLOpeningController_Abstract
 		if (isMacOS == true) { // as we handle this with open-url
 			return
 		}
-		const numberOfArgsIfNoPossibleURIPassed = process.env.NODE_ENV === 'development' ? 2 : 1
+		const numberOfArgsIfNoPossibleURIPassed = process.env.NODE_ENV === 'development' ? 3 : 1
 		// ^-- we need to check if prod because in dev, the app is run by executing electron with the app entrypoint as the first arg
 		if (argv.length <= numberOfArgsIfNoPossibleURIPassed) { // simply launched, no args
 			return
