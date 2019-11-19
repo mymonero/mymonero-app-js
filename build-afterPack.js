@@ -33,7 +33,6 @@ const { exec } = require('./build-util')
 
 exports.default = async function(context)
 {
-  console.log("~~~~~~~> ", context)
   const isLinux = context.targets.find(target => target.name === 'appImage')
   if (!isLinux) {
     return
@@ -42,9 +41,9 @@ exports.default = async function(context)
   const originalDir = process.cwd()
   const dirname = context.appOutDir
   chdir(dirname)
-  console.log("~~~~~~~~~> dirname", dirname)
 
   const appname_lc = "mymonero"
+  console.log("~~~~~> WARNING: Applying customization to wrap actual "+appname_lc+".bin in a call with arg '--no-sandbox' to https://github.com/electron-userland/electron-builder/issues/3872")
 
   await exec('mv', [appname_lc, `${appname_lc}.bin`])
   const wrapperScript = `#!/bin/bash
