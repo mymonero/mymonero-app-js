@@ -43,7 +43,7 @@ let k_defaults_record =
 	displayCcySymbol: Currencies.ccySymbolsByCcy.XMR, // default
 	authentication_requireWhenSending: true,
 	authentication_requireWhenDisclosingWalletSecrets: true,
-	autoDownloadUpdatesEnabled: true 
+	autoInstallUpdatesOnQuitEnabled: true 
 }
 //
 class SettingsController extends EventEmitter
@@ -119,10 +119,10 @@ class SettingsController extends EventEmitter
 			} else {
 				self.authentication_requireWhenDisclosingWalletSecrets = record_doc.authentication_requireWhenDisclosingWalletSecrets 
 			}
-			if (typeof record_doc.autoDownloadUpdatesEnabled == 'undefined' || record_doc.autoDownloadUpdatesEnabled == null) {
-				self.autoDownloadUpdatesEnabled = k_defaults_record.autoDownloadUpdatesEnabled
+			if (typeof record_doc.autoInstallUpdatesOnQuitEnabled == 'undefined' || record_doc.autoInstallUpdatesOnQuitEnabled == null) {
+				self.autoInstallUpdatesOnQuitEnabled = k_defaults_record.autoInstallUpdatesOnQuitEnabled
 			} else {
-				self.autoDownloadUpdatesEnabled = record_doc.autoDownloadUpdatesEnabled
+				self.autoInstallUpdatesOnQuitEnabled = record_doc.autoInstallUpdatesOnQuitEnabled
 			}
 			//
 			self._setBooted() // all done!
@@ -169,18 +169,18 @@ class SettingsController extends EventEmitter
 	{
 		return "EventName_settingsChanged_authentication_requireWhenDisclosingWalletSecrets"
 	}
-	EventName_settingsChanged_autoDownloadUpdatesEnabled()
+	EventName_settingsChanged_autoInstallUpdatesOnQuitEnabled()
 	{
-		return "EventName_settingsChanged_autoDownloadUpdatesEnabled"
+		return "EventName_settingsChanged_autoInstallUpdatesOnQuitEnabled"
 	}
 	//
 	AppTimeoutNeverValue()
 	{
 		return -1
 	}
-	defaultValue__autoDownloadUpdatesEnabled()
+	defaultValue__autoInstallUpdatesOnQuitEnabled()
 	{
-		return k_defaults_record.autoDownloadUpdatesEnabled
+		return k_defaults_record.autoInstallUpdatesOnQuitEnabled
 	}
 	//
 	//
@@ -200,7 +200,7 @@ class SettingsController extends EventEmitter
 				var didUpdate_displayCcySymbol = false
 				var didUpdate_authentication_requireWhenSending = false
 				var didUpdate_authentication_requireWhenDisclosingWalletSecrets = false
-				var didUpdate_autoDownloadUpdatesEnabled = false
+				var didUpdate_autoInstallUpdatesOnQuitEnabled = false
 				for (let valueKey of valueKeys) {
 					const value = valuesByKey[valueKey]
 					{ // validate / mark as updated for yield later
@@ -214,8 +214,8 @@ class SettingsController extends EventEmitter
 							didUpdate_authentication_requireWhenSending = true
 						} else if (valueKey === "authentication_requireWhenDisclosingWalletSecrets") {
 							didUpdate_authentication_requireWhenDisclosingWalletSecrets = true
-						} else if (valueKey == "autoDownloadUpdatesEnabled") {
-							didUpdate_autoDownloadUpdatesEnabled = true
+						} else if (valueKey == "autoInstallUpdatesOnQuitEnabled") {
+							didUpdate_autoInstallUpdatesOnQuitEnabled = true
 						}
 						// NOTE: not checking invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount b/c invisible_ and therefore always set programmatically
 					}
@@ -260,10 +260,10 @@ class SettingsController extends EventEmitter
 									self.authentication_requireWhenDisclosingWalletSecrets
 								)
 							}
-							if (didUpdate_autoDownloadUpdatesEnabled) {
+							if (didUpdate_autoInstallUpdatesOnQuitEnabled) {
 								self.emit(
-									self.EventName_settingsChanged_autoDownloadUpdatesEnabled(),
-									self.autoDownloadUpdatesEnabled
+									self.EventName_settingsChanged_autoInstallUpdatesOnQuitEnabled(),
+									self.autoInstallUpdatesOnQuitEnabled
 								)
 							}
 						}
@@ -304,7 +304,7 @@ class SettingsController extends EventEmitter
 					displayCcySymbol: self.displayCcySymbol,
 					authentication_requireWhenSending: self.authentication_requireWhenSending,
 					authentication_requireWhenDisclosingWalletSecrets: self.authentication_requireWhenDisclosingWalletSecrets,
-					autoDownloadUpdatesEnabled: self.autoDownloadUpdatesEnabled
+					autoInstallUpdatesOnQuitEnabled: self.autoInstallUpdatesOnQuitEnabled
 				}
 				if (self._id === null || typeof self._id === 'undefined') {
 					_proceedTo_insertNewDocument(persistableDocument)

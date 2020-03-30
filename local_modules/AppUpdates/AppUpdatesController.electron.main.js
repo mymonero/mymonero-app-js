@@ -45,8 +45,8 @@ if (useMockedAutoUpdater) { // `false &&` means don't do it even in dev mode
 	}
 }
 if (autoUpdater) {
-	autoUpdater.autoDownload = false; // No sneaking updates in if Pref has it turned off
-	autoUpdater.autoInstallOnAppQuit = false; // This also gets managed
+	autoUpdater.autoDownload = true; // Allow downloads, but keep auto-install-on-quit OFF unless changed by Prefs
+	autoUpdater.autoInstallOnAppQuit = false; // No sneaking updates in if Pref has it turned off
 }
 //
 const path = require("path")
@@ -155,9 +155,11 @@ class Controller extends EventEmitter
 			self.dateAnUpdateLastDownloadedDuringRun = new Date()
 			//
 			if (autoUpdater.autoDownload && self.lastCheckWasManuallyInitiated != true) {
-				if (autoUpdater.autoInstallOnAppQuit != true) {
-					console.warn("Unexpected autoUpdater.autoDownload && !autoUpdater.autoInstallOnAppQuit")
-				}
+				//
+				// now that autoInstallOnAppQuit is fixed, this warn may no longer be true
+				// if (autoUpdater.autoInstallOnAppQuit != true) {
+				// 	console.warn("Unexpected autoUpdater.autoDownload && !autoUpdater.autoInstallOnAppQuit")
+				// }
 				if (self.lastCheckWasManuallyInitiated == true) {
 					throw "This should be a dialog"
 				}
@@ -253,11 +255,11 @@ class Controller extends EventEmitter
 			self.IPCMethod__ViewOfSettingsUpdated(), 
 			function(event, params)
 			{
-				const autoDownloadUpdatesEnabled = params.autoDownloadUpdatesEnabled
+				const autoInstallUpdatesOnQuitEnabled = params.autoInstallUpdatesOnQuitEnabled
 				// Called on SettingsController boot and on field toggles.
 				// This will also get called on a DeleteEverything.
 				// When app gets locked down we don't need to set autoupdate to off because if it's set to on, it's ok to allow autoupdate even if the app is locked
-				self.set_autoUpdateInstallEnabled(autoDownloadUpdatesEnabled)
+				self.set_autoUpdateInstallEnabled(autoInstallUpdatesOnQuitEnabled)
 			}
 		);
 	}
@@ -275,7 +277,10 @@ class Controller extends EventEmitter
 		if (autoUpdater == null) {
 			throw "The app should disallow calling set_autoUpdateInstallEnabled(…) while autoUpdater is legally null."
 		}
-		autoUpdater.autoDownload = to_isEnabled;
+		//
+		/* autoUpdater.autoDownload = to_isEnabled; */
+		// ^---- This can be left set to always true, now that autoInstallOnAppQuit is working  https://github.com/electron-userland/electron-builder/issues/3330
+		//
 		autoUpdater.autoInstallOnAppQuit = to_isEnabled;
 		// These get picked up by the autoUpdater again when its checkForUpdates() is called
 	}

@@ -387,13 +387,13 @@ class SettingsView extends View
 			div.appendChild(labelLayer)
 			{
 				const switchView = commonComponents_switchToggles.New_fieldValue_switchToggleView({
-					note: "Download automatically",
+					note: "Auto-install on quit",
 					border: true,
 					changed_fn: function(isChecked)
 					{
 						self.context.settingsController.Set_settings_valuesByKey(
 							{
-								autoDownloadUpdatesEnabled: isChecked
+								autoInstallUpdatesOnQuitEnabled: isChecked
 							},
 							function(err)
 							{
@@ -430,7 +430,7 @@ class SettingsView extends View
 					}
 				}, self.context)  
 				div.appendChild(switchView.layer)
-				self.autoDownloadUpdatesEnabled_switchView = switchView
+				self.autoInstallUpdatesOnQuitEnabled_switchView = switchView
 			}
 		}
 		self.form_containerLayer.appendChild(div)
@@ -786,9 +786,9 @@ class SettingsView extends View
 				true, // squelch_changed_fn_emit - or we'd get redundant saves
 				true // setWithoutShouldToggle - or we get asked to auth
 			)
-			if (typeof self.autoDownloadUpdatesEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
-				self.autoDownloadUpdatesEnabled_switchView.setChecked(
-					self.context.settingsController.autoDownloadUpdatesEnabled,
+			if (typeof self.autoInstallUpdatesOnQuitEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
+				self.autoInstallUpdatesOnQuitEnabled_switchView.setChecked(
+					self.context.settingsController.autoInstallUpdatesOnQuitEnabled,
 					true, // squelch_changed_fn_emit - or we'd get redundant saves
 					true // setWithoutShouldToggle - or we get asked to auth
 				)
