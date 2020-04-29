@@ -6,15 +6,15 @@
 // permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this list of
-//	conditions and the following disclaimer.
+//    conditions and the following disclaimer.
 //
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//	of conditions and the following disclaimer in the documentation and/or other
-//	materials provided with the distribution.
+//    of conditions and the following disclaimer in the documentation and/or other
+//    materials provided with the distribution.
 //
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
-//	used to endorse or promote products derived from this software without specific
-//	prior written permission.
+//    used to endorse or promote products derived from this software without specific
+//    prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -470,11 +470,11 @@ class WalletDetailsView extends View {
         //
         // self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction = function()
         // {
-        // 	self._configureUIWithWallet__heightsAndImportAndFetchingState()
+        //     self._configureUIWithWallet__heightsAndImportAndFetchingState()
         // }
         // self.wallet.on(
-        // 	self.wallet.EventName_isFetchingUpdatesChanged(),
-        // 	self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
+        //     self.wallet.EventName_isFetchingUpdatesChanged(),
+        //     self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
         // )
         //
         // deletion
@@ -594,8 +594,8 @@ class WalletDetailsView extends View {
         self.wallet_EventName_transactionsChanged_listenerFunction = null
         //
         // self.wallet.removeListener(
-        // 	self.wallet.EventName_isFetchingUpdatesChanged(),
-        // 	self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
+        //     self.wallet.EventName_isFetchingUpdatesChanged(),
+        //     self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction
         // )
         // self.wallet_EventName_isFetchingUpdatesChanged_listenerFunction = null
         //
@@ -743,7 +743,7 @@ class WalletDetailsView extends View {
         }
         // hopefully these will be able to handle small enough values .. maybe switch to BigInt w/o doubles .. but fwiw they are just for display
         let XMR = Currencies.ccySymbolsByCcy.XMR
-        
+
         const amountPending_JSBigInt = wallet.AmountPending_JSBigInt()
         const hasPendingAmount = amountPending_JSBigInt.compare(0) > 0
         const amountLocked_JSBigInt = wallet.locked_balance || new JSBigInt(0)
@@ -784,6 +784,15 @@ class WalletDetailsView extends View {
     _configureUIWithWallet__transactions() {
         const self = this
         const wallet = self.wallet
+        let currentLocale
+        self.context.locale.Locale(function(err, locale)
+        {
+            if (err) {
+                console.error("Error obtaining the current locale.")
+                throw err
+            }
+            currentLocale = locale
+        })
         const wallet_bootFailed = wallet.didFailToInitialize_flag || wallet.didFailToBoot_flag
         const layer_transactions = self.layer_transactions
         while (layer_transactions.firstChild) {
@@ -832,7 +841,7 @@ class WalletDetailsView extends View {
         {
             stateCachedTransactions.forEach(
                 function (tx, i) {
-                    // console.log("tx", JSON.stringify(tx, null, '	'))
+                    // console.log("tx", JSON.stringify(tx, null, ' '))
                     const listItemLayer = document.createElement("div")
                     listContainerLayer.appendChild(listItemLayer)
                     {
@@ -898,7 +907,7 @@ class WalletDetailsView extends View {
 
                         const date = tx.timestamp // TODO: this in UTC?
                         const dateString = date.toLocaleDateString( // (e.g. 27 NOV 2016)
-                            'en-US'/*for now*/,
+                            currentLocale,
                             {year: 'numeric', month: 'short', day: 'numeric'}
                         ).toUpperCase()
                         div.innerHTML = dateString
@@ -1005,7 +1014,7 @@ class WalletDetailsView extends View {
                     var messageText;
                     var progressLabelLayer_innerHTMLStr = "" // default
                     const nBlocks = self.wallet.NBlocksBehind()
-                    /*					if (wallet.IsFetchingAnyUpdates()) {
+                    /*                  if (wallet.IsFetchingAnyUpdates()) {
                                             messageText = self.context.isMobile == true
                                                 ? "FETCHING…"
                                                 : "FETCHING UPDATES…"
