@@ -113,6 +113,7 @@ class SettingsView extends View
 					self._setup_form_field_appUpdates()
 				}
 			}
+			self._setup_form_field_versionNumber()
 			self._setup_deleteEverythingButton()
 			//
 			containerLayer.style.paddingBottom = "64px"
@@ -435,6 +436,24 @@ class SettingsView extends View
 		}
 		self.form_containerLayer.appendChild(div)
 	}
+
+	_setup_form_field_versionNumber()
+	{
+		const self = this
+		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
+		{
+			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("SOFTWARE VERSION", self.context)
+			div.appendChild(labelLayer)
+
+			const messageLayer = commonComponents_forms.New_fieldAccessory_messageLayer(self.context)
+			messageLayer.style.wordBreak = "break-word"
+			messageLayer.innerHTML = 'v1.1.13'
+			div.appendChild(messageLayer)
+
+		}
+		self.form_containerLayer.appendChild(div)
+	}
+
 	_setup_form_field_displayCcy()
 	{
 		const self = this
