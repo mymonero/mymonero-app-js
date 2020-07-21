@@ -29,7 +29,6 @@
 "use strict"
 //
 const View = require('../Views/View.web')
-const commonComponents_hoverableCells = require('./hoverableCells.web')
 //
 const ActionButton_h = 32
 const ActionButton_rightMargin = 9
@@ -110,12 +109,12 @@ function New_ActionButtonView(
 	}
 	view.SetColorType = function(colorType)
 	{
-		layer.classList.remove(commonComponents_hoverableCells.ClassFor_GreyCell())
-		layer.classList.remove(commonComponents_hoverableCells.ClassFor_BlueCell())
-		layer.classList.remove(commonComponents_hoverableCells.ClassFor_RedCell())
+		layer.classList.remove('utility')
+		layer.classList.remove('action')
+		layer.classList.remove('destructive')
 		//		
 		if (colorType === "grey") {
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+			layer.classList.add('utility')
 			layer.style.color = "#FCFBFC"
 			layer.style.backgroundColor = "#383638"
 			if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
@@ -134,7 +133,7 @@ function New_ActionButtonView(
 				layer.style.lineHeight = ActionButton_h + "px" // reset/set on mobile - cause font size is consistent
 			}
 		} else if (colorType == "blue") {
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
+			layer.classList.add('action')
 			layer.style.color = "#161416"
 			layer.style.backgroundColor = "#00C6FF"
 			if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
@@ -152,7 +151,7 @@ function New_ActionButtonView(
 			layer.style.transform = "none" // reset
 			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else if (colorType === "red") {
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_RedCell())
+			layer.classList.add('destructive')
 			layer.style.color = "#161416"
 			layer.style.backgroundColor = "#f97777"
 			if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
@@ -190,8 +189,8 @@ function New_ActionButtonView(
 		layer.style.boxSizing = "border-box"
 		layer.style.borderRadius = "3px"
 		{
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-			layer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable())
+			layer.classList.add('hoverable-cell')
+			layer.classList.add('disableable')
 			view.SetColorType(optl_colorType || "grey")
 		}		
 		layer.style.textDecoration = "none"

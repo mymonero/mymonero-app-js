@@ -33,54 +33,9 @@ const emoji_web = require('../Emoji/emoji_web')
 //
 const default__margin_h = 16
 const default__margin_v = 18
-//
-// CSS rules
-const Views__cssRules = require('../Views/cssRules.web')
-const NamespaceName = "emptyScreens"
-const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	`.${NamespaceName} {
-		position: relative;
-		display: table; /* for valign */
-		border: 1px solid #373537;
-		border-radius: 5px;
-	}`,
-	`.${NamespaceName} .content-container .message-label {
-		margin: 0 0 0 0;
-		width: 100%;
-		height: auto;
-		line-height: 19px;
-		color: #9e9c9e;
-		text-align: center;
-	}`,
-	`.${NamespaceName} .content-container .emoji-label {
-		margin: 0 0 23px 0;
-		width: 100%;
-		height: 21px;
-		font-size: 13px;
-		text-align: center;
-		-webkit-font-smoothing: subpixel-antialiased;
-	}`,
-	`.${NamespaceName} .content-container .emoji-label .emojione {
-		transform: scale(.5);
-		margin-left: 0px;
-		margin-top: 1px;
-	}`
-]
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
-//
-function New_EmptyStateMessageContainerView(
-	optl_emoji, 
-	optl_messageText, 
-	context, 
-	optl_explicitMarginH, 
-	optl_explicitMarginV, 
-	optl_contentTranslateYPX
-)
+
+function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, context, optl_explicitMarginH, optl_explicitMarginV, optl_contentTranslateYPX)
 {
-	__injectCSSRules_ifNecessary()
-	//
 	const nativeEmoji = typeof optl_emoji === 'string' ? optl_emoji : "😀"
 	const messageText = typeof optl_messageText === 'string' ? optl_messageText : ""
 	const margin_h = typeof optl_explicitMarginH !== 'undefined' ? optl_explicitMarginH : default__margin_h
@@ -92,7 +47,7 @@ function New_EmptyStateMessageContainerView(
 	}
 	{
 		const layer = view.layer
-		layer.classList.add(NamespaceName)
+		layer.classList.add("emptyScreens")
 		layer.style.width = `calc(100% - ${2 * margin_h}px - 2px)` // -2px for border
 		layer.style.height = `calc(100% - ${2 * margin_v}px - 2px)` // -2px for border
 		layer.style.margin = `${margin_v}px ${margin_h}px`

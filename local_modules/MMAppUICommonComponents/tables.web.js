@@ -341,7 +341,7 @@ exports.New_createNewRecordNamedButtonView = New_createNewRecordNamedButtonView
 function New_clearingBreakLayer()
 {
 	const layer = document.createElement("br")
-	layer.clear = "both"
+	layer.style.clear = "both"
 	//
 	return layer
 }
@@ -430,7 +430,8 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	//
 	const isValueNil = value === null || typeof value === 'undefined' || value === ""
 	const valueToDisplay = isValueNil === false ? value : valueToDisplayIfValueNil_orDefault
-	const div = New_fieldContainerLayer()
+	const div = document.createElement("div")
+	div.className = "table_field"
 	const padding_btm = isTruncatedPreviewForm ? 12 : 19
 	div.style.padding = `15px 0 ${padding_btm}px 0`
 	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)

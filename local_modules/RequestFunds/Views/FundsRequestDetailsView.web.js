@@ -119,7 +119,8 @@ class FundsRequestDetailsView extends View
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		containerLayer.style.padding = "0 0 0 15px" // to get separator inset
 		{
-			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+			const div = document.createElement("div")
+			div.className = "table_field"
 			div.style.padding = "15px 0 17px 0"
 			{
 				{ // left
@@ -197,7 +198,8 @@ class FundsRequestDetailsView extends View
 		}
 		containerLayer.appendChild(commonComponents_tables.New_separatorLayer(self.context))
 		{
-			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+			const div = document.createElement("div")
+			div.className = "table_field"
 			div.style.padding = "15px 0 17px 0"
 			{
 				const clickableLink_uri = self.fundsRequest.Lazy_URI__addressAsAuthority()
@@ -241,7 +243,8 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
-		const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+		const div = document.createElement("div")
+		div.className = "table_field"
 		div.style.padding = "15px 0 5px 0" // 5px instead of 17px cause value layer in this special case has p tags with their own padding/margin
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()

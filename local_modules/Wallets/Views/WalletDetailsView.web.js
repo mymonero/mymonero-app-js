@@ -38,7 +38,6 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const InfoDisclosingView = require('../../InfoDisclosingView/Views/InfoDisclosingView.web')
 //
@@ -875,8 +874,8 @@ class WalletDetailsView extends View
 						listItemLayer.style.width = "100%"
 						listItemLayer.style.height = "74px"
 						//
-						listItemLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
-						listItemLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+						listItemLayer.classList.add('utility')
+						listItemLayer.classList.add('hoverable-cell')
 					}
 					listItemLayer.addEventListener(
 						"click",

@@ -30,7 +30,6 @@
 //
 const commonComponents_walletIcons = require('./walletIcons.web')
 const Views__cssRules = require('../Views/cssRules.web')
-const commonComponents_hoverableCells = require('./hoverableCells.web')
 //
 // CSS rules
 const NamespaceName = "walletColorPicker"
@@ -143,8 +142,8 @@ function New_1OfN_WalletColorPickerInputView(context, selectHexColorString_orUnd
 		}
 		lis.push(li)
 		{
-			li.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-			li.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+			li.classList.add('hoverable-cell')
+			li.classList.add('utility')
 		}
 		{
 			const div = commonComponents_walletIcons.New_WalletIconLayer(context)

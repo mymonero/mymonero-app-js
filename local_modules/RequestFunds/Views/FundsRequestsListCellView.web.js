@@ -30,8 +30,6 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
-const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
 //
 class FundsRequestsListCellView extends ListCellView
@@ -55,8 +53,8 @@ class FundsRequestsListCellView extends ListCellView
 			const layer = self.layer
 			layer.style.position = "relative"
 			// hover effects/classes
-			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+			self.layer.classList.add('hoverable-cell')
+			self.layer.classList.add('utility')
 		}
 		{ 
 			const layer = commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context)

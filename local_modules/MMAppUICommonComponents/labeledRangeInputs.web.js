@@ -27,14 +27,14 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 const View = require('../Views/View.web')
 const Views__cssRules = require('../Views/cssRules.web')
-//
+
 const k_knobWidth = 12
 const k_visibleTrackHeight = 2
 const k_runnableTrackHeight = k_knobWidth + 2
-//
+
 // CSS rules
 const NamespaceName = "labeledRangeInputs"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName

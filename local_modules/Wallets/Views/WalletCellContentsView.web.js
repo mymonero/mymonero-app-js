@@ -31,7 +31,6 @@
 const View = require('../../Views/View.web')
 const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
 let monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
@@ -59,8 +58,8 @@ class WalletCellContentsView extends View
 		const self = this
 		if (self.wantsHoverable) {
 			// hover effects/classes
-			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+			self.layer.classList.add('hoverable-cell')
+			self.layer.classList.add('utility')
 		}
 		{ 
 			const layer = self.layer

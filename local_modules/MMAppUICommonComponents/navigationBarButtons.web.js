@@ -30,8 +30,7 @@
 //
 const View = require('../Views/View.web')
 const BarButtonBaseView = require('../StackNavigation/Views/BarButtonBaseView.web')
-const commonComponents_hoverableCells = require('./hoverableCells.web')
-//	
+//
 function _New_ButtonBase_View(context, optl_didConfigureInteractivity_fn)
 {
 	const view = new BarButtonBaseView({
@@ -46,19 +45,17 @@ function _New_ButtonBase_View(context, optl_didConfigureInteractivity_fn)
 	//
 	layer.style.borderRadius = "3px"
 	layer.style.height = "24px"
-	//
 	layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 	layer.style.textAlign = "center"
 	layer.style.border = "none"
 	layer.style.textDecoration = "none"
 	layer.style.lineHeight = "24px"
-	//
 	layer.style.boxSizing = "border-box"
 	layer.style.width = "auto"
 	layer.style.padding = "0 8px"
 	//
 	view.SetEnabled(true)
-	layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+	layer.classList.add('hoverable-cell')
 	//
 	return view
 }
@@ -76,7 +73,7 @@ function New_GreyButtonView(context)
 		}
 	)
 	const layer = view.layer
-	layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+	layer.classList.add('utility')
 	if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
 		layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"	
 	} else { // avoiding shadow
@@ -89,7 +86,7 @@ function New_GreyButtonView(context)
 	layer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
 	layer.style.fontWeight = "400" // semibold desired
 	layer.style.letterSpacing = "0.5px"
-	layer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable()) // allowing this to be auto-styled as disabled
+	layer.classList.add('disableable') // allowing this to be auto-styled as disabled
 	return view
 }
 exports.New_GreyButtonView = New_GreyButtonView
@@ -121,7 +118,7 @@ function New_BlueButtonView(context)
 		}
 	)
 	const layer = view.layer
-	layer.classList.add(commonComponents_hoverableCells.ClassFor_BlueCell())
+	layer.classList.add('action')
 		
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "12px"

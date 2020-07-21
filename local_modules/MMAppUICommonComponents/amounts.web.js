@@ -27,30 +27,13 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-// const View = require('../Views/View.web')
-const Views__cssRules = require('../Views/cssRules.web')
-//
+
 const commonComponents_tables = require('./tables.web')
 const commonComponents_forms = require('./forms.web')
 const commonComponents_ccySelect = require('./ccySelect.web')
-//
+
 const monero_config = require('../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
-//
-const NamespaceName = "Forms.Amounts"
-const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	// `.form_field .field_value {
-	// 	-webkit-font-smoothing: subpixel-antialiased;
-	// }`,
-	// `.form_field .field_value::-webkit-input-placeholder  {
-	// 	-webkit-font-smoothing: subpixel-antialiased;
-	// 	color: #6B696B;
-	// }`
-]
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
-//
+
 function New_AmountInputFieldPKG(
 	context,
 	isOptional,

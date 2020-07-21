@@ -27,68 +27,18 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-const Views__cssRules = require('../Views/cssRules.web')
-const commonComponents_forms = require('./forms.web')
-//
-const emoji_web = require('../Emoji/emoji_web')
-//
-const NamespaceName = "contactPicker"
-const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	// autocomplete-results rows
-	`.${NamespaceName} .autocomplete-results .row .emojione {
-		position: absolute;
-		left: 5px;
-		top: -1px;
-		transform: scale(.5);
-	}`,
-	`.${NamespaceName} .autocomplete-results .row .title {
-		position: absolute;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 
-		top: 0px;
-		left: 48px;
-		width: calc(100% - 48px - 12px)
-	}`,
-	`.${NamespaceName} .autocomplete-results .row .title.withNonNativeEmoji	 {
-	}`,
-	//
-	// picked contacts
-	`.${NamespaceName} .picked-contact .emojione {
-		position: absolute;
-		left: 1px;
-		top: -1px;
-		transform: scale(.5);
-	}`,
-	`.${NamespaceName} .picked-contact .title {
-		margin-left: 10px;
-	}`,
-	`.${NamespaceName} .picked-contact .title.withNonNativeEmoji {
-		margin-left: 21px;
-	}`
-]
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
-//
-function New_contactPickerLayer(
-	context,
-	placeholderText, 
-	contactsListController,
-	didPickContact_fn,
-	didClearPickedContact_fn,
-	didFinishTypingInInput_fn // ((event?) -> Void)? 
-) //  -> Component (which is just a customized DOM element obj)
+const commonComponents_forms = require('./forms.web')
+const emoji_web = require('../Emoji/emoji_web')
+
+function New_contactPickerLayer(context, placeholderText, contactsListController, didPickContact_fn, didClearPickedContact_fn, didFinishTypingInInput_fn)
 { // NOTE: You must call Component_TearDown when you're done with this component
 	if (!contactsListController) {
 		throw "New_contactPickerLayer requires a contactsListController"
 	}
-	__injectCSSRules_ifNecessary()
 	//
 	const containerLayer = document.createElement("div")
-	containerLayer.classList.add(NamespaceName)
+	containerLayer.classList.add("contactPicker")
 	containerLayer.style.position = "relative"
 	containerLayer.style.width = "100%"
 	containerLayer.style.webkitUserSelect = "none" // disable selection
@@ -373,11 +323,9 @@ function _new_autocompleteResultsLayer()
 	layer.style.borderRadius = "3px"
 	layer.style.boxShadow = "0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.30)"
 	layer.style.overflowY = "auto"
-	// layer.style.webkitOverflowScrolling = "touch"
 	layer.style.zIndex = "10000" // above everything - even action buttons (absolute z-index alone may not be a sustainable methodology here)
-	//
 	layer.style.display = "none" // for now - no results at init!
-	//
+
 	return layer
 }
 function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
