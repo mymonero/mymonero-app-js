@@ -96,7 +96,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const layer = document.createElement("h3")
 		layer.innerHTML = contentString
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "20px"
 		layer.style.fontWeight = "500"
@@ -109,7 +109,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const layer = document.createElement("p")
 		layer.innerHTML = contentString
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.style.fontWeight = "normal"
 		layer.style.fontSize = "13px"
 		layer.style.color = "#8D8B8D"
@@ -167,7 +167,9 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen
 				layer.style.width = "85px"
 			}
 			layer.style.height = `${32 - 10 * 2 }px`
-			self.context.themeController.StyleLayer_FontAsMessageBearingSmallLightMonospace(layer)
+			layer.style.fontSize = "11px" // we need this to visually stand out slightly more given how it's used
+			layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+			layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
 			layer.style.color = "#f8f7f8"
 			layer.style.background = "#383638"
 			if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {

@@ -395,7 +395,7 @@ function _new_autocompleteResultRowLayer(context, contact, isAtEnd, clicked_fn)
 	layer.style.color = "#1D1B1D"
 	layer.style.fontSize = "13px"
 	layer.style.fontWeight = "500"
-	layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+	layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 	layer.style.lineHeight = height+"px" // this is commented because it's overridden in the CSS rules above
 	layer.style.webkitUserSelect = "none" // redundant but for explicitness
 	layer.style.cursor = "pointer"
@@ -494,7 +494,7 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 
 		contentLayer.style.fontSize = "13px"
 		contentLayer.style.fontWeight = "300"
-		contentLayer.style.fontFamily = context.themeController.FontFamily_monospaceRegular()
+		contentLayer.style.fontFamily = 'Native-Regular, input, menlo, monospace'
 
 		contentLayer.style.color = "#FCFBFC"
 		// contentLayer.style.webkitFontSmoothing = "subpixel-antialiased"

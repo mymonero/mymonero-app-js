@@ -104,7 +104,7 @@ var context_object_instantiation_descriptions =
 	//
 	// app controllers
 	{
-		module_path: __dirname + "/../../Passwords/Controllers/PasswordController.Full",
+		module_path: __dirname + "/../../Passwords/Controllers/PasswordController",
 		instance_key: "passwordController",
 		options: {}
 	},
@@ -120,7 +120,7 @@ var context_object_instantiation_descriptions =
 	},
 	// The following should go after the passwordController, persister, etc
 	{
-		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController.Full",
+		module_path: __dirname + "/../../WalletsList/Controllers/WalletsListController",
 		instance_key: "walletsListController",
 		options: {}
 	},
@@ -182,7 +182,7 @@ function NewHydratedContext(
 		monero_utils: monero_utils
 	}
 	// required options (which can only be obtained with `app`, etc.)
-	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.getName()
+	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_product = app.name
 	instantiation_description__hostedMoneroAPIClient.options.appUserAgent_version = app.getVersion()	
 	//
 	return require("../../runtime_context/runtime_context").NewHydratedContext(

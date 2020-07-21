@@ -50,7 +50,7 @@ const _humanReadable_AvailableUserSelectableTypesOfPassword =
 //
 // Controller
 //
-class PasswordController_Base extends EventEmitter
+class PasswordController extends EventEmitter
 {
 
 
@@ -1171,4 +1171,4 @@ class PasswordController_Base extends EventEmitter
 		self._startObserving_userIdleInWindowController()
 	}
 }
-module.exports = PasswordController_Base
+module.exports = PasswordController

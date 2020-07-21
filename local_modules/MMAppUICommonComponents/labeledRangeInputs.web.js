@@ -180,7 +180,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	{
 		const sliderSide_labelLayer = document.createElement("div")
 		sliderSide_labelLayer.innerHTML = text
-		sliderSide_labelLayer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
+		sliderSide_labelLayer.style.fontFamily = 'Native-Light, input, menlo, monospace'
 		sliderSide_labelLayer.style.color = "#8d8b8d"
 		sliderSide_labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 		sliderSide_labelLayer.style.fontSize = "11px"
@@ -210,7 +210,7 @@ function New_fieldValue_labeledRangeInputView(params, context)
 	labelLayer.style.width = labelLayer_width + "px"
 	labelLayer.style.textAlign = "center"
 	labelLayer.style.height = "15px"
-	labelLayer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
+	labelLayer.style.fontFamily = 'Native-Light, input, menlo, monospace'
 	labelLayer.style.fontWeight = "100"
 	labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
 	labelLayer.style.color = "#f8f8f8"

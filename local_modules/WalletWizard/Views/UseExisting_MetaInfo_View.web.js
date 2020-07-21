@@ -297,7 +297,15 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	{
 		const self = this
 		const layer = document.createElement("div")
-		self.context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
+		layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+		layer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
+		layer.style.fontSize = "10px"
+		layer.style.letterSpacing = "0.5px"
+		if (typeof process !== 'undefined' && process.platform === "linux") {
+			layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
+		} else {
+			layer.style.fontWeight = "300"
+		}
 		layer.style.fontSize = "11px" // must set 11px so it matches visual weight of other labels
 		layer.style.letterSpacing = "0"
 		layer.style.color = "#8d8b8d"

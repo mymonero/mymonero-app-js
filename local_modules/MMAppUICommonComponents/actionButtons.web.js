@@ -123,10 +123,11 @@ function New_ActionButtonView(
 			} else { // avoiding shadow gradient
 				layer.style.boxShadow = "inset 0 0.5px 0 0 #494749"
 			}
-			context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
-				layer,
-				true // bright content, dark bg
-			)
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
+			layer.style.letterSpacing = "0.5px"
+			layer.style.fontWeight = "400"
 			if (context.ThemeController_isMobileBrowser !== true) { // note: using the same flag as themeController for toggling font sizes - slightly fragile tho
 				layer.style.lineHeight = (ActionButton_h+2) + "px" // set for smaller font size so layout isn't messed
 			} else {
@@ -142,10 +143,12 @@ function New_ActionButtonView(
 				// TODO: add replacement box shadow w/effective color and 1.0 opacity
 				layer.style.boxShadow = "none" // temporary until replaced - to reset potential 'grey'
 			}
-			context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
-				layer,
-				false // dark content, bright bg
-			)
+
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "13px" // appears /slightly/ too bug but waygd
+			layer.style.letterSpacing = "0"
+			layer.style.fontWeight = "600"
 			layer.style.transform = "none" // reset
 			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else if (colorType === "red") {
@@ -158,10 +161,11 @@ function New_ActionButtonView(
 				// TODO: add replacement box shadow w/effective color and 1.0 opacity
 				layer.style.boxShadow = "none" // temporary until replaced - to reset potential 'grey'
 			}
-			context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
-				layer,
-				false // dark content, bright bg
-			)
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			layer.style.webkitFontSmoothing = "subpixel-antialiased"
+			layer.style.fontSize = "13px" // appears /slightly/ too bug but waygd
+			layer.style.letterSpacing = "0"
+			layer.style.fontWeight = "600"
 			layer.style.lineHeight = ActionButton_h + "px" // reset/set
 		} else {
 			throw "unrecognized colorType " + colorType
@@ -192,7 +196,7 @@ function New_ActionButtonView(
 		}		
 		layer.style.textDecoration = "none"
 		layer.style.textAlign = "center"
-		layer.style.fontFamily = context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		if (isRightmostButtonInContainer !== true) {
 			layer.style.marginRight = ActionButton_rightMargin + "px"
 		}

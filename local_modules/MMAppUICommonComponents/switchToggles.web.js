@@ -141,7 +141,9 @@ function New_fieldValue_switchToggleView(params, context)
 
 	const noteDiv = document.createElement("span")
 	noteDiv.className = "note"
-	context.themeController.StyleLayer_FontAsMessageBearingSmallLightMonospace(noteDiv)
+	noteDiv.style.fontSize = "11px" // we need this to visually stand out slightly more given how it's used
+	noteDiv.style.fontFamily = 'Native-Light, input, menlo, monospace'
+	noteDiv.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
 	noteDiv.innerHTML = note 
 	containerLayer.appendChild(noteDiv)
 
