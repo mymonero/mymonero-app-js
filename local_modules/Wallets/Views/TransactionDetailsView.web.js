@@ -127,19 +127,12 @@ class TransactionDetailsView extends View
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		layer.style.boxSizing = "border-box"
-		//
-		const margin_h = 16
 		layer.style.width = `100%`
 		layer.style.height = "100%"
-		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.overflowY = "auto"
-		// layer.style.webkitOverflowScrolling = "touch"
-		layer.style.padding = `0 ${margin_h}px 40px ${margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		//
+		layer.style.padding = `0 16px 40px 16px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 
