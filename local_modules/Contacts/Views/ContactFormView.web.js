@@ -74,12 +74,7 @@ class ContactFormView extends View
 		// layer.style.webkitOverflowScrolling = "touch"
 		layer.style.overflowX = "hidden" // cause the Emoji picker likes to protrude
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		if (self.context.Cordova_isMobile === true || self.context.isMobile === true) {
-			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
-		}
-		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		// no need to support other browsers since this is not in the web wallet

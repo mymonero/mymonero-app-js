@@ -79,9 +79,6 @@ class AddContactView extends ContactFormView
 		)
 		self.actionButtonsContainerView = view
 		{
-			if (self.context.Cordova_isMobile === true /* but not context.isMobile */) { // til we have Electron support
-				self._setup_actionButton_useCamera()
-			}
 			self._setup_actionButton_chooseFile()
 		}
 		self.form_containerLayer.appendChild(view.layer)
