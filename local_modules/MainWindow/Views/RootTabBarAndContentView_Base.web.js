@@ -251,7 +251,7 @@ class RootTabBarAndContentView extends TabBarAndContentView
 	{
 		const self = this
 		//
-		return self.context.themeController.TabBarView_thickness()
+		return 79
 	}
 	//
 	//

@@ -59,7 +59,7 @@ class ConnectivityMessageBarView extends View
 		layer.style.position = "fixed"
 		layer.style.zIndex = 100
 		var leftMargin = 16
-		leftMargin += self.context.themeController.TabBarView_thickness()
+		leftMargin += 79
 		layer.style.width = `calc(100% - ${leftMargin}px - 16px)`
 		layer.style.minHeight = "24px"
 		layer.style.padding = "4px 8px"

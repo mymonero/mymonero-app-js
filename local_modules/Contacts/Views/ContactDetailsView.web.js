@@ -101,7 +101,7 @@ class ContactDetailsView extends View
 		{ // action buttons toolbar
 			var view;
 			const actionButtonsContainerView_margin_h = 16
-			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + actionButtonsContainerView_margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowLeft = 79 + actionButtonsContainerView_margin_h // we need this for a position:fixed, width:100% container
 			const margin_fromWindowRight = actionButtonsContainerView_margin_h
 			view = commonComponents_actionButtons.New_ActionButtonsContainerView(
 				margin_fromWindowLeft,

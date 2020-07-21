@@ -71,18 +71,6 @@ class ThemeController
 		self.context = context
 		__injectCSSRules_ifNecessary(context)
 	}
-	//
-	// Accessors - UI - Metrics - Layout
-	TabBarView_thickness()
-	{
-		const self = this
-		return self.context.TabBarView_thickness
-	}
-	TabBarView_isHorizontalBar()
-	{
-		const self = this
-		return false
-	}
 
 	// Delegation/Accessors/Protocol - Navigation Bar View - Buttons - Back button
 	NavigationBarView__New_back_leftBarButtonView(clicked_fn)
