@@ -59,9 +59,7 @@ class SettingsView extends View
 	setup_views()
 	{
 		const self = this
-		{ // metrics / caches
-			self.margin_h = 0
-		}
+
 		self._setup_self_layer()
 		self._setup_form_containerLayer()
 		// self.DEBUG_BorderChildLayers()
@@ -72,19 +70,14 @@ class SettingsView extends View
 		//
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		//
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = `0 0px 0px 0px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
-		// layer.style.webkitOverflowScrolling = "touch"
-		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_form_containerLayer()
@@ -93,9 +86,6 @@ class SettingsView extends View
 		const containerLayer = document.createElement("div")
 		self.form_containerLayer = containerLayer
 		{
-			if (self.context.Settings_shouldDisplayAboutAppButton === true) {
-				self._setup_aboutAppButton()
-			}
 			self._setup_form_field_changePasswordButton()
 			self._setup_form_field_appTimeoutSlider()
 			self._setup_form_field_authentication() // no password protecting Lite app
@@ -111,30 +101,7 @@ class SettingsView extends View
 		}
 		self.layer.appendChild(containerLayer)
 	}
-	_setup_aboutAppButton()
-	{
-		const self = this
-		const div = document.createElement("div")
-		div.style.padding = "12px 0 12px 33px"
-		const buttonView = commonComponents_tables.New_clickableLinkButtonView(
-			"ABOUT MYMONERO",
-			self.context,
-			function()
-			{
-				const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-				const ModalStandaloneAboutView = require('../../AboutWindow/Views/ModalStandaloneAboutView.web')
-				const options = {}
-				const view = new ModalStandaloneAboutView(options, self.context)
-				self.current_ModalStandaloneAboutView = view
-				const navigationView = new StackAndModalNavigationView({}, self.context)
-				navigationView.SetStackViews([ view ])
-				self.navigationController.PresentView(navigationView, true)
-			}
-		)
-		buttonView.layer.style.margin = "0"
-		div.appendChild(buttonView.layer)
-		self.form_containerLayer.appendChild(div)
-	}
+
 	_setup_form_field_changePasswordButton()
 	{
 		const self = this
@@ -204,9 +171,8 @@ class SettingsView extends View
 					)
 				}
 			}, self.context)
-			const margin_h = 5
-			view.layer.style.margin = `0 ${margin_h}px`
-			view.layer.style.width = `calc(100% - ${2 * margin_h}px)`
+			view.layer.style.margin = `0 5px`
+			view.layer.style.width = `calc(100% - 10px)`
 			self.appTimeoutRangeInputView = view // NOTE: This must be torn down manually; see TearDown()
 			div.appendChild(view.layer)
 			//
@@ -546,19 +512,7 @@ class SettingsView extends View
 							throw err
 						}
 						if (didChooseYes) {
-							self.context.passwordController.InitiateDeleteEverything(
-								function(err)
-								{
-									/*
-									self.viewWillAppear()
-									self.viewDidAppear()
-									*/
-									// ^- this is to cause the UI to update itself with new values/states
-									// but is commented out here because we do not need to call it -
-									// we have the tab bar select the walletsTab for us, and if the user
-									// does come back to Settings, both of these will be called
-								}
-							)
+							self.context.passwordController.InitiateDeleteEverything(function(err) {})
 						}
 					}
 				)

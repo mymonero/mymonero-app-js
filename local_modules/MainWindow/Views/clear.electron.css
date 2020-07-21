@@ -2,3 +2,119 @@
 	padding: 0; 
 	margin: 0; 
 }
+
+.red-button {
+	display: block;
+	float: left;
+	clear: left;
+	margin-left: 32px;
+	color: #F97777;
+	font-family: Native-Light, input, menlo, monospace;
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-size: 10px;
+	letter-spacing: 0.5px;
+	text-decoration: none;
+}
+
+.red-button:hover {
+	text-decoration: underline;
+}
+/** FROM tables.web.js */
+.table_field {
+	 padding: 0;
+ }
+.table_field a.clickableLinkButton {
+
+ }
+.table_field .field_value {
+
+ }
+.table_field .field_value a,
+ .table_field .field_value a:active,
+ .table_field .field_value a:hover
+ {
+	 color: #FFFFFF;
+	 cursor: default;
+	 text-decoration: none;
+ }
+.table_field .field_value p {
+	 display: block;
+	 padding: 0 0 18px 0;
+	 word-break: break-word;
+ }
+
+.inlineMessageDialogLayer {
+	 background: rgba(245,230,125,0.05);
+	 border: 0.5px solid rgba(245,230,125,0.30);
+	 border-radius: 3px;
+	 min-height: 29px;
+	 box-sizing: border-box;
+	 margin-left: 0;
+	 margin-right: 0;
+	 padding: 6px 8px 8px 8px;
+	 margin-top: 15px;
+	 margin-bottom: 10px;
+	 height: auto;
+	 width: 100%; /* feel free to set, along with margin left */
+	 color: #F5E67E;
+	 font-size: 11px;
+	 font-weight: 400;
+	 letter-spacing: 0.5px;
+	 -webkit-font-smoothing: subpixel-antialiased;
+	 word-break: break-word;
+	 position: relative;
+	 top: 0;
+	 left: 0;
+ }
+.inlineMessageDialogLayer.wantsCloseButton {
+	 padding-right: 18px;
+ }
+.inlineMessageDialogLayer > a.close-btn {
+	 background-image: url(../../MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@3x.png);
+	 background-size: 8px 8px;
+	 background-repeat: no-repeat;
+	 background-position: center;
+	 width: 27px;
+	 height: 27px;
+	 position: absolute;
+	 right: 0px;
+	 top: 0px;
+	 display: block; /* for bounds as an a tag */
+	 opacity: 0.8;
+	 transition: opacity 0.05s ease-out;
+ }
+.inlineMessageDialogLayer > a.close-btn:hover {
+	 opacity: 1.0;
+ }
+/** END FROM tables.web.js */
+
+/** FROM forms.web.js */
+
+.form_field {
+	 padding: 0 24px 20px 24px;
+ }
+.form_field .field_title {
+ }
+.form_field .field_value {
+	 -webkit-font-smoothing: subpixel-antialiased;
+ }
+.form_field .field_value::-webkit-input-placeholder {
+	 -webkit-font-smoothing: subpixel-antialiased;
+	 color: #6B696B;
+ }
+.form_field .field_value.placeholderAsValue::-webkit-input-placeholder {
+	 color: #dfdedf;
+ }
+.iconAndMessageLayer {
+	 padding: 7px 10px 7px 10px;
+ }
+.iconAndMessageLayer > img {
+	 display: inline-block;
+	 position: relative;
+	 top: 1px;
+ }
+.iconAndMessageLayer > span {
+	 display: inline-block;
+ }
+
+/** END FROM forms.web.js */

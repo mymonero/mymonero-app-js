@@ -86,12 +86,8 @@ class CreateRequestFormView extends View
 		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
 			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
 		)
-		// layer.style.webkitOverflowScrolling = "touch"
-		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_validationMessageLayer()
