@@ -92,7 +92,7 @@ class AddContactView extends ContactFormView
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
 			// borrowing this asset til these are factored
-			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
+			"../../SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png",
 			false,
 			function(layer, e)
 			{
@@ -112,7 +112,7 @@ class AddContactView extends ContactFormView
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
 			// borrowing this asset til these are factored
-			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
+			"../../SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png",
 			true,
 			function(layer, e)
 			{

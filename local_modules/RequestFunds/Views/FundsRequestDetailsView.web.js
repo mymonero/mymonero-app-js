@@ -374,7 +374,7 @@ class FundsRequestDetailsView extends View
 		value += "\r\n---------------------------"
 		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI__addressAsAuthority()}`
 		value += `\r\n`
-		value += `\r\nIf you don't have MyMonero installed, download it from ${"https://" + self.context.appDownloadLink_domainAndPath}`
+		value += `\r\nIf you don't have MyMonero installed, download it from https://mymonero.com`
 		//
 		return value
 	}
@@ -401,8 +401,7 @@ class FundsRequestDetailsView extends View
 		}
 		value += "<p>---------------------------</p>"
 		value += `<p>If you have MyMonero installed, <a href="${self.fundsRequest.Lazy_URI__addressAsAuthority()}">press this link to send the funds</a>.</p>`
-		const appDownloadLink_domainAndPath = self.context.appDownloadLink_domainAndPath
-		value += `<p>If you don't have MyMonero installed, download it from <a href="https://${appDownloadLink_domainAndPath}">${appDownloadLink_domainAndPath}</a>.</p>`
+		value += `<p>If you don't have MyMonero installed, download it from <a href="https://mymonero.com">mymonero.com</a>.</p>`
 		//
 		return value
 	}

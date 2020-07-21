@@ -88,9 +88,7 @@ class WalletDetailsView extends View
 		self._setup_balanceLabelView()
 		self._setup_secondaryBalancesLabelLayer()
 		self._setup_account_InfoDisclosingView()
-		if (self.context.isLiteApp !== true) {
-			self._setup_sendReceive_actionButtons()
-		}
+		self._setup_sendReceive_actionButtons()
 		self._setup_layers_transactionsListLayerContainerLayer()
 	}
 	_setup_self_layer()
@@ -357,7 +355,7 @@ class WalletDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Receive", 
-			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Wallets/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
+			"../../Wallets/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
 			// TODO?: borrowing another module's asset. sort of bad
 			false,
 			function(layer, e)
@@ -391,7 +389,7 @@ class WalletDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Send", 
-			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Wallets/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
+			"../../Wallets/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
@@ -669,10 +667,6 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		const view = commonComponents_navigationBarButtons.New_RightSide_EditButtonView(self.context)
-		if (self.context.isLiteApp == true) {
-			view.layer.innerHTML = "Log&nbsp;Out"
-			view.layer.style.width = "64px"
-		}
 		const layer = view.layer
 		layer.addEventListener(
 			"click",

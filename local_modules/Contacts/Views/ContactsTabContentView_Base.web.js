@@ -54,7 +54,7 @@ class ContactsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Contacts/Resources/icon_tabBar_contacts@3x.png)",
+			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 23px"
@@ -64,7 +64,7 @@ class ContactsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Contacts/Resources/icon_tabBar_contacts__active@3x.png)",
+			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 23px"

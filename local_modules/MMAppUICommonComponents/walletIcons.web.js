@@ -77,7 +77,7 @@ function __injectCSSRules_ifNecessary()
 function New_WalletIconLayer(context, optl_sizeClass)
 {
 	var sizeClass = optl_sizeClass || SizeClasses.Large48
-	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath + (context.ThemeController_rootPathSuffixPrefixingPathToFontFiles || "")
+	const assetsPath = "../../" + (context.ThemeController_rootPathSuffixPrefixingPathToFontFiles || "")
 	//
 	__injectCSSRules_ifNecessary()
 	//

@@ -514,7 +514,7 @@ class SettingsView extends View
 				layer.style.right = "13px"
 				layer.style.top = top+"px"
 				layer.style.zIndex = "100" // above options_containerView 
-				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundImage = "url(../../SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
 				layer.style.backgroundRepeat = "no-repeat"
 				layer.style.backgroundPosition = "center"
 				layer.style.backgroundSize = w+"px "+ h+"px"

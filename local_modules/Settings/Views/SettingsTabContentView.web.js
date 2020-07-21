@@ -74,7 +74,7 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Settings/Resources/icon_tabBar_settings@3x.png)",
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "16px 16px"
@@ -84,7 +84,7 @@ class SettingsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Settings/Resources/icon_tabBar_settings__active@3x.png)",
+			backgroundImage: "url(../../Settings/Resources/icon_tabBar_settings__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "16px 16px"

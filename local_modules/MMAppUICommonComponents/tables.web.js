@@ -38,7 +38,6 @@ const NamespaceName = "Tables"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath + (context.crossPlatform_indexContextRelativeAssetsRootPathSuffix || "")
 	const cssRules =
 	[
 		`.table_field {
@@ -91,7 +90,7 @@ function cssRules_generatorFn(context)
 			padding-right: 18px;
 		}`,
 		`.inlineMessageDialogLayer > a.close-btn {
-			background-image: url(${assetsPath}MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@3x.png);
+			background-image: url(../../MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@3x.png);
 			background-size: 8px 8px;
 			background-repeat: no-repeat;
 			background-position: center;
@@ -661,7 +660,7 @@ function New_tableCell_accessoryChevronLayer(context)
 	//
 	const image_filename = "list_rightside_chevron@3x.png"
 	const layer = document.createElement("img")
-	layer.src = context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/" + image_filename
+	layer.src = "../../MMAppUICommonComponents/Resources/" + image_filename
 	layer.style.position = "absolute"
 	layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
 	layer.style.width = "7px"
