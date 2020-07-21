@@ -96,7 +96,7 @@ class ContactQRDisplayModalView extends View
 		layer.style.paddingBottom = "10px" // for spacing
 		layer.style.color = "#9E9C9E"
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.style.webkitUserSelect = "all"
 		layer.style.MozUserSelect = "all"
 		layer.style.msUserSelect = "all"

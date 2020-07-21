@@ -104,7 +104,10 @@ class NavigationBarView extends View
 			layer.style.color = self.defaultNavigationBarTitleColor
 			layer.style.position = "absolute"
 			layer.style.top = "-1px"
-			self.context.themeController.StyleLayer_FontAsMiddlingBoldSansSerif(layer)
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			layer.style.fontSize = "12px" // design says 13 but chrome/webkit/electron renders oddly, simulating with…
+			layer.style.fontWeight = "500"
+			layer.style.letterSpacing = "0.5px"
 			self.titleLayer_marginX_pxComponent = 16
 			self.titleLayer_marginX_pctComponent = .15
 			layer.style.boxSizing = "border-box"

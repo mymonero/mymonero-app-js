@@ -107,7 +107,7 @@ class ImportTransactionsModalView extends View
 		layer.style.paddingBottom = "10px" // for spacing
 		layer.style.color = "#9E9C9E"
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.innerHTML = "Loading…"
 		self.informationalHeaderLayer = layer
 		self.layer.appendChild(layer)
@@ -298,7 +298,7 @@ class ImportTransactionsModalView extends View
 		layer.style.padding = `6px ${padding_h}px 7px ${padding_h}px`
 		layer.style.margin = `4px ${margin_h}px 8px ${margin_h}px`
 		layer.style.fontWeight = "300"
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.style.fontSize = "11px"
 		layer.style.fontWeight = "400"
 		layer.style.webkitFontSmoothing = "subpixel-antialiased"

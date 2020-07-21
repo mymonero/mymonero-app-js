@@ -107,7 +107,7 @@ class FundsRequestQRDisplayView extends View
 		layer.style.MozUserSelect = "all"
 		layer.style.msUserSelect = "all"
 		layer.style.userSelect = "all"
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		var innerHTML = ""
 		{
 			let payment_id = self.initializing__fundsRequest.payment_id

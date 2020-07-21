@@ -91,7 +91,7 @@ class RootView extends View
 			layer.style.textAlign = "center"
 			layer.style.fontSize = "13px"
 			layer.style.fontWeight = "400"
-			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 			layer.style.color = "#FCFBFC"
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.innerHTML = `Version ${self.context.app.getVersion()}`
@@ -105,7 +105,7 @@ class RootView extends View
 			layer.style.textDecoration = "none"
 			layer.style.fontSize = "11px"
 			layer.style.fontWeight = "400"
-			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 			layer.style.marginTop = "3px"
 			layer.style.color = "#8D8B8D"
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"

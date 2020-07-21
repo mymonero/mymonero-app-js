@@ -109,7 +109,7 @@ class MenuController extends MenuController_Abstract
 	_new_menuSpecs()
 	{
 		const self = this
-		const appName = self.context.app.getName()
+		const appName = self.context.app.name
 		//
 		const menuSpecs = []
 		{ // MyMonero menu

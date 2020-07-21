@@ -473,10 +473,12 @@ class SettingsView extends View
 				selectLayer.style.MozAppearance = "none"
 				selectLayer.style.msAppearance = "none"
 				selectLayer.style.appearance = "none"
-				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
-					selectLayer,
-					true // bright content, dark bg
-				)
+				selectLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+				selectLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+				selectLayer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
+				selectLayer.style.letterSpacing = "0.5px"
+				selectLayer.style.fontWeight = "400"
+
 				if (typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 					selectLayer.style.textIndent = "4px"
 				} else {
