@@ -30,26 +30,9 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
-//
+
 const emoji_web = require('../../Emoji/emoji_web')
-//
-// CSS rules
-const Views__cssRules = require('../../Views/cssRules.web')
-const NamespaceName = "ContactsListCellView"
-const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules =
-[
-	`.${NamespaceName} .emoji-label {
-	}`,
-	`.${NamespaceName} .emoji-label .emojione {
-		transform: scale(.5);
-		margin-left: -7px;
-		margin-top: -6px;
-	}`
-]
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
-//
+
 class ContactsListCellView extends ListCellView
 {
 	constructor(options, context)
@@ -60,13 +43,12 @@ class ContactsListCellView extends ListCellView
 	{
 		const self = this
 		super.setup_views()
-		__injectCSSRules_ifNecessary()
-		self.layer.classList.add(NamespaceName)
+		self.layer.classList.add("ContactsListCellView")
 		self.layer.style.position = "relative"
 		self.layer.style.padding = "19px 0 7px 0"
 		{ // hover effects/classes
-			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+			self.layer.classList.add('hoverable-cell')
+			self.layer.classList.add('utility')
 		}
 		self.__setup_emojiLayer()
 		self.__setup_nameLayer()

@@ -36,7 +36,6 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_switchToggles = require('../../MMAppUICommonComponents/switchToggles.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_ccySelect = require('../../MMAppUICommonComponents/ccySelect.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
 const config__MyMonero = require('../../HostedMoneroAPIClient/config__MyMonero')
@@ -443,9 +442,9 @@ class SettingsView extends View
 					selectLayer.style.textIndent = "11px"
 				}
 				{ // hover effects/classes
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable())
+					selectLayer.classList.add('hoverable-cell')
+					selectLayer.classList.add('utility')
+					selectLayer.classList.add('disableable')
 				}
 				//
 				// observation

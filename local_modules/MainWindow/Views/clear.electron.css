@@ -118,3 +118,214 @@
  }
 
 /** END FROM forms.web.js */
+
+/** FROM EmojiPickerPopoverContentView.web.js */
+.EmojiPickerPopoverContentView {
+	 overflow-y: auto;
+ }
+.EmojiPickerPopoverContentView > .EmojiButtonView {
+	 width: 42px;
+	 height: 40px;
+	 line-height: 40px;
+	 text-indent: 0px; /* native emoji */
+	 display: inline-block;
+	 text-align: center;
+	 vertical-align: middle;
+	 font-size: 24px;
+	 cursor: pointer;
+	 background: rgba(0,0,0,0);
+	 /* transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out; */
+ }
+.EmojiPickerPopoverContentView > .EmojiButtonView.withNonNativeEmoji {
+ }
+.EmojiPickerPopoverContentView > .EmojiButtonView.active,
+.EmojiPickerPopoverContentView > .EmojiButtonView:hover {
+	 background: #F2F1F2;
+	 box-shadow: 0 0.5px 0 0 #FFFFFF, inset 0 0.5px 1px 0 #DFDEDF;
+	 border-radius: 3px;
+ }
+.EmojiPickerPopoverContentView > .EmojiButtonView .emojione {
+	 transform: scale(.75);
+	 margin-left: 3px;
+	 margin-top: 0px;
+ }
+
+/** END FROM EmojiPickerPopoverContentView.web.js */
+
+/** FROM ContactsListCellView.web.js */
+.ContactsListCellView .emoji-label {
+ }
+.ContactsListCellView .emoji-label .emojione {
+	 transform: scale(.5);
+	 margin-left: -7px;
+	 margin-top: -6px;
+ }
+
+/** END FROM ContactsListCellView.web.js */
+
+/** FROM walleticons.web.js */
+.walletIcon {
+	 position: relative;
+	 background-repeat: no-repeat;
+	 background-position: center;
+ }
+.walletIcon.large-48 {
+	 width: 48px;
+	 height: 48px;
+	 background-size: 48px 48px;
+ }
+.walletIcon.large-43 {
+	 width: 43px;
+	 height: 43px;
+	 background-size: 43px 43px;
+ }
+.walletIcon.medium-32 {
+	 width: 32px;
+	 height: 32px;
+	 background-size: 32px 32px;
+ }
+
+/** END FROM walleticons.web.js */
+
+/** FROM hoverableCells.web.js */
+.hoverable-cell {
+	 transition: background-color 0.1s ease-out;
+ }
+.hoverable-cell.utility:not(.disabled):not(.active):not([disabled]):hover {
+	 background-color: #3f3e3f !important;
+ }
+.hoverable-cell.action:not(.disabled):not(.active):not([disabled]):hover {
+	 background-color: #33d1ff !important;
+ }
+.hoverable-cell.destructive:not(.disabled):not(.active):not([disabled]):hover {
+	 background-color: #F77E7E !important;
+ }
+.hoverable-cell.disableable[disabled=disabled],
+.hoverable-cell.disableable.disabled {
+	 opacity: 0.5;
+ }
+/** END FROM hoverableCells.web.js */
+
+/** FROM activityIndicators.web.js */
+.activityIndicators .loader > .block  {
+	 margin: 1px;
+	 float: left;
+	 width: 3px;
+	 height: 8px;
+	 border-radius: 2px;
+	 box-shadow: inset 0 1px 0 rgba(73, 71, 73, 0.5), 0 1px 1px rgba(0, 0, 0, 0.3);
+ }
+.activityIndicators.on-normal-background .loader > .block  {
+	 background-color: #383638;
+	 animation: block-animate-normal-bg .75s infinite ease-in-out;
+ }
+.activityIndicators.on-accent-background .loader > .block  {
+	 background-color: #5A585A;
+	 animation: block-animate-on-accent-bg .75s infinite ease-in-out;
+ }
+.activityIndicators .loader > .block1 {
+	 animation-delay: -1.2s !important;
+ }
+.activityIndicators .loader > .block2 {
+	 animation-delay: -1.0s !important;
+ }
+.activityIndicators .loader > .block3 {
+	 animation-delay: -0.8s !important;
+ }
+@keyframes block-animate-normal-bg {
+	 0%, 20%, 60%, 100% {
+		 transform: translateY(2px);
+		 background-color: #383638;
+	 }
+	 40% {
+		 transform: translateY(0);
+		 background-color: #494749;
+	 }
+ }
+@keyframes block-animate-on-accent-bg {
+	 0%, 20%, 60%, 100% {
+		 transform: translateY(2px);
+		 background-color: #5A585A;
+	 }
+	 40% {
+		 transform: translateY(0);
+		 background-color: #7C7A7C;
+	 }
+ }
+.activityIndicators.graphicAndLabel {
+	 padding: 8px 10px 7px 32px;
+ }
+.activityIndicators.graphicAndLabel > div.loader {
+	 display: inline-block;
+	 position: relative;
+	 top: 0px;
+ }
+.activityIndicators.graphicAndLabel > span {
+	 display: inline-block;
+ }
+/** END FROM activityIndicators.web.js */
+
+/** FROM contactPicker.web.js */
+.contactPicker .autocomplete-results .row .emojione {
+	 position: absolute;
+	 left: 5px;
+	 top: -1px;
+	 transform: scale(.5);
+ }
+.contactPicker .autocomplete-results .row .title {
+	 position: absolute;
+	 white-space: nowrap;
+	 overflow: hidden;
+	 text-overflow: ellipsis;
+
+	 top: 0px;
+	 left: 48px;
+	 width: calc(100% - 48px - 12px)
+ }
+.contactPicker .autocomplete-results .row .title.withNonNativeEmoji	 {
+ }
+.contactPicker .picked-contact .emojione {
+	 position: absolute;
+	 left: 1px;
+	 top: -1px;
+	 transform: scale(.5);
+ }
+.contactPicker .picked-contact .title {
+	 margin-left: 10px;
+ }
+.contactPicker .picked-contact .title.withNonNativeEmoji {
+	 margin-left: 21px;
+ }
+
+/** END FROM contactPicker.web.js */
+
+/** FROM emptyScreens.web.js */
+.emptyScreens {
+	 position: relative;
+	 display: table; /* for valign */
+	 border: 1px solid #373537;
+	 border-radius: 5px;
+ }
+.emptyScreens .content-container .message-label {
+	 margin: 0 0 0 0;
+	 width: 100%;
+	 height: auto;
+	 line-height: 19px;
+	 color: #9e9c9e;
+	 text-align: center;
+ }
+.emptyScreens .content-container .emoji-label {
+	 margin: 0 0 23px 0;
+	 width: 100%;
+	 height: 21px;
+	 font-size: 13px;
+	 text-align: center;
+	 -webkit-font-smoothing: subpixel-antialiased;
+ }
+.emptyScreens .content-container .emoji-label .emojione {
+	 transform: scale(.5);
+	 margin-left: 0px;
+	 margin-top: 1px;
+ }
+
+/** END FROM emptyScreens.web.js */

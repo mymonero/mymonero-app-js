@@ -31,10 +31,7 @@
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
-//
 const mnemonic_languages = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/mnemonic_languages')
-//
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
 class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
@@ -151,8 +148,8 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 
 				selectLayer.style.textIndent = "11px"
 				{ // hover effects/classes
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+					selectLayer.classList.add('hoverable-cell')
+					selectLayer.classList.add('utility')
 				}
 				//
 				// observation

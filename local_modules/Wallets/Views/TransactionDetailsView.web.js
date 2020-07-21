@@ -92,7 +92,21 @@ class TransactionDetailsView extends View
 			self.layer.appendChild(layer)
 		}
 		// v- NOTE: only specifying commonComponents_forms here to get the styling, so that's somewhat fragile
-		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("DETAILS", self.context)
+		const labelLayer = document.createElement("span")
+		labelLayer.className = "field_title"
+		labelLayer.innerHTML = "DETAILS"
+		labelLayer.style.webkitUserSelect = "none"
+		labelLayer.style.MozUserSelect = "none"
+		labelLayer.style.msUserSelect = "none"
+		labelLayer.style.userSelect = "none"
+		labelLayer.style.display = "block" // own line
+		labelLayer.style.margin = "15px 0 8px 8px"
+		labelLayer.style.textAlign = "left"
+		labelLayer.style.color = "#F8F7F8"
+		labelLayer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+		labelLayer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
+		labelLayer.style.fontSize = "10px"
+		labelLayer.style.letterSpacing = "0.5px"
 		labelLayer.style.marginTop = "15px"
 		labelLayer.style.marginBottom = "0"
 		labelLayer.style.paddingTop = "0"
@@ -100,6 +114,11 @@ class TransactionDetailsView extends View
 		labelLayer.style.display = "block"
 		labelLayer.style.color = "#9E9C9E" // special case
 		labelLayer.style.fontWeight = "500" // to get specific visual weight w color
+		if (typeof process !== 'undefined' && process.platform === "linux") {
+			labelLayer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
+		} else {
+			labelLayer.style.fontWeight = "300"
+		}
 		self.layer.appendChild(labelLayer)
 		//
 		const containerLayer = document.createElement("div")
@@ -144,7 +163,8 @@ class TransactionDetailsView extends View
 	__new_tableFieldLayer_simpleValue(value, title, optl_color)
 	{
 		const self = this
-		const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+		const div = document.createElement("div")
+		div.className = "table_field"
 		div.style.padding = "17px 0"
 		//
 		const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(title, self.context)
@@ -158,9 +178,7 @@ class TransactionDetailsView extends View
 		valueLayer.style.marginTop = "-1px"
 		valueLayer.style.maxWidth = "75%" // should wrap
 		div.appendChild(valueLayer)
-		//
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?	
-		//
+		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
 		div.Component_SetValue = function(value)
 		{
 			valueLayer.Component_SetValue(value)

@@ -34,7 +34,6 @@ const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web'
 const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
@@ -45,7 +44,6 @@ const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView
 //
 const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
-const monero_paymentID_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_paymentID_utils')
 const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
 const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
 //
@@ -553,8 +551,8 @@ class SendFundsView extends View
 					selectLayer.style.textIndent = "11px"
 				}
 				{ // hover effects/classes
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+					selectLayer.classList.add('hoverable-cell')
+					selectLayer.classList.add('utility')
 				}
 				//
 				// observation
