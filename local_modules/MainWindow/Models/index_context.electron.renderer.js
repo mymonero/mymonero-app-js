@@ -173,7 +173,6 @@ function NewHydratedContext(
 		userDataAbsoluteFilepath: app.getPath('userData'),
 		isDebug: process.env.NODE_ENV === 'development',
 		platformSpecific_RootTabBarAndContentView: require('../Views/RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
-		TabBarView_thickness: 79,
 		HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
 		monero_utils: monero_utils
 	}
