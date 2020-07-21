@@ -157,7 +157,7 @@ class EditWalletView extends View
 			"wallet", 
 			self.context, 
 			"REMOVE", 
-			self.context.isLiteApp == true ? "LOG OUT…" : undefined
+			undefined
 		)
 		const layer = view.layer
 		function __proceedTo_deleteRecord()
@@ -185,11 +185,9 @@ class EditWalletView extends View
 						return false
 					}
 					self.context.windowDialogs.PresentQuestionAlertDialogWith(
-						self.context.isLiteApp == true ? 'Log out?' : 'Logging out', 
-						self.context.isLiteApp == true 
-							? 'Logging Out' 
-							: 'You are about to log out of a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need your mnemonic to recover access to this wallet.\n\nAre you sure you want to log out of this wallet?',
-						self.context.isLiteApp == true ? 'Log out' : 'Log out'/*used to be 'Remove' but that's confusing*/,
+						'Logging out',
+						'You are about to log out of a wallet.\n\nMake sure you saved your mnemonic! It can be found by clicking the arrow next to Address on the Wallet screen. You will need your mnemonic to recover access to this wallet.\n\nAre you sure you want to log out of this wallet?',
+						'Log out'/*used to be 'Remove' but that's confusing*/,
 						'Cancel',
 						function(err, didChooseYes)
 						{

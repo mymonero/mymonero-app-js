@@ -575,11 +575,7 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	div.style.padding = `15px 0 ${padding_btm}px 0`
 	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
 	const canSupportCopyButton = wantsCopyButton
-	if (canSupportCopyButton == false) {
-		if (wantsCopyButton && context.isLiteApp !== true) {
-			throw "Expected this to be lite app when unable to support copy button"
-		}
-	}
+
 	var copy_buttonLayer;
 	if (canSupportCopyButton) {
 		copy_buttonLayer = New_copyButton_aLayer(
