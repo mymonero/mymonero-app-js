@@ -100,22 +100,14 @@ class WalletsListView extends ListView
 		{ // action buttons toolbar
 			const margin_h = margin_side
 			var actionButtonsContainerView;
-			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
-				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
-				const margin_fromWindowRight = margin_h
-				actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
-					margin_fromWindowLeft, 
-					margin_fromWindowRight, 
-					self.context
-				)
-			} else {
-				actionButtonsContainerView = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-					0, 
-					0, 
-					15,
-					self.context
-				)
-			}
+			const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+			const margin_fromWindowRight = margin_h
+			actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
+				margin_fromWindowLeft,
+				margin_fromWindowRight,
+				self.context
+			)
+
 			self.actionButtonsContainerView = actionButtonsContainerView
 			{ // as these access self.actionButtonsContainerView
 				self._setup_actionButton_useExistingWallet()
@@ -214,17 +206,6 @@ class WalletsListView extends ListView
 	Navigation_Title()
 	{
 		const self = this
-		if (self.context.isLiteApp == true) { // should come before check for 0 wallets
-			const logo_w = 30
-			const logo_h = 20
-			var backgroundCSS = "background-image: url(\""
-				+ self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath
-				+ "MainWindow/Resources/www_logo@3x.png\");"
-			backgroundCSS += `background-size: ${logo_w}px ${logo_h}px;`
-			backgroundCSS += `background-position: 0 10px;`
-			backgroundCSS += `background-repeat: no-repeat;`
-			return `<a href="https://mymonero.com" target="_blank" style="text-decoration: none; color: rgb(252, 251, 252); "><span style='width: ${logo_w}px; height: ${logo_h}px; display: inline-block; margin-right: 6px;'><span style='width: 30px; height: 30px; display: inline-block; ${backgroundCSS}'>&nbsp;</span></span>MyMonero</a>`
-		}
 		if (!self.listController.records || !self.listController.records.length) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return "MyMonero"
 		}
@@ -233,9 +214,7 @@ class WalletsListView extends ListView
 	Navigation_New_RightBarButtonView()
 	{
 		const self = this
-		if (self.context.isLiteApp == true) {
-			return null
-		}
+
 		if (self.listController.records.length === 0) { // ok to access this w/o checking boot cause should be [] pre boot and view invisible to user preboot
 			return null
 		}

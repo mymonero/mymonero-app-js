@@ -140,7 +140,7 @@ function New_LeftSide_BackButtonView(context)
 	layer.style.marginTop = "10px"
 	layer.style.width = "26px"
 	layer.style.height = "24px"
-	layer.style.backgroundImage = "url("+context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/backButtonIcon@3x.png)"
+	layer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/backButtonIcon@3x.png)"
 	layer.style.backgroundSize = "9px 14px"
 	layer.style.backgroundRepeat = "no-repeat"
 	layer.style.backgroundPosition = "8px 5px"
@@ -155,7 +155,7 @@ function New_RightSide_AddButtonView(context)
 	layer.style.float = "right" // so it sticks to the right of the right btn holder view layer
 	layer.style.marginTop = "10px"
 	layer.style.width = "26px" // instead of 24px - slightly wider than H 
-	layer.style.backgroundImage = "url("+context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/addButtonIcon_10@3x.png)"
+	layer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/addButtonIcon_10@3x.png)"
 	layer.style.backgroundSize = "10px 10px"
 	layer.style.backgroundRepeat = "no-repeat"
 	layer.style.backgroundPosition = "center"

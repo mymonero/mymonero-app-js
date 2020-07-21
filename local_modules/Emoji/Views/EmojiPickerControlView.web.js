@@ -41,7 +41,7 @@ const NamespaceName = "EmojiPickerControlView"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath + (context.ThemeController_rootPathSuffixPrefixingPathToFontFiles || "")
+	const assetsPath = "../../" + (context.ThemeController_rootPathSuffixPrefixingPathToFontFiles || "")
 	const useMobRendOpts = context.Views_selectivelyEnableMobileRenderingOptimizations === true
 	const cssRules =
 	[

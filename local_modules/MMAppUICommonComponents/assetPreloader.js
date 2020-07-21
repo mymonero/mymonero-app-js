@@ -48,10 +48,9 @@ const images_filenames =
 const cached_preloadedImages = []
 function PreLoadImages(context)
 {
-	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath
 	for (let i = 0; i < images_filenames.length; i++) {
 		const filename = images_filenames[i]
-		const imageURL = `${assetsPath}MMAppUICommonComponents/Resources/${filename}`
+		const imageURL = `../../MMAppUICommonComponents/Resources/${filename}`
 		const image = new Image()
 		image.src = imageURL
 		cached_preloadedImages.push(image)

@@ -67,7 +67,7 @@ class WalletsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"WalletsList/Resources/icon_tabBar_wallets@3x.png)",
+			backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 24px"
@@ -77,7 +77,7 @@ class WalletsTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"WalletsList/Resources/icon_tabBar_wallets__active@3x.png)",
+			backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 24px"

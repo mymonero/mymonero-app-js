@@ -48,7 +48,7 @@ function New_ActionButtonsContainerView(
 	const layer = view.layer
 	{
 		layer.style.position = "fixed"
-		layer.style.top = `calc(100% - ${ActionButtonsContainerView_h}px - ${ActionButtonsContainerView_bottomMargin}px - ${context.rootViewFooterHeight}px)`
+		layer.style.top = `calc(100% - ${ActionButtonsContainerView_h}px - ${ActionButtonsContainerView_bottomMargin}px)`
 		layer.style.width = `calc(100% - ${margin_fromWindowLeft}px - ${margin_fromWindowRight}px)`
 		layer.style.height = ActionButtonsContainerView_h + "px"
 		layer.style.zIndex = 1000

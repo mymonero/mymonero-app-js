@@ -133,7 +133,7 @@ class CustomSelectView extends View
 			layer.style.right = "16px"
 			layer.style.top = "0"
 			layer.style.zIndex = "100" // above options_containerView 
-			layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)"
+			layer.style.backgroundImage = "url(../../SelectView/Resources/dropdown-arrow-down@3x.png)"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.backgroundPosition = "center"
 			layer.style.backgroundSize = w+"px "+ h+"px"

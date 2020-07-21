@@ -35,20 +35,19 @@ const NamespaceName = "ThemeController"
 const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
 function cssRules_generatorFn(context)
 {
-	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath + (context.crossPlatform_indexContextRelativeAssetsRootPathSuffix || "")
 	const cssRules =
 	[
 		`@font-face {
 			font-family: Native-Regular;
-			src: url("${assetsPath}Theme/Resources/Native-Regular.otf") format("opentype");
+			src: url(../../Theme/Resources/Native-Regular.otf") format("opentype");
 		}`,
 		`@font-face {
 			font-family: Native-Light;
-			src: url("${assetsPath}Theme/Resources/Native-Light.otf") format("opentype");
+			src: url("../../Theme/Resources/Native-Light.otf") format("opentype");
 		}`,
 		`@font-face {
 			font-family: Native-Bold;
-			src: url("${assetsPath}Theme/Resources/Native-Bold.otf") format("opentype");
+			src: url("../../Theme/Resources/Native-Bold.otf") format("opentype");
 		}`,
 	]
 	return cssRules
@@ -82,7 +81,7 @@ class ThemeController
 	TabBarView_isHorizontalBar()
 	{
 		const self = this
-		return self.context.TabBarView_isHorizontalBar
+		return false
 	}
 
 	// Delegation/Accessors/Protocol - Navigation Bar View - Buttons - Back button
