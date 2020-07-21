@@ -70,14 +70,20 @@ class WalletsListCellView extends ListCellView
 			// layer.style.border = "1px solid yellow"
 		}
 		{
-			let layer = commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context)
+			const layer = document.createElement("img")
+			layer.src = "../../MMAppUICommonComponents/Resources/list_rightside_chevron@3x.png"
+			layer.classList.add('table-chevron')
 			self.accessoryChevronLayer = layer
 			self.layer.appendChild(layer)
 		}
 		{
-			let layer = commonComponents_tables.New_tableCell_accessoryActivityIndicatorLayer(
-				true // is on dark bg
-			)
+			const layer = activityIndicators.New_Graphic_ActivityIndicatorLayer(true)
+			layer.style.position = "absolute"
+			layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
+			layer.style.width = "16px"
+			layer.style.height = `14px`
+			layer.style.right = "16px"
+			layer.style.top = `calc(50% - 7px)`
 			layer.style.display = "none"
 			self.accessoryActivityIndicatorLayer = layer
 			self.layer.appendChild(layer)

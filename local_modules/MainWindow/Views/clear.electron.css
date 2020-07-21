@@ -19,6 +19,16 @@
 .red-button:hover {
 	text-decoration: underline;
 }
+
+.table-chevron {
+	position : absolute;
+	pointer-events : none;
+	width : 7px;
+	height : 12px;
+	right : 16px;
+	top : calc(50% - 6px);
+}
+
 /** FROM tables.web.js */
 .table_field {
 	 padding: 0;

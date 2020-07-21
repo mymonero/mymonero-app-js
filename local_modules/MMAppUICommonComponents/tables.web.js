@@ -29,19 +29,9 @@
 "use strict"
 //
 const View = require('../Views/View.web')
-//
 const activityIndicators = require('./activityIndicators.web')
 const commonComponents_forms = require('./forms.web')
 
-function New_fieldContainerLayer(context)
-{
-	const layer = document.createElement("div")
-	layer.className = "table_field"
-	//
-	return layer
-}
-exports.New_fieldContainerLayer = New_fieldContainerLayer
-//
 function New_clickableLinkButtonView(buttonTitle, context, clicked_fn, optl__mouseEnter_fn, optl__mouseLeave_fn)
 {
 	clicked_fn = clicked_fn || function() {}
@@ -111,24 +101,6 @@ function New_clickableLinkButtonView(buttonTitle, context, clicked_fn, optl__mou
 	return view
 }
 exports.New_clickableLinkButtonView = New_clickableLinkButtonView
-//
-function New_fieldTitle_labelLayer(labelText, context)
-{
-	const layer = document.createElement("span")
-	layer.innerHTML = labelText
-	layer.style.float = "left"
-	layer.style.textAlign = "left"
-	layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	layer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
-	layer.style.fontWeight = "400" // semibold desired
-	layer.style.letterSpacing = "0.5px"
-	layer.style.color = "#FFFFFF"
-	layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-
-	return layer
-}
-exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
 function New_fieldValue_labelLayer(labelText, context)
 {
@@ -347,16 +319,6 @@ function New_clearingBreakLayer()
 }
 exports.New_clearingBreakLayer = New_clearingBreakLayer
 //
-function New_spacerLayer()
-{
-	const layer = document.createElement("div")
-	layer.style.width = "100%"
-	layer.style.height = "40px" // just tentative - feel free to customize
-	//
-	return layer
-}
-exports.New_spacerLayer = New_spacerLayer
-//
 function New_inlineMessageDialogLayer(context, messageString, optl_immediatelyVisible, optl_wantsXButtonHidden)
 {
 	const immediatelyVisible = optl_immediatelyVisible === true ? true : false // These are configured to not by default be initially visible
@@ -434,7 +396,16 @@ function New_copyable_longStringValueField_component_fieldContainerLayer(
 	div.className = "table_field"
 	const padding_btm = isTruncatedPreviewForm ? 12 : 19
 	div.style.padding = `15px 0 ${padding_btm}px 0`
-	var labelLayer = New_fieldTitle_labelLayer(fieldLabelTitle, context)
+	const labelLayer = document.createElement("span")
+	labelLayer.innerHTML = fieldLabelTitle
+	labelLayer.style.float = "left"
+	labelLayer.style.textAlign = "left"
+	labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+	labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+	labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+	labelLayer.style.fontWeight = "400" // semibold desired
+	labelLayer.style.letterSpacing = "0.5px"
+	labelLayer.style.color = "#FFFFFF"
 	const canSupportCopyButton = wantsCopyButton
 
 	var copy_buttonLayer;
@@ -515,42 +486,8 @@ function New_tableCell_accessoryChevronLayer(context)
 {
 	const layer = document.createElement("img")
 	layer.src = "../../MMAppUICommonComponents/Resources/list_rightside_chevron@3x.png"
-	layer.style.position = "absolute"
-	layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
-	layer.style.width = "7px"
-	layer.style.height = `12px`
-	layer.style.right = "16px"
-	layer.style.top = `calc(50% - 6px)`
+	layer.classList.add('table-chevron')
 
 	return layer
 }
 exports.New_tableCell_accessoryChevronLayer = New_tableCell_accessoryChevronLayer
-//
-function New_tableCell_accessoryActivityIndicatorLayer(isOnAccentBackground)
-{
-	const layer = activityIndicators.New_Graphic_ActivityIndicatorLayer(isOnAccentBackground)
-	layer.style.position = "absolute"
-	layer.style.pointerEvents = "none" // b/c we actually don't want to pick up pointer events nor prevent them from being received by the cell
-	layer.style.width = "16px"
-	layer.style.height = `14px`
-	layer.style.right = "16px"
-	layer.style.top = `calc(50% - 7px)`
-
-	return layer
-}
-exports.New_tableCell_accessoryActivityIndicatorLayer = New_tableCell_accessoryActivityIndicatorLayer
-//
-function New_tableCell_separatorLayer()
-{
-	const layer = document.createElement("div")
-	layer.style.background = "#413e40"
-	layer.style.position = "absolute"
-	layer.style.bottom = "-0.5px" // instead of 0… to make sure hover effects look nicer (but it might not do much in the end)
-	layer.style.height = "1px"
-	layer.style.width = `calc(100% - 50px)`
-	layer.style.left = `50px`
-	layer.style.visibility = "visible" // to be configured
-
-	return layer
-}
-exports.New_tableCell_separatorLayer = New_tableCell_separatorLayer

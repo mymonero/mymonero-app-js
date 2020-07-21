@@ -110,7 +110,14 @@ class ContactsListCellView extends ListCellView
 	__setup_cellSeparatorLayer()
 	{
 		const self = this
-		const layer = commonComponents_tables.New_tableCell_separatorLayer()
+		const layer = document.createElement("div")
+		layer.style.background = "#413e40"
+		layer.style.position = "absolute"
+		layer.style.bottom = "-0.5px" // instead of 0… to make sure hover effects look nicer (but it might not do much in the end)
+		layer.style.height = "1px"
+		layer.style.width = `calc(100% - 50px)`
+		layer.style.left = `50px`
+		layer.style.visibility = "visible" // to be configured
 		self.cellSeparatorLayer = layer
 		self.layer.appendChild(layer)
 	}
