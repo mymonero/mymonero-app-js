@@ -78,9 +78,6 @@ function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNeces
 //
 function _fromContext_wantsHoverAndSelectable(context)
 {
-	if (context.isLiteApp == true) {
-		return false // special case - b/c we'll only ever have max 1 wallet
-	}
 	return true
 }
 //
@@ -138,9 +135,6 @@ class WalletsSelectView extends ListCustomSelectView
 			layer.style.zIndex = "10" // below cells
 			layer.className = "background"
 			self.options_containerView.layer.appendChild(layer)
-		}
-		if (self.context.isLiteApp == true) {
-			self.disclosureArrowLayer.style.display = "none"
 		}
 	}
 	// Overrides

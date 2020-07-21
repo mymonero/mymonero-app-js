@@ -2237,35 +2237,7 @@ class SendFundsView extends View
 		if (absoluteFilePath != null && absoluteFilePath != "" && typeof absoluteFilePath !== 'undefined') {
 			self._shared_didPickQRCodeAtPath(absoluteFilePath)
 		} else if (file_size) { // going to assume we're in a browser
-			if (self.context.isLiteApp != true) {
 				throw "Expected this to be Lite app aka browser"
-			}
-			if (!/^image\//.test(file.type)) {
-				self.validationMessageLayer.SetValidationError("Please select a QR code image file.")
-				return
-			}
-			var img = document.createElement("img")
-			img.file = file
-			img.style.display = "none"
-			document.body.appendChild(img)
-			{
-				var reader = new FileReader()
-				reader.onload = (function(anImg)
-				{ 
-					const fn = function(e)
-					{ 
-						const loadedBase64Content = e.target.result
-						if (loadedBase64Content.indexOf("data:image/") != 0) {
-							self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
-							return
-						}
-						self._shared_didPickQRCodeWithImageSrcValue(loadedBase64Content)
-					}
-					return fn
-				})(img)
-				reader.readAsDataURL(file)
-			}
-			document.body.removeChild(img)
 		} else {
 			self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
 			return // nothing picked / canceled

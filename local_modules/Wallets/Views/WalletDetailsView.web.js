@@ -673,23 +673,7 @@ class WalletDetailsView extends View
 			function(e)
 			{
 				e.preventDefault()
-				if (self.context.isLiteApp == true) {
-					self.context.windowDialogs.PresentQuestionAlertDialogWith(
-						'Log out?',
-						'Are you sure you want to log out?',
-						'Log Out',
-						'Cancel',
-						function(err, didChooseYes)
-						{
-							if (err) {
-								throw err
-							}
-							if (didChooseYes) {
-								self.context.passwordController.InitiateDeleteEverything(function(err) {})
-							}
-						}
-					)
-				} else { // v--- self.navigationController because self is presented packaged in a StackNavigationView
+				{ // v--- self.navigationController because self is presented packaged in a StackNavigationView
 					const EditWalletView = require('./EditWalletView.web')
 					const view = new EditWalletView({
 						wallet: self.wallet
