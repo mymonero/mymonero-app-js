@@ -167,7 +167,16 @@ class TransactionDetailsView extends View
 		div.className = "table_field"
 		div.style.padding = "17px 0"
 		//
-		const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(title, self.context)
+		const labelLayer = document.createElement("span")
+		labelLayer.innerHTML = title
+		labelLayer.style.float = "left"
+		labelLayer.style.textAlign = "left"
+		labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+		labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+		labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+		labelLayer.style.fontWeight = "400" // semibold desired
+		labelLayer.style.letterSpacing = "0.5px"
+		labelLayer.style.color = "#FFFFFF"
 		self.___styleLabelLayerAsFieldHeader(labelLayer)
 		div.appendChild(labelLayer)
 		//

@@ -210,11 +210,21 @@ class ContactDetailsView extends View
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		containerLayer.style.padding = "0 0 0 15px" // to get separator inset
 		{
-			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+			const div = document.createElement("div")
+			div.className = "table_field"
 			div.style.padding = "15px 0 17px 0"
 			{
 				{ // left
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("QR Code", self.context)
+					const labelLayer = document.createElement("span")
+					labelLayer.innerHTML = "QR Code"
+					labelLayer.style.float = "left"
+					labelLayer.style.textAlign = "left"
+					labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+					labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+					labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+					labelLayer.style.fontWeight = "400" // semibold desired
+					labelLayer.style.letterSpacing = "0.5px"
+					labelLayer.style.color = "#FFFFFF"
 					labelLayer.style.margin = "0 0 0 0"
 					labelLayer.style.padding = "0"
 					div.appendChild(labelLayer)
