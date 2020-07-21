@@ -63,13 +63,11 @@ class RootView extends View
 		}
 		{
 			const layer = document.createElement("a")
-			const w = 50
-			const h = 50
-			layer.style.width = 50+"px"
-			layer.style.height = 50+"px"
+			layer.style.width = "50px"
+			layer.style.height = "50px"
 			layer.style.display = "block"
 			layer.style.outline = "none"
-			layer.style.backgroundSize = `${w}px ${h}px`
+			layer.style.backgroundSize = `50px 50px`
 			layer.style.backgroundImage = "url(../../AboutWindow/Resources/logo_solid_light@3x.png)"
 			layer.style.backgroundPosition = "center"
 			layer.style.backgroundRepeat = "no-repeat"

@@ -66,12 +66,10 @@ class EnterNewPasswordView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.backgroundColor = "#272527"
-		const paddingTop = 41 // the nav bar height - we should prolly do this on VDA and ask for actual height
-		const padding_h = 10
-		layer.style.paddingTop = paddingTop + "px"
-		layer.style.width = `calc(100% - ${2 * 14}px)`
-		layer.style.paddingLeft = padding_h + "px"
-		layer.style.height = `calc(100% - ${paddingTop}px)`
+		layer.style.paddingTop = "41px"
+		layer.style.width = `calc(100% - 28px)`
+		layer.style.paddingLeft = "10px"
+		layer.style.height = `calc(100% - 41px)`
 	}
 	_setup_form()
 	{

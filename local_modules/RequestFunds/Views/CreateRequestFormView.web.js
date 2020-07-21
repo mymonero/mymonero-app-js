@@ -82,9 +82,6 @@ class CreateRequestFormView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		if (self.context.Cordova_isMobile === true) {
-			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
-		}
 		layer.style.overflowY = "auto"
 		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
 			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()

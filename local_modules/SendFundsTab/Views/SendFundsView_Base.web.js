@@ -120,12 +120,7 @@ class SendFundsView extends View
 			}
 			self.actionButtonsContainerView = view
 			{
-				if (self.context.Cordova_isMobile === true /* but not context.isMobile */) { // til we have Electron support
-					self._setup_actionButton_useCamera()
-				}
-				if (self.context.isLiteApp != true) {
-					self._setup_actionButton_chooseFile()
-				}
+				self._setup_actionButton_chooseFile()
 			}
 			self.addSubview(view)
 		}
@@ -146,18 +141,6 @@ class SendFundsView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		if (self.context.Cordova_isMobile === true) {
-			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
-			// layer.style.webkitOverflowScrolling = "touch"
-			// disabling this cause it conflicts with touchup/end of contacts picker
-			// layer.addEventListener("touchmove", function()
-			// { // blur currently text input field on user scroll
-			// 	const activeElement = document.activeElement
-			// 	if (activeElement) {
-			// 		activeElement.blur()
-			// 	}
-			// }, false)
-		}
 		layer.style.overflowY = "auto"
 		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
 			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
@@ -1369,9 +1352,6 @@ class SendFundsView extends View
 			self.set_isSubmittable_needsUpdate() // since we've updated form enabled
 			//
 			self.context.userIdleInWindowController.ReEnable_userIdle()					
-			if (self.context.Cordova_isMobile === true) {
-				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
-			}
 			//
 			self.walletSelectView.SetEnabled(true)
 			//
@@ -1394,9 +1374,6 @@ class SendFundsView extends View
 			self.isFormDisabled = true
 			self.set_isSubmittable_needsUpdate() // since we've updated form enabled
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
-			if (self.context.Cordova_isMobile === true) {
-				window.plugins.insomnia.keepAwake() // disable screen dim/off
-			}
 			//
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Disable()
