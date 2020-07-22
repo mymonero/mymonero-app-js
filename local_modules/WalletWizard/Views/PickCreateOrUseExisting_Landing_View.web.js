@@ -30,140 +30,158 @@
 
 const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
-const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
-const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
-//
-class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen
-{
-	_setup_views()
-	{
-		const self = this
-		super._setup_views()
-		self._setup_emptyStateMessageContainerView()
-		self._setup_actionButtonsContainerView()
-		{ // update empty state message container to accommodate 
-			const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
-			self.emptyStateMessageContainerView.layer.style.height 
-				= `calc(100% - ${2 * margin_v}px + 3px - ${self.actionButtonsContainerView.layer.style.height/*no'px'*/})`
-		}
-	}
-	_setup_emptyStateMessageContainerView()
-	{
-		const self = this
-		const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
-			"🤔", 
-			"How would you like to</br>add a wallet?",
-			self.context,
-			16,
-			19
-		)
-		const layer = view.layer
-		layer.style.marginBottom = "0" // not going to use margin on the btm because action bar is there
-		self.emptyStateMessageContainerView = view
-		self.addSubview(view)
-	}
-	_setup_actionButtonsContainerView()
-	{
-		const self = this
-		const margin_h = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_h
-		const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
+const emoji_web = require('../../Emoji/emoji_web')
 
-		const view = new View({}, self.context)
-		const layer = view.layer
-		layer.style.position = "relative"
-		layer.style.width = `calc(100% - ${margin_h}px - ${margin_h}px)`
-		layer.style.marginLeft = `${margin_h}px`
-		layer.style.marginTop = `${margin_v-3}px`
-		layer.style.height = 32 + 8 + "px"
-		self.actionButtonsContainerView = view
-		{
-			self._setup_actionButton_useExistingWallet()
-			self._setup_actionButton_createNewWallet()
-		}
-		self.addSubview(view)
-	}
-	_setup_actionButton_useExistingWallet()
-	{
-		const self = this
-		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Use existing wallet", 
-			null, // no image
-			false,
-			function(layer, e)
-			{
-				self.wizardController.PatchToDifferentWizardTaskMode_byPushingScreen(
-					self.wizardController.WizardTask_Mode_AfterPick_UseExisting(), 
-					1 // first screen after 0 - maintain ability to hit 'back'
-				)
-			},
-			self.context
-		)
-		self.actionButtonsContainerView.addSubview(buttonView)
-	}
-	_setup_actionButton_createNewWallet()
-	{
-		const self = this
-		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Create new wallet", 
-			null, // no image
-			true,
-			function(layer, e)
-			{
-				self.wizardController.PatchToDifferentWizardTaskMode_byPushingScreen(
-					self.wizardController.WizardTask_Mode_AfterPick_CreateWallet(), 
-					1 // first screen after 0 - maintain ability to hit 'back'
-				)
-			},
-			self.context,
-			undefined,
-			"blue"
-		)
-		self.actionButtonsContainerView.addSubview(buttonView)
-	}
-	_setup_startObserving()
-	{
-		const self = this
-		super._setup_startObserving()
-	}
-	//
-	//
-	// Lifecycle - Teardown
-	//
-	TearDown()
-	{
-		const self = this
-		super.TearDown()
-	}
-	//
-	//
-	// Runtime - Accessors - Navigation
-	//
-	Navigation_Title()
-	{
-		return "Add Wallet"
-	}
-	Navigation_New_LeftBarButtonView()
-	{
-		const self = this
-		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
-		const layer = view.layer
-		{ // observe
-			layer.addEventListener(
-				"click",
-				function(e)
-				{
-					e.preventDefault()
-					self.wizardController._fromScreen_userPickedCancel()
-					return false
-				}
-			)
-		}
-		return view
-	}
-	//
-	//
-	// Runtime - Imperatives - 
-	//
+//
+class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen {
+    _setup_views() {
+        const self = this
+        super._setup_views()
+        self._setup_emptyStateMessageContainerView()
+        self._setup_actionButtonsContainerView()
+    }
+
+    _setup_emptyStateMessageContainerView() {
+        const self = this
+
+        const view = new View({}, self.context)
+        {
+            const layer = view.layer
+            layer.classList.add("emptyScreens")
+            layer.classList.add("empty-page-panel")
+        }
+        var contentContainerLayer;
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("content-container")
+            layer.classList.add("empty-page-content-container")
+            contentContainerLayer = layer
+            view.layer.appendChild(layer)
+        }
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("emoji-label")
+            layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(self.context, "🤔")
+            contentContainerLayer.appendChild(layer)
+        }
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("message-label")
+            layer.innerHTML = "How would you like to</br>add a wallet?"
+
+            contentContainerLayer.appendChild(layer)
+        }
+
+        self.emptyStateMessageContainerView = view
+        self.addSubview(view)
+
+    }
+
+    _setup_actionButtonsContainerView() {
+        const self = this
+
+        const view = new View({}, self.context)
+        const layer = view.layer
+        layer.classList.add('action-box-two-button')
+        self.actionButtonsContainerView = view
+        {
+            self._setup_actionButton_useExistingWallet()
+            self._setup_actionButton_createNewWallet()
+        }
+        self.addSubview(view)
+    }
+
+    _setup_actionButton_useExistingWallet() {
+        const self = this
+
+        const buttonView = new View({tag: "a"}, self.context)
+        const layer = buttonView.layer
+        layer.classList.add('utility')
+        layer.innerHTML = "Use existing wallet"
+        layer.href = "#"
+        layer.classList.add('action-button')
+        layer.classList.add('hoverable-cell')
+        layer.style.marginRight = "9px"
+
+        layer.addEventListener(
+            "click",
+            function (e) {
+                e.preventDefault()
+
+                self.wizardController.PatchToDifferentWizardTaskMode_byPushingScreen(
+                    self.wizardController.WizardTask_Mode_AfterPick_UseExisting(),
+                    1 // first screen after 0 - maintain ability to hit 'back'
+                )
+            }.bind(self)
+        )
+
+        self.actionButtonsContainerView.addSubview(buttonView)
+    }
+
+    _setup_actionButton_createNewWallet() {
+        const self = this
+
+        const buttonView = new View({tag: "a"}, self.context)
+        const layer = buttonView.layer
+        layer.classList.add('action')
+        layer.innerHTML = "Create new wallet"
+        layer.href = "#"
+        layer.classList.add('action-button')
+        layer.classList.add('hoverable-cell')
+
+        layer.addEventListener(
+            "click",
+            function (e) {
+                e.preventDefault()
+
+                self.wizardController.PatchToDifferentWizardTaskMode_byPushingScreen(
+                    self.wizardController.WizardTask_Mode_AfterPick_CreateWallet(),
+                    1 // first screen after 0 - maintain ability to hit 'back'
+                )
+            }.bind(self)
+        )
+
+        self.actionButtonsContainerView.addSubview(buttonView)
+    }
+
+    _setup_startObserving() {
+        const self = this
+        super._setup_startObserving()
+    }
+
+    //
+    // Lifecycle - Teardown
+    //
+    TearDown() {
+        const self = this
+        super.TearDown()
+    }
+
+    //
+    // Runtime - Accessors - Navigation
+    //
+    Navigation_Title() {
+        return "Add Wallet"
+    }
+
+    Navigation_New_LeftBarButtonView() {
+        const self = this
+        const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+        const layer = view.layer
+        { // observe
+            layer.addEventListener(
+                "click",
+                function (e) {
+                    e.preventDefault()
+                    self.wizardController._fromScreen_userPickedCancel()
+                    return false
+                }
+            )
+        }
+        return view
+    }
+
 }
+
 module.exports = PickCreateOrUseExisting_Landing_View

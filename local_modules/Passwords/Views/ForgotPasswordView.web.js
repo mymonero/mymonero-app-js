@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 const View = require('../../Views/View.web')
 const emoji_web = require('../../Emoji/emoji_web')
 
@@ -64,13 +64,13 @@ class ForgotPasswordView extends View {
         {
             const layer = view.layer
             layer.classList.add("emptyScreens")
-            layer.classList.add("forgot-password-panel")
+            layer.classList.add("empty-page-panel")
         }
         var contentContainerLayer;
         {
             const layer = document.createElement("div")
             layer.classList.add("content-container")
-            layer.classList.add("forgot-password-content-container")
+            layer.classList.add("empty-page-content-container")
             contentContainerLayer = layer
             view.layer.appendChild(layer)
         }
@@ -97,7 +97,7 @@ class ForgotPasswordView extends View {
 
         const view = new View({}, self.context)
         const layer = view.layer
-        layer.classList.add("forgot-password-action-box")
+        layer.classList.add("action-box-two-button")
         self.actionButtonsContainerView = view
         {
             self._setup_actionButton_nevermind()
@@ -111,7 +111,6 @@ class ForgotPasswordView extends View {
 
         const buttonView = new View({tag: "a"}, self.context)
         const layer = buttonView.layer
-
         layer.classList.add('utility')
         layer.innerHTML = "Nevermind"
         layer.href = "#"
@@ -136,7 +135,6 @@ class ForgotPasswordView extends View {
 
         const buttonView = new View({tag: "a"}, self.context)
         const layer = buttonView.layer
-
         layer.classList.add('destructive')
         layer.innerHTML = "Clear all data"
         layer.href = "#"
