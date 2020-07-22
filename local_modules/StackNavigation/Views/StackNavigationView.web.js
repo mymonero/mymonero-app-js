@@ -69,7 +69,7 @@ class StackNavigationView extends View
 			self.navigationBarView = view
 			{
 				view.on(
-					view.EventName_backButtonTapped(),
+					"EventName_backButtonTapped",
 					function()
 					{
 						self.PopView(true) // animated
@@ -105,17 +105,6 @@ class StackNavigationView extends View
 		self.stackViews = null // TODO: iterate on them and call TearDown?
 		self.topStackView = null
 	}
-	//
-	//
-	// Runtime - Accessors - Public - UI Metrics
-	//
-	NavigationBarHeight()
-	{
-		const self = this
-		//
-		return self.navigationBarView.NavigationBarHeight()
-	}
-	//
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//

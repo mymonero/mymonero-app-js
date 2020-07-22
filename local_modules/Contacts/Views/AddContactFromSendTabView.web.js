@@ -183,10 +183,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView
 	{
 		return false
 	}
-	_overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
-	{
-		return "Don't Save" // contextual - instead of 'Cancel'
-	}
+
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
