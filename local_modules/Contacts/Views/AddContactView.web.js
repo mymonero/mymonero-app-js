@@ -70,13 +70,13 @@ class AddContactView extends ContactFormView
 	_setup_form_qrPicking_actionButtons()
 	{
 		const self = this
-		const margin_h = 24
-		var view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-			margin_h, 
-			margin_h, 
-			15,
-			self.context
-		)
+		const view = new View({}, self.context)
+		const layer = view.layer
+		layer.style.position = "relative"
+		layer.style.width = `calc(100% - 24px - 24px)`
+		layer.style.marginLeft = `24px`
+		layer.style.marginTop = `15px`
+		layer.style.height = 32 + 8 + "px"
 		self.actionButtonsContainerView = view
 		{
 			self._setup_actionButton_chooseFile()

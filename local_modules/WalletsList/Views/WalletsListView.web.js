@@ -98,15 +98,13 @@ class WalletsListView extends ListView
 			view.addSubview(emptyStateMessageContainerView)
 		}
 		{ // action buttons toolbar
-			const margin_h = margin_side
-			var actionButtonsContainerView;
-			const margin_fromWindowLeft = 79 + margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = margin_h
-			actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
-				margin_fromWindowLeft,
-				margin_fromWindowRight,
-				self.context
-			)
+			const actionButtonsContainerView = new View({}, self.context)
+			const actionLayer = actionButtonsContainerView.layer
+			actionLayer.style.position = "fixed"
+			actionLayer.style.top = `calc(100% - 32px - 8px)`
+			actionLayer.style.width = `calc(100% - 95px - 16px)`
+			actionLayer.style.height = 32 + "px"
+			actionLayer.style.zIndex = 1000
 
 			self.actionButtonsContainerView = actionButtonsContainerView
 			{ // as these access self.actionButtonsContainerView
@@ -116,8 +114,8 @@ class WalletsListView extends ListView
 			view.addSubview(actionButtonsContainerView)
 		}
 		{ // essential: update empty state message container to accommodate
-			const actionBar_style_height = commonComponents_actionButtons.ActionButtonsContainerView_h
-			const actionBar_style_marginBottom = commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin
+			const actionBar_style_height = 32
+			const actionBar_style_marginBottom = 8
 			const actionBarFullHeightDisplacement = margin_side + actionBar_style_height + actionBar_style_marginBottom
 			const style_height = `calc(100% - ${actionBarFullHeightDisplacement}px)`
 			self.emptyStateMessageContainerView.layer.style.height = style_height

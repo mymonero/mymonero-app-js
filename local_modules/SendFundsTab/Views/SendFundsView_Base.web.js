@@ -78,12 +78,7 @@ class SendFundsView extends View
 			self.set_isSubmittable_needsUpdate() // start off disabled
 		}, 10) // this is really lame but to fix it requires a good method to be notified of the moment self gets put into the nav bar…… I'll also place in VDA for good measure
 	}
-	_isUsingRelativeNotFixedActionButtonsContainer()
-	{
-		const self = this
 
-		return false
-	}
 	setup_views()
 	{
 		const self = this
@@ -97,25 +92,14 @@ class SendFundsView extends View
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
 		{ // action buttons toolbar
-			const margin_h = 16
-			var view;
-			if (self._isUsingRelativeNotFixedActionButtonsContainer() == false) {
-				const margin_fromWindowLeft = 79 + margin_h // we need this for a position:fixed, width:100% container
-				const margin_fromWindowRight = margin_h
-				view = commonComponents_actionButtons.New_ActionButtonsContainerView(
-					margin_fromWindowLeft, 
-					margin_fromWindowRight, 
-					self.context
-				)
-				view.layer.style.paddingLeft = "16px"
-			} else {
-				view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-					margin_h, 
-					margin_h, 
-					15,
-					self.context
-				)
-			}
+			const view = new View({}, self.context)
+			const layer = view.layer
+			layer.style.position = "fixed"
+			layer.style.top = `calc(100% - 32px - 8px)`
+			layer.style.width = `calc(100% - 95px - 16px)`
+			layer.style.height = 32 + "px"
+			layer.style.zIndex = 1000
+			layer.style.paddingLeft = "16px"
 			self.actionButtonsContainerView = view
 			{
 				self._setup_actionButton_chooseFile()
@@ -133,22 +117,15 @@ class SendFundsView extends View
 		layer.style.MozUserSelect = "none" // disable selection here but enable selectively
 		layer.style.msUserSelect = "none" // disable selection here but enable selectively
 		layer.style.userSelect = "none" // disable selection here but enable selectively
-		//
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
-		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
-			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
-		)
-		// layer.style.webkitOverflowScrolling = "touch"
-		//
+		layer.classList.add("ClassNameForScrollingAncestorOfScrollToAbleElement")
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_validationMessageLayer()
@@ -165,15 +142,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		const containerLayer = document.createElement("div")
-		var paddingBottom;
-		if (self._isUsingRelativeNotFixedActionButtonsContainer() == false) {
-			paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h 
-								+ commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin 
-								+ 10
-		} else {
-			paddingBottom = 0
-		}
-		containerLayer.style.paddingBottom = `${paddingBottom}px`
+		containerLayer.style.paddingBottom = `50px`
 		self.form_containerLayer = containerLayer
 		{
 			self._setup_form_walletSelectLayer()
