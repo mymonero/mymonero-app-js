@@ -1637,10 +1637,10 @@ class SendFundsView extends View
 		super.viewWillAppear()
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+				self.layer.style.paddingTop = `41px`
 				//
-				self.qrCodeInputs_contentView.layer.style.height = `calc(100% - ${15 * 2 + self.navigationController.NavigationBarHeight() + 2}px)` // +2 for border
-				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + self.navigationController.NavigationBarHeight()}px`
+				self.qrCodeInputs_contentView.layer.style.height = `calc(100% - ${15 * 2 + 41 + 2}px)` // +2 for border
+				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + 41}px`
 			}
 		}
 		self.set_isSubmittable_needsUpdate() // start off disabled

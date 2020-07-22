@@ -635,11 +635,7 @@ class SettingsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-			}
-		}
+		self.layer.style.paddingTop = `41px`
 		const passwordController = self.context.passwordController
 		{ // config change pw btn text, app timeout slider, …
 			if (!self.changePasswordButtonView) {

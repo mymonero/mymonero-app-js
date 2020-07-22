@@ -504,9 +504,7 @@ class ContactDetailsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-		}
+		self.layer.style.paddingTop = `41px`
 	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
 	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad

@@ -53,29 +53,9 @@ class ForgotPasswordView extends View {
 
     _setup_views() {
         const self = this
-        self.__setup_self_layer()
+        self.layer.classList.add('forgot-password-layer');
         self._setup_emptyStateMessageContainerView()
         self._setup_actionButtonsContainerView()
-        { // update empty state message container to accommodate
-            const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
-            self.emptyStateMessageContainerView.layer.style.height =
-                `calc(100% - ${2 * margin_v}px + 3px - ${self.actionButtonsContainerView.layer.style.height/*no'px'*/})`
-        }
-    }
-
-    __setup_self_layer() {
-        const self = this
-        //
-        const layer = self.layer
-        layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-        layer.style.position = "relative"
-        layer.style.boxSizing = "border-box"
-        layer.style.width = "100%"
-        layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-        layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-        layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-        layer.style.color = "#c0c0c0" // temporary
-        layer.style.wordBreak = "break-all" // to get the text to wrap
     }
 
     _setup_emptyStateMessageContainerView() {
@@ -89,6 +69,7 @@ class ForgotPasswordView extends View {
         )
         const layer = view.layer
         layer.style.marginBottom = "0" // not going to use margin on the btm because action bar is there
+        layer.style.height = `calc(100% - 38px + 3px - 40px)`
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
     }
@@ -173,7 +154,6 @@ class ForgotPasswordView extends View {
     }
 
     Navigation_New_LeftBarButtonView() {
-        const self = this
         return null // no back btn
     }
 

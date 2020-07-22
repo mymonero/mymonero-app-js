@@ -1298,10 +1298,7 @@ class WalletDetailsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		//
-		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px` // no need to set height as we're box-sizing: border-box
-		}
+		self.layer.style.paddingTop = `41px`
 	}
 	viewDidAppear()
 	{
