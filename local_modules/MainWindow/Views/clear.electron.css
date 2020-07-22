@@ -94,7 +94,7 @@
 	word-break :break-all;
 }
 
-.forgot-password-action-box {
+.action-box-two-button {
 	position: relative;
 	width: calc(100% - 16px - 16px);
 	margin-left: 16px;
@@ -102,13 +102,13 @@
 	height: 40px;
 }
 
-.forgot-password-panel {
+.empty-page-panel {
 	width: calc(100% - 32px - 2px);
 	height: calc(100% - 38px + 3px - 40px);
 	margin: 19px 16px 0;
 }
 
-.forgot-password-content-container {
+.empty-page-content-container {
 	display: table-cell;
 	vertical-align: middle;
 	transform: translateY(-16px);
