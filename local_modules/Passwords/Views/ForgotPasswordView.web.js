@@ -29,8 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
-const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
-const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
+const emoji_web = require('../../Emoji/emoji_web')
 
 class ForgotPasswordView extends View {
     constructor(options, context) {
@@ -60,16 +59,35 @@ class ForgotPasswordView extends View {
 
     _setup_emptyStateMessageContainerView() {
         const self = this
-        const view = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
-            "😢",
-            "Password reset is<br/>unfortunately not possible.<br/><br/>If you can't remember your password,<br/>you'll need to clear all data and<br/>re-import your wallet(s).",
-            self.context,
-            16,
-            19 // and we'll set btm to 0 manually
-        )
-        const layer = view.layer
-        layer.style.marginBottom = "0" // not going to use margin on the btm because action bar is there
-        layer.style.height = `calc(100% - 38px + 3px - 40px)`
+
+        const view = new View({}, self.context)
+        {
+            const layer = view.layer
+            layer.classList.add("emptyScreens")
+            layer.classList.add("forgot-password-panel")
+        }
+        var contentContainerLayer;
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("content-container")
+            layer.classList.add("forgot-password-content-container")
+            contentContainerLayer = layer
+            view.layer.appendChild(layer)
+        }
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("emoji-label")
+            layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(self.context, "😢")
+            contentContainerLayer.appendChild(layer)
+        }
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("message-label")
+            layer.innerHTML = "Password reset is<br/>unfortunately not possible.<br/><br/>If you can't remember your password,<br/>you'll need to clear all data and<br/>re-import your wallet(s)."
+
+            contentContainerLayer.appendChild(layer)
+        }
+
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
     }
@@ -79,11 +97,7 @@ class ForgotPasswordView extends View {
 
         const view = new View({}, self.context)
         const layer = view.layer
-        layer.style.position = "relative"
-        layer.style.width = `calc(100% - 16px - 16px)`
-        layer.style.marginLeft = `16px`
-        layer.style.marginTop = `16px`
-        layer.style.height = 32 + 8 + "px"
+        layer.classList.add("forgot-password-action-box")
         self.actionButtonsContainerView = view
         {
             self._setup_actionButton_nevermind()
@@ -94,25 +108,46 @@ class ForgotPasswordView extends View {
 
     _setup_actionButton_nevermind() {
         const self = this
-        const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-            "Nevermind",
-            null, // no image
-            false,
-            function (layer, e) {
+
+        const buttonView = new View({tag: "a"}, self.context)
+        const layer = buttonView.layer
+
+        layer.classList.add('utility')
+        layer.innerHTML = "Nevermind"
+        layer.href = "#"
+        layer.classList.add('action-button')
+        layer.classList.add('hoverable-cell')
+        layer.style.marginRight = "9px"
+
+        layer.addEventListener(
+            "click",
+            function (e) {
+                e.preventDefault()
+
                 self.navigationController.PopView(true)
-            },
-            self.context
+            }.bind(self)
         )
+
         self.actionButtonsContainerView.addSubview(buttonView)
     }
 
     _setup_actionButton_clearAllData() {
         const self = this
-        const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-            "Clear all data",
-            null, // no image
-            true,
-            function (layer, e) {
+
+        const buttonView = new View({tag: "a"}, self.context)
+        const layer = buttonView.layer
+
+        layer.classList.add('destructive')
+        layer.innerHTML = "Clear all data"
+        layer.href = "#"
+        layer.classList.add('action-button')
+        layer.classList.add('hoverable-cell')
+
+        layer.addEventListener(
+            "click",
+            function (e) {
+                e.preventDefault()
+
                 var msg = 'Are you sure you want to clear your locally stored data?\n\nAny wallets will remain permanently on the Monero blockchain. At present, local-only data like contacts would not be recoverable.'
                 self.context.windowDialogs.PresentQuestionAlertDialogWith(
                     'Delete everything?',
@@ -129,10 +164,7 @@ class ForgotPasswordView extends View {
                         }
                     }
                 )
-            },
-            self.context,
-            undefined,
-            "red" // 'destructive' cell
+            }.bind(self)
         )
         self.actionButtonsContainerView.addSubview(buttonView)
     }
