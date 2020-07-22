@@ -27,12 +27,11 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
+
+const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_emptyScreens = require('../../MMAppUICommonComponents/emptyScreens.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
-//
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
 class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen
@@ -69,12 +68,14 @@ class PickCreateOrUseExisting_Landing_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const margin_h = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_h
 		const margin_v = self.emptyStateMessageContainerView.__EmptyStateMessageContainerView_margin_v
-		const view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-			margin_h, 
-			margin_h, 
-			margin_v - 3, // top
-			self.context
-		)
+
+		const view = new View({}, self.context)
+		const layer = view.layer
+		layer.style.position = "relative"
+		layer.style.width = `calc(100% - ${margin_h}px - ${margin_h}px)`
+		layer.style.marginLeft = `${margin_h}px`
+		layer.style.marginTop = `${margin_v-3}px`
+		layer.style.height = 32 + 8 + "px"
 		self.actionButtonsContainerView = view
 		{
 			self._setup_actionButton_useExistingWallet()

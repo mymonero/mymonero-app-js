@@ -76,12 +76,7 @@ function New_fieldTitle_rightSide_accessoryLayer(labelText, context)
 	return layer
 }
 exports.New_fieldTitle_rightSide_accessoryLayer = New_fieldTitle_rightSide_accessoryLayer
-//
-function ClassNameForScrollingAncestorOfScrollToAbleElement()
-{
-	return "ClassNameForScrollingAncestorOfScrollToAbleElement"
-}
-exports.ClassNameForScrollingAncestorOfScrollToAbleElement = ClassNameForScrollingAncestorOfScrollToAbleElement
+
 function ScrollCurrentFormElementIntoView()
 { // not a factory but a convenience function for call, e.g.. on window resize
 	const activeElement = document.activeElement
@@ -103,8 +98,7 @@ exports.ScrollCurrentFormElementIntoView = ScrollCurrentFormElementIntoView
 var LocalVendor_ScrollPositionEndFixed_Animate = null 
 function _shared_scrollConformingElementIntoView(inputLayer)
 {
-	const selector = `.${ClassNameForScrollingAncestorOfScrollToAbleElement()}`
-	const scrollingAncestor = inputLayer.closest(selector)
+	const scrollingAncestor = inputLayer.closest(".ClassNameForScrollingAncestorOfScrollToAbleElement")
 	if (!scrollingAncestor || typeof scrollingAncestor === 'undefined') {
 		console.warn("⚠️  Asked to _shared_scrollConformingElementIntoView but no scrollingAncestor found")
 		return

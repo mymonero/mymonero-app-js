@@ -119,25 +119,22 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.style.wordBreak = "break-word"
 			layer.innerHTML = "That’s not right. You can try again or start over with a new mnemonic."
 			{ // v-- this padding is added to accommodate the action bar in case the screen is too short and scrolling happens
-				const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h + commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin + 10
+				const paddingBottom = 50
 				layer.style.paddingBottom = `${paddingBottom}px`
 			}
 			self.mnemonicConfirmation_validationErrorLabelLayer = layer
 			self.layer.appendChild(layer)
 		}
 		{ // action buttons toolbar
-			const margin_h = 16
-			var actionButtonsContainerView;
-			const margin_fromWindowLeft = 79 + margin_h // we need this for a position:fixed, width:100% container
-			const margin_fromWindowRight = margin_h
-			actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
-				margin_fromWindowLeft,
-				margin_fromWindowRight,
-				self.context
-			)
-			actionButtonsContainerView.layer.style.paddingLeft = margin_h+"px"
-
-			actionButtonsContainerView.layer.style.display = "none" // for now
+			let actionButtonsContainerView = new View({}, self.context)
+			const layer = actionButtonsContainerView.layer
+			layer.style.position = "fixed"
+			layer.style.top = `calc(100% - 32px - 8px)`
+			layer.style.width = `calc(100% - 95px - 16px)`
+			layer.style.height = 32 + "px"
+			layer.style.zIndex = 1000
+			layer.style.paddingLeft = "16px"
+			layer.style.display = "none" // for now
 			self.actionButtonsContainerView = actionButtonsContainerView
 			{
 				self._setup_actionButton_tryAgain()

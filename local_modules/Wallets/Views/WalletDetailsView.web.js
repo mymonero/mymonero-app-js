@@ -336,12 +336,13 @@ class WalletDetailsView extends View
 	_setup_sendReceive_actionButtons()
 	{
 		var self = this;
-		var view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
-			0, 
-			0, 
-			15,
-			self.context
-		)
+		const view = new View({}, self.context)
+		const layer = view.layer
+		layer.style.position = "relative"
+		layer.style.width = `calc(100% - 0px - 0px)`
+		layer.style.marginLeft = `0px`
+		layer.style.marginTop = `15px`
+		layer.style.height = 32 + 8 + "px"
 		self.actionButtonsContainerView = view
 		{
 			self._setup_actionButton_receive()
