@@ -29,6 +29,18 @@
 	top : calc(50% - 6px);
 }
 
+.forgot-password-layer {
+	-webkit-user-select :none;
+	position :relative;
+	box-sizing :border-box;
+	width :100%;
+	height :100%;
+	padding :0;
+	background-color :#272527;
+	color :#c0c0c0;
+	word-break :break-all;
+}
+
 /** FROM tables.web.js */
 .table_field {
 	 padding: 0;

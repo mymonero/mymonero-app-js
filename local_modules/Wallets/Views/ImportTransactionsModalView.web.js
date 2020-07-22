@@ -516,9 +516,7 @@ class ImportTransactionsModalView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-		}
+		self.layer.style.paddingTop = `41px`
 	}
 	viewDidAppear()
 	{
