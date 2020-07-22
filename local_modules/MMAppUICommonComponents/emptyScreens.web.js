@@ -76,11 +76,6 @@ function New_EmptyStateMessageContainerView(optl_emoji, optl_messageText, contex
     {
         const layer = document.createElement("div")
         layer.classList.add("message-label")
-        layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-        layer.style.letterSpacing = "0"
-        layer.style.fontSize = "13px"
-        layer.style.webkitFontSmoothing = "subpixel-antialiased"
-        layer.style.fontWeight = "300"
         message_layer = layer
         layer.innerHTML = messageText
 

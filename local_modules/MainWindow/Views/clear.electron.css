@@ -16,6 +16,59 @@
 	text-decoration: none;
 }
 
+.action-button {
+	display: inline-block;
+	width: calc(50% - 4.5px);
+	height: 32px;
+	box-sizing: border-box;
+	border-radius: 3px;
+	text-decoration: none;
+	text-align: center;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+	-webkit-font-smoothing: subpixel-antialiased;
+	opacity: 1.0;
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-app-region: no-drag;
+	cursor: default;
+}
+
+.action-button.utility {
+	color: #FCFBFC;
+	background-color: #383638;
+	box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
+	font-size: 12px;
+	letter-spacing: 0.5px;
+	font-weight: 400;
+	line-height: 34px;
+}
+
+.action-button.action {
+	color: #161416;
+	background-color: #00C6FF;
+	box-shadow: inset 0 0.5px 0 0 rgba(255,255,255,0.20);
+	font-size: 13px;
+	letter-spacing: 0;
+	font-weight: 600;
+	transform: none;
+	line-height: 32px;
+}
+
+.action-button.destructive {
+	color: #161416;
+	background-color: #f97777;
+	box-shadow: inset 0 0.5px 0 0 rgba(255,255,255,0.20);
+	font-size: 13px;
+	letter-spacing: 0;
+	font-weight: 600;
+	transform: none;
+	line-height: 32px;
+}
+
+.action-button.disabled {
+	opacity: 0.5;
+}
+
 .red-button:hover {
 	text-decoration: underline;
 }
@@ -39,6 +92,26 @@
 	background-color :#272527;
 	color :#c0c0c0;
 	word-break :break-all;
+}
+
+.forgot-password-action-box {
+	position: relative;
+	width: calc(100% - 16px - 16px);
+	margin-left: 16px;
+	margin-top: 16px;
+	height: 40px;
+}
+
+.forgot-password-panel {
+	width: calc(100% - 32px - 2px);
+	height: calc(100% - 38px + 3px - 40px);
+	margin: 19px 16px 0;
+}
+
+.forgot-password-content-container {
+	display: table-cell;
+	vertical-align: middle;
+	transform: translateY(-16px);
 }
 
 /** FROM tables.web.js */
@@ -335,6 +408,11 @@
 	 line-height: 19px;
 	 color: #9e9c9e;
 	 text-align: center;
+	 font-family :-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+	 letter-spacing :0;
+	 font-size :13px;
+	 -webkit-font-smoothing :subpixel-antialiased;
+	 font-weight :300;
  }
 .emptyScreens .content-container .emoji-label {
 	 margin: 0 0 23px 0;

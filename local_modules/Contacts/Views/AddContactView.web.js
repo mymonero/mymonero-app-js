@@ -27,7 +27,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
+const View = require('../../Views/View.web')
 const ContactFormView = require('./ContactFormView.web')
 const monero_paymentID_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_paymentID_utils')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
@@ -83,26 +84,7 @@ class AddContactView extends ContactFormView
 		}
 		self.form_containerLayer.appendChild(view.layer)
 	}
-	_setup_actionButton_useCamera()
-	{
-		const self = this
-		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
-			"Use Camera", 
-			// borrowing this asset til these are factored
-			"../../SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png",
-			false,
-			function(layer, e)
-			{
-				self.__didSelect_actionButton_useCamera()
-			},
-			self.context,
-			9, // px from top of btn - due to shorter icon
-			undefined,
-			"14px 14px"
-		)
-		self.useCamera_buttonView = buttonView
-		self.actionButtonsContainerView.addSubview(buttonView)
-	}
+
 	_setup_actionButton_chooseFile()
 	{
 		const self = this
@@ -444,29 +426,6 @@ class AddContactView extends ContactFormView
 					return // nothing picked / canceled
 				}
 				self._shared_didPickQRCodeAtPath(absoluteFilePath)
-			}
-		)
-	}
-	__didSelect_actionButton_useCamera()
-	{
-		const self = this
-		// Cordova_disallowLockDownOnAppPause is handled within qrScanningUI
-		self.context.qrScanningUI.PresentUIToScanOneQRCodeString(
-			function(err, possibleUriString)
-			{
-				if (err) {
-					self.validationMessageLayer.SetValidationError(""+err)
-					return
-				}
-				if (possibleUriString == null) { // err and possibleUriString are null - treat as a cancellation
-					self.validationMessageLayer.ClearAndHideMessage() // clear to resolve ambiguity in case existing error is displaying
-					return
-				}
-				if (!possibleUriString) { // if not explicitly null but "" or undefined…
-					self.validationMessageLayer.SetValidationError("No scanned QR code content found.")
-					return
-				}
-				self._shared_didPickPossibleRequestURIStringForAutofill(possibleUriString)
 			}
 		)
 	}

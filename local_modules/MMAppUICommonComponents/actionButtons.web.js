@@ -45,64 +45,29 @@ function New_ActionButtonView(
     //
     const view = new View({tag: "a"}, context)
     const layer = view.layer
-    layer.ondragstart = function (e) {
-        e.preventDefault();
-        return false;
-    } // disable link dragging
+
     view.Disable = function () { // is this going to create a retain cycle?
         view.isDisabled = true
         layer.href = "" // to make it non-clickable
-        layer.style.opacity = "0.5"
         layer.classList.add("disabled")
     }
     view.Enable = function () { // is this going to create a retain cycle?
         view.isDisabled = false
         layer.href = "#" // to make it clickable
-        layer.style.opacity = "1.0"
         layer.classList.remove("disabled")
     }
     view.SetColorType = function (colorType) {
         layer.classList.remove('utility')
         layer.classList.remove('action')
         layer.classList.remove('destructive')
-        //
-        if (colorType === "grey") {
-            layer.classList.add('utility')
-            layer.style.color = "#FCFBFC"
-            layer.style.backgroundColor = "#383638"
-            layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-            layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-            layer.style.webkitFontSmoothing = "subpixel-antialiased"
-            layer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
-            layer.style.letterSpacing = "0.5px"
-            layer.style.fontWeight = "400"
-            layer.style.lineHeight = (32 + 2) + "px" // set for smaller font size so layout isn't messed
-        } else if (colorType == "blue") {
-            layer.classList.add('action')
-            layer.style.color = "#161416"
-            layer.style.backgroundColor = "#00C6FF"
-            layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
 
-            layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-            layer.style.webkitFontSmoothing = "subpixel-antialiased"
-            layer.style.fontSize = "13px" // appears /slightly/ too bug but waygd
-            layer.style.letterSpacing = "0"
-            layer.style.fontWeight = "600"
-            layer.style.transform = "none" // reset
-            layer.style.lineHeight = 32 + "px" // reset/set
+        if (colorType === "blue") {
+            layer.classList.add('action')
+
         } else if (colorType === "red") {
             layer.classList.add('destructive')
-            layer.style.color = "#161416"
-            layer.style.backgroundColor = "#f97777"
-            layer.style.boxShadow = "inset 0 0.5px 0 0 rgba(255,255,255,0.20)"
-            layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-            layer.style.webkitFontSmoothing = "subpixel-antialiased"
-            layer.style.fontSize = "13px" // appears /slightly/ too bug but waygd
-            layer.style.letterSpacing = "0"
-            layer.style.fontWeight = "600"
-            layer.style.lineHeight = 32 + "px" // reset/set
         } else {
-            throw "unrecognized colorType " + colorType
+            layer.classList.add('utility')
         }
     }
     { // setup/style
@@ -118,21 +83,13 @@ function New_ActionButtonView(
             }
             layer.style.textIndent = "10px" // to prevent visual weirdness as button gets so small text may overlap image… would be nice to have a better solution which takes into account size of text and maybe size of button
         }
-        layer.style.display = "inline-block"
-        layer.style.width = `calc(50% - ${9 / 2}px` // we're assuming there are only two buttons
-        layer.style.height = 32 + "px"
-        layer.style.boxSizing = "border-box"
-        layer.style.borderRadius = "3px"
-        {
-            layer.classList.add('hoverable-cell')
-            layer.classList.add('disableable')
-            view.SetColorType(optl_colorType || "grey")
-        }
-        layer.style.textDecoration = "none"
-        layer.style.textAlign = "center"
-        layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+        layer.classList.add('action-button')
+        layer.classList.add('hoverable-cell')
+        layer.classList.add('disableable')
+        view.SetColorType(optl_colorType || "grey")
+
         if (isRightmostButtonInContainer !== true) {
-            layer.style.marginRight = 9 + "px"
+            layer.style.marginRight = "9px"
         }
     }
     layer.addEventListener(
