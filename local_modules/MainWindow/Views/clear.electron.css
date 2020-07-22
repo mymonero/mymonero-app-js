@@ -114,6 +114,154 @@
 	transform: translateY(-16px);
 }
 
+.navigation-blue-button-enabled {
+	background-color: #00c6ff;
+	box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255,255,255,0.20);
+	color: #161416;
+	font-weight: 600;
+}
+
+.navigation-blue-button-disabled {
+	background-color: #383638;
+	box-shadow: none;
+	color: #6B696B;
+	font-weight: 600;
+}
+
+.base-button {
+	border-radius: 3px;
+	height: 24px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+	text-align: center;
+	border: none;
+	text-decoration: none;
+	line-height: 24px;
+	box-sizing: border-box;
+	width: auto;
+	padding: 0 8px;
+}
+
+.grey-menu-button {
+	box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
+	background-color: #383638;
+	color: #FCFBFC;
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: 0.5px;
+}
+
+.left-back-button {
+	display: block;
+	float: right;
+	margin-top: 10px;
+	width: 26px;
+	height: 24px;
+	background-image: url(../../MMAppUICommonComponents/Resources/backButtonIcon@3x.png);
+	background-size: 9px 14px;
+	background-repeat: no-repeat;
+	background-position: 8px 5px;
+}
+
+.left-cancel-button {
+	display: block;
+	float: left;
+	margin-top: 10px;
+}
+
+.right-add-button {
+	float: right;
+	margin-top: 10px;
+	width: 26px;
+	background-image: url(../../MMAppUICommonComponents/Resources/addButtonIcon_10@3x.png);
+	background-size: 10px 10px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.right-save-button {
+	float: right;
+	margin-top: 10px;
+}
+
+.right-edit-button {
+	display: block;
+	float: right;
+	margin-top: 10px;
+}
+
+.right-value-button {
+	display: block;
+	float: right;
+	margin-top: 12px;
+	width: auto;
+	height: auto;
+	text-decoration: none;
+	font-family: Native-Light, input, menlo, monospace;
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-size: 10px;
+	letter-spacing: 0.5px;
+	color: #9E9C9E;
+	line-height: 200%;
+	text-align: center;
+	cursor: default;
+}
+
+.nav-button-left-container {
+	position: absolute;
+	left: 16px;
+	width: 15%;
+	min-width: 41px;
+	height: 41px;
+}
+
+.nav-button-right-container {
+	position: absolute;
+	right: 16px;
+	width: 15%;
+	min-width: 41px;
+	height: 41px;
+}
+
+.nav-bar-panel {
+	position: absolute;
+	top: 0%;
+	z-index: 9;
+	width: 100%;
+	height: 41px;
+	background-color: #272527;
+	transition: box-shadow 0.06 ease-in-out;
+	webkit-app-region: drag;
+	-webkit-user-select: none;
+}
+
+.nav-bar-background {
+	position: absolute;
+	width: 100%;
+	height: 41px;
+	background-color: #272527;
+}
+
+.nav-title-label {
+	color: #fcfbfc;
+	position: absolute;
+	top: -1px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 0.5px;
+	box-sizing: border-box;
+	left: calc(15% + 16px);
+	width: calc(70% - 32px - 10px);
+	padding-left: 10px;
+	height: 41px;
+	text-align: center;
+	line-height: 41px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /** FROM tables.web.js */
 .table_field {
 	 padding: 0;
@@ -429,3 +577,14 @@
  }
 
 /** END FROM emptyScreens.web.js */
+
+/** FROM NavigationBarView.web.js */
+.NavigationBarView .title-label {
+ }
+.NavigationBarView .title-label .emojione {
+	 transform: scale(.5);
+	 margin: 7px 0 0 -16px;
+	 position: absolute;
+ }
+
+/** END FROM NavigationBarView.web.js */

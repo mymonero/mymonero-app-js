@@ -28,7 +28,6 @@
 //
 "use strict"
 //
-const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
