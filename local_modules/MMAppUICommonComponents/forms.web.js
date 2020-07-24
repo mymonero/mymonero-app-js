@@ -43,22 +43,9 @@ function New_fieldTitle_labelLayer(labelText, context)
 	const layer = document.createElement("span")
 	layer.className = "field_title"
 	layer.innerHTML = labelText
-	layer.style.webkitUserSelect = "none"
-	layer.style.MozUserSelect = "none"
-	layer.style.msUserSelect = "none"
-	layer.style.userSelect = "none"
-	layer.style.display = "block" // own line
-	layer.style.margin = "15px 0 8px 8px"
-	layer.style.textAlign = "left"
-	layer.style.color = "#F8F7F8"
-	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
-	layer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
-	layer.style.fontSize = "10px"
-	layer.style.letterSpacing = "0.5px"
+	layer.classList.add('form-field-title')
 	if (typeof process !== 'undefined' && process.platform === "linux") {
 		layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
-	} else {
-		layer.style.fontWeight = "300"
 	}
 
 	return layer
@@ -206,10 +193,9 @@ function New_fieldValue_textAreaView(params, context)
 	if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 		layer.placeholder = placeholderText
 	}
-	const padding_h = 8
-	layer.style.padding = `9px ${padding_h}px`
-	layer.style.height = `${61 - 2 * padding_h}px`
-	layer.style.width = `calc(100% - ${2 * padding_h}px)` // no border so no -2*brdr_w
+	layer.style.padding = `9px 8px`
+	layer.style.height = `45px`
+	layer.style.width = `calc(100% - 18px)`
 	layer.style.borderRadius = "3px"
 	layer.style.border = "none"
 	layer.style.textAlign = "left"
@@ -287,7 +273,7 @@ function New_fieldValue_selectLayer(params)
 		}
 		layer.style.display = "inline-block"
 		layer.style.height = "30px"
-		layer.style.width = `calc(100% - 4px - ${2 * 10}px)`
+		layer.style.width = `calc(100% - 4px - 20px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
@@ -324,11 +310,12 @@ function New_fieldAccessory_validationMessageLayer(context)
 	return layer
 }
 exports.New_fieldAccessory_validationMessageLayer = New_fieldAccessory_validationMessageLayer
-//
-function New_NonEditable_ValueDisplayLayer(value, context)
+
+function New_NonEditable_ValueDisplayLayer_BreakChar(value, context)
 {
 	const layer = document.createElement("div")
 	layer.value = value // setting this so there is a common interface with _textView above - some consumers rely on it. this should be standardized into a Value() method of a View
+	layer.innerHTML = value
 	layer.style.borderRadius = "3px"
 	layer.style.backgroundColor = "#383638"
 	layer.style.padding = "8px 11px"
@@ -340,49 +327,21 @@ function New_NonEditable_ValueDisplayLayer(value, context)
 	layer.style.fontWeight = "100"
 	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
-	layer.innerHTML = value
-
-	return layer
-}
-exports.New_NonEditable_ValueDisplayLayer = New_NonEditable_ValueDisplayLayer
-function New_NonEditable_ValueDisplayLayer_BreakWord(value, context)
-{
-	const layer = New_NonEditable_ValueDisplayLayer(value, context)
-	layer.style.wordBreak = "break-word"
-	return layer
-}
-exports.New_NonEditable_ValueDisplayLayer_BreakWord = New_NonEditable_ValueDisplayLayer_BreakWord
-function New_NonEditable_ValueDisplayLayer_BreakChar(value, context)
-{
-	const layer = New_NonEditable_ValueDisplayLayer(value, context)
 	layer.style.wordBreak = "break-all"
 	return layer
 }
 exports.New_NonEditable_ValueDisplayLayer_BreakChar = New_NonEditable_ValueDisplayLayer_BreakChar
-//
-function New_IconAndMessageLayer(iconPath, messageText, context, optl_imgW, optl_imgH)
+
+function New_Detected_IconAndMessageLayer(context)
 {
 	const layer = document.createElement("div")
 	layer.classList.add("iconAndMessageLayer")
-	layer.innerHTML = `<img src="${iconPath}" ${optl_imgW ? 'width="'+ optl_imgW + '"' : ""} ${optl_imgH ? 'height="'+ optl_imgH + '"' : ""} />&nbsp;<span>${messageText}</span>`
+	layer.innerHTML = `<img src="../../MMAppUICommonComponents/Resources/detectedCheckmark@3x.png" width="9px" height="7px" />&nbsp;<span>Detected</span>`
 	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "11px"
 	layer.style.fontWeight = "100"
 	layer.style.color = "#8D8B8D"
-	
-	return layer		
-}
-exports.New_IconAndMessageLayer = New_IconAndMessageLayer
-function New_Detected_IconAndMessageLayer(context)
-{
-	const layer = New_IconAndMessageLayer( // will call `__inject…`
-		"../../MMAppUICommonComponents/Resources/detectedCheckmark@3x.png",
-		"Detected",
-		context,
-		"9px",
-		"7px"
-	)
 	return layer
 }
 exports.New_Detected_IconAndMessageLayer = New_Detected_IconAndMessageLayer

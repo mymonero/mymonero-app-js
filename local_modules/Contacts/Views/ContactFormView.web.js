@@ -160,8 +160,7 @@ class ContactFormView extends View
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.padding = "0 0 0 24px"
-		const emojiComponentWidth = 60 + 24 + 24
-		div.style.width = `calc(100% - ${emojiComponentWidth}px - 24px + 2px)` // -24px for right side margin
+		div.style.width = `calc(100% - 108px - 24px + 2px)` // -24px for right side margin
 		div.style.float = "left"
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NAME", self.context)

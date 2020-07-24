@@ -3,6 +3,22 @@
 	margin: 0; 
 }
 
+.form-field-title {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	display: block;
+	margin: 15px 0 8px 8px;
+	text-align: left;
+	color: #F8F7F8;
+	font-family: Native-Light, input, menlo, monospace;
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-size: 10px;
+	letter-spacing: 0.5px;
+	font-weight: 300;
+}
+
 .red-button {
 	display: block;
 	float: left;
@@ -112,6 +128,25 @@
 	display: table-cell;
 	vertical-align: middle;
 	transform: translateY(-16px);
+}
+
+.stacked-navigation-panel {
+	position: relative;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.stacked-content-view {
+	z-index: 1;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 }
 
 .navigation-blue-button-enabled {
