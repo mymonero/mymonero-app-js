@@ -54,7 +54,7 @@ class RootTabBarAndContentView_Full extends RootTabBarAndContentView_Base
 		{ // urlOpeningController
 			const controller = self.context.urlOpeningCoordinator
 			controller.on(
-				controller.EventName_TimeToHandleReceivedMoneroRequestURL(),
+				"EventName_TimeToHandleReceivedMoneroRequestURL",
 				function(url)
 				{
 					self.selectTab_sendFunds()

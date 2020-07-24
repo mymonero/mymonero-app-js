@@ -53,12 +53,7 @@ class StackNavigationView extends View
 		}
 		{ // self.layer
 			const layer = self.layer
-			layer.style.position = "relative"
-			layer.style.left = "0"
-			layer.style.top = "0"
-			layer.style.width = "100%"
-			layer.style.height = "100%"
-			layer.style.overflow = "hidden" // because we don't want modals presented in self to create a scroll bar - bad thangs happen
+			layer.classList.add('stacked-navigation-panel')
 		}
 		{ // navigationBarView
 			const NavigationBarView = require('./NavigationBarView.web')
@@ -81,13 +76,7 @@ class StackNavigationView extends View
 			const view = new View({}, self.context)
 			{
 				const layer = view.layer
-				layer.style.zIndex = "1"
-				layer.style.position = "absolute"
-				layer.style.left = "0"
-				layer.style.top = "0"
-				layer.style.width = "100%"
-				layer.style.height = "100%"
-				layer.style.overflow = "hidden" // we're going to say subviews are not allowed to hijack scroll - if they want to, they have to create their own wrapper - or else transitions cause scroll bar to appear
+				layer.classList.add('stacked-content-view')
 			}
 			self.addSubview(view)
 			self.stackViewStageView = view
