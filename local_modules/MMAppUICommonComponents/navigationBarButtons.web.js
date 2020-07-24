@@ -27,10 +27,9 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 const BarButtonBaseView = require('../StackNavigation/Views/BarButtonBaseView.web')
 
-//
 function _New_ButtonBase_View(context, optl_didConfigureInteractivity_fn) {
     const view = new BarButtonBaseView({
         didConfigureInteractivity_fn: function (thisView) {

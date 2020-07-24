@@ -27,9 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict";
-//
-const wants_electronRemote = true // becaus we're only ever including this in the electron renderer process
-//
+
 const fn_names = require('./__bridged_fns_spec.electron').bridgedFn_names;
 const moneroUtils_promise_fn = function(options)
 {
@@ -59,7 +57,6 @@ const moneroUtils_promise_fn = function(options)
 			}
 			local_fns.Module = coreBridge_instance.Module;
 			//
-			// if (wants_electronRemote) { // set up async bridges 
 			const {ipcRenderer} = require('electron')
 			self._bridge_call_cbs_by_call_id = {};
 			local_fns["async__send_funds"] = function(args)
@@ -216,8 +213,6 @@ const moneroUtils_promise_fn = function(options)
 				const call_id = IPC_on_arg.call_id
 				self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__success(call_id)](IPC_on_arg.params)
 			})
-			// }
-			//
 			resolve(local_fns);
 		}
 		// Require file again except on the main process ...
