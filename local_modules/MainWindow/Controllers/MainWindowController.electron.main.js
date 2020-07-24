@@ -95,9 +95,7 @@ class MainWindowController
 			minWidth: 412, // For action buttons
 			minHeight: 420,
 			title: "MyMonero", // Windows
-			//
 			show: false, // shown on ready
-			//
 			backgroundColor: "#272527",
 			titleBarStyle: "hiddenInset",
 			//

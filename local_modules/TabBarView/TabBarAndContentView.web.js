@@ -81,14 +81,13 @@ class TabBarAndContentView extends View
 		}
 		{
 			// default behavior is bar on bottom of screen
-			const tabBarView_thickness = self.overridable_tabBarView_thickness()
 			{
 				const layer = self.tabBarView.layer
 				layer.style.position = "absolute"
-				layer.style.top = `calc(100% - ${tabBarView_thickness}px)`
+				layer.style.top = `calc(100% - 79px)`
 				layer.style.left = "0px"
 				layer.style.width = "100%"
-				layer.style.height = `${tabBarView_thickness}px`
+				layer.style.height = `79px`
 			}
 			{
 				const layer = self.contentAreaView.layer
@@ -96,7 +95,7 @@ class TabBarAndContentView extends View
 				layer.style.top = "0px"
 				layer.style.left = "0px"
 				layer.style.width = "100%"
-				layer.style.height = `calc(100% - ${tabBarView_thickness}px)`
+				layer.style.height = `calc(100% - 79px)`
 			}
 		}
 	}

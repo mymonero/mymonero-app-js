@@ -31,27 +31,9 @@
 const emojione = require('./Vendor/emojione.min')
 emojione.imageType = "png" // png instead of svg as svg appear too slow to display en-masse
 emojione.sprites = true
-//
+
 const emoji_set = require('./emoji_set')
-//
-const Views__cssRules = require('../Views/cssRules.web')
-function stylesheetPaths_generatorFn(context)
-{
-	const stylesheetPaths =
-	[
-		`../../Emoji/Vendor/emojione.min.css`,
-		`../../Emoji/Vendor/emojione-sprite-32.min.css`
-	]
-	return stylesheetPaths
-}
-function __injectCSS_ifNecessary(context) 
-{
-	Views__cssRules.InjectCSSFiles_ifNecessary(
-		stylesheetPaths_generatorFn,
-		context
-	) 
-}
-//
+
 var cached_spritesheetImages = [];
 function PreLoadAndSetUpEmojiOne(context)
 { // ^ be sure to call this in order to inject the stylesheets
@@ -77,7 +59,6 @@ function PreLoadAndSetUpEmojiOne(context)
 				cached_spritesheetImages.push(image_2x)
 			}
 		);
-		__injectCSS_ifNecessary(context) // good time to do this
 	}
 }
 exports.PreLoadAndSetUpEmojiOne = PreLoadAndSetUpEmojiOne
