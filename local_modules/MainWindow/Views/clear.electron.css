@@ -1152,3 +1152,47 @@
 }
 
 /** END FROM switchToggles.web.js */
+
+/** FROM WalletSelectView.web.js */
+.WalletSelectView {
+    display: block; /* own line */
+    outline: none; /* no focus ring */
+
+    height: 66px;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+
+    appearance: none;
+    background: #383638;
+    border-width: 0;
+    box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
+    border-radius: 5px;
+
+    text-align: left;
+    font-size: 14px;
+    color: #FCFBFC;
+}
+
+.WalletSelectView .selectionDisplayCellView,
+.WalletSelectView .options_containerView {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.WalletSelectView > .options_containerView {
+    border-radius: 5px;
+    box-shadow: 0 15px 12px 0 rgba(0, 0, 0, 0.22), 0 19px 38px 0 rgba(0, 0, 0, 0.30);
+}
+
+.WalletSelectView > .options_containerView > .background {
+    background: #383638;
+    border-radius: 5px;
+    box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749;
+}
+
+.WalletSelectView > .options_containerView .optionCell.active {
+    background-color: rgba(73, 71, 73, 0.95) !important;
+}
+
+/** END FROM WalletSelectView.web.js */

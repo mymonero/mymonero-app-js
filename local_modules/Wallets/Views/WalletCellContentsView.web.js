@@ -143,7 +143,6 @@ class WalletCellContentsView extends View
 		layer.style.letterSpacing = "0.5px"
 		layer.style.color = "#fcfbfc"
 		layer.style.cursor = "default"
-		// layer.style.border = "1px solid red"
 		self.titleLayer = layer
 		self.layer.appendChild(layer)
 	}

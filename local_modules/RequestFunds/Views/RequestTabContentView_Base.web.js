@@ -48,7 +48,6 @@ class RequestTabContentView extends StackAndModalNavigationView
 	//
 	TabBarItem_layer_customStyle()
 	{
-		const self = this
 		return {}
 	}
 	TabBarItem_icon_customStyle()

@@ -27,10 +27,10 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 const View = require('../Views/View.web')
 const TabBarItemButtonView = require('./TabBarItemButtonView.web')
-//
+
 class TabBarAndContentView extends View
 {
 	constructor(options, context)

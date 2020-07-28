@@ -27,522 +27,514 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
-const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const monero_amount_format_utils = require("../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils");
 const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
-//
-class TransactionDetailsView extends View
-{
-	constructor(options, context)
-	{
-		super(options, context)
-		//
-		const self = this
-		{
-			self.transaction = options.transaction
-			if (self.transaction === null || typeof self.transaction === 'undefined') {
-				throw "options.transaction nil but required for " + self.constructor.name
-			}
-			//
-			self.wallet = options.wallet
-			if (self.wallet === null || typeof self.wallet === 'undefined') {
-				throw "options.wallet nil but required for " + self.constructor.name
-			}
-		}
-		self.setup()
-	}
-	setup()
-	{
-		const self = this
-		{ // zeroing / initialization
-		}
-		self._setup_views()
-		self._setup_startObserving()
-		//
-		self._configureUIWithTransaction()
-	}
-	_setup_views()
-	{
-		const self = this
-		self.setup_self_layer()
-		{
-			const layer = commonComponents_tables.New_inlineMessageDialogLayer(
-				self.context, 
-				"", // for now
-				false // for now
-			)
-			layer.style.width = "calc(100% - 0px)"
-			layer.style.marginLeft = "0px"
-			self.validationMessageLayer__isLocked = layer
-			self.layer.appendChild(layer)
-		}
-		{
-			const layer = commonComponents_tables.New_inlineMessageDialogLayer(
-				self.context, 
-				"Your Monero is on its way.",
-				false // for now
-			)
-			layer.style.width = "calc(100% - 0px)"
-			layer.style.marginLeft = "0px"
-			self.validationMessageLayer__onItsWay = layer
-			self.layer.appendChild(layer)
-		}
-		// v- NOTE: only specifying commonComponents_forms here to get the styling, so that's somewhat fragile
-		const labelLayer = document.createElement("span")
-		labelLayer.className = "field_title"
-		labelLayer.innerHTML = "DETAILS"
-		labelLayer.style.webkitUserSelect = "none"
-		labelLayer.style.MozUserSelect = "none"
-		labelLayer.style.msUserSelect = "none"
-		labelLayer.style.userSelect = "none"
-		labelLayer.style.display = "block" // own line
-		labelLayer.style.margin = "15px 0 8px 8px"
-		labelLayer.style.textAlign = "left"
-		labelLayer.style.color = "#F8F7F8"
-		labelLayer.style.fontFamily = 'Native-Light, input, menlo, monospace'
-		labelLayer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
-		labelLayer.style.fontSize = "10px"
-		labelLayer.style.letterSpacing = "0.5px"
-		labelLayer.style.marginTop = "15px"
-		labelLayer.style.marginBottom = "0"
-		labelLayer.style.paddingTop = "0"
-		labelLayer.style.paddingBottom = "0"
-		labelLayer.style.display = "block"
-		labelLayer.style.color = "#9E9C9E" // special case
-		labelLayer.style.fontWeight = "500" // to get specific visual weight w color
-		if (typeof process !== 'undefined' && process.platform === "linux") {
-			labelLayer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
-		} else {
-			labelLayer.style.fontWeight = "300"
-		}
-		self.layer.appendChild(labelLayer)
-		//
-		const containerLayer = document.createElement("div")
-		self.tableSection_containerLayer = containerLayer
-		containerLayer.style.margin = "8px 0"
-		containerLayer.style.boxSizing = "border-box"
-		containerLayer.style.padding = "0 16px 4px 16px"
-		containerLayer.style.border = "0.5px solid #494749"
-		containerLayer.style.borderRadius = "5px"
-		{
-			self._addTableFieldLayer_date()
-			self._addTableFieldLayer_amountsFeesAndTotals()
-			self._addTableFieldLayer_to();
-			self._addTableFieldLayer_paymentID()
-			self._addTableFieldLayer_transactionHash()
-			self._addTableFieldLayer_transactionKey()
-			self._addTableFieldLayer_ringsize()
-		}
-		self.layer.appendChild(containerLayer)
-		// self.DEBUG_BorderChildLayers()
-	}
-	setup_self_layer()
-	{
-		const self = this
-		const layer = self.layer
-		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		layer.style.boxSizing = "border-box"
-		layer.style.width = `100%`
-		layer.style.height = "100%"
-		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		layer.style.color = "#c0c0c0" // temporary
-		layer.style.overflowY = "auto"
-		layer.style.padding = `0 16px 40px 16px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		layer.style.wordBreak = "break-all" // to get the text to wrap
-	}
 
-	___styleLabelLayerAsFieldHeader(labelLayer)
-	{
-		labelLayer.style.fontSize = "11px"
-		labelLayer.style.color = "#DFDEDF"
-	}
-	__new_tableFieldLayer_simpleValue(value, title, optl_color)
-	{
-		const self = this
-		const div = document.createElement("div")
-		div.className = "table_field"
-		div.style.padding = "17px 0"
-		//
-		const labelLayer = document.createElement("span")
-		labelLayer.innerHTML = title
-		labelLayer.style.float = "left"
-		labelLayer.style.textAlign = "left"
-		labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-		labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
-		labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
-		labelLayer.style.fontWeight = "400" // semibold desired
-		labelLayer.style.letterSpacing = "0.5px"
-		labelLayer.style.color = "#FFFFFF"
-		self.___styleLabelLayerAsFieldHeader(labelLayer)
-		div.appendChild(labelLayer)
-		//
-		const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value, self.context)
-		if (typeof optl_color !== 'undefined' && optl_color) {
-			valueLayer.style.color = optl_color
-		}
-		valueLayer.style.marginTop = "-1px"
-		valueLayer.style.maxWidth = "75%" // should wrap
-		div.appendChild(valueLayer)
-		div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
-		div.Component_SetValue = function(value)
-		{
-			valueLayer.Component_SetValue(value)
-		}
-		div.Component_SetColor = function(color)
-		{
-			valueLayer.style.color = color
-		}
-		return div
-	}
-	_addTableFieldLayer_date()
-	{
-		const self = this
-		const title = "Date"
-		const div = self.__new_tableFieldLayer_simpleValue(
-			"", // for now
-			title			
-		)
-		self.tableFieldLayer__date = div
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	_addTableFieldLayer_amountsFeesAndTotals()
-	{
-		const self = this
-		const title = "Total"
-		const div = self.__new_tableFieldLayer_simpleValue(
-			"", // for now
-			title
-		)
-		self.tableFieldLayer__amountsFeesAndTotals = div
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	_addTableFieldLayer_ringsize()
-	{
-		const self = this
-		const title = "Ring size"
-		const div = self.__new_tableFieldLayer_simpleValue(
-			"", // for now
-			title			
-		)
-		self.tableFieldLayer__ringsize = div
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	_addTableFieldLayer_transactionHash()
-	{
-		const self = this
-		const fieldLabelTitle = "Transaction ID"
-		const valueToDisplayIfValueNil = "N/A"
-		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-			self.context,
-			fieldLabelTitle, 
-			"", // for now
-			self.context.pasteboard, 
-			valueToDisplayIfValueNil
-		)
-		self.valueLayer__transactionHash = div
-		const labelLayer = div.Component_GetLabelLayer()
-		self.___styleLabelLayerAsFieldHeader(labelLayer)
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	_addTableFieldLayer_transactionKey()
-	{
-		const self = this
-		const fieldLabelTitle = "Secret Key"
-		const valueToDisplayIfValueNil = "Unknown"
-		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-			self.context,
-			fieldLabelTitle, 
-			"", // for now
-			self.context.pasteboard, 
-			valueToDisplayIfValueNil,
-			false // not truncated - functions and looks better
-		)
-		self.valueLayer__transactionKey = div
-		const labelLayer = div.Component_GetLabelLayer()
-		self.___styleLabelLayerAsFieldHeader(labelLayer)
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	_addTableFieldLayer_paymentID()
-	{
-		const self = this
-		const fieldLabelTitle = "Payment ID"
-		const valueToDisplayIfValueNil = "None"
-		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-			self.context,
-			fieldLabelTitle, 
-			"", // for now
-			self.context.pasteboard, 
-			valueToDisplayIfValueNil
-		)
-		self.valueLayer__paymentID = div
-		const labelLayer = div.Component_GetLabelLayer()
-		self.___styleLabelLayerAsFieldHeader(labelLayer)
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	_addTableFieldLayer_to()
-	{
-		const self = this
-		const fieldLabelTitle = "To"
-		const valueToDisplayIfValueNil = "Unknown"
-		const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
-			self.context,
-			fieldLabelTitle, 
-			"", // for now
-			self.context.pasteboard, 
-			valueToDisplayIfValueNil,
-			false // it looks weird to have truncated fields next to non-truncated fields, presently
-		);
-		self.valueLayer__to = div
-		const labelLayer = div.Component_GetLabelLayer()
-		self.___styleLabelLayerAsFieldHeader(labelLayer)
-		self.tableSection_containerLayer.appendChild(div)
-	}
-	//
-	_setup_startObserving()
-	{
-		const self = this
-		self._setup_startObserving_wallet()
-	}
-	_setup_startObserving_wallet()
-	{
-		const self = this
-		if (typeof self.wallet === 'undefined' || self.wallet === null) {
-			throw "nil self.wallet undefined in " + self.constructor.name + "/" + "_setup_startObserving_wallet`"
-		}
-		// here, we're going to store the listener functions as instance properties
-		// because when we need to stopObserving we need to have access to the listener fns
-		//
-		// txs updated
-		self.wallet_EventName_transactionsChanged_listenerFunction = function()
-		{
-			self.wallet_EventName_transactionsChanged()
-		}
-		self.wallet.on(
-			self.wallet.EventName_transactionsChanged(),
-			self.wallet_EventName_transactionsChanged_listenerFunction
-		)
-	}
-	//
-	//
-	// Lifecycle - Teardown
-	//
-	TearDown()
-	{ // We're going to make sure we tear this down here as well as in VDA in case we get popped over back to root (thus never calling VDA but calling this)
-		const self = this
-		super.TearDown()
-		//
-		self.transaction = null
-		self._stopObserving()
-		self.wallet = null
-	}
-	_stopObserving()
-	{
-		const self = this
-		function doesListenerFunctionExist(fn)
-		{
-			if (typeof fn !== 'undefined' && fn !== null) {
-				return true
-			}
-			return false
-		}
-		if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
-			self.wallet.removeListener(
-				self.wallet.EventName_transactionsChanged(),
-				self.wallet_EventName_transactionsChanged_listenerFunction
-			)
-		}
-	}
-	//
-	//
-	// Runtime - Accessors - Navigation
-	//
-	Navigation_Title()
-	{
-		const self = this
-		//
-		const tx = self.transaction
-		const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
-		const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
-		return monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
-	}
-	Navigation_New_RightBarButtonView()
-	{
-		const self = this
-		const view = commonComponents_navigationBarButtons.New_RightSide_ValueDisplayLabelButtonView(self.context)
-		const layer = view.layer
-		{
-			var valueString;
-			const transaction = self.transaction
-			if (transaction && typeof transaction !== 'undefined') {
-				if (transaction.isFailed) {
-					valueString = "REJECTED"
-				} else if (transaction.isConfirmed !== true) {
-					valueString = "PENDING"
-				} else {
-					valueString = "CONFIRMED"
-				}
-			} else {
-				valueString = ""
-			}
-			layer.innerHTML = valueString
-		}
-		view.layer.addEventListener(
-			"click",
-			function(e)
-			{
-				e.preventDefault()
-				// disabled
-				return false
-			}
-		)
-		return view
-	}
-	
-	Navigation_TitleColor()
-	{
-		const self = this
-		const transaction = self.transaction
-		const colorHexString_orNil = transaction.approx_float_amount < 0 ? "#F97777" : null
-		//
-		return colorHexString_orNil // null meaning go with the default
-	}
-	//
-	//
-	// Runtime - Imperatives - UI Configuration
-	//
-	_configureUIWithTransaction()
-	{
-		const self = this
-		const wallet = self.wallet
-		if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
-			throw self.constructor.name + " opened while wallet failed to init or boot."
-		}
-		const transaction = self.transaction
-		if (transaction.isUnlocked !== true) {
-			if (self.validationMessageLayer__isLocked.userHasClosedThisLayer !== true) {
-				const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
-				var messageString = "This transaction is currently locked. " + lockedReason
-				self.validationMessageLayer__isLocked.SetValidationError(
-					messageString,
-					true/*wantsXButtonHidden*/
-				) // this shows the validation err msg
-			}
-		} else {
-			self.validationMessageLayer__isLocked.style.display = "none"
-		}
-		if (transaction.isFailed != true && (transaction.isJustSentTransaction === true || transaction.isConfirmed !== true)) {
-			if (self.validationMessageLayer__onItsWay.userHasClosedThisLayer !== true) {
-				self.validationMessageLayer__onItsWay.style.display = "block"
-			} else {
-				// do not re-show since user has already closed it
-			}
-		} else {
-			self.validationMessageLayer__onItsWay.style.display = "none"
-		}
-		if (self.navigationController) {
-			self.navigationController.SetNavigationBarTitleNeedsUpdate() // for the CONFIRMED/PENDING
-		} else {
-			// then it'll effectively be called for us after init
-		}
-		// Configuring table fields
-		{ // Date
-			var date = self.transaction.timestamp
-			if (typeof date === 'string') {
-				date = new Date(date)
-			}
-			const dateString = date.toLocaleDateString(
-				'en-US'/*for now*/, 
-				{ year: 'numeric', month: 'short', day: 'numeric', hour: "numeric", minute: "numeric", second: "numeric" }
-			).toUpperCase()
-			const value = dateString
-			self.tableFieldLayer__date.Component_SetValue(value)
-		}
-		if (typeof self.transaction.target_address !== 'undefined' && self.transaction.target_address) {
-			self.valueLayer__to.Component_SetValue(self.transaction.target_address) // in case we have it
-			self.valueLayer__to.style.display = "block"
-		} else {
-			self.valueLayer__to.style.display = "none"
-		}
-		const isOutgoing = self.transaction.approx_float_amount < 0
-		{ // Total
-			const tx = self.transaction
-			const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
-			const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
-			const value = monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
-			var color;
-			if (isOutgoing) {
-				color = "#F97777"
-			} else {
-				color = "#FCFBFC"
-			}
-			self.tableFieldLayer__amountsFeesAndTotals.Component_SetValue(value)
-			self.tableFieldLayer__amountsFeesAndTotals.Component_SetColor(color)
-		}
-		{ // Ringsize
-			const value = parseInt(self.transaction.mixin) + 1 // b/c ringsize = mixin + 1
-			self.tableFieldLayer__ringsize.Component_SetValue(value)
-		}
-		{ // TX hash
-			const value = self.transaction.hash
-			self.valueLayer__transactionHash.Component_SetValue(value)
-		}
-		if (typeof self.transaction.tx_key !== 'undefined' && self.transaction.tx_key) { // outgoing .. we might have own tx key
-			const value = self.transaction.tx_key
-			self.valueLayer__transactionKey.Component_SetValue(value)
-			self.valueLayer__transactionKey.style.display = "block"
-		} else {
-			self.valueLayer__transactionKey.style.display = "none"
-		}
-		{ // Payment ID
-			const value = self.transaction.payment_id
-			self.valueLayer__paymentID.Component_SetValue(value)
-		}
-	}
-	//
-	//
-	// Runtime - Delegation - Event handlers - Wallet
-	//
-	wallet_EventName_transactionsChanged()
-	{
-		const self = this
-		var updated_transaction = null // to find
-		const transactions = self.wallet.New_StateCachedTransactions() // important to use this instead of .transactions
-		const transactions_length = transactions.length
-		for (let i = 0 ; i < transactions_length ; i++) {
-			const this_transaction = transactions[i]
-			if (this_transaction.hash === self.transaction.hash) {
-				updated_transaction = this_transaction
-				break
-			}
-		}
-		if (updated_transaction !== null) {
-			self.transaction = updated_transaction
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.navigationController.SetNavigationBarTitleNeedsUpdate()
-			}
-			self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
-		} else {
-			throw "Didn't find same transaction in already open details view. Probably a server bug."
-		}
-	}
-	//
-	//
-	// Runtime - Delegation - Navigation/View lifecycle
-	//
-	viewWillAppear()
-	{
-		const self = this
-		super.viewWillAppear()
-		self.layer.style.paddingTop = `41px`
-	}
-	viewDidAppear()
-	{
-		const self = this
-		super.viewDidAppear()
-	}
+//
+class TransactionDetailsView extends View {
+    constructor(options, context) {
+        super(options, context)
+        //
+        const self = this
+        {
+            self.transaction = options.transaction
+            if (self.transaction === null || typeof self.transaction === 'undefined') {
+                throw "options.transaction nil but required for " + self.constructor.name
+            }
+            //
+            self.wallet = options.wallet
+            if (self.wallet === null || typeof self.wallet === 'undefined') {
+                throw "options.wallet nil but required for " + self.constructor.name
+            }
+        }
+        self.setup()
+    }
+
+    setup() {
+        const self = this
+        self._setup_views()
+        self._setup_startObserving()
+        //
+        self._configureUIWithTransaction()
+    }
+
+    _setup_views() {
+        const self = this
+        self.setup_self_layer()
+        {
+            const layer = commonComponents_tables.New_inlineMessageDialogLayer(
+                self.context,
+                "", // for now
+                false // for now
+            )
+            layer.style.width = "calc(100% - 0px)"
+            layer.style.marginLeft = "0px"
+            self.validationMessageLayer__isLocked = layer
+            self.layer.appendChild(layer)
+        }
+        {
+            const layer = commonComponents_tables.New_inlineMessageDialogLayer(
+                self.context,
+                "Your Monero is on its way.",
+                false // for now
+            )
+            layer.style.width = "calc(100% - 0px)"
+            layer.style.marginLeft = "0px"
+            self.validationMessageLayer__onItsWay = layer
+            self.layer.appendChild(layer)
+        }
+        // v- NOTE: only specifying commonComponents_forms here to get the styling, so that's somewhat fragile
+        const labelLayer = document.createElement("span")
+        labelLayer.className = "field_title"
+        labelLayer.innerHTML = "DETAILS"
+        labelLayer.style.webkitUserSelect = "none"
+        labelLayer.style.MozUserSelect = "none"
+        labelLayer.style.msUserSelect = "none"
+        labelLayer.style.userSelect = "none"
+        labelLayer.style.display = "block" // own line
+        labelLayer.style.margin = "15px 0 8px 8px"
+        labelLayer.style.textAlign = "left"
+        labelLayer.style.color = "#F8F7F8"
+        labelLayer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+        labelLayer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
+        labelLayer.style.fontSize = "10px"
+        labelLayer.style.letterSpacing = "0.5px"
+        labelLayer.style.marginTop = "15px"
+        labelLayer.style.marginBottom = "0"
+        labelLayer.style.paddingTop = "0"
+        labelLayer.style.paddingBottom = "0"
+        labelLayer.style.display = "block"
+        labelLayer.style.color = "#9E9C9E" // special case
+        labelLayer.style.fontWeight = "500" // to get specific visual weight w color
+        if (typeof process !== 'undefined' && process.platform === "linux") {
+            labelLayer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
+        } else {
+            labelLayer.style.fontWeight = "300"
+        }
+        self.layer.appendChild(labelLayer)
+        //
+        const containerLayer = document.createElement("div")
+        self.tableSection_containerLayer = containerLayer
+        containerLayer.style.margin = "8px 0"
+        containerLayer.style.boxSizing = "border-box"
+        containerLayer.style.padding = "0 16px 4px 16px"
+        containerLayer.style.border = "0.5px solid #494749"
+        containerLayer.style.borderRadius = "5px"
+        {
+            self._addTableFieldLayer_date()
+            self._addTableFieldLayer_amountsFeesAndTotals()
+            self._addTableFieldLayer_to();
+            self._addTableFieldLayer_paymentID()
+            self._addTableFieldLayer_transactionHash()
+            self._addTableFieldLayer_transactionKey()
+            self._addTableFieldLayer_ringsize()
+        }
+        self.layer.appendChild(containerLayer)
+        // self.DEBUG_BorderChildLayers()
+    }
+
+    setup_self_layer() {
+        const self = this
+        const layer = self.layer
+        layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
+        layer.style.boxSizing = "border-box"
+        layer.style.width = `100%`
+        layer.style.height = "100%"
+        layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+        layer.style.color = "#c0c0c0" // temporary
+        layer.style.overflowY = "auto"
+        layer.style.padding = `0 16px 40px 16px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+        layer.style.wordBreak = "break-all" // to get the text to wrap
+    }
+
+    ___styleLabelLayerAsFieldHeader(labelLayer) {
+        labelLayer.style.fontSize = "11px"
+        labelLayer.style.color = "#DFDEDF"
+    }
+
+    __new_tableFieldLayer_simpleValue(value, title, optl_color) {
+        const self = this
+        const div = document.createElement("div")
+        div.className = "table_field"
+        div.style.padding = "17px 0"
+        //
+        const labelLayer = document.createElement("span")
+        labelLayer.innerHTML = title
+        labelLayer.style.float = "left"
+        labelLayer.style.textAlign = "left"
+        labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+        labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+        labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+        labelLayer.style.fontWeight = "400" // semibold desired
+        labelLayer.style.letterSpacing = "0.5px"
+        labelLayer.style.color = "#FFFFFF"
+        self.___styleLabelLayerAsFieldHeader(labelLayer)
+        div.appendChild(labelLayer)
+        //
+        const valueLayer = commonComponents_tables.New_fieldValue_labelLayer(value, self.context)
+        if (typeof optl_color !== 'undefined' && optl_color) {
+            valueLayer.style.color = optl_color
+        }
+        valueLayer.style.marginTop = "-1px"
+        valueLayer.style.maxWidth = "75%" // should wrap
+        div.appendChild(valueLayer)
+        div.appendChild(commonComponents_tables.New_clearingBreakLayer()) // preserve height; better way?
+        div.Component_SetValue = function (value) {
+            valueLayer.Component_SetValue(value)
+        }
+        div.Component_SetColor = function (color) {
+            valueLayer.style.color = color
+        }
+        return div
+    }
+
+    _addTableFieldLayer_date() {
+        const self = this
+        const title = "Date"
+        const div = self.__new_tableFieldLayer_simpleValue(
+            "", // for now
+            title
+        )
+        self.tableFieldLayer__date = div
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    _addTableFieldLayer_amountsFeesAndTotals() {
+        const self = this
+        const title = "Total"
+        const div = self.__new_tableFieldLayer_simpleValue(
+            "", // for now
+            title
+        )
+        self.tableFieldLayer__amountsFeesAndTotals = div
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    _addTableFieldLayer_ringsize() {
+        const self = this
+        const title = "Ring size"
+        const div = self.__new_tableFieldLayer_simpleValue(
+            "", // for now
+            title
+        )
+        self.tableFieldLayer__ringsize = div
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    _addTableFieldLayer_transactionHash() {
+        const self = this
+        const fieldLabelTitle = "Transaction ID"
+        const valueToDisplayIfValueNil = "N/A"
+        const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+            self.context,
+            fieldLabelTitle,
+            "", // for now
+            self.context.pasteboard,
+            valueToDisplayIfValueNil
+        )
+        self.valueLayer__transactionHash = div
+        const labelLayer = div.Component_GetLabelLayer()
+        self.___styleLabelLayerAsFieldHeader(labelLayer)
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    _addTableFieldLayer_transactionKey() {
+        const self = this
+        const fieldLabelTitle = "Secret Key"
+        const valueToDisplayIfValueNil = "Unknown"
+        const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+            self.context,
+            fieldLabelTitle,
+            "", // for now
+            self.context.pasteboard,
+            valueToDisplayIfValueNil,
+            false // not truncated - functions and looks better
+        )
+        self.valueLayer__transactionKey = div
+        const labelLayer = div.Component_GetLabelLayer()
+        self.___styleLabelLayerAsFieldHeader(labelLayer)
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    _addTableFieldLayer_paymentID() {
+        const self = this
+        const fieldLabelTitle = "Payment ID"
+        const valueToDisplayIfValueNil = "None"
+        const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+            self.context,
+            fieldLabelTitle,
+            "", // for now
+            self.context.pasteboard,
+            valueToDisplayIfValueNil
+        )
+        self.valueLayer__paymentID = div
+        const labelLayer = div.Component_GetLabelLayer()
+        self.___styleLabelLayerAsFieldHeader(labelLayer)
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    _addTableFieldLayer_to() {
+        const self = this
+        const fieldLabelTitle = "To"
+        const valueToDisplayIfValueNil = "Unknown"
+        const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
+            self.context,
+            fieldLabelTitle,
+            "", // for now
+            self.context.pasteboard,
+            valueToDisplayIfValueNil,
+            false // it looks weird to have truncated fields next to non-truncated fields, presently
+        );
+        self.valueLayer__to = div
+        const labelLayer = div.Component_GetLabelLayer()
+        self.___styleLabelLayerAsFieldHeader(labelLayer)
+        self.tableSection_containerLayer.appendChild(div)
+    }
+
+    //
+    _setup_startObserving() {
+        const self = this
+        self._setup_startObserving_wallet()
+    }
+
+    _setup_startObserving_wallet() {
+        const self = this
+        if (typeof self.wallet === 'undefined' || self.wallet === null) {
+            throw "nil self.wallet undefined in " + self.constructor.name + "/" + "_setup_startObserving_wallet`"
+        }
+        // here, we're going to store the listener functions as instance properties
+        // because when we need to stopObserving we need to have access to the listener fns
+        //
+        // txs updated
+        self.wallet_EventName_transactionsChanged_listenerFunction = function () {
+            self.wallet_EventName_transactionsChanged()
+        }
+        self.wallet.on(
+            self.wallet.EventName_transactionsChanged(),
+            self.wallet_EventName_transactionsChanged_listenerFunction
+        )
+    }
+
+    //
+    //
+    // Lifecycle - Teardown
+    //
+    TearDown() { // We're going to make sure we tear this down here as well as in VDA in case we get popped over back to root (thus never calling VDA but calling this)
+        const self = this
+        super.TearDown()
+        //
+        self.transaction = null
+        self._stopObserving()
+        self.wallet = null
+    }
+
+    _stopObserving() {
+        const self = this
+
+        function doesListenerFunctionExist(fn) {
+            if (typeof fn !== 'undefined' && fn !== null) {
+                return true
+            }
+            return false
+        }
+
+        if (doesListenerFunctionExist(self.wallet_EventName_transactionsChanged_listenerFunction) === true) {
+            self.wallet.removeListener(
+                self.wallet.EventName_transactionsChanged(),
+                self.wallet_EventName_transactionsChanged_listenerFunction
+            )
+        }
+    }
+
+    //
+    //
+    // Runtime - Accessors - Navigation
+    //
+    Navigation_Title() {
+        const self = this
+        //
+        const tx = self.transaction
+        const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
+        const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
+        return monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
+    }
+
+    Navigation_New_RightBarButtonView() {
+        const self = this
+        const view = commonComponents_navigationBarButtons.New_RightSide_ValueDisplayLabelButtonView(self.context)
+        const layer = view.layer
+        {
+            var valueString;
+            const transaction = self.transaction
+            if (transaction && typeof transaction !== 'undefined') {
+                if (transaction.isFailed) {
+                    valueString = "REJECTED"
+                } else if (transaction.isConfirmed !== true) {
+                    valueString = "PENDING"
+                } else {
+                    valueString = "CONFIRMED"
+                }
+            } else {
+                valueString = ""
+            }
+            layer.innerHTML = valueString
+        }
+        view.layer.addEventListener(
+            "click",
+            function (e) {
+                e.preventDefault()
+                // disabled
+                return false
+            }
+        )
+        return view
+    }
+
+    Navigation_TitleColor() {
+        const self = this
+        const transaction = self.transaction
+        const colorHexString_orNil = transaction.approx_float_amount < 0 ? "#F97777" : null
+        //
+        return colorHexString_orNil // null meaning go with the default
+    }
+
+    //
+    //
+    // Runtime - Imperatives - UI Configuration
+    //
+    _configureUIWithTransaction() {
+        const self = this
+        const wallet = self.wallet
+        if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
+            throw self.constructor.name + " opened while wallet failed to init or boot."
+        }
+        const transaction = self.transaction
+        if (transaction.isUnlocked !== true) {
+            if (self.validationMessageLayer__isLocked.userHasClosedThisLayer !== true) {
+                const lockedReason = self.wallet.TransactionLockedReason(self.transaction)
+                var messageString = "This transaction is currently locked. " + lockedReason
+                self.validationMessageLayer__isLocked.SetValidationError(
+                    messageString,
+                    true/*wantsXButtonHidden*/
+                ) // this shows the validation err msg
+            }
+        } else {
+            self.validationMessageLayer__isLocked.style.display = "none"
+        }
+        if (transaction.isFailed != true && (transaction.isJustSentTransaction === true || transaction.isConfirmed !== true)) {
+            if (self.validationMessageLayer__onItsWay.userHasClosedThisLayer !== true) {
+                self.validationMessageLayer__onItsWay.style.display = "block"
+            } else {
+                // do not re-show since user has already closed it
+            }
+        } else {
+            self.validationMessageLayer__onItsWay.style.display = "none"
+        }
+        if (self.navigationController) {
+            self.navigationController.SetNavigationBarTitleNeedsUpdate() // for the CONFIRMED/PENDING
+        } else {
+            // then it'll effectively be called for us after init
+        }
+        // Configuring table fields
+        { // Date
+            var date = self.transaction.timestamp
+            if (typeof date === 'string') {
+                date = new Date(date)
+            }
+            const dateString = date.toLocaleDateString(
+                'en-US'/*for now*/,
+                {year: 'numeric', month: 'short', day: 'numeric', hour: "numeric", minute: "numeric", second: "numeric"}
+            ).toUpperCase()
+            const value = dateString
+            self.tableFieldLayer__date.Component_SetValue(value)
+        }
+        if (typeof self.transaction.target_address !== 'undefined' && self.transaction.target_address) {
+            self.valueLayer__to.Component_SetValue(self.transaction.target_address) // in case we have it
+            self.valueLayer__to.style.display = "block"
+        } else {
+            self.valueLayer__to.style.display = "none"
+        }
+        const isOutgoing = self.transaction.approx_float_amount < 0
+        { // Total
+            const tx = self.transaction
+            const received_JSBigInt = tx.total_received ? (typeof tx.total_received == 'string' ? new JSBigInt(tx.total_received) : tx.total_received) : new JSBigInt("0")
+            const sent_JSBigInt = tx.total_sent ? (typeof tx.total_sent == 'string' ? new JSBigInt(tx.total_sent) : tx.total_sent) : new JSBigInt("0")
+            const value = monero_amount_format_utils.formatMoney(received_JSBigInt.subtract(sent_JSBigInt))
+            var color;
+            if (isOutgoing) {
+                color = "#F97777"
+            } else {
+                color = "#FCFBFC"
+            }
+            self.tableFieldLayer__amountsFeesAndTotals.Component_SetValue(value)
+            self.tableFieldLayer__amountsFeesAndTotals.Component_SetColor(color)
+        }
+        { // Ringsize
+            const value = parseInt(self.transaction.mixin) + 1 // b/c ringsize = mixin + 1
+            self.tableFieldLayer__ringsize.Component_SetValue(value)
+        }
+        { // TX hash
+            const value = self.transaction.hash
+            self.valueLayer__transactionHash.Component_SetValue(value)
+        }
+        if (typeof self.transaction.tx_key !== 'undefined' && self.transaction.tx_key) { // outgoing .. we might have own tx key
+            const value = self.transaction.tx_key
+            self.valueLayer__transactionKey.Component_SetValue(value)
+            self.valueLayer__transactionKey.style.display = "block"
+        } else {
+            self.valueLayer__transactionKey.style.display = "none"
+        }
+        { // Payment ID
+            const value = self.transaction.payment_id
+            self.valueLayer__paymentID.Component_SetValue(value)
+        }
+    }
+
+    //
+    //
+    // Runtime - Delegation - Event handlers - Wallet
+    //
+    wallet_EventName_transactionsChanged() {
+        const self = this
+        var updated_transaction = null // to find
+        const transactions = self.wallet.New_StateCachedTransactions() // important to use this instead of .transactions
+        const transactions_length = transactions.length
+        for (let i = 0; i < transactions_length; i++) {
+            const this_transaction = transactions[i]
+            if (this_transaction.hash === self.transaction.hash) {
+                updated_transaction = this_transaction
+                break
+            }
+        }
+        if (updated_transaction !== null) {
+            self.transaction = updated_transaction
+            if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+                self.navigationController.SetNavigationBarTitleNeedsUpdate()
+            }
+            self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
+        } else {
+            throw "Didn't find same transaction in already open details view. Probably a server bug."
+        }
+    }
+
+    //
+    //
+    // Runtime - Delegation - Navigation/View lifecycle
+    //
+    viewWillAppear() {
+        const self = this
+        super.viewWillAppear()
+        self.layer.style.paddingTop = `41px`
+    }
+
+    viewDidAppear() {
+        const self = this
+        super.viewDidAppear()
+    }
 }
+
 module.exports = TransactionDetailsView
