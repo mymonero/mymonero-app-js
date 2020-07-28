@@ -146,13 +146,13 @@ class RootTabBarAndContentView extends TabBarAndContentView {
         { // walletAppCoordinator
             const emitter = self.context.walletAppCoordinator
             emitter.on(
-                emitter.EventName_willTrigger_sendFundsToContact(),
+                emitter.EventName_willTrigger_sendFundsToContact,
                 function () {
                     self._selectTab_withContentView(self.sendTabContentView)
                 }
             )
             emitter.on(
-                emitter.EventName_willTrigger_requestFundsFromContact(),
+                emitter.EventName_willTrigger_requestFundsFromContact,
                 function () {
                     self._selectTab_withContentView(self.requestTabContentView)
                 }
