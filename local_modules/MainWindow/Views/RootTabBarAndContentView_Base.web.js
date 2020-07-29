@@ -33,6 +33,7 @@ const WalletsTabContentView = require('../../WalletsList/Views/WalletsTabContent
 const SendTabContentView = require('../../SendFundsTab/Views/SendTabContentView.Full.web')
 const RequestTabContentView = require('../../RequestFunds/Views/RequestTabContentView.web')
 const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
+const ExchangeTabContentView = require('../../Exchange/Views/ExchangeTabContentView.web')
 const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
 
 class RootTabBarAndContentView extends TabBarAndContentView {
@@ -79,7 +80,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
                 layer.style.height = "100%"
             }
         }
-        { // add tab bar content views
+        { // add tab bar content Views
             self._setup_addTabBarContentViews()
         }
 
@@ -103,6 +104,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
         self.sendTabContentView = new SendTabContentView({}, context)
         self.requestTabContentView = new RequestTabContentView({}, context)
         self.contactsTabContentView = new ContactsTabContentView({}, context)
+        self.exchangeTabContentView = new ExchangeTabContentView({}, context)
         self.settingsTabContentView = new SettingsTabContentView({}, context)
         self.SetTabBarContentViews(
             [
@@ -110,6 +112,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
                 self.sendTabContentView,
                 self.requestTabContentView,
                 self.contactsTabContentView,
+                self.exchangeTabContentView,
                 self.settingsTabContentView
             ]
         )
@@ -121,7 +124,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
             const emitter = self.context.passwordController
             emitter.on(
                 emitter.EventName_didDeconstructBootedStateAndClearPassword(),
-                function () { // stuff like popping stack nav views to root views
+                function () { // stuff like popping stack nav Views to root Views
                     self.ResetAllTabContentViewsToRootState(false) // not animated
                 }
             )

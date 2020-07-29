@@ -170,9 +170,9 @@ class TabBarAndContentView extends View
 				self._tabBarItemButtonViews = []
 			}
 		}
-		{ // add tab bar item button views, and new tabBarContentViews
-			const isHorizontalBar = self.overridable_isHorizontalBar()
-			const tabBarView_thickness = self.overridable_tabBarView_thickness()
+		{ // add tab bar item button Views, and new tabBarContentViews
+			const isHorizontalBar = false
+			const tabBarView_thickness = 79
 			const numberOf_tabs = to_tabBarContentViews.length
 			to_tabBarContentViews.forEach(
 				function(to_tabBarContentView, idx)
