@@ -30,6 +30,7 @@
 const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
 const emoji_web = require('../../Emoji/emoji_web')
+const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 
 class ExchangeContentView extends ListView {
     constructor(options, context) {
@@ -84,6 +85,30 @@ class ExchangeContentView extends ListView {
         return "Exchange"
     }
 
+    Navigation_New_RightBarButtonView()
+    {
+        const self = this
+        //
+        const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
+        view.layer.addEventListener(
+            "click",
+            function(e)
+            {
+                e.preventDefault()
+                //
+                console.warn("Button pressed and then view change")
+                //
+                // const view = new AddContactFromContactsTabView({}, self.context)
+                // self.currentlyPresented_AddContactView = view
+                // const navigationView = new StackAndModalNavigationView({}, self.context)
+                // navigationView.SetStackViews([ view ])
+                // self.navigationController.PresentView(navigationView, true)
+                //
+                return false
+            }
+        )
+        return view
+    }
 }
 
 module.exports = ExchangeContentView
