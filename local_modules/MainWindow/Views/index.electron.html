@@ -2,8 +2,10 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<meta http-equiv="Content-Security-Policy" content="default-src 'none'; object-src 'none'; script-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src * data: blob: filesystem:;">
+		<!-- TODO: Karl, YOU HAVE TO CHANGE THE CSP to allow sha signed code !!!!!!!!! -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'none'; object-src 'none'; script-src 'self' 'unsafe-inline'; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src * data: blob: filesystem:;">
 		<link rel="stylesheet" type="text/css" href="./clear.electron.css" >
+		<link rel="stylesheet" type="text/css" href="./styles.css" >
 		<link rel="stylesheet" type="text/css" href="../../Emoji/Vendor/emojione.min.css" >
 		<link rel="stylesheet" type="text/css" href="../../Emoji/Vendor/emojione-sprite-32.min.css" >
 		<title>MyMonero</title>
