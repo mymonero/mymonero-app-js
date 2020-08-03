@@ -5,7 +5,6 @@
   "version": "1.1.13",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": "https://github.com/mymonero/mymonero-app-js",
-  "private": false,
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
     "start": "electron ./local_modules/electron_main/electron_main.js",
@@ -17,54 +16,7 @@
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
-    "copyright": "Copyright © 2014-2019 MyMonero/",
-    "asar": true,
-    "forceCodeSigning": false,
     "afterPack": "./build-afterPack.js",
-    "files": [
-      "local_modules/**/*.{js,json,wasm}",
-      "local_modules/**/*.{png,icns,ico,otf,ttf}",
-      "local_modules/**/*.css",
-      "local_modules/**/*.html",
-      "node_modules/**",
-      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests,powered-test,example,examples,*.d.ts}",
-      "!**/node_modules/.bin",
-      "!**/*.{o,hprof,orig,pyc,pyo,rbc}",
-      "!**/._*",
-      "!**/{.DS_Store,.eslintrc.json,.eslintignore,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}",
-      "!**/*.cordova.*",
-      "!**/*.Lite.*",
-      "!**/local_modules/**/package.json",
-      "!**/local_modules/**/package-lock.json",
-      "!**/tests/*",
-      "!**/*.spec.js",
-      "!local_modules/Pasteboard/Vendor/clipboard.min.js",
-      "!local_modules/mymonero_libapp_js/libapp_js/MyMoneroLibAppCpp_ASMJS.js",
-      "!local_modules/mymonero_libapp_js/libapp_js/MyMoneroLibAppCpp_ASMJS.asm.js",
-      "!local_modules/mymonero_libapp_js/build",
-      "!local_modules/mymonero_libapp_js/tests/**",
-      "!local_modules/mymonero_libapp_js/src/**",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/index.js",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_ASMJS.js",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_ASMJS.asm.js",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_WASM.js",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_WASM.wasm",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreBridge.js",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreBridgeClass.js",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/tests/**",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/wallaby*",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/src/**",
-      "!local_modules/mymonero_libapp_js/mymonero-core-js/build",
-      "!**/*.browser.*",
-      "!**/favicon*.png",
-      "!**/favicon*.ico",
-      "!**/mstile*.png",
-      "!**/apple-touch-icon.png",
-      "!**/android-chrome*.png",
-      "!**/browserconfig.xml",
-      "!local_modules/MainWindow/Resources/favicon/manifest.json",
-      "!local_modules/MainWindow/Resources/www_logo@3x.png"
-    ],
     "publish": [
       {
         "provider": "github",
@@ -74,40 +26,14 @@
     ],
     "mac": {
       "category": "public.app-category.finance",
-      "target": [
-        "zip",
-        "dir",
-        "dmg"
-      ],
-      "type": "distribution",
-      "icon": "icon.icns",
-      "identity": "MyMonero Pty Ltd (NLN5D623Y3)",
-      "extendInfo": {
-        "com.apple.developer.team-identifier": "NLN5D623Y3",
-        "com.apple.application-identifier": "NLN5D623Y3.com.mymonero.mymonero-desktop"
-      }
+      "identity": "MyMonero Pty Ltd (NLN5D623Y3)"
     },
     "win": {
-      "target": [
-        "nsis"
-      ],
-      "artifactName": "${productName}-${version}.${ext}",
-      "legalTrademarks": "Copyright © 2014-2019 MyMonero.",
       "publisherName": null,
       "verifyUpdateCodeSignature": false
     },
     "nsis": {
-      "perMachine": true,
-      "artifactName": "${productName}-${version}.${ext}"
-    },
-    "nsisWeb": {
-      "artifactName": "${productName}-${version}.${ext}"
-    },
-    "linux": {
-      "icon": "icon.icns",
-      "target": [
-        "AppImage"
-      ]
+      "perMachine": true
     },
     "protocols": [
       {
