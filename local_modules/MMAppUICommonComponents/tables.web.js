@@ -484,7 +484,7 @@ exports.New_copyable_longStringValueField_component_fieldContainerLayer = New_co
 function New_tableCell_accessoryChevronLayer(context)
 {
 	const layer = document.createElement("img")
-	layer.src = "../../MMAppUICommonComponents/Resources/list_rightside_chevron@3x.png"
+	layer.src = "../../../assets/img/list_rightside_chevron@3x.png"
 	layer.classList.add('table-chevron')
 
 	return layer

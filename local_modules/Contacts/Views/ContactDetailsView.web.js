@@ -290,7 +290,7 @@ class ContactDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Pay", 
-			"../../Contacts/Resources/actionButton_iconImage__send@3x.png", // relative to index.html
+			"../../../assets/img/actionButton_iconImage__send@3x.png", // relative to index.html
 			false,
 			function(layer, e)
 			{
@@ -308,7 +308,7 @@ class ContactDetailsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Request", 
-			"../../Contacts/Resources/actionButton_iconImage__request@3x.png", // relative to index.html
+			"../../../assets/img/actionButton_iconImage__request@3x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{

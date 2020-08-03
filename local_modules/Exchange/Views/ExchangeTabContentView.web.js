@@ -61,7 +61,7 @@ class ExchangeTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts@3x.png)",
+			backgroundImage: "url(../../../assets/img//icon_tabBar_contacts@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 23px"
@@ -71,7 +71,7 @@ class ExchangeTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../Contacts/Resources/icon_tabBar_contacts__active@3x.png)",
+			backgroundImage: "url(../../../assets/img/icon_tabBar_contacts__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 23px"

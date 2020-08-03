@@ -58,7 +58,7 @@ class FundsRequestsListCellView extends ListCellView
 		}
 		{
 			const layer = document.createElement("img")
-			layer.src = "../../MMAppUICommonComponents/Resources/list_rightside_chevron@3x.png"
+			layer.src = "../../../assets/img/list_rightside_chevron@3x.png"
 			layer.classList.add('table-chevron')
 			self.layer.appendChild(layer)
 		}

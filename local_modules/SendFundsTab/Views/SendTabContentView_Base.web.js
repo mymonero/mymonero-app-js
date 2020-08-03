@@ -70,7 +70,7 @@ class SendTabContentView_Base extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../SendFundsTab/Resources/icon_tabBar_sendFunds@3x.png)",
+			backgroundImage: "url(../../../assets/img/icon_tabBar_sendFunds@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 25px"
@@ -80,7 +80,7 @@ class SendTabContentView_Base extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../SendFundsTab/Resources/icon_tabBar_sendFunds__active@3x.png)",
+			backgroundImage: "url(../../../assets/img/icon_tabBar_sendFunds__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 25px"
