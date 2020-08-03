@@ -50,7 +50,7 @@ function PreLoadImages(context)
 {
 	for (let i = 0; i < images_filenames.length; i++) {
 		const filename = images_filenames[i]
-		const imageURL = `../../MMAppUICommonComponents/Resources/${filename}`
+		const imageURL = `../../../assets/img/${filename}`
 		const image = new Image()
 		image.src = imageURL
 		cached_preloadedImages.push(image)

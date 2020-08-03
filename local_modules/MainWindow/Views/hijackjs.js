@@ -52,7 +52,7 @@ doc.addEventListener('ready', bindListeners());
 
 
 
-{/* <div id="walletsList" style="-webkit-app-region: no-drag; width: 100%; height: 100%; border: none; background-image: url('../../WalletsList/Resources/icon_tabBar_wallets__active@3x.png'); background-position: center center; background-repeat: no-repeat; background-size: 24px 24px; opacity: 0.3;"></div>
+{/* <div id="walletsList" style="-webkit-app-region: no-drag; width: 100%; height: 100%; border: none; background-image: url('../../../assets/img/icon_tabBar_wallets__active@3x.png'); background-position: center center; background-repeat: no-repeat; background-size: 24px 24px; opacity: 0.3;"></div>
 </a>
 <a style="display: inline-block; position: relative; -webkit-app-region: no-drag; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 79px; height: 56px;">
     <div id="sendFunds" */}

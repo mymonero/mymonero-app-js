@@ -149,7 +149,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Try again", 
-			"../../WalletWizard/Resources/actionButton_iconImage__tryAgain@3x.png", // relative to index.html
+			"../../../assets/img/actionButton_iconImage__tryAgain@3x.png", // relative to index.html
 			false,
 			function(layer, e)
 			{
@@ -168,7 +168,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Start Over", 
-			"../../WalletWizard/Resources/actionButton_iconImage__startOver@3x.png", // relative to index.html
+			"../../../assets/img/actionButton_iconImage__startOver@3x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
