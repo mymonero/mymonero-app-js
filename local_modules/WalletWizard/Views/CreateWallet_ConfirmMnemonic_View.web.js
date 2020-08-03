@@ -36,6 +36,8 @@ const commonComponents_activityIndicators = require('../../MMAppUICommonComponen
 //
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
+const View = require('../../Views/View.web')
+
 class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 {
 	_setup_views()
