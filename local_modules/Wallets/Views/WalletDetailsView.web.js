@@ -96,6 +96,7 @@ class WalletDetailsView extends View {
         layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
         layer.style.color = "#c0c0c0" // temporary
         layer.style.wordBreak = "break-all" // to get the text to wrap
+        layer.className = "WalletDetailsView"
     }
 
     _setup_balanceLabelView() {
@@ -116,6 +117,7 @@ class WalletDetailsView extends View {
             layer.style.overflow = "hidden"
             layer.style.textOverflow = "ellipsis"
             layer.style.wordBreak = "break-all"
+            layer.className = "WalletDetailsSubview";
         }
         const mainLabelSpan = document.createElement("span")
         {
@@ -123,6 +125,7 @@ class WalletDetailsView extends View {
             layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
             layer.style.fontWeight = "100"
             layer.style.fontSize = "32px"
+            layer.className = "mainLabelSpan";
             view.layer.appendChild(layer)
         }
         const secondarySectionLabelSpan = document.createElement("span")
@@ -131,6 +134,7 @@ class WalletDetailsView extends View {
             layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
             layer.style.fontWeight = "100"
             layer.style.fontSize = "32px"
+            layer.className = "secondarySectionLabelSpan";
             view.layer.appendChild(layer)
         }
         view.SetWalletThemeColor = function (swatch_hexColorString) {
@@ -739,6 +743,9 @@ class WalletDetailsView extends View {
         }
         // hopefully these will be able to handle small enough values .. maybe switch to BigInt w/o doubles .. but fwiw they are just for display
         let XMR = Currencies.ccySymbolsByCcy.XMR
+        console.log(XMR);
+        console.log(amountPending_JSBigInt);
+        console.log(wallet);
         const amountPending_JSBigInt = wallet.AmountPending_JSBigInt()
         const hasPendingAmount = amountPending_JSBigInt.compare(0) > 0
         const amountLocked_JSBigInt = wallet.locked_balance || new JSBigInt(0)
