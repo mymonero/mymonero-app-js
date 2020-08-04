@@ -91,7 +91,7 @@ class AddContactView extends ContactFormView
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
 			// borrowing this asset til these are factored
-			"../../SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png",
+			"../../../assets/img/actionButton_iconImage__chooseFile@3x.png",
 			true,
 			function(layer, e)
 			{

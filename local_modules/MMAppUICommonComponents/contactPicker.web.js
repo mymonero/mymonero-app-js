@@ -455,7 +455,7 @@ function _new_pickedContactLayer(context, contact, didClickCloseBtn_fn)
 			xButtonLayer.style.top = "0px"
 			xButtonLayer.style.width = "34px"
 			xButtonLayer.style.height = "100%"
-			xButtonLayer.style.backgroundImage = "url(../../MMAppUICommonComponents/Resources/contactPicker_xBtnIcn@3x.png)"
+			xButtonLayer.style.backgroundImage = "url(../../../assets/img/contactPicker_xBtnIcn@3x.png)"
 			xButtonLayer.style.backgroundSize = "11px 10px"
 			xButtonLayer.style.backgroundPosition = "center"
 			xButtonLayer.style.backgroundRepeat = "no-repeat"

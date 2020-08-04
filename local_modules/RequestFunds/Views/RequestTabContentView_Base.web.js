@@ -54,7 +54,7 @@ class RequestTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../RequestFunds/Resources/icon_tabBar_fundsRequests@3x.png)",
+			backgroundImage: "url(../../../assets/img/icon_tabBar_fundsRequests@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 24px"
@@ -64,7 +64,7 @@ class RequestTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../RequestFunds/Resources/icon_tabBar_fundsRequests__active@3x.png)",
+			backgroundImage: "url(../../../assets/img/icon_tabBar_fundsRequests__active@3x.png)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
 			backgroundSize: "24px 24px"
