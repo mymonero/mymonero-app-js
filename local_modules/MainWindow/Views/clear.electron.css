@@ -216,7 +216,7 @@
     margin-top: 10px;
     width: 26px;
     height: 24px;
-    background-image: url(../../MMAppUICommonComponents/Resources/backButtonIcon@3x.png);
+    background-image: url(../../../assets/img/backButtonIcon@3x.png);
     background-size: 9px 14px;
     background-repeat: no-repeat;
     background-position: 8px 5px;
@@ -232,7 +232,7 @@
     float: right;
     margin-top: 10px;
     width: 26px;
-    background-image: url(../../MMAppUICommonComponents/Resources/addButtonIcon_10@3x.png);
+    background-image: url(../../../assets/img/addButtonIcon_10@3x.png);
     background-size: 10px 10px;
     background-repeat: no-repeat;
     background-position: center;
@@ -393,7 +393,7 @@
 }
 
 .inlineMessageDialogLayer > a.close-btn {
-    background-image: url(../../MMAppUICommonComponents/Resources/inlineMessageDialog_closeBtn@3x.png);
+    background-image: url(../../../assets/img/inlineMessageDialog_closeBtn@3x.png);
     background-size: 8px 8px;
     background-repeat: no-repeat;
     background-position: center;

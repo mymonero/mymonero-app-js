@@ -121,7 +121,7 @@ class InfoDisclosingView extends View
 			layer.style.position = "absolute"
 			layer.style.left = "14px"
 			layer.style.top = "15px"
-			layer.style.backgroundImage = "url('../../InfoDisclosingView/Resources/disclosureArrow_icon@3x.png')"
+			layer.style.backgroundImage = "url('../../../assets/img/disclosureArrow_icon@3x.png')"
 			layer.style.backgroundSize = "8px 10px"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.backgroundPosition = "center"

@@ -62,7 +62,7 @@ class WalletsTabContentView extends StackAndModalNavigationView {
 
     TabBarItem_icon_customStyle() {
         return {
-            backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets@3x.png)",
+            backgroundImage: "url(../../../assets/img/icon_tabBar_wallets@3x.png)",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "24px 24px"
@@ -71,7 +71,7 @@ class WalletsTabContentView extends StackAndModalNavigationView {
 
     TabBarItem_icon_selected_customStyle() {
         return {
-            backgroundImage: "url(../../WalletsList/Resources/icon_tabBar_wallets__active@3x.png)",
+            backgroundImage: "url(../../../assets/img/icon_tabBar_wallets__active@3x.png)",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "24px 24px"

@@ -336,7 +336,7 @@ function New_Detected_IconAndMessageLayer(context)
 {
 	const layer = document.createElement("div")
 	layer.classList.add("iconAndMessageLayer")
-	layer.innerHTML = `<img src="../../MMAppUICommonComponents/Resources/detectedCheckmark@3x.png" width="9px" height="7px" />&nbsp;<span>Detected</span>`
+	layer.innerHTML = `<img src="../../../assets/img/detectedCheckmark@3x.png" width="9px" height="7px" />&nbsp;<span>Detected</span>`
 	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "11px"
