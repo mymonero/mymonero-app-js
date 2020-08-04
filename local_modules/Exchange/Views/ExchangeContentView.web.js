@@ -41,6 +41,9 @@ class ExchangeContentView extends ListView {
         // ^- injecting dep so consumer of self doesn't have to
         super(options, context)
         self.currentlyPresented_AddContactView = null // zeroing
+        console.log("going to print it");
+        console.log(context);
+
     }
 
     _setup_views() {

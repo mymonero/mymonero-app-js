@@ -97,7 +97,7 @@ function _shared_scrollConformingElementIntoView(inputLayer)
 	// for note with github issues.
 	{ // lazy require to avoid usage in e.g. electron; hopefully the perf hit will not be noticed
 		if (LocalVendor_ScrollPositionEndFixed_Animate == null) {
-			LocalVendor_ScrollPositionEndFixed_Animate = require('../Animation/Vendor/velocity')
+			LocalVendor_ScrollPositionEndFixed_Animate = require('../../assets/img/velocity')
 			// ^-- hopefully it will not cause problems to have multiple velocity modules connected to the same DOM
 		}
 	}
