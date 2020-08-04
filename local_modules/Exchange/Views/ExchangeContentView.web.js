@@ -32,8 +32,10 @@ const ListView = require('../../Lists/Views/ListView.web')
 const emoji_web = require('../../Emoji/emoji_web')
 const ExchangeFunctions = require('./ExchangeFunctions')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
+const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 const fs = require('fs');
-const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
+//const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
+
 
 class ExchangeContentView extends ListView {
     constructor(options, context) {
@@ -41,9 +43,7 @@ class ExchangeContentView extends ListView {
         // ^- injecting dep so consumer of self doesn't have to
         super(options, context)
         self.currentlyPresented_AddContactView = null // zeroing
-        console.log("going to print it");
         console.log(context);
-
     }
 
     _setup_views() {
@@ -70,31 +70,26 @@ class ExchangeContentView extends ListView {
             view.layer.appendChild(layer)
         }
         {
-            const layer = commonComponents_contactPicker.New_contactPickerLayer(
-                self.context,
-                "Contact name, or address/domain",
-                self.context.contactsListController,
-                function (contact) { // did pick
-                    self._didPickContact(contact)
-                },
-                function (clearedContact) {
-                    self.cancelAny_requestHandle_for_oaResolution()
-                    //
-                    self._dismissValidationMessageLayer() // in case there was an OA addr resolve network err sitting on the screen
-                    self._hideResolvedPaymentID()
-                    self._hideResolvedAddress()
-                    //
-                    self.addPaymentIDButtonView.layer.style.display = "block" // can re-show this
-                    self.manualPaymentIDInputLayer_containerLayer.style.display = "none" // just in case
-                    self.manualPaymentIDInputLayer.value = ""
-                    //
-                    self.pickedContact = null
-                },
-                function (event) { // didFinishTypingInInput_fn
-                    self._didFinishTypingInContactPickerInput(event)
-                }
-            )
-            contentContainerLayer.appendChild(layer);
+			// const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
+			// {
+			// 	const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
+			// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+			// 	const layer = view.layer
+			// 	labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+			// }
+			// div.appendChild(labelLayer)
+			// //
+			const view = new WalletsSelectView({}, self.context)
+			view.didUpdateSelection_fn = function()
+			{
+				//self.configure_amountInputTextGivenMaxToggledState()
+			}
+			self.walletSelectView = view
+            const valueLayer = view.layer;
+            console.log(valueLayer);
+            contentContainerLayer.appendChild(valueLayer)
+            //view.layer.appendChild(valueLayer)
+
         }
         {
             const layer = document.createElement("div")
