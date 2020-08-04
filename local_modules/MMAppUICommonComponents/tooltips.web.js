@@ -31,7 +31,7 @@
 //
 "use strict"
 //
-const Opentip = require('./Vendor/opentip-native.min.js')
+const Opentip = require('../../assets/js/opentip-native.min.js')
 //
 const commonComponents_tables = require('./tables.web')
 
