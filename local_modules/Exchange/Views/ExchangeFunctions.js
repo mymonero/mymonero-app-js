@@ -9,9 +9,9 @@ class ExchangeFunctions {
         // this.apiUrl = "https://test.xmr.to/api/";
         // this.apiVersion = "v3";
         // this.currencyToExchange = "xmr2btc";
-        
+        this.order = {};
     }
-    static getOrderStatus(order_id) {
+    static getOrderStatus() {
         //Post UUID to https://xmr.to/api/v3/xmr2btc/order_status_query/
         // {
         //     "state": <order_state_as_string>,
@@ -33,14 +33,21 @@ class ExchangeFunctions {
         //     "msat_amount": <order_amount_in_msat_as_integer>,
         //     "payments": [<payment_objects>]
         // }
+        const order = this.order;
+        console.log(this);
         return new Promise((resolve, reject) => {
-            let endpoint = `https://xmr.to/api/v3/xmr2btc/order_status_query/`;
+            console.log(order);
+            console.log('pre-query-order');
+            let endpoint = `https://test.xmr.to/api/v3/xmr2btc/order_status_query/`;
             let data = {
-                "uuid": order_id
+                "uuid": order.data.uuid
             }
+            console.log(order.data);
+            console.log(order.data.uuid);
             axios.post(endpoint, data)
                 .then(function (response) {
                     console.log(response);
+                    order.state = response.data;
                     resolve(response);
                 })
                 .catch(function (error) {
@@ -52,6 +59,7 @@ class ExchangeFunctions {
 
     // We expect a return code 201, not a 200
     static createNewOrder(amount, amount_currency, btc_dest_address) {
+        let self = this;
         return new Promise((resolve, reject) => {
             let endpoint = `https://test.xmr.to/api/v3/xmr2btc/order_create/`;
             // https://xmr.to/api/v3/xmr2btc/order_parameter_query/
@@ -60,9 +68,9 @@ class ExchangeFunctions {
                     amount_currency, // currency as string
                     btc_dest_address // dest address as string
                 }
-
                 axios.post(endpoint, data)
                   .then(function (response) {
+                    self.order = response;
                     console.log(response);
                     resolve(response);
                   })
