@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-"use strict"
+//"use strict"
 const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
 const emoji_web = require('../../Emoji/emoji_web')
@@ -43,7 +43,13 @@ class ExchangeContentView extends ListView {
         // ^- injecting dep so consumer of self doesn't have to
         super(options, context)
         self.currentlyPresented_AddContactView = null // zeroing
+        console.log('ECV constructor')
         console.log(context);
+        let interval = setInterval(function() {
+            console.log(context);
+        }, 5000);
+        
+        
     }
 
     _setup_views() {
@@ -54,7 +60,7 @@ class ExchangeContentView extends ListView {
     
     _setup_emptyStateContainerView() {
         const self = this
-
+        console.log(self.context);
         const view = new View({}, self.context)
         {
             const layer = view.layer
@@ -80,7 +86,8 @@ class ExchangeContentView extends ListView {
 			// div.appendChild(labelLayer)
 			// //
 			const view = new WalletsSelectView({}, self.context)
-			view.didUpdateSelection_fn = function()
+            view.didUpdateSelection_fn = function(){};
+            console.log(view);
 			{
 				//self.configure_amountInputTextGivenMaxToggledState()
 			}
@@ -115,15 +122,21 @@ class ExchangeContentView extends ListView {
         }
         {
             const layer = document.createElement("script");
-            layer.innerText = fs.readFileSync(__dirname + '/ExchangeScript.js', 'utf8');;
+            layer.innerText = fs.readFileSync(__dirname + '/ExchangeScript.js', 'utf8');
+            // we will probably need to handle the context.wallet stuff here
             contentContainerLayer.appendChild(layer);
         }
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
+        // setInterval((context, options) => {
+        //     console.log(options);
+        //     console.log(self.context);
+        //     console.log(self.context.walletsListController);
+        // }, 5000);
     }
 /**
  *                 let exchangeRate = document.getElementById('exchangeRate');
-                console.log(ExchangeFunctions)
+                
                 exchangeRate.addEventListener('click', function() {
                     const rateObj = await ExchangeFunctions.getRatesAndLimits();
                     console.log(rateObj);

@@ -75,7 +75,8 @@
     border-radius: 3px; 
     background-color: rgb(56, 54, 56); 
     padding: 8px 11px; 
-    box-sizing: border-box; width: 100%; height: auto; color: rgb(124, 122, 124); font-size: 13px; font-weight: 100; font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; word-break: break-all;"
+    box-sizing: border-box; width: 100%; height: auto; color: rgb(124, 122, 124); font-size: 13px; font-weight: 100; font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; 
+    word-break: break-all;
 }
 
 .clickableLinkButton {
