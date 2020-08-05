@@ -36,7 +36,7 @@ const net_service_utils = require('../mymonero_libapp_js/mymonero-core-js/hostAP
 //
 const config__MyMonero = require('./config__MyMonero')
 //
-class HostedMoneroAPIClient_Base
+class HostedMoneroAPIClient
 {
 	//
 	// Lifecycle - Initialization
@@ -71,6 +71,16 @@ class HostedMoneroAPIClient_Base
 	// Runtime - Accessors - Private - Requests
 	_new_apiAddress_authority() 
 	{ // overridable
+		const self = this
+		const settingsController = self.context.settingsController
+		if (settingsController.hasBooted != true) {
+			throw "Expected SettingsController to have been booted"
+		}
+		const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority || ""
+		if (specificAPIAddressURLAuthority != "") {
+			return specificAPIAddressURLAuthority
+		}
+		// fall back to mymonero server
 		return config__MyMonero.API__authority
 	}
 	//
@@ -110,13 +120,7 @@ class HostedMoneroAPIClient_Base
 	}
 	//
 	// Syncing
-	AddressInfo_returningRequestHandle(
-		address,
-		view_key__private,
-		spend_key__public,
-		spend_key__private,
-		fn
-	) {  // -> RequestHandle
+	AddressInfo_returningRequestHandle(address, view_key__private, spend_key__public, spend_key__private, fn) {  // -> RequestHandle
 		const self = this
 		const endpointPath = "get_address_info"
 		const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
@@ -137,7 +141,7 @@ class HostedMoneroAPIClient_Base
 		function __proceedTo_parseAndCallBack(data)
 		{
 			self.context.backgroundAPIResponseParser.Parsed_AddressInfo(
-				// key-image-managed - just be sure to dekete your wallet's key img cache when you tear down
+
 				data,
 				address,
 				view_key__private,
@@ -378,4 +382,4 @@ class HostedMoneroAPIClient_Base
 		return requestHandle
 	}
 }
-module.exports = HostedMoneroAPIClient_Base
+module.exports = HostedMoneroAPIClient

@@ -180,39 +180,21 @@ class WalletHostPollingController {
         var __debug_fnName = "_fetch_accountInfo"
         const self = this
         const wallet = self.wallet
-        const fn = function (errOrNil) {
-            if (errOrNil) {
-                // TODO: how to handle this? we'll retry soon enough
-            }
-            // success
-        }
-        //
+        
         if (typeof self.requestHandle_for_accountInfo !== 'undefined' && self.requestHandle_for_accountInfo !== null) {
-            const warnStr = "⚠️  _fetch_accountInfo called but request already taking place. Bailing"
-            console.warn(warnStr)
-            fn() // not an error we'd necessarily want to bubble
+            console.warn("⚠️  "+ __debug_fnName +" called but request already taking place. Bailing")
             return
         }
-        //
         if (wallet.isLoggedIn !== true) {
-            const errStr = "❌  Unable to " + __debug_fnName + " as isLoggedIn !== true"
-            console.error(errStr)
-            const err = new Error(errStr)
-            fn(err)
+            console.error("❌  Unable to " + __debug_fnName + " as isLoggedIn !== true")
             return
         }
         if (typeof wallet.public_address === 'undefined' && wallet.public_address === null || wallet.public_address === '') {
-            const errStr = "❌  Unable to " + __debug_fnName + " as no public_address"
-            console.error(errStr)
-            const err = new Error(errStr)
-            fn(err)
+            console.error("❌  Unable to " + __debug_fnName + " as no public_address")
             return
         }
         if (typeof wallet.private_keys === 'undefined' && wallet.private_keys === null) {
-            const errStr = "❌  Unable to " + __debug_fnName + " as no private_keys"
-            console.error(errStr)
-            const err = new Error(errStr)
-            fn(err)
+            console.error("❌  Unable to " + __debug_fnName + " as no private_keys")
             return
         }
         const requestHandle = self.context.hostedMoneroAPIClient.AddressInfo_returningRequestHandle(
@@ -238,7 +220,6 @@ class WalletHostPollingController {
                 self._didUpdate_factorOf_isFetchingState()
                 //
                 if (err) { // already logged
-                    fn(err)
                     return
                 }
                 //
@@ -267,39 +248,21 @@ class WalletHostPollingController {
         var __debug_fnName = "_fetch_transactionHistory"
         const self = this
         const wallet = self.wallet
-        const fn = function (errOrNil) {
-            if (errOrNil) {
-                // TODO: how to handle this? we'll retry soon enough
-            }
-            // success
-        }
-        //
+        
         if (typeof self.requestHandle_for_transactions !== 'undefined' && self.requestHandle_for_transactions !== null) {
-            const warnStr = "⚠️  _fetch_transactionHistory called but request already taking place. Bailing"
-            console.warn(warnStr)
-            fn() // not an error we'd necessarily want to bubble
+            console.warn("⚠️  "+ __debug_fnName + " called but request already taking place. Bailing")
             return
         }
-        //
         if (wallet.isLoggedIn !== true) {
-            const errStr = "❌  Unable to " + __debug_fnName + " as isLoggedIn !== true"
-            console.error(errStr)
-            const err = new Error(errStr)
-            fn(err)
+            console.error("❌  Unable to " + __debug_fnName + " as isLoggedIn !== true")
             return
         }
         if (typeof wallet.public_address === 'undefined' && wallet.public_address === null || wallet.public_address === '') {
-            const errStr = "❌  Unable to " + __debug_fnName + " as no public_address"
-            console.error(errStr)
-            const err = new Error(errStr)
-            fn(err)
+            console.error("❌  Unable to " + __debug_fnName + " as no public_address")
             return
         }
         if (typeof wallet.private_keys === 'undefined' && wallet.private_keys === null) {
-            const errStr = "❌  Unable to " + __debug_fnName + " as no private_keys"
-            console.error(errStr)
-            const err = new Error(errStr)
-            fn(err)
+            console.error("❌  Unable to " + __debug_fnName + " as no private_keys")
             return
         }
         const requestHandle = self.context.hostedMoneroAPIClient.AddressTransactions_returningRequestHandle(
