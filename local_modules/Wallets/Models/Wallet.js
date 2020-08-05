@@ -88,6 +88,9 @@ class Wallet extends EventEmitter
 		var self = this
 		self.options = options
 		self.context = context
+		if (context.wallets === undefined) {
+			context.wallets = [];
+		}
 		//
 		self.initTimeInstanceUUID = uuidV1() // so that e.g. the list controller can immediately have an id with which to do observation listener fn cache hashes
 		//
@@ -121,14 +124,22 @@ class Wallet extends EventEmitter
 		//
 		// detecting how to set up instance
 		if (self._id !== null) { // need to look up existing document but do not decrypt & boot
-			self.__setup_fetchExistingDoc_andAwaitBoot()
+			self.__setup_fetchExistingDoc_andAwaitBoot(context)
 		} else {
-			self.__setup_andAwaitBootAndLogInAndDocumentCreation()
+			self.__setup_andAwaitBootAndLogInAndDocumentCreation(context)
 		}
+		console.log(self.context);
+		context.wallets = [];
+		context.wallets.forEach((element) => {
+			console.log('checking element');
+			console.log(element);
+		});
+		context.wallets.push(self);
 	}
-	__setup_fetchExistingDoc_andAwaitBoot()
+	__setup_fetchExistingDoc_andAwaitBoot(context)
 	{
 		const self = this
+		console.log('inside __setup_fetchExistingDoc_andAwaitBoot');
 		self.context.persister.DocumentsWithIds(
 			wallet_persistence_utils.CollectionName,
 			[ self._id ], // cause we're saying we have an _id passed in…
@@ -150,12 +161,24 @@ class Wallet extends EventEmitter
 				// and we hang onto this for when the instantiator opts to boot the instance
 				self.initialization_encryptedString = encryptedString
 				self.successfullyInitialized_cb()
+				let checkWalletExists = false;
+				context.wallets.forEach((element) => {
+					console.log('checking element2');
+					if (element._id === self._id) {
+						console.log('success');
+						checkWalletExists = true;
+					}
+				});
+				if (!checkWalletExists) {
+					context.wallets.push(self);
+				}
 			}
 		)
 	}
-	__setup_andAwaitBootAndLogInAndDocumentCreation()
+	__setup_andAwaitBootAndLogInAndDocumentCreation(context)
 	{
 		const self = this
+		console.log('inside __setup_andAwaitBootAndLogInAndDocumentCreation');
 		//
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false

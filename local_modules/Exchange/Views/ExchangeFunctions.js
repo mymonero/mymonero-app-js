@@ -1,8 +1,7 @@
+const axios = require("axios");
 //const http = require('http');
-
 // const { URL } = require('url');
 // This module contains XMR.TO functionality. For more info, go to test.xmr.to
-const axios = require("axios");
 
 class ExchangeFunctions {
 
@@ -14,6 +13,41 @@ class ExchangeFunctions {
     }
     static getOrderStatus(order_id) {
         //Post UUID to https://xmr.to/api/v3/xmr2btc/order_status_query/
+        // {
+        //     "state": <order_state_as_string>,
+        //     "btc_amount": <requested_amount_in_btc_as_string>,
+        //     "btc_amount_partial": <partial_amount_in_btc_as_string>,
+        //     "btc_dest_address": <requested_destination_address_as_string>,
+        //     "uuid": <unique_order_identifier_as_12_character_string>
+        //     "btc_num_confirmations_threshold": <btc_num_confirmations_threshold_as_integer>,
+        //     "created_at": <timestamp_as_string>,
+        //     "expires_at": <timestamp_as_string>,
+        //     "seconds_till_timeout": <seconds_till_timeout_as_integer>,
+        //     "incoming_amount_total": <amount_in_incoming_currency_for_this_order_as_string>,
+        //     "remaining_amount_incoming": <amount_in_incoming_currency_that_the_user_must_still_send_as_string>,
+        //     "incoming_num_confirmations_remaining": <num_incoming_currency_confirmations_remaining_before_bitcoins_will_be_sent_as_integer>,
+        //     "incoming_price_btc": <price_of_1_incoming_in_btc_currency_as_offered_by_service_as_string>,
+        //     "receiving_subaddress": <xmr_subaddress_user_needs_to_send_funds_to_as_string>,
+        //     "recommended_mixin": <recommended_mixin_as_integer>,
+        //     "uses_lightning": <boolean_indicating_the_method_for_the_payment>,
+        //     "msat_amount": <order_amount_in_msat_as_integer>,
+        //     "payments": [<payment_objects>]
+        // }
+        return new Promise((resolve, reject) => {
+            let endpoint = `https://xmr.to/api/v3/xmr2btc/order_status_query/`;
+            let data = {
+                "uuid": order_id
+            }
+            axios.post(endpoint, data)
+                .then(function (response) {
+                    console.log(response);
+                    resolve(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    reject(error);
+                });
+        });
     }
 
     // We expect a return code 201, not a 200
@@ -27,9 +61,10 @@ class ExchangeFunctions {
                     btc_dest_address // dest address as string
                 }
 
-                axios.post('endpoint', date)
+                axios.post(endpoint, data)
                   .then(function (response) {
                     console.log(response);
+                    resolve(response);
                   })
                   .catch(function (error) {
                     console.log(error);
