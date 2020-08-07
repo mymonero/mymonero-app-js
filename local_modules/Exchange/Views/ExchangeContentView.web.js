@@ -163,25 +163,46 @@ class ExchangeContentView extends ListView {
         const self = this
         //
         const view = commonComponents_navigationBarButtons.New_RightSide_AddButtonView(self.context)
-        view.layer.addEventListener(
-            "click",
-            function(e)
-            {
-                e.preventDefault()
-                //
-                console.warn("Button pressed and then view change")
-                //
-                // const view = new AddContactFromContactsTabView({}, self.context)
-                // self.currentlyPresented_AddContactView = view
-                // const navigationView = new StackAndModalNavigationView({}, self.context)
-                // navigationView.SetStackViews([ view ])
-                // self.navigationController.PresentView(navigationView, true)
-                //
-                return false
+        //const view = _New_ButtonBase_View(context)
+        const layer = view.layer
+        { // setup/style
+            layer.href = "" // to make it non-clickable -- KB: Or you could event.preventDefault..., like sane people?
+            layer.innerHTML = "Create Order";
+            layer.id = "order-button"
+            layer.classList.add('exchange-button')
+            layer.classList.add('base-button'); 
+            layer.classList.add('hoverable-cell'); 
+            layer.classList.add('navigation-blue-button-enabled'); 
+            layer.classList.add('action'); 
+
+            if (typeof process !== 'undefined' && process.platform === "linux") {
+                layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
+            } else {
+                layer.style.fontWeight = "300"
+                }
             }
-        )
-        return view
+            view.layer.addEventListener(
+                "click",
+                function(e)
+                {
+                    e.preventDefault()
+                    //
+                    console.warn("Button pressed and then view change")
+    
+                    //
+                    // const view = new AddContactFromContactsTabView({}, self.context)
+                    // self.currentlyPresented_AddContactView = view
+                    // const navigationView = new StackAndModalNavigationView({}, self.context)
+                    // navigationView.SetStackViews([ view ])
+                    // self.navigationController.PresentView(navigationView, true)
+                    //
+                    return false
+                }
+            )
+            return view
+        }
     }
-}
+
+
 
 module.exports = ExchangeContentView

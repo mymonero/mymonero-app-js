@@ -11,7 +11,7 @@ class ExchangeFunctions {
         // this.currencyToExchange = "xmr2btc";
         this.order = {};
         this.orderRefreshTimer = {};
-
+        this.currentRates = {};
     }
     static getOrderStatus() {
         //Post UUID to https://xmr.to/api/v3/xmr2btc/order_status_query/
@@ -108,12 +108,16 @@ class ExchangeFunctions {
     }
 
     static getRatesAndLimits() {
+        let self = this;
         return new Promise((resolve, reject) => {
             let operation = "order_parameter_query";
             let endpoint = "https://test.xmr.to/api/v3/xmr2btc/order_parameter_query";
             console.log('inside rates and limits');
             axios.get(endpoint)
                 .then((response) => {
+                    self.currentRates = response.data;
+                    self.currentRates.minimum_xmr = self.currentRates.lower_limit / self.currentRates.price;
+                    self.currentRates.maximum_xmr = self.currentRates.upper_limit / self.currentRates.price;
                     console.log(self);
                     resolve(response);
                 }).catch((error) => {
