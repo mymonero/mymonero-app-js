@@ -22,6 +22,49 @@
         console.log('this is table');
         console.log(table);
     });
+
+    const XMRcurrencyInput = document.getElementById('XMRcurrencyInput');
+    const BTCcurrencyInput = document.getElementById('BTCcurrencyInput');
+    const validationMessages = document.getElementById('validation-messages');
+
+    XMRcurrencyInput.addEventListener('keyup', function() {
+        validationMessages.innerHTML = '';
+        let BTCToReceive = XMRcurrencyInput.value * ExchangeFunctions.currentRates.price;
+        if (BTCToReceive > ExchangeFunctions.currentRates.upper_limit) {
+            let error = document.createElement('div');
+            error.id = 'xmrexceeded';
+            error.innerHTML = `You cannot exchange more than ${ExchangeFunctions.currentRates.maximum_xmr}.`;
+            validationMessages.appendChild(error);
+        }
+        if (BTCToReceive < ExchangeFunctions.currentRates.lower_limit) {
+            let error = document.createElement('div');
+            error.id = 'xmrtoolow';
+            error.innerHTML = `You cannot exchange less than ${ExchangeFunctions.currentRates.minimum_xmr}.`;
+            validationMessages.appendChild(error);
+        }
+        BTCcurrencyInput.value = BTCToReceive;
+    });
+
+    BTCcurrencyInput.addEventListener('keyup', function() {
+        validationMessages.innerHTML = '';
+        let XMRtoReceive = BTCcurrencyInput.value / ExchangeFunctions.currentRates.price;
+        if (XMRtoReceive > ExchangeFunctions.currentRates.upper_limit) {
+            let error = document.createElement('div');
+            error.id = 'xmrexceeded';
+            error.innerHTML = `You cannot exchange more than ${ExchangeFunctions.currentRates.upper_limit}.`;
+            validationMessages.appendChild(error);
+        }
+        if (XMRtoReceive < ExchangeFunctions.currentRates.lower_limit) {
+            let error = document.createElement('div');
+            error.id = 'xmrtoolow';
+            error.innerHTML = `You cannot exchange less than ${ExchangeFunctions.currentRates.lower_limit}.`;
+            validationMessages.appendChild(error);
+        }
+        console.log(XMRtoReceive);
+        XMRcurrencyInput.value = XMRtoReceive;
+    });
+
+
     let order = {};
     let orderBtn = document.getElementById("order-button");
     orderBtn.addEventListener('click', function() {
@@ -32,7 +75,6 @@
         let amount = document.getElementById('currencyInput').value;
         let amount_currency = 'XMR';
         let btc_dest_address = document.getElementById('btcAddress').value;
-        toggleLoader('active');
         let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
             console.log(response);
             order = response.data;
