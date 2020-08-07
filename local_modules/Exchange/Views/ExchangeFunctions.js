@@ -10,6 +10,8 @@ class ExchangeFunctions {
         // this.apiVersion = "v3";
         // this.currencyToExchange = "xmr2btc";
         this.order = {};
+        this.orderRefreshTimer = {};
+
     }
     static getOrderStatus() {
         //Post UUID to https://xmr.to/api/v3/xmr2btc/order_status_query/
@@ -71,11 +73,21 @@ class ExchangeFunctions {
                 axios.post(endpoint, data)
                   .then(function (response) {
                     self.order = response;
+                    // we're successful with the order creation. We now invoke our order update timer
+                    self.orderRefreshTimer = setInterval(() => {
+                        if (self.order == undefined && self.order.state == undefined) {
+                            let data = ExchangeFunctions.getOrderStatus(order.uuid).then((response) => {
+                                console.log('This is the order update timer');
+                                console.log(response);
+                            });
+                        }
+                    }, 5000);
                     console.log(response);
                     resolve(response);
                   })
                   .catch(function (error) {
                     console.log(error);
+                    reject(error);
                   });
 
                 // post data to test.xmr.to
@@ -104,7 +116,9 @@ class ExchangeFunctions {
                 .then((response) => {
                     console.log(self);
                     resolve(response);
-                });
+                }).catch((error) => {
+                    reject(error);
+                })
         });
     }
 

@@ -69,54 +69,66 @@ class ExchangeContentView extends ListView {
         }
         var contentContainerLayer;
         {
-            const layer = document.createElement("div")
+            //const layer = document.createElement("div")
+            
+            // layer.classList.add("content-container")
+            // layer.classList.add("empty-page-content-container")
+            // 
+            // view.layer.appendChild(layer)
+            //let html = fs.readFileSync(__dirname + '/Header.html', 'utf8');
+            //layer.innerHTML = html;
+            const layer = document.createElement("div");
             layer.classList.add("content-container")
             layer.classList.add("empty-page-content-container")
-            contentContainerLayer = layer
             view.layer.appendChild(layer)
+            contentContainerLayer = layer
+            //layer.classList.add("xmr_input");
+            let html = fs.readFileSync(__dirname + '/Header.html', 'utf8');
+            layer.innerHTML = html;
+            //contentContainerLayer.appendChild(layer);
         }
-        {
-			// const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
-			// {
-			// 	const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
-			// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-			// 	const layer = view.layer
-			// 	labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
-			// }
-			// div.appendChild(labelLayer)
-			// //
-			const view = new WalletsSelectView({}, self.context)
-            view.didUpdateSelection_fn = function(){};
-            console.log(view);
-			{
-				//self.configure_amountInputTextGivenMaxToggledState()
-			}
-			self.walletSelectView = view
-            const valueLayer = view.layer;
-            console.log(valueLayer);
-            contentContainerLayer.appendChild(valueLayer)
-            //view.layer.appendChild(valueLayer)
+        // {
+		// 	// const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
+		// 	// {
+		// 	// 	const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
+		// 	// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
+		// 	// 	const layer = view.layer
+		// 	// 	labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
+		// 	// }
+		// 	// div.appendChild(labelLayer)
+		// 	// //
+		// 	const view = new WalletsSelectView({}, self.context)
+        //     view.didUpdateSelection_fn = function(){};
+        //     console.log(view);
+		// 	{
+		// 		//self.configure_amountInputTextGivenMaxToggledState()
+		// 	}
+		// 	self.walletSelectView = view
+        //     const valueLayer = view.layer;
+        //     console.log(valueLayer);
+        //     contentContainerLayer.appendChild(valueLayer)
+        //     //view.layer.appendChild(valueLayer)
 
-        }
-        {
-            const layer = document.createElement("div")
-            layer.classList.add("emoji-label")
-            layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(self.context, "😬")
-            contentContainerLayer.appendChild(layer)
-        }
+        // }
+        // {
+        //     const layer = document.createElement("div")
+        //     layer.classList.add("emoji-label")
+        //     layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(self.context, "😬")
+        //     contentContainerLayer.appendChild(layer)
+        // }
         {
             
             const layer = document.createElement("div")
             layer.classList.add("message-label")
             layer.classList.add("exchangeRate")
-            layer.innerHTML = "This is where we will be exchanging! Click me to see exchange rates!";
+            layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
             contentContainerLayer.appendChild(layer)
         }
         {
             // let's make the xmr.to form in HTML for sanity's sake
             const layer = document.createElement("div");
             //layer.classList.add("xmr_input");
-            let html = fs.readFileSync(__dirname + '/Header.html', 'utf8');
+            let html = fs.readFileSync(__dirname + '/Body.html', 'utf8');
             layer.innerHTML = html;
             contentContainerLayer.appendChild(layer);
         }

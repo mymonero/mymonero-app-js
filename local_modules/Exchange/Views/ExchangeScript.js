@@ -2,9 +2,14 @@
     console.log('IIME executing');
     console.log(document);
     let ExchangeFunctions = require('../../Exchange/Views/ExchangeFunctions');
-    
-    console.log(ExchangeFunctions);
+    let loaderPage = document.getElementById('loader');
 
+    setTimeout(() => {
+        
+        loaderPage.classList.remove("active");
+        let exchangePage = document.getElementById('exchangePage');
+        exchangePage.classList.add("active");
+    }, 1000);
 
     const rateObj = ExchangeFunctions.getRatesAndLimits().then((result) => {
         console.log(result); 
@@ -27,6 +32,7 @@
         let amount = document.getElementById('currencyInput').value;
         let amount_currency = 'XMR';
         let btc_dest_address = document.getElementById('btcAddress').value;
+        toggleLoader('active');
         let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
             console.log(response);
             order = response.data;
@@ -35,22 +41,12 @@
         }).then((order) => {
             console.log(order);
             console.log('preorder');
-        
-            
+            toggleLoader.classList.remove('active');
+            let orderDiv = document.getElementById("orderStatusPage");
+            orderDiv.classList.add('active');
         });
-
     });
     console.log(orderBtn);
-    
-    setInterval(() => {
-        if (ExchangeFunctions.order == undefined && ExchangeFunctions.order.state == undefined) {
-            let data = ExchangeFunctions.getOrderStatus(order.uuid).then((response) => {
-                console.log('order');
-                console.log(response);
-            });
-        }
-        console.log(ExchangeFunctions.order.state);
-    }, 2500);
     
     let checkOrderBtn = document.getElementById("check-order-status");
     let checkOrderResult = checkOrderBtn.addEventListener('click', function(){
@@ -61,10 +57,10 @@
             <div>
                 <div><h2>Order Status</h2></div>
                 <table>
-                    <tr class=""><td>Order Status:</td><td>${order.state}</td></tr>
-                    <tr class=""><td>UUID:</td><td>${order.uuid}</td></tr>
-                    <tr class=""><td>BTC Amount:</td><td>${order.btc_amount}</td></tr>
-                    <tr class=""><td>BTC Destination Address</td><td>${order.btc_dest_address}</td></div>
+                    <tr class=""><td>Order Status:</td><td>${ExchangeFunctions.order.state}</td></tr>
+                    <tr class=""><td>UUID:</td><td>${ExchangeFunctions.uuid}</td></tr>
+                    <tr class=""><td>BTC Amount:</td><td>${ExchangeFunctions.btc_amount}</td></tr>
+                    <tr class=""><td>BTC Destination Address</td><td>${ExchangeFunctions.btc_dest_address}</td></div>
                 </table>
             </div>;
         `;
