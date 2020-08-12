@@ -140,14 +140,9 @@ class MainWindowController
 	{
 		const self = this
 		const app = self.context.app
-		if (app.isReady() === true) { // this is probably not going to be true as the app is fairly zippy to set up
+		app.whenReady().then(() => {
 			self._create_window_ifNecessary()
-		} else {
-			app.on('ready', function()
-			{
-				self._create_window_ifNecessary()
-			})
-		}
+		});
 	}
 	_create_window_ifNecessary()
 	{
