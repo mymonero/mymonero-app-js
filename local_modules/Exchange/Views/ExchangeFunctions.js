@@ -12,6 +12,7 @@ class ExchangeFunctions {
         this.order = {};
         this.orderRefreshTimer = {};
         this.currentRates = {};
+        this.orderStatus = {};
     }
     static getOrderStatus() {
         //Post UUID to https://xmr.to/api/v3/xmr2btc/order_status_query/
@@ -36,6 +37,7 @@ class ExchangeFunctions {
         //     "payments": [<payment_objects>]
         // }
         const order = this.order;
+        const self = this;
         console.log(this);
         return new Promise((resolve, reject) => {
             console.log(order);
@@ -49,8 +51,11 @@ class ExchangeFunctions {
             axios.post(endpoint, data)
                 .then(function (response) {
                     console.log(response);
-                    order.state = response.data;
-                    resolve(response);
+
+                    self.orderStatus = response.data;
+                    console.log('hello from getstatus');
+                    console.log(self.orderStatus);
+                    resolve(self.orderStatus);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -59,6 +64,13 @@ class ExchangeFunctions {
         });
     }
 
+    static getOrderExpiry() {
+        return this.orderStatus.expires_at;
+    }
+
+    static getTimeRemaining() {
+        return this.orderStatus.seconds_till_timeout;
+    }
     // We expect a return code 201, not a 200
     static createNewOrder(amount, amount_currency, btc_dest_address) {
         let self = this;
@@ -73,16 +85,14 @@ class ExchangeFunctions {
                 axios.post(endpoint, data)
                   .then(function (response) {
                     self.order = response;
+                    console.log(response);
                     // we're successful with the order creation. We now invoke our order update timer
                     self.orderRefreshTimer = setInterval(() => {
-                        if (self.order == undefined && self.order.state == undefined) {
-                            let data = ExchangeFunctions.getOrderStatus(order.uuid).then((response) => {
-                                console.log('This is the order update timer');
-                                console.log(response);
-                            });
-                        }
+                        let data = ExchangeFunctions.getOrderStatus(self.order.uuid).then((response) => {
+                            self.orderStatus = response.data;
+                            console.log(response);
+                        });
                     }, 5000);
-                    console.log(response);
                     resolve(response);
                   })
                   .catch(function (error) {
@@ -106,6 +116,39 @@ class ExchangeFunctions {
 
         });
     }
+
+    static updateOrder() {
+        let self = this;
+        return new Promise((resolve, reject) => {
+        let endpoint = `https://test.xmr.to/api/v3/xmr2btc/order_create/`;
+        // https://xmr.to/api/v3/xmr2btc/order_parameter_query/
+            let data = {
+                amount,  // float
+                amount_currency, // currency as string
+                btc_dest_address // dest address as string
+            }
+            axios.post(endpoint, data)
+                .then(function (response) {
+                self.order = response;
+                console.log(response);
+                // we're successful with the order creation. We now invoke our order update timer
+                self.orderRefreshTimer = setInterval(() => {
+                    if (self.order == undefined && self.order.state == undefined) {
+                        let data = ExchangeFunctions.getOrderStatus(order.uuid).then((response) => {
+                            self.orderStatus = response.data;
+                        });
+                    }
+                }, 4000);
+                    console.log(response);
+                    resolve(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    reject(error);
+                });
+        })
+    }
+    
 
     static getRatesAndLimits() {
         let self = this;

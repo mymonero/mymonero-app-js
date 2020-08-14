@@ -43,12 +43,7 @@ class ExchangeContentView extends ListView {
         // ^- injecting dep so consumer of self doesn't have to
         super(options, context)
         self.currentlyPresented_AddContactView = null // zeroing
-        console.log('ECV constructor')
-        console.log(context);
-        let interval = setInterval(function() {
-            console.log(context);
-        }, 5000);
-        
+
         
     }
 
