@@ -661,6 +661,7 @@
 /** END FROM contactPicker.web.js */
 
 /** FROM emptyScreens.web.js */
+
 .emptyScreens {
     position: relative;
     display: table; /* for valign */
@@ -695,6 +696,18 @@
     transform: scale(.5);
     margin-left: 0px;
     margin-top: 1px;
+}
+
+/** END FROM emptyScreens.web.js */
+
+/** FROM Exchange module */
+div.exchange-button {
+    cursor: default; -webkit-font-smoothing: subpixel-antialiased; font-size: 12px; letter-spacing: 0.5px; -webkit-app-region: no-drag; position: absolute; right: 0px;
+    width: auto;
+    margin-top: 10px;
+    background-image: none !important;
+    min-width: 97px;
+    font-weight: bold !important;
 }
 
 /** END FROM emptyScreens.web.js */

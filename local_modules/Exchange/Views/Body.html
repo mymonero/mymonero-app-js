@@ -82,6 +82,53 @@
             padding: 0px 10px 0px 0px !important;
             margin: 17px 0px 8px 0px;
         }
+        #minutesRemaining, #secondsRemaining {
+            padding: 4px;
+            border-radius: 5px;
+            font-family: Native-Light, input, menlo, monospace;
+        }
+        #clock {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            -webkit-font-smoothing: subpixel-antialiased;
+            font-size: 9px;
+            letter-spacing: 0;
+            text-indent: 10px;
+            color: rgb(223, 222, 223);
+            background-color: rgba(80, 74, 80, 0.55);
+            /* position: absolute; */
+            /* left: 117.5px; */
+            /* border: 0px; */
+            font-size: 2em;
+            padding: 9px 10px;
+            border-radius: 4px;
+            -webkit-appearance: none;
+            top: 24px;
+            box-shadow: rgba(56, 54, 56, 0.5) 0px 0.5px 0px 0px, rgb(22, 20, 22) 0px 0.5px 0px 0px inset;
+            background-color: rgb(29, 27, 29);
+            margin-top: 6px;
+            text-align: left;
+            /* width: 80px;*/
+        }
+        .xmrto-order-status {
+            margin-top: 6px;
+            text-align: left;
+        }
+        #timerSeparator {
+            font-size: 3em;
+        }        
+        .uppercase {
+            text-transform: uppercase;
+        }
+        .currencyOutput, .receiving-subaddress {
+            height: 20px;
+            width: 108px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0);
+            text-align: right;
+            font-size: 13px;
+            font-weight: 200;
+            padding: 9px 37px 0px 7px;
+        }
         </style>
 
     <div id="loader" class="active">
@@ -123,6 +170,7 @@
                 </td>
             </tr>
         </table>
+
             
 
             <div class="form_field">
@@ -130,24 +178,11 @@
                     <a class="clickableLinkButton" data-id="4" style="color: rgb(17, 187, 236); cursor: pointer; user-select: none; font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; font-size: 10px; letter-spacing: 0.5px; width: auto; display: inline; clear: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); margin: 8px 0px 0px 7px; font-weight: 300; float: none; text-decoration: none;">?</a>
                 </span>
                 <div class="contactPicker" style="position: relative; width: 100%; user-select: none;">
-                    <input class="full-width longTextInput" type="text" placeholder="Destination BTC Address" autocomplete="off" autocapitalize="none" spellcheck="true" style="">
+                    <input id="btcAddress" class="full-width longTextInput" type="text" placeholder="Destination BTC Address" autocomplete="off" autocapitalize="none" spellcheck="true" style="" value="2NBaUzuYqJvbThw77QVqq8NEXmkmDmSooy9">
                 </div>
-                </div>
-                <div class="graphicAndLabel activityIndicators on-normal-background" style="font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; font-size: 10px; letter-spacing: 0.5px; font-weight: 300; color: rgb(248, 247, 248); display: none; padding-left: 7px;">
-                    <div class="loader">
-                        <div class="block block1">
-                
-                        </div>
-                    <div class="block block2">
-                
-                    </div>
-                    <div class="block block3">
-                
-                    </div>
-                </div>&nbsp;
-                <span>RESOLVING…</span>
-                
-                </div>
+            </div>
+            <div class="message-label exchangeRate">Please note that values on this page are <b>estimates only.</b><br>
+                <br>You will be shown the exact amounts once you create an order.</div>    
                 <div style="display: none;">
                     <span class="field_title form-field-title" style="margin-top: 12px;">MONERO ADDRESS</span>
                     <div style="border-radius: 3px; background-color: rgb(56, 54, 56); padding: 8px 11px; box-sizing: border-box; width: 100%; height: auto; color: rgb(124, 122, 124); font-size: 13px; font-weight: 100; font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; word-break: break-all;">
@@ -176,10 +211,164 @@
         </div>
     </div>
     <div id="orderStatusPage">
-        Hello, this is dog!
-        <div id="check-order-status">Check order status</div>
+        <div class="field_title form-field-title">
+            <table>
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title uppercase">Time Remaining
+                            <div id="clock">
+                                <span id="minutesRemaining"></span>
+                                <span>:</span>
+                                <span id="secondsRemaining"></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="field_title form-field-title">
+            <table class="full-width">
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title">Remaining XMR payable
+                            <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                <div id="remaining_amount_incoming" class="textInput currencyOutput" type="text" placeholder="0.00">Loading</div>
+                                <select id="currencySelect"><option value="XMR" style="text-align: center;">XMR</option></select>    
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title">BTC to be paid out
+                            <div class="" style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                <div id="btc_amount" class="textInput currencyOutput" type="text">Loading</div>
+                                <select id="currencySelect"><option value="BTC" style="text-align: center;">BTC</option></select>    
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="field_title form-field-title">
+            <table>
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title uppercase">Order Status
+                            <div class="">
+                                <div class="order-status textInput currencyOutput" id="state">
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="xmrto-order-status" id="state">
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="field_title form-field-title">
+                <table class="full-width">
+                    <tr>
+                        <td>
+                            <div class="field_title form-field-title">Receiving subaddress
+                                <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                    <div id="receiving_subaddress" class="textInput currencyOutput" type="text">Loading</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="field_title form-field-title">BTC to be paid out
+                                <div class="" style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0">
+                                    <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                    <div id="btc_amount" class="textInput currencyOutput" type="text">Loading</div>
+                                    <select id="currencySelect"><option value="BTC" style="text-align: center;">BTC</option></select>    
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <table>
+                <!-- <tr>
+                    <td>btc_amount</td>
+                    <td id="btc_amount"> "0.00789659"</td>
+                </tr> -->
+                <tr>
+                    <td>btc_amount_partial</td>
+                    <td id="btc_amount_partial"> "0"</td>
+                </tr>
+                <tr>
+                    <td>btc_dest_address</td>
+                    <td id="btc_dest_address"> "2NBaUzuYqJvbThw77QVqq8NEXmkmDmSooy9"</td>
+                </tr>
+                <tr>
+                    <td>btc_num_confirmations_threshold</td>
+                    <td id="btc_num_confirmations_threshold"> 144</td>
+                </tr>
+                <tr>
+                    <td>created_at</td>
+                    <td id="created_at"> "2020-08-07T13:49:30Z"</td>
+                </tr>
+                <tr>
+                    <td>expires_at</td>
+                    <td id="expires_at"> "2020-08-07T13:54:30Z"</td>
+                </tr>
+                <tr>
+                    <td>incoming_amount_total</td>
+                    <td id="incoming_amount_total"> "1"</td>
+                </tr>
+                <tr>
+                    <td>incoming_num_confirmations_remaining</td>
+                    <td id="incoming_num_confirmations_remaining"> -1</td>
+                </tr>
+                <tr>
+                    <td>incoming_price_btc</td>
+                    <td id="incoming_price_btc"> "0.00789659"</td>
+                </tr>
+                <tr>
+                    <td>payments</td>
+                    <td id="payments"> []</td>
+                </tr>   
+                <tr>
+                    <td>receiving_subaddress</td>
+                    <td id="receiving_subaddress"> "72FsJzvGG4x97vvjwu9V6e8hBBfB3bhrqVEEoPsxrkjAVgQUnbA22cbgMmu5b4Lx6cQ75vnjPVs9HUB1L32yBMhaNsi7KrD"</td>
+                </tr>
+                <tr>
+                    <td>recommended_mixin</td>
+                    <td id="recommended_mixin"> 11</td>
+                </tr>
+                <tr>
+                    <td>remaining_amount_incoming</td>
+                    <td id="remaining_amount_incoming"> "1"</td>
+                </tr>
+                <tr>
+                    <td>seconds_till_timeout</td>
+                    <td id="seconds_till_timeout"> 254</td>
+                </tr>
+                <tr>
+                    <td>state</td>
+                    <td id=""> "UNPAID"</td>
+                </tr>
+                <tr>
+                    <td>uses_lightning</td>
+                    <td id="uses_lightning"> false</td>
+                </tr>
+                <tr>
+                    <td>uuid</td>
+                    <td id="uuid"> "xmrto-NCXzGE"</td>
+                </tr>
+            </table>
+            <div id="check-order-status">Check order status</div>
+        </div>
     </div>
-
-
-
-</div></div>
+</div>

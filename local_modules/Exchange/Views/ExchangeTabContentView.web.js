@@ -61,20 +61,20 @@ class ExchangeTabContentView extends StackAndModalNavigationView
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../../assets/img//icon_tabBar_contacts@3x.png)",
+			backgroundImage: "url(../../../assets/img/XMRtoBTCInactive.svg)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
-			backgroundSize: "24px 23px"
+			backgroundSize: "39px"
 		}
 	}
 	TabBarItem_icon_selected_customStyle()
 	{
 		const self = this
 		return {
-			backgroundImage: "url(../../../assets/img/icon_tabBar_contacts__active@3x.png)",
+			backgroundImage: "url(../../../assets/img/XMRtoBTCActive.svg)",
 			backgroundPosition: "center",
 			backgroundRepeat: "no-repeat",
-			backgroundSize: "24px 23px"
+			backgroundSize: "39px"
 		}
 	}
 	// interactivity
