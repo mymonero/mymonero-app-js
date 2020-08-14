@@ -1,6 +1,6 @@
 
 #exchangePage {
-    padding-bottom: 50px;
+    padding: 0px 10px 50px 10px;
 }
 
 #exchangePage .amount {
@@ -94,4 +94,11 @@
     margin: 8px 0px 0px 7px;
     font-weight: 300;
     float: none;
+}
+
+.full-width {
+    width: 100%;
+}
+table.side-padding {
+    padding: 0px 15px;
 }
