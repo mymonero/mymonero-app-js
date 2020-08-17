@@ -1,0 +1,22 @@
+name: ci
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build_on_mac:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: 12.8.0
+    - name: install
+      run: npm install && npm run submodules
+    - name: release
+      env:
+        APPLE_ID: ${{ secrets.AID }}
+        APPLE_PASSWORD: ${{ secrets.AIP }}
+        CSC_LINK: ${{ secrets.CSC_LINK }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: npm release # electron-builder --publish always
