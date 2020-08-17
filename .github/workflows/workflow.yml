@@ -19,4 +19,4 @@ jobs:
         APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         CSC_LINK: ${{ secrets.CSC_LINK }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: npm release # electron-builder --publish always
+      run: npm run release # electron-builder --publish always
