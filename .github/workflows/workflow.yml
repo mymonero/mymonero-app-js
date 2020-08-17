@@ -2,7 +2,7 @@ name: ci
 on:
   push:
     branches:
-      - master
+      - actions
 jobs:
   build_on_mac:
     runs-on: macOS-latest
@@ -15,8 +15,8 @@ jobs:
       run: npm install && npm run submodules
     - name: release
       env:
-        APPLE_ID: ${{ secrets.AID }}
-        APPLE_PASSWORD: ${{ secrets.AIP }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         CSC_LINK: ${{ secrets.CSC_LINK }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: npm release # electron-builder --publish always
