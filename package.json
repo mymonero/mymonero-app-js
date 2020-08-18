@@ -14,7 +14,7 @@
     "dist-l": "electron-builder -l -p never",
     "postinstall": "electron-builder install-app-deps",
     "submodules": "./bin/update_submodules",
-    "release": "electron-builder"
+    "release": "electron-builder --publish always"
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
