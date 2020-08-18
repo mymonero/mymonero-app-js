@@ -20,3 +20,16 @@ jobs:
         CSC_LINK: ${{ secrets.CSC_LINK }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: npm run release # electron-builder --publish always
+  build_on_win:
+    runs-on: windows-2016
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: 12.8.0
+    - name: install
+      run: npm install && npm run submodules
+    - name: release
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: npm run release
