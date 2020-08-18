@@ -13,7 +13,7 @@
     "dist-w": "electron-builder -w -p never --ia32 --x64",
     "dist-l": "electron-builder -l -p never",
     "postinstall": "electron-builder install-app-deps",
-    "submodules": "./bin/update_submodules",
+    "submodules": "bin/update_submodules",
     "release": "electron-builder --publish always"
   },
   "build": {
