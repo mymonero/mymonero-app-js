@@ -19,13 +19,6 @@
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "mymonero",
-        "repo": "mymonero-app-js"
-      }
-    ],
     "mac": {
       "category": "public.app-category.finance",
       "identity": "MyMonero Pty Ltd (NLN5D623Y3)"
