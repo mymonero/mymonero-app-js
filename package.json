@@ -12,7 +12,9 @@
     "dist-m": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m -p never",
     "dist-w": "electron-builder -w -p never --ia32 --x64",
     "dist-l": "electron-builder -l -p never",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "submodules": "./bin/update_submodules",
+    "release": "electron-builder"
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",

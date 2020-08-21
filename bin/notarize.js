@@ -12,8 +12,8 @@ exports.default = async function notarizing(context) {
     return await notarize({
         appBundleId: 'com.mymonero.mymonero-desktop',
         appPath: `${appOutDir}/${appName}.app`,
-        appleId: 'email apple id',
-        appleIdPassword: 'single app password',
+        appleId: '${{ secrets.APPLE_ID }}',
+        appleIdPassword: '${{ secrets.APPLE_PASSWORD }}',
         ascProvider: 'NLN5D623Y3'
     });
 };
