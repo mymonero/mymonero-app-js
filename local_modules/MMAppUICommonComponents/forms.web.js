@@ -85,21 +85,11 @@ exports.ScrollCurrentFormElementIntoView = ScrollCurrentFormElementIntoView
 var LocalVendor_ScrollPositionEndFixed_Animate = null 
 function _shared_scrollConformingElementIntoView(inputLayer)
 {
+	LocalVendor_ScrollPositionEndFixed_Animate = require('../../node_modules/velocity-animate');
 	const scrollingAncestor = inputLayer.closest(".ClassNameForScrollingAncestorOfScrollToAbleElement")
 	if (!scrollingAncestor || typeof scrollingAncestor === 'undefined') {
 		console.warn("⚠️  Asked to _shared_scrollConformingElementIntoView but no scrollingAncestor found")
 		return
-	}
-	// NOTE: velocity 1.5.0 is waiting on v2 to introduce a fix for 
-	// bug in scrolling to element who is wrapped in a relative parent
-	// before its scrollable ancestor (showing bug on e.g. Contact picker);
-	// so patch was manually applied. See local vendored velocity.js header 
-	// for note with github issues.
-	{ // lazy require to avoid usage in e.g. electron; hopefully the perf hit will not be noticed
-		if (LocalVendor_ScrollPositionEndFixed_Animate == null) {
-			LocalVendor_ScrollPositionEndFixed_Animate = require('../../assets/img/velocity')
-			// ^-- hopefully it will not cause problems to have multiple velocity modules connected to the same DOM
-		}
 	}
 	LocalVendor_ScrollPositionEndFixed_Animate(inputLayer, "stop")
 	LocalVendor_ScrollPositionEndFixed_Animate(scrollingAncestor, "stop")
