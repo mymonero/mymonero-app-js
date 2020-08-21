@@ -3,16 +3,3 @@
 node_modules
 npm-debug.log
 dist
-browser_build
-browser_build.zip
-
-test_products
-**/tests_config.js
-
-electron_child_crashReport_tmp
-
-stats.json
-
-cordova_res/build/*
-cordova.android.build.json
-android_release.jks
