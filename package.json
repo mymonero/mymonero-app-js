@@ -13,22 +13,35 @@
     "dist-w": "electron-builder -w -p never --ia32 --x64",
     "dist-l": "electron-builder -l -p never",
     "postinstall": "electron-builder install-app-deps",
-    "submodules": "git submodule update --init --recursive & git submodule foreach --recursive git fetch & git submodule foreach --recursive git checkout master & git submodule foreach --recursive git pull --ff-only origin master",
-    "release": "electron-builder --publish always"
+    "submodules": "git submodule update --init --recursive & git submodule foreach --recursive git fetch & git submodule foreach --recursive git checkout master & git submodule foreach --recursive git pull --ff-only origin master"
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
+    "afterSign": "./bin/notarize.js",
     "mac": {
       "category": "public.app-category.finance",
-      "identity": "MyMonero Pty Ltd (NLN5D623Y3)"
+      "identity": "MyMonero Pty Ltd (NLN5D623Y3)",
+      "target": [
+        "dmg",
+        "mas"
+      ]
     },
     "win": {
-      "publisherName": null,
-      "verifyUpdateCodeSignature": false
+      "certificateSubjectName": "MyMonero (PTY) LTD",
+      "target": [
+        "appx",
+        "msi"
+      ]
     },
     "nsis": {
       "perMachine": true
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "snap"
+      ]
     },
     "protocols": [
       {
@@ -63,7 +76,6 @@
     "babel-minify": "0.5.1",
     "electron": "^9.0.0",
     "electron-builder": "21.2.0",
-    "electron-packager": "14.1.0",
     "eslint": "5.6.0",
     "request": "2.88.0",
     "webpack": "4.41.2",
