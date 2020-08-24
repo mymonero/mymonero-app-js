@@ -3,7 +3,7 @@
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
   "version": "1.1.14",
-  "license": "SEE LICENSE IN LICENSE.txt",
+  "license": "BSD-3-Clause",
   "repository": "https://github.com/devinpearson/mymonero-app-js",
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
