@@ -1518,7 +1518,6 @@ class SendFundsView extends View
 // Karl added this to try figure out what values are set
 
 			console.log(wallet);
-			_trampolineToReturnWithValidationErrorString();
 			console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
 			console.log('resolvedAddress: ' + resolvedAddress);
 			console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
@@ -1533,56 +1532,6 @@ class SendFundsView extends View
 			console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
 			console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
 			console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
-			console.log(function(str) // preSuccess_nonTerminal_statusUpdate_fn
-			{
-				self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
-			});
-			console.log(function()
-			{ // canceled_fn
-				self._dismissValidationMessageLayer()
-				_reEnableFormElements()
-			});
-			console.log(function(err, mockedTransaction)
-			{
-				console.log("err", err)
-				if (err) {
-					_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
-					return
-				}
-				{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-					const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
-					self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
-				}
-				{
-					const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-					self.__didSendWithPickedContact(
-						this_pickedContact, 
-						enteredAddressValue_exists ? enteredAddressValue : null, 
-						resolvedAddress_exists ? resolvedAddress : null,
-						mockedTransaction
-					);
-				}
-				{ // finally, clean up form
-					setTimeout(
-						function()
-						{
-							self._clearForm()
-							// and lastly, importantly, re-enable everything
-							_reEnableFormElements()
-						},
-						500 // after the navigation transition just above has taken place
-					)
-				}
-				{ // and fire off a request to have the wallet get the latest (real) tx records
-					setTimeout(
-						function()
-						{
-							wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
-						}
-					)
-				}
-			});
-
 // end of Karl's console logging
 		
 			let contact_payment_id = hasPickedAContact ? self.pickedContact.payment_id : undefined;
@@ -1608,22 +1557,24 @@ class SendFundsView extends View
 				self._selected_simplePriority(),
 				preSuccess_nonTerminal_statusUpdate_fn,
 				cancelled_fn,
-				doViewSpecificUpdates,
+				handleResponse_fn,
 			);
 		}
 
+		// What this is, is essentially a hack to provide feedback on the transaction based on messages returned from wallet.SendFunds
 		function preSuccess_nonTerminal_statusUpdate_fn(str)
 		{
 			self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
 		}
 
+		// This is for when a send is cancelled. This gets invoked on non-recoverable error
 		function cancelled_fn() 
 		{ // canceled_fn
 			self._dismissValidationMessageLayer()
 			_reEnableFormElements()
 		}
 
-		function doViewSpecificUpdates(err, mockedTransaction) 
+		function handleResponse_fn(err, mockedTransaction) 
 		{
 			console.log("err", err)
 			if (err) {
