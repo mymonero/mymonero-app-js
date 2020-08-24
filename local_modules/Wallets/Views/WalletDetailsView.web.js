@@ -743,9 +743,7 @@ class WalletDetailsView extends View {
         }
         // hopefully these will be able to handle small enough values .. maybe switch to BigInt w/o doubles .. but fwiw they are just for display
         let XMR = Currencies.ccySymbolsByCcy.XMR
-        console.log(XMR);
-        console.log(amountPending_JSBigInt);
-        console.log(wallet);
+        
         const amountPending_JSBigInt = wallet.AmountPending_JSBigInt()
         const hasPendingAmount = amountPending_JSBigInt.compare(0) > 0
         const amountLocked_JSBigInt = wallet.locked_balance || new JSBigInt(0)
