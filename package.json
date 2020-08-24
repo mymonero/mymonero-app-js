@@ -7,11 +7,10 @@
   "repository": "https://github.com/devinpearson/mymonero-app-js",
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
     "start": "electron ./local_modules/electron_main/electron_main.js",
-    "start-dev": "NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
-    "dist-m": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m -p never",
-    "dist-w": "electron-builder -w -p never --ia32 --x64",
-    "dist-l": "electron-builder -l -p never",
+    "dev": "NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
     "postinstall": "electron-builder install-app-deps",
     "submodules": "git submodule update --init --recursive & git submodule foreach --recursive git fetch & git submodule foreach --recursive git checkout master & git submodule foreach --recursive git pull --ff-only origin master"
   },
@@ -76,6 +75,7 @@
     "babel-minify": "0.5.1",
     "electron": "^9.0.0",
     "electron-builder": "22.8.0",
+    "electron-notarize": "^1.0.0",
     "eslint": "5.6.0",
     "request": "2.88.0",
     "webpack": "4.41.2",
