@@ -1,11 +1,21 @@
 // Functions for Bitcoin address checking
-import validate from 'bitcoin-address-validation';
+//let validate = require((require.resolve('bitcoin-address-validation')));
+let validate = require('bitcoin-address-validation');
+console.log(validate);
+console.log(validate.validateBtcAddress);
+//import validate from 'bitcoin-address-validation';
 
-function checkBTCAddress(address) {
-    if (validate.validate(address) == 'false') {
+function validateBTCAddress(address) {
+    console.log(typeof(validage(address)));
+    if (typeof(validate(address)) !== Object) {
         return false;
     }
     return true;
+}
+
+function determineAddressNetwork(address) {
+    let info = validate(address);
+    return info.network;
 }
 
 // end of functions to check Bitcoin address
@@ -32,12 +42,8 @@ function renderOrderStatus(order) {
     ];
 
     idArr.forEach((item, index) => {
-        console.log(item);
-        console.log();
-        console.log(order);
         document.getElementById(item).innerHTML = order[item];
     });
-    let cmt = "TODO: we need to display part payment details once we get it back. Not sure what that looks like yet";
 }
 
     function getTimeRemaining(endtime){
@@ -98,4 +104,4 @@ function renderOrderStatus(order) {
         return true;
     }
 
-    module.exports = { checkBTCAddress, getTimeRemaining, isValidBase10Decimal, checkDecimals, renderOrderStatus };
+    module.exports = { validateBTCAddress, getTimeRemaining, isValidBase10Decimal, checkDecimals, renderOrderStatus };
