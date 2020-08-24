@@ -55,6 +55,7 @@ let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_uti
 //
 let rateServiceDomainText = "cryptocompare.com" 
 //
+
 class SendFundsView extends View
 {
 	constructor(options, context)
@@ -148,6 +149,7 @@ class SendFundsView extends View
 			self._setup_form_walletSelectLayer()
 			{
 				const table = document.createElement("table")
+				table.classList.add('wallet-select-table');
 				table.style.width = "100%"
 				const tr_1 = document.createElement("tr")
 				self._setup_form_amountInputLayer(tr_1)
@@ -1512,6 +1514,82 @@ class SendFundsView extends View
 		//
 		function __proceedTo_generateSendTransaction()
 		{
+
+// Karl added this to try figure out what values are set
+
+			console.log(wallet);
+			_trampolineToReturnWithValidationErrorString();
+			console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
+			console.log('resolvedAddress: ' + resolvedAddress);
+			console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
+			console.log('resolvedPaymentID: ' + resolvedPaymentID);
+			console.log('hasPickedAContact: ' + hasPickedAContact);
+			console.log('resolvedAddress_fieldIsVisible: ' + resolvedAddress_fieldIsVisible);
+			console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + manuallyEnteredPaymentID_fieldIsVisible);
+			console.log('resolvedPaymentID_fieldIsVisible: ' + resolvedPaymentID_fieldIsVisible);
+			console.log('contact_payment_id: ' + (hasPickedAContact ? self.pickedContact.payment_id : undefined));
+			console.log('cached_OAResolved_address: ' + (hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined));
+			console.log('contact_hasOpenAliasAddress: ' + (hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined));
+			console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
+			console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
+			console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
+			console.log(function(str) // preSuccess_nonTerminal_statusUpdate_fn
+			{
+				self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
+			});
+			console.log(function()
+			{ // canceled_fn
+				self._dismissValidationMessageLayer()
+				_reEnableFormElements()
+			});
+			console.log(function(err, mockedTransaction)
+			{
+				console.log("err", err)
+				if (err) {
+					_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
+					return
+				}
+				{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
+					const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
+					self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
+				}
+				{
+					const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
+					self.__didSendWithPickedContact(
+						this_pickedContact, 
+						enteredAddressValue_exists ? enteredAddressValue : null, 
+						resolvedAddress_exists ? resolvedAddress : null,
+						mockedTransaction
+					);
+				}
+				{ // finally, clean up form
+					setTimeout(
+						function()
+						{
+							self._clearForm()
+							// and lastly, importantly, re-enable everything
+							_reEnableFormElements()
+						},
+						500 // after the navigation transition just above has taken place
+					)
+				}
+				{ // and fire off a request to have the wallet get the latest (real) tx records
+					setTimeout(
+						function()
+						{
+							wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+						}
+					)
+				}
+			});
+
+// end of Karl's console logging
+		
+			let contact_payment_id = hasPickedAContact ? self.pickedContact.payment_id : undefined;
+			let cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined;
+			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
+			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
+
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
@@ -1521,66 +1599,69 @@ class SendFundsView extends View
 				resolvedAddress_fieldIsVisible,
 				manuallyEnteredPaymentID_fieldIsVisible,
 				resolvedPaymentID_fieldIsVisible,
-				//
-				hasPickedAContact ? self.pickedContact.payment_id : undefined,
-				hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined,
-				hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined,
-				hasPickedAContact ? self.pickedContact.address : undefined,
-				//
+				contact_payment_id,
+				cached_OAResolved_address,
+				contact_hasOpenAliasAddress,
+				contact_address,
 				"" + final_XMR_amount_Number,
 				sweeping, // when true, amount will be ignored
 				self._selected_simplePriority(),
-				//
-				function(str) // preSuccess_nonTerminal_statusUpdate_fn
-				{
-					self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
-				},
-				function()
-				{ // canceled_fn
-					self._dismissValidationMessageLayer()
-					_reEnableFormElements()
-				},
-				function(err, mockedTransaction)
-				{
-					console.log("err", err)
-					if (err) {
-						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
-						return
-					}
-					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-						const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
-						self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
-					}
+				preSuccess_nonTerminal_statusUpdate_fn,
+				cancelled_fn,
+				doViewSpecificUpdates,
+			);
+		}
+
+		function preSuccess_nonTerminal_statusUpdate_fn(str)
+		{
+			self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
+		}
+
+		function cancelled_fn() 
+		{ // canceled_fn
+			self._dismissValidationMessageLayer()
+			_reEnableFormElements()
+		}
+
+		function doViewSpecificUpdates(err, mockedTransaction) 
+		{
+			console.log("err", err)
+			if (err) {
+				_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
+				return
+			}
+			{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
+				const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
+				self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
+			}
+			{
+				const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
+				self.__didSendWithPickedContact(
+					this_pickedContact, 
+					enteredAddressValue_exists ? enteredAddressValue : null, 
+					resolvedAddress_exists ? resolvedAddress : null,
+					mockedTransaction
+				);
+			}
+			{ // finally, clean up form
+				setTimeout(
+					function()
 					{
-						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-						self.__didSendWithPickedContact(
-							this_pickedContact, 
-							enteredAddressValue_exists ? enteredAddressValue : null, 
-							resolvedAddress_exists ? resolvedAddress : null,
-							mockedTransaction
-						);
+						self._clearForm()
+						// and lastly, importantly, re-enable everything
+						_reEnableFormElements()
+					},
+					500 // after the navigation transition just above has taken place
+				)
+			}
+			{ // and fire off a request to have the wallet get the latest (real) tx records
+				setTimeout(
+					function()
+					{
+						wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
 					}
-					{ // finally, clean up form
-						setTimeout(
-							function()
-							{
-								self._clearForm()
-								// and lastly, importantly, re-enable everything
-								_reEnableFormElements()
-							},
-							500 // after the navigation transition just above has taken place
-						)
-					}
-					{ // and fire off a request to have the wallet get the latest (real) tx records
-						setTimeout(
-							function()
-							{
-								wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
-							}
-						)
-					}
-				}
-			)
+				)
+			}
 		}
 	}
 	//
