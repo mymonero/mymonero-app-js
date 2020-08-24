@@ -451,38 +451,44 @@ class ImportTransactionsModalView extends View {
             false, // sweeping
             monero_sendingFunds_utils.default_priority(),
             //
-            function (str) // preSuccess_nonTerminal_statusUpdate_fn
-            {
-                self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
-            },
-            function () { // canceled_fn
-                self._dismissValidationMessageLayer()
-                _reEnableFormElements()
-            },
-            function (err, mockedTransaction) {
-                if (err) {
-                    _trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
-                    return
-                }
-                //
-                self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
-                // finally, clean up form
-                setTimeout(
-                    function () {
-                        self._dismissValidationMessageLayer()
-                        // Now dismiss
-                        self.dismissView()
-                    },
-                    500
-                )
-                // and fire off a request to have the wallet get the latest (real) tx records
-                setTimeout(
-                    function () {
-                        wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
-                    }
-                )
-            }
+            preSuccess_nonTerminal_statusUpdate_fn,
+            cancelled_fn,
+            doViewSpecificUpdates
         )
+
+        function doViewSpecificUpdates (err, mockedTransaction) {
+            if (err) {
+                _trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
+                return
+            }
+            //
+            self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
+            // finally, clean up form
+            setTimeout(
+                function () {
+                    self._dismissValidationMessageLayer()
+                    // Now dismiss
+                    self.dismissView()
+                },
+                500
+            )
+            // and fire off a request to have the wallet get the latest (real) tx records
+            setTimeout(
+                function () {
+                    wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+                }
+            )
+        }
+
+        function preSuccess_nonTerminal_statusUpdate_fn(str)
+        {
+            self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
+        }
+
+        function cancelled_fn() { // canceled_fn
+            self._dismissValidationMessageLayer()
+            _reEnableFormElements()
+        }
     }
 
     //
