@@ -38,23 +38,14 @@ class ExchangeFunctions {
         // }
         const order = this.order;
         const self = this;
-        console.log(this);
         return new Promise((resolve, reject) => {
-            console.log(order);
-            console.log('pre-query-order');
             let endpoint = `https://test.xmr.to/api/v3/xmr2btc/order_status_query/`;
             let data = {
                 "uuid": order.data.uuid
             }
-            console.log(order.data);
-            console.log(order.data.uuid);
             axios.post(endpoint, data)
                 .then(function (response) {
-                    console.log(response);
-
                     self.orderStatus = response.data;
-                    console.log('hello from getstatus');
-                    console.log(self.orderStatus);
                     resolve(self.orderStatus);
                 })
                 .catch(function (error) {
@@ -85,12 +76,10 @@ class ExchangeFunctions {
                 axios.post(endpoint, data)
                   .then(function (response) {
                     self.order = response;
-                    console.log(response);
                     // we're successful with the order creation. We now invoke our order update timer
                     self.orderRefreshTimer = setInterval(() => {
                         let data = ExchangeFunctions.getOrderStatus(self.order.uuid).then((response) => {
                             self.orderStatus = response.data;
-                            console.log(response);
                         });
                     }, 5000);
                     resolve(response);
@@ -130,7 +119,6 @@ class ExchangeFunctions {
             axios.post(endpoint, data)
                 .then(function (response) {
                 self.order = response;
-                console.log(response);
                 // we're successful with the order creation. We now invoke our order update timer
                 self.orderRefreshTimer = setInterval(() => {
                     if (self.order == undefined && self.order.state == undefined) {
@@ -139,7 +127,6 @@ class ExchangeFunctions {
                         });
                     }
                 }, 4000);
-                    console.log(response);
                     resolve(response);
                 })
                 .catch(function (error) {

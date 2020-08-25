@@ -149,7 +149,6 @@ class SendFundsView extends View
 			self._setup_form_walletSelectLayer()
 			{
 				const table = document.createElement("table")
-				table.classList.add('wallet-select-table');
 				table.style.width = "100%"
 				const tr_1 = document.createElement("tr")
 				self._setup_form_amountInputLayer(tr_1)
@@ -1516,7 +1515,7 @@ class SendFundsView extends View
 		{
 
 // Karl added this to try figure out what values are set
-
+			_reEnableFormElements();
 			console.log(wallet);
 			console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
 			console.log('resolvedAddress: ' + resolvedAddress);
@@ -1574,6 +1573,7 @@ class SendFundsView extends View
 			_reEnableFormElements()
 		}
 
+		// mocked transaction gets set in wallet.js
 		function handleResponse_fn(err, mockedTransaction) 
 		{
 			console.log("err", err)
