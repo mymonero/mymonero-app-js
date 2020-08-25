@@ -132,25 +132,22 @@ class ExchangeContentView extends ListView {
         self._setup_emptyStateContainerView()
         console.log(this);
         let interval = setInterval(function() {
-            console.log('wallets from ECV');
-            console.log(self);
             if (self.context.wallets !== undefined) {
                 self._setup_walletExchangeOptions(self.context);
             }
         }, 50000);
-        self.keepExchangeOptionsUpdated = interval;
+        self.keepExchangeOptionsUpdated = interval; // we use a named interval attached to the view so that we can stop it if we ever want to;
     }
     
     _setup_emptyStateContainerView() {
         const self = this;
+        // We run this on an interval because of the way DOM elements are instantiated. Our DOM only renders once a user clicks the XMR->BTC menu tab
         let initialExchangeInit = setInterval(() => {
-            console.log('update wallet info');
             let walletDiv = document.getElementById('wallet-selector');
             if (walletDiv !== null) {
                 clearInterval( self.initialExchangeInit ); 
                 self._setup_walletExchangeOptions(self.context);
             }
-            console.log(self.context);
         }, 200);
 
         self.initialExchangeInit = initialExchangeInit;
