@@ -31,6 +31,7 @@ const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
 const emoji_web = require('../../Emoji/emoji_web')
 const ExchangeFunctions = require('../Javascript/ExchangeFunctions')
+const ExchangeUtils = require('../Javascript/ExchangeUtililtyFunctions');
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
@@ -171,43 +172,7 @@ class ExchangeContentView extends ListView {
             //contentContainerLayer.appendChild(layer);
         }
 
-        { 
-            //const layer = document.createElement("div");
-            //_setup_form_walletSelectLayer
-
-            
-        }
-        // {
-		// 	// const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
-		// 	// {
-		// 	// 	const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
-		// 	// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-		// 	// 	const layer = view.layer
-		// 	// 	labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
-		// 	// }
-		// 	// div.appendChild(labelLayer)
-		// 	// //
-		// 	const view = new WalletsSelectView({}, self.context)
-        //     view.didUpdateSelection_fn = function(){};
-        //     console.log(view);
-		// 	{
-		// 		//self.configure_amountInputTextGivenMaxToggledState()
-		// 	}
-		// 	self.walletSelectView = view
-        //     const valueLayer = view.layer;
-        //     console.log(valueLayer);
-        //     contentContainerLayer.appendChild(valueLayer)
-        //     //view.layer.appendChild(valueLayer)
-
-        // }
-        // {
-        //     const layer = document.createElement("div")
-        //     layer.classList.add("emoji-label")
-        //     layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(self.context, "😬")
-        //     contentContainerLayer.appendChild(layer)
-        // }
         {
-            
             const layer = document.createElement("div")
             layer.classList.add("message-label")
             layer.classList.add("exchangeRate")
@@ -216,7 +181,6 @@ class ExchangeContentView extends ListView {
         }
         
 		{
-            const self = this
 		    const div = document.createElement('div');
 			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
 			{
@@ -228,6 +192,24 @@ class ExchangeContentView extends ListView {
             div.appendChild(labelLayer);
             contentContainerLayer.appendChild(div);
             
+            {
+                // Send Funds
+                const layer = document.createElement("div");
+                // we use ES6's spread operator (...buttonClasses) to invoke the addition of classes -- cleaner than a foreach
+                let buttonClasses = ['base-button', 'hoverable-cell', 'navigation-blue-button-enabled', 'action', 'right-add-button', 'exchange-button'];
+                layer.classList.add(...buttonClasses);
+                layer.id = "exchange-xmr";
+                layer.innerText = "Exchange XMR";
+                layer.addEventListener('click', function() {
+                    let xmr_amount = document.getElementById('XMRcurrencyInput').value;
+                    let xmr_send_address = document.getElementById('XMRtoAddress').value;
+                    let sweep_wallet = false; // TODO: Add sweeping functionality
+                    console.log(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
+                    ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
+                });
+                contentContainerLayer.appendChild(layer);
+            }
+
 			//
 			//const view = new WalletsSelectView({}, self.context)
 			// view.didUpdateSelection_fn = function()
@@ -366,7 +348,6 @@ class ExchangeContentView extends ListView {
             layer.classList.add('hoverable-cell'); 
             layer.classList.add('navigation-blue-button-enabled'); 
             layer.classList.add('action'); 
-
             if (typeof process !== 'undefined' && process.platform === "linux") {
                 layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
             } else {
@@ -379,6 +360,8 @@ class ExchangeContentView extends ListView {
                 {
                     e.preventDefault()
                     //
+                    
+                    console.log()
                     console.warn("Button pressed and then view change")
     
                     //

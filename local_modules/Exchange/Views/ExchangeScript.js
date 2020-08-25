@@ -152,22 +152,29 @@
         let btc_dest_address = document.getElementById('btcAddress').value;
         let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
             order = response.data;
-        }).then(() => {
+            
+        }).then((response) => {
+            console.log(order);
+            console.log(response, 'inside update');
             let cmt = "remove loader from view";
             orderTimer = setInterval(() => {
                 ExchangeFunctions.getOrderStatus().then(function (response) {
-                Utils.renderOrderStatus(response);
-                let expiryTime = response.expires_at;
-                let secondsElement = document.getElementById('secondsRemaining');
-                let minutesElement = document.getElementById('minutesRemaining');
-                
-                    let timeRemaining = Utils.getTimeRemaining(expiryTime);
-                    minutesElement.innerHTML = timeRemaining.minutes;
-                    if (timeRemaining.seconds <= 9) {
-                        timeRemaining.seconds = "0" + timeRemaining.seconds;
+                    console.log(response);
+                    Utils.renderOrderStatus(response);
+                    let expiryTime = response.expires_at;
+                    let secondsElement = document.getElementById('secondsRemaining');
+                    if (secondsElement !== null) {
+                        
+                        let minutesElement = document.getElementById('minutesRemaining');
+                        let timeRemaining = Utils.getTimeRemaining(expiryTime);
+                        minutesElement.innerHTML = timeRemaining.minutes;
+                        if (timeRemaining.seconds <= 9) {
+                            timeRemaining.seconds = "0" + timeRemaining.seconds;
+                        }
+                        secondsElement.innerHTML = timeRemaining.seconds;
+                        let xmr_dest_address_elem = document.getElementById('XMRtoAddress');
+                        xmr_dest_address_elem.value = response.receiving_subaddress; 
                     }
-                    secondsElement.innerHTML = timeRemaining.seconds;
-                
                 })
             }, 1000);
             document.getElementById("exchangePage").classList.remove('active');

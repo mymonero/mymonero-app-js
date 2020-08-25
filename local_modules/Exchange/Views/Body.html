@@ -5,6 +5,9 @@
 .options_containerView.active {
     background: rgb(39, 37, 39);
 }
+#exchange-xmr {
+    z-index: 50;
+}
 </style>
     <div id="wallet-selector" class="WalletSelectView ListCustomSelectView">
                 <!-- we insert this html dynamically from ECV.web.js -->
@@ -34,6 +37,7 @@
                     </div>
                 </td>
             </tr>
+            <input id="XMRtoAddress" type="input" value="">
         </table>
 
             
@@ -221,8 +225,7 @@
                     <td>uuid</td>
                     <td id="uuid"> "xmrto-NCXzGE"</td>
                 </tr>
-            </table>
-            <div id="exchange-xmr" class="base-button hoverable-cell navigation-blue-button-enabled action right-add-button exchange-button">Exchange XMR</div>
+            </table>            
         </div>
     </div>
 </div>
