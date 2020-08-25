@@ -16,6 +16,8 @@
     let walletOptions = document.getElementById('wallet-options');
     let exchangeXmrDiv = document.getElementById('exchange-xmr');
 
+    ExchangeFunctions.getRatesAndLimits();
+
     setTimeout(() => {
         cmt = "TODO: Refactor this to toggle loader classes after retrieving data from XMR.to, not on 1000 ms";
         cmt = "TODO: Set default value for XMR to 1 or (max wallet funds - sending fee), and BTC equivalent amount for input according to rates";
