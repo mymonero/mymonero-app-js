@@ -9,7 +9,7 @@
     let ExchangeFunctions = require('../../Exchange/Javascript/ExchangeFunctions');
     let loaderPage = document.getElementById('loader');
     let order = {};
-    let exchangePage = document.getElementById('exchangePage');
+    let exchangePage = document.getElementById('orderStatusPage');
     let orderBtn = document.getElementById("order-button");
     let orderTimer = {};
     let btcAddressInput = document.getElementById("btcAddress");
@@ -171,10 +171,11 @@
                     }
                 })
             }, 1000);
-            document.getElementById("exchangePage").classList.remove('active');
-            let orderStatusDiv = document.getElementById("orderStatusPage");
+            document.getElementById("orderStatusPage").classList.remove('active');
+            let orderStatusDiv = document.getElementById("exchangePage");
             loaderPage.classList.remove('active');
             orderStatusDiv.classList.add('active');
+            exchangeXmrDiv.classList.add('active');
         });
     });
 })()

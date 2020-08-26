@@ -29,7 +29,7 @@
 
 
 </style>
-    <div id="exchangePage">
+    <div id="orderStatusPage">
         <div id="wallet-selector" class="WalletSelectView ListCustomSelectView">
                     <!-- we insert this html dynamically from ECV.web.js -->
         </div>
@@ -96,11 +96,19 @@
 
         </div>
     </div>
-</div>
-    <div id="orderStatusPage">
+    <div id="exchangePage">
         <div class="field_title form-field-title">
             <table>
                 <tr>
+                    <td>
+                        <div class="field_title form-field-title uppercase">
+                            <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">XMR.to UUID</span>
+                                <div id="uuid" class="textInput currencyOutput" type="text" placeholder="0.00">1</div>
+                                <div class="currencySelect"><option value="XMR" style="text-align: center;">XMR</option></select>    
+                            </div>
+                        </div>
+                    </td>
                     <td>
                         <div class="field_title form-field-title uppercase">Time Remaining
                             <div id="clock">
@@ -121,18 +129,16 @@
                             <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
                                 <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
                                 <div id="remaining_amount_incoming" class="textInput currencyOutput" type="text" placeholder="0.00">Loading</div>
-                                <select id="currencySelect"><option value="XMR" style="text-align: center;">XMR</option></select>    
+                                <div class="currencySelect"><option value="XMR" style="text-align: center;">XMR</option></select>    
                             </div>
                         </div>
                     </td>
-                </tr>
-                <tr>
                     <td>
                         <div class="field_title form-field-title">BTC to be paid out
                             <div class="" style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0">
                                 <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
                                 <div id="btc_amount" class="textInput currencyOutput" type="text">Loading</div>
-                                <select id="currencySelect"><option value="BTC" style="text-align: center;">BTC</option></select>    
+                                <div class="currencySelect"><option value="BTC" style="text-align: center;">BTC</option></select>    
                             </div>
                         </div>
                     </td>
@@ -154,14 +160,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="xmrto-order-status" id="state">
 
-                        </div>
                     </td>
                 </tr>
             </table>
         </div>
-        <div class="field_title form-field-title">
+        <div class="field_title form-field-title hidden">
                 <table class="full-width" style="display: none;">
                     <tr>
                         <td>
@@ -174,7 +178,7 @@
                     </tr>
                 </table>
             </div>
-            <table>
+            <table class="hidden">
                     <tr>
                     <td>btc_amount</td>
                     <td id="btc_amount"> "0.00789659"</td>

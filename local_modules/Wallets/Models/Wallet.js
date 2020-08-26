@@ -1262,9 +1262,9 @@ class Wallet extends EventEmitter
 		console.log('isSweepTx: ' + (isSweepTx)); // when console.log('true: ' + (true)), amount will be ignore;
 		console.log('simple_priority: ' + (simple_priority));
 		console.log('preSuccess_nonTerminal_statusUpdate_fn: ' + (preSuccess_nonTerminal_statusUpdate_fn)), // (String) -> Voi;
-		console.log('canceled_fn: ' + (canceled_fn)), // () -> Voi;
+		console.log('canceled_fn: ' + (canceled_fn)); // () -> Voi;
 		// TODO: Remove this line once we can send
-		self.isSendingFunds = false;
+		//self.isSendingFunds = false;
 		// state-lock the function
 		if (self.isSendingFunds === true) {
 			const errStr = "Currently already sending funds. Please try again when complete."
@@ -1380,6 +1380,14 @@ class Wallet extends EventEmitter
 			contact_hasOpenAliasAddress: contact_hasOpenAliasAddress, // may be undefined
 			contact_address: contact_address // may be undefined
 		};
+
+		console.log(args);
+		for (let [property, key] in args) {
+			console.log(key);
+			console.log(property);
+			console.log(`key: ${key}` + `typeof: ${typeof(property)}`);
+		}
+
 		args.willBeginSending_fn = function()
 		{
 			preSuccess_nonTerminal_statusUpdate_fn(statusUpdate_messageBase)

@@ -1209,3 +1209,9 @@ div.exchange-button {
 }
 
 /** END FROM WalletSelectView.web.js */
+
+#exchange-xmr {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
