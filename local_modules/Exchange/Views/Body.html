@@ -8,14 +8,31 @@
 #exchange-xmr {
     z-index: 50;
 }
-</style>
-    <div id="wallet-selector" class="WalletSelectView ListCustomSelectView">
-                <!-- we insert this html dynamically from ECV.web.js -->
-                <div class="background"></div>
-            </div>
-            <div style="pointer-events: none; border: none; position: absolute; width: 10px; height: 100%; right: 16px; top: 0px; z-index: 100; background-image: url(&quot;../../../assets/img/dropdown-arrow-down@3x.png&quot;); background-repeat: no-repeat; background-position: center center; background-size: 10px 8px;"></div>
-        </div>
+#orderStatusPage {
+    display: none;
+}
+#orderStatusPage.active {
+    display: block;
+}
+#exchangePage {
+    display: none;
+}
+#orderStatusPage.active {
+    display: block;
+}
+#exchange-xmr {
+    display: none;
+}
+#exchange-xmr.active {
+    display: block;
+}
 
+
+</style>
+    <div id="exchangePage">
+        <div id="wallet-selector" class="WalletSelectView ListCustomSelectView">
+                    <!-- we insert this html dynamically from ECV.web.js -->
+        </div>
         <table class="full-width">
             <tr>
                 <td>   
@@ -37,7 +54,7 @@
                     </div>
                 </td>
             </tr>
-            <input id="XMRtoAddress" type="input" value="">
+            <input id="XMRtoAddress" type="hidden" value="">
         </table>
 
             
@@ -79,6 +96,7 @@
 
         </div>
     </div>
+</div>
     <div id="orderStatusPage">
         <div class="field_title form-field-title">
             <table>
@@ -229,4 +247,4 @@
         </div>
     </div>
 </div>
-<div class="" id="order-button" style="cursor: default; -webkit-font-smoothing: subpixel-antialiased; font-size: 12px; letter-spacing: 0.5px; font-weight: 300; -webkit-app-region: no-drag; position: absolute; right: 0px;">Create Order</div>
+<!-- <div class="" id="order-button" style="cursor: default; -webkit-font-smoothing: subpixel-antialiased; font-size: 12px; letter-spacing: 0.5px; font-weight: 300; -webkit-app-region: no-drag; position: absolute; right: 0px;">Create Order</div> -->

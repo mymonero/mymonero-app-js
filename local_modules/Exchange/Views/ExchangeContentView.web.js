@@ -127,7 +127,7 @@ class ExchangeContentView extends ListView {
     }
 
     _setup_views() {
-        // to do -- clean up interval timers decently.
+        // to do -- clean up interval timers a bit.
         const self = this
         super._setup_views()
         self._setup_emptyStateContainerView()
@@ -142,7 +142,7 @@ class ExchangeContentView extends ListView {
     
     _setup_emptyStateContainerView() {
         const self = this;
-        // We run this on an interval because of the way DOM elements are instantiated. Our DOM only renders once a user clicks the XMR->BTC menu tab
+        // We run this on an interval because of the way DOM elements are instantiated. Our Exchange DOM only renders once a user clicks the XMR->BTC menu tab
         let initialExchangeInit = setInterval(() => {
             let walletDiv = document.getElementById('wallet-selector');
             if (walletDiv !== null) {
@@ -172,44 +172,48 @@ class ExchangeContentView extends ListView {
             //contentContainerLayer.appendChild(layer);
         }
 
-        {
-            const layer = document.createElement("div")
-            layer.classList.add("message-label")
-            layer.classList.add("exchangeRate")
-            layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
-            contentContainerLayer.appendChild(layer)
-        }
-        
-		{
-		    const div = document.createElement('div');
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
-			{
-				const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
-				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-				const layer = view.layer
-				labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
-            }
-            div.appendChild(labelLayer);
-            contentContainerLayer.appendChild(div);
-            
-            {
-                // Send Funds
-                const layer = document.createElement("div");
-                // we use ES6's spread operator (...buttonClasses) to invoke the addition of classes -- cleaner than a foreach
-                let buttonClasses = ['base-button', 'hoverable-cell', 'navigation-blue-button-enabled', 'action', 'right-add-button', 'exchange-button'];
-                layer.classList.add(...buttonClasses);
-                layer.id = "exchange-xmr";
-                layer.innerText = "Exchange XMR";
-                layer.addEventListener('click', function() {
-                    let xmr_amount = document.getElementById('XMRcurrencyInput').value;
-                    let xmr_send_address = document.getElementById('XMRtoAddress').value;
-                    let sweep_wallet = false; // TODO: Add sweeping functionality
-                    console.log(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
-                    ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
-                });
-                contentContainerLayer.appendChild(layer);
-            }
 
+
+        // {
+        //     const layer = document.createElement("div")
+        //     layer.classList.add("message-label")
+        //     layer.classList.add("exchangeRate")
+        //     layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
+        //     contentContainerLayer.appendChild(layer)
+        // }
+                
+        {
+            // Send Funds
+            const layer = document.createElement("div");
+            // we use ES6's spread operator (...buttonClasses) to invoke the addition of classes -- cleaner than a foreach
+            let buttonClasses = ['base-button', 'hoverable-cell', 'navigation-blue-button-enabled', 'action', 'right-add-button', 'exchange-button'];
+            layer.classList.add(...buttonClasses);
+            layer.id = "exchange-xmr";
+            layer.innerText = "Exchange XMR";
+
+            layer.addEventListener('click', function() {
+                /* 
+                    * We define this function here, since we need to update the DOM with status feedback from the monero-daemon. We pass it as the final argument to ExchangeUtils.sendFunds
+                    * It performs the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
+                    */
+                function validation_status_fn(str)
+                {
+                    console.log('statuses: ' + str);
+                    self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
+
+                }
+                let xmr_amount = document.getElementById('XMRcurrencyInput').value;
+                let xmr_send_address = document.getElementById('XMRtoAddress').value;
+                let xmr_amount_str = "" + xmr_amount.value;
+                console.log('xmramountstr' + xmr_amount);
+                let sweep_wallet = false; // TODO: Add sweeping functionality
+                console.log(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
+                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn);
+                
+            });
+            contentContainerLayer.appendChild(layer);
+        }
+        {
 			//
 			//const view = new WalletsSelectView({}, self.context)
 			// view.didUpdateSelection_fn = function()
@@ -229,7 +233,8 @@ class ExchangeContentView extends ListView {
             // let's make the xmr.to form in HTML for sanity's sake
             const layer = document.createElement("div");
             //layer.classList.add("xmr_input");
-            let html = fs.readFileSync(__dirname + '/Body.html', 'utf8');
+            let html = '    <div>';
+            html += fs.readFileSync(__dirname + '/Body.html', 'utf8');
             layer.innerHTML = html;
             contentContainerLayer.appendChild(layer);
         }
@@ -360,7 +365,7 @@ class ExchangeContentView extends ListView {
                 {
                     e.preventDefault()
                     //
-                    
+                    let orderElement = document.getElementById("")
                     console.log()
                     console.warn("Button pressed and then view change")
     

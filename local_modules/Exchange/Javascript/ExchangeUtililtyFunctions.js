@@ -26,7 +26,7 @@ console.log(validate.validateBtcAddress);
 */
 
 
-function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet) {
+function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn) {
     return new Promise((resolve, reject) => {
         console.log(wallet);
         console.log(xmr_amount, xmr_send_address, sweep_wallet);
@@ -67,9 +67,9 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet) {
         let manuallyEnteredPaymentID = "";
         let resolvedPaymentID = "";
         let hasPickedAContact = false;
-        let resolvedAddress_fieldIsVisible = "";
-        let manuallyEnteredPaymentID_fieldIsVisible = "";
-        let resolvedPaymentID_fieldIsVisible = "";
+        let manuallyEnteredPaymentID_fieldIsVisible = false;
+        let resolvedPaymentID_fieldIsVisible = false;
+        let resolvedAddress_fieldIsVisible = false;
         let contact_payment_id = undefined;
         let cached_OAResolved_address = undefined;
         let contact_hasOpenAliasAddress = undefined;
@@ -119,7 +119,7 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet) {
             raw_amount_string,
             sweeping,
             simple_priority,
-            preSuccess_nonTerminal_statusUpdate_fn,
+            validation_status_fn,
             cancelled_fn,
             handleResponse_fn
         );
