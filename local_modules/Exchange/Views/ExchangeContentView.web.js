@@ -172,16 +172,14 @@ class ExchangeContentView extends ListView {
             //contentContainerLayer.appendChild(layer);
         }
 
-
-
-        // {
-        //     const layer = document.createElement("div")
-        //     layer.classList.add("message-label")
-        //     layer.classList.add("exchangeRate")
-        //     layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
-        //     contentContainerLayer.appendChild(layer)
-        // }
-                
+        {
+            const layer = document.createElement("div")
+            layer.classList.add("message-label")
+            layer.classList.add("exchangeRate")
+            layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
+            contentContainerLayer.appendChild(layer)
+        }
+        
         {
             // Send Funds
             const layer = document.createElement("div");
@@ -190,7 +188,6 @@ class ExchangeContentView extends ListView {
             layer.classList.add(...buttonClasses);
             layer.id = "exchange-xmr";
             layer.innerText = "Exchange XMR";
-
             layer.addEventListener('click', function() {
                 /* 
                     * We define this function here, since we need to update the DOM with status feedback from the monero-daemon. We pass it as the final argument to ExchangeUtils.sendFunds
@@ -213,22 +210,6 @@ class ExchangeContentView extends ListView {
             });
             contentContainerLayer.appendChild(layer);
         }
-        {
-			//
-			//const view = new WalletsSelectView({}, self.context)
-			// view.didUpdateSelection_fn = function()
-			// {
-			// 	//self.configure_amountInputTextGivenMaxToggledState()
-			// }
-			// self.walletSelectView = view
-			// const valueLayer = view.layer
-			// div.appendChild(valueLayer)
-        }
-        // {
-        //     const div = document.createElement("div");
-        //     div.classList.add("wallet-selector");
-        //     contentContainerLayer.appendChild(div);
-        // }
         {
             // let's make the xmr.to form in HTML for sanity's sake
             const layer = document.createElement("div");
