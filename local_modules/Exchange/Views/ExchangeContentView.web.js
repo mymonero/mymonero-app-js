@@ -79,14 +79,24 @@ class ExchangeContentView extends ListView {
         if (walletDiv === null) {
             return;
         }
+        console.log(walletDiv.dataset.walletchosen);
+        console.log(walletDiv);
+        console.log(walletDiv.dataset);
+        console.log(walletDiv.dataset.walletchosen == "true");
         // if the user has selected a wallet, we update the balances for them
-        if (walletDiv.dataset.walletselected == true) {
+        if (walletDiv.dataset.walletchosen == "true") {
             let selectedWallet = document.getElementById('selected-wallet');
             let selectorOffset = selectedWallet.dataset.walletoffset;
-            selectedWallet.dataset.walletbalance = dataAttributes.walletbalance;
+            console.log(selectedWallet.dataset);
+            console.log(selectorOffset);
+            let selectorInt = parseInt(selectorOffset);
+            let wallet = self.context.wallets[selectorInt];
+            console.log(self.context.wallets);
+            console.log(self.context.wallets[selectorOffset]);
             let walletBalance = document.getElementById('selected-wallet-balance'); 
-            walletBalance.innerText = `${self.Balance_FormattedString(context.wallets[selectorOffset])}`;
+            walletBalance.innerText = `${self.Balance_FormattedString(self.context.wallets[selectorOffset])}`;
         } else {
+            console.log('We run the full update');
             let walletOptions = ``;
             for (let i = 0; i < context.wallets.length; i++) {
                 let wallet = context.wallets[i];
@@ -107,11 +117,10 @@ class ExchangeContentView extends ListView {
             let size = context.wallets.length;
             size = size - 1;
             console.log(size);
-            let defaultOffset = context.wallets.length - 1;
+            let defaultOffset = 0;
             let defaultWallet = context.wallets[defaultOffset];
-            
             let walletSelectOptions = `
-            <div data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletBalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
+            <div data-walletOffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletBalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
                     <div id="selected-wallet-icon" class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${defaultWallet.swatch.substr(1)}@3x.png')"></div>
                     <div id="selected-wallet-label" class="walletName">${defaultWallet.walletLabel}</div>
                     <div id="selected-wallet-balance" class="description-label">${self.Balance_FormattedString(defaultWallet)} XMR</div>
@@ -123,6 +132,15 @@ class ExchangeContentView extends ListView {
                 </div>
             `;
             walletDiv.innerHTML = walletSelectOptions;
+        }
+        console.log(walletDiv);
+    }
+    _refresh_sending_fee() {
+        const self = this;
+        let tx_fee = document.getElementById('tx-fee');
+        if (tx_fee !== null) {
+            tx_fee.dataset.txFee = self._new_estimatedNetworkFee_displayString();
+            tx_fee.innerHTML = `<span class="field_title form-field-title" style="margin-top: 8px; color: rgb(158, 156, 158); display: inline-block;">+ ${self._new_estimatedNetworkFee_displayString()} XMR EST. FEE</span><a class="clickableLinkButton" data-id="3" style="color: rgb(17, 187, 236); cursor: pointer; user-select: none; font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; font-size: 10px; letter-spacing: 0.5px; width: auto; display: inline; clear: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); margin: 8px 0px 0px 7px; font-weight: 300; float: none;">?</a>`;
         }
     }
 
@@ -136,11 +154,13 @@ class ExchangeContentView extends ListView {
             if (self.context.wallets !== undefined) {
                 self._setup_walletExchangeOptions(self.context);
             }
-        }, 50000);
+            self._refresh_sending_fee();
+        }, 5000);
         self.keepExchangeOptionsUpdated = interval; // we use a named interval attached to the view so that we can stop it if we ever want to;
     }
     
     _setup_emptyStateContainerView() {
+        // TODO: wrap this in a promise so that we can execute logic after this
         const self = this;
         // We run this on an interval because of the way DOM elements are instantiated. Our Exchange DOM only renders once a user clicks the XMR->BTC menu tab
         let initialExchangeInit = setInterval(() => {
@@ -234,6 +254,9 @@ class ExchangeContentView extends ListView {
 
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
+
+
+
         // setInterval((context, options) => {
         //     console.log(options);
         //     console.log(self.context);
@@ -243,6 +266,7 @@ class ExchangeContentView extends ListView {
 
     Balance_JSBigInt(wallet)
     {
+        const self = this;
         console.log("in balance");
         console.log(wallet);
         var total_received = wallet.total_received
@@ -262,10 +286,8 @@ class ExchangeContentView extends ListView {
     }
     Balance_FormattedString(wallet)
 	{ // provided for convenience mainly so consumers don't have to require monero_utils
-		let self = wallet;
-		let balance_JSBigInt = self.Balance_JSBigInt()
-        //
-        console.log('@@@' + monero_amount_format_utils.formatMoney(balance_JSBigInt));
+        let self = this;
+		let balance_JSBigInt = self.Balance_JSBigInt(wallet);
 		return monero_amount_format_utils.formatMoney(balance_JSBigInt) 
 	}
 	Balance_DoubleNumber(wallet)
@@ -305,7 +327,40 @@ class ExchangeContentView extends ListView {
 	{
 		let self = this
 		return parseFloat(self.LockedBalance_FormattedString()) // is this appropriate and safe?
+    }
+    
+	new_xmr_estFeeAmount() 
+	{
+		const self = this
+		const estimatedNetworkFee_JSBigInt = new JSBigInt(self.context.monero_utils.estimated_tx_network_fee(
+			null, // deprecated - will be removed soon
+			1,
+			"24658" // TODO: grab this from wallet via API request
+		))
+		const estimatedTotalFee_JSBigInt = estimatedNetworkFee_JSBigInt // no tx hosting service fee
+		//
+		return estimatedTotalFee_JSBigInt
 	}
+
+    _new_estimatedNetworkFee_displayString()
+	{
+		const self = this
+		const estimatedTotalFee_JSBigInt = self.new_xmr_estFeeAmount()
+		const estimatedTotalFee_str = monero_amount_format_utils.formatMoney(estimatedTotalFee_JSBigInt)
+		const estimatedTotalFee_moneroAmountDouble = parseFloat(estimatedTotalFee_str)
+		
+		// const estimatedTotalFee_moneroAmountDouble = 0.028
+		// Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
+		let displayCcySymbol = self.context.settingsController.displayCcySymbol
+		let finalizable_ccySymbol = displayCcySymbol
+		var finalizable_formattedAmountString = estimatedTotalFee_str;//`${estimatedTotalFee_moneroAmountDouble}`
+		let final_formattedAmountString = finalizable_formattedAmountString
+		let final_ccySymbol = "XMR";
+		let displayString = `${final_formattedAmountString}`
+		//
+		return displayString
+	}
+
 /**
  *                 let exchangeRate = document.getElementById('exchangeRate');
                 

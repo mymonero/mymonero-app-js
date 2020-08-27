@@ -50,10 +50,12 @@
         let selectedWallet = document.getElementById('selected-wallet');
         walletElement.classList.add('active');
         if (event.srcElement.parentElement.className.includes("optionCell")) {
+
             let dataAttributes = event.srcElement.parentElement.dataset;
             selectedWallet.dataset.walletlabel = dataAttributes.walletlabel;
             selectedWallet.dataset.walletBalance = dataAttributes.walletbalance;
             selectedWallet.dataset.swatch = dataAttributes.swatch;
+            selectedWallet.dataset.walletselected = true;
             let walletLabel = document.getElementById('selected-wallet-label'); 
             let walletBalance = document.getElementById('selected-wallet-balance'); 
             let walletIcon = document.getElementById('selected-wallet-icon'); 
@@ -63,6 +65,8 @@
             walletBalance.innerText = dataAttributes.walletbalance;
             let walletSelector = document.getElementById('wallet-selector');
             walletSelector.dataset.walletchosen = true;
+            clearCurrencies();
+            console.log(walletElement);
         }
         if (event.srcElement.parentElement.className.includes("selectionDisplayCellView")) {
             console.log('we picked selectionDisplayCellView');
@@ -93,9 +97,24 @@
         }
     });
 
-    XMRcurrencyInput.addEventListener('keyup', function(event) {
-        validationMessages.innerHTML = '';
+
+    function xmrBalanceChecks() {
+        let selectedWallet = document.getElementById('selected-wallet');
+        let tx_feeElem = document.getElementById('tx-fee');
+        let tx_fee = tx_feeElem.dataset.txFee;
+        let tx_fee_double = parseFloat(tx_fee);
+        let walletMaxSpendDouble = parseFloat(selectedWallet.dataset.walletbalance);
+        let walletMaxSpend = walletMaxSpendDouble - tx_fee;
         let BTCToReceive = XMRcurrencyInput.value * ExchangeFunctions.currentRates.price;
+        let XMRbalance = parseFloat(XMRcurrencyInput.value);
+        if (walletMaxSpend - XMRbalance < 0) {
+            console.log('not enough');
+            let error = document.createElement('div');
+            error.classList.add('message-label');
+            error.id = 'xmrexceeded';
+            error.innerHTML = `You cannot exchange more than ${walletMaxSpend} XMR`;
+            validationMessages.appendChild(error);
+        }
         if (BTCToReceive.toFixed(8) > ExchangeFunctions.currentRates.upper_limit) {
             let error = document.createElement('div');
             error.classList.add('message-label');
@@ -111,9 +130,18 @@
             validationMessages.appendChild(error);
         }
         BTCcurrencyInput.value = BTCToReceive.toFixed(8);
+    }
+
+    XMRcurrencyInput.addEventListener('keyup', function(event) {
+        validationMessages.innerHTML = '';
+        xmrBalanceChecks();
     });
     
 
+    function clearCurrencies() {
+        XMRcurrencyInput.value = "";
+        BTCcurrencyInput.value = "";
+    }
 
     BTCcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
