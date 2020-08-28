@@ -57,18 +57,16 @@ class ExchangeContentView extends ListView {
         self.currentlyPresented_AddContactView = null // zeroing
         let passwordInput = document.getElementsByClassName('field_value');
         // wait half a second for password controller to boot
-        setTimeout(() => {
-            let passwordInput = document.getElementsByClassName('field_value');
-            let m = passwordInput[0];
-            setTimeout(() => {
-                let passwordInput = document.getElementsByClassName('field_value');
-                let m = passwordInput[0];
-                // pass default password to password field
-                m.value = "123456";
-            }, 500)
-            // pass default password to password field when debugging
-            // m.value = "123456";
-        }, 500)
+        // setTimeout(() => {
+        //     let passwordInput = document.getElementsByClassName('field_value');
+        //     let m = passwordInput[0];
+        //     setTimeout(() => {
+        //         let passwordInput = document.getElementsByClassName('field_value');
+        //         let m = passwordInput[0];
+        //         // pass default password to password field
+        //         m.value = "";
+        //     }, 500)
+        // }, 500)
         // regularly update our selector component with latest wallet values
         //setInterval()
     }
