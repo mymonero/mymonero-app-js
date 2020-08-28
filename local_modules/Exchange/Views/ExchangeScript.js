@@ -16,6 +16,7 @@
     let walletSelector = document.getElementById('wallet-selector');
     let walletOptions = document.getElementById('wallet-options');
     let exchangeXmrDiv = document.getElementById('exchange-xmr');
+    let orderStarted = false;
     let orderCreated = false;
     let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
     backBtn.style.display = "none";
@@ -53,6 +54,7 @@
         if ( (event.which !== 110) 
             && (event.which <= 48 || event.which >= 57) 
             && (event.which <= 96 && event.which >= 105) 
+            && (event.which !== 46)
             && (event.which !== 8) )  {
             event.preventDefault();
             return;
@@ -75,13 +77,14 @@
             selectedWallet.dataset.walletBalance = dataAttributes.walletbalance;
             selectedWallet.dataset.swatch = dataAttributes.swatch;
             selectedWallet.dataset.walletselected = true;
+            selectedWallet.dataset.offset = dataAttributes.walletoffset;
             let walletLabel = document.getElementById('selected-wallet-label'); 
             let walletBalance = document.getElementById('selected-wallet-balance'); 
             let walletIcon = document.getElementById('selected-wallet-icon'); 
             walletElement.classList.remove('active');
             walletIcon.style.backgroundImage = `url('../../../assets/img/wallet-${dataAttributes.swatch}@3x.png'`;
             walletLabel.innerText = dataAttributes.walletlabel;
-            walletBalance.innerText = dataAttributes.walletbalance;
+            walletBalance.innerText = dataAttributes.walletbalance + " XMR";
             let walletSelector = document.getElementById('wallet-selector');
             walletSelector.dataset.walletchosen = true;
             clearCurrencies();
@@ -106,6 +109,7 @@
         if ( (event.which !== 110) 
             && (event.which <= 48 || event.which >= 57) 
             && (event.which <= 96 && event.which >= 105) 
+            && (event.which !== 46)
             && (event.which !== 8) )  {
             event.preventDefault();
             return;
@@ -199,16 +203,31 @@
 
     
     orderBtn.addEventListener('click', function() {
+        console.log(validationMessages);
+        console.log(addressValidation);
+        let validationError = false;
         if (orderCreated == true) {
             return;
         } 
+        if (validationMessages.firstChild !== null) {
+            validationMessages.firstChild.style.color = "#ff0000";
+            validationError = true;
+            return;
+        }
+        if (addressValidation.firstChild !== null) {
+            addressValidation.firstChild.style.color = "#ff0000";
+            validationError = true;
+            return;
+        }
+        orderBtn.style.display = "none";
+        orderCreated = true;
         backBtn.style.display = "block";
         loaderPage.classList.add('active');
         let amount = document.getElementById('XMRcurrencyInput').value;
         let amount_currency = 'XMR';
         let btc_dest_address = document.getElementById('btcAddress').value;
-            let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
-                order = response.data;
+        let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
+            order = response.data;
             
         }).then((response) => {
             console.log(order);
@@ -220,6 +239,7 @@
                     Utils.renderOrderStatus(response);
                     let expiryTime = response.expires_at;
                     let secondsElement = document.getElementById('secondsRemaining');
+                    let minutesElement = document.getElementById('minutesRemaining');
                     if (secondsElement !== null) {
                         
                         let minutesElement = document.getElementById('minutesRemaining');
@@ -232,6 +252,7 @@
                         let xmr_dest_address_elem = document.getElementById('XMRtoAddress');
                         xmr_dest_address_elem.value = response.receiving_subaddress; 
                     }
+                    console.log(secondsElement) + console.log(minutesElement);
                 })
             }, 1000);
             document.getElementById("orderStatusPage").classList.remove('active');
