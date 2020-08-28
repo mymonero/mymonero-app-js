@@ -105,7 +105,7 @@ class ExchangeContentView extends ListView {
                 console.log(self.Balance_FormattedString(wallet));
                 let swatch = wallet.swatch.substr(1);
                 walletOptions = walletOptions + `
-                <div data-walletLabel="${wallet.walletLabel}" data-walletOffset="${i}" data-swatch="${swatch}" data-walletBalance="${self.Balance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
+                <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.Balance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
                     <div class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${swatch}@3x.png');"></div>                        
                     <div class="walletLabel">${wallet.walletLabel}</div>
                     <div class="description-label" style="position: relative; box-sizing: border-box; padding: 0px 38px 4px 66px; font-size: 13px; font-family: Native-Light, input, menlo, monospace; font-weight: 100; -webkit-font-smoothing: subpixel-antialiased; max-height: 32px; color: rgb(158, 156, 158); word-break: normal; overflow: hidden; text-overflow: ellipsis; cursor: default;">${self.Balance_FormattedString(wallet)} XMR</div>
@@ -120,7 +120,7 @@ class ExchangeContentView extends ListView {
             let defaultOffset = 0;
             let defaultWallet = context.wallets[defaultOffset];
             let walletSelectOptions = `
-            <div data-walletOffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletBalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
+            <div data-walletoffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletbalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
                     <div id="selected-wallet-icon" class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${defaultWallet.swatch.substr(1)}@3x.png')"></div>
                     <div id="selected-wallet-label" class="walletName">${defaultWallet.walletLabel}</div>
                     <div id="selected-wallet-balance" class="description-label">${self.Balance_FormattedString(defaultWallet)} XMR</div>
