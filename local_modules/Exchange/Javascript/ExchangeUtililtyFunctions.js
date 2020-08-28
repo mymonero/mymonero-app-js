@@ -166,10 +166,13 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
 
 
 function validateBTCAddress(address) {
-    console.log(typeof(validage(address)));
+    console.log(typeof(validate(address)));
     if (typeof(validate(address)) !== Object) {
         return false;
     }
+    // TODO: write a proper validation routine.
+
+
     return true;
 }
 

@@ -16,6 +16,10 @@
     let walletSelector = document.getElementById('wallet-selector');
     let walletOptions = document.getElementById('wallet-options');
     let exchangeXmrDiv = document.getElementById('exchange-xmr');
+    let orderCreated = false;
+    let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
+    backBtn.style.display = "none";
+    let addressValidation = document.getElementById('address-messages');
 
     ExchangeFunctions.getRatesAndLimits().then(() => {
         loaderPage.classList.remove('active');
@@ -26,6 +30,21 @@
 
     btcAddressInput.addEventListener('input', function() {
         console.log(Utils.validateBTCAddress(btcAddressInput.value));
+
+        let div = document.getElementById('btc-invalid');
+        if ((Utils.validateBTCAddress(btcAddressInput.value) == false) && div == null) {
+            console.log('not valid BTC address');
+            let error = document.createElement('div');
+            error.classList.add('message-label');
+            error.id = 'btc-invalid';
+            error.innerHTML = `Your BTC address is not valid.`;
+            addressValidation.appendChild(error);
+        } else {
+            console.log('yay valid!');
+            if (!(div == null)) {
+                div.remove();
+            }
+        }
     });
 
     XMRcurrencyInput.addEventListener('keydown', function(event) {
@@ -167,22 +186,35 @@
         XMRcurrencyInput.value = XMRtoReceive.toFixed(12);
     });
 
+    backBtn.addEventListener('click', function() {
+        orderCreated = false;
+        document.getElementById("orderStatusPage").classList.add('active');
+        backBtn.style.display = "none";
+        let orderStatusDiv = document.getElementById("exchangePage");
+        loaderPage.classList.remove('active');
+        orderStatusDiv.classList.remove('active');
+        exchangeXmrDiv.classList.remove('active');
+    });
+
     orderBtn.addEventListener('click', function() {
+        if (orderCreated == true) {
+            return;
+        } 
+        backBtn.style.display = "block";
         loaderPage.classList.add('active');
         let amount = document.getElementById('XMRcurrencyInput').value;
         let amount_currency = 'XMR';
         let btc_dest_address = document.getElementById('btcAddress').value;
-        let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
-            order = response.data;
+            let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
+                order = response.data;
             
         }).then((response) => {
             console.log(order);
             console.log(response, 'inside update');
+            backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
             let cmt = "remove loader from view";
             orderTimer = setInterval(() => {
                 ExchangeFunctions.getOrderStatus().then(function (response) {
-                    console.log(response);
-                    Utils.renderOrderStatus(response);
                     let expiryTime = response.expires_at;
                     let secondsElement = document.getElementById('secondsRemaining');
                     if (secondsElement !== null) {
@@ -204,6 +236,17 @@
             loaderPage.classList.remove('active');
             orderStatusDiv.classList.add('active');
             exchangeXmrDiv.classList.add('active');
+        }).catch((error) => {
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                    validationMessages.appendChild('XMR.to is not reachable');
+                console.log(error.request);
+            } else {
+                console.log('Error', error.message);
+            }
         });
     });
 })()
