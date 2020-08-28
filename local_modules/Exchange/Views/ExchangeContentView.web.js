@@ -77,30 +77,19 @@ class ExchangeContentView extends ListView {
         if (walletDiv === null) {
             return;
         }
-        console.log(walletDiv.dataset.walletchosen);
-        console.log(walletDiv);
-        console.log(walletDiv.dataset);
-        console.log(walletDiv.dataset.walletchosen == "true");
         // if the user has selected a wallet, we update the balances for them
         if (walletDiv.dataset.walletchosen == "true") {
             let selectedWallet = document.getElementById('selected-wallet');
             let selectorOffset = selectedWallet.dataset.walletoffset;
-            console.log(selectedWallet.dataset);
-            console.log(selectorOffset);
             let selectorInt = parseInt(selectorOffset);
             let wallet = self.context.wallets[selectorInt];
-            console.log(self.context.wallets);
-            console.log(self.context.wallets[selectorOffset]);
             let walletBalance = document.getElementById('selected-wallet-balance'); 
             walletBalance.innerText = `${self.Balance_FormattedString(self.context.wallets[selectorOffset])} XMR`;
         } else {
-            console.log('We run the full update');
+
             let walletOptions = ``;
             for (let i = 0; i < context.wallets.length; i++) {
                 let wallet = context.wallets[i];
-                console.log('we ran this wallet option init now');
-                console.log("attempting balance");
-                console.log(self.Balance_FormattedString(wallet));
                 let swatch = wallet.swatch.substr(1);
                 walletOptions = walletOptions + `
                 <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.Balance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
@@ -114,7 +103,6 @@ class ExchangeContentView extends ListView {
             // get oldest wallet based on how wallets are inserted into wallets as a zero element, changing indexes backwards
             let size = context.wallets.length;
             size = size - 1;
-            console.log(size);
             let defaultOffset = 0;
             let defaultWallet = context.wallets[defaultOffset];
             let walletSelectOptions = `
@@ -131,7 +119,7 @@ class ExchangeContentView extends ListView {
             `;
             walletDiv.innerHTML = walletSelectOptions;
         }
-        console.log(walletDiv);
+
     }
     _refresh_sending_fee() {
         const self = this;
@@ -147,7 +135,7 @@ class ExchangeContentView extends ListView {
         const self = this
         super._setup_views()
         self._setup_emptyStateContainerView()
-        console.log(this);
+        
         let interval = setInterval(function() {
             if (self.context.wallets !== undefined) {
                 self._setup_walletExchangeOptions(self.context);
@@ -214,7 +202,7 @@ class ExchangeContentView extends ListView {
                 */
                 function validation_status_fn(str)
                 {
-                    console.log('statuses: ' + str);
+
                     let monerodUpdates = document.getElementById('monerod-updates')
                     monerodUpdates.innerText = str;
                 }
@@ -235,9 +223,9 @@ class ExchangeContentView extends ListView {
                 let xmr_amount = document.getElementById('XMRcurrencyInput').value;
                 let xmr_send_address = document.getElementById('XMRtoAddress').value;
                 let xmr_amount_str = "" + xmr_amount.value;
-                console.log('xmramountstr' + xmr_amount);
+                
                 let sweep_wallet = false; // TODO: Add sweeping functionality
-                console.log(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
+                
                 ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn);
             });
 
@@ -281,8 +269,6 @@ class ExchangeContentView extends ListView {
     Balance_JSBigInt(wallet)
     {
         const self = this;
-        console.log("in balance");
-        console.log(wallet);
         var total_received = wallet.total_received
         var total_sent = wallet.total_sent
         if (typeof total_received === 'undefined') {
@@ -295,7 +281,6 @@ class ExchangeContentView extends ListView {
         if (balance_JSBigInt.compare(0) < 0) {
             return new JSBigInt(0)
         }
-        console.log(balance_JSBigInt);
         return balance_JSBigInt
     }
     Balance_FormattedString(wallet)
@@ -409,26 +394,23 @@ class ExchangeContentView extends ListView {
                 layer.style.fontWeight = "300"
                 }
             }
-            view.layer.addEventListener(
-                "click",
-                function(e)
-                {
-                    e.preventDefault()
-                    //
-                    let orderElement = document.getElementById("")
-                    console.log()
-                    console.warn("Button pressed and then view change")
-    
-                    //
-                    // const view = new AddContactFromContactsTabView({}, self.context)
-                    // self.currentlyPresented_AddContactView = view
-                    // const navigationView = new StackAndModalNavigationView({}, self.context)
-                    // navigationView.SetStackViews([ view ])
-                    // self.navigationController.PresentView(navigationView, true)
-                    //
-                    return false
-                }
-            )
+            // view.layer.addEventListener(
+            //     "click",
+            //     function(e)
+            //     {
+            //         e.preventDefault()
+            //         //
+            //         let orderElement = document.getElementById("")    
+            //         //
+            //         // const view = new AddContactFromContactsTabView({}, self.context)
+            //         // self.currentlyPresented_AddContactView = view
+            //         // const navigationView = new StackAndModalNavigationView({}, self.context)
+            //         // navigationView.SetStackViews([ view ])
+            //         // self.navigationController.PresentView(navigationView, true)
+            //         //
+            //         return false
+            //     }
+            // )
             return view
         }
     }

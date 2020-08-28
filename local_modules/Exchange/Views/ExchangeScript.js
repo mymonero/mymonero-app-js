@@ -4,7 +4,7 @@
     const BTCcurrencyInput = document.getElementById('BTCcurrencyInput');
     const validationMessages = document.getElementById('validation-messages');
 
-    let cmt = "";
+    
     let Utils = require('../../Exchange/Javascript/ExchangeUtililtyFunctions');
     let ExchangeFunctions = require('../../Exchange/Javascript/ExchangeFunctions');
     let loaderPage = document.getElementById('loader');
@@ -30,18 +30,16 @@
 
 
     btcAddressInput.addEventListener('input', function() {
-        console.log(Utils.validateBTCAddress(btcAddressInput.value));
+        
 
         let div = document.getElementById('btc-invalid');
         if ((Utils.validateBTCAddress(btcAddressInput.value) == false) && div == null) {
-            console.log('not valid BTC address');
             let error = document.createElement('div');
             error.classList.add('message-label');
             error.id = 'btc-invalid';
             error.innerHTML = `Your BTC address is not valid.`;
             addressValidation.appendChild(error);
         } else {
-            console.log('yay valid!');
             if (!(div == null)) {
                 div.remove();
             }
@@ -59,7 +57,7 @@
             event.preventDefault();
             return;
         }
-        cmt = "We check here to ensure that we do not exceed 12 decimal places (XMR limit)";
+
         if (!Utils.checkDecimals(XMRcurrencyInput.value, 12)) {
             event.preventDefault();
             return;
@@ -73,10 +71,6 @@
         if (event.srcElement.parentElement.className.includes("optionCell")) {
             
             let dataAttributes = event.srcElement.parentElement.dataset;
-
-            console.log(dataAttributes);
-
-
             selectedWallet.dataset.walletlabel = dataAttributes.walletlabel;
             selectedWallet.dataset.walletbalance = dataAttributes.walletbalance;
             selectedWallet.dataset.swatch = dataAttributes.swatch;
@@ -92,11 +86,8 @@
             let walletSelector = document.getElementById('wallet-selector');
             walletSelector.dataset.walletchosen = true;
             clearCurrencies();
-            console.log(walletElement);
         }
         if (event.srcElement.parentElement.className.includes("selectionDisplayCellView")) {
-            console.log('we picked selectionDisplayCellView');
-            console.log(event.srcElement.parentElement.dataset);
             walletElement.classList.add('active');
         }
         if (event.srcElement == 'div.hoverable-cell.utility.selectionDisplayCellView') {
@@ -135,7 +126,6 @@
         let BTCToReceive = XMRcurrencyInput.value * ExchangeFunctions.currentRates.price;
         let XMRbalance = parseFloat(XMRcurrencyInput.value);
         if (walletMaxSpend - XMRbalance < 0) {
-            console.log('not enough');
             let error = document.createElement('div');
             error.classList.add('message-label');
             error.id = 'xmrexceeded';
@@ -177,7 +167,6 @@
             let error = document.createElement('div');
             error.id = 'xmrexceeded';
             error.classList.add('message-label');
-            console.log(ExchangeFunctions.currentRates);
             let btc_amount = parseFloat(ExchangeFunctions.currentRates.upper_limit);
             error.innerHTML = `You cannot exchange more than ${btc_amount} BTC.`;
             validationMessages.appendChild(error);
@@ -186,7 +175,6 @@
             let error = document.createElement('div');
             error.id = 'xmrtoolow';
             error.classList.add('message-label');
-            console.log(ExchangeFunctions.currentRates);
             let btc_amount = parseFloat(ExchangeFunctions.currentRates.lower_limit);
             error.innerHTML = `You cannot exchange less than ${btc_amount} BTC.`;
             validationMessages.appendChild(error);
@@ -207,8 +195,6 @@
 
     
     orderBtn.addEventListener('click', function() {
-        console.log(validationMessages);
-        console.log(addressValidation);
         let validationError = false;
         if (orderStarted == true) {
             return;
@@ -234,10 +220,7 @@
             order = response.data;
             orderCreated = true;
         }).then((response) => {
-            console.log(order);
-            console.log(response, 'inside update');
             backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-            let cmt = "remove loader from view";
             orderTimer = setInterval(() => {
                 ExchangeFunctions.getOrderStatus().then(function (response) {
                     Utils.renderOrderStatus(response);
@@ -256,7 +239,6 @@
                         let xmr_dest_address_elem = document.getElementById('XMRtoAddress');
                         xmr_dest_address_elem.value = response.receiving_subaddress; 
                     }
-                    console.log(secondsElement) + console.log(minutesElement);
                 })
             }, 1000);
             document.getElementById("orderStatusPage").classList.remove('active');
@@ -266,14 +248,17 @@
             exchangeXmrDiv.classList.add('active');
         }).catch((error) => {
             if (error.response) {
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                let errorDiv = document.createElement("div");
+                errorDiv.innerText = "An unexpected error occurred";
+                validationMessages.appendChild(errorDiv);
             } else if (error.request) {
-                    validationMessages.appendChild('XMR.to is not reachable');
-                console.log(error.request);
+                let errorDiv = document.createElement("div");
+                errorDiv.innerText = "XMR.to's server is unreachable. Please try again shortly.";
+                validationMessages.appendChild(errorDiv);
             } else {
-                console.log('Error', error.message);
+                let errorDiv = document.createElement("div");
+                errorDiv.innerText = error.message;
+                validationMessages.appendChild(errorDiv);
             }
         });
     });

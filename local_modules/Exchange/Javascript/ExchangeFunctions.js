@@ -142,13 +142,11 @@ class ExchangeFunctions {
         return new Promise((resolve, reject) => {
             let operation = "order_parameter_query";
             let endpoint = "https://test.xmr.to/api/v3/xmr2btc/order_parameter_query";
-            console.log('inside rates and limits');
             axios.get(endpoint)
                 .then((response) => {
                     self.currentRates = response.data;
                     self.currentRates.minimum_xmr = self.currentRates.lower_limit / self.currentRates.price;
                     self.currentRates.maximum_xmr = self.currentRates.upper_limit / self.currentRates.price;
-                    console.log(self);
                     resolve(response);
                 }).catch((error) => {
                     reject(error);
@@ -158,8 +156,6 @@ class ExchangeFunctions {
 
     static generateRatesTable(rates) {
         return new Promise((resolve, reject) => {
-            console.log('hello in setPricingTable'); 
-            console.log(rates);
             let tbl = document.createElement('table');
             // row 0 is XMR => BTC
             let newRow = tbl.insertRow(0);
