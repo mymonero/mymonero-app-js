@@ -113,7 +113,7 @@ class ExchangeContentView extends ListView {
                 `;
             }         
             //console.log('wallet html ran options '+i)
-                        // get oldest wallet based on how wallets are inserted into wallets as a zero element, changing indexes backwards
+            // get oldest wallet based on how wallets are inserted into wallets as a zero element, changing indexes backwards
             let size = context.wallets.length;
             size = size - 1;
             console.log(size);

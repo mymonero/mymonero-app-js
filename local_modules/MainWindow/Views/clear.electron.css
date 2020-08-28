@@ -1173,7 +1173,7 @@ div.exchange-button {
 
     height: 66px;
     width: 100%;
-    padding: 0;
+    padding: 0 5px;
     box-sizing: border-box;
 
     appearance: none;
@@ -1214,4 +1214,26 @@ div.exchange-button {
     position: absolute;
     bottom: 10px;
     right: 10px;
+}
+
+.exchangeRate {
+    font-size: 12px;
+}
+
+input#XMRcurrencyInput {
+    min-width: 104px;
+}
+input#BTCcurrencyInput {
+    text-align: right;
+    width: 112px;
+    padding: 0px 10px 0px 0px;
+}
+div#currency-table {
+    padding: 0 24px 0 0;
+}
+#orderStatusPage {
+    padding: 0px 10px;
+}
+#tx-fee {
+    padding: 0px 13px 7px 6px;
 }
