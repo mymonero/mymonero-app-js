@@ -71,13 +71,17 @@
         let selectedWallet = document.getElementById('selected-wallet');
         walletElement.classList.add('active');
         if (event.srcElement.parentElement.className.includes("optionCell")) {
-
+            
             let dataAttributes = event.srcElement.parentElement.dataset;
+
+            console.log(dataAttributes);
+
+
             selectedWallet.dataset.walletlabel = dataAttributes.walletlabel;
-            selectedWallet.dataset.walletBalance = dataAttributes.walletbalance;
+            selectedWallet.dataset.walletbalance = dataAttributes.walletbalance;
             selectedWallet.dataset.swatch = dataAttributes.swatch;
             selectedWallet.dataset.walletselected = true;
-            selectedWallet.dataset.offset = dataAttributes.walletoffset;
+            selectedWallet.dataset.walletoffset = dataAttributes.walletoffset;
             let walletLabel = document.getElementById('selected-wallet-label'); 
             let walletBalance = document.getElementById('selected-wallet-balance'); 
             let walletIcon = document.getElementById('selected-wallet-icon'); 
@@ -206,7 +210,7 @@
         console.log(validationMessages);
         console.log(addressValidation);
         let validationError = false;
-        if (orderCreated == true) {
+        if (orderStarted == true) {
             return;
         } 
         if (validationMessages.firstChild !== null) {
@@ -220,7 +224,7 @@
             return;
         }
         orderBtn.style.display = "none";
-        orderCreated = true;
+        orderStarted = true;
         backBtn.style.display = "block";
         loaderPage.classList.add('active');
         let amount = document.getElementById('XMRcurrencyInput').value;
@@ -228,7 +232,7 @@
         let btc_dest_address = document.getElementById('btcAddress').value;
         let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
             order = response.data;
-            
+            orderCreated = true;
         }).then((response) => {
             console.log(order);
             console.log(response, 'inside update');
