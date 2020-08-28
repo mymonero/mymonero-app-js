@@ -26,7 +26,7 @@ console.log(validate.validateBtcAddress);
 */
 
 
-function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn) {
+function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn) {
     return new Promise((resolve, reject) => {
         console.log(wallet);
         console.log(xmr_amount, xmr_send_address, sweep_wallet);
@@ -125,36 +125,6 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
         );
 
         // these functions are passed as parameters to wallet.SendFunds
-        function handleResponse_fn (err, mockedTransaction) {
-            console.log('handleResponse_fn:', err, mockedTransaction);
-            if (err) {
-                //_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
-                return
-            }
-            //
-            self.validationMessageLayer.SetValidationError(`Sent.`, true/*wantsXButtonHidden*/)
-            // finally, clean up form
-            setTimeout(
-                function () {
-                    self._dismissValidationMessageLayer()
-                    // Now dismiss
-                    self.dismissView()
-                },
-                500
-            )
-            // and fire off a request to have the wallet get the latest (real) tx records
-            setTimeout(
-                function () {
-                    wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
-                }
-            )
-        }
-
-        function preSuccess_nonTerminal_statusUpdate_fn(str)
-        {
-            console.log('statuses: ' + str);
-            self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
-        }
 
         function cancelled_fn() { // canceled_fn
             console.log(e);

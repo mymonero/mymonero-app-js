@@ -94,7 +94,7 @@ class ExchangeContentView extends ListView {
             console.log(self.context.wallets);
             console.log(self.context.wallets[selectorOffset]);
             let walletBalance = document.getElementById('selected-wallet-balance'); 
-            walletBalance.innerText = `${self.Balance_FormattedString(self.context.wallets[selectorOffset])}`;
+            walletBalance.innerText = `${self.Balance_FormattedString(self.context.wallets[selectorOffset])} XMR`;
         } else {
             console.log('We run the full update');
             let walletOptions = ``;
@@ -140,7 +140,7 @@ class ExchangeContentView extends ListView {
         let tx_fee = document.getElementById('tx-fee');
         if (tx_fee !== null) {
             tx_fee.dataset.txFee = self._new_estimatedNetworkFee_displayString();
-            tx_fee.innerHTML = `<span class="field_title form-field-title" style="margin-top: 8px; color: rgb(158, 156, 158); display: inline-block;">+ ${self._new_estimatedNetworkFee_displayString()} XMR EST. FEE</span><a class="clickableLinkButton" data-id="3" style="color: rgb(17, 187, 236); cursor: pointer; user-select: none; font-family: Native-Light, input, menlo, monospace; -webkit-font-smoothing: subpixel-antialiased; font-size: 10px; letter-spacing: 0.5px; width: auto; display: inline; clear: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); margin: 8px 0px 0px 7px; font-weight: 300; float: none;">?</a>`;
+            tx_fee.innerHTML = `<span class="field_title form-field-title" style="margin-top: 8px; color: rgb(158, 156, 158); display: inline-block;">+ ${self._new_estimatedNetworkFee_displayString()} XMR EST. FEE</span>`;
         }
     }
 
@@ -196,7 +196,7 @@ class ExchangeContentView extends ListView {
             const layer = document.createElement("div")
             layer.classList.add("message-label")
             layer.classList.add("exchangeRate")
-            layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
+            layer.innerHTML = "You can exchange XMR to Bitcoin here, using XMR.to.";
             contentContainerLayer.appendChild(layer)
         }
         
@@ -210,14 +210,29 @@ class ExchangeContentView extends ListView {
             layer.innerText = "Exchange XMR";
             layer.addEventListener('click', function() {
                 /* 
-                    * We define this function here, since we need to update the DOM with status feedback from the monero-daemon. We pass it as the final argument to ExchangeUtils.sendFunds
-                    * It performs the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
-                    */
+                * We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon. 
+                * We pass them as the final argument to ExchangeUtils.sendFunds
+                * It performs the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
+                */
                 function validation_status_fn(str)
                 {
                     console.log('statuses: ' + str);
-                    self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
-
+                    let monerodUpdates = document.getElementById('monerod-updates')
+                    monerodUpdates.innerText = str;
+                }
+                /* 
+                * We perform the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
+                */
+                function handle_response_fn(err, mockedTransaction)
+                {
+                    if (err) {
+                        let str = typeof err === 'string' ? err : err.message;
+                        monerodUpdates.innerText = str;
+                        return
+                    }
+                    let monerodUpdates = document.getElementById('monerod-updates')
+                    str = "Sent successfully.";
+                    monerodUpdates.innerText = str;
                 }
                 let xmr_amount = document.getElementById('XMRcurrencyInput').value;
                 let xmr_send_address = document.getElementById('XMRtoAddress').value;
@@ -226,8 +241,9 @@ class ExchangeContentView extends ListView {
                 let sweep_wallet = false; // TODO: Add sweeping functionality
                 console.log(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet);
                 ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn);
-                
             });
+
+
             contentContainerLayer.appendChild(layer);
         }
         {
