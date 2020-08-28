@@ -196,6 +196,8 @@
         exchangeXmrDiv.classList.remove('active');
     });
 
+
+    
     orderBtn.addEventListener('click', function() {
         if (orderCreated == true) {
             return;
@@ -215,6 +217,7 @@
             let cmt = "remove loader from view";
             orderTimer = setInterval(() => {
                 ExchangeFunctions.getOrderStatus().then(function (response) {
+                    Utils.renderOrderStatus(response);
                     let expiryTime = response.expires_at;
                     let secondsElement = document.getElementById('secondsRemaining');
                     if (secondsElement !== null) {
