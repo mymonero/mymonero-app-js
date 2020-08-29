@@ -1,15 +1,65 @@
-// Functions for Bitcoin address checking
-//let validate = require((require.resolve('bitcoin-address-validation')));
+// import function for Bitcoin address checking
 let validate = require('bitcoin-address-validation');
-console.log(validate);
-console.log(validate.validateBtcAddress);
-//import validate from 'bitcoin-address-validation';
+
+function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn) {
+    return new Promise((resolve, reject) => {
+
+        // for debug, we use our own xmr_wallet and we send a tiny amount of XMR. Change this once we can send funds
+        xmr_send_address = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm";
+        xmr_amount = 0.000001;
+
+        let enteredAddressValue = xmr_send_address; //;
+        let resolvedAddress = "";
+        let manuallyEnteredPaymentID = "";
+        let resolvedPaymentID = "";
+        let hasPickedAContact = false;
+        let manuallyEnteredPaymentID_fieldIsVisible = false;
+        let resolvedPaymentID_fieldIsVisible = false;
+        let resolvedAddress_fieldIsVisible = false;
+        let contact_payment_id = undefined;
+        let cached_OAResolved_address = undefined;
+        let contact_hasOpenAliasAddress = undefined;
+        let contact_address = undefined;
+        let raw_amount_string = xmr_amount; // XMR amount in double
+        let sweeping = sweep_wallet;
+        let simple_priority = 1;
+
+        wallet.SendFunds(
+            enteredAddressValue,
+            resolvedAddress,
+            manuallyEnteredPaymentID,
+            resolvedPaymentID,
+            hasPickedAContact,
+            resolvedAddress_fieldIsVisible,
+            manuallyEnteredPaymentID_fieldIsVisible,
+            resolvedPaymentID_fieldIsVisible,
+            contact_payment_id,
+            cached_OAResolved_address,
+            contact_hasOpenAliasAddress,
+            contact_address,
+            raw_amount_string,
+            sweeping,
+            simple_priority,
+            validation_status_fn,
+            cancelled_fn,
+            handle_response_fn
+        );
+
+        function cancelled_fn() { // canceled_fn    
+            // TODO: Karl: I haven't diven deep enough to determine what state would invoke this function
+        }
+    });
+}
+
 
 function validateBTCAddress(address) {
-    console.log(typeof(validage(address)));
+    
     if (typeof(validate(address)) !== Object) {
         return false;
     }
+    // TODO: write a proper validation routine.
+
+
     return true;
 }
 
@@ -21,7 +71,9 @@ function determineAddressNetwork(address) {
 // end of functions to check Bitcoin address
 
 function renderOrderStatus(order) {
-    console.log(order);
+    
+    // this is a hackish way to render out all data we receive from order_status_updates from XMR.to. The appropriate elements exist in Body.html
+
     let idArr = [
         "btc_amount",
         "btc_amount_partial",
@@ -41,9 +93,12 @@ function renderOrderStatus(order) {
         "uuid"
     ];
 
-    idArr.forEach((item, index) => {
-        document.getElementById(item).innerHTML = order[item];
-    });
+    let test = document.getElementById('btc_amount');
+    if (!(test == null)) {
+        idArr.forEach((item, index) => {
+            document.getElementById(item).innerHTML = order[item];
+        });
+    }
 }
 
     function getTimeRemaining(endtime){
@@ -70,10 +125,7 @@ function renderOrderStatus(order) {
     function checkDecimals(value, decimals) {
         let str = value.toString();
         let strArr = str.split('.');
-        console.log('checking decimal places');
         if (strArr.length > 1) {
-            console.log(strArr[1].length);
-            console.log(strArr[1].length >= decimals);
             if (strArr[1].length >= decimals) {
                 return false;
             }
@@ -82,9 +134,7 @@ function renderOrderStatus(order) {
     }
 
     function isValidBase10Decimal(number) {
-        console.log(number);
         let str = number.toString();
-        console.log(str);
         let strArr = str.split('.');
         if (strArr.size > 1 && typeof(strArr) == Array) {
             return false;
@@ -94,8 +144,6 @@ function renderOrderStatus(order) {
                 return false;
             }
         }
-        console.log(strArr[1].length);
-        console.log(strArr[1]);
         if (strArr.size > 1) {
             if (strArr[1].length == 0) {
                 return false;
@@ -104,4 +152,4 @@ function renderOrderStatus(order) {
         return true;
     }
 
-    module.exports = { validateBTCAddress, getTimeRemaining, isValidBase10Decimal, checkDecimals, renderOrderStatus };
+    module.exports = { validateBTCAddress, getTimeRemaining, isValidBase10Decimal, checkDecimals, renderOrderStatus, sendFunds };

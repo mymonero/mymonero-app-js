@@ -163,10 +163,16 @@ const moneroUtils_promise_fn = function(options)
 					real__success_fn(cb_arg) // contains stuff like tx_hash, mixin, tx_key, final_payment_id, serialized_signed_tx, ....
 				}
 				//
+
+				console.log('calling ipcRenderer to send funds');
+				console.log(this_bridge_call_id);
+				console.log(args);
+				
 				ipcRenderer.send('async__send_funds', {
 					IPCBridge_call_id: this_bridge_call_id,
 					args: args
 				})
+				
 			}
 			ipcRenderer.on('async__send_funds--authenticate_fn', function(event, IPC_on_arg)
 			{
