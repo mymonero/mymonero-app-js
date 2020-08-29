@@ -42,7 +42,7 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
             simple_priority,
             validation_status_fn,
             cancelled_fn,
-            handleResponse_fn
+            handle_response_fn
         );
 
         function cancelled_fn() { // canceled_fn    
