@@ -191,7 +191,7 @@ class ExchangeContentView extends ListView {
             const layer = document.createElement("div");
             // we use ES6's spread operator (...buttonClasses) to invoke the addition of classes -- cleaner than a foreach
             let buttonClasses = ['base-button', 'hoverable-cell', 'navigation-blue-button-enabled', 'action', 'right-add-button', 'exchange-button'];
-            layer.classList.add(...buttonClasses);
+            layer.classList.add(...buttonClasses);  
             layer.id = "exchange-xmr";
             layer.innerText = "Exchange XMR";
             layer.addEventListener('click', function() {
