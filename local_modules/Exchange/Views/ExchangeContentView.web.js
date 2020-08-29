@@ -31,6 +31,7 @@ const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
 const emoji_web = require('../../Emoji/emoji_web')
 const ExchangeFunctions = require('../Javascript/ExchangeFunctions')
+const ExchangeUtils = require('../Javascript/ExchangeUtililtyFunctions');
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
@@ -56,18 +57,16 @@ class ExchangeContentView extends ListView {
         self.currentlyPresented_AddContactView = null // zeroing
         let passwordInput = document.getElementsByClassName('field_value');
         // wait half a second for password controller to boot
-        setTimeout(() => {
-            let passwordInput = document.getElementsByClassName('field_value');
-            let m = passwordInput[0];
-            setTimeout(() => {
-                let passwordInput = document.getElementsByClassName('field_value');
-                let m = passwordInput[0];
-                // pass default password to password field
-                m.value = "123456";
-            }, 500)
-            // pass default password to password field when debugging
-            // m.value = "123456";
-        }, 500)
+        // setTimeout(() => {
+        //     let passwordInput = document.getElementsByClassName('field_value');
+        //     let m = passwordInput[0];
+        //     setTimeout(() => {
+        //         let passwordInput = document.getElementsByClassName('field_value');
+        //         let m = passwordInput[0];
+        //         // pass default password to password field
+        //         m.value = "";
+        //     }, 500)
+        // }, 500)
         // regularly update our selector component with latest wallet values
         //setInterval()
     }
@@ -79,22 +78,21 @@ class ExchangeContentView extends ListView {
             return;
         }
         // if the user has selected a wallet, we update the balances for them
-        if (walletDiv.dataset.walletselected == true) {
+        if (walletDiv.dataset.walletchosen == "true") {
             let selectedWallet = document.getElementById('selected-wallet');
             let selectorOffset = selectedWallet.dataset.walletoffset;
-            selectedWallet.dataset.walletbalance = dataAttributes.walletbalance;
+            let selectorInt = parseInt(selectorOffset);
+            let wallet = self.context.wallets[selectorInt];
             let walletBalance = document.getElementById('selected-wallet-balance'); 
-            walletBalance.innerText = `${self.Balance_FormattedString(context.wallets[selectorOffset])}`;
+            walletBalance.innerText = `${self.Balance_FormattedString(self.context.wallets[selectorOffset])} XMR`;
         } else {
+
             let walletOptions = ``;
             for (let i = 0; i < context.wallets.length; i++) {
                 let wallet = context.wallets[i];
-                console.log('we ran this wallet option init now');
-                console.log("attempting balance");
-                console.log(self.Balance_FormattedString(wallet));
                 let swatch = wallet.swatch.substr(1);
                 walletOptions = walletOptions + `
-                <div data-walletLabel="${wallet.walletLabel}" data-walletOffset="${i}" data-swatch="${swatch}" data-walletBalance="${self.Balance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
+                <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.Balance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
                     <div class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${swatch}@3x.png');"></div>                        
                     <div class="walletLabel">${wallet.walletLabel}</div>
                     <div class="description-label" style="position: relative; box-sizing: border-box; padding: 0px 38px 4px 66px; font-size: 13px; font-family: Native-Light, input, menlo, monospace; font-weight: 100; -webkit-font-smoothing: subpixel-antialiased; max-height: 32px; color: rgb(158, 156, 158); word-break: normal; overflow: hidden; text-overflow: ellipsis; cursor: default;">${self.Balance_FormattedString(wallet)} XMR</div>
@@ -102,15 +100,13 @@ class ExchangeContentView extends ListView {
                 `;
             }         
             //console.log('wallet html ran options '+i)
-                        // get oldest wallet based on how wallets are inserted into wallets as a zero element, changing indexes backwards
+            // get oldest wallet based on how wallets are inserted into wallets as a zero element, changing indexes backwards
             let size = context.wallets.length;
             size = size - 1;
-            console.log(size);
-            let defaultOffset = context.wallets.length - 1;
+            let defaultOffset = 0;
             let defaultWallet = context.wallets[defaultOffset];
-            
             let walletSelectOptions = `
-            <div data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletBalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
+            <div data-walletoffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletbalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
                     <div id="selected-wallet-icon" class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${defaultWallet.swatch.substr(1)}@3x.png')"></div>
                     <div id="selected-wallet-label" class="walletName">${defaultWallet.walletLabel}</div>
                     <div id="selected-wallet-balance" class="description-label">${self.Balance_FormattedString(defaultWallet)} XMR</div>
@@ -123,34 +119,42 @@ class ExchangeContentView extends ListView {
             `;
             walletDiv.innerHTML = walletSelectOptions;
         }
+
+    }
+    _refresh_sending_fee() {
+        const self = this;
+        let tx_fee = document.getElementById('tx-fee');
+        if (tx_fee !== null) {
+            tx_fee.dataset.txFee = self._new_estimatedNetworkFee_displayString();
+            tx_fee.innerHTML = `<span class="field_title form-field-title" style="margin-top: 8px; color: rgb(158, 156, 158); display: inline-block;">+ ${self._new_estimatedNetworkFee_displayString()} XMR EST. FEE</span>`;
+        }
     }
 
     _setup_views() {
-        // to do -- clean up interval timers decently.
+        // to do -- clean up interval timers a bit.
         const self = this
         super._setup_views()
         self._setup_emptyStateContainerView()
-        console.log(this);
+        
         let interval = setInterval(function() {
-            console.log('wallets from ECV');
-            console.log(self);
             if (self.context.wallets !== undefined) {
                 self._setup_walletExchangeOptions(self.context);
             }
-        }, 50000);
-        self.keepExchangeOptionsUpdated = interval;
+            self._refresh_sending_fee();
+        }, 5000);
+        self.keepExchangeOptionsUpdated = interval; // we use a named interval attached to the view so that we can stop it if we ever want to;
     }
     
     _setup_emptyStateContainerView() {
+        // TODO: wrap this in a promise so that we can execute logic after this
         const self = this;
+        // We run this on an interval because of the way DOM elements are instantiated. Our Exchange DOM only renders once a user clicks the XMR->BTC menu tab
         let initialExchangeInit = setInterval(() => {
-            console.log('update wallet info');
             let walletDiv = document.getElementById('wallet-selector');
             if (walletDiv !== null) {
                 clearInterval( self.initialExchangeInit ); 
                 self._setup_walletExchangeOptions(self.context);
             }
-            console.log(self.context);
         }, 200);
 
         self.initialExchangeInit = initialExchangeInit;
@@ -174,83 +178,66 @@ class ExchangeContentView extends ListView {
             //contentContainerLayer.appendChild(layer);
         }
 
-        { 
-            //const layer = document.createElement("div");
-            //_setup_form_walletSelectLayer
-
-            
-        }
-        // {
-		// 	// const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
-		// 	// {
-		// 	// 	const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
-		// 	// 	const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-		// 	// 	const layer = view.layer
-		// 	// 	labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
-		// 	// }
-		// 	// div.appendChild(labelLayer)
-		// 	// //
-		// 	const view = new WalletsSelectView({}, self.context)
-        //     view.didUpdateSelection_fn = function(){};
-        //     console.log(view);
-		// 	{
-		// 		//self.configure_amountInputTextGivenMaxToggledState()
-		// 	}
-		// 	self.walletSelectView = view
-        //     const valueLayer = view.layer;
-        //     console.log(valueLayer);
-        //     contentContainerLayer.appendChild(valueLayer)
-        //     //view.layer.appendChild(valueLayer)
-
-        // }
-        // {
-        //     const layer = document.createElement("div")
-        //     layer.classList.add("emoji-label")
-        //     layer.innerHTML = emoji_web.NativeEmojiTextToImageBackedEmojiText_orUnlessDisabled_NativeEmojiText(self.context, "😬")
-        //     contentContainerLayer.appendChild(layer)
-        // }
         {
-            
             const layer = document.createElement("div")
             layer.classList.add("message-label")
             layer.classList.add("exchangeRate")
-            layer.innerHTML = "You can exchange XMR to Bitcoin directly from this page.";
+            layer.innerHTML = "You can exchange XMR to Bitcoin here, using XMR.to.";
             contentContainerLayer.appendChild(layer)
         }
         
-		{
-            const self = this
-		    const div = document.createElement('div');
-			const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("FROM", self.context)
-			{
-				const tooltipText = `Monero makes transactions<br/>with your "available outputs",<br/>so part of your balance will<br/>be briefly locked and then<br/>returned as change.`
-				const view = commonComponents_tooltips.New_TooltipSpawningButtonView(tooltipText, self.context)
-				const layer = view.layer
-				labelLayer.appendChild(layer) // we can append straight to labelLayer as we don't ever change its innerHTML
-            }
-            div.appendChild(labelLayer);
-            contentContainerLayer.appendChild(div);
-            
-			//
-			//const view = new WalletsSelectView({}, self.context)
-			// view.didUpdateSelection_fn = function()
-			// {
-			// 	//self.configure_amountInputTextGivenMaxToggledState()
-			// }
-			// self.walletSelectView = view
-			// const valueLayer = view.layer
-			// div.appendChild(valueLayer)
+        {
+            // Send Funds
+            const layer = document.createElement("div");
+            // we use ES6's spread operator (...buttonClasses) to invoke the addition of classes -- cleaner than a foreach
+            let buttonClasses = ['base-button', 'hoverable-cell', 'navigation-blue-button-enabled', 'action', 'right-add-button', 'exchange-button'];
+            layer.classList.add(...buttonClasses);  
+            layer.id = "exchange-xmr";
+            layer.innerText = "Exchange XMR";
+            layer.addEventListener('click', function() {
+                /* 
+                * We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon. 
+                * We pass them as the final argument to ExchangeUtils.sendFunds
+                * It performs the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
+                */
+                function validation_status_fn(str)
+                {
+
+                    let monerodUpdates = document.getElementById('monerod-updates')
+                    monerodUpdates.innerText = str;
+                }
+                /* 
+                * We perform the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
+                */
+                function handle_response_fn(err, mockedTransaction)
+                {
+                    let monerodUpdates = document.getElementById('monerod-updates');
+                    if (err) {
+                        let str = typeof err === 'string' ? err : err.message;
+                        monerodUpdates.innerText = str;
+                        return
+                    }
+                    str = "Sent successfully.";
+                    monerodUpdates.innerText = str;
+                }
+                let xmr_amount = document.getElementById('XMRcurrencyInput').value;
+                let xmr_send_address = document.getElementById('XMRtoAddress').value;
+                let xmr_amount_str = "" + xmr_amount.value;
+                
+                let sweep_wallet = false; // TODO: Add sweeping functionality
+                
+                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
+            });
+
+
+            contentContainerLayer.appendChild(layer);
         }
-        // {
-        //     const div = document.createElement("div");
-        //     div.classList.add("wallet-selector");
-        //     contentContainerLayer.appendChild(div);
-        // }
         {
             // let's make the xmr.to form in HTML for sanity's sake
             const layer = document.createElement("div");
             //layer.classList.add("xmr_input");
-            let html = fs.readFileSync(__dirname + '/Body.html', 'utf8');
+            let html = '    <div>';
+            html += fs.readFileSync(__dirname + '/Body.html', 'utf8');
             layer.innerHTML = html;
             contentContainerLayer.appendChild(layer);
         }
@@ -269,6 +256,9 @@ class ExchangeContentView extends ListView {
 
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
+
+
+
         // setInterval((context, options) => {
         //     console.log(options);
         //     console.log(self.context);
@@ -278,8 +268,7 @@ class ExchangeContentView extends ListView {
 
     Balance_JSBigInt(wallet)
     {
-        console.log("in balance");
-        console.log(wallet);
+        const self = this;
         var total_received = wallet.total_received
         var total_sent = wallet.total_sent
         if (typeof total_received === 'undefined') {
@@ -292,15 +281,12 @@ class ExchangeContentView extends ListView {
         if (balance_JSBigInt.compare(0) < 0) {
             return new JSBigInt(0)
         }
-        console.log(balance_JSBigInt);
         return balance_JSBigInt
     }
     Balance_FormattedString(wallet)
 	{ // provided for convenience mainly so consumers don't have to require monero_utils
-		let self = wallet;
-		let balance_JSBigInt = self.Balance_JSBigInt()
-        //
-        console.log('@@@' + monero_amount_format_utils.formatMoney(balance_JSBigInt));
+        let self = this;
+		let balance_JSBigInt = self.Balance_JSBigInt(wallet);
 		return monero_amount_format_utils.formatMoney(balance_JSBigInt) 
 	}
 	Balance_DoubleNumber(wallet)
@@ -340,7 +326,40 @@ class ExchangeContentView extends ListView {
 	{
 		let self = this
 		return parseFloat(self.LockedBalance_FormattedString()) // is this appropriate and safe?
+    }
+    
+	new_xmr_estFeeAmount() 
+	{
+		const self = this
+		const estimatedNetworkFee_JSBigInt = new JSBigInt(self.context.monero_utils.estimated_tx_network_fee(
+			null, // deprecated - will be removed soon
+			1,
+			"24658" // TODO: grab this from wallet via API request
+		))
+		const estimatedTotalFee_JSBigInt = estimatedNetworkFee_JSBigInt // no tx hosting service fee
+		//
+		return estimatedTotalFee_JSBigInt
 	}
+
+    _new_estimatedNetworkFee_displayString()
+	{
+		const self = this
+		const estimatedTotalFee_JSBigInt = self.new_xmr_estFeeAmount()
+		const estimatedTotalFee_str = monero_amount_format_utils.formatMoney(estimatedTotalFee_JSBigInt)
+		const estimatedTotalFee_moneroAmountDouble = parseFloat(estimatedTotalFee_str)
+		
+		// const estimatedTotalFee_moneroAmountDouble = 0.028
+		// Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
+		let displayCcySymbol = self.context.settingsController.displayCcySymbol
+		let finalizable_ccySymbol = displayCcySymbol
+		var finalizable_formattedAmountString = estimatedTotalFee_str;//`${estimatedTotalFee_moneroAmountDouble}`
+		let final_formattedAmountString = finalizable_formattedAmountString
+		let final_ccySymbol = "XMR";
+		let displayString = `${final_formattedAmountString}`
+		//
+		return displayString
+	}
+
 /**
  *                 let exchangeRate = document.getElementById('exchangeRate');
                 
@@ -369,31 +388,29 @@ class ExchangeContentView extends ListView {
             layer.classList.add('hoverable-cell'); 
             layer.classList.add('navigation-blue-button-enabled'); 
             layer.classList.add('action'); 
-
             if (typeof process !== 'undefined' && process.platform === "linux") {
                 layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
             } else {
                 layer.style.fontWeight = "300"
                 }
             }
-            view.layer.addEventListener(
-                "click",
-                function(e)
-                {
-                    e.preventDefault()
-                    //
-                    console.warn("Button pressed and then view change")
-    
-                    //
-                    // const view = new AddContactFromContactsTabView({}, self.context)
-                    // self.currentlyPresented_AddContactView = view
-                    // const navigationView = new StackAndModalNavigationView({}, self.context)
-                    // navigationView.SetStackViews([ view ])
-                    // self.navigationController.PresentView(navigationView, true)
-                    //
-                    return false
-                }
-            )
+            // view.layer.addEventListener(
+            //     "click",
+            //     function(e)
+            //     {
+            //         e.preventDefault()
+            //         //
+            //         let orderElement = document.getElementById("")    
+            //         //
+            //         // const view = new AddContactFromContactsTabView({}, self.context)
+            //         // self.currentlyPresented_AddContactView = view
+            //         // const navigationView = new StackAndModalNavigationView({}, self.context)
+            //         // navigationView.SetStackViews([ view ])
+            //         // self.navigationController.PresentView(navigationView, true)
+            //         //
+            //         return false
+            //     }
+            // )
             return view
         }
     }

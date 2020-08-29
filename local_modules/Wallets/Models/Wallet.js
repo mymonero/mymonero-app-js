@@ -1246,6 +1246,25 @@ class Wallet extends EventEmitter
 		fn // (err?, mockedTransaction?) -> Void
 	) {
 		const self = this
+		console.log('enteredAddressValue: ' + (enteredAddressValue)); // currency-ready wallet address but not an OpenAlias address (resolve before calling;
+		console.log('resolvedAddress: ' + (resolvedAddress));
+		console.log('manuallyEnteredPaymentID: ' + (manuallyEnteredPaymentID));
+		console.log('resolvedPaymentID: ' + (resolvedPaymentID));
+		console.log('hasPickedAContact: ' + (hasPickedAContact));
+		console.log('resolvedAddress_fieldIsVisible: ' + (resolvedAddress_fieldIsVisible));
+		console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + (manuallyEnteredPaymentID_fieldIsVisible));
+		console.log('resolvedPaymentID_fieldIsVisible: ' + (resolvedPaymentID_fieldIsVisible));
+		console.log('contact_payment_id: ' + (contact_payment_id));
+		console.log('cached_OAResolved_address: ' + (cached_OAResolved_address));
+		console.log('contact_hasOpenAliasAddress: ' + (contact_hasOpenAliasAddress));
+		console.log('contact_address: ' + (contact_address));
+		console.log('raw_amount_string: ' + (raw_amount_string));
+		console.log('isSweepTx: ' + (isSweepTx)); // when console.log('true: ' + (true)), amount will be ignore;
+		console.log('simple_priority: ' + (simple_priority));
+		console.log('preSuccess_nonTerminal_statusUpdate_fn: ' + (preSuccess_nonTerminal_statusUpdate_fn)), // (String) -> Voi;
+		console.log('canceled_fn: ' + (canceled_fn)); // () -> Voi;
+		// TODO: Remove this line once we can send
+		//self.isSendingFunds = false;
 		// state-lock the function
 		if (self.isSendingFunds === true) {
 			const errStr = "Currently already sending funds. Please try again when complete."
@@ -1254,7 +1273,8 @@ class Wallet extends EventEmitter
 			fn(err)
 			return
 		}
-		self.isSendingFunds = true
+		//self.isSendingFunds = true
+
 		//
 		// now that we've done that, we can ask the user idle controller to disable user idle until we're done with this - cause it's not something we want to have interrupted by the user idle controller tearing everything down!!
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
@@ -1360,6 +1380,14 @@ class Wallet extends EventEmitter
 			contact_hasOpenAliasAddress: contact_hasOpenAliasAddress, // may be undefined
 			contact_address: contact_address // may be undefined
 		};
+
+		console.log(args);
+		for (let [property, key] in args) {
+			console.log(key);
+			console.log(property);
+			console.log(`key: ${key}` + `typeof: ${typeof(property)}`);
+		}
+
 		args.willBeginSending_fn = function()
 		{
 			preSuccess_nonTerminal_statusUpdate_fn(statusUpdate_messageBase)
@@ -1418,6 +1446,7 @@ class Wallet extends EventEmitter
 				tx_key: params.tx_key,
 				target_address: params.target_address,
 			};
+			console.log(args);
 			fn(null, mockedTransaction, params.isXMRAddressIntegrated, params.integratedAddressPIDForDisplay)
 			//
 			// manually insert .. and subsequent fetches from the server will be 
@@ -1467,6 +1496,7 @@ class Wallet extends EventEmitter
 		{
 			self.context.hostedMoneroAPIClient.SubmitRawTx(req_params, cb)
 		}
+		console.log(args);
 		self.context.monero_utils.async__send_funds(args)
 	}
 	//
