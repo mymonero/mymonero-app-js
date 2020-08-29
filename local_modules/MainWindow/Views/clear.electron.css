@@ -665,12 +665,12 @@
 .emptyScreens {
     position: relative;
     display: table; /* for valign */
-    border: 1px solid #373537;
+    /* border: 1px solid #373537; -- this doesn't play well with mobile-width */
     border-radius: 5px;
 }
 
 .emptyScreens .content-container .message-label {
-    margin: 0 0 0 0;
+    margin: 0 0 7px 0;
     width: 100%;
     height: auto;
     line-height: 19px;
@@ -1229,7 +1229,7 @@ input#BTCcurrencyInput {
     padding: 0px 10px 0px 0px;
 }
 div#currency-table {
-    padding: 0 24px 0 0;
+    padding: 0;
 }
 #orderStatusPage {
     padding: 0px 10px;
@@ -1572,4 +1572,71 @@ div#currency-table {
 }
 #exchange-xmr.active {
     display: block;
+}
+.emptyScreens .exchangeScreen .textInput {
+    padding: 0px 8px 0px 7px;
+}
+
+
+@media screen and (max-width: 535px) {
+    .empty-page-panel {
+        margin: 19px auto;
+        word-break: break-word;
+    }
+    .empty-page-panel td {
+        display: block;
+        clear: both;
+        width: 100%;
+    }
+    .form-field-title {
+        max-width: 100%;
+        margin: 15px 0 8px 0;
+    }
+    #btc-address {
+        padding: 0px 13px 7px 6px;
+    }
+    #orderStatusPage {
+        padding: 0px 0px;
+    }
+    div#currency-table {
+        padding: 0;
+    }
+    #currencySelect {
+        right: 5px;
+        left: auto;
+    }
+    input#XMRcurrencyInput, input#BTCcurrencyInput {
+        width: calc(100% - 70px);
+        padding: 0px 0px;
+        text-indent: 148px;
+        position: relative;
+        right: 40px;
+        left: 0px;
+        padding: 0px 3px;
+        margin-right: 5px;
+        text-indent: 20px;
+    }
+
+    #exchangePage .currencyOutput {
+        width: calc(100% - 40px);
+        padding: 0px 0px;
+        text-indent: 148px;
+        position: relative;
+        right: 40px;
+        left: 0px;
+        padding: 5px 8px 0 0;
+        margin-right: 0px;
+        text-indent: 20px;
+        height: 23px;
+        top: 23px;
+    }
+
+    #exchangePage .currencySelect {
+        position: absolute;
+        right: 0px;
+        margin: 0px;
+        /* float: right; */
+        right: -20px;
+        left: auto;
+    }
 }
