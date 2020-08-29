@@ -211,12 +211,12 @@ class ExchangeContentView extends ListView {
                 */
                 function handle_response_fn(err, mockedTransaction)
                 {
+                    let monerodUpdates = document.getElementById('monerod-updates');
                     if (err) {
                         let str = typeof err === 'string' ? err : err.message;
                         monerodUpdates.innerText = str;
                         return
                     }
-                    let monerodUpdates = document.getElementById('monerod-updates')
                     str = "Sent successfully.";
                     monerodUpdates.innerText = str;
                 }
@@ -226,7 +226,7 @@ class ExchangeContentView extends ListView {
                 
                 let sweep_wallet = false; // TODO: Add sweeping functionality
                 
-                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn);
+                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
             });
 
 
