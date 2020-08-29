@@ -6,3 +6,4 @@ dist
 
 electron-builder.env
 certs.p12
+local_modules/mymonero_libapp_js
