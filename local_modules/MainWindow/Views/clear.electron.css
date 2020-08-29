@@ -1618,7 +1618,7 @@ div#currency-table {
     }
 
     #exchangePage .currencyOutput {
-        width: calc(100% - 40px);
+        width: calc(100% - 65px);
         padding: 0px 0px;
         text-indent: 148px;
         position: relative;
@@ -1627,8 +1627,8 @@ div#currency-table {
         padding: 5px 8px 0 0;
         margin-right: 0px;
         text-indent: 20px;
-        height: 23px;
-        top: 23px;
+        height: 24px;
+        top: -1px;    
     }
 
     #exchangePage .currencySelect {
@@ -1636,7 +1636,16 @@ div#currency-table {
         right: 0px;
         margin: 0px;
         /* float: right; */
-        right: -20px;
+        right: -1px;
         left: auto;
+    }
+    #exchangePage #state {
+        padding: 9px 5px 3px 6px;
+        width: calc(100% - 10px);
+        text-align: right;
+        margin-right: 5px;
+    }
+    #clock {
+        text-align: right;
     }
 }
