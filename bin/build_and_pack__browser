@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+bin/_build_browser_prod; 
+# node_modules/babel-minify/bin/minify.js browser_build/mymonero-app-bundle.js -o browser_build/mymonero-app-bundle.js

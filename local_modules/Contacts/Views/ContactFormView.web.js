@@ -68,10 +68,18 @@ class ContactFormView extends View
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
 		layer.style.overflowY = "auto"
-		layer.classList.add( "ClassNameForScrollingAncestorOfScrollToAbleElement")
+		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
+			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
+		)
+		// layer.style.webkitOverflowScrolling = "touch"
 		layer.style.overflowX = "hidden" // cause the Emoji picker likes to protrude
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		if (self.context.Cordova_isMobile === true || self.context.isMobile === true) {
+			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
+		}
+		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
 		// no need to support other browsers since this is not in the web wallet
@@ -154,13 +162,17 @@ class ContactFormView extends View
 	{
 		return false // do show payment id note layer by default
 	}
-
+	_overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
+	{
+		return undefined
+	}
 	_setup_field_fullname()
 	{
 		const self = this
 		const div = commonComponents_forms.New_fieldContainerLayer(self.context)
 		div.style.padding = "0 0 0 24px"
-		div.style.width = `calc(100% - 108px - 24px + 2px)` // -24px for right side margin
+		const emojiComponentWidth = 60 + 24 + 24
+		div.style.width = `calc(100% - ${emojiComponentWidth}px - 24px + 2px)` // -24px for right side margin
 		div.style.float = "left"
 		//
 		const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer("NAME", self.context)
@@ -340,7 +352,8 @@ class ContactFormView extends View
 	Navigation_New_LeftBarButtonView()
 	{
 		const self = this
-		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
+		const title = self._overridable_initial_leftBarButtonTitleString_orUndefinedForDefaultCancel()
+		const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context, title)
 		self.leftBarButtonView = view
 		const layer = view.layer
 		{ // observe
@@ -417,7 +430,9 @@ class ContactFormView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		self.layer.style.paddingTop = `41px`
+		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
+			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+		}
 	}
 }
 module.exports = ContactFormView

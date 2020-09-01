@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-
+//
 const images_filenames =
 [
 	"addButtonIcon_10@3x.png",
@@ -48,9 +48,10 @@ const images_filenames =
 const cached_preloadedImages = []
 function PreLoadImages(context)
 {
+	const assetsPath = context.crossPlatform_appBundledIndexRelativeAssetsRootPath
 	for (let i = 0; i < images_filenames.length; i++) {
 		const filename = images_filenames[i]
-		const imageURL = `../../../assets/img/${filename}`
+		const imageURL = `${assetsPath}MMAppUICommonComponents/Resources/${filename}`
 		const image = new Image()
 		image.src = imageURL
 		cached_preloadedImages.push(image)
