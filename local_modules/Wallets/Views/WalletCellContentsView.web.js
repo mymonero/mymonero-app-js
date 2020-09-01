@@ -27,11 +27,15 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-
+//
 const View = require('../../Views/View.web')
+const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
 const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
+//
 let Currencies = require('../../CcyConversionRates/Currencies')
-
+let monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
+//
 class WalletCellContentsView extends View
 {
 	constructor(options, context)
@@ -55,8 +59,8 @@ class WalletCellContentsView extends View
 		const self = this
 		if (self.wantsHoverable) {
 			// hover effects/classes
-			self.layer.classList.add('hoverable-cell')
-			self.layer.classList.add('utility')
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
 		{ 
 			const layer = self.layer
@@ -136,13 +140,10 @@ class WalletCellContentsView extends View
 		layer.style.whiteSpace = "nowrap"
 		layer.style.overflow = "hidden"
 		layer.style.textOverflow = "ellipsis"
-		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-		layer.style.webkitFontSmoothing = "subpixel-antialiased"
-		layer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
-		layer.style.fontWeight = "400" // semibold desired
-		layer.style.letterSpacing = "0.5px"
+		self.context.themeController.StyleLayer_FontAsMiddlingSemiboldSansSerif(layer)
 		layer.style.color = "#fcfbfc"
 		layer.style.cursor = "default"
+		// layer.style.border = "1px solid red"
 		self.titleLayer = layer
 		self.layer.appendChild(layer)
 	}
@@ -156,7 +157,7 @@ class WalletCellContentsView extends View
 		const paddingLeft = self._lookup_labelsPaddingLeft()
 		layer.style.padding = "0px 38px 4px "+paddingLeft+"px"
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontWeight = "100"
 		layer.style.webkitFontSmoothing = "subpixel-antialiased"
 		layer.style.maxHeight = "32px"

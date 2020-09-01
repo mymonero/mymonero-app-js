@@ -34,6 +34,7 @@ const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web'
 const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 //
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 //
@@ -44,6 +45,7 @@ const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView
 //
 const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
+const monero_paymentID_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_paymentID_utils')
 const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
 const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
 //
@@ -55,7 +57,6 @@ let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_uti
 //
 let rateServiceDomainText = "cryptocompare.com" 
 //
-
 class SendFundsView extends View
 {
 	constructor(options, context)
@@ -79,7 +80,14 @@ class SendFundsView extends View
 			self.set_isSubmittable_needsUpdate() // start off disabled
 		}, 10) // this is really lame but to fix it requires a good method to be notified of the moment self gets put into the nav bar…… I'll also place in VDA for good measure
 	}
-
+	_isUsingRelativeNotFixedActionButtonsContainer()
+	{
+		const self = this
+		if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+			return false
+		}
+		return true
+	}
 	setup_views()
 	{
 		const self = this
@@ -93,17 +101,33 @@ class SendFundsView extends View
 		self._setup_validationMessageLayer()
 		self._setup_form_containerLayer()
 		{ // action buttons toolbar
-			const view = new View({}, self.context)
-			const layer = view.layer
-			layer.style.position = "fixed"
-			layer.style.top = `calc(100% - 32px - 8px)`
-			layer.style.width = `calc(100% - 95px - 16px)`
-			layer.style.height = 32 + "px"
-			layer.style.zIndex = 1000
-			layer.style.paddingLeft = "16px"
+			const margin_h = 16
+			var view;
+			if (self._isUsingRelativeNotFixedActionButtonsContainer() == false) {
+				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+				const margin_fromWindowRight = margin_h
+				view = commonComponents_actionButtons.New_ActionButtonsContainerView(
+					margin_fromWindowLeft, 
+					margin_fromWindowRight, 
+					self.context
+				)
+				view.layer.style.paddingLeft = "16px"
+			} else {
+				view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+					margin_h, 
+					margin_h, 
+					15,
+					self.context
+				)
+			}
 			self.actionButtonsContainerView = view
 			{
-				self._setup_actionButton_chooseFile()
+				if (self.context.Cordova_isMobile === true /* but not context.isMobile */) { // til we have Electron support
+					self._setup_actionButton_useCamera()
+				}
+				if (self.context.isLiteApp != true) {
+					self._setup_actionButton_chooseFile()
+				}
 			}
 			self.addSubview(view)
 		}
@@ -118,15 +142,34 @@ class SendFundsView extends View
 		layer.style.MozUserSelect = "none" // disable selection here but enable selectively
 		layer.style.msUserSelect = "none" // disable selection here but enable selectively
 		layer.style.userSelect = "none" // disable selection here but enable selectively
+		//
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%"
 		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		if (self.context.Cordova_isMobile === true) {
+			layer.style.paddingBottom = "300px" // very hacky, but keyboard UX takes dedication to get right, and would like to save that effort for native app
+			// layer.style.webkitOverflowScrolling = "touch"
+			// disabling this cause it conflicts with touchup/end of contacts picker
+			// layer.addEventListener("touchmove", function()
+			// { // blur currently text input field on user scroll
+			// 	const activeElement = document.activeElement
+			// 	if (activeElement) {
+			// 		activeElement.blur()
+			// 	}
+			// }, false)
+		}
 		layer.style.overflowY = "auto"
-		layer.classList.add("ClassNameForScrollingAncestorOfScrollToAbleElement")
+		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
+			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
+		)
+		// layer.style.webkitOverflowScrolling = "touch"
+		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
+		//
 		layer.style.color = "#c0c0c0" // temporary
+		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_validationMessageLayer()
@@ -143,7 +186,15 @@ class SendFundsView extends View
 	{
 		const self = this
 		const containerLayer = document.createElement("div")
-		containerLayer.style.paddingBottom = `50px`
+		var paddingBottom;
+		if (self._isUsingRelativeNotFixedActionButtonsContainer() == false) {
+			paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h 
+								+ commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin 
+								+ 10
+		} else {
+			paddingBottom = 0
+		}
+		containerLayer.style.paddingBottom = `${paddingBottom}px`
 		self.form_containerLayer = containerLayer
 		{
 			self._setup_form_walletSelectLayer()
@@ -510,19 +561,18 @@ class SendFundsView extends View
 				selectLayer.style.MozAppearance = "none"
 				selectLayer.style.msAppearance = "none"
 				selectLayer.style.appearance = "none"
-				selectLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-				selectLayer.style.webkitFontSmoothing = "subpixel-antialiased"
-				selectLayer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
-				selectLayer.style.letterSpacing = "0.5px"
-				selectLayer.style.fontWeight = "400"
+				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
+					selectLayer,
+					true // bright content, dark bg
+				)
 				if (typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 					selectLayer.style.textIndent = "4px"
 				} else {
 					selectLayer.style.textIndent = "11px"
 				}
 				{ // hover effects/classes
-					selectLayer.classList.add('hoverable-cell')
-					selectLayer.classList.add('utility')
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 				}
 				//
 				// observation
@@ -549,7 +599,7 @@ class SendFundsView extends View
 				layer.style.right = "13px"
 				layer.style.top = top+"px"
 				layer.style.zIndex = "100" // above options_containerView 
-				layer.style.backgroundImage = "url(../../../assets/img/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
 				layer.style.backgroundRepeat = "no-repeat"
 				layer.style.backgroundPosition = "center"
 				layer.style.backgroundSize = w+"px "+ h+"px"
@@ -565,7 +615,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Use Camera", 
-			"../../../assets/img/actionButton_iconImage__useCamera@3x.png",
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
 			false,
 			function(layer, e)
 			{
@@ -584,7 +634,7 @@ class SendFundsView extends View
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
-			"../../../assets/img/actionButton_iconImage__chooseFile@3x.png",
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
 			true,
 			function(layer, e)
 			{
@@ -641,7 +691,7 @@ class SendFundsView extends View
 			div.style.width = "100%" // cause centering in css is……
 			div.style.height = side+"px"
 			div.style.backgroundSize = side+"px " + side+"px"
-			div.style.backgroundImage = "url(../../../assets/img/qrDropzoneIcon@3x.png)"
+			div.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/qrDropzoneIcon@3x.png)"
 			div.style.backgroundPosition = "center"
 			div.style.backgroundRepeat = "no-repeat"
 			div.style.backgroundSize = "48px 48px"
@@ -656,7 +706,7 @@ class SendFundsView extends View
 			div.style.marginTop = "24px"
 			//
 			div.style.fontSize = "13px"
-			div.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			div.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 			div.style.color = "#9E9C9E"
 			div.style.fontWeight = "300"
 			div.style.webkitFontSmoothing = "subpixel-antialiased"
@@ -1320,6 +1370,9 @@ class SendFundsView extends View
 			self.set_isSubmittable_needsUpdate() // since we've updated form enabled
 			//
 			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 			//
 			self.walletSelectView.SetEnabled(true)
 			//
@@ -1342,6 +1395,9 @@ class SendFundsView extends View
 			self.isFormDisabled = true
 			self.set_isSubmittable_needsUpdate() // since we've updated form enabled
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.keepAwake() // disable screen dim/off
+			}
 			//
 			if (self.useCamera_buttonView) {
 				self.useCamera_buttonView.Disable()
@@ -1513,31 +1569,6 @@ class SendFundsView extends View
 		//
 		function __proceedTo_generateSendTransaction()
 		{
-
-// Karl added this to try figure out what values are set
-			_reEnableFormElements();
-			console.log(wallet);
-			console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
-			console.log('resolvedAddress: ' + resolvedAddress);
-			console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
-			console.log('resolvedPaymentID: ' + resolvedPaymentID);
-			console.log('hasPickedAContact: ' + hasPickedAContact);
-			console.log('resolvedAddress_fieldIsVisible: ' + resolvedAddress_fieldIsVisible);
-			console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + manuallyEnteredPaymentID_fieldIsVisible);
-			console.log('resolvedPaymentID_fieldIsVisible: ' + resolvedPaymentID_fieldIsVisible);
-			console.log('contact_payment_id: ' + (hasPickedAContact ? self.pickedContact.payment_id : undefined));
-			console.log('cached_OAResolved_address: ' + (hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined));
-			console.log('contact_hasOpenAliasAddress: ' + (hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined));
-			console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
-			console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
-			console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
-// end of Karl's console logging
-		
-			let contact_payment_id = hasPickedAContact ? self.pickedContact.payment_id : undefined;
-			let cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined;
-			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
-			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
-
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
@@ -1547,72 +1578,66 @@ class SendFundsView extends View
 				resolvedAddress_fieldIsVisible,
 				manuallyEnteredPaymentID_fieldIsVisible,
 				resolvedPaymentID_fieldIsVisible,
-				contact_payment_id,
-				cached_OAResolved_address,
-				contact_hasOpenAliasAddress,
-				contact_address,
+				//
+				hasPickedAContact ? self.pickedContact.payment_id : undefined,
+				hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined,
+				hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined,
+				hasPickedAContact ? self.pickedContact.address : undefined,
+				//
 				"" + final_XMR_amount_Number,
 				sweeping, // when true, amount will be ignored
 				self._selected_simplePriority(),
-				preSuccess_nonTerminal_statusUpdate_fn,
-				cancelled_fn,
-				handleResponse_fn,
-			);
-		}
-
-		// What this is, is essentially a hack to provide feedback on the transaction based on messages returned from wallet.SendFunds
-		function preSuccess_nonTerminal_statusUpdate_fn(str)
-		{
-			self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
-		}
-
-		// This is for when a send is cancelled. This gets invoked on non-recoverable error
-		function cancelled_fn() 
-		{ // canceled_fn
-			self._dismissValidationMessageLayer()
-			_reEnableFormElements()
-		}
-
-		// mocked transaction gets set in wallet.js
-		function handleResponse_fn(err, mockedTransaction) 
-		{
-			console.log("err", err)
-			if (err) {
-				_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
-				return
-			}
-			{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
-				const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
-				self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
-			}
-			{
-				const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-				self.__didSendWithPickedContact(
-					this_pickedContact, 
-					enteredAddressValue_exists ? enteredAddressValue : null, 
-					resolvedAddress_exists ? resolvedAddress : null,
-					mockedTransaction
-				);
-			}
-			{ // finally, clean up form
-				setTimeout(
-					function()
-					{
-						self._clearForm()
-						// and lastly, importantly, re-enable everything
-						_reEnableFormElements()
-					},
-					500 // after the navigation transition just above has taken place
-				)
-			}
-			{ // and fire off a request to have the wallet get the latest (real) tx records
-				setTimeout(
-					function()
-					{
-						wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+				//
+				function(str) // preSuccess_nonTerminal_statusUpdate_fn
+				{
+					self.validationMessageLayer.SetValidationError(str, true/*wantsXButtonHidden*/)
+				},
+				function()
+				{ // canceled_fn
+					self._dismissValidationMessageLayer()
+					_reEnableFormElements()
+				},
+				function(err, mockedTransaction)
+				{
+					console.log("err", err)
+					if (err) {
+						_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
+						return
 					}
-				)
-			}
+					{ // now present a mocked transaction details view, and see if we need to present an "Add Contact From Sent" screen based on whether they sent w/o using a contact
+						const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
+						self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
+					}
+					{
+						const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
+						self.__didSendWithPickedContact(
+							this_pickedContact, 
+							enteredAddressValue_exists ? enteredAddressValue : null, 
+							resolvedAddress_exists ? resolvedAddress : null,
+							mockedTransaction
+						);
+					}
+					{ // finally, clean up form
+						setTimeout(
+							function()
+							{
+								self._clearForm()
+								// and lastly, importantly, re-enable everything
+								_reEnableFormElements()
+							},
+							500 // after the navigation transition just above has taken place
+						)
+					}
+					{ // and fire off a request to have the wallet get the latest (real) tx records
+						setTimeout(
+							function()
+							{
+								wallet.hostPollingController._fetch_transactionHistory() // TODO: maybe fix up the API for this
+							}
+						)
+					}
+				}
+			)
 		}
 	}
 	//
@@ -1669,10 +1694,10 @@ class SendFundsView extends View
 		super.viewWillAppear()
 		{
 			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `41px`
+				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
 				//
-				self.qrCodeInputs_contentView.layer.style.height = `calc(100% - ${15 * 2 + 41 + 2}px)` // +2 for border
-				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + 41}px`
+				self.qrCodeInputs_contentView.layer.style.height = `calc(100% - ${15 * 2 + self.navigationController.NavigationBarHeight() + 2}px)` // +2 for border
+				self.qrCodeInputs_contentView.layer.style.marginTop = `${15 + self.navigationController.NavigationBarHeight()}px`
 			}
 		}
 		self.set_isSubmittable_needsUpdate() // start off disabled
@@ -2236,7 +2261,35 @@ class SendFundsView extends View
 		if (absoluteFilePath != null && absoluteFilePath != "" && typeof absoluteFilePath !== 'undefined') {
 			self._shared_didPickQRCodeAtPath(absoluteFilePath)
 		} else if (file_size) { // going to assume we're in a browser
+			if (self.context.isLiteApp != true) {
 				throw "Expected this to be Lite app aka browser"
+			}
+			if (!/^image\//.test(file.type)) {
+				self.validationMessageLayer.SetValidationError("Please select a QR code image file.")
+				return
+			}
+			var img = document.createElement("img")
+			img.file = file
+			img.style.display = "none"
+			document.body.appendChild(img)
+			{
+				var reader = new FileReader()
+				reader.onload = (function(anImg)
+				{ 
+					const fn = function(e)
+					{ 
+						const loadedBase64Content = e.target.result
+						if (loadedBase64Content.indexOf("data:image/") != 0) {
+							self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
+							return
+						}
+						self._shared_didPickQRCodeWithImageSrcValue(loadedBase64Content)
+					}
+					return fn
+				})(img)
+				reader.readAsDataURL(file)
+			}
+			document.body.removeChild(img)
 		} else {
 			self.validationMessageLayer.SetValidationError("Couldn't get QR code content from that file.")
 			return // nothing picked / canceled

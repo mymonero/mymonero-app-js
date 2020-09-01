@@ -27,8 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-
-const View = require('../../Views/View.web')
+//
 const ContactFormView = require('./ContactFormView.web')
 const monero_paymentID_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_paymentID_utils')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
@@ -71,27 +70,49 @@ class AddContactView extends ContactFormView
 	_setup_form_qrPicking_actionButtons()
 	{
 		const self = this
-		const view = new View({}, self.context)
-		const layer = view.layer
-		layer.style.position = "relative"
-		layer.style.width = `calc(100% - 24px - 24px)`
-		layer.style.marginLeft = `24px`
-		layer.style.marginTop = `15px`
-		layer.style.height = 32 + 8 + "px"
+		const margin_h = 24
+		var view = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+			margin_h, 
+			margin_h, 
+			15,
+			self.context
+		)
 		self.actionButtonsContainerView = view
 		{
+			if (self.context.Cordova_isMobile === true /* but not context.isMobile */) { // til we have Electron support
+				self._setup_actionButton_useCamera()
+			}
 			self._setup_actionButton_chooseFile()
 		}
 		self.form_containerLayer.appendChild(view.layer)
 	}
-
+	_setup_actionButton_useCamera()
+	{
+		const self = this
+		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
+			"Use Camera", 
+			// borrowing this asset til these are factored
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__useCamera@3x.png", 
+			false,
+			function(layer, e)
+			{
+				self.__didSelect_actionButton_useCamera()
+			},
+			self.context,
+			9, // px from top of btn - due to shorter icon
+			undefined,
+			"14px 14px"
+		)
+		self.useCamera_buttonView = buttonView
+		self.actionButtonsContainerView.addSubview(buttonView)
+	}
 	_setup_actionButton_chooseFile()
 	{
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Choose File", 
 			// borrowing this asset til these are factored
-			"../../../assets/img/actionButton_iconImage__chooseFile@3x.png",
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SendFundsTab/Resources/actionButton_iconImage__chooseFile@3x.png", 
 			true,
 			function(layer, e)
 			{
@@ -426,6 +447,29 @@ class AddContactView extends ContactFormView
 					return // nothing picked / canceled
 				}
 				self._shared_didPickQRCodeAtPath(absoluteFilePath)
+			}
+		)
+	}
+	__didSelect_actionButton_useCamera()
+	{
+		const self = this
+		// Cordova_disallowLockDownOnAppPause is handled within qrScanningUI
+		self.context.qrScanningUI.PresentUIToScanOneQRCodeString(
+			function(err, possibleUriString)
+			{
+				if (err) {
+					self.validationMessageLayer.SetValidationError(""+err)
+					return
+				}
+				if (possibleUriString == null) { // err and possibleUriString are null - treat as a cancellation
+					self.validationMessageLayer.ClearAndHideMessage() // clear to resolve ambiguity in case existing error is displaying
+					return
+				}
+				if (!possibleUriString) { // if not explicitly null but "" or undefined…
+					self.validationMessageLayer.SetValidationError("No scanned QR code content found.")
+					return
+				}
+				self._shared_didPickPossibleRequestURIStringForAutofill(possibleUriString)
 			}
 		)
 	}

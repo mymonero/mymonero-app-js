@@ -53,7 +53,12 @@ class StackNavigationView extends View
 		}
 		{ // self.layer
 			const layer = self.layer
-			layer.classList.add('stacked-navigation-panel')
+			layer.style.position = "relative"
+			layer.style.left = "0"
+			layer.style.top = "0"
+			layer.style.width = "100%"
+			layer.style.height = "100%"
+			layer.style.overflow = "hidden" // because we don't want modals presented in self to create a scroll bar - bad thangs happen
 		}
 		{ // navigationBarView
 			const NavigationBarView = require('./NavigationBarView.web')
@@ -64,7 +69,7 @@ class StackNavigationView extends View
 			self.navigationBarView = view
 			{
 				view.on(
-					"EventName_backButtonTapped",
+					view.EventName_backButtonTapped(),
 					function()
 					{
 						self.PopView(true) // animated
@@ -76,7 +81,13 @@ class StackNavigationView extends View
 			const view = new View({}, self.context)
 			{
 				const layer = view.layer
-				layer.classList.add('stacked-content-view')
+				layer.style.zIndex = "1"
+				layer.style.position = "absolute"
+				layer.style.left = "0"
+				layer.style.top = "0"
+				layer.style.width = "100%"
+				layer.style.height = "100%"
+				layer.style.overflow = "hidden" // we're going to say subviews are not allowed to hijack scroll - if they want to, they have to create their own wrapper - or else transitions cause scroll bar to appear
 			}
 			self.addSubview(view)
 			self.stackViewStageView = view
@@ -94,6 +105,17 @@ class StackNavigationView extends View
 		self.stackViews = null // TODO: iterate on them and call TearDown?
 		self.topStackView = null
 	}
+	//
+	//
+	// Runtime - Accessors - Public - UI Metrics
+	//
+	NavigationBarHeight()
+	{
+		const self = this
+		//
+		return self.navigationBarView.NavigationBarHeight()
+	}
+	//
 	//
 	// Runtime - Accessors - Internal - UI & UI metrics - Shared
 	//

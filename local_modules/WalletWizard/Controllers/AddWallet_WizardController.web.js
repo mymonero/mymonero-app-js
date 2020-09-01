@@ -77,12 +77,21 @@ class AddWallet_WizardController
 			self.initial_wizardTaskModeName = null
 		}
 		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName = {}
-		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_CreateWallet =
-		{
-			"0": "MetaInfo",
-			"1": "Instructions",
-			"2": "InformOfMnemonic",
-			"3": "ConfirmMnemonic"
+		if (self.context.isLiteApp != true) {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_CreateWallet = 
+			{
+				"0": "MetaInfo",
+				"1": "Instructions",
+				"2": "InformOfMnemonic",
+				"3": "ConfirmMnemonic"
+			}
+		} else {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_CreateWallet = 
+			{
+				"0": "Instructions",
+				"1": "InformOfMnemonic",
+				"2": "ConfirmMnemonic"
+			}
 		}
 		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.FirstTime_UseExisting =
 		{
@@ -92,15 +101,24 @@ class AddWallet_WizardController
 		{
 			"0": "Landing", // only one screen before we patch to…
 		}
-		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_CreateWallet =
-		{
-			"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
-			"1": "MetaInfo",
-			"2": "Instructions",
-			"3": "InformOfMnemonic",
-			"4": "ConfirmMnemonic"
+		if (self.context.isLiteApp != true) {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_CreateWallet =
+			{
+				"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+				"1": "MetaInfo",
+				"2": "Instructions",
+				"3": "InformOfMnemonic",
+				"4": "ConfirmMnemonic"
+			}
+		} else {
+			self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_CreateWallet =
+			{
+				"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
+				"1": "Instructions",
+				"2": "InformOfMnemonic",
+				"3": "ConfirmMnemonic"
+			}
 		}
-
 		self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName.AfterPick_UseExisting =
 		{
 			"0": "Landing", // provided so we can still have idx at 1 for screen after Landing after patch
