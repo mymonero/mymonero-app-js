@@ -72,13 +72,10 @@ class ContactsListView extends ListView
 		const view = new View({}, self.context)
 		self.emptyStateContainerView = view
 		const layer = view.layer
-		const margin_side = 16
-		const marginTop = 56 - 41 // TODO: do this in VDA and query actual nav bar height
-		const marginBottom = 14
-		layer.style.marginTop = `${marginTop}px`
-		layer.style.marginLeft = margin_side + "px"
-		layer.style.width = `calc(100% - ${2 * margin_side}px)`
-		layer.style.height = `calc(100% - ${marginTop + marginBottom}px)`
+		layer.style.marginTop = `15px`
+		layer.style.marginLeft = "16px"
+		layer.style.width = `calc(100% - 32px)`
+		layer.style.height = `calc(100% - 29px)`
 		{
 			const emptyStateMessageContainerView = commonComponents_emptyScreens.New_EmptyStateMessageContainerView(
 				"😬", 
@@ -181,11 +178,7 @@ class ContactsListView extends ListView
 			} else {
 				layer.style.margin = "16px"
 				layer.style.background = "#383638"
-				if (self.context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
-					layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
-				} else {
-					layer.style.boxShadow = "inset 0 0.5px 0 0 #494749"
-				}
+				layer.style.boxShadow = "0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 #494749"
 				layer.style.borderRadius = "5px"
 				layer.style.boxSizing = "border-box"
 				layer.style.overflow = "hidden" // to cut off hover style at borders

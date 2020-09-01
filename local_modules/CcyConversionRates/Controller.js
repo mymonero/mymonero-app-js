@@ -27,10 +27,10 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 "use strict"
-//
+
 const EventEmitter = require('events')
 const Currencies = require('./Currencies')
-//
+
 class Controller extends EventEmitter
 {
 	//

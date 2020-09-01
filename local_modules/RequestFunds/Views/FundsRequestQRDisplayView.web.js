@@ -75,7 +75,6 @@ class FundsRequestQRDisplayView extends View
 		//
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		//
 		layer.style.position = "relative"
 		layer.style.textAlign = "center"
 		layer.style.boxSizing = "border-box"
@@ -83,11 +82,7 @@ class FundsRequestQRDisplayView extends View
 		layer.style.height = "100%"
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
-		layer.classList.add( // so that we get autoscroll to form field inputs on mobile platforms
-			commonComponents_forms.ClassNameForScrollingAncestorOfScrollToAbleElement()
-		)
-		// layer.style.webkitOverflowScrolling = "touch"
-		//
+		layer.classList.add("ClassNameForScrollingAncestorOfScrollToAbleElement")
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
@@ -107,7 +102,7 @@ class FundsRequestQRDisplayView extends View
 		layer.style.MozUserSelect = "all"
 		layer.style.msUserSelect = "all"
 		layer.style.userSelect = "all"
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		var innerHTML = ""
 		{
 			let payment_id = self.initializing__fundsRequest.payment_id
@@ -248,9 +243,7 @@ class FundsRequestQRDisplayView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-		}
+		self.layer.style.paddingTop = `41px`
 	}
 }
 module.exports = FundsRequestQRDisplayView

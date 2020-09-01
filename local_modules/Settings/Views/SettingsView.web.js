@@ -36,7 +36,6 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_switchToggles = require('../../MMAppUICommonComponents/switchToggles.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_ccySelect = require('../../MMAppUICommonComponents/ccySelect.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 //
 const config__MyMonero = require('../../HostedMoneroAPIClient/config__MyMonero')
@@ -59,9 +58,7 @@ class SettingsView extends View
 	setup_views()
 	{
 		const self = this
-		{ // metrics / caches
-			self.margin_h = 0
-		}
+
 		self._setup_self_layer()
 		self._setup_form_containerLayer()
 		// self.DEBUG_BorderChildLayers()
@@ -72,19 +69,14 @@ class SettingsView extends View
 		//
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		//
 		layer.style.position = "relative"
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		layer.style.padding = `0 ${self.margin_h}px 0px ${self.margin_h}px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
+		layer.style.padding = `0 0px 0px 0px` // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
-		// layer.style.webkitOverflowScrolling = "touch"
-		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	_setup_form_containerLayer()
@@ -93,25 +85,14 @@ class SettingsView extends View
 		const containerLayer = document.createElement("div")
 		self.form_containerLayer = containerLayer
 		{
-			if (self.context.Settings_shouldDisplayAboutAppButton === true) {
-				self._setup_aboutAppButton()
-			}
-			if (self.context.isLiteApp != true) {
-				self._setup_form_field_changePasswordButton()
-			}
+			self._setup_form_field_changePasswordButton()
 			self._setup_form_field_appTimeoutSlider()
-			if (self.context.isLiteApp != true) {
-				self._setup_form_field_authentication() // no password protecting Lite app
-			}
+			self._setup_form_field_authentication() // no password protecting Lite app
 			self._setup_form_field_displayCcy()
-			if (self.context.isLiteApp != true) {
-				self._setup_form_field_serverURL()
-			}
-			if (self.context.isLiteApp != true) {
-				const isLinux = typeof process.platform !== 'undefined' && process.platform && /linux/.test(process.platform)
-				if (isLinux != true) { // because there is no software update support under linux (yet) .. TODO: possibly just encode this under a self.context.appHasSoftwareUpdateSupport so we can switch it in one place
-					self._setup_form_field_appUpdates()
-				}
+			self._setup_form_field_serverURL()
+			const isLinux = typeof process.platform !== 'undefined' && process.platform && /linux/.test(process.platform)
+			if (isLinux != true) { // because there is no software update support under linux (yet) .. TODO: possibly just encode this under a self.context.appHasSoftwareUpdateSupport so we can switch it in one place
+				self._setup_form_field_appUpdates()
 			}
 			self._setup_deleteEverythingButton()
 			//
@@ -119,30 +100,7 @@ class SettingsView extends View
 		}
 		self.layer.appendChild(containerLayer)
 	}
-	_setup_aboutAppButton()
-	{
-		const self = this
-		const div = document.createElement("div")
-		div.style.padding = "12px 0 12px 33px"
-		const buttonView = commonComponents_tables.New_clickableLinkButtonView(
-			"ABOUT MYMONERO",
-			self.context,
-			function()
-			{
-				const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
-				const ModalStandaloneAboutView = require('../../AboutWindow/Views/ModalStandaloneAboutView.web')
-				const options = {}
-				const view = new ModalStandaloneAboutView(options, self.context)
-				self.current_ModalStandaloneAboutView = view
-				const navigationView = new StackAndModalNavigationView({}, self.context)
-				navigationView.SetStackViews([ view ])
-				self.navigationController.PresentView(navigationView, true)
-			}
-		)
-		buttonView.layer.style.margin = "0"
-		div.appendChild(buttonView.layer)
-		self.form_containerLayer.appendChild(div)
-	}
+
 	_setup_form_field_changePasswordButton()
 	{
 		const self = this
@@ -212,9 +170,8 @@ class SettingsView extends View
 					)
 				}
 			}, self.context)
-			const margin_h = 5
-			view.layer.style.margin = `0 ${margin_h}px`
-			view.layer.style.width = `calc(100% - ${2 * margin_h}px)`
+			view.layer.style.margin = `0 5px`
+			view.layer.style.width = `calc(100% - 10px)`
 			self.appTimeoutRangeInputView = view // NOTE: This must be torn down manually; see TearDown()
 			div.appendChild(view.layer)
 			//
@@ -473,19 +430,21 @@ class SettingsView extends View
 				selectLayer.style.MozAppearance = "none"
 				selectLayer.style.msAppearance = "none"
 				selectLayer.style.appearance = "none"
-				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
-					selectLayer,
-					true // bright content, dark bg
-				)
+				selectLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+				selectLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+				selectLayer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
+				selectLayer.style.letterSpacing = "0.5px"
+				selectLayer.style.fontWeight = "400"
+
 				if (typeof navigator !== 'undefined' && navigator && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 					selectLayer.style.textIndent = "4px"
 				} else {
 					selectLayer.style.textIndent = "11px"
 				}
 				{ // hover effects/classes
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_Disableable())
+					selectLayer.classList.add('hoverable-cell')
+					selectLayer.classList.add('utility')
+					selectLayer.classList.add('disableable')
 				}
 				//
 				// observation
@@ -512,7 +471,7 @@ class SettingsView extends View
 				layer.style.right = "13px"
 				layer.style.top = top+"px"
 				layer.style.zIndex = "100" // above options_containerView 
-				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundImage = "url(../../../assets/img/dropdown-arrow-down@3x.png)" // borrowing this
 				layer.style.backgroundRepeat = "no-repeat"
 				layer.style.backgroundPosition = "center"
 				layer.style.backgroundSize = w+"px "+ h+"px"
@@ -527,7 +486,7 @@ class SettingsView extends View
 		const self = this
 		const div = document.createElement("div")
 		div.style.paddingTop = "23px"
-		const titleText = self.context.isLiteApp ? "LOG OUT" : "DELETE EVERYTHING"
+		const titleText = "DELETE EVERYTHING"
 		const view = commonComponents_tables.New_redTextButtonView(titleText, self.context)
 		self.deleteEverything_buttonView = view
 		const layer = view.layer
@@ -540,15 +499,11 @@ class SettingsView extends View
 					return false
 				}
 				var msg;
-				if (self.context.isLiteApp != true) { 
-					msg = 'Are you sure you want to delete all of your local data?\n\nAny wallets will remain permanently on the Monero blockchain but local data such as contacts will not be recoverable.'
-				} else {
-					msg = 'Are you sure you want to log out?'
-				}
+				msg = 'Are you sure you want to delete all of your local data?\n\nAny wallets will remain permanently on the Monero blockchain but local data such as contacts will not be recoverable.'
 				self.context.windowDialogs.PresentQuestionAlertDialogWith(
-					self.context.isLiteApp != true ? 'Delete everything?' : 'Log out?', 
+					'Delete everything?',
 					msg,
-					self.context.isLiteApp != true ? 'Delete Everything' : 'Log Out', 
+					'Delete Everything',
 					'Cancel',
 					function(err, didChooseYes)
 					{
@@ -556,19 +511,7 @@ class SettingsView extends View
 							throw err
 						}
 						if (didChooseYes) {
-							self.context.passwordController.InitiateDeleteEverything(
-								function(err)
-								{
-									/*
-									self.viewWillAppear()
-									self.viewDidAppear()
-									*/
-									// ^- this is to cause the UI to update itself with new values/states
-									// but is commented out here because we do not need to call it -
-									// we have the tab bar select the walletsTab for us, and if the user
-									// does come back to Settings, both of these will be called
-								}
-							)
+							self.context.passwordController.InitiateDeleteEverything(function(err) {})
 						}
 					}
 				)
@@ -692,107 +635,82 @@ class SettingsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		{
-			if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-				self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-			}
-		}
+		self.layer.style.paddingTop = `41px`
 		const passwordController = self.context.passwordController
 		{ // config change pw btn text, app timeout slider, …
-			if (self.context.isLiteApp == true) {
-				if (self.changePasswordButtonView) {
-					throw "Did not expect self.changePasswordButtonView"
-				}
-				self.appTimeoutSlider_messageLayer.innerHTML = "Idle time before automatic log-out"
-			} else {
-				if (!self.changePasswordButtonView) {
-					throw "Expected self.changePasswordButtonView"
-				}
-				const layer = self.changePasswordButtonView.layer
-				const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
-				const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
-				if (typeof passwordType_humanReadableString !== 'undefined') {
-					const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
-					layer.innerHTML = "Change " + capitalized_passwordType
-					self.appTimeoutSlider_messageLayer.innerHTML = "Idle time before your " + passwordType_humanReadableString + " is required"
-				}
+			if (!self.changePasswordButtonView) {
+				throw "Expected self.changePasswordButtonView"
+			}
+			const layer = self.changePasswordButtonView.layer
+			const userSelectedTypeOfPassword = passwordController.userSelectedTypeOfPassword
+			const passwordType_humanReadableString = passwordController.HumanReadable_AvailableUserSelectableTypesOfPassword()[userSelectedTypeOfPassword]
+			if (typeof passwordType_humanReadableString !== 'undefined') {
+				const capitalized_passwordType = passwordType_humanReadableString.charAt(0).toUpperCase() + passwordType_humanReadableString.slice(1)
+				layer.innerHTML = "Change " + capitalized_passwordType
+				self.appTimeoutSlider_messageLayer.innerHTML = "Idle time before your " + passwordType_humanReadableString + " is required"
 			}
 		}
-		if (self.context.isLiteApp) {
+		if (passwordController.hasUserSavedAPassword !== true) {
 			if (self.changePasswordButtonView) {
-				throw "Did not expect self.changePasswordButtonView"
+				self.changePasswordButtonView.SetEnabled(false) // can't change til entered
 			}
 			if (self.serverURLInputLayer) {
-				throw "Did not expect self.serverURLInputLayer"
+				self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
 			}
-			const walletsExist = self.context.walletsListController.records.length > 0
-			self.appTimeoutRangeInputView.SetEnabled(true)
+			self.displayCcySelectLayer.disabled = true
+			self.displayCcySelectLayer.classList.add("disabled")
+			self.appTimeoutRangeInputView.SetEnabled(false)
+			self.requireWhenSending_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
+			self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
+			self.deleteEverything_buttonView.SetEnabled(false)
+			// 'auto-install updates' this should remain enabled
+		} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
+			// however, user should never be able to see the settings view in this state
+			if (self.changePasswordButtonView) {
+				self.changePasswordButtonView.SetEnabled(false)
+			}
+			if (self.serverURLInputLayer) {
+				self.serverURLInputLayer.disabled = true
+			}
+			self.displayCcySelectLayer.disabled = true
+			self.displayCcySelectLayer.classList.add("disabled")
+			self.appTimeoutRangeInputView.SetEnabled(false)
+			self.requireWhenSending_switchView.SetEnabled(false) // "
+			self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // "
+			self.deleteEverything_buttonView.SetEnabled(false)
+			// 'auto-install updates' this should remain enabled
+		} else { // has entered PW - unlock
+			if (self.changePasswordButtonView) {
+				self.changePasswordButtonView.SetEnabled(true)
+			}
+			if (self.serverURLInputLayer) {
+				self.serverURLInputLayer.disabled = false
+			}
 			self.displayCcySelectLayer.disabled = false
 			self.displayCcySelectLayer.classList.remove("disabled")
-			self.deleteEverything_buttonView.SetEnabled(walletsExist) // cause this is actually the 'log out' btn
-		} else {
-			if (passwordController.hasUserSavedAPassword !== true) {
-				if (self.changePasswordButtonView) {
-					self.changePasswordButtonView.SetEnabled(false) // can't change til entered
-				}
-				if (self.serverURLInputLayer) {
-					self.serverURLInputLayer.disabled = false // enable - user may want to change URL before they add their first wallet
-				}
-				self.displayCcySelectLayer.disabled = true
-				self.displayCcySelectLayer.classList.add("disabled")
-				self.appTimeoutRangeInputView.SetEnabled(false) 
-				self.requireWhenSending_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
-				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // cannot have them turn it off w/o pw because it should require a pw to de-escalate security measure
-				self.deleteEverything_buttonView.SetEnabled(false)
-				// 'auto-install updates' this should remain enabled
-			} else if (passwordController.HasUserEnteredValidPasswordYet() !== true) { // has data but not unlocked app - prevent tampering
-				// however, user should never be able to see the settings view in this state
-				if (self.changePasswordButtonView) {
-					self.changePasswordButtonView.SetEnabled(false)
-				}
-				if (self.serverURLInputLayer) {
-					self.serverURLInputLayer.disabled = true
-				}
-				self.displayCcySelectLayer.disabled = true
-				self.displayCcySelectLayer.classList.add("disabled")
-				self.appTimeoutRangeInputView.SetEnabled(false)
-				self.requireWhenSending_switchView.SetEnabled(false) // "
-				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(false) // "
-				self.deleteEverything_buttonView.SetEnabled(false)
-				// 'auto-install updates' this should remain enabled
-			} else { // has entered PW - unlock
-				if (self.changePasswordButtonView) {
-					self.changePasswordButtonView.SetEnabled(true)
-				}
-				if (self.serverURLInputLayer) {
-					self.serverURLInputLayer.disabled = false
-				}
-				self.displayCcySelectLayer.disabled = false
-				self.displayCcySelectLayer.classList.remove("disabled")
-				self.appTimeoutRangeInputView.SetEnabled(true)
-				self.requireWhenSending_switchView.SetEnabled(true)
-				self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(true)
-				self.deleteEverything_buttonView.SetEnabled(true)
-				// 'auto-install updates' this should remain enabled
-			}
-			// we only have password authentication in the Full app
-			self.requireWhenSending_switchView.setChecked(
-				self.context.settingsController.authentication_requireWhenSending,
+			self.appTimeoutRangeInputView.SetEnabled(true)
+			self.requireWhenSending_switchView.SetEnabled(true)
+			self.requireWhenDisclosingWalletSecrets_switchView.SetEnabled(true)
+			self.deleteEverything_buttonView.SetEnabled(true)
+			// 'auto-install updates' this should remain enabled
+		}
+		// we only have password authentication in the Full app
+		self.requireWhenSending_switchView.setChecked(
+			self.context.settingsController.authentication_requireWhenSending,
+			true, // squelch_changed_fn_emit - or we'd get redundant saves
+			true // setWithoutShouldToggle - or we get asked to auth
+		)
+		self.requireWhenDisclosingWalletSecrets_switchView.setChecked(
+			self.context.settingsController.authentication_requireWhenDisclosingWalletSecrets,
+			true, // squelch_changed_fn_emit - or we'd get redundant saves
+			true // setWithoutShouldToggle - or we get asked to auth
+		)
+		if (typeof self.autoDownloadUpdatesEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
+			self.autoDownloadUpdatesEnabled_switchView.setChecked(
+				self.context.settingsController.autoDownloadUpdatesEnabled,
 				true, // squelch_changed_fn_emit - or we'd get redundant saves
 				true // setWithoutShouldToggle - or we get asked to auth
 			)
-			self.requireWhenDisclosingWalletSecrets_switchView.setChecked(
-				self.context.settingsController.authentication_requireWhenDisclosingWalletSecrets,
-				true, // squelch_changed_fn_emit - or we'd get redundant saves
-				true // setWithoutShouldToggle - or we get asked to auth
-			)
-			if (typeof self.autoDownloadUpdatesEnabled_switchView !== 'undefined') { // since it might not be supported (Linux)
-				self.autoDownloadUpdatesEnabled_switchView.setChecked(
-					self.context.settingsController.autoDownloadUpdatesEnabled,
-					true, // squelch_changed_fn_emit - or we'd get redundant saves
-					true // setWithoutShouldToggle - or we get asked to auth
-				)
-			}
 		}
 		{
 			if (self.serverURLInputLayer) {

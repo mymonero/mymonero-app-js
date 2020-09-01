@@ -70,10 +70,9 @@ class EnterExistingPasswordView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.backgroundColor = "#272527"
-		const paddingTop = 41 // the nav bar height - we should prolly do this on VDA and ask for actual height
-		layer.style.paddingTop = paddingTop + "px"
+		layer.style.paddingTop = "41px"
 		layer.style.width = "100%"
-		layer.style.height = `calc(100% - ${paddingTop}px)`
+		layer.style.height = `calc(100% - 41px)`
 		self.layer.addEventListener(
 			"click",
 			function(e)
