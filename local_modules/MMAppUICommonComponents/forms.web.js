@@ -29,9 +29,49 @@
 "use strict"
 //
 const View = require('../Views/View.web')
+const Views__cssRules = require('../Views/cssRules.web')
+//
+const commonComponents_tables = require('./tables.web')
+//
+const NamespaceName = "Forms"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.form_field {
+		padding: 0 24px 20px 24px;
+	}`,
+	`.form_field .field_title {
+	}`,
+	`.form_field .field_value {
+		-webkit-font-smoothing: subpixel-antialiased;
+	}`,
+	`.form_field .field_value::-webkit-input-placeholder {
+		-webkit-font-smoothing: subpixel-antialiased;
+		color: #6B696B;
+	}`,
+	// add/remove .placeholderAsValue if you want to display fixed input without making it the value
+	`.form_field .field_value.placeholderAsValue::-webkit-input-placeholder {
+		color: #dfdedf;
+	}`,	
+	//
+	// .iconAndMessageLayer
+	`.iconAndMessageLayer {
+		padding: 7px 10px 7px 10px;
+	}`,
+	`.iconAndMessageLayer > img {
+		display: inline-block;
+		position: relative;
+		top: 1px;
+	}`,
+	`.iconAndMessageLayer > span {
+		display: inline-block;
+	}`
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
 //
 function New_fieldContainerLayer(context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.className = "form_field"
 	return layer
@@ -40,20 +80,28 @@ exports.New_fieldContainerLayer = New_fieldContainerLayer
 //
 function New_fieldTitle_labelLayer(labelText, context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("span")
 	layer.className = "field_title"
 	layer.innerHTML = labelText
-	layer.classList.add('form-field-title')
-	if (typeof process !== 'undefined' && process.platform === "linux") {
-		layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
-	}
-
+	layer.style.webkitUserSelect = "none"
+	layer.style.MozUserSelect = "none"
+	layer.style.msUserSelect = "none"
+	layer.style.userSelect = "none"
+	layer.style.display = "block" // own line
+	layer.style.margin = "15px 0 8px 8px"
+	layer.style.textAlign = "left"
+	layer.style.color = "#F8F7F8"
+	//
+	context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
+	//
 	return layer
 }
 exports.New_fieldTitle_labelLayer = New_fieldTitle_labelLayer
 //
 function New_fieldTitle_rightSide_accessoryLayer(labelText, context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = New_fieldTitle_labelLayer("optional", context)
 	layer.style.float = "right"
 	layer.style.color = "#6B696B"
@@ -63,7 +111,12 @@ function New_fieldTitle_rightSide_accessoryLayer(labelText, context)
 	return layer
 }
 exports.New_fieldTitle_rightSide_accessoryLayer = New_fieldTitle_rightSide_accessoryLayer
-
+//
+function ClassNameForScrollingAncestorOfScrollToAbleElement()
+{
+	return "ClassNameForScrollingAncestorOfScrollToAbleElement"
+}
+exports.ClassNameForScrollingAncestorOfScrollToAbleElement = ClassNameForScrollingAncestorOfScrollToAbleElement
 function ScrollCurrentFormElementIntoView()
 { // not a factory but a convenience function for call, e.g.. on window resize
 	const activeElement = document.activeElement
@@ -85,11 +138,22 @@ exports.ScrollCurrentFormElementIntoView = ScrollCurrentFormElementIntoView
 var LocalVendor_ScrollPositionEndFixed_Animate = null 
 function _shared_scrollConformingElementIntoView(inputLayer)
 {
-	LocalVendor_ScrollPositionEndFixed_Animate = require('../../node_modules/velocity-animate');
-	const scrollingAncestor = inputLayer.closest(".ClassNameForScrollingAncestorOfScrollToAbleElement")
+	const selector = `.${ClassNameForScrollingAncestorOfScrollToAbleElement()}`
+	const scrollingAncestor = inputLayer.closest(selector)
 	if (!scrollingAncestor || typeof scrollingAncestor === 'undefined') {
 		console.warn("⚠️  Asked to _shared_scrollConformingElementIntoView but no scrollingAncestor found")
 		return
+	}
+	// NOTE: velocity 1.5.0 is waiting on v2 to introduce a fix for 
+	// bug in scrolling to element who is wrapped in a relative parent
+	// before its scrollable ancestor (showing bug on e.g. Contact picker);
+	// so patch was manually applied. See local vendored velocity.js header 
+	// for note with github issues.
+	{ // lazy require to avoid usage in e.g. electron; hopefully the perf hit will not be noticed
+		if (LocalVendor_ScrollPositionEndFixed_Animate == null) {
+			LocalVendor_ScrollPositionEndFixed_Animate = require('../Animation/Vendor/velocity')
+			// ^-- hopefully it will not cause problems to have multiple velocity modules connected to the same DOM
+		}
 	}
 	LocalVendor_ScrollPositionEndFixed_Animate(inputLayer, "stop")
 	LocalVendor_ScrollPositionEndFixed_Animate(scrollingAncestor, "stop")
@@ -109,6 +173,7 @@ exports._shared_scrollConformingElementIntoView = _shared_scrollConformingElemen
 //
 function New_fieldValue_textInputLayer(context, params)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("input")
 	layer.className = "field_value"
 	layer.type = params.customInputType || "text"
@@ -140,7 +205,7 @@ function New_fieldValue_textInputLayer(context, params)
 	layer.style.fontSize = "13px"
 	layer.style.fontWeight = "200"
 	layer.style.padding = `0 ${padding_h}px`
-	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.outline = "none" // no focus ring
 	// editable:true
 	if (context.Views_selectivelyEnableMobileRenderingOptimizations !== true) {
@@ -171,6 +236,7 @@ exports.New_fieldValue_textInputLayer = New_fieldValue_textInputLayer
 //
 function New_fieldValue_textAreaView(params, context)
 {
+	__injectCSSRules_ifNecessary()
 	const view = new View({ tag: "textarea" }, context)
 	const layer = view.layer
 	layer.className = "field_value"
@@ -183,9 +249,10 @@ function New_fieldValue_textAreaView(params, context)
 	if (typeof placeholderText !== 'undefined' && placeholderText !== null) {
 		layer.placeholder = placeholderText
 	}
-	layer.style.padding = `9px 8px`
-	layer.style.height = `45px`
-	layer.style.width = `calc(100% - 18px)`
+	const padding_h = 8
+	layer.style.padding = `9px ${padding_h}px`
+	layer.style.height = `${61 - 2 * padding_h}px`
+	layer.style.width = `calc(100% - ${2 * padding_h}px)` // no border so no -2*brdr_w
 	layer.style.borderRadius = "3px"
 	layer.style.border = "none"
 	layer.style.textAlign = "left"
@@ -194,7 +261,7 @@ function New_fieldValue_textAreaView(params, context)
 	layer.style.lineHeight = "15px"
 	layer.style.resize = "none" // not user-resizable
 	layer.style.outline = "none" // no focus ring
-	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.wordBreak = "break-word"
 	//
 	view.SetEnabled = function(isEnabled)
@@ -243,6 +310,7 @@ exports.New_fieldValue_textAreaView = New_fieldValue_textAreaView
 //
 function New_fieldValue_selectLayer(params)
 {
+	__injectCSSRules_ifNecessary()
 	const values = params.values || []
 	const layer = document.createElement("select")
 	{
@@ -263,7 +331,7 @@ function New_fieldValue_selectLayer(params)
 		}
 		layer.style.display = "inline-block"
 		layer.style.height = "30px"
-		layer.style.width = `calc(100% - 4px - 20px)`
+		layer.style.width = `calc(100% - 4px - ${2 * 10}px)`
 		layer.style.border = "1px inset #222"
 		layer.style.borderRadius = "4px"
 		layer.style.textAlign = "left"
@@ -279,10 +347,9 @@ exports.New_fieldValue_selectLayer = New_fieldValue_selectLayer
 //
 function New_fieldAccessory_messageLayer(context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("p")
-	layer.style.fontSize = "11px" // we need this to visually stand out slightly more given how it's used
-	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
-	layer.style.fontWeight = "100" // instead of 500, cause this color, white, is rendered strong
+	context.themeController.StyleLayer_FontAsMessageBearingSmallLightMonospace(layer) // name needs improvement
 	layer.style.lineHeight = "15px"
 	layer.style.margin = "7px 7px 0 7px"
 	layer.style.color = "#8d8b8d"
@@ -295,43 +362,74 @@ function New_fieldAccessory_messageLayer(context)
 exports.New_fieldAccessory_messageLayer = New_fieldAccessory_messageLayer
 function New_fieldAccessory_validationMessageLayer(context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = New_fieldAccessory_messageLayer(context)
 	layer.style.color = "#f97777"
 	return layer
 }
 exports.New_fieldAccessory_validationMessageLayer = New_fieldAccessory_validationMessageLayer
-
-function New_NonEditable_ValueDisplayLayer_BreakChar(value, context)
+//
+function New_NonEditable_ValueDisplayLayer(value, context)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.value = value // setting this so there is a common interface with _textView above - some consumers rely on it. this should be standardized into a Value() method of a View
-	layer.innerHTML = value
 	layer.style.borderRadius = "3px"
 	layer.style.backgroundColor = "#383638"
 	layer.style.padding = "8px 11px"
 	layer.style.boxSizing = "border-box"
 	layer.style.width = "100%"
 	layer.style.height = "auto"
+	//
 	layer.style.color = "#7C7A7C"
 	layer.style.fontSize = "13px"
 	layer.style.fontWeight = "100"
-	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
+	layer.innerHTML = value
+	//
+	return layer
+}
+exports.New_NonEditable_ValueDisplayLayer = New_NonEditable_ValueDisplayLayer
+function New_NonEditable_ValueDisplayLayer_BreakWord(value, context)
+{
+	const layer = New_NonEditable_ValueDisplayLayer(value, context)
+	layer.style.wordBreak = "break-word"
+	return layer
+}
+exports.New_NonEditable_ValueDisplayLayer_BreakWord = New_NonEditable_ValueDisplayLayer_BreakWord
+function New_NonEditable_ValueDisplayLayer_BreakChar(value, context)
+{
+	const layer = New_NonEditable_ValueDisplayLayer(value, context)
 	layer.style.wordBreak = "break-all"
 	return layer
 }
 exports.New_NonEditable_ValueDisplayLayer_BreakChar = New_NonEditable_ValueDisplayLayer_BreakChar
-
-function New_Detected_IconAndMessageLayer(context)
+//
+function New_IconAndMessageLayer(iconPath, messageText, context, optl_imgW, optl_imgH)
 {
+	__injectCSSRules_ifNecessary()
 	const layer = document.createElement("div")
 	layer.classList.add("iconAndMessageLayer")
-	layer.innerHTML = `<img src="../../../assets/img/detectedCheckmark@3x.png" width="9px" height="7px" />&nbsp;<span>Detected</span>`
-	layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+	layer.innerHTML = `<img src="${iconPath}" ${optl_imgW ? 'width="'+ optl_imgW + '"' : ""} ${optl_imgH ? 'height="'+ optl_imgH + '"' : ""} />&nbsp;<span>${messageText}</span>`
+	layer.style.fontFamily = context.themeController.FontFamily_monospaceLight()
 	layer.style.webkitFontSmoothing = "subpixel-antialiased"
 	layer.style.fontSize = "11px"
 	layer.style.fontWeight = "100"
 	layer.style.color = "#8D8B8D"
+	
+	return layer		
+}
+exports.New_IconAndMessageLayer = New_IconAndMessageLayer
+function New_Detected_IconAndMessageLayer(context)
+{
+	const layer = New_IconAndMessageLayer( // will call `__inject…`
+		context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/detectedCheckmark@3x.png",
+		"Detected",
+		context,
+		"9px",
+		"7px"
+	)
 	return layer
 }
 exports.New_Detected_IconAndMessageLayer = New_Detected_IconAndMessageLayer

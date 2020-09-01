@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+node bin/__assemble_browser_build.node.js && 
+bin/__webpack_browser__dev && 
+echo "✅  Assembled DEVELOPMENT ./browser_build."

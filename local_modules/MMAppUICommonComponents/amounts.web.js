@@ -27,13 +27,30 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-
+//
+// const View = require('../Views/View.web')
+const Views__cssRules = require('../Views/cssRules.web')
+//
 const commonComponents_tables = require('./tables.web')
 const commonComponents_forms = require('./forms.web')
 const commonComponents_ccySelect = require('./ccySelect.web')
-
+//
 const monero_config = require('../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
-
+//
+const NamespaceName = "Forms.Amounts"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	// `.form_field .field_value {
+	// 	-webkit-font-smoothing: subpixel-antialiased;
+	// }`,
+	// `.form_field .field_value::-webkit-input-placeholder  {
+	// 	-webkit-font-smoothing: subpixel-antialiased;
+	// 	color: #6B696B;
+	// }`
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+//
 function New_AmountInputFieldPKG(
 	context,
 	isOptional,
@@ -138,11 +155,7 @@ function New_AmountInputFieldPKG(
 	let ccySelectLayer = commonComponents_ccySelect.new_selectLayer()
 	var ccySelect_disclosureArrow_layer; // will be set
 	{
-		ccySelectLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-		ccySelectLayer.style.webkitFontSmoothing = "subpixel-antialiased"
-		ccySelectLayer.style.fontSize = "11px"
-		ccySelectLayer.style.fontWeight = "400" // semibold desired
-		ccySelectLayer.style.letterSpacing = "0.5px"
+		context.themeController.StyleLayer_FontAsSmallSemiboldSansSerif(ccySelectLayer)
 		//
 		// TODO: move these into class + css rules
 		//
@@ -199,7 +212,7 @@ function New_AmountInputFieldPKG(
 		layer.style.left = (selectLayer_left + selectLayer_w - ccySelect_disclosureArrow_margin_right - w) + "px"
 		layer.style.top = 
 		layer.style.zIndex = "9" // below .options_containerView 
-		layer.style.backgroundImage = "url(../../../assets/img/smallSelect_disclosureArrow@3x.png)"
+		layer.style.backgroundImage = "url("+context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"MMAppUICommonComponents/Resources/smallSelect_disclosureArrow@3x.png)"
 		layer.style.backgroundRepeat = "no-repeat"
 		layer.style.backgroundPosition = "center"
 		layer.style.backgroundSize = w+"px "+ h+"px"
@@ -216,9 +229,7 @@ function New_AmountInputFieldPKG(
 	effectiveAmountLabelLayer.style.margin = "0 0 0 8px"
 	effectiveAmountLabelLayer.style.verticalAlign = "middle"
 	effectiveAmountLabelLayer.style.color = "#8D8B8D"
-	effectiveAmountLabelLayer.style.fontFamily = 'Native-Regular, input, menlo, monospace'
-	effectiveAmountLabelLayer.style.fontSize = "12px"
-	effectiveAmountLabelLayer.style.fontWeight = "normal"
+	context.themeController.StyleLayer_FontAsSubMiddlingRegularMonospace(effectiveAmountLabelLayer)
 	div.appendChild(effectiveAmountLabelLayer)
 	//
 	var max_buttonView;

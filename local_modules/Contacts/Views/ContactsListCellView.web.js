@@ -30,9 +30,26 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
-
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
+//
 const emoji_web = require('../../Emoji/emoji_web')
-
+//
+// CSS rules
+const Views__cssRules = require('../../Views/cssRules.web')
+const NamespaceName = "ContactsListCellView"
+const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
+const cssRules =
+[
+	`.${NamespaceName} .emoji-label {
+	}`,
+	`.${NamespaceName} .emoji-label .emojione {
+		transform: scale(.5);
+		margin-left: -7px;
+		margin-top: -6px;
+	}`
+]
+function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
+//
 class ContactsListCellView extends ListCellView
 {
 	constructor(options, context)
@@ -43,12 +60,13 @@ class ContactsListCellView extends ListCellView
 	{
 		const self = this
 		super.setup_views()
-		self.layer.classList.add("ContactsListCellView")
+		__injectCSSRules_ifNecessary()
+		self.layer.classList.add(NamespaceName)
 		self.layer.style.position = "relative"
 		self.layer.style.padding = "19px 0 7px 0"
 		{ // hover effects/classes
-			self.layer.classList.add('hoverable-cell')
-			self.layer.classList.add('utility')
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
 		self.__setup_emojiLayer()
 		self.__setup_nameLayer()
@@ -78,7 +96,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.margin = "0 66px 4px 50px"
 		layer.style.height = "auto"
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		layer.style.fontWeight = "400"
 		layer.style.wordBreak = "break-word"
 		layer.style.whiteSpace = "nowrap"
@@ -96,7 +114,7 @@ class ContactsListCellView extends ListCellView
 		layer.style.position = "relative"
 		layer.style.margin = "0 66px 4px 50px"
 		layer.style.fontSize = "13px"
-		layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+		layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 		layer.style.fontWeight = "100"
 		layer.style.height = "20px"
 		layer.style.color = "#9e9c9e"
@@ -110,14 +128,7 @@ class ContactsListCellView extends ListCellView
 	__setup_cellSeparatorLayer()
 	{
 		const self = this
-		const layer = document.createElement("div")
-		layer.style.background = "#413e40"
-		layer.style.position = "absolute"
-		layer.style.bottom = "-0.5px" // instead of 0… to make sure hover effects look nicer (but it might not do much in the end)
-		layer.style.height = "1px"
-		layer.style.width = `calc(100% - 50px)`
-		layer.style.left = `50px`
-		layer.style.visibility = "visible" // to be configured
+		const layer = commonComponents_tables.New_tableCell_separatorLayer()
 		self.cellSeparatorLayer = layer
 		self.layer.appendChild(layer)
 	}

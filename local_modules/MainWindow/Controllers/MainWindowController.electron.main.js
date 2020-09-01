@@ -95,7 +95,9 @@ class MainWindowController
 			minWidth: 412, // For action buttons
 			minHeight: 420,
 			title: "MyMonero", // Windows
+			//
 			show: false, // shown on ready
+			//
 			backgroundColor: "#272527",
 			titleBarStyle: "hiddenInset",
 			//
@@ -140,9 +142,14 @@ class MainWindowController
 	{
 		const self = this
 		const app = self.context.app
-		app.whenReady().then(() => {
+		if (app.isReady() === true) { // this is probably not going to be true as the app is fairly zippy to set up
 			self._create_window_ifNecessary()
-		});
+		} else {
+			app.on('ready', function()
+			{
+				self._create_window_ifNecessary()
+			})
+		}
 	}
 	_create_window_ifNecessary()
 	{
