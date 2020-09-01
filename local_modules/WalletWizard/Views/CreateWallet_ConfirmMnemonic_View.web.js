@@ -28,6 +28,7 @@
 //
 "use strict"
 //
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
@@ -36,8 +37,6 @@ const commonComponents_activityIndicators = require('../../MMAppUICommonComponen
 //
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
-const View = require('../../Views/View.web')
-
 class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 {
 	_setup_views()
@@ -108,7 +107,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		{
 			const layer = document.createElement("div")
 			layer.style.fontSize = "11px"
-			layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
+			layer.style.fontFamily = self.context.themeController.FontFamily_monospaceLight()
 			layer.style.fontSize = "11px"
 			layer.style.lineHeight = "14px"
 			layer.style.color = "#f97777"
@@ -120,22 +119,33 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.style.wordBreak = "break-word"
 			layer.innerHTML = "That’s not right. You can try again or start over with a new mnemonic."
 			{ // v-- this padding is added to accommodate the action bar in case the screen is too short and scrolling happens
-				const paddingBottom = 50
+				const paddingBottom = commonComponents_actionButtons.ActionButtonsContainerView_h + commonComponents_actionButtons.ActionButtonsContainerView_bottomMargin + 10
 				layer.style.paddingBottom = `${paddingBottom}px`
 			}
 			self.mnemonicConfirmation_validationErrorLabelLayer = layer
 			self.layer.appendChild(layer)
 		}
 		{ // action buttons toolbar
-			let actionButtonsContainerView = new View({}, self.context)
-			const layer = actionButtonsContainerView.layer
-			layer.style.position = "fixed"
-			layer.style.top = `calc(100% - 32px - 8px)`
-			layer.style.width = `calc(100% - 95px - 16px)`
-			layer.style.height = 32 + "px"
-			layer.style.zIndex = 1000
-			layer.style.paddingLeft = "16px"
-			layer.style.display = "none" // for now
+			const margin_h = 16
+			var actionButtonsContainerView;
+			if (self.context.themeController.TabBarView_isHorizontalBar() === false) {
+				const margin_fromWindowLeft = self.context.themeController.TabBarView_thickness() + margin_h // we need this for a position:fixed, width:100% container
+				const margin_fromWindowRight = margin_h
+				actionButtonsContainerView = commonComponents_actionButtons.New_ActionButtonsContainerView(
+					margin_fromWindowLeft, 
+					margin_fromWindowRight, 
+					self.context
+				)
+				actionButtonsContainerView.layer.style.paddingLeft = margin_h+"px"
+			} else {
+				actionButtonsContainerView = commonComponents_actionButtons.New_Stacked_ActionButtonsContainerView(
+					margin_h, 
+					margin_h, 
+					15,
+					self.context
+				)
+			}
+			actionButtonsContainerView.layer.style.display = "none" // for now
 			self.actionButtonsContainerView = actionButtonsContainerView
 			{
 				self._setup_actionButton_tryAgain()
@@ -149,7 +159,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Try again", 
-			"../../../assets/img/actionButton_iconImage__tryAgain@3x.png", // relative to index.html
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"WalletWizard/Resources/actionButton_iconImage__tryAgain@3x.png", // relative to index.html
 			false,
 			function(layer, e)
 			{
@@ -168,7 +178,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const buttonView = commonComponents_actionButtons.New_ActionButtonView(
 			"Start Over", 
-			"../../../assets/img/actionButton_iconImage__startOver@3x.png", // relative to index.html
+			self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"WalletWizard/Resources/actionButton_iconImage__startOver@3x.png", // relative to index.html
 			true,
 			function(layer, e)
 			{
@@ -208,7 +218,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const layer = document.createElement("h3")
 		layer.innerHTML = contentString
-		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "20px"
 		layer.style.fontWeight = "500"
@@ -222,7 +232,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const layer = document.createElement("p")
 		layer.innerHTML = contentString
-		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 		layer.style.fontWeight = "normal"
 		layer.style.fontSize = "13px"
 		layer.style.color = "#8D8B8D"
@@ -341,6 +351,9 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		function ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
 		{ // factored because we would like to call this on successful submission too!
 			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 		}
 		function ___reEnableFormFromSubmissionDisable()
 		{
@@ -358,6 +371,9 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen
 		{ // disable form
 			self.isDisabledFromSubmission = true
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.keepAwake() // disable screen dim/off
+			}
 			//
 			self.validationMessageLayer.ClearAndHideMessage()
 			//

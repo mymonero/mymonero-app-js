@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+bin/_build_browser_dev; 
+cd browser_build && python -m SimpleHTTPServer 9100;

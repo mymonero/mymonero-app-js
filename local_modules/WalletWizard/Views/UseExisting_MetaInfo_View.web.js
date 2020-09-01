@@ -57,8 +57,10 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self._setup_form_walletAddrAndKeysFields()
 			self._setup_form_toggleLoginModeLayer()		
 		}
+		if (self.context.isLiteApp != true) {
 			self._setup_form_walletNameField()
 			self._setup_form_walletSwatchField()
+		}
 		setTimeout(function()
 		{ // after visible… (TODO: improve by doing on VDA or other trigger)
 			self.mnemonicTextAreaView.layer.focus()
@@ -295,15 +297,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	{
 		const self = this
 		const layer = document.createElement("div")
-		layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
-		layer.style.webkitFontSmoothing = "subpixel-antialiased" // for chrome browser
-		layer.style.fontSize = "10px"
-		layer.style.letterSpacing = "0.5px"
-		if (typeof process !== 'undefined' && process.platform === "linux") {
-			layer.style.fontWeight = "700" // surprisingly does not render well w/o this… not linux thing but font size thing. would be nice to know which font it uses and toggle accordingly. platform is best guess for now
-		} else {
-			layer.style.fontWeight = "300"
-		}
+		self.context.themeController.StyleLayer_FontAsSmallRegularMonospace(layer)
 		layer.style.fontSize = "11px" // must set 11px so it matches visual weight of other labels
 		layer.style.letterSpacing = "0"
 		layer.style.color = "#8d8b8d"
@@ -457,13 +451,17 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	lookup__walletName()
 	{
 		const self = this
-
+		if (self.context.isLiteApp == true) {
+			return self.context.walletsListController.LiteAppWalletName()
+		}
 		return self.walletNameInputLayer.value
 	}
 	lookup__colorHexString()
 	{
 		const self = this
-
+		if (self.context.isLiteApp == true) {
+			return self.context.walletsListController.LiteAppWalletSwatchColor()
+		}
 		return self.walletColorPickerInputView.Component_Value()
 	}
 	lookup__mnemonicSeed()
@@ -543,6 +541,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		{
 			self.isDisabledFromSubmission = true
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.keepAwake() // disable screen dim/off
+			}
 			//
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
@@ -567,6 +568,9 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 		function ____reEnable_userIdleAndScreenSleepFromSubmissionDisable()
 		{ // factored because we would like to call this on successful submission too!
 			self.context.userIdleInWindowController.ReEnable_userIdle()					
+			if (self.context.Cordova_isMobile === true) {
+				window.plugins.insomnia.allowSleepAgain() // re-enable screen dim/off
+			}
 		}
 		function ___reEnableFormFromSubmissionDisable()
 		{

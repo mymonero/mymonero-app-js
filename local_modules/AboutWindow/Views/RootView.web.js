@@ -63,17 +63,19 @@ class RootView extends View
 		}
 		{
 			const layer = document.createElement("a")
-			layer.style.width = "50px"
-			layer.style.height = "50px"
+			const w = 50
+			const h = 50
+			layer.style.width = 50+"px"
+			layer.style.height = 50+"px"
 			layer.style.display = "block"
 			layer.style.outline = "none"
-			layer.style.backgroundSize = `50px 50px`
-			layer.style.backgroundImage = "url(../../../assets/img/logo_solid_light@3x.png)"
+			layer.style.backgroundSize = `${w}px ${h}px`
+			layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"AboutWindow/Resources/logo_solid_light@3x.png)"
 			layer.style.backgroundPosition = "center"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.margin = "66px auto 14px auto"
 			layer.style.cursor = "pointer"
-			layer.href = "https://mymonero.com"
+			layer.href = "https://" + self.context.appDownloadLink_domainAndPath
 			layer.addEventListener("click", function(e)
 			{
 				e.preventDefault()
@@ -89,7 +91,7 @@ class RootView extends View
 			layer.style.textAlign = "center"
 			layer.style.fontSize = "13px"
 			layer.style.fontWeight = "400"
-			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 			layer.style.color = "#FCFBFC"
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
 			layer.innerHTML = `Version ${self.context.app.getVersion()}`
@@ -103,7 +105,7 @@ class RootView extends View
 			layer.style.textDecoration = "none"
 			layer.style.fontSize = "11px"
 			layer.style.fontWeight = "400"
-			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
 			layer.style.marginTop = "3px"
 			layer.style.color = "#8D8B8D"
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"

@@ -311,7 +311,11 @@ class ListView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		self.layer.style.paddingTop = `41px`
+		//
+		if (self.navigationController && typeof self.navigationController !== 'undefined') {
+			const layer = self.layer // TODO: this can probably be done only once rather than every time
+			layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
+		}
 	}
 	// Runtime - Protocol / Delegation - Stack & modal navigation 
 	// We don't want to naively do this on VDA as else tab switching may trigger it - which is bad

@@ -2,44 +2,111 @@
   "name": "MyMonero",
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
-  "version": "1.1.14",
-  "license": "BSD-3-Clause",
-  "repository": "https://github.com/devinpearson/mymonero-app-js",
+  "version": "1.1.13",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "repository": "https://github.com/mymonero/mymonero-app-js",
+  "private": false,
   "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
     "start": "electron ./local_modules/electron_main/electron_main.js",
-    "dev": "NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
-    "postinstall": "electron-builder install-app-deps",
-    "submodules": "git submodule update --init --recursive & git submodule foreach --recursive git fetch & git submodule foreach --recursive git checkout master & git submodule foreach --recursive git pull --ff-only origin master"
+    "start-dev": "NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
+    "dist-m": "CSC_IDENTITY_AUTO_DISCOVERY=false CSC_NAME=\"MyMonero Pty Ltd\" electron-builder -m -p never",
+    "dist-w": "electron-builder -w -p never --ia32 --x64",
+    "dist-l": "electron-builder -l -p never",
+    "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
+    "copyright": "Copyright © 2014-2019 MyMonero/",
+    "asar": true,
+    "forceCodeSigning": false,
     "afterPack": "./build-afterPack.js",
-    "afterSign": "./bin/notarize.js",
+    "files": [
+      "local_modules/**/*.{js,json,wasm}",
+      "local_modules/**/*.{png,icns,ico,otf,ttf}",
+      "local_modules/**/*.css",
+      "local_modules/**/*.html",
+      "node_modules/**",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests,powered-test,example,examples,*.d.ts}",
+      "!**/node_modules/.bin",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc}",
+      "!**/._*",
+      "!**/{.DS_Store,.eslintrc.json,.eslintignore,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}",
+      "!**/*.cordova.*",
+      "!**/*.Lite.*",
+      "!**/local_modules/**/package.json",
+      "!**/local_modules/**/package-lock.json",
+      "!**/tests/*",
+      "!**/*.spec.js",
+      "!local_modules/Pasteboard/Vendor/clipboard.min.js",
+      "!local_modules/mymonero_libapp_js/libapp_js/MyMoneroLibAppCpp_ASMJS.js",
+      "!local_modules/mymonero_libapp_js/libapp_js/MyMoneroLibAppCpp_ASMJS.asm.js",
+      "!local_modules/mymonero_libapp_js/build",
+      "!local_modules/mymonero_libapp_js/tests/**",
+      "!local_modules/mymonero_libapp_js/src/**",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/index.js",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_ASMJS.js",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_ASMJS.asm.js",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_WASM.js",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreCpp_WASM.wasm",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreBridge.js",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/monero_utils/MyMoneroCoreBridgeClass.js",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/tests/**",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/wallaby*",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/src/**",
+      "!local_modules/mymonero_libapp_js/mymonero-core-js/build",
+      "!**/*.browser.*",
+      "!**/favicon*.png",
+      "!**/favicon*.ico",
+      "!**/mstile*.png",
+      "!**/apple-touch-icon.png",
+      "!**/android-chrome*.png",
+      "!**/browserconfig.xml",
+      "!local_modules/MainWindow/Resources/favicon/manifest.json",
+      "!local_modules/MainWindow/Resources/www_logo@3x.png"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "mymonero",
+        "repo": "mymonero-app-js"
+      }
+    ],
     "mac": {
       "category": "public.app-category.finance",
-      "identity": "MyMonero Pty Ltd (NLN5D623Y3)",
       "target": [
-        "dmg",
-        "mas"
-      ]
+        "zip",
+        "dir",
+        "dmg"
+      ],
+      "type": "distribution",
+      "icon": "icon.icns",
+      "identity": "MyMonero Pty Ltd (NLN5D623Y3)",
+      "extendInfo": {
+        "com.apple.developer.team-identifier": "NLN5D623Y3",
+        "com.apple.application-identifier": "NLN5D623Y3.com.mymonero.mymonero-desktop"
+      }
     },
     "win": {
-      "certificateSubjectName": "MyMonero (PTY) LTD",
       "target": [
-        "appx",
-        "msi"
-      ]
+        "nsis"
+      ],
+      "artifactName": "${productName}-${version}.${ext}",
+      "legalTrademarks": "Copyright © 2014-2019 MyMonero.",
+      "publisherName": null,
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
-      "perMachine": true
+      "perMachine": true,
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "nsisWeb": {
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "linux": {
+      "icon": "icon.icns",
       "target": [
-        "AppImage",
-        "snap"
+        "AppImage"
       ]
     },
     "protocols": [
@@ -56,8 +123,6 @@
   },
   "dependencies": {
     "async": "3.1.0",
-    "axios": "^0.19.2",
-    "bitcoin-address-validation": "^1.0.2",
     "electron-context-menu": "0.15.1",
     "electron-log": "3.0.9",
     "electron-updater": "4.2.0",
@@ -73,9 +138,9 @@
     "babel-core": "6.26.3",
     "babel-loader": "8.0.6",
     "babel-minify": "0.5.1",
-    "electron": "^9.0.0",
-    "electron-builder": "22.8.0",
-    "electron-notarize": "^1.0.0",
+    "electron": "7.1.1",
+    "electron-builder": "21.2.0",
+    "electron-packager": "14.1.0",
     "eslint": "5.6.0",
     "request": "2.88.0",
     "webpack": "4.41.2",

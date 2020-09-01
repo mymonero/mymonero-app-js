@@ -30,6 +30,8 @@
 //
 const ListCellView = require('../../Lists/Views/ListCellView.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
+const commonComponents_walletIcons = require('../../MMAppUICommonComponents/walletIcons.web')
+const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
 const FundsRequestCellContentsView = require('./FundsRequestCellContentsView.web')
 //
 class FundsRequestsListCellView extends ListCellView
@@ -53,13 +55,11 @@ class FundsRequestsListCellView extends ListCellView
 			const layer = self.layer
 			layer.style.position = "relative"
 			// hover effects/classes
-			self.layer.classList.add('hoverable-cell')
-			self.layer.classList.add('utility')
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
+			self.layer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
 		}
-		{
-			const layer = document.createElement("img")
-			layer.src = "../../../assets/img/list_rightside_chevron@3x.png"
-			layer.classList.add('table-chevron')
+		{ 
+			const layer = commonComponents_tables.New_tableCell_accessoryChevronLayer(self.context)
 			self.layer.appendChild(layer)
 		}
 		self.__setup_cellSeparatorLayer()
@@ -76,14 +76,7 @@ class FundsRequestsListCellView extends ListCellView
 	__setup_cellSeparatorLayer()
 	{
 		const self = this
-		const layer = document.createElement("div")
-		layer.style.background = "#413e40"
-		layer.style.position = "absolute"
-		layer.style.bottom = "-0.5px" // instead of 0… to make sure hover effects look nicer (but it might not do much in the end)
-		layer.style.height = "1px"
-		layer.style.width = `calc(100% - 50px)`
-		layer.style.left = `50px`
-		layer.style.visibility = "visible" // to be configured
+		const layer = commonComponents_tables.New_tableCell_separatorLayer()
 		self.cellSeparatorLayer = layer
 		self.layer.appendChild(layer)
 	}
