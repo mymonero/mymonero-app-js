@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict";
-//
+
 const globalObject = global;
 const globalPromiseKey = "MyMoneroLibAppBridge_Singleton.electron"
 if (typeof globalObject[globalPromiseKey] === 'undefined' || !globalObject[globalPromiseKey]) {
