@@ -27,15 +27,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-const Views__cssRules = require('../../Views/cssRules.web')
 const CustomSelectView = require('../../SelectView/CustomSelectView.web')
-//
-const NamespaceName = "ListCustomSelectView"
-const haveCSSRulesBeenInjected_documentKey = "__haveCSSRulesBeenInjected_"+NamespaceName
-const cssRules = []
-function __injectCSSRules_ifNecessary() { Views__cssRules.InjectCSSRules_ifNecessary(haveCSSRulesBeenInjected_documentKey, cssRules) }
-//
+
 class ListCustomSelectView extends CustomSelectView
 {
 	// Lifecycle - Setup - Overrides
@@ -86,8 +79,7 @@ class ListCustomSelectView extends CustomSelectView
 		//
 		super.setup()
 		// post-super.setup()
-		__injectCSSRules_ifNecessary() // may as well do this here
-		self.layer.classList.add(NamespaceName) // must add class for css rules
+		self.layer.classList.add("ListCustomSelectView") // must add class for css rules
 		// then hydrate UI
 		listController.ExecuteWhenBooted(function()
 		{ 

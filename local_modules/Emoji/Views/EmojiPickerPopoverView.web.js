@@ -59,7 +59,7 @@ class EmojiPickerPopoverView extends View
 			layer.style.height = bg_h+"px"
 			layer.style.boxSizing = "border-box"
 			// using a whole image instead of css for this due to more complex styling
-			layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"Emoji/Resources/popoverBG@3x.png)"
+			layer.style.backgroundImage = "url(../../Emoji/Resources/popoverBG@3x.png)"
 			layer.style.backgroundPosition = "0px 0px"
 			layer.style.backgroundRepeat = "no-repeat"
 			layer.style.backgroundSize = `${bg_w}px ${bg_h}px`

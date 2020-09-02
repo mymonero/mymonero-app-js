@@ -1,3 +1,0 @@
-[submodule "local_modules/mymonero_libapp_js"]
-	path = local_modules/mymonero_libapp_js
-	url = https://github.com/mymonero/mymonero-libapp-js
