@@ -17,13 +17,10 @@
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
-    "afterSign": "./bin/notarize.js",
     "mac": {
       "category": "public.app-category.finance",
-      "identity": "MyMonero Pty Ltd (NLN5D623Y3)",
       "target": [
-        "dmg",
-        "mas"
+        "dmg"
       ]
     },
     "win": {
@@ -58,25 +55,28 @@
     "async": "3.1.0",
     "axios": "^0.19.2",
     "bitcoin-address-validation": "^1.0.2",
-    "electron-context-menu": "^1.0.0",
+    "electron-context-menu": "0.15.1",
     "electron-log": "3.0.9",
-    "electron-updater": "^4.2.2",
+    "electron-updater": "4.2.0",
     "fastclick": "1.0.6",
     "html5-fs": "0.1.1",
     "jsqr": "1.1.1",
-    "qrcode": "^1.4.4",
+    "qrcode": "1.2.2",
     "uuid": "3.3.2",
     "velocity-animate": "1.5.2",
     "xhr": "2.5.0"
   },
   "devDependencies": {
-    "electron": "^9.0.0",
+    "babel-core": "6.26.3",
+    "babel-loader": "8.0.6",
+    "babel-minify": "0.5.1",
+    "electron": "^8.0.0",
     "electron-builder": "22.8.0",
     "electron-notarize": "^1.0.0",
     "eslint": "5.6.0",
     "request": "2.88.0",
-    "webpack": "4.41.6",
-    "webpack-cli": "3.3.12",
+    "webpack": "4.41.2",
+    "webpack-cli": "3.3.10",
     "webpack-merge": "4.2.2",
     "worker-loader": "2.0.0"
   }
