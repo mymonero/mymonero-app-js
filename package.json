@@ -10,13 +10,14 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "start": "electron ./local_modules/electron_main/electron_main.js",
-    "dev": "NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
+    "dev": "cross-env NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
     "postinstall": "electron-builder install-app-deps",
     "submodules": "git submodule update --init --recursive & git submodule foreach --recursive git fetch & git submodule foreach --recursive git checkout master & git submodule foreach --recursive git pull --ff-only origin master"
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
+    "publish": "github",
     "mac": {
       "category": "public.app-category.finance",
       "target": [
@@ -26,12 +27,14 @@
     "win": {
       "certificateSubjectName": "MyMonero (PTY) LTD",
       "target": [
-        "appx",
-        "msi"
+        "nsis"
       ]
     },
     "nsis": {
-      "perMachine": true
+      "oneClick": true,
+      "perMachine": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": true
     },
     "linux": {
       "target": [
@@ -69,6 +72,7 @@
     "babel-core": "6.26.3",
     "babel-loader": "8.0.6",
     "babel-minify": "0.5.1",
+    "cross-env": "^7.0.2",
     "electron": "^8.0.0",
     "electron-builder": "^22.8.x",
     "electron-notarize": "^1.0.0",
