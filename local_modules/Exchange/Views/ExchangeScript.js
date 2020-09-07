@@ -19,6 +19,7 @@
     let exchangeXmrDiv = document.getElementById('exchange-xmr');
     let orderStarted = false;
     let orderCreated = false;
+    let orderStatusDiv = document.getElementById("exchangePage");
     let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
     backBtn.style.display = "none";
     let addressValidation = document.getElementById('address-messages');
@@ -50,12 +51,30 @@
         BTCcurrencyInput.value = "";
     }
 
-    BTCcurrencyInput.addEventListener('keyup', Listeners.BTCCurrencyInput);
+    BTCcurrencyInput.addEventListener('keyup', function(event) {
+        validationMessages.innerHTML = '';
+        Listeners.btcBalanceChecks(ExchangeFunctions.currentRates);
+    });
+
+     
 
     backBtn.addEventListener('click', backButtonClickListener);
 
 
-    // TODO: refactor this into ExchangeListeners.js
+    let viewOrderBtn = document.createElement('div');
+    viewOrderBtn.id = "view-order";
+    viewOrderBtn.innerHTML = "View Order";
+    viewOrderBtn.addEventListener('click', function() {
+        orderStatusDiv.classList.add('active');
+        orderStatusDiv.classList.remove('active');
+        exchangeXmrDiv.classList.add('active');
+        viewOrderBtn.style.display = "none";
+    });
+
+
+    let nav_right = document.getElementsByClassName('nav-button-right-container')[0];
+    nav_right.appendChild(viewOrderBtn);
+
     orderBtn.addEventListener('click', function() {
         let validationError = false;
         if (orderStarted == true) {
@@ -71,9 +90,6 @@
             validationError = true;
             return;
         }
-        orderBtn.style.display = "none";
-        orderStarted = true;
-        backBtn.style.display = "block";
         loaderPage.classList.add('active');
         let amount = document.getElementById('XMRcurrencyInput').value;
         let amount_currency = 'XMR';
@@ -81,6 +97,9 @@
         let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
             order = response.data;
             orderCreated = true;
+            orderBtn.style.display = "none";
+            orderStarted = true;
+            backBtn.style.display = "block";
         }).then((response) => {
             backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
             orderTimer = setInterval(() => {
@@ -104,7 +123,6 @@
                 })
             }, 1000);
             document.getElementById("orderStatusPage").classList.remove('active');
-            let orderStatusDiv = document.getElementById("exchangePage");
             loaderPage.classList.remove('active');
             orderStatusDiv.classList.add('active');
             exchangeXmrDiv.classList.add('active');

@@ -77,7 +77,7 @@ class ExchangeContentView extends ListView {
         if (walletDiv === null) {
             return;
         }
-        console.log(self);
+        
         // if the user has selected a wallet, we update the balances for them
         if (walletDiv.dataset.walletchosen == "true") {
             let selectedWallet = document.getElementById('selected-wallet');
@@ -403,6 +403,8 @@ class ExchangeContentView extends ListView {
                 layer.style.fontWeight = "300"
                 }
             }
+
+            
             // view.layer.addEventListener(
             //     "click",
             //     function(e)
