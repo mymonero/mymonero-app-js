@@ -244,6 +244,4 @@ module.exports = {
     xmrBalanceChecks,
     BTCCurrencyInput
     // orderBtnClickListener
- };
-
-    
+};
