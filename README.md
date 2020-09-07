@@ -24,7 +24,7 @@
 
 See `LICENSE.txt` for license.
 
-All app source code and assets copyright © 2014-2019 by MyMonero. All rights reserved.
+All app source code and assets copyright © 2014-2020 by MyMonero. All rights reserved.
 
 
 ## Downloads
@@ -47,8 +47,6 @@ The desktop app is built on [Electron](https://www.electronjs.org/) and can be p
 ### Where is user data saved?
 
 * Desktop: See Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
-
-* Browser: None (no data is saved)
 
 
 
