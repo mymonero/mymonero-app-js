@@ -1,6 +1,13 @@
-let Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
+const Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
 
 const validationMessages = document.getElementById('validation-messages');
+const addressValidation = document.getElementById('address-messages');
+const orderBtn = document.getElementById("order-button");
+const loaderPage = document.getElementById('loader');
+
+let exchangeXmrDiv = document.getElementById('exchange-xmr');
+let backBtn = document.getElementsByClassName('nav-button-left-container')[0];  
+
 
 
 BTCAddressInputListener = function() {
@@ -157,10 +164,86 @@ function clearCurrencies() {
     BTCcurrencyInput.value = "";
 }
 
+// TODO: Finish refactoring this to clean up ExchangeScript.js
+// orderBtnClickListener = function(orderStarted, ExchangeFunctions) {
+//     let validationError = false;
+//     if (orderStarted == true) {
+//         return;
+//     } 
+//     if (validationMessages.firstChild !== null) {
+//         validationMessages.firstChild.style.color = "#ff0000";
+//         validationError = true;
+//         return;
+//     }
+//     if (addressValidation.firstChild !== null) {
+//         addressValidation.firstChild.style.color = "#ff0000";
+//         validationError = true;
+//         return;
+//     }
+//     orderBtn.style.display = "none";
+//     orderStarted = true;
+//     backBtn.style.display = "block";
+//     loaderPage.classList.add('active');
+//     let amount = document.getElementById('XMRcurrencyInput').value;
+//     let amount_currency = 'XMR';
+//     let btc_dest_address = document.getElementById('btcAddress').value;
+//     let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
+//         order = response.data;
+//         orderCreated = true;
+//     }).then((response) => {
+//         backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
+//         orderTimer = setInterval(() => {
+//             ExchangeFunctions.getOrderStatus().then(function (response) {
+//                 Utils.renderOrderStatus(response);
+//                 let expiryTime = response.expires_at;
+//                 let secondsElement = document.getElementById('secondsRemaining');
+//                 let minutesElement = document.getElementById('minutesRemaining');
+//                 if (secondsElement !== null) {
+                    
+//                     let minutesElement = document.getElementById('minutesRemaining');
+//                     let timeRemaining = Utils.getTimeRemaining(expiryTime);
+//                     minutesElement.innerHTML = timeRemaining.minutes;
+//                     if (timeRemaining.seconds <= 9) {
+//                         timeRemaining.seconds = "0" + timeRemaining.seconds;
+//                     }
+//                     secondsElement.innerHTML = timeRemaining.seconds;
+//                     let xmr_dest_address_elem = document.getElementById('XMRtoAddress');
+//                     xmr_dest_address_elem.value = response.receiving_subaddress; 
+//                 }
+//             })
+//         }, 1000);
+//         document.getElementById("orderStatusPage").classList.remove('active');
+//         let orderStatusDiv = document.getElementById("exchangePage");
+//         loaderPage.classList.remove('active');
+//         orderStatusDiv.classList.add('active');
+//         exchangeXmrDiv.classList.add('active');
+//     }).catch((error) => {
+//         if (error.response) {
+//             let errorDiv = document.createElement("div");
+//             errorDiv.innerText = "An unexpected error occurred";
+//             validationMessages.appendChild(errorDiv);
+//         } else if (error.request) {
+//             let errorDiv = document.createElement("div");
+//             errorDiv.innerText = "XMR.to's server is unreachable. Please try again shortly.";
+//             validationMessages.appendChild(errorDiv);
+//         } else {
+//             let errorDiv = document.createElement("div");
+//             errorDiv.innerText = error.message;
+//             validationMessages.appendChild(errorDiv);
+//         }
+//     });
+// }
+
+
+
 module.exports = { 
     BTCAddressInputListener,
     XMRCurrencyInputKeydownListener,
     BTCCurrencyKeydownListener,
     walletSelectorClickListener,
     xmrBalanceChecks,
-    BTCCurrencyInput };
+    BTCCurrencyInput
+    // orderBtnClickListener
+ };
+
+    

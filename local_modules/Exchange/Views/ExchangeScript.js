@@ -55,7 +55,7 @@
     backBtn.addEventListener('click', backButtonClickListener);
 
 
-    
+    // TODO: refactor this into ExchangeListeners.js
     orderBtn.addEventListener('click', function() {
         let validationError = false;
         if (orderStarted == true) {
