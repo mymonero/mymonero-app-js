@@ -6,7 +6,7 @@
 
     let validate = require('bitcoin-address-validation');
     let Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
-    let ExchangeFunctions = require('../../Exchange/Javascript/ExchangeFunctions');
+    let ExchangeFunctions = require('xmrto-lib');
     let Listeners = require('../../Exchange/Javascript/ExchangeListeners');
     let loaderPage = document.getElementById('loader');
     let order = {};
