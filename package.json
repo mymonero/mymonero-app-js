@@ -64,7 +64,7 @@
     "uuid": "3.3.2",
     "velocity-animate": "1.5.2",
     "xhr": "2.5.0",
-    "xmrto-lib": "file:../xmrto-lib"
+    "xmrto-lib": "^0.1.0"
   },
   "devDependencies": {
     "babel-core": "6.26.3",
