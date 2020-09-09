@@ -140,7 +140,6 @@ class Wallet extends EventEmitter
 	__setup_fetchExistingDoc_andAwaitBoot(context)
 	{
 		const self = this
-		console.log('inside __setup_fetchExistingDoc_andAwaitBoot');
 		self.context.persister.DocumentsWithIds(
 			wallet_persistence_utils.CollectionName,
 			[ self._id ], // cause we're saying we have an _id passed in…
@@ -1446,7 +1445,6 @@ class Wallet extends EventEmitter
 				tx_key: params.tx_key,
 				target_address: params.target_address,
 			};
-			console.log(args);
 			fn(null, mockedTransaction, params.isXMRAddressIntegrated, params.integratedAddressPIDForDisplay)
 			//
 			// manually insert .. and subsequent fetches from the server will be 
@@ -1496,7 +1494,6 @@ class Wallet extends EventEmitter
 		{
 			self.context.hostedMoneroAPIClient.SubmitRawTx(req_params, cb)
 		}
-		console.log(args);
 		self.context.monero_utils.async__send_funds(args)
 	}
 	//

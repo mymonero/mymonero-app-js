@@ -31,7 +31,7 @@ const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
 const emoji_web = require('../../Emoji/emoji_web')
 const ExchangeFunctions = require('../Javascript/ExchangeFunctions')
-const ExchangeUtils = require('../Javascript/ExchangeUtililtyFunctions');
+const ExchangeUtils = require('../Javascript/ExchangeUtilityFunctions');
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
@@ -77,6 +77,7 @@ class ExchangeContentView extends ListView {
         if (walletDiv === null) {
             return;
         }
+        
         // if the user has selected a wallet, we update the balances for them
         if (walletDiv.dataset.walletchosen == "true") {
             let selectedWallet = document.getElementById('selected-wallet');
@@ -84,18 +85,17 @@ class ExchangeContentView extends ListView {
             let selectorInt = parseInt(selectorOffset);
             let wallet = self.context.wallets[selectorInt];
             let walletBalance = document.getElementById('selected-wallet-balance'); 
-            walletBalance.innerText = `${self.Balance_FormattedString(self.context.wallets[selectorOffset])} XMR`;
+            walletBalance.innerText = `${self.UnlockedBalance_FormattedString(self.context.wallets[selectorOffset])} XMR available`;
         } else {
-
             let walletOptions = ``;
             for (let i = 0; i < context.wallets.length; i++) {
                 let wallet = context.wallets[i];
                 let swatch = wallet.swatch.substr(1);
                 walletOptions = walletOptions + `
-                <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.Balance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
+                <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.UnlockedBalance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
                     <div class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${swatch}@3x.png');"></div>                        
                     <div class="walletLabel">${wallet.walletLabel}</div>
-                    <div class="description-label" style="position: relative; box-sizing: border-box; padding: 0px 38px 4px 66px; font-size: 13px; font-family: Native-Light, input, menlo, monospace; font-weight: 100; -webkit-font-smoothing: subpixel-antialiased; max-height: 32px; color: rgb(158, 156, 158); word-break: normal; overflow: hidden; text-overflow: ellipsis; cursor: default;">${self.Balance_FormattedString(wallet)} XMR</div>
+                    <div class="description-label" style="position: relative; box-sizing: border-box; padding: 0px 38px 4px 66px; font-size: 13px; font-family: Native-Light, input, menlo, monospace; font-weight: 100; -webkit-font-smoothing: subpixel-antialiased; max-height: 32px; color: rgb(158, 156, 158); word-break: normal; overflow: hidden; text-overflow: ellipsis; cursor: default;">${self.UnlockedBalance_FormattedString(wallet)} XMR available</div>
                 </div>
                 `;
             }         
@@ -106,10 +106,10 @@ class ExchangeContentView extends ListView {
             let defaultOffset = 0;
             let defaultWallet = context.wallets[defaultOffset];
             let walletSelectOptions = `
-            <div data-walletoffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletbalance="${self.Balance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
+            <div data-walletoffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletbalance="${self.UnlockedBalance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
                     <div id="selected-wallet-icon" class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${defaultWallet.swatch.substr(1)}@3x.png')"></div>
                     <div id="selected-wallet-label" class="walletName">${defaultWallet.walletLabel}</div>
-                    <div id="selected-wallet-balance" class="description-label">${self.Balance_FormattedString(defaultWallet)} XMR</div>
+                    <div id="selected-wallet-balance" class="description-label">${self.UnlockedBalance_FormattedString(defaultWallet)} XMR available</div>
                 </div>
                 <div id="wallet-options" class="options_containerView">
                     <div class="options_cellViews_containerView" style="position: relative; left: 0px; top: 0px; width: 100%; height: 100%; z-index: 20; overflow-y: auto; max-height: 174.9px;">
@@ -135,13 +135,15 @@ class ExchangeContentView extends ListView {
         const self = this
         super._setup_views()
         self._setup_emptyStateContainerView()
-        
+        self.observerIsSet = false;
+
         let interval = setInterval(function() {
+            // if wallets exist, setup the wallet selector for the exchange page
             if (self.context.wallets !== undefined) {
                 self._setup_walletExchangeOptions(self.context);
             }
             self._refresh_sending_fee();
-        }, 5000);
+        }, 4000);
         self.keepExchangeOptionsUpdated = interval; // we use a named interval attached to the view so that we can stop it if we ever want to;
     }
     
@@ -211,9 +213,10 @@ class ExchangeContentView extends ListView {
                 */
                 function handle_response_fn(err, mockedTransaction)
                 {
+                    let str;
                     let monerodUpdates = document.getElementById('monerod-updates');
                     if (err) {
-                        let str = typeof err === 'string' ? err : err.message;
+                        str = typeof err === 'string' ? err : err.message;
                         monerodUpdates.innerText = str;
                         return
                     }
@@ -283,6 +286,12 @@ class ExchangeContentView extends ListView {
         }
         return balance_JSBigInt
     }
+    UnlockedBalance_FormattedString(wallet)
+	{ // provided for convenience mainly so consumers don't have to require monero_utils
+        let self = this;
+		let balance_JSBigInt = self.UnlockedBalance_JSBigInt(wallet);
+		return monero_amount_format_utils.formatMoney(balance_JSBigInt) 
+	}
     Balance_FormattedString(wallet)
 	{ // provided for convenience mainly so consumers don't have to require monero_utils
         let self = this;
@@ -394,6 +403,8 @@ class ExchangeContentView extends ListView {
                 layer.style.fontWeight = "300"
                 }
             }
+
+            
             // view.layer.addEventListener(
             //     "click",
             //     function(e)

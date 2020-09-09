@@ -100,22 +100,21 @@ class RootTabBarAndContentView extends TabBarAndContentView {
     _setup_addTabBarContentViews() {
         const self = this
         const context = self.context
-        self.walletsTabContentView = new WalletsTabContentView({}, context)
-        self.sendTabContentView = new SendTabContentView({}, context)
-        self.requestTabContentView = new RequestTabContentView({}, context)
-        self.contactsTabContentView = new ContactsTabContentView({}, context)
-        self.exchangeTabContentView = new ExchangeTabContentView({}, context)
-        self.settingsTabContentView = new SettingsTabContentView({}, context)
-        self.SetTabBarContentViews(
-            [
-                self.walletsTabContentView,
-                self.sendTabContentView,
-                self.requestTabContentView,
-                self.contactsTabContentView,
-                self.exchangeTabContentView,
-                self.settingsTabContentView
-            ]
-        )
+        
+        let contentViewsArr = [
+            self.walletsTabContentView = new WalletsTabContentView({}, context),
+            self.sendTabContentView = new SendTabContentView({}, context),
+            self.requestTabContentView = new RequestTabContentView({}, context),
+            self.contactsTabContentView = new ContactsTabContentView({}, context),
+            self.settingsTabContentView = new SettingsTabContentView({}, context)
+        ]
+
+        if (process.env.ENABLE_EXCHANGE === "true") {
+            self.exchangeTabContentView = new ExchangeTabContentView({}, context)
+            contentViewsArr.push(self.exchangeTabContentView);
+        }
+
+        self.SetTabBarContentViews(contentViewsArr)
     }
 
     _setup_startObserving() {

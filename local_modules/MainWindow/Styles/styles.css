@@ -1649,6 +1649,37 @@ div#currency-table {
     cursor: default;
 }
 
+#view-order {
+    width: auto;
+    margin-top: 10px;
+    background-image: none !important;
+    min-width: 103px;
+    font-weight: bold !important;
+    float: right;
+    background-color: #00c6ff;
+    box-shadow: 0 0.5px 1px 0 #161416, inset 0 0.5px 0 0 rgba(255, 255, 255, 0.20);
+    color: #161416;
+    cursor: default;
+    -webkit-font-smoothing: subpixel-antialiased;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    transition: background-color 0.1s ease-out;
+    background-size: 10px 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 3px;
+    height: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    text-align: center;
+    border: none;
+    text-decoration: none;
+    line-height: 24px;
+    box-sizing: border-box;
+    width: auto;
+    padding: 0 8px;
+    display: none;
+}
+
 .label-spacer {
     border-radius: 3px; 
     background-color: rgb(56, 54, 56); 
