@@ -6,7 +6,8 @@
 
     let validate = require('bitcoin-address-validation');
     let Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
-    let ExchangeFunctions = require('xmrto-lib');
+    let ExchangeLibrary = require('mymonero-exchange');
+    let ExchangeFunctions = new ExchangeLibrary();
     let Listeners = require('../../Exchange/Javascript/ExchangeListeners');
     let loaderPage = document.getElementById('loader');
     let order = {};
@@ -23,7 +24,10 @@
     let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
     backBtn.style.display = "none";
     let addressValidation = document.getElementById('address-messages');
+    const selectedWallet = document.getElementById('selected-wallet');
 
+
+    console.log(ExchangeFunctions);
     ExchangeFunctions.getRatesAndLimits().then(() => {
         loaderPage.classList.remove('active');
         exchangePage.classList.add("active");
@@ -90,56 +94,31 @@
             validationError = true;
             return;
         }
-        loaderPage.classList.add('active');
-        let amount = document.getElementById('XMRcurrencyInput').value;
-        let amount_currency = 'XMR';
         let btc_dest_address = document.getElementById('btcAddress').value;
-        let test = ExchangeFunctions.createNewOrder(amount, amount_currency, btc_dest_address).then((response) => {
-            order = response.data;
-            orderCreated = true;
-            orderBtn.style.display = "none";
-            orderStarted = true;
-            backBtn.style.display = "block";
-        }).then((response) => {
-            backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-            orderTimer = setInterval(() => {
-                ExchangeFunctions.getOrderStatus().then(function (response) {
-                    Utils.renderOrderStatus(response);
-                    let expiryTime = response.expires_at;
-                    let secondsElement = document.getElementById('secondsRemaining');
-                    let minutesElement = document.getElementById('minutesRemaining');
-                    if (secondsElement !== null) {
-                        
-                        let minutesElement = document.getElementById('minutesRemaining');
-                        let timeRemaining = Utils.getTimeRemaining(expiryTime);
-                        minutesElement.innerHTML = timeRemaining.minutes;
-                        if (timeRemaining.seconds <= 9) {
-                            timeRemaining.seconds = "0" + timeRemaining.seconds;
-                        }
-                        secondsElement.innerHTML = timeRemaining.seconds;
-                        let xmr_dest_address_elem = document.getElementById('XMRtoAddress');
-                        xmr_dest_address_elem.value = response.receiving_subaddress; 
-                    }
-                })
-            }, 1000);
-            document.getElementById("orderStatusPage").classList.remove('active');
-            loaderPage.classList.remove('active');
-            orderStatusDiv.classList.add('active');
-            exchangeXmrDiv.classList.add('active');
-        }).catch((error) => {
-            if (error.response) {
-                let errorDiv = document.createElement("div");
-                errorDiv.innerText = "An unexpected error occurred";
-                validationMessages.appendChild(errorDiv);
-            } else if (error.request) {
-                let errorDiv = document.createElement("div");
-                errorDiv.innerText = "XMR.to's server is unreachable. Please try again shortly.";
-                validationMessages.appendChild(errorDiv);
-            } else {
-                let errorDiv = document.createElement("div");
-                errorDiv.innerText = error.message;
-                validationMessages.appendChild(errorDiv);
-            }
+        
+        orderBtn.style.display = "none";
+        orderStarted = true;
+        backBtn.style.display = "block";
+        loaderPage.classList.add('active');
+
+        let out_amount = document.getElementById('BTCcurrencyInput').value;
+        let in_currency = 'XMR';
+        let out_currency = 'BTC';
+        let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((response) => {
+            console.log(response);
+            console.log(ExchangeFunctions.offer);
+        }).then(() => {
+            let selectedWallet = document.getElementById('selected-wallet');
+            console.log(ExchangeFunctions);
+            console.log(btc_dest_address);
+            console.log(selectedWallet);
+            ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((response) => {
+                document.getElementById("orderStatusPage").classList.remove('active');
+                loaderPage.classList.remove('active');
+                orderStatusDiv.classList.add('active');
+                exchangeXmrDiv.classList.add('active');
+            });
         });
+        
     });
 })()
