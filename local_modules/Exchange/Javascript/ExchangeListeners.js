@@ -51,10 +51,12 @@ XMRCurrencyInputKeydownListener = function() {
         
         let dataAttributes = event.srcElement.parentElement.dataset;
         selectedWallet.dataset.walletlabel = dataAttributes.walletlabel;
+        selectedWallet.dataset.walletpublicaddress = dataAttributes.walletpublicaddress;
         selectedWallet.dataset.walletbalance = dataAttributes.walletbalance;
         selectedWallet.dataset.swatch = dataAttributes.swatch;
         selectedWallet.dataset.walletselected = true;
         selectedWallet.dataset.walletoffset = dataAttributes.walletoffset;
+        console.log('refund address:', dataAttributes.walletpublicaddress);
         let walletLabel = document.getElementById('selected-wallet-label'); 
         let walletBalance = document.getElementById('selected-wallet-balance'); 
         let walletIcon = document.getElementById('selected-wallet-icon'); 
