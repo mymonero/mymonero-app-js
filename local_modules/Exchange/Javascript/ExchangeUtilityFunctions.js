@@ -70,30 +70,16 @@ function determineAddressNetwork(address) {
 
 // end of functions to check Bitcoin address
 
-function renderOrderStatus(order) {
-    
-    // this is a hackish way to render out all data we receive from order_status_updates from XMR.to. The appropriate elements exist in Body.html
-
+function renderOrderStatus(order) {    
     let idArr = [
-        "btc_amount",
-        "btc_amount_partial",
-        "btc_dest_address",
-        "btc_num_confirmations_threshold",
-        "created_at",
+        "in_amount_remaining",
+        "out_amount",
+        "status",
         "expires_at",
-        "incoming_amount_total",
-        "incoming_num_confirmations_remaining",
-        "incoming_price_btc",
-        "receiving_subaddress",
-        "recommended_mixin",
-        "remaining_amount_incoming",
-        "seconds_till_timeout",
-        "state",
-        "uses_lightning",
-        "uuid"
+        "provider_order_id"
     ];
 
-    let test = document.getElementById('btc_amount');
+    let test = document.getElementById('exchangePage');
     if (!(test == null)) {
         idArr.forEach((item, index) => {
             document.getElementById(item).innerHTML = order[item];
