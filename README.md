@@ -72,11 +72,9 @@ Please don't use the Issues tracker for general support or inquiries. You can al
 
 3. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
 
-4. **NEW** Be sure to set up and download all required Git submodules with `bin/update_submodules`. 
+4. Install all required `node_modules` by executing `npm install`.
 
-	* Note: At present, run this command after pulling this repo as necessary to keep all sub-modules up-to-date. 
-
-5. Install all required `node_modules` by executing `npm install`.
+5. Run `npm start` to open the wallet without building.
 
 ## Building for Production
 
