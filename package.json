@@ -11,7 +11,7 @@
     "dist": "electron-builder",
     "start": "electron ./local_modules/electron_main/electron_main.js",
     "dev": "cross-env NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && bin/update_submodules",
     "submodules": "git submodule update --init --recursive & git submodule foreach --recursive git fetch & git submodule foreach --recursive git checkout master & git submodule foreach --recursive git pull --ff-only origin master"
   },
   "build": {
