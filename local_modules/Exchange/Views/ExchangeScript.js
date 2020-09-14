@@ -20,7 +20,7 @@
     let exchangeXmrDiv = document.getElementById('exchange-xmr');
     let orderStarted = false;
     let orderCreated = false;
-    let orderStatusDiv = document.getElementById("exchangePage");
+    let orderStatusPage = document.getElementById("orderStatusPage");
     let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
     backBtn.style.display = "none";
     let addressValidation = document.getElementById('address-messages');
@@ -69,9 +69,10 @@
     viewOrderBtn.id = "view-order";
     viewOrderBtn.innerHTML = "View Order";
     viewOrderBtn.addEventListener('click', function() {
-        orderStatusDiv.classList.add('active');
-        orderStatusDiv.classList.remove('active');
-        exchangeXmrDiv.classList.add('active');
+        orderStatusPage.classList.add('active');
+        orderStatusPage.classList.remove('active');
+        let exchangePage = document.getElementById('exchangePage');
+        exchangePage.classList.add('active');
         viewOrderBtn.style.display = "none";
     });
 
