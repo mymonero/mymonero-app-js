@@ -1762,7 +1762,7 @@ table.side-padding {
         margin-right: 0px;
         text-indent: 20px;
         height: 24px;
-        top: -1px;    
+        top: 0px;    
     }
 
     #exchangePage .currencySelect {
@@ -1781,5 +1781,8 @@ table.side-padding {
     }
     #clock {
         text-align: right;
+    }
+    .label-spacing {
+        padding: 0px 0px 0px 0px !important;
     }
 }
