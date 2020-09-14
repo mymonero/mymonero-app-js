@@ -6,7 +6,7 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
 
         // for debug, we use our own xmr_wallet and we send a tiny amount of XMR. Change this once we can send funds
         if (process.env.EXCHANGE_TESTMODE == "true") {
-            xmr_send_address = process.env.EXCHANGE_TESTADDRESS;
+            xmr_send_address = process.env.EXCHANGE_TESTADDRESS; // an XMR wallet address under your control
             xmr_amount = 0.000001;    
         } else {
 
