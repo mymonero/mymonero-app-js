@@ -131,9 +131,13 @@ Contributors to each release are credited in release notes.
 
 ### Core Contributors
 
-* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Lead maintainer; MyMonero lead
+* 🍕 `Tekkzbadger` ([Devin Pearson](https://github.com/devinpearson)) Lead maintainer; core developer
+
+* 💱 `jkarlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
 
 * 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
+
+* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Former core maintainer; MyMonero core contributor
 
 * 😎 `vtnerd` ([Lee Clagett](https://github.com/vtnerd)) Lead back-end developer
 
