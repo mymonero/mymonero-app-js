@@ -63,11 +63,11 @@
     "electron-updater": "4.2.0",
     "fastclick": "1.0.6",
     "jsqr": "1.1.1",
+    "mymonero-exchange": "^0.1.0",
     "qrcode": "^1.4.4",
     "uuid": "3.3.2",
     "velocity-animate": "1.5.2",
-    "xhr": "2.5.0",
-    "xmrto-lib": "^0.1.0"
+    "xhr": "2.5.0"
   },
   "devDependencies": {
     "babel-core": "6.26.3",
