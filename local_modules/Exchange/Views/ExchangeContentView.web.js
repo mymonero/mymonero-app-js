@@ -199,6 +199,7 @@ class ExchangeContentView extends ListView {
             layer.id = "exchange-xmr";
             layer.innerText = "Exchange XMR";
             layer.addEventListener('click', function() {
+                
                 /* 
                 * We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon. 
                 * We pass them as the final argument to ExchangeUtils.sendFunds
@@ -225,13 +226,22 @@ class ExchangeContentView extends ListView {
                     str = "Sent successfully.";
                     monerodUpdates.innerText = str;
                 }
-                let xmr_amount = document.getElementById('XMRcurrencyInput').value;
-                let xmr_send_address = document.getElementById('XMRtoAddress').value;
-                let xmr_amount_str = "" + xmr_amount.value;
+                let test = document.getElementById('in_amount');
+                console.log(test);
+                console.log(test.innerHTML);
+                console.log(test.value);
+                let xmr_amount = document.getElementById('in_amount').innerHTML;
+                let xmr_send_address = document.getElementById('receiving_subaddress').innerHTML;
+                let xmr_amount_str = "" + xmr_amount;
                 
+                console.log(xmr_amount);
+                console.log(xmr_send_address);
+                console.log(xmr_amount_str);
+
                 let sweep_wallet = false; // TODO: Add sweeping functionality
-                
-                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
+                // function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn) {
+                console.log('', xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
+                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
             });
 
 

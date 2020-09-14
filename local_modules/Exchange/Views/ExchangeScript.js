@@ -135,7 +135,7 @@
                                 timeRemaining.seconds = "0" + timeRemaining.seconds;
                             }
                             secondsElement.innerHTML = timeRemaining.seconds;
-                            let xmr_dest_address_elem = document.getElementById('XMRtoAddress');
+                            let xmr_dest_address_elem = document.getElementById('in_address');
                             xmr_dest_address_elem.value = response.receiving_subaddress; 
                         }
                     })
