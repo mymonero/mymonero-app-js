@@ -76,11 +76,10 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
 
 
 function validateBTCAddress(address) {
-    
     if (typeof(validate(address)) !== Object) {
         return false;
     }
-    // TODO: write a proper validation routine.
+    // TODO: check for and fail on testnet address? Force testnet address on ENABLE_TESTMODE?
 
 
     return true;
