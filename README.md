@@ -24,7 +24,7 @@
 
 See `LICENSE.txt` for license.
 
-All app source code and assets copyright © 2014-2019 by MyMonero. All rights reserved.
+All app source code and assets copyright © 2014-2020 by MyMonero. All rights reserved.
 
 
 ## Downloads
@@ -38,7 +38,7 @@ To get set up with the source code, please see **Getting the Source Code** below
 
 ## Requirements & Install Locations
 
-The desktop app is built on [Electron](https://electron.atom.io) and can be packaged to run on modern versions of:
+The desktop app is built on [Electron](https://www.electronjs.org/) and can be packaged to run on modern versions of:
 
 * MacOS (.app)
 * Windows (installer .exe)
@@ -47,8 +47,6 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 ### Where is user data saved?
 
 * Desktop: See Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
-
-* Browser: None (no data is saved)
 
 
 
@@ -74,37 +72,13 @@ Please don't use the Issues tracker for general support or inquiries. You can al
 
 3. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
 
-4. **NEW** Be sure to set up and download all required Git submodules with `bin/update_submodules`. 
+4. Install all required `node_modules` by executing `npm install`.
 
-	* Note: At present, run this command after pulling this repo as necessary to keep all sub-modules up-to-date. 
-
-5. Install all required `node_modules` by executing `npm install`.
-
-#### On Debian/Ubuntu/Linux
-
-* It has been reported that Debian/Ubuntu now calls the `node` binary `nodejs`. One workaround is to create a symlink from /usr/bin/nodejs to /usr/bin/node.
-
-* libgconf is now a requirement for running Electron under Linux, and can be installed with `apt install libgconf-2-4` (https://github.com/electron/electron/issues/1518)
-
-
-## Repo Contents Overview
-* Executable scripts for common tasks are located in `bin/`
-
-* Local, application source code is located in `local_modules/`. This includes bundled/static third-party "Vendor" libraries such as [EmojiOne](http://emojione.com).
-
-* After installation, non-bundled third-party modules (such as Electron) will be located in `node_modules/`.
-
-* App package and build process info is located in `package.json`.
-
-* This readme is located at `README.md`, and the license is located at `LICENSE.txt`.
-
+5. Run `npm start` to open the wallet without building.
 
 ## Building for Production
 
 If you're testing a pre-release version of this app and need to verify its behavior in production mode or want to obtain an installable release bundle, see [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md).
-
-If you want to run the browser build which is provided in the releases, simply unzip it, `cd` into the browser_build directory, then run `python -m SimpleHTTPServer 9100` (replacing the port with one of your choice if needed). Then, open your browser of choice and navigate to `http://localhost:9100`.
-
 
 ## Running in Development Mode
 
@@ -112,14 +86,7 @@ If you want to run the browser build which is provided in the releases, simply u
 
 *Does not require you to package, sign, and install the app, and will cause the Developer window to be shown. Certain features, such as URL opening under MacOS, require production build.*
 
-`bin/start_dev_desktop`
-
-### Browser (Web wallet)
-
-`bin/start_dev_browser`
-
-*Note:* This will run the command `python -m SimpleHTTPServer 9100` to serve `./browser_build`. After this command completes, open your browser of choice and navigate to `http://localhost:9100`.
-
+`npm run dev`
 
 
 ## Contributing
@@ -164,9 +131,13 @@ Contributors to each release are credited in release notes.
 
 ### Core Contributors
 
-* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Lead maintainer; MyMonero lead
+* 🍕 `Tekkzbadger` ([Devin Pearson](https://github.com/devinpearson)) Lead maintainer; core developer
+
+* 💱 `jkarlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
 
 * 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
+
+* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Former core maintainer; MyMonero core contributor
 
 * 😎 `vtnerd` ([Lee Clagett](https://github.com/vtnerd)) Lead back-end developer
 

@@ -32,6 +32,7 @@ const async = require('async')
 const EventEmitter = require('events')
 const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
+const WalletInfo = require('./WalletInfo')
 //
 const monero_txParsing_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_txParsing_utils')
 const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
@@ -88,6 +89,9 @@ class Wallet extends EventEmitter
 		var self = this
 		self.options = options
 		self.context = context
+		if (context.wallets === undefined) {
+			context.wallets = [];
+		}
 		//
 		self.initTimeInstanceUUID = uuidV1() // so that e.g. the list controller can immediately have an id with which to do observation listener fn cache hashes
 		//
@@ -121,12 +125,19 @@ class Wallet extends EventEmitter
 		//
 		// detecting how to set up instance
 		if (self._id !== null) { // need to look up existing document but do not decrypt & boot
-			self.__setup_fetchExistingDoc_andAwaitBoot()
+			self.__setup_fetchExistingDoc_andAwaitBoot(context)
 		} else {
-			self.__setup_andAwaitBootAndLogInAndDocumentCreation()
+			self.__setup_andAwaitBootAndLogInAndDocumentCreation(context)
 		}
+		console.log(self.context);
+		context.wallets = [];
+		context.wallets.forEach((element) => {
+			console.log('checking element');
+			console.log(element);
+		});
+		context.wallets.push(self);
 	}
-	__setup_fetchExistingDoc_andAwaitBoot()
+	__setup_fetchExistingDoc_andAwaitBoot(context)
 	{
 		const self = this
 		self.context.persister.DocumentsWithIds(
@@ -150,12 +161,24 @@ class Wallet extends EventEmitter
 				// and we hang onto this for when the instantiator opts to boot the instance
 				self.initialization_encryptedString = encryptedString
 				self.successfullyInitialized_cb()
+				let checkWalletExists = false;
+				context.wallets.forEach((element) => {
+					console.log('checking element2');
+					if (element._id === self._id) {
+						console.log('success');
+						checkWalletExists = true;
+					}
+				});
+				if (!checkWalletExists) {
+					context.wallets.push(self);
+				}
 			}
 		)
 	}
-	__setup_andAwaitBootAndLogInAndDocumentCreation()
+	__setup_andAwaitBootAndLogInAndDocumentCreation(context)
 	{
 		const self = this
+		console.log('inside __setup_andAwaitBootAndLogInAndDocumentCreation');
 		//
 		// need to create new document. gather metadata & state we need to do so
 		self.isLoggedIn = false
@@ -1222,6 +1245,25 @@ class Wallet extends EventEmitter
 		fn // (err?, mockedTransaction?) -> Void
 	) {
 		const self = this
+		console.log('enteredAddressValue: ' + (enteredAddressValue)); // currency-ready wallet address but not an OpenAlias address (resolve before calling;
+		console.log('resolvedAddress: ' + (resolvedAddress));
+		console.log('manuallyEnteredPaymentID: ' + (manuallyEnteredPaymentID));
+		console.log('resolvedPaymentID: ' + (resolvedPaymentID));
+		console.log('hasPickedAContact: ' + (hasPickedAContact));
+		console.log('resolvedAddress_fieldIsVisible: ' + (resolvedAddress_fieldIsVisible));
+		console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + (manuallyEnteredPaymentID_fieldIsVisible));
+		console.log('resolvedPaymentID_fieldIsVisible: ' + (resolvedPaymentID_fieldIsVisible));
+		console.log('contact_payment_id: ' + (contact_payment_id));
+		console.log('cached_OAResolved_address: ' + (cached_OAResolved_address));
+		console.log('contact_hasOpenAliasAddress: ' + (contact_hasOpenAliasAddress));
+		console.log('contact_address: ' + (contact_address));
+		console.log('raw_amount_string: ' + (raw_amount_string));
+		console.log('isSweepTx: ' + (isSweepTx)); // when console.log('true: ' + (true)), amount will be ignore;
+		console.log('simple_priority: ' + (simple_priority));
+		console.log('preSuccess_nonTerminal_statusUpdate_fn: ' + (preSuccess_nonTerminal_statusUpdate_fn)), // (String) -> Voi;
+		console.log('canceled_fn: ' + (canceled_fn)); // () -> Voi;
+		// TODO: Remove this line once we can send
+		//self.isSendingFunds = false;
 		// state-lock the function
 		if (self.isSendingFunds === true) {
 			const errStr = "Currently already sending funds. Please try again when complete."
@@ -1230,7 +1272,8 @@ class Wallet extends EventEmitter
 			fn(err)
 			return
 		}
-		self.isSendingFunds = true
+		//self.isSendingFunds = true
+
 		//
 		// now that we've done that, we can ask the user idle controller to disable user idle until we're done with this - cause it's not something we want to have interrupted by the user idle controller tearing everything down!!
 		self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
@@ -1336,6 +1379,14 @@ class Wallet extends EventEmitter
 			contact_hasOpenAliasAddress: contact_hasOpenAliasAddress, // may be undefined
 			contact_address: contact_address // may be undefined
 		};
+
+		console.log(args);
+		for (let [property, key] in args) {
+			console.log(key);
+			console.log(property);
+			console.log(`key: ${key}` + `typeof: ${typeof(property)}`);
+		}
+
 		args.willBeginSending_fn = function()
 		{
 			preSuccess_nonTerminal_statusUpdate_fn(statusUpdate_messageBase)
@@ -1605,22 +1656,9 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Delegation - Private - WalletHostPollingController delegation fns
 
-	_WalletHostPollingController_didFetch_accountInfo(
-		total_received_JSBigInt,
-		locked_balance_JSBigInt,
-		total_sent_JSBigInt,
-		spent_outputs,
-		account_scanned_tx_height,
-		account_scanned_block_height,
-		account_scan_start_height,
-		transaction_height,
-		blockchain_height,
-		ratesBySymbol
-	) {
+	_WalletHostPollingController_didFetch_accountInfo(total_received_JSBigInt, locked_balance_JSBigInt, total_sent_JSBigInt, spent_outputs, account_scanned_tx_height, account_scanned_block_height, account_scan_start_height, transaction_height, blockchain_height, ratesBySymbol) {
 		const self = this
-		//
-		// console.log("_didFetch_accountInfo")
-		//
+		
 		setTimeout(
 			function()
 			{ // just so as not to interfere w/ the _didFetch_accountInfo 'meat'
@@ -1629,74 +1667,35 @@ class Wallet extends EventEmitter
 				)
 			}
 		)
+		
 		//
 		// JSBigInts
-		var accountBalance_didActuallyChange = false
 		var existing_total_received = self.total_received || new JSBigInt(0)
 		var existing_total_sent = self.total_sent || new JSBigInt(0)
 		var existing_locked_balance = self.locked_balance || new JSBigInt(0)
-		function isExistingBigIntDifferentFrom(existingValue, newValue)
-		{
-			if (typeof existingValue === 'undefined' || existingValue === null || typeof existingValue !== 'object') { // let's always broadcast-as-diff receiving a newValue when existingValue is undefined, null, or non JSBigInts
-				return true
-			} // now we presume it's a JSBigInt…
-			if (existingValue.compare(newValue) != 0) {
-				return true
-			}
-			return false
-		}
-		if (isExistingBigIntDifferentFrom(existing_total_received, total_received_JSBigInt) === true) {
-			accountBalance_didActuallyChange = true
-		}
-		if (isExistingBigIntDifferentFrom(existing_total_sent, total_sent_JSBigInt) === true) {
-			accountBalance_didActuallyChange = true
-		}
-		if (isExistingBigIntDifferentFrom(existing_locked_balance, locked_balance_JSBigInt) === true) {
-			accountBalance_didActuallyChange = true
-		}
-		self.total_received = total_received_JSBigInt
-		self.total_sent = total_sent_JSBigInt
-		self.locked_balance = locked_balance_JSBigInt
-		//
-		// outputs
-		// TODO: diff spent_outputs
-		var spentOutputs_didActuallyChange = false
-		const existing_spent_outputs = self.spent_outputs
-		if (typeof existing_spent_outputs === 'undefined' || existing_spent_outputs === null || areObjectsEqual(spent_outputs, existing_spent_outputs) === false) {
-			spentOutputs_didActuallyChange = true
-		}
-		self.spent_outputs = spent_outputs
-		//
-		// heights
-		var heights_didActuallyChange = false
-		// TODO: should this actually be account_scanned_height? can we remove account_scanned_tx_height?
-		if (account_scanned_tx_height !== self.account_scanned_tx_height) {
-			heights_didActuallyChange = true
-			self.account_scanned_tx_height = account_scanned_tx_height
-		}
-		if (account_scanned_block_height !== self.account_scanned_block_height) {
-			heights_didActuallyChange = true
-			self.account_scanned_block_height = account_scanned_block_height
-		}
-		if (account_scan_start_height !== self.account_scan_start_height) {
-			heights_didActuallyChange = true
-			self.account_scan_start_height = account_scan_start_height
-		}
-		// NOTE: the following change even when we do not do/get any txs
-		if (transaction_height !== self.transaction_height) {
-			heights_didActuallyChange = true
-			self.transaction_height = transaction_height
-		}
-		if (blockchain_height !== self.blockchain_height) {
-			heights_didActuallyChange = true
-			self.blockchain_height = blockchain_height
-		}
-		//
-		var wasFirstFetchOf_accountInfo = false
-		if (typeof self.dateThatLast_fetchedAccountInfo === 'undefined' || self.dateThatLast_fetchedAccountInfo === null) {
-			wasFirstFetchOf_accountInfo = true
-		}		
-		self.dateThatLast_fetchedAccountInfo = new Date()
+		var existing_spent_outputs = self.spent_outputs;
+		
+		// Instantiate the WalletInfo class and set its values
+		let walletInfoObj = new WalletInfo();
+		walletInfoObj.setValues(self.total_received, self.total_sent, self.locked_balance, self.spent_outputs, self.account_scanned_tx_height, self.account_scanned_block_height, self.account_scan_start_height, self.transaction_height, self.blockchain_height, ratesBySymbol, self.dateThatLast_fetchedAccountInfo);
+		
+		// Do checks on whether or not the data has changed
+		let accountBalance_didActuallyChange = walletInfoObj.checkBalanceForChange(total_received_JSBigInt,total_sent_JSBigInt, locked_balance_JSBigInt)
+		let spentOutputs_didActuallyChange = walletInfoObj.checkSpentOutputsForChange(spent_outputs);
+		let heights_didActuallyChange = walletInfoObj.checkHeightForChange(account_scanned_tx_height, account_scanned_block_height, account_scan_start_height, transaction_height, blockchain_height);
+		let wasFirstFetchOf_accountInfo = walletInfoObj.isFirstFetch();
+		
+		// bring the values back from the WalletInfo class
+		self.total_received = walletInfoObj.totalReceived;
+		self.total_sent = walletInfoObj.totalSent;
+		self.locked_balance = walletInfoObj.lockedBalance;
+		self.spent_outputs = walletInfoObj.spentOutputs;
+		self.account_scanned_tx_height = walletInfoObj.scanStartHeight;
+		self.account_scanned_block_height = walletInfoObj.scannedBlockHeight;
+		self.account_scan_start_height = walletInfoObj.scanStartHeight;
+		self.transaction_height = walletInfoObj.transactionHeight;
+		self.blockchain_height = walletInfoObj.blockchainHeight;
+		self.dateThatLast_fetchedAccountInfo = walletInfoObj.dateLastFetched;
 		//
 		self.saveToDisk(
 			function(err)
@@ -1733,14 +1732,8 @@ class Wallet extends EventEmitter
 			}
 		)
 	}
-	_WalletHostPollingController_didFetch_transactionHistory(
-		account_scanned_height,
-		account_scanned_block_height,
-		account_scan_start_height,
-		transaction_height,
-		blockchain_height,
-		transactions
-	) {
+
+	_WalletHostPollingController_didFetch_transactionHistory(account_scanned_height, account_scanned_block_height, account_scan_start_height, transaction_height, blockchain_height, transactions) {
 		const self = this
 		//
 		var heights_didActuallyChange = false

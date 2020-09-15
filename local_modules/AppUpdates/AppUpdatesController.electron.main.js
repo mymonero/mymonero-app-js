@@ -31,9 +31,23 @@
 const EventEmitter = require('events')
 const { Notification, dialog, ipcMain } = require("electron")
 //
+
+
 const isLinux = typeof process.platform !== 'undefined' && process.platform && /linux/.test(process.platform)
 const isAutoUpdaterSupported = isLinux == false && process.env.NODE_ENV !== 'development' // no support in either case .. in the latter we need a dev yaml file in the asar and I'm just turning it off here to avoid contributor confusion at the error which pops up in the file's absence
 //
+let isPackaged = false;
+
+if (
+  process.mainModule &&
+  process.mainModule.filename.indexOf('app.asar') !== -1
+) {
+  isPackaged = true;
+} else if (process.argv.filter(a => a.indexOf('app.asar') !== -1).length > 0) {
+  isPackaged = true;
+}
+
+
 const useMockedAutoUpdater = false && process.env.NODE_ENV === 'development'
 var autoUpdater = null;
 if (useMockedAutoUpdater) { // `false &&` means don't do it even in dev mode
@@ -68,6 +82,10 @@ class Controller extends EventEmitter
 	{
 		const self = this
 		//
+		if (!isPackaged) {
+			return;
+		}
+		
 		if (autoUpdater == null) {
 			if (isAutoUpdaterSupported) {
 				throw "Illegal autoUpdater=null && isAutoUpdaterSupported"
