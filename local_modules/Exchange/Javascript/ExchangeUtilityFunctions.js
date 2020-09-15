@@ -5,8 +5,12 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
     return new Promise((resolve, reject) => {
 
         // for debug, we use our own xmr_wallet and we send a tiny amount of XMR. Change this once we can send funds
-        xmr_send_address = "45am3uVv3gNGUWmMzafgcrAbuw8FmLmtDhaaNycit7XgUDMBAcuvin6U2iKohrjd6q2DLUEzq5LLabkuDZFgNrgC9i3H4Tm";
-        xmr_amount = 0.000001;
+        if (process.env.EXCHANGE_TESTMODE == "true") {
+            xmr_send_address = process.env.EXCHANGE_TESTADDRESS; // an XMR wallet address under your control
+            xmr_amount = 0.000001;    
+        } else {
+
+        }
 
         let enteredAddressValue = xmr_send_address; //;
         let resolvedAddress = "";
@@ -23,6 +27,25 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
         let raw_amount_string = xmr_amount; // XMR amount in double
         let sweeping = sweep_wallet;
         let simple_priority = 1;
+
+        console.log(enteredAddressValue,
+            resolvedAddress,
+            manuallyEnteredPaymentID,
+            resolvedPaymentID,
+            hasPickedAContact,
+            resolvedAddress_fieldIsVisible,
+            manuallyEnteredPaymentID_fieldIsVisible,
+            resolvedPaymentID_fieldIsVisible,
+            contact_payment_id,
+            cached_OAResolved_address,
+            contact_hasOpenAliasAddress,
+            contact_address,
+            raw_amount_string,
+            sweeping,
+            simple_priority,
+            validation_status_fn,
+            cancelled_fn,
+            handle_response_fn)
 
         wallet.SendFunds(
             enteredAddressValue,
@@ -53,11 +76,10 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
 
 
 function validateBTCAddress(address) {
-    
     if (typeof(validate(address)) !== Object) {
         return false;
     }
-    // TODO: write a proper validation routine.
+    // TODO: check for and fail on testnet address? Force testnet address on ENABLE_TESTMODE?
 
 
     return true;
@@ -70,16 +92,18 @@ function determineAddressNetwork(address) {
 
 // end of functions to check Bitcoin address
 
-function renderOrderStatus(order) {
-    
-    // this is a hackish way to render out all data we receive from order_status_updates from XMR.to. The appropriate elements exist in Body.html
+function renderOrderStatus(order) {    
 
-    let idArr = [
+/*
+
         "btc_amount",
         "btc_amount_partial",
         "btc_dest_address",
         "btc_num_confirmations_threshold",
         "created_at",
+        "in_amount_remaining",
+        "out_amount",
+        "status",
         "expires_at",
         "incoming_amount_total",
         "incoming_num_confirmations_remaining",
@@ -91,12 +115,30 @@ function renderOrderStatus(order) {
         "state",
         "uses_lightning",
         "uuid"
+        "provider_order_id"
+
+*/
+
+
+    let idArr = [
+        "in_amount_remaining",
+        "out_amount",
+        "status",
+        "expires_at",
+        "provider_order_id",
+        "in_address",
+        "in_amount"
     ];
 
-    let test = document.getElementById('btc_amount');
+    let test = document.getElementById('exchangePage');
     if (!(test == null)) {
         idArr.forEach((item, index) => {
-            document.getElementById(item).innerHTML = order[item];
+            if (item == "in_address") {
+                document.getElementById('receiving_subaddress').innerHTML = order[item];
+            } else {
+                document.getElementById(item).innerHTML = order[item];
+            }
+            
         });
     }
 }

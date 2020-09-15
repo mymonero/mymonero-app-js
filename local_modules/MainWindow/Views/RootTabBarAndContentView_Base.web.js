@@ -109,7 +109,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
             self.settingsTabContentView = new SettingsTabContentView({}, context)
         ]
 
-        if (process.env.ENABLE_EXCHANGE === "true") {
+        if (process.env.ENABLE_EXCHANGE == "true" || typeof(process.env.ENABLE_EXCHANGE == undefined)) {
             self.exchangeTabContentView = new ExchangeTabContentView({}, context)
             contentViewsArr.push(self.exchangeTabContentView);
         }

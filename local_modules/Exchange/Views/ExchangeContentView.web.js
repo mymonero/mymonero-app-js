@@ -91,8 +91,10 @@ class ExchangeContentView extends ListView {
             for (let i = 0; i < context.wallets.length; i++) {
                 let wallet = context.wallets[i];
                 let swatch = wallet.swatch.substr(1);
+                console.log('Get the wallet address, pass it as a data attr for refunds');
+                console.log(wallet);
                 walletOptions = walletOptions + `
-                <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.UnlockedBalance_FormattedString(wallet)}" data-walletid="${wallet._id}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">
+                <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.UnlockedBalance_FormattedString(wallet)}" data-walletid="${wallet._id}" data-walletpublicaddress="${wallet.public_address}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">                    
                     <div class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${swatch}@3x.png');"></div>                        
                     <div class="walletLabel">${wallet.walletLabel}</div>
                     <div class="description-label" style="position: relative; box-sizing: border-box; padding: 0px 38px 4px 66px; font-size: 13px; font-family: Native-Light, input, menlo, monospace; font-weight: 100; -webkit-font-smoothing: subpixel-antialiased; max-height: 32px; color: rgb(158, 156, 158); word-break: normal; overflow: hidden; text-overflow: ellipsis; cursor: default;">${self.UnlockedBalance_FormattedString(wallet)} XMR available</div>
@@ -106,7 +108,7 @@ class ExchangeContentView extends ListView {
             let defaultOffset = 0;
             let defaultWallet = context.wallets[defaultOffset];
             let walletSelectOptions = `
-            <div data-walletoffset="0" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletbalance="${self.UnlockedBalance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
+            <div data-walletoffset="0" data-walletpublicaddress="${defaultWallet.public_address}" data-walletLabel="${defaultWallet.walletLabel}" data-swatch="${defaultWallet.swatch.substr(1)}" data-walletbalance="${self.UnlockedBalance_FormattedString(defaultWallet)}" data-walletid="${defaultWallet._id}" id="selected-wallet" class="hoverable-cell utility selectionDisplayCellView" style="">
                     <div id="selected-wallet-icon" class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${defaultWallet.swatch.substr(1)}@3x.png')"></div>
                     <div id="selected-wallet-label" class="walletName">${defaultWallet.walletLabel}</div>
                     <div id="selected-wallet-balance" class="description-label">${self.UnlockedBalance_FormattedString(defaultWallet)} XMR available</div>
@@ -197,6 +199,7 @@ class ExchangeContentView extends ListView {
             layer.id = "exchange-xmr";
             layer.innerText = "Exchange XMR";
             layer.addEventListener('click', function() {
+                
                 /* 
                 * We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon. 
                 * We pass them as the final argument to ExchangeUtils.sendFunds
@@ -223,13 +226,22 @@ class ExchangeContentView extends ListView {
                     str = "Sent successfully.";
                     monerodUpdates.innerText = str;
                 }
-                let xmr_amount = document.getElementById('XMRcurrencyInput').value;
-                let xmr_send_address = document.getElementById('XMRtoAddress').value;
-                let xmr_amount_str = "" + xmr_amount.value;
+                let test = document.getElementById('in_amount');
+                console.log(test);
+                console.log(test.innerHTML);
+                console.log(test.value);
+                let xmr_amount = document.getElementById('in_amount').innerHTML;
+                let xmr_send_address = document.getElementById('receiving_subaddress').innerHTML;
+                let xmr_amount_str = "" + xmr_amount;
                 
+                console.log(xmr_amount);
+                console.log(xmr_send_address);
+                console.log(xmr_amount_str);
+
                 let sweep_wallet = false; // TODO: Add sweeping functionality
-                
-                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
+                // function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn) {
+                console.log('', xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
+                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
             });
 
 
