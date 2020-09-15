@@ -1,4 +1,4 @@
-# MyMonero Desktop + Web Wallet 
+# MyMonero Desktop
 
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
