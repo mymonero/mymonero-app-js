@@ -33,8 +33,6 @@
         exchangePage.classList.add("active");
     });
 
-
-
     btcAddressInput.addEventListener('input', Listeners.BTCAddressInputListener);
 
     XMRcurrencyInput.addEventListener('keydown', Listeners.XMRCurrencyInputKeydownListener);
@@ -46,7 +44,7 @@
 
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.xmrBalanceChecks(ExchangeFunctions.currentRates);
+        Listeners.xmrBalanceChecks(ExchangeFunctions);
     });
     
 
