@@ -24,16 +24,15 @@
     let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
     backBtn.style.display = "none";
     let addressValidation = document.getElementById('address-messages');
+    let serverValidation = document.getElementById('server-messages');
     const selectedWallet = document.getElementById('selected-wallet');
 
+    Listeners.BTCAddressInputListener();
 
-    console.log(ExchangeFunctions);
     ExchangeFunctions.getRatesAndLimits().then(() => {
         loaderPage.classList.remove('active');
         exchangePage.classList.add("active");
     });
-
-
 
     btcAddressInput.addEventListener('input', Listeners.BTCAddressInputListener);
 
@@ -46,7 +45,9 @@
 
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.xmrBalanceChecks(ExchangeFunctions.currentRates);
+        if (XMRcurrencyInput.value.length > 0) {
+            Listeners.xmrBalanceChecks(ExchangeFunctions);            
+        }
     });
     
 
@@ -57,7 +58,9 @@
 
     BTCcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.btcBalanceChecks(ExchangeFunctions.currentRates);
+        if (BTCcurrencyInput.value.length > 0) {
+            Listeners.btcBalanceChecks(ExchangeFunctions);            
+        }
     });
 
      
@@ -82,6 +85,7 @@
 
     orderBtn.addEventListener('click', function() {
         let validationError = false;
+        serverValidation.innerHTML = "";
         if (orderStarted == true) {
             return;
         } 
@@ -96,7 +100,7 @@
             return;
         }
         let btc_dest_address = document.getElementById('btcAddress').value;
-        
+
         orderBtn.style.display = "none";
         orderStarted = true;
         backBtn.style.display = "block";
@@ -105,47 +109,68 @@
         let out_amount = document.getElementById('BTCcurrencyInput').value;
         let in_currency = 'XMR';
         let out_currency = 'BTC';
-        let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((response) => {
-            console.log(response);
-            console.log(ExchangeFunctions.offer);
-        }).then(() => {
-            let selectedWallet = document.getElementById('selected-wallet');
-            console.log(ExchangeFunctions);
-            console.log(btc_dest_address);
-            console.log(selectedWallet);
-            ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((response) => {
-                let orderStatusDiv = document.getElementById("exchangePage");
-                document.getElementById("orderStatusPage").classList.remove('active');
-                loaderPage.classList.remove('active');
-                orderStatusDiv.classList.add('active');
-                exchangeXmrDiv.classList.add('active');
-                backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-                orderTimer = setInterval(() => {
-                    ExchangeFunctions.getOrderStatus().then(function (response) {
-                        Utils.renderOrderStatus(response);
-                        let expiryTime = response.expires_at;
-                        let secondsElement = document.getElementById('secondsRemaining');
-                        let minutesElement = document.getElementById('minutesRemaining');
-                        if (secondsElement !== null) {
-                            
+        try {
+            let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((error, response) => {
+                console.log(error);
+                console.log(response);
+                console.log(ExchangeFunctions.offer);
+            }).then((error, response) => {
+                let selectedWallet = document.getElementById('selected-wallet');
+                console.log(ExchangeFunctions);
+                console.log(btc_dest_address);
+                console.log(selectedWallet);
+                ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((error, response) => {
+                    let orderStatusDiv = document.getElementById("exchangePage");
+                    document.getElementById("orderStatusPage").classList.remove('active');
+                    loaderPage.classList.remove('active');
+                    orderStatusDiv.classList.add('active');
+                    exchangeXmrDiv.classList.add('active');
+                    backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
+                    orderTimer = setInterval(() => {
+                        ExchangeFunctions.getOrderStatus().then(function (response) {
+                            console.log(response);
+                            Utils.renderOrderStatus(response);
+                            let expiryTime = response.expires_at;
+                            let secondsElement = document.getElementById('secondsRemaining');
                             let minutesElement = document.getElementById('minutesRemaining');
-                            let timeRemaining = Utils.getTimeRemaining(expiryTime);
-                            minutesElement.innerHTML = timeRemaining.minutes;
-                            if (timeRemaining.seconds <= 9) {
-                                timeRemaining.seconds = "0" + timeRemaining.seconds;
+                            if (secondsElement !== null) {
+                                
+                                let minutesElement = document.getElementById('minutesRemaining');
+                                let timeRemaining = Utils.getTimeRemaining(expiryTime);
+                                minutesElement.innerHTML = timeRemaining.minutes;
+                                if (timeRemaining.seconds <= 9) {
+                                    timeRemaining.seconds = "0" + timeRemaining.seconds;
+                                }
+                                secondsElement.innerHTML = timeRemaining.seconds;
+                                let xmr_dest_address_elem = document.getElementById('in_address');
+                                xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
-                            secondsElement.innerHTML = timeRemaining.seconds;
-                            let xmr_dest_address_elem = document.getElementById('in_address');
-                            xmr_dest_address_elem.value = response.receiving_subaddress; 
-                        }
-                    })
-                }, 1000);
-                document.getElementById("orderStatusPage").classList.remove('active');
-                loaderPage.classList.remove('active');
-                orderStatusDiv.classList.add('active');
-                exchangeXmrDiv.classList.add('active');
+                        })
+                    }, 1000);
+                    document.getElementById("orderStatusPage").classList.remove('active');
+                    loaderPage.classList.remove('active');
+                    orderStatusDiv.classList.add('active');
+                    exchangeXmrDiv.classList.add('active');
+                }).catch((error) => {
+                    let errorDiv = document.createElement('div');
+                    errorDiv.classList.add('message-label');
+                    errorDiv.id = 'server-invalid';
+                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error;
+                    serverValidation.appendChild(errorDiv);
+                    orderBtn.style.display = "block";
+                    orderStarted = false;
+                })
+            }).catch((error) => {
+                let errorDiv = document.createElement('div');
+                errorDiv.classList.add('message-label');
+                errorDiv.id = 'server-invalid';
+                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error;
+                serverValidation.appendChild(errorDiv);
+                orderBtn.style.display = "block";
+                orderStarted = false;
             });
-        });
-        
+        } catch (Error) {
+            console.log(Error);
+        }
     });
 })()

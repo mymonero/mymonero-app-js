@@ -226,22 +226,14 @@ class ExchangeContentView extends ListView {
                     str = "Sent successfully.";
                     monerodUpdates.innerText = str;
                 }
-                let test = document.getElementById('in_amount');
-                console.log(test);
-                console.log(test.innerHTML);
-                console.log(test.value);
-                let xmr_amount = document.getElementById('in_amount').innerHTML;
+                let xmr_amount = document.getElementById('in_amount_remaining').innerHTML;
                 let xmr_send_address = document.getElementById('receiving_subaddress').innerHTML;
                 let xmr_amount_str = "" + xmr_amount;
                 
-                console.log(xmr_amount);
-                console.log(xmr_send_address);
-                console.log(xmr_amount_str);
-
+                let selectedWallet = document.getElementById('selected-wallet');
+                let selectorOffset = selectedWallet.dataset.walletoffset;
                 let sweep_wallet = false; // TODO: Add sweeping functionality
-                // function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn) {
-                console.log('', xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
-                ExchangeUtils.sendFunds(self.context.wallets[0], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
+                ExchangeUtils.sendFunds(self.context.wallets[selectorOffset], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn);
             });
 
 
