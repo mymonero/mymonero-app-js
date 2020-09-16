@@ -26,8 +26,8 @@
     let addressValidation = document.getElementById('address-messages');
     const selectedWallet = document.getElementById('selected-wallet');
 
+    Listeners.BTCAddressInputListener();
 
-    console.log(ExchangeFunctions);
     ExchangeFunctions.getRatesAndLimits().then(() => {
         loaderPage.classList.remove('active');
         exchangePage.classList.add("active");
@@ -55,7 +55,7 @@
 
     BTCcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.btcBalanceChecks(ExchangeFunctions.currentRates);
+        Listeners.btcBalanceChecks(ExchangeFunctions);
     });
 
      
@@ -94,7 +94,10 @@
             return;
         }
         let btc_dest_address = document.getElementById('btcAddress').value;
-        
+        console.log(btc_dest_address);
+        console.log(btc_dest_address.length);
+        console.log(btc_dest_address.size);
+        if (btc_dest_address)
         orderBtn.style.display = "none";
         orderStarted = true;
         backBtn.style.display = "block";
@@ -103,47 +106,57 @@
         let out_amount = document.getElementById('BTCcurrencyInput').value;
         let in_currency = 'XMR';
         let out_currency = 'BTC';
-        let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((response) => {
-            console.log(response);
-            console.log(ExchangeFunctions.offer);
-        }).then(() => {
-            let selectedWallet = document.getElementById('selected-wallet');
-            console.log(ExchangeFunctions);
-            console.log(btc_dest_address);
-            console.log(selectedWallet);
-            ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((response) => {
-                let orderStatusDiv = document.getElementById("exchangePage");
-                document.getElementById("orderStatusPage").classList.remove('active');
-                loaderPage.classList.remove('active');
-                orderStatusDiv.classList.add('active');
-                exchangeXmrDiv.classList.add('active');
-                backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-                orderTimer = setInterval(() => {
-                    ExchangeFunctions.getOrderStatus().then(function (response) {
-                        Utils.renderOrderStatus(response);
-                        let expiryTime = response.expires_at;
-                        let secondsElement = document.getElementById('secondsRemaining');
-                        let minutesElement = document.getElementById('minutesRemaining');
-                        if (secondsElement !== null) {
-                            
+        try {
+            let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((error, response) => {
+                console.log(error);
+                console.log(response);
+                console.log(ExchangeFunctions.offer);
+            }).then((error, response) => {
+                let selectedWallet = document.getElementById('selected-wallet');
+                console.log(ExchangeFunctions);
+                console.log(btc_dest_address);
+                console.log(selectedWallet);
+                ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((error, response) => {
+                    let orderStatusDiv = document.getElementById("exchangePage");
+                    document.getElementById("orderStatusPage").classList.remove('active');
+                    loaderPage.classList.remove('active');
+                    orderStatusDiv.classList.add('active');
+                    exchangeXmrDiv.classList.add('active');
+                    backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
+                    orderTimer = setInterval(() => {
+                        ExchangeFunctions.getOrderStatus().then(function (response) {
+                            Utils.renderOrderStatus(response);
+                            let expiryTime = response.expires_at;
+                            let secondsElement = document.getElementById('secondsRemaining');
                             let minutesElement = document.getElementById('minutesRemaining');
-                            let timeRemaining = Utils.getTimeRemaining(expiryTime);
-                            minutesElement.innerHTML = timeRemaining.minutes;
-                            if (timeRemaining.seconds <= 9) {
-                                timeRemaining.seconds = "0" + timeRemaining.seconds;
+                            if (secondsElement !== null) {
+                                
+                                let minutesElement = document.getElementById('minutesRemaining');
+                                let timeRemaining = Utils.getTimeRemaining(expiryTime);
+                                minutesElement.innerHTML = timeRemaining.minutes;
+                                if (timeRemaining.seconds <= 9) {
+                                    timeRemaining.seconds = "0" + timeRemaining.seconds;
+                                }
+                                secondsElement.innerHTML = timeRemaining.seconds;
+                                let xmr_dest_address_elem = document.getElementById('in_address');
+                                xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
-                            secondsElement.innerHTML = timeRemaining.seconds;
-                            let xmr_dest_address_elem = document.getElementById('in_address');
-                            xmr_dest_address_elem.value = response.receiving_subaddress; 
-                        }
-                    })
-                }, 1000);
-                document.getElementById("orderStatusPage").classList.remove('active');
-                loaderPage.classList.remove('active');
-                orderStatusDiv.classList.add('active');
-                exchangeXmrDiv.classList.add('active');
+                        })
+                    }, 1000);
+                    document.getElementById("orderStatusPage").classList.remove('active');
+                    loaderPage.classList.remove('active');
+                    orderStatusDiv.classList.add('active');
+                    exchangeXmrDiv.classList.add('active');
+                }).catch((error) => {
+                    console.log('or here?');
+                    console.log(error);
+                })
+            }).catch((error) => {
+                console.log('here?');
+                console.log(error);
             });
-        });
-        
+        } catch (Error) {
+            console.log(Error);
+        }
     });
 })()

@@ -76,7 +76,8 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
 
 
 function validateBTCAddress(address) {
-    if (typeof(validate(address)) !== Object) {
+    console.log(validate(address));
+    if (validate(address) == false) {
         return false;
     }
     // TODO: check for and fail on testnet address? Force testnet address on ENABLE_TESTMODE?
