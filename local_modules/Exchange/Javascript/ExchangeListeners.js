@@ -29,22 +29,24 @@ BTCAddressInputListener = function() {
     }
 }
 
-XMRCurrencyInputKeydownListener = function() {
-        if (event.which == 8) 
+XMRCurrencyInputKeydownListener = function(event) {
+        console.log(event.which)
+        if (event.which == 8 || event.which == 110 || event.which == 46) 
         return;
-        if ( (event.which !== 110) 
-            && (event.which <= 48 || event.which >= 57) 
-            && (event.which <= 96 && event.which >= 105) 
-            && (event.which !== 46)
-            && (event.which !== 8) )  {
-            event.preventDefault();
+
+        if ( (event.which >= 48 && event.which <= 57) || (event.which >= 96 && event.which <= 105) ) {
             return;
         }
+
 
         if (!Utils.checkDecimals(XMRcurrencyInput.value, 12)) {
             event.preventDefault();
             return;
         }
+
+        event.preventDefault();
+        return;
+
  }
 
  walletSelectorClickListener = function(event) {
@@ -79,21 +81,19 @@ XMRCurrencyInputKeydownListener = function() {
 }
 
 BTCCurrencyKeydownListener = function(event) {
-    if (event.which == 8) 
-        return;
+    if (event.which == 8 || event.which == 110 || event.which == 46) 
+    return;
 
-    if ( (event.which !== 110) 
-        && (event.which <= 48 || event.which >= 57) 
-        && (event.which <= 96 && event.which >= 105) 
-        && (event.which !== 46)
-        && (event.which !== 8) )  {
-        event.preventDefault();
+    if ( (event.which >= 48 && event.which <= 57) || (event.which >= 96 && event.which <= 105) ) {
         return;
     }
+
     if (!Utils.checkDecimals(BTCcurrencyInput.value, 8)) {
         event.preventDefault();
         return;
     }
+    event.preventDefault();
+    return;
 }
 
 
@@ -140,6 +140,12 @@ xmrBalanceChecks = function(exchangeFunctions) {
                     validationMessages.appendChild(error);
                 }
                 BTCcurrencyInput.value = BTCToReceive.toFixed(8);
+            }).catch((error) => {
+                let errorDiv = document.createElement('div');
+                errorDiv.classList.add('message-label');
+                errorDiv.id = 'server-invalid';
+                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                addressValidation.appendChild(errorDiv);
             });
     }, 1500);
 }
@@ -193,6 +199,12 @@ btcBalanceChecks = function(exchangeFunctions) {
                     validationMessages.appendChild(error);
                 }
                 XMRcurrencyInput.value = XMRtoReceive.toFixed(12);
+            }).catch((error) => {
+                let errorDiv = document.createElement('div');
+                errorDiv.classList.add('message-label');
+                errorDiv.id = 'server-invalid';
+                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                addressValidation.appendChild(errorDiv);
             });
     }, 1500);
 }

@@ -44,7 +44,9 @@
 
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.xmrBalanceChecks(ExchangeFunctions);
+        if (XMRcurrencyInput.value.length > 0) {
+            Listeners.xmrBalanceChecks(ExchangeFunctions);            
+        }
     });
     
 
@@ -55,7 +57,9 @@
 
     BTCcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.btcBalanceChecks(ExchangeFunctions);
+        if (BTCcurrencyInput.value.length > 0) {
+            Listeners.btcBalanceChecks(ExchangeFunctions);            
+        }
     });
 
      
@@ -152,7 +156,7 @@
                     errorDiv.classList.add('message-label');
                     errorDiv.id = 'server-invalid';
                     console.log(error);
-                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error;
                     addressValidation.appendChild(errorDiv);
                     console.log(error);
                     orderBtn.style.display = "block";
