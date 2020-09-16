@@ -129,6 +129,7 @@
                     backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
                     orderTimer = setInterval(() => {
                         ExchangeFunctions.getOrderStatus().then(function (response) {
+                            console.log(response);
                             Utils.renderOrderStatus(response);
                             let expiryTime = response.expires_at;
                             let secondsElement = document.getElementById('secondsRemaining');

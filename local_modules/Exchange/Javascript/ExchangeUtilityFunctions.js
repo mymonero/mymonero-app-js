@@ -28,25 +28,6 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
         let sweeping = sweep_wallet;
         let simple_priority = 1;
 
-        console.log(enteredAddressValue,
-            resolvedAddress,
-            manuallyEnteredPaymentID,
-            resolvedPaymentID,
-            hasPickedAContact,
-            resolvedAddress_fieldIsVisible,
-            manuallyEnteredPaymentID_fieldIsVisible,
-            resolvedPaymentID_fieldIsVisible,
-            contact_payment_id,
-            cached_OAResolved_address,
-            contact_hasOpenAliasAddress,
-            contact_address,
-            raw_amount_string,
-            sweeping,
-            simple_priority,
-            validation_status_fn,
-            cancelled_fn,
-            handle_response_fn)
-
         wallet.SendFunds(
             enteredAddressValue,
             resolvedAddress,
@@ -69,7 +50,7 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
         );
 
         function cancelled_fn() { // canceled_fn    
-            // TODO: Karl: I haven't diven deep enough to determine what state would invoke this function
+            // TODO: Karl: I haven't diven deep enough to determine what state would invoke this function yet
         }
     });
 }

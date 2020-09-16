@@ -81,6 +81,7 @@ XMRCurrencyInputKeydownListener = function(event) {
 }
 
 BTCCurrencyKeydownListener = function(event) {
+
     if (event.which == 8 || event.which == 110 || event.which == 46) 
     return;
 
@@ -106,6 +107,7 @@ xmrBalanceChecks = function(exchangeFunctions) {
     if (currencyInputTimer !== undefined) {
         clearTimeout(currencyInputTimer);
     }
+    validationMessages.innerHTML = "";
     currencyInputTimer = setTimeout(() => {
         exchangeFunctions.getOfferWithInAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, in_amount)
             .then((response) => {
