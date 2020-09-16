@@ -17,7 +17,7 @@
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
-    "afterSign": "./bin/notarize.js",
+    
     "publish": "github",
     "generateUpdatesFilesForAllChannels": true,
     "mac": {
@@ -70,13 +70,9 @@
     "qrcode": "^1.4.4",
     "uuid": "3.3.2",
     "velocity-animate": "1.5.2",
-    "xhr": "2.5.0",
-    "xmrto-lib": "^0.1.0"
+    "xhr": "2.5.0"
   },
   "devDependencies": {
-    "babel-core": "6.26.3",
-    "babel-loader": "8.0.6",
-    "babel-minify": "0.5.1",
     "cross-env": "^7.0.2",
     "electron": "^8.0.0",
     "electron-builder": "^22.8.x",
