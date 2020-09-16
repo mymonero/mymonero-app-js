@@ -24,6 +24,7 @@
     let backBtn = document.getElementsByClassName('nav-button-left-container')[0];    
     backBtn.style.display = "none";
     let addressValidation = document.getElementById('address-messages');
+    let serverValidation = document.getElementById('server-messages');
     const selectedWallet = document.getElementById('selected-wallet');
 
     Listeners.BTCAddressInputListener();
@@ -84,6 +85,7 @@
 
     orderBtn.addEventListener('click', function() {
         let validationError = false;
+        serverValidation.innerHTML = "";
         if (orderStarted == true) {
             return;
         } 
@@ -98,10 +100,7 @@
             return;
         }
         let btc_dest_address = document.getElementById('btcAddress').value;
-        console.log(btc_dest_address);
-        console.log(btc_dest_address.length);
-        console.log(btc_dest_address.size);
-        if (btc_dest_address)
+
         orderBtn.style.display = "none";
         orderStarted = true;
         backBtn.style.display = "block";
@@ -156,16 +155,19 @@
                     let errorDiv = document.createElement('div');
                     errorDiv.classList.add('message-label');
                     errorDiv.id = 'server-invalid';
-                    console.log(error);
                     errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error;
-                    addressValidation.appendChild(errorDiv);
-                    console.log(error);
+                    serverValidation.appendChild(errorDiv);
                     orderBtn.style.display = "block";
                     orderStarted = false;
                 })
             }).catch((error) => {
-                console.log('here?');
-                console.log(error);
+                let errorDiv = document.createElement('div');
+                errorDiv.classList.add('message-label');
+                errorDiv.id = 'server-invalid';
+                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error;
+                serverValidation.appendChild(errorDiv);
+                orderBtn.style.display = "block";
+                orderStarted = false;
             });
         } catch (Error) {
             console.log(Error);

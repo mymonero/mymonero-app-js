@@ -30,14 +30,13 @@ BTCAddressInputListener = function() {
 }
 
 XMRCurrencyInputKeydownListener = function(event) {
-        console.log(event.which)
+
         if (event.which == 8 || event.which == 110 || event.which == 46) 
         return;
 
         if ( (event.which >= 48 && event.which <= 57) || (event.which >= 96 && event.which <= 105) ) {
             return;
         }
-
 
         if (!Utils.checkDecimals(XMRcurrencyInput.value, 12)) {
             event.preventDefault();
@@ -46,7 +45,6 @@ XMRCurrencyInputKeydownListener = function(event) {
 
         event.preventDefault();
         return;
-
  }
 
  walletSelectorClickListener = function(event) {
@@ -99,6 +97,7 @@ BTCCurrencyKeydownListener = function(event) {
 
 
 xmrBalanceChecks = function(exchangeFunctions) {
+    serverValidation.innerHTML = "";
     let BTCToReceive;
     let XMRbalance = parseFloat(XMRcurrencyInput.value);
     let in_amount = XMRbalance.toFixed(12);
@@ -108,6 +107,7 @@ xmrBalanceChecks = function(exchangeFunctions) {
         clearTimeout(currencyInputTimer);
     }
     validationMessages.innerHTML = "";
+    serverValidation.innerHTML = "";
     currencyInputTimer = setTimeout(() => {
         exchangeFunctions.getOfferWithInAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, in_amount)
             .then((response) => {
@@ -147,7 +147,7 @@ xmrBalanceChecks = function(exchangeFunctions) {
                 errorDiv.classList.add('message-label');
                 errorDiv.id = 'server-invalid';
                 errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
-                addressValidation.appendChild(errorDiv);
+                serverValidation.appendChild(errorDiv);
             });
     }, 1500);
 }
@@ -156,11 +156,12 @@ btcBalanceChecks = function(exchangeFunctions) {
     let BTCToReceive;
     let BTCbalance = parseFloat(BTCcurrencyInput.value);
     let out_amount = BTCbalance.toFixed(12);
-    console.log(currencyInputTimer);
     XMRcurrencyInput.value = "Loading...";
     if (currencyInputTimer !== undefined) {
         clearTimeout(currencyInputTimer);
     }
+    validationMessages.innerHTML = "";
+    serverValidation.innerHTML = "";
     currencyInputTimer = setTimeout(() => {
         exchangeFunctions.getOfferWithOutAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, out_amount)
             .then((response) => {
@@ -206,7 +207,7 @@ btcBalanceChecks = function(exchangeFunctions) {
                 errorDiv.classList.add('message-label');
                 errorDiv.id = 'server-invalid';
                 errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
-                addressValidation.appendChild(errorDiv);
+                serverValidation.appendChild(errorDiv);
             });
     }, 1500);
 }
