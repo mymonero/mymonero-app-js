@@ -148,8 +148,15 @@
                     orderStatusDiv.classList.add('active');
                     exchangeXmrDiv.classList.add('active');
                 }).catch((error) => {
-                    console.log('or here?');
+                    let errorDiv = document.createElement('div');
+                    errorDiv.classList.add('message-label');
+                    errorDiv.id = 'server-invalid';
                     console.log(error);
+                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                    addressValidation.appendChild(errorDiv);
+                    console.log(error);
+                    orderBtn.style.display = "block";
+                    orderStarted = false;
                 })
             }).catch((error) => {
                 console.log('here?');

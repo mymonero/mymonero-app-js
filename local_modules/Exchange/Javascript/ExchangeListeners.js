@@ -2,6 +2,7 @@ const Utils = require('../Javascript/ExchangeUtilityFunctions');
 
 const validationMessages = document.getElementById('validation-messages');
 const addressValidation = document.getElementById('address-messages');
+const serverValidation = document.getElementById('server-messages')
 const orderBtn = document.getElementById("order-button");
 const loaderPage = document.getElementById('loader');
 
