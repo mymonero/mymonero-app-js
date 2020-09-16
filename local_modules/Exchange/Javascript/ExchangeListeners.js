@@ -1,4 +1,4 @@
-const Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
+const Utils = require('../Javascript/ExchangeUtilityFunctions');
 
 const validationMessages = document.getElementById('validation-messages');
 const addressValidation = document.getElementById('address-messages');
@@ -8,6 +8,7 @@ const loaderPage = document.getElementById('loader');
 let exchangeXmrDiv = document.getElementById('exchange-xmr');
 let backBtn = document.getElementsByClassName('nav-button-left-container')[0];  
 let XMRcurrencyInput = document.getElementById('XMRcurrencyInput');
+let currencyInputTimer;
 
 BTCAddressInputListener = function() {
     let div = document.getElementById('btc-invalid');
@@ -93,15 +94,24 @@ BTCCurrencyKeydownListener = function(event) {
 }
 
 
-xmrBalanceChecks = function(rates) {
+xmrBalanceChecks = function(exchangeFunctions) {
+    let XMRbalance = parseFloat(XMRcurrencyInput.value);
+    let in_amount = XMRbalance.toFixed(12);
+    console.log(currencyInputTimer);
+    if (currencyInputTimer !== undefined) {
+        clearTimeout(currencyInputTimer);
+    }
+    currencyInputTimer = setTimeout(() => {
+        exchangeFunctions.getOfferWithInAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, in_amount);
+    }, 1500);
     let selectedWallet = document.getElementById('selected-wallet');
     let tx_feeElem = document.getElementById('tx-fee');
     let tx_fee = tx_feeElem.dataset.txFee;
     let tx_fee_double = parseFloat(tx_fee);
     let walletMaxSpendDouble = parseFloat(selectedWallet.dataset.walletbalance);
     let walletMaxSpend = walletMaxSpendDouble - tx_fee;
-    let BTCToReceive = XMRcurrencyInput.value * rates.price;
-    let XMRbalance = parseFloat(XMRcurrencyInput.value);
+    let BTCToReceive = XMRcurrencyInput.value * (rates.in_max / rates.out_max);
+    
     if ((walletMaxSpend - XMRbalance) < 0) {
         let error = document.createElement('div');
         error.classList.add('message-label');
@@ -132,7 +142,7 @@ btcBalanceChecks = function(rates) {
     console.log(BTCcurrencyInput);
 
     validationMessages.innerHTML = '';
-    let XMRtoReceive = BTCcurrencyInput.value / rates.price;
+    let XMRtoReceive = BTCcurrencyInput.value / (rates.in_max / rates.out_max);
     let selectedWallet = document.getElementById('selected-wallet');
     let tx_feeElem = document.getElementById('tx-fee');
     let tx_fee = tx_feeElem.dataset.txFee;
