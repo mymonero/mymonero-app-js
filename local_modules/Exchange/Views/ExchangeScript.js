@@ -48,7 +48,7 @@
                 errorDiv.classList.remove('hidden');
             } else {            
                 let errorDiv = document.createElement('div');
-                errorDiv.innerText = "There was a problem with retrieving rates from the server. Please click the 'Retry' button to try connect again.";
+                errorDiv.innerText = "There was a problem with retrieving rates from the server. Please click the 'Retry' button to try connect again. The error message was: " + error.message;
                 errorDiv.id = "retry-error";
                 errorDiv.classList.add('message-label');
                 let retryBtn = document.createElement('div');
@@ -79,8 +79,6 @@
 
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        console.log(ExchangeFunctions);
-        console.log(ExchangeFunctions.rates);
         Listeners.xmrBalanceChecks(ExchangeFunctions);
     });
     
