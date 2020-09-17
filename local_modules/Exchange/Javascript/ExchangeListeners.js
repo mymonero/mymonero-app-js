@@ -97,6 +97,7 @@ BTCCurrencyKeydownListener = function(event) {
 
 
 xmrBalanceChecks = function(exchangeFunctions) {
+    console.log(exchangeFunctions);
     serverValidation.innerHTML = "";
     let BTCToReceive;
     let XMRbalance = parseFloat(XMRcurrencyInput.value);
@@ -153,6 +154,8 @@ xmrBalanceChecks = function(exchangeFunctions) {
 }
 
 btcBalanceChecks = function(exchangeFunctions) {
+    console.log(exchangeFunctions);
+    
     let BTCToReceive;
     let BTCbalance = parseFloat(BTCcurrencyInput.value);
     let out_amount = BTCbalance.toFixed(12);

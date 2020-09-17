@@ -25,14 +25,48 @@
     backBtn.style.display = "none";
     let addressValidation = document.getElementById('address-messages');
     let serverValidation = document.getElementById('server-messages');
+    let explanatoryMessage = document.getElementById('explanatory-message');
     const selectedWallet = document.getElementById('selected-wallet');
+    const serverRatesValidation = document.getElementById('server-rates-messages');
 
     Listeners.BTCAddressInputListener();
 
-    ExchangeFunctions.getRatesAndLimits().then(() => {
-        loaderPage.classList.remove('active');
-        exchangePage.classList.add("active");
-    });
+    function getRates() {
+        serverRatesValidation.innerHTML = "";
+        let retry = document.getElementById('retry-rates');
+        let errorDiv = document.getElementById('retry-error');
+        if (retry !== null) {
+            retry.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+        }
+        ExchangeFunctions.getRatesAndLimits().then(() => {
+            loaderPage.classList.remove('active');
+            exchangePage.classList.add("active");
+        }).catch((error) => {
+            if (retry !== null) {
+                retry.classList.remove('hidden');
+                errorDiv.classList.remove('hidden');
+            } else {            
+                let errorDiv = document.createElement('div');
+                errorDiv.innerText = "There was a problem with retrieving rates from the server. Please click the 'Retry' button to try connect again. The error message was: " + error.message;
+                errorDiv.id = "retry-error";
+                errorDiv.classList.add('message-label');
+                let retryBtn = document.createElement('div');
+                retryBtn.id = "retry-rates";
+                retryBtn.classList.add('base-button');
+                retryBtn.classList.add('hoverable-cell'); 
+                retryBtn.classList.add('navigation-blue-button-enabled');
+                retryBtn.classList.add('action');
+                retryBtn.innerHTML = "Retry";
+                retryBtn.addEventListener('click', getRates);
+                explanatoryMessage.appendChild(errorDiv);
+                explanatoryMessage.appendChild(retryBtn);
+            }
+        });
+    }
+
+    getRates();
+
 
     btcAddressInput.addEventListener('input', Listeners.BTCAddressInputListener);
 
@@ -100,7 +134,7 @@
             return;
         }
         let btc_dest_address = document.getElementById('btcAddress').value;
-
+        
         orderBtn.style.display = "none";
         orderStarted = true;
         backBtn.style.display = "block";

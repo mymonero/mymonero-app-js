@@ -186,7 +186,8 @@ class ExchangeContentView extends ListView {
             const layer = document.createElement("div")
             layer.classList.add("message-label")
             layer.classList.add("exchangeRate")
-            layer.innerHTML = "You can exchange XMR to Bitcoin here, using XMR.to.";
+            layer.id = "explanatory-message";
+            layer.innerHTML = "You can exchange XMR to Bitcoin here.";
             contentContainerLayer.appendChild(layer)
         }
         
