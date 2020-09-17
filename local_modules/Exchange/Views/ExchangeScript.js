@@ -80,7 +80,7 @@
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
         if (XMRcurrencyInput.value.length > 0) {
-            Listeners.btcBalanceChecks(ExchangeFunctions);            
+            Listeners.xmrBalanceChecks(ExchangeFunctions);            
         }
     });
     
