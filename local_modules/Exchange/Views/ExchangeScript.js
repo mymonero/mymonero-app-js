@@ -79,7 +79,9 @@
 
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.xmrBalanceChecks(ExchangeFunctions);
+        if (XMRcurrencyInput.value.length > 0) {
+            Listeners.btcBalanceChecks(ExchangeFunctions);            
+        }
     });
     
 
@@ -90,7 +92,9 @@
 
     BTCcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
-        Listeners.btcBalanceChecks(ExchangeFunctions);
+        if (BTCcurrencyInput.value.length > 0) {
+            Listeners.btcBalanceChecks(ExchangeFunctions);            
+        }
     });
 
      
