@@ -80,6 +80,7 @@
     XMRcurrencyInput.addEventListener('keyup', function(event) {
         validationMessages.innerHTML = '';
         console.log(ExchangeFunctions);
+        console.log(ExchangeFunctions.rates);
         Listeners.xmrBalanceChecks(ExchangeFunctions);
     });
     
