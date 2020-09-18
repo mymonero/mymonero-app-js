@@ -17,7 +17,6 @@
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
-    
     "publish": "github",
     "generateUpdatesFilesForAllChannels": true,
     "mac": {
