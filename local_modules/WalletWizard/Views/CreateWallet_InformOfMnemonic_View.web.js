@@ -31,10 +31,7 @@
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
-const commonComponents_hoverableCells = require('../../MMAppUICommonComponents/hoverableCells.web')
-//
 const mnemonic_languages = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/mnemonic_languages')
-//
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
 class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
@@ -75,7 +72,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 			layer.style.padding = `6px ${padding_h}px 7px ${padding_h}px`
 			layer.style.margin = "0 16px 40px 16px" // footer padding
 			layer.style.fontWeight = "300"
-			layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+			layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 			layer.style.fontSize = "11px"
 			layer.style.fontWeight = "400"
 			layer.style.webkitFontSmoothing = "subpixel-antialiased"
@@ -143,14 +140,16 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 				selectLayer.style.MozAppearance = "none"
 				selectLayer.style.msAppearance = "none"
 				selectLayer.style.appearance = "none"
-				self.context.themeController.StyleLayer_FontAsMiddlingButtonContentSemiboldSansSerif(
-					selectLayer,
-					true // bright content, dark bg
-				)
+				selectLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+				selectLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+				selectLayer.style.fontSize = "12px" // appears slightly too small but 13 is far to big
+				selectLayer.style.letterSpacing = "0.5px"
+				selectLayer.style.fontWeight = "400"
+
 				selectLayer.style.textIndent = "11px"
 				{ // hover effects/classes
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_HoverableCell())
-					selectLayer.classList.add(commonComponents_hoverableCells.ClassFor_GreyCell())
+					selectLayer.classList.add('hoverable-cell')
+					selectLayer.classList.add('utility')
 				}
 				//
 				// observation
@@ -186,7 +185,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 				layer.style.right = "13px"
 				layer.style.top = top+"px"
 				layer.style.zIndex = "100" // above options_containerView 
-				layer.style.backgroundImage = "url("+self.context.crossPlatform_appBundledIndexRelativeAssetsRootPath+"SelectView/Resources/dropdown-arrow-down@3x.png)" // borrowing this
+				layer.style.backgroundImage = "url(../../../assets/img/dropdown-arrow-down@3x.png)" // borrowing this
 				layer.style.backgroundRepeat = "no-repeat"
 				layer.style.backgroundPosition = "center"
 				layer.style.backgroundSize = w+"px "+ h+"px"
@@ -219,7 +218,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const layer = document.createElement("h3")
 		layer.innerHTML = contentString
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.style.fontSize = "13px"
 		layer.style.lineHeight = "20px"
 		layer.style.fontWeight = "500"
@@ -233,7 +232,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 		const self = this
 		const layer = document.createElement("p")
 		layer.innerHTML = contentString
-		layer.style.fontFamily = self.context.themeController.FontFamily_sansSerif()
+		layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
 		layer.style.fontWeight = "normal"
 		layer.style.fontSize = "13px"
 		layer.style.color = "#8D8B8D"

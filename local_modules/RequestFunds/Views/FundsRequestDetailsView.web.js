@@ -69,19 +69,13 @@ class FundsRequestDetailsView extends View
 		const self = this
 		const layer = self.layer
 		layer.style.webkitUserSelect = "none" // disable selection here but enable selectively
-		//
 		layer.style.boxSizing = "border-box"
 		layer.style.width = "100%"
 		layer.style.height = "100%" // we're also set height in viewWillAppear when in a nav controller
-		//
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
-		//
 		layer.style.color = "#c0c0c0" // temporary
-		//
 		layer.style.overflowY = "auto"
-		// layer.style.webkitOverflowScrolling = "touch"
 		layer.style.padding = "0 0 40px 0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
-		//
 		layer.style.wordBreak = "break-all" // to get the text to wrap
 	}
 	__new_flatTable_sectionContainerLayer(isFirst)
@@ -119,11 +113,21 @@ class FundsRequestDetailsView extends View
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
 		containerLayer.style.padding = "0 0 0 15px" // to get separator inset
 		{
-			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+			const div = document.createElement("div")
+			div.className = "table_field"
 			div.style.padding = "15px 0 17px 0"
 			{
 				{ // left
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("QR Code", self.context)
+					const labelLayer = document.createElement("span")
+					labelLayer.innerHTML = "QR Code"
+					labelLayer.style.float = "left"
+					labelLayer.style.textAlign = "left"
+					labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+					labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+					labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+					labelLayer.style.fontWeight = "400" // semibold desired
+					labelLayer.style.letterSpacing = "0.5px"
+					labelLayer.style.color = "#FFFFFF"
 					labelLayer.style.margin = "0 0 0 0"
 					labelLayer.style.padding = "0"
 					div.appendChild(labelLayer)
@@ -197,12 +201,22 @@ class FundsRequestDetailsView extends View
 		}
 		containerLayer.appendChild(commonComponents_tables.New_separatorLayer(self.context))
 		{
-			const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+			const div = document.createElement("div")
+			div.className = "table_field"
 			div.style.padding = "15px 0 17px 0"
 			{
 				const clickableLink_uri = self.fundsRequest.Lazy_URI__addressAsAuthority()
 				{ // left
-					const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer("Request Link", self.context)
+					const labelLayer = document.createElement("span")
+					labelLayer.innerHTML = "Request Link"
+					labelLayer.style.float = "left"
+					labelLayer.style.textAlign = "left"
+					labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+					labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+					labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+					labelLayer.style.fontWeight = "400" // semibold desired
+					labelLayer.style.letterSpacing = "0.5px"
+					labelLayer.style.color = "#FFFFFF"
 					labelLayer.style.margin = "0 0 0 0"
 					labelLayer.style.padding = "0"
 					div.appendChild(labelLayer)
@@ -241,15 +255,21 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
-		const div = commonComponents_tables.New_fieldContainerLayer(self.context)
+		const div = document.createElement("div")
+		div.className = "table_field"
 		div.style.padding = "15px 0 5px 0" // 5px instead of 17px cause value layer in this special case has p tags with their own padding/margin
 		{
 			const htmlString = self.new_requesteeMessageHTMLString()
 			{ // left
-				const labelLayer = commonComponents_tables.New_fieldTitle_labelLayer(
-					"Message for Requestee", 
-					self.context
-				)
+				const labelLayer = document.createElement("span")
+				labelLayer.innerHTML = "Message for Requestee"
+				labelLayer.style.float = "left"
+				labelLayer.style.textAlign = "left"
+				labelLayer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+				labelLayer.style.webkitFontSmoothing = "subpixel-antialiased"
+				labelLayer.style.fontSize = "12px" // design says 13 but chrome/desktop renders it too large
+				labelLayer.style.fontWeight = "400" // semibold desired
+				labelLayer.style.letterSpacing = "0.5px"
 				labelLayer.style.margin = "0 0 0 15px"
 				labelLayer.style.padding = "0"
 				labelLayer.style.color = "#DFDEDF" // design specifies slightly different color
@@ -374,7 +394,7 @@ class FundsRequestDetailsView extends View
 		value += "\r\n---------------------------"
 		value += `\r\nIf you have MyMonero installed, use this link to send the funds: ${self.fundsRequest.Lazy_URI__addressAsAuthority()}`
 		value += `\r\n`
-		value += `\r\nIf you don't have MyMonero installed, download it from ${"https://" + self.context.appDownloadLink_domainAndPath}`
+		value += `\r\nIf you don't have MyMonero installed, download it from https://mymonero.com`
 		//
 		return value
 	}
@@ -401,8 +421,7 @@ class FundsRequestDetailsView extends View
 		}
 		value += "<p>---------------------------</p>"
 		value += `<p>If you have MyMonero installed, <a href="${self.fundsRequest.Lazy_URI__addressAsAuthority()}">press this link to send the funds</a>.</p>`
-		const appDownloadLink_domainAndPath = self.context.appDownloadLink_domainAndPath
-		value += `<p>If you don't have MyMonero installed, download it from <a href="https://${appDownloadLink_domainAndPath}">${appDownloadLink_domainAndPath}</a>.</p>`
+		value += `<p>If you don't have MyMonero installed, download it from <a href="https://mymonero.com">mymonero.com</a>.</p>`
 		//
 		return value
 	}
@@ -422,9 +441,7 @@ class FundsRequestDetailsView extends View
 	{
 		const self = this
 		super.viewWillAppear()
-		if (typeof self.navigationController !== 'undefined' && self.navigationController !== null) {
-			self.layer.style.paddingTop = `${self.navigationController.NavigationBarHeight()}px`
-		}
+		self.layer.style.paddingTop = `41px`
 	}
 	//
 	//

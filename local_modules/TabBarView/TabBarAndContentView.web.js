@@ -27,10 +27,10 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 const View = require('../Views/View.web')
 const TabBarItemButtonView = require('./TabBarItemButtonView.web')
-//
+
 class TabBarAndContentView extends View
 {
 	constructor(options, context)
@@ -81,14 +81,13 @@ class TabBarAndContentView extends View
 		}
 		{
 			// default behavior is bar on bottom of screen
-			const tabBarView_thickness = self.overridable_tabBarView_thickness()
 			{
 				const layer = self.tabBarView.layer
 				layer.style.position = "absolute"
-				layer.style.top = `calc(100% - ${tabBarView_thickness}px)`
+				layer.style.top = `calc(100% - 79px)`
 				layer.style.left = "0px"
 				layer.style.width = "100%"
-				layer.style.height = `${tabBarView_thickness}px`
+				layer.style.height = `79px`
 			}
 			{
 				const layer = self.contentAreaView.layer
@@ -96,7 +95,7 @@ class TabBarAndContentView extends View
 				layer.style.top = "0px"
 				layer.style.left = "0px"
 				layer.style.width = "100%"
-				layer.style.height = `calc(100% - ${tabBarView_thickness}px)`
+				layer.style.height = `calc(100% - 79px)`
 			}
 		}
 	}
@@ -171,9 +170,9 @@ class TabBarAndContentView extends View
 				self._tabBarItemButtonViews = []
 			}
 		}
-		{ // add tab bar item button views, and new tabBarContentViews
-			const isHorizontalBar = self.overridable_isHorizontalBar()
-			const tabBarView_thickness = self.overridable_tabBarView_thickness()
+		{ // add tab bar item button Views, and new tabBarContentViews
+			const isHorizontalBar = false
+			const tabBarView_thickness = 79
 			const numberOf_tabs = to_tabBarContentViews.length
 			to_tabBarContentViews.forEach(
 				function(to_tabBarContentView, idx)

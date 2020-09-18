@@ -25,27 +25,21 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+
 "use strict"
-//
+
 const fs = require('fs')
-//
-const FilesystemUI_Abstract = require('./FilesystemUI_Abstract')
-//
-class FilesytemUI extends FilesystemUI_Abstract
-{
+
+class FilesytemUI {
 	constructor(options, context)
 	{
-		super(options, context)
+		const self = this
+		{
+			self.options = options
+			self.context = context
+		}
 	}
-	//
-	//
-	// Runtime - Accessors - Lookups - IPC - Main window
-	//
 	
-	//
-	//
-	// Runtime - Imperatives - Dialogs - Save
 	PresentDialogToSaveBase64ImageStringAsImageFile(
 		imgData_base64String,
 		title,
@@ -134,10 +128,7 @@ class FilesytemUI extends FilesystemUI_Abstract
 		)
 
 	}
-	//
-	//
-	// Runtime - Imperatives - Dialogs - Open
-	//
+	
 	PresentDialogToOpenOneImageFile(
 		title,
 		fn // (err?, absoluteFilePath?) -> Void

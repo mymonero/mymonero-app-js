@@ -28,6 +28,9 @@
 //
 "use strict"
 
+require('dotenv').config();
+require('events').EventEmitter.defaultMaxListeners = 25;
+
 if (process.env.NODE_ENV !== 'development') {
 	console.log = function() {}
 }
