@@ -255,7 +255,13 @@ class WalletHostPollingController {
         var __debug_fnName = "_fetch_transactionHistory"
         const self = this
         const wallet = self.wallet
-        
+        const fn = function(errOrNil)
+		{
+			if (errOrNil) {
+				// TODO: how to handle this? we'll retry soon enough
+			}
+			// success
+		}
         if (typeof self.requestHandle_for_transactions !== 'undefined' && self.requestHandle_for_transactions !== null) {
             console.warn("⚠️  "+ __debug_fnName + " called but request already taking place. Bailing")
             return
