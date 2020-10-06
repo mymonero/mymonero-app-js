@@ -180,7 +180,14 @@ class WalletHostPollingController {
         var __debug_fnName = "_fetch_accountInfo"
         const self = this
         const wallet = self.wallet
-        
+        const fn = function(errOrNil)
+		{
+			if (errOrNil) {
+				// TODO: how to handle this? we'll retry soon enough
+			}
+			// success
+		}
+		//
         if (typeof self.requestHandle_for_accountInfo !== 'undefined' && self.requestHandle_for_accountInfo !== null) {
             console.warn("⚠️  "+ __debug_fnName +" called but request already taking place. Bailing")
             return
