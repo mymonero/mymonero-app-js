@@ -56,7 +56,7 @@ If you would like to report an issue or share a feature request, please create a
 
 If you're reporting a bug, be sure to include all information which we would need to reproduce the issue, such as the operating system and app version on which you saw the bug, and the steps you took, if you can tell. 
 
-Please don't use the Issues tracker for general support or inquiries. You can also [contact us](https://mymonero.com/support) directly.
+Please [contact us](https://mymonero.com/support) directly via our site for general support or inquiries. Please only use the issue tracker when you are experiencing a bug.
 
 
 # Contributing & Testing
@@ -133,7 +133,7 @@ Contributors to each release are credited in release notes.
 
 * 🍕 `Tekkzbadger` ([Devin Pearson](https://github.com/devinpearson)) Lead maintainer; core developer
 
-* 💱 `jkarlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
+* 💱 `j_karlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
 
 * 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
 
