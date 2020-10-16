@@ -408,14 +408,16 @@ class TransactionDetailsView extends View {
     //
     _configureUIWithTransaction() {
         const self = this
-        let currentLocale
+		let currentLocale
         self.context.locale.Locale(function(err, locale)
         {
             if (err) {
                 console.error("Error obtaining the current locale.")
-                throw err
+                currentLocale = "en-US"
+            } else {
+                currentLocale = locale
             }
-            currentLocale = locale
+            
         })
         const wallet = self.wallet
         if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
