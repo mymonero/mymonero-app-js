@@ -35,6 +35,20 @@ Developers and pre-release testers who would like to use and work on the app can
 
 To get set up with the source code, please see **Getting the Source Code** below.
 
+## What's new
+
+2020-10-16
+
+* The application has been updated for Monero's 0.17 hardfork
+* Electron has been upgraded to Electron version 8
+* The web wallet has been split off from the desktop wallet, to make ongoing development and support easier. The web wallet can now be found [here](https://github.com/mymonero/mymonero-app-js)
+* Users are now able to exchange their XMR into BTC
+* Code signing and notarization for MacOS & Windows
+* The build process has been enhanced and simplified
+
+## What to expect
+
+The next major release will allow for Monero be exchanged into many other cyptocurrencies.
 
 ## Requirements & Install Locations
 
@@ -56,7 +70,7 @@ If you would like to report an issue or share a feature request, please create a
 
 If you're reporting a bug, be sure to include all information which we would need to reproduce the issue, such as the operating system and app version on which you saw the bug, and the steps you took, if you can tell. 
 
-Please don't use the Issues tracker for general support or inquiries. You can also [contact us](https://mymonero.com/support) directly.
+ Please contact us via [contact us](https://mymonero.com/support) for general support and enquiries. Please only use the Issues tracker when you believe you've encountered a bug.
 
 
 # Contributing & Testing
@@ -133,7 +147,7 @@ Contributors to each release are credited in release notes.
 
 * 🍕 `Tekkzbadger` ([Devin Pearson](https://github.com/devinpearson)) Lead maintainer; core developer
 
-* 💱 `jkarlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
+* 💱 `j_karlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
 
 * 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
 
