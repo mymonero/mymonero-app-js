@@ -54,12 +54,7 @@ class URLOpeningController_Abstract extends EventEmitter
 	{
 		const self = this
 	}
-	//
-	// Runtime - Accessors
-	EventName_ReceivedURLToOpen_FundsRequest()
-	{
-		return "EventName_ReceivedURLToOpen_FundsRequest"
-	}
+
 	PROTOCOL_PREFIX()
 	{
 		return PROTOCOL_PREFIX
@@ -76,7 +71,7 @@ class URLOpeningController_Abstract extends EventEmitter
 		}
 		const url = possibleURI // we'll suppose it is one
 		self.emit( // and yield
-			self.EventName_ReceivedURLToOpen_FundsRequest(), 
+			"EventName_ReceivedURLToOpen_FundsRequest",
 			url
 		)
 	}

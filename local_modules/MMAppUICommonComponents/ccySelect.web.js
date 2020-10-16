@@ -27,9 +27,9 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
+
 let Currencies = require('../CcyConversionRates/Currencies')
-//
+
 const new_selectLayer = exports.new_selectLayer = function()
 {
 	let selectLayer = document.createElement("select")

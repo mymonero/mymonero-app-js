@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-DEBUG=electron-builder npm run-script dist-w

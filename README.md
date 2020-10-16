@@ -1,4 +1,4 @@
-# MyMonero Desktop + Web Wallet 
+# MyMonero Desktop
 
 ![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
 
@@ -24,7 +24,7 @@
 
 See `LICENSE.txt` for license.
 
-All app source code and assets copyright © 2014-2019 by MyMonero. All rights reserved.
+All app source code and assets copyright © 2014-2020 by MyMonero. All rights reserved.
 
 
 ## Downloads
@@ -35,10 +35,24 @@ Developers and pre-release testers who would like to use and work on the app can
 
 To get set up with the source code, please see **Getting the Source Code** below.
 
+## What's new
+
+2020-10-16
+
+* The application has been updated for Monero's 0.17 hardfork
+* Electron has been upgraded to Electron version 8
+* The web wallet has been split off from the desktop wallet, to make ongoing development and support easier. The web wallet can now be found [here](https://github.com/mymonero/mymonero-app-js)
+* Users are now able to exchange their XMR into BTC
+* Code signing and notarization for MacOS & Windows
+* The build process has been enhanced and simplified
+
+## What to expect
+
+The next major release will allow for Monero be exchanged into many other cyptocurrencies.
 
 ## Requirements & Install Locations
 
-The desktop app is built on [Electron](https://electron.atom.io) and can be packaged to run on modern versions of:
+The desktop app is built on [Electron](https://www.electronjs.org/) and can be packaged to run on modern versions of:
 
 * MacOS (.app)
 * Windows (installer .exe)
@@ -48,8 +62,6 @@ The desktop app is built on [Electron](https://electron.atom.io) and can be pack
 
 * Desktop: See Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
 
-* Browser: None (no data is saved)
-
 
 
 ## Reporting Bugs & Making Feature Requests
@@ -58,7 +70,7 @@ If you would like to report an issue or share a feature request, please create a
 
 If you're reporting a bug, be sure to include all information which we would need to reproduce the issue, such as the operating system and app version on which you saw the bug, and the steps you took, if you can tell. 
 
-Please don't use the Issues tracker for general support or inquiries. You can also [contact us](https://mymonero.com/support) directly.
+ Please contact us via [contact us](https://mymonero.com/support) for general support and enquiries. Please only use the Issues tracker when you believe you've encountered a bug.
 
 
 # Contributing & Testing
@@ -74,37 +86,13 @@ Please don't use the Issues tracker for general support or inquiries. You can al
 
 3. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
 
-4. **NEW** Be sure to set up and download all required Git submodules with `bin/update_submodules`. 
+4. Install all required `node_modules` by executing `npm install`.
 
-	* Note: At present, run this command after pulling this repo as necessary to keep all sub-modules up-to-date. 
-
-5. Install all required `node_modules` by executing `npm install`.
-
-#### On Debian/Ubuntu/Linux
-
-* It has been reported that Debian/Ubuntu now calls the `node` binary `nodejs`. One workaround is to create a symlink from /usr/bin/nodejs to /usr/bin/node.
-
-* libgconf is now a requirement for running Electron under Linux, and can be installed with `apt install libgconf-2-4` (https://github.com/electron/electron/issues/1518)
-
-
-## Repo Contents Overview
-* Executable scripts for common tasks are located in `bin/`
-
-* Local, application source code is located in `local_modules/`. This includes bundled/static third-party "Vendor" libraries such as [EmojiOne](http://emojione.com).
-
-* After installation, non-bundled third-party modules (such as Electron) will be located in `node_modules/`.
-
-* App package and build process info is located in `package.json`.
-
-* This readme is located at `README.md`, and the license is located at `LICENSE.txt`.
-
+5. Run `npm start` to open the wallet without building.
 
 ## Building for Production
 
 If you're testing a pre-release version of this app and need to verify its behavior in production mode or want to obtain an installable release bundle, see [Packaging the App for Production Mode](./docs/PRODUCTION_BUILDS.md).
-
-If you want to run the browser build which is provided in the releases, simply unzip it, `cd` into the browser_build directory, then run `python -m SimpleHTTPServer 9100` (replacing the port with one of your choice if needed). Then, open your browser of choice and navigate to `http://localhost:9100`.
-
 
 ## Running in Development Mode
 
@@ -112,14 +100,7 @@ If you want to run the browser build which is provided in the releases, simply u
 
 *Does not require you to package, sign, and install the app, and will cause the Developer window to be shown. Certain features, such as URL opening under MacOS, require production build.*
 
-`bin/start_dev_desktop`
-
-### Browser (Web wallet)
-
-`bin/start_dev_browser`
-
-*Note:* This will run the command `python -m SimpleHTTPServer 9100` to serve `./browser_build`. After this command completes, open your browser of choice and navigate to `http://localhost:9100`.
-
+`npm run dev`
 
 
 ## Contributing
@@ -164,9 +145,13 @@ Contributors to each release are credited in release notes.
 
 ### Core Contributors
 
-* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Lead maintainer; MyMonero lead
+* 🍕 `Tekkzbadger` ([Devin Pearson](https://github.com/devinpearson)) Lead maintainer; core developer
+
+* 💱 `j_karlos` ([Karl Buys](https://github.com/karlbuys)) Maintainer; core developer
 
 * 🦄 `fluffyponyza` ([Riccardo Spagni](https://github.com/fluffypony)) Advisor; MyMonero founder; Monero core team member
+
+* 🏂 `endogenic` ([Paul Shapiro](https://github.com/paulshapiro)) Former core maintainer; MyMonero core contributor
 
 * 😎 `vtnerd` ([Lee Clagett](https://github.com/vtnerd)) Lead back-end developer
 

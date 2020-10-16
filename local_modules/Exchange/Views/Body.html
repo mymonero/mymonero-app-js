@@ -1,0 +1,168 @@
+    <div id="orderStatusPage">
+        <div id="wallet-selector" class="WalletSelectView ListCustomSelectView form_field">
+                    <!-- we insert this html dynamically from ECV.web.js -->
+        </div>
+        <div class="form_field" id="currency-table">
+            <table class="full-width">
+                <tr>
+                    <td>   
+                        <div class="field_title form-field-title">XMR to send
+                            <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                <input id="XMRcurrencyInput" class="textInput currencyInput" type="text" placeholder="00.00" value="">
+                                <select id="currencySelect"><option value="XMR" style="text-align: center;">XMR</option></select>    
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="BTCInputDiv" class="field_title form-field-title">BTC you will receive
+                            <div class="" style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                <input id="BTCcurrencyInput" class="textInput currencyInput" type="text" placeholder="00.00" value="">
+                                <select id="currencySelect"><option value="BTC" style="text-align: center;">BTC</option></select>    
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <input id="in_address" type="hidden" value="">
+            </table>
+        </div>
+        <div class="form_field" id="tx-fee">
+                <span class="field_title form-field-title" style="margin-top: 8px; color: rgb(158, 156, 158); display: inline-block;">Loading ...</span>
+            </div>
+            
+
+            <div class="form_field" id="btc-address">
+                <span class="field_title form-field-title" style="margin-top: 17px;">DESTINATION BITCOIN ADDRESS
+                </span>
+                <div class="contactPicker" style="position: relative; width: 100%; user-select: none;">
+                    <input id="btcAddress" class="full-width longTextInput" type="text" placeholder="Destination BTC Address" autocomplete="off" autocapitalize="none" spellcheck="false" value="">
+                </div>
+            </div>
+            <div id="validation-messages"></div>
+            <div id="address-messages"></div>
+            <div id="server-messages"></div>
+
+        </div>
+                
+        </div>
+        <div id="order-status">
+
+        </div>
+    </div>
+    <div id="exchangePage">
+        <div class="field_title form-field-title">
+            <table>
+                <tr>
+                    <td colspan="2" style="word-wrap: normal; word-break: normal;">Please note that MyMonero cannot provide support for any exchanges. For all issues, please contact XMR.to with your UUID, as they will be able to assist.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title uppercase">
+                            <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">XMR.to UUID</span>
+                                <div id="provider_order_id" class="textInput currencyOutput" type="text" placeholder="0.00"></div>
+                                <div class="currencySelect"><option value="XMR" style="text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;</option></select> 
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field_title form-field-title uppercase">Time Remaining
+                            <div id="clock">
+                                <span id="minutesRemaining"></span>
+                                <span>:</span>
+                                <span id="secondsRemaining"></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title">Remaining XMR payable
+                            <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                <div id="in_amount_remaining" class="textInput currencyOutput" type="text" placeholder="0.00">Loading</div>
+                                <div class="currencySelect"><option value="XMR" style="text-align: center;">XMR</option>    
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field_title form-field-title">BTC to be paid out
+                            <div class="" style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">AMOUNT</span>
+                                <div id="out_amount" class="textInput currencyOutput" type="text">Loading</div>
+                                <div class="currencySelect"><option value="BTC" style="text-align: center;">BTC</option>    
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field_title form-field-title uppercase label-spacing">
+                            <div class="" style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0">
+                                <span class="field_title form-field-title label-spacing" style="margin-top: 0px;">Order Status</span>
+                                <div class="order-status textInput currencyOutput" id="status"></div>
+                                <div class="currencySelect"><option value="XMR" style="text-align: center;">&nbsp;&nbsp;&nbsp;</option>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="field_title form-field-title hidden">
+                <table class="full-width" style="display: none;">
+                    <tr>
+                        <td>
+                            <div class="field_title form-field-title">Receiving subaddress
+                                <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
+                                    <div id="receiving_subaddress" class="textInput currencyOutput" type="text">Loading</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div id="monerod-updates" class="validationWindow">
+
+        </div>
+            <table class="hidden">
+                <tr>
+                    <td>btc_amount_partial</td>
+                    <td id="btc_amount_partial"> "0"</td>
+                </tr>
+                <tr>
+                    <td>btc_dest_address</td>
+                    <td id="in_address"> "2NBaUzuYqJvbThw77QVqq8NEXmkmDmSooy9"</td>
+                </tr>
+
+                <tr>
+                    <td>expires_at</td>
+                    <td id="expires_at"> "2020-08-07T13:54:30Z"</td>
+                </tr>
+                <tr>
+                    <td>incoming_amount_total</td>
+                    <td id="in_amount"> "1"</td>
+                </tr>
+
+                <tr>
+                    <td>incoming_price_btc</td>
+                    <td id="incoming_price_btc"> "0.00789659"</td>
+                </tr>
+                <tr>
+                    <td>receiving_subaddress</td>
+                    <td id="receiving_subaddress"> "72FsJzvGG4x97vvjwu9V6e8hBBfB3bhrqVEEoPsxrkjAVgQUnbA22cbgMmu5b4Lx6cQ75vnjPVs9HUB1L32yBMhaNsi7KrD"</td>
+                </tr>
+                <tr>
+                    <td>remaining_amount_incoming</td>
+                    <td id="remaining_amount_incoming"> "1"</td>
+                </tr>
+                <tr>
+                    <td>uuid</td>
+                    <td id="uuid"> "xmrto-NCXzGE"</td>
+                </tr>
+            </table>            
+        </div>
+    </div>
+</div>
+<!-- <div class="" id="order-button" style="cursor: default; -webkit-font-smoothing: subpixel-antialiased; font-size: 12px; letter-spacing: 0.5px; font-weight: 300; -webkit-app-region: no-drag; position: absolute; right: 0px;">Create Order</div> -->

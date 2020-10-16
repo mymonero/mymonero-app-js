@@ -27,14 +27,14 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-//
-const Locale_Abstract = require('./Locale_Abstract')
-//
-class Locale extends Locale_Abstract
+
+class Locale
 {
 	constructor(options, context)
 	{
-		super(options, context)
+		const self = this
+		self.options = options
+		self.context = context
 	}
 	Locale(fn)
 	{
