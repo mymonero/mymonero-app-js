@@ -997,8 +997,7 @@ class Wallet extends EventEmitter
 		if (nBlocksBehind >= 10) {
 			return true
 		} else if (nBlocksBehind < 0) {
-			throw "nBlocksBehind < 0" // maybe replace with warn log
-			// return false 
+			console.log("nBlocksBehind < 0");
 		}
 		return false
 	}
