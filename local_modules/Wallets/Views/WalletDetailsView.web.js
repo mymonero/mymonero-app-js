@@ -788,10 +788,13 @@ class WalletDetailsView extends View {
         self.context.locale.Locale(function(err, locale)
         {
             if (err) {
+                // Fall back to en-US
                 console.error("Error obtaining the current locale.")
-                throw err
+                currentLocale = "en-US"
+            } else {
+                currentLocale = locale
             }
-            currentLocale = locale
+            
         })
         const wallet_bootFailed = wallet.didFailToInitialize_flag || wallet.didFailToBoot_flag
         const layer_transactions = self.layer_transactions
