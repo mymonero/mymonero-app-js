@@ -91,9 +91,9 @@ class MainWindowController
 		const options =
 		{
 			width: 500,
-			height: 552,
+			height: 640,
 			minWidth: 412, // For action buttons
-			minHeight: 420,
+			minHeight: 640,
 			title: "MyMonero", // Windows
 			show: false, // shown on ready
 			backgroundColor: "#272527",
