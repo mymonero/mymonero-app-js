@@ -145,7 +145,7 @@ class FilesytemUI {
 				{ name: 'Images', extensions: [ "png", "jpg", "jpeg" ] },
 			]
 		}
-		const path = dialog.showOpenDialogSync(
+		let path = dialog.showOpenDialogSync(
 			electronWindow,
 			options
 		)

@@ -180,7 +180,7 @@
                                 xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
                         })
-                    }, 1000);
+                    }, 10000);
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
