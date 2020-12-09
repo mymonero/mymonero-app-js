@@ -57,7 +57,6 @@ function sendFunds(wallet, xmr_amount, xmr_send_address, sweep_wallet, validatio
 
 
 function validateBTCAddress(address) {
-    console.log(validate(address));
     if (validate(address) == false) {
         return false;
     }
@@ -75,105 +74,81 @@ function determineAddressNetwork(address) {
 // end of functions to check Bitcoin address
 
 function renderOrderStatus(order) {    
-
-/*
-
-        "btc_amount",
-        "btc_amount_partial",
-        "btc_dest_address",
-        "btc_num_confirmations_threshold",
-        "created_at",
-        "in_amount_remaining",
-        "out_amount",
-        "status",
-        "expires_at",
-        "incoming_amount_total",
-        "incoming_num_confirmations_remaining",
-        "incoming_price_btc",
-        "receiving_subaddress",
-        "recommended_mixin",
-        "remaining_amount_incoming",
-        "seconds_till_timeout",
-        "state",
-        "uses_lightning",
-        "uuid"
-        "provider_order_id"
-
-*/
-
-
-    let idArr = [
-        "in_amount_remaining",
-        "out_amount",
-        "status",
-        "expires_at",
-        "provider_order_id",
-        "in_address",
-        "in_amount"
-    ];
-
-    let test = document.getElementById('exchangePage');
-    if (!(test == null)) {
-        idArr.forEach((item, index) => {
-            if (item == "in_address") {
-                document.getElementById('receiving_subaddress').innerHTML = order[item];
-            } else {
-                document.getElementById(item).innerHTML = order[item];
-            }
-            
-        });
-    }
+    return new Promise((resolve, reject) => {
+        let idArr = [
+            "in_amount_remaining",
+            "out_amount",
+            "status",
+            "expires_at",
+            "provider_order_id",
+            "in_address",
+            "in_amount"
+        ];
+    
+        let test = document.getElementById('exchangePage');
+        if (!(test == null)) {
+            idArr.forEach((item, index) => {
+                if (item == "in_address") {
+                    document.getElementById('receiving_subaddress').innerHTML = order[item];
+                } else {
+                    document.getElementById(item).innerHTML = order[item];
+                }
+                
+            });
+        }
+        resolve();
+    })
 }
 
-    function getTimeRemaining(endtime){
-        let total = Date.parse(endtime) - Date.parse(new Date());
-        let seconds = Math.floor( (total/1000) % 60 );
-        let minutes = Math.floor( (total/1000/60) % 60 );
-        let hours = Math.floor( (total/(1000*60*60)) % 24 );
-        let days = Math.floor( total/(1000*60*60*24) );
-        
-        if (total < 0) {
-            seconds = 0;
-            minutes = 0;
-        }
-
-        return {
-          total,
-          days,
-          hours,
-          minutes,
-          seconds
-        };
+function getTimeRemaining(endtime){
+    let total = Date.parse(endtime) - Date.parse(new Date());
+    let seconds = Math.floor( (total/1000) % 60 );
+    let minutes = Math.floor( (total/1000/60) % 60 );
+    let hours = Math.floor( (total/(1000*60*60)) % 24 );
+    let days = Math.floor( total/(1000*60*60*24) );
+    
+    if (total < 0) {
+        seconds = 0;
+        minutes = 0;
     }
 
-    function checkDecimals(value, decimals) {
-        let str = value.toString();
-        let strArr = str.split('.');
-        if (strArr.length > 1) {
-            if (strArr[1].length >= decimals) {
-                return false;
-            }
-        }
-        return true;
-    }
+    return {
+        total,
+        days,
+        hours,
+        minutes,
+        seconds
+    };
+}
 
-    function isValidBase10Decimal(number) {
-        let str = number.toString();
-        let strArr = str.split('.');
-        if (strArr.size > 1 && typeof(strArr) == Array) {
+function checkDecimals(value, decimals) {
+    let str = value.toString();
+    let strArr = str.split('.');
+    if (strArr.length > 1) {
+        if (strArr[1].length >= decimals) {
             return false;
         }
-        for (let i = 0; i < 2; i++) {
-            if (isNaN(parseInt(strArr[i]))) {
-                return false;
-            }
-        }
-        if (strArr.size > 1) {
-            if (strArr[1].length == 0) {
-                return false;
-            }
-        }
-        return true;
     }
+    return true;
+}
+
+function isValidBase10Decimal(number) {
+    let str = number.toString();
+    let strArr = str.split('.');
+    if (strArr.size > 1 && typeof(strArr) == Array) {
+        return false;
+    }
+    for (let i = 0; i < 2; i++) {
+        if (isNaN(parseInt(strArr[i]))) {
+            return false;
+        }
+    }
+    if (strArr.size > 1) {
+        if (strArr[1].length == 0) {
+            return false;
+        }
+    }
+    return true;
+}
 
     module.exports = { validateBTCAddress, getTimeRemaining, isValidBase10Decimal, checkDecimals, renderOrderStatus, sendFunds };
