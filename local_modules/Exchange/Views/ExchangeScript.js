@@ -13,7 +13,9 @@
     let order = {};
     let exchangePage = document.getElementById('orderStatusPage');
     let orderBtn = document.getElementById("order-button");
-    let orderTimer = {};
+    let orderTimerInterval = {};
+    let orderStatusInterval = {};
+    let orderStatusResponse = {};
     let btcAddressInput = document.getElementById("btcAddress");
     let walletSelector = document.getElementById('wallet-selector');
     let walletOptions = document.getElementById('wallet-options');
@@ -160,10 +162,15 @@
                     orderStatusDiv.classList.add('active');
                     exchangeXmrDiv.classList.add('active');
                     backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-                    orderTimer = setInterval(() => {
+                    let firstTick = true;
+                    orderTimerInterval = setInterval(() => {
                         ExchangeFunctions.getOrderStatus().then(function (response) {
+                            if (firstTick == true) {
+                                Utils.renderOrderStatus(response);
+                                firstTick = false;
+                            }
+                            orderStatusResponse = response;
                             console.log(response);
-                            Utils.renderOrderStatus(response);
                             let expiryTime = response.expires_at;
                             let secondsElement = document.getElementById('secondsRemaining');
                             let minutesElement = document.getElementById('minutesRemaining');
@@ -180,6 +187,17 @@
                                 xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
                         })
+                    }, 1000);
+                    orderStatusInterval = setInterval(() => {
+                        Utils.renderOrderStatus(orderStatusResponse).then(() => {
+                            if (orderStatusResponse.status == "PAID" || orderStatusResponse.status == "TIMED_OUT"
+                                || orderStatusResponse.status == "DONE" || orderStatusResponse.status == "FLAGGED_DESTINATION_ADDRESS"
+                                || orderStatusResponse.status == "PAYMENT_FAILED" || orderStatusResponse.status == "REJECTED") 
+                                {
+                                    clearInterval(orderStatusInterval);
+                                    clearInterval(orderTimerInterval);
+                            }
+                        });
                     }, 10000);
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
