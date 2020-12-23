@@ -103,6 +103,15 @@ xmrBalanceChecks = function(exchangeFunctions) {
     if (currencyInputTimer !== undefined) {
         clearTimeout(currencyInputTimer);
     }
+
+    if (in_amount == 0) {
+        let error = document.createElement('div');
+        error.classList.add('message-label');
+        error.id = 'xmrexceeded';
+        error.innerHTML = `Please enter a valid amount`;
+        validationMessages.appendChild(error);
+        return;
+    }
     // if (exchangeFunctions.currentRates.in_min > XMRbalance) {
     //     let error = document.createElement('div');
     //     error.classList.add('message-label');
