@@ -152,17 +152,19 @@ class ExchangeContentView extends ListView {
     _setup_emptyStateContainerView() {
         // TODO: wrap this in a promise so that we can execute logic after this
         const self = this;
+        console.log(self);
         // We run this on an interval because of the way DOM elements are instantiated. Our Exchange DOM only renders once a user clicks the XMR->BTC menu tab
         let initialExchangeInit = setInterval(() => {
             let walletDiv = document.getElementById('wallet-selector');
             if (walletDiv !== null) {
+                console.log("Does this terminat?");
                 clearInterval( self.initialExchangeInit ); 
                 self._setup_walletExchangeOptions(self.context);
             }
         }, 200);
 
         self.initialExchangeInit = initialExchangeInit;
-
+        console.log(self);
         const view = new View({}, self.context)
         {
             const layer = view.layer
@@ -200,7 +202,8 @@ class ExchangeContentView extends ListView {
             layer.id = "exchange-xmr";
             layer.innerText = "Exchange XMR";
             layer.addEventListener('click', function() {
-                
+                let exchangeXmrBtn = document.getElementById("exchange-xmr");
+                exchangeXmrBtn.style.display = "none";
                 /* 
                 * We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon. 
                 * We pass them as the final argument to ExchangeUtils.sendFunds
@@ -222,6 +225,7 @@ class ExchangeContentView extends ListView {
                     if (err) {
                         str = typeof err === 'string' ? err : err.message;
                         monerodUpdates.innerText = str;
+                        exchangeXmrBtn.style.display = "block";
                         return
                     }
                     str = "Sent successfully.";

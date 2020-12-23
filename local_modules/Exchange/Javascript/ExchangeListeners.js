@@ -182,6 +182,14 @@ btcBalanceChecks = function(exchangeFunctions) {
         clearTimeout(currencyInputTimer);
     }
 
+    if (out_amount == 0) {
+        let error = document.createElement('div');
+        error.classList.add('message-label');
+        error.id = 'xmrexceeded';
+        error.innerHTML = `Please enter a valid amount`;
+        validationMessages.appendChild(error);
+        return;
+    }
     // if (exchangeFunctions.currentRates.out_min > BTCbalance) {
     //     let error = document.createElement('div');
     //     error.classList.add('message-label');

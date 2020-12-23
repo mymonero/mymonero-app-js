@@ -108,11 +108,11 @@
     viewOrderBtn.id = "view-order";
     viewOrderBtn.innerHTML = "View Order";
     viewOrderBtn.addEventListener('click', function() {
-        orderStatusPage.classList.add('active');
         orderStatusPage.classList.remove('active');
         let exchangePage = document.getElementById('exchangePage');
         exchangePage.classList.add('active');
         viewOrderBtn.style.display = "none";
+        backBtn.style.display = "block";
     });
 
 
@@ -121,6 +121,7 @@
 
     orderBtn.addEventListener('click', function() {
         let validationError = false;
+
         serverValidation.innerHTML = "";
         if (orderStarted == true) {
             return;
@@ -161,8 +162,39 @@
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
                     exchangeXmrDiv.classList.add('active');
+                    let orderStatusResponse = {};
                     backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
                     let firstTick = true;
+                    ExchangeFunctions.getOrderStatus().then(function (response) {
+                        console.log("Inside init getOrderStatus");
+                        if (firstTick == true) {
+                            Utils.renderOrderStatus(response);
+                            let elemArr = document.getElementsByClassName("provider-name");
+                            elemArr[0].innerHTML = response.provider_name;
+                            elemArr[1].innerHTML = response.provider_name;
+                            firstTick = false;
+                        }
+                        let elemArr = document.getElementsByClassName("provider-name");
+                        elemArr[0].innerHTML = response.provider_name;
+                        elemArr[1].innerHTML = response.provider_name;
+                        orderStatusResponse = response;
+                        console.log(response);
+                        let expiryTime = response.expires_at;
+                        let secondsElement = document.getElementById('secondsRemaining');
+                        let minutesElement = document.getElementById('minutesRemaining');
+                        if (secondsElement !== null) {
+                            
+                            let minutesElement = document.getElementById('minutesRemaining');
+                            let timeRemaining = Utils.getTimeRemaining(expiryTime);
+                            minutesElement.innerHTML = timeRemaining.minutes;
+                            if (timeRemaining.seconds <= 9) {
+                                timeRemaining.seconds = "0" + timeRemaining.seconds;
+                            }
+                            secondsElement.innerHTML = timeRemaining.seconds;
+                            let xmr_dest_address_elem = document.getElementById('in_address');
+                            xmr_dest_address_elem.value = response.receiving_subaddress; 
+                        }
+                    });
                     orderTimerInterval = setInterval(() => {
                         ExchangeFunctions.getOrderStatus().then(function (response) {
                             if (firstTick == true) {
@@ -187,8 +219,24 @@
                                 xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
                         })
-                    }, 1000);
+                    }, 10000);
                     orderStatusInterval = setInterval(() => {
+                        console.log(orderStatusResponse);
+                        let expiryTime = orderStatusResponse.expires_at;
+                        let secondsElement = document.getElementById('secondsRemaining');
+                        let minutesElement = document.getElementById('minutesRemaining');
+                        if (secondsElement !== null) {
+                            
+                            let minutesElement = document.getElementById('minutesRemaining');
+                            let timeRemaining = Utils.getTimeRemaining(expiryTime);
+                            minutesElement.innerHTML = timeRemaining.minutes;
+                            if (timeRemaining.seconds <= 9) {
+                                timeRemaining.seconds = "0" + timeRemaining.seconds;
+                            }
+                            secondsElement.innerHTML = timeRemaining.seconds;
+                            let xmr_dest_address_elem = document.getElementById('in_address');
+                            xmr_dest_address_elem.value = orderStatusResponse.receiving_subaddress; 
+                        }
                         Utils.renderOrderStatus(orderStatusResponse).then(() => {
                             if (orderStatusResponse.status == "PAID" || orderStatusResponse.status == "TIMED_OUT"
                                 || orderStatusResponse.status == "DONE" || orderStatusResponse.status == "FLAGGED_DESTINATION_ADDRESS"
@@ -198,7 +246,7 @@
                                     clearInterval(orderTimerInterval);
                             }
                         });
-                    }, 10000);
+                    }, 1000);
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
