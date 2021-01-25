@@ -91,8 +91,6 @@ class ExchangeContentView extends ListView {
             for (let i = 0; i < context.wallets.length; i++) {
                 let wallet = context.wallets[i];
                 let swatch = wallet.swatch.substr(1);
-                console.log('Get the wallet address, pass it as a data attr for refunds');
-                console.log(wallet);
                 walletOptions = walletOptions + `
                 <div data-walletLabel="${wallet.walletLabel}" data-walletoffset="${i}" data-swatch="${swatch}" data-walletbalance="${self.UnlockedBalance_FormattedString(wallet)}" data-walletid="${wallet._id}" data-walletpublicaddress="${wallet.public_address}" class="hoverable-cell utility optionCell" style="word-break: break-all; height: 66px; position: relative; left: 0px; top: 0px; box-sizing: border-box; width: 100%;">                    
                     <div class="walletIcon medium-32" style="background-image: url('../../../assets/img/wallet-${swatch}@3x.png');"></div>                        
@@ -101,7 +99,7 @@ class ExchangeContentView extends ListView {
                 </div>
                 `;
             }         
-            //console.log('wallet html ran options '+i)
+
             // get oldest wallet based on how wallets are inserted into wallets as a zero element, changing indexes backwards
             let size = context.wallets.length;
             size = size - 1;
@@ -152,7 +150,7 @@ class ExchangeContentView extends ListView {
     _setup_emptyStateContainerView() {
         // TODO: wrap this in a promise so that we can execute logic after this
         const self = this;
-        console.log(self);
+
         // We run this on an interval because of the way DOM elements are instantiated. Our Exchange DOM only renders once a user clicks the XMR->BTC menu tab
         let initialExchangeInit = setInterval(() => {
             let walletDiv = document.getElementById('wallet-selector');
@@ -266,14 +264,6 @@ class ExchangeContentView extends ListView {
 
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
-
-
-
-        // setInterval((context, options) => {
-        //     console.log(options);
-        //     console.log(self.context);
-        //     console.log(self.context.walletsListController);
-        // }, 5000);
     }
 
     Balance_JSBigInt(wallet)
@@ -376,14 +366,7 @@ class ExchangeContentView extends ListView {
 		return displayString
 	}
 
-/**
- *                 let exchangeRate = document.getElementById('exchangeRate');
-                
-                exchangeRate.addEventListener('click', function() {
-                    const rateObj = await ExchangeFunctions.getRatesAndLimits();
-                    console.log(rateObj);
-                })
-*/
+
     Navigation_Title() {
         return "Exchange"
     }
