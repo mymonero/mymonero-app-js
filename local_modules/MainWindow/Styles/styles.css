@@ -1786,3 +1786,8 @@ table.side-padding {
         padding: 0px 0px 0px 0px !important;
     }
 }
+
+.provider-name {
+    text-transform: uppercase;
+    text-decoration: underline;
+}
