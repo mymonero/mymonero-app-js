@@ -188,7 +188,6 @@
                             ExchangeFunctions.getOrderStatus().then(function (response) {
                                 let elemArr = document.getElementsByClassName("provider-name");
                                 if (firstTick == true || elemArr[0].innerHTML == 'undefined') {
-                                    console.log("This is first tick (maybe again)");
                                     Utils.renderOrderStatus(response);
                                     elemArr[0].innerHTML = response.provider_name;
                                     elemArr[1].innerHTML = response.provider_name;
