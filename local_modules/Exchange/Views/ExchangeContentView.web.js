@@ -157,14 +157,12 @@ class ExchangeContentView extends ListView {
         let initialExchangeInit = setInterval(() => {
             let walletDiv = document.getElementById('wallet-selector');
             if (walletDiv !== null) {
-                console.log("Does this terminat?");
                 clearInterval( self.initialExchangeInit ); 
                 self._setup_walletExchangeOptions(self.context);
             }
         }, 200);
 
         self.initialExchangeInit = initialExchangeInit;
-        console.log(self);
         const view = new View({}, self.context)
         {
             const layer = view.layer
