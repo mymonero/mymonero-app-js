@@ -1,7 +1,7 @@
 const Utils = require('../Javascript/ExchangeUtilityFunctions');
 
 const validationMessages = document.getElementById('validation-messages');
-const addressValidation = document.getElementById('address-messages');
+//const addressValidation = document.getElementById('address-messages');
 const serverValidation = document.getElementById('server-messages')
 const orderBtn = document.getElementById("order-button");
 const loaderPage = document.getElementById('loader');
@@ -20,6 +20,7 @@ BTCAddressInputListener = function() {
         error.classList.add('message-label');
         error.id = 'btc-invalid';
         error.innerHTML = `Your BTC address is not valid.`;
+        let addressValidation = document.getElementById('address-messages');
         addressValidation.appendChild(error);
     } else {
         if (!(div == null)) {

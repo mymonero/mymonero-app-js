@@ -121,7 +121,6 @@
 
     orderBtn.addEventListener('click', function() {
         let validationError = false;
-
         serverValidation.innerHTML = "";
         if (orderStarted == true) {
             return;
@@ -140,70 +139,28 @@
         
         orderBtn.style.display = "none";
         orderStarted = true;
-        backBtn.style.display = "block";
+        
         loaderPage.classList.add('active');
-
+        let orderStatusResponse = { orderTick: 0 };
         let out_amount = document.getElementById('BTCcurrencyInput').value;
         let in_currency = 'XMR';
         let out_currency = 'BTC';
+        let firstTick = true;
         try {
-            let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((error, response) => {
-                console.log(error);
-                console.log(response);
-                console.log(ExchangeFunctions.offer);
-            }).then((error, response) => {
+            let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((response) => {
                 let selectedWallet = document.getElementById('selected-wallet');
-                console.log(ExchangeFunctions);
-                console.log(btc_dest_address);
-                console.log(selectedWallet);
-                ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((error, response) => {
+                ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((response) => {
                     let orderStatusDiv = document.getElementById("exchangePage");
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
                     exchangeXmrDiv.classList.add('active');
-                    let orderStatusResponse = {};
                     backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-                    let firstTick = true;
-                    ExchangeFunctions.getOrderStatus().then(function (response) {
-                        console.log("Inside init getOrderStatus");
-                        if (firstTick == true) {
-                            Utils.renderOrderStatus(response);
-                            let elemArr = document.getElementsByClassName("provider-name");
-                            elemArr[0].innerHTML = response.provider_name;
-                            elemArr[1].innerHTML = response.provider_name;
-                            firstTick = false;
-                        }
-                        let elemArr = document.getElementsByClassName("provider-name");
-                        elemArr[0].innerHTML = response.provider_name;
-                        elemArr[1].innerHTML = response.provider_name;
-                        orderStatusResponse = response;
-                        console.log(response);
-                        let expiryTime = response.expires_at;
-                        let secondsElement = document.getElementById('secondsRemaining');
-                        let minutesElement = document.getElementById('minutesRemaining');
-                        if (secondsElement !== null) {
-                            
-                            let minutesElement = document.getElementById('minutesRemaining');
-                            let timeRemaining = Utils.getTimeRemaining(expiryTime);
-                            minutesElement.innerHTML = timeRemaining.minutes;
-                            if (timeRemaining.seconds <= 9) {
-                                timeRemaining.seconds = "0" + timeRemaining.seconds;
-                            }
-                            secondsElement.innerHTML = timeRemaining.seconds;
-                            let xmr_dest_address_elem = document.getElementById('in_address');
-                            xmr_dest_address_elem.value = response.receiving_subaddress; 
-                        }
-                    });
-                    orderTimerInterval = setInterval(() => {
-                        ExchangeFunctions.getOrderStatus().then(function (response) {
-                            if (firstTick == true) {
-                                Utils.renderOrderStatus(response);
-                                firstTick = false;
-                            }
-                            orderStatusResponse = response;
-                            console.log(response);
-                            let expiryTime = response.expires_at;
+                    let localOrderTimer = setInterval(() => {
+                        if (orderStatusResponse.hasOwnProperty('expires_at')) {
+                            orderStatusResponse.orderTick++;
+                            Utils.renderOrderStatus(orderStatusResponse);
+                            let expiryTime = orderStatusResponse.expires_at;
                             let secondsElement = document.getElementById('secondsRemaining');
                             let minutesElement = document.getElementById('minutesRemaining');
                             if (secondsElement !== null) {
@@ -218,35 +175,35 @@
                                 let xmr_dest_address_elem = document.getElementById('in_address');
                                 xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
-                        })
-                    }, 10000);
-                    orderStatusInterval = setInterval(() => {
-                        console.log(orderStatusResponse);
-                        let expiryTime = orderStatusResponse.expires_at;
-                        let secondsElement = document.getElementById('secondsRemaining');
-                        let minutesElement = document.getElementById('minutesRemaining');
-                        if (secondsElement !== null) {
-                            
-                            let minutesElement = document.getElementById('minutesRemaining');
-                            let timeRemaining = Utils.getTimeRemaining(expiryTime);
-                            minutesElement.innerHTML = timeRemaining.minutes;
-                            if (timeRemaining.seconds <= 9) {
-                                timeRemaining.seconds = "0" + timeRemaining.seconds;
-                            }
-                            secondsElement.innerHTML = timeRemaining.seconds;
-                            let xmr_dest_address_elem = document.getElementById('in_address');
-                            xmr_dest_address_elem.value = orderStatusResponse.receiving_subaddress; 
-                        }
-                        Utils.renderOrderStatus(orderStatusResponse).then(() => {
+
                             if (orderStatusResponse.status == "PAID" || orderStatusResponse.status == "TIMED_OUT"
                                 || orderStatusResponse.status == "DONE" || orderStatusResponse.status == "FLAGGED_DESTINATION_ADDRESS"
-                                || orderStatusResponse.status == "PAYMENT_FAILED" || orderStatusResponse.status == "REJECTED") 
+                                || orderStatusResponse.status == "PAYMENT_FAILED" || orderStatusResponse.status == "REJECTED" 
+                                || orderStatusResponse.status == "EXPIRED") 
                                 {
-                                    clearInterval(orderStatusInterval);
-                                    clearInterval(orderTimerInterval);
-                            }
-                        });
+                                    clearInterval(localOrderTimer);
+                                }
+                        }
+                        if ((orderStatusResponse.orderTick % 10) == 0) {
+                            ExchangeFunctions.getOrderStatus().then(function (response) {
+                                let elemArr = document.getElementsByClassName("provider-name");
+                                if (firstTick == true || elemArr[0].innerHTML == 'undefined') {
+                                    console.log("This is first tick (maybe again)");
+                                    Utils.renderOrderStatus(response);
+                                    elemArr[0].innerHTML = response.provider_name;
+                                    elemArr[1].innerHTML = response.provider_name;
+                                    elemArr[2].innerHTML = response.provider_name;
+                                    
+                                    firstTick = false;
+                                }
+                                let orderTick = orderStatusResponse.orderTick;
+                                orderTick++;
+                                response.orderTick = orderTick;
+                                orderStatusResponse = response;
+                            })
+                        }
                     }, 1000);
+
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
@@ -272,5 +229,5 @@
         } catch (Error) {
             console.log(Error);
         }
-    });
+    })
 })()
