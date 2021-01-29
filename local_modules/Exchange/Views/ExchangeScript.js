@@ -3,7 +3,7 @@
     const XMRcurrencyInput = document.getElementById('XMRcurrencyInput');
     const BTCcurrencyInput = document.getElementById('BTCcurrencyInput');
     const validationMessages = document.getElementById('validation-messages');
-
+    const shell = require('electron').shell;
     let validate = require('bitcoin-address-validation');
     let Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
     let ExchangeLibrary = require('mymonero-exchange');
@@ -53,45 +53,32 @@
             if (referrer_id.length > 0) {
                 console.log("Got a referrer -- generate custom URL");
                 let urlToOpen = url + "?" + paramStr + "=" + referrer_id;
-                window.open(urlToOpen);
+                shell.openExternal(urlToOpen);
             } else {
                 console.log("No referrer");
-                window.open("https://localmonero.co");
+                shell.openExternal("https://localmonero.co");
             }
         }
-
+        console.log(ExchangeFunctions);
+        console.log(ExchangeFunctions.initialiseExchangeConfiguration);
         ExchangeFunctions.initialiseExchangeConfiguration().then((response) => {
-            // Data returned by resolve
             let localmoneroAnchor = document.getElementById('localmonero-anchor');
-            // let indacoinAnchor = document.getElementById('indacoin-anchor');
-            
-            // indacoinAnchor.setAttribute("url", "https://indacoin.com/");
-            // indacoinAnchor.setAttribute("referrer_id", response.referrer_info.indacoin.referrer_id)
-            // indacoinAnchor.setAttribute("param_str", "");
-
-            localmoneroAnchor.setAttribute("referrer_id", response.referrer_info.localmonero.referrer_id)
-            localmoneroAnchor.setAttribute("url", "https://localmonero.co")
+            localmoneroAnchor.setAttribute("referrer_id", response.referrer_info.localmonero.referrer_id);
+            localmoneroAnchor.setAttribute("url", "https://localmonero.co");
             localmoneroAnchor.setAttribute("param_str", "rc");
-            
-            
-            // if (response.referrer_info.indacoin.enabled === true) {
-            //     indacoinDiv.style.display = "block";
-            //     indacoinAnchor.addEventListener('click', openClickableLink);
-            // }
             if (response.referrer_info.localmonero.enabled === true) {
                 localmoneroDiv.style.display = "block";
                 localmoneroAnchor.addEventListener('click', openClickableLink);
             }
-        }).catch(error => {
+        }).catch((error) => {
             let localmoneroAnchor = document.getElementById('localmonero-anchor');
-            
-            localmoneroAnchor.setAttribute("referrer_id", "h2t1")
-            localmoneroAnchor.setAttribute("url", "https://localmonero.co")
+            localmoneroAnchor.setAttribute("referrer_id", "h2t1");
+            localmoneroAnchor.setAttribute("url", "https://localmonero.co");
             localmoneroAnchor.setAttribute("param_str", "rc");
-            // No data received from promise resolve(). Display link for LocalMonero
             localmoneroDiv.style.display = "block";
             localmoneroAnchor.addEventListener('click', openClickableLink);
         });
+
 
         ExchangeFunctions.getRatesAndLimits().then(() => {
             loaderPage.classList.remove('active');
