@@ -59,8 +59,6 @@
                 shell.openExternal("https://localmonero.co");
             }
         }
-        console.log(ExchangeFunctions);
-        console.log(ExchangeFunctions.initialiseExchangeConfiguration);
         ExchangeFunctions.initialiseExchangeConfiguration().then((response) => {
             let localmoneroAnchor = document.getElementById('localmonero-anchor');
             localmoneroAnchor.setAttribute("referrer_id", response.referrer_info.localmonero.referrer_id);
