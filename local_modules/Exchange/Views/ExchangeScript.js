@@ -61,10 +61,10 @@
         }
         ExchangeFunctions.initialiseExchangeConfiguration().then((response) => {
             let localmoneroAnchor = document.getElementById('localmonero-anchor');
-            localmoneroAnchor.setAttribute("referrer_id", response.referrer_info.localmonero.referrer_id);
+            localmoneroAnchor.setAttribute("referrer_id", response.data.referrer_info.localmonero.referrer_id);
             localmoneroAnchor.setAttribute("url", "https://localmonero.co");
             localmoneroAnchor.setAttribute("param_str", "rc");
-            if (response.referrer_info.localmonero.enabled === true) {
+            if (response.data.referrer_info.localmonero.enabled === true) {
                 localmoneroDiv.style.display = "block";
                 localmoneroAnchor.addEventListener('click', openClickableLink);
             }
