@@ -1,7 +1,7 @@
 const Utils = require('../Javascript/ExchangeUtilityFunctions');
 
 const validationMessages = document.getElementById('validation-messages');
-const addressValidation = document.getElementById('address-messages');
+//const addressValidation = document.getElementById('address-messages');
 const serverValidation = document.getElementById('server-messages')
 const orderBtn = document.getElementById("order-button");
 const loaderPage = document.getElementById('loader');
@@ -15,12 +15,12 @@ let currencyInputTimer;
 BTCAddressInputListener = function() {
     let div = document.getElementById('btc-invalid');
     let btcAddressInput = document.getElementById("btcAddress");
-    console.log(Utils.validateBTCAddress(btcAddressInput.value));
     if ((Utils.validateBTCAddress(btcAddressInput.value) == false) && div == null) {
         let error = document.createElement('div');
         error.classList.add('message-label');
         error.id = 'btc-invalid';
         error.innerHTML = `Your BTC address is not valid.`;
+        let addressValidation = document.getElementById('address-messages');
         addressValidation.appendChild(error);
     } else {
         if (!(div == null)) {
@@ -96,38 +96,44 @@ BTCCurrencyKeydownListener = function(event) {
 
 
 xmrBalanceChecks = function(exchangeFunctions) {
-    console.log(exchangeFunctions);
     serverValidation.innerHTML = "";
     let BTCToReceive;
     let XMRbalance = parseFloat(XMRcurrencyInput.value);
     let in_amount = XMRbalance.toFixed(12);
-    console.log(currencyInputTimer);
     BTCcurrencyInput.value = "Loading...";
     if (currencyInputTimer !== undefined) {
         clearTimeout(currencyInputTimer);
     }
-    if (exchangeFunctions.currentRates.in_min > XMRbalance) {
+
+    if (in_amount == 0) {
         let error = document.createElement('div');
         error.classList.add('message-label');
         error.id = 'xmrexceeded';
-        error.innerHTML = `You cannot exchange less than ${exchangeFunctions.currentRates.in_min} XMR`;
+        error.innerHTML = `Please enter a valid amount`;
         validationMessages.appendChild(error);
         return;
     }
-    if (exchangeFunctions.currentRates.in_max < XMRbalance) {
-        let error = document.createElement('div');
-        error.classList.add('message-label');
-        error.id = 'xmrexceeded';
-        error.innerHTML = `You cannot exchange more than ${exchangeFunctions.currentRates.in_max} XMR`;
-        validationMessages.appendChild(error);
-        return;
-    }
+    // if (exchangeFunctions.currentRates.in_min > XMRbalance) {
+    //     let error = document.createElement('div');
+    //     error.classList.add('message-label');
+    //     error.id = 'xmrexceeded';
+    //     error.innerHTML = `You cannot exchange less than ${exchangeFunctions.currentRates.in_min} XMR`;
+    //     validationMessages.appendChild(error);
+    //     return;
+    // }
+    // if (exchangeFunctions.currentRates.in_max < XMRbalance) {
+    //     let error = document.createElement('div');
+    //     error.classList.add('message-label');
+    //     error.id = 'xmrexceeded';
+    //     error.innerHTML = `You cannot exchange more than ${exchangeFunctions.currentRates.in_max} XMR`;
+    //     validationMessages.appendChild(error);
+    //     return;
+    // }
     validationMessages.innerHTML = "";
     serverValidation.innerHTML = "";
     currencyInputTimer = setTimeout(() => {
         exchangeFunctions.getOfferWithInAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, in_amount)
             .then((response) => {
-                console.log('async return', response);
                 BTCToReceive = parseFloat(response.out_amount);
                 let selectedWallet = document.getElementById('selected-wallet');
                 let tx_feeElem = document.getElementById('tx-fee');
@@ -143,34 +149,41 @@ xmrBalanceChecks = function(exchangeFunctions) {
                     error.innerHTML = `You cannot exchange more than ${walletMaxSpend} XMR`;
                     validationMessages.appendChild(error);
                 }
-                if (BTCToReceive.toFixed(8) > exchangeFunctions.currentRates.out_max) {
-                    let error = document.createElement('div');
-                    error.classList.add('message-label');
-                    error.id = 'xmrexceeded';
-                    error.innerHTML = `You cannot exchange more than ${exchangeFunctions.currentRates.in_max.toFixed(12)} XMR`;
-                    validationMessages.appendChild(error);
-                }
-                if (BTCToReceive.toFixed(8) < exchangeFunctions.currentRates.lower_limit) {
-                    let error = document.createElement('div');
-                    error.classList.add('message-label');
-                    error.id = 'xmrtoolow';
-                    error.innerHTML = `You cannot exchange less than ${exchangeFunctions.currentRates.in_min.toFixed(12)} XMR.`;
-                    validationMessages.appendChild(error);
-                }
+                // if (BTCToReceive.toFixed(8) > exchangeFunctions.currentRates.out_max) {
+                //     let error = document.createElement('div');
+                //     error.classList.add('message-label');
+                //     error.id = 'xmrexceeded';
+                //     error.innerHTML = `You cannot exchange more than ${exchangeFunctions.currentRates.in_max.toFixed(12)} XMR`;
+                //     validationMessages.appendChild(error);
+                // }
+                // if (BTCToReceive.toFixed(8) < exchangeFunctions.currentRates.lower_limit) {
+                //     let error = document.createElement('div');
+                //     error.classList.add('message-label');
+                //     error.id = 'xmrtoolow';
+                //     error.innerHTML = `You cannot exchange less than ${exchangeFunctions.currentRates.in_min.toFixed(12)} XMR.`;
+                //     validationMessages.appendChild(error);
+                // }
                 BTCcurrencyInput.value = BTCToReceive.toFixed(8);
             }).catch((error) => {
                 let errorDiv = document.createElement('div');
+                let errorStringSplit = error.response.data.Error.split("must be");
                 errorDiv.classList.add('message-label');
                 errorDiv.id = 'server-invalid';
-                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                BTCcurrencyInput.value = "Error";
+                if (errorStringSplit.length > 1) {
+                    // currency out of bounds error
+                    let currencyType = errorStringSplit[0].includes("deposit_coint_amount") ? "XMR" : "BTC";
+                    errorDiv.innerHTML = `You must exchange ${errorStringSplit[1]} ${currencyType}`;
+                } else {
+                    // undetermined error
+                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                }
                 serverValidation.appendChild(errorDiv);
             });
     }, 1500);
 }
 
 btcBalanceChecks = function(exchangeFunctions) {
-    console.log(exchangeFunctions);
-    
     let BTCToReceive;
     let BTCbalance = parseFloat(BTCcurrencyInput.value);
     let out_amount = BTCbalance.toFixed(12);
@@ -179,22 +192,30 @@ btcBalanceChecks = function(exchangeFunctions) {
         clearTimeout(currencyInputTimer);
     }
 
-    if (exchangeFunctions.currentRates.out_min > BTCbalance) {
+    if (out_amount == 0) {
         let error = document.createElement('div');
         error.classList.add('message-label');
         error.id = 'xmrexceeded';
-        error.innerHTML = `You cannot exchange less than ${exchangeFunctions.currentRates.out_min} BTC`;
+        error.innerHTML = `Please enter a valid amount`;
         validationMessages.appendChild(error);
         return;
     }
-    if (exchangeFunctions.currentRates.out_max < BTCbalance) {
-        let error = document.createElement('div');
-        error.classList.add('message-label');
-        error.id = 'xmrexceeded';
-        error.innerHTML = `You cannot exchange more than ${exchangeFunctions.currentRates.out_max} BTC`;
-        validationMessages.appendChild(error);
-        return;
-    }
+    // if (exchangeFunctions.currentRates.out_min > BTCbalance) {
+    //     let error = document.createElement('div');
+    //     error.classList.add('message-label');
+    //     error.id = 'xmrexceeded';
+    //     error.innerHTML = `You cannot exchange less than ${exchangeFunctions.currentRates.out_min} BTC`;
+    //     validationMessages.appendChild(error);
+    //     return;
+    // }
+    // if (exchangeFunctions.currentRates.out_max < BTCbalance) {
+    //     let error = document.createElement('div');
+    //     error.classList.add('message-label');
+    //     error.id = 'xmrexceeded';
+    //     error.innerHTML = `You cannot exchange more than ${exchangeFunctions.currentRates.out_max} BTC`;
+    //     validationMessages.appendChild(error);
+    //     return;
+    // }
     validationMessages.innerHTML = "";
     serverValidation.innerHTML = "";
     currencyInputTimer = setTimeout(() => {
@@ -207,8 +228,6 @@ btcBalanceChecks = function(exchangeFunctions) {
                 let tx_fee_double = parseFloat(tx_fee);
                 let walletMaxSpendDouble = parseFloat(selectedWallet.dataset.walletbalance);
                 let walletMaxSpend = walletMaxSpendDouble - tx_fee;
-                //let BTCToReceive = XMRcurrencyInput.value * exchangeFunctions.currentRates.price;
-                //let XMRbalance = parseFloat(XMRcurrencyInput.value);
                 let BTCCurrencyValue = parseFloat(BTCcurrencyInput.value);
 
 
@@ -239,9 +258,18 @@ btcBalanceChecks = function(exchangeFunctions) {
                 XMRcurrencyInput.value = XMRtoReceive.toFixed(12);
             }).catch((error) => {
                 let errorDiv = document.createElement('div');
+                let errorStringSplit = error.response.data.Error.split("must be");
                 errorDiv.classList.add('message-label');
                 errorDiv.id = 'server-invalid';
-                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                XMRcurrencyInput.value = "Error";
+                if (errorStringSplit.length > 1) {
+                    // currency out of bounds error
+                    let currencyType = errorStringSplit[0].includes("deposit_coint_amount") ? "XMR" : "BTC";
+                    errorDiv.innerHTML = `You must exchange ${errorStringSplit[1]} ${currencyType}`;
+                } else {
+                    // undetermined error
+                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                }
                 serverValidation.appendChild(errorDiv);
             });
     }, 1500);
@@ -257,9 +285,7 @@ backButtonClickListener = function() {
     loaderPage.classList.remove('active');
     orderStatusDiv.classList.remove('active');
     exchangeXmrDiv.classList.remove('active');
-    console.log(viewOrderBtn);
     viewOrderBtn.style.display = "block";
-    console.log(viewOrderBtn);
 }
 
 function clearCurrencies() {
