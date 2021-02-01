@@ -1,7 +1,7 @@
 const Utils = require('../Javascript/ExchangeUtilityFunctions');
 
 const validationMessages = document.getElementById('validation-messages');
-const addressValidation = document.getElementById('address-messages');
+//const addressValidation = document.getElementById('address-messages');
 const serverValidation = document.getElementById('server-messages')
 const orderBtn = document.getElementById("order-button");
 const loaderPage = document.getElementById('loader');
@@ -20,6 +20,7 @@ BTCAddressInputListener = function() {
         error.classList.add('message-label');
         error.id = 'btc-invalid';
         error.innerHTML = `Your BTC address is not valid.`;
+        let addressValidation = document.getElementById('address-messages');
         addressValidation.appendChild(error);
     } else {
         if (!(div == null)) {
@@ -103,6 +104,15 @@ xmrBalanceChecks = function(exchangeFunctions) {
     if (currencyInputTimer !== undefined) {
         clearTimeout(currencyInputTimer);
     }
+
+    if (in_amount == 0) {
+        let error = document.createElement('div');
+        error.classList.add('message-label');
+        error.id = 'xmrexceeded';
+        error.innerHTML = `Please enter a valid amount`;
+        validationMessages.appendChild(error);
+        return;
+    }
     // if (exchangeFunctions.currentRates.in_min > XMRbalance) {
     //     let error = document.createElement('div');
     //     error.classList.add('message-label');
@@ -182,6 +192,14 @@ btcBalanceChecks = function(exchangeFunctions) {
         clearTimeout(currencyInputTimer);
     }
 
+    if (out_amount == 0) {
+        let error = document.createElement('div');
+        error.classList.add('message-label');
+        error.id = 'xmrexceeded';
+        error.innerHTML = `Please enter a valid amount`;
+        validationMessages.appendChild(error);
+        return;
+    }
     // if (exchangeFunctions.currentRates.out_min > BTCbalance) {
     //     let error = document.createElement('div');
     //     error.classList.add('message-label');

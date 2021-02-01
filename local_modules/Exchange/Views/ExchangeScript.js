@@ -3,7 +3,7 @@
     const XMRcurrencyInput = document.getElementById('XMRcurrencyInput');
     const BTCcurrencyInput = document.getElementById('BTCcurrencyInput');
     const validationMessages = document.getElementById('validation-messages');
-
+    const shell = require('electron').shell;
     let validate = require('bitcoin-address-validation');
     let Utils = require('../../Exchange/Javascript/ExchangeUtilityFunctions');
     let ExchangeLibrary = require('mymonero-exchange');
@@ -41,6 +41,43 @@
             retry.classList.add('hidden');
             errorDiv.classList.add('hidden');
         }
+
+        let indacoinDiv = document.getElementById("indacoin");
+        let localmoneroDiv = document.getElementById("localmonero");
+
+        function openClickableLink() {
+            const self = this;
+            let referrer_id = self.getAttribute("referrer_id");
+            let url = self.getAttribute("url");
+            let paramStr = self.getAttribute("param_str");
+            if (referrer_id.length > 0) {
+                console.log("Got a referrer -- generate custom URL");
+                let urlToOpen = url + "?" + paramStr + "=" + referrer_id;
+                shell.openExternal(urlToOpen);
+            } else {
+                console.log("No referrer");
+                shell.openExternal("https://localmonero.co");
+            }
+        }
+        ExchangeFunctions.initialiseExchangeConfiguration().then((response) => {
+            let localmoneroAnchor = document.getElementById('localmonero-anchor');
+            localmoneroAnchor.setAttribute("referrer_id", response.referrer_info.localmonero.referrer_id);
+            localmoneroAnchor.setAttribute("url", "https://localmonero.co");
+            localmoneroAnchor.setAttribute("param_str", "rc");
+            if (response.referrer_info.localmonero.enabled === true) {
+                localmoneroDiv.style.display = "block";
+                localmoneroAnchor.addEventListener('click', openClickableLink);
+            }
+        }).catch((error) => {
+            let localmoneroAnchor = document.getElementById('localmonero-anchor');
+            localmoneroAnchor.setAttribute("referrer_id", "h2t1");
+            localmoneroAnchor.setAttribute("url", "https://localmonero.co");
+            localmoneroAnchor.setAttribute("param_str", "rc");
+            localmoneroDiv.style.display = "block";
+            localmoneroAnchor.addEventListener('click', openClickableLink);
+        });
+
+
         ExchangeFunctions.getRatesAndLimits().then(() => {
             loaderPage.classList.remove('active');
             exchangePage.classList.add("active");
@@ -108,11 +145,11 @@
     viewOrderBtn.id = "view-order";
     viewOrderBtn.innerHTML = "View Order";
     viewOrderBtn.addEventListener('click', function() {
-        orderStatusPage.classList.add('active');
         orderStatusPage.classList.remove('active');
         let exchangePage = document.getElementById('exchangePage');
         exchangePage.classList.add('active');
         viewOrderBtn.style.display = "none";
+        backBtn.style.display = "block";
     });
 
 
@@ -139,39 +176,28 @@
         
         orderBtn.style.display = "none";
         orderStarted = true;
-        backBtn.style.display = "block";
+        
         loaderPage.classList.add('active');
-
+        let orderStatusResponse = { orderTick: 0 };
         let out_amount = document.getElementById('BTCcurrencyInput').value;
         let in_currency = 'XMR';
         let out_currency = 'BTC';
+        let firstTick = true;
         try {
-            let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((error, response) => {
-                console.log(error);
-                console.log(response);
-                console.log(ExchangeFunctions.offer);
-            }).then((error, response) => {
+            let offer = ExchangeFunctions.getOfferWithOutAmount(in_currency, out_currency, out_amount).then((response) => {
                 let selectedWallet = document.getElementById('selected-wallet');
-                console.log(ExchangeFunctions);
-                console.log(btc_dest_address);
-                console.log(selectedWallet);
-                ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((error, response) => {
+                ExchangeFunctions.createOrder(btc_dest_address, selectedWallet.dataset.walletpublicaddress).then((response) => {
                     let orderStatusDiv = document.getElementById("exchangePage");
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
                     exchangeXmrDiv.classList.add('active');
                     backBtn.innerHTML = `<div class="base-button hoverable-cell utility grey-menu-button disableable left-back-button" style="cursor: default; -webkit-app-region: no-drag; position: absolute; opacity: 1; left: 0px;"></div>`;
-                    let firstTick = true;
-                    orderTimerInterval = setInterval(() => {
-                        ExchangeFunctions.getOrderStatus().then(function (response) {
-                            if (firstTick == true) {
-                                Utils.renderOrderStatus(response);
-                                firstTick = false;
-                            }
-                            orderStatusResponse = response;
-                            console.log(response);
-                            let expiryTime = response.expires_at;
+                    let localOrderTimer = setInterval(() => {
+                        if (orderStatusResponse.hasOwnProperty('expires_at')) {
+                            orderStatusResponse.orderTick++;
+                            Utils.renderOrderStatus(orderStatusResponse);
+                            let expiryTime = orderStatusResponse.expires_at;
                             let secondsElement = document.getElementById('secondsRemaining');
                             let minutesElement = document.getElementById('minutesRemaining');
                             if (secondsElement !== null) {
@@ -186,19 +212,34 @@
                                 let xmr_dest_address_elem = document.getElementById('in_address');
                                 xmr_dest_address_elem.value = response.receiving_subaddress; 
                             }
-                        })
-                    }, 1000);
-                    orderStatusInterval = setInterval(() => {
-                        Utils.renderOrderStatus(orderStatusResponse).then(() => {
+
                             if (orderStatusResponse.status == "PAID" || orderStatusResponse.status == "TIMED_OUT"
                                 || orderStatusResponse.status == "DONE" || orderStatusResponse.status == "FLAGGED_DESTINATION_ADDRESS"
-                                || orderStatusResponse.status == "PAYMENT_FAILED" || orderStatusResponse.status == "REJECTED") 
+                                || orderStatusResponse.status == "PAYMENT_FAILED" || orderStatusResponse.status == "REJECTED" 
+                                || orderStatusResponse.status == "EXPIRED") 
                                 {
-                                    clearInterval(orderStatusInterval);
-                                    clearInterval(orderTimerInterval);
-                            }
-                        });
-                    }, 10000);
+                                    clearInterval(localOrderTimer);
+                                }
+                        }
+                        if ((orderStatusResponse.orderTick % 10) == 0) {
+                            ExchangeFunctions.getOrderStatus().then(function (response) {
+                                let elemArr = document.getElementsByClassName("provider-name");
+                                if (firstTick == true || elemArr[0].innerHTML == 'undefined') {
+                                    Utils.renderOrderStatus(response);
+                                    elemArr[0].innerHTML = response.provider_name;
+                                    elemArr[1].innerHTML = response.provider_name;
+                                    elemArr[2].innerHTML = response.provider_name;
+                                    
+                                    firstTick = false;
+                                }
+                                let orderTick = orderStatusResponse.orderTick;
+                                orderTick++;
+                                response.orderTick = orderTick;
+                                orderStatusResponse = response;
+                            })
+                        }
+                    }, 1000);
+
                     document.getElementById("orderStatusPage").classList.remove('active');
                     loaderPage.classList.remove('active');
                     orderStatusDiv.classList.add('active');
@@ -224,5 +265,5 @@
         } catch (Error) {
             console.log(Error);
         }
-    });
+    })
 })()

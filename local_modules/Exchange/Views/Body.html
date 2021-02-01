@@ -39,6 +39,8 @@
                     <input id="btcAddress" class="full-width longTextInput" type="text" placeholder="Destination BTC Address" autocomplete="off" autocapitalize="none" spellcheck="false" value="">
                 </div>
             </div>
+            <div id="localmonero"><a href="#" id="localmonero-anchor" class="clickableLinkButton">Buy Monero using LocalMonero</a></div>
+            <div id="indacoin"><a href="#" id="indacoin-anchor" class="clickableLinkButton">Buy Monero using Indacoin</a></div>
             <div id="validation-messages"></div>
             <div id="address-messages"></div>
             <div id="server-messages"></div>
@@ -54,13 +56,13 @@
         <div class="field_title form-field-title">
             <table>
                 <tr>
-                    <td colspan="2" style="word-wrap: normal; word-break: normal;">Please note an exchange may take a few minutes to process. XMR.to are able to provide support for any exchanges. For all issues, please contact XMR.to with your UUID for assistance.</td>
+                    <td colspan="2" style="word-wrap: normal; word-break: normal;">Please note an exchange may take a few minutes to process. <span class="provider-name"></span> are able to provide support for any exchanges. For all issues, please contact <span class="provider-name"></span> with your UUID for assistance.</td>
                 </tr>
                 <tr>
                     <td>
                         <div class="field_title form-field-title">
                             <div style="position: relative; left: 0px; top: 0px; padding: 2px 0 0 0;">
-                                <span class="field_title form-field-title label-spacing uppercase" style="margin-top: 0px;">XMR.to UUID</span>
+                                <span class="field_title form-field-title label-spacing uppercase" style="margin-top: 0px;"><span class="provider-name"></span> UUID</span>
                                 <div id="provider_order_id" class="textInput currencyOutput" type="text" placeholder="0.00"></div>
                                 <div class="currencySelect"><option value="XMR" style="text-align: center;">&nbsp;&nbsp;&nbsp;&nbsp;</option></select> 
                             </div>
