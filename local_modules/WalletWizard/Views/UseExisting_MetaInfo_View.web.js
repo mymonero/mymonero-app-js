@@ -544,6 +544,18 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 			self.isDisabledFromSubmission = true
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
 			//
+			try {
+				let ret = self.context.monero_utils.seed_and_keys_from_mnemonic(
+					self.lookup__mnemonicSeed(),
+					self.context.nettype
+				);
+			} catch (e) {
+				console.error("Invalid mnemonic!");
+				console.log(e);
+				console.log(self);
+				__trampolineFor_failedWithErrStr(e);
+				return
+			} 
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
 			self.rightBarButtonView.layer.innerHTML = commonComponents_activityIndicators.New_Graphic_ActivityIndicatorLayer_htmlString({"margin-top": "3px"})
