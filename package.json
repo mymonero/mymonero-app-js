@@ -30,8 +30,13 @@
     "win": {
       "certificateSubjectName": "MyMonero (PTY) LTD",
       "target": [
-        "nsis",
-        "zip"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
       ]
     },
     "nsis": {
