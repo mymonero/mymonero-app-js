@@ -551,8 +551,6 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 				);
 			} catch (e) {
 				console.error("Invalid mnemonic!");
-				console.log(e);
-				console.log(self);
 				__trampolineFor_failedWithErrStr(e);
 				return
 			} 
