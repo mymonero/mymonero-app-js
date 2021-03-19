@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
@@ -55,6 +56,11 @@ let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_uti
 //
 let rateServiceDomainText = "cryptocompare.com" 
 //
+// Yat import
+const YatMoneroLookup = require('yat-monero-lookup');
+
+let yatMoneroLookup = new YatMoneroLookup({ debugMode: true });
+
 
 class SendFundsView extends View
 {
@@ -1799,6 +1805,9 @@ class SendFundsView extends View
 	}
 	_didFinishTypingInContactPickerInput(optl_event)
 	{
+		console.log("Invoked didFinishTypingInContactPickerInput");
+		//console.log("Checking if addy has  handle"); 
+		// Check for 
 		const self = this
 		//
 		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
@@ -1828,6 +1837,73 @@ class SendFundsView extends View
 		//
 		self.isResolvingSendTarget = true
 		self.set_isSubmittable_needsUpdate()
+		
+		// if enteredPossibleAddress length less than 7, check if it's a Yat
+		let hasEmojiCharacters = /\p{Extended_Pictographic}/u.test(enteredPossibleAddress)
+		if (hasEmojiCharacters) {
+			console.log("Has emojis, probably a Yat handle attempt");
+			console.log("Possible address's length:", enteredPossibleAddress.length);
+			// An emoji is two-bytes, hence length < 14 
+			if (enteredPossibleAddress.length < 12) {
+				console.log("Less than 6 characters")
+				let isYat = yatMoneroLookup.isValidYatHandle(enteredPossibleAddress);
+				console.log("Is Yat: ", isYat);
+				if (isYat) {
+					let map = new Map();
+					
+					const lookup = yatMoneroLookup.lookupMoneroAddresses(enteredPossibleAddress).then((responseMap) => {
+						console.log("RESPONSE HERE");
+						console.log(responseMap);
+						console.log("MAP HERE", responseMap.size);
+						// If our library returns a map with zero keys, it typecasts it to a normal object with zero properties. 
+						// Since normal objects don't have a size property, responseMap.size returns as "undefined"
+						if (typeof(responseMap.size) == "undefined") {
+							// no monero address
+							let errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
+							self.validationMessageLayer.SetValidationError(errorString);
+							console.log("No yat records");
+						} else if (responseMap.size == 1) {
+							// Either a Monero address or a Monero subaddress was found.
+							let iterator = responseMap.values();
+							let record = iterator.next();
+							console.log(record);
+							self._displayResolvedAddress(record.value);
+						} else if (responseMap.size == 2) {
+							// TODO: if a primary address is set, we use that, else we use the primary address
+							let moneroAddress = responseMap.get('0x1001');
+							console.log("Primary monero address:", moneroAddress);
+							self._displayResolvedAddress(moneroAddress);
+							console.log(record);
+						}
+	
+					}).catch((error) => {
+						console.log(error.response);
+						console.log(error.response.status);
+						if (error.response.status == 404) {
+							console.log("Yat not found");
+							// Show error 
+							let errorString = `The Yat "${enteredPossibleAddress}" does not exist`
+							self.validationMessageLayer.SetValidationError(errorString);
+							return;
+						}
+						console.log("Here's our error");
+						console.log(error);
+						console.log(error.message);
+					});
+					// lookup is a key->value Map with zero to two key-value pairs
+				} else {
+					// This conditional will run when a mixture of emoji and non-emoji characters is present in the address
+					let errorString = `"${enteredPossibleAddress}" is not a valid Yat handle. You may have input an emoji that is not part of the Yat emoji set, or a non-emoji character.`
+					self.validationMessageLayer.SetValidationError(errorString);
+					return;
+				}
+			} else {
+				let errorString = `Yats have a maximum of five characters`
+				self.validationMessageLayer.SetValidationError(errorString);
+				console.log("Yats have a maximum of five characters");
+			}
+		}
+			
 		//
 		const isOAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredPossibleAddress)
 		if (isOAAddress !== true) {
