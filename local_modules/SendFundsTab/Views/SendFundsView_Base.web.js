@@ -899,6 +899,7 @@ class SendFundsView extends View
 				e.preventDefault()
 				{
 					if (self.isSubmitButtonDisabled !== true) { // button is enabled
+						console.log("We've tried to send.");
 						self._tryToGenerateSend()
 					}
 				}
@@ -1415,12 +1416,17 @@ class SendFundsView extends View
 		}
 		//
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
-		const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ""
+		let enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ""
 		const enteredAddressValue_exists = enteredAddressValue !== ""
 		//
 		const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ""
 		const resolvedAddress_exists = resolvedAddress !== "" // NOTE: it might be hidden, though!
 		const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === "block"
+		if (yatMoneroLookup.isValidYatHandle(self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value)) {
+			// The user entered a valid Yat. We need to override the value of enteredAddressValue to the resolved address
+			enteredAddressValue = self.resolvedAddress_valueLayer.innerHTML || "";
+		}
+
 		//
 		const manuallyEnteredPaymentID = self.manualPaymentIDInputLayer.value || ""
 		const manuallyEnteredPaymentID_exists = manuallyEnteredPaymentID !== ""
@@ -1481,6 +1487,7 @@ class SendFundsView extends View
 							}
 						)
 						// and of course proceed
+						
 						__proceedTo_generateSendTransaction()
 					}
 				)
@@ -1544,6 +1551,7 @@ class SendFundsView extends View
 			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
 			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
 
+			//console.log("Successfully reached wallet.SendFunds but didn't invoke it -- Yat testing");
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
@@ -1873,18 +1881,20 @@ class SendFundsView extends View
 							let moneroAddress = responseMap.get('0x1001');
 							console.log("Primary monero address:", moneroAddress);
 							self._displayResolvedAddress(moneroAddress);
-							console.log(record);
 						}
 	
 					}).catch((error) => {
 						console.log(error.response);
-						console.log(error.response.status);
-						if (error.response.status == 404) {
-							console.log("Yat not found");
-							// Show error 
-							let errorString = `The Yat "${enteredPossibleAddress}" does not exist`
-							self.validationMessageLayer.SetValidationError(errorString);
-							return;
+						//console.log(error.response.status);
+						if (typeof(error.response) !== "undefined" && typeof(error.response.status) !== "undefined") {
+							// Due to the status being defined, handle this as an HTTP error response
+							if (error.response.status == 404) {
+								console.log("Yat not found");
+								// Show error 
+								let errorString = `The Yat "${enteredPossibleAddress}" does not exist`
+								self.validationMessageLayer.SetValidationError(errorString);
+								return;
+							}
 						}
 						console.log("Here's our error");
 						console.log(error);
