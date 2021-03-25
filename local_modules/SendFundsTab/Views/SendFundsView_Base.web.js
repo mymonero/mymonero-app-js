@@ -1527,31 +1527,30 @@ class SendFundsView extends View
 		function __proceedTo_generateSendTransaction()
 		{
 
-// Karl added this to try figure out what values are set
-			_reEnableFormElements();
-			console.log(wallet);
-			console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
-			console.log('resolvedAddress: ' + resolvedAddress);
-			console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
-			console.log('resolvedPaymentID: ' + resolvedPaymentID);
-			console.log('hasPickedAContact: ' + hasPickedAContact);
-			console.log('resolvedAddress_fieldIsVisible: ' + resolvedAddress_fieldIsVisible);
-			console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + manuallyEnteredPaymentID_fieldIsVisible);
-			console.log('resolvedPaymentID_fieldIsVisible: ' + resolvedPaymentID_fieldIsVisible);
-			console.log('contact_payment_id: ' + (hasPickedAContact ? self.pickedContact.payment_id : undefined));
-			console.log('cached_OAResolved_address: ' + (hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined));
-			console.log('contact_hasOpenAliasAddress: ' + (hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined));
-			console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
-			console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
-			console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
-// end of Karl's console logging
+			// Karl added this to try figure out what values are set
+			// _reEnableFormElements();
+			// console.log(wallet);
+			// console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
+			// console.log('resolvedAddress: ' + resolvedAddress);
+			// console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
+			// console.log('resolvedPaymentID: ' + resolvedPaymentID);
+			// console.log('hasPickedAContact: ' + hasPickedAContact);
+			// console.log('resolvedAddress_fieldIsVisible: ' + resolvedAddress_fieldIsVisible);
+			// console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + manuallyEnteredPaymentID_fieldIsVisible);
+			// console.log('resolvedPaymentID_fieldIsVisible: ' + resolvedPaymentID_fieldIsVisible);
+			// console.log('contact_payment_id: ' + (hasPickedAContact ? self.pickedContact.payment_id : undefined));
+			// console.log('cached_OAResolved_address: ' + (hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined));
+			// console.log('contact_hasOpenAliasAddress: ' + (hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined));
+			// console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
+			// console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
+			// console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
+			// end of Karl's console logging
 		
 			let contact_payment_id = hasPickedAContact ? self.pickedContact.payment_id : undefined;
 			let cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined;
 			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
 			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
 
-			//console.log("Successfully reached wallet.SendFunds but didn't invoke it -- Yat testing");
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
