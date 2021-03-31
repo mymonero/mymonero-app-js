@@ -78,6 +78,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.isSubmitButtonDisabled = false
+		self.isYatHandle = false
 		self.setup_views()
 		self.startObserving()
 		//
@@ -1522,11 +1523,11 @@ class SendFundsView extends View
 			}
 		}
 		// fall through
-		__proceedTo_generateSendTransaction()
+		__proceedTo_generateSendTransaction(self)
 		//
-		function __proceedTo_generateSendTransaction()
+		function __proceedTo_generateSendTransaction(self)
 		{
-
+			console.log(self);
 			// Karl added this to try figure out what values are set
 			// _reEnableFormElements();
 			// console.log(wallet);
@@ -1550,7 +1551,7 @@ class SendFundsView extends View
 			let cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined;
 			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
 			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
-
+			console.log(self.isYatHandle);
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
@@ -1589,7 +1590,7 @@ class SendFundsView extends View
 		// mocked transaction gets set in wallet.js
 		function handleResponse_fn(err, mockedTransaction) 
 		{
-			console.log("err", err)
+
 			if (err) {
 				_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 				return
@@ -1598,15 +1599,18 @@ class SendFundsView extends View
 				const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
 				self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
 			}
-			{
-				const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-				self.__didSendWithPickedContact(
-					this_pickedContact, 
-					enteredAddressValue_exists ? enteredAddressValue : null, 
-					resolvedAddress_exists ? resolvedAddress : null,
-					mockedTransaction
-				);
-			}
+			// TODO: Once we have properly developed Yat support for Contacts, remove this isYatHandle check to allow a user to save the Yat contact
+			if (self.isYatHandle == false) {
+				{
+					const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
+					self.__didSendWithPickedContact(
+						this_pickedContact, 
+						enteredAddressValue_exists ? enteredAddressValue : null, 
+						resolvedAddress_exists ? resolvedAddress : null,
+						mockedTransaction
+					);
+				}
+			} 
 			{ // finally, clean up form
 				setTimeout(
 					function()
@@ -1855,6 +1859,7 @@ class SendFundsView extends View
 				console.log("Less than 6 characters")
 				let isYat = yatMoneroLookup.isValidYatHandle(enteredPossibleAddress);
 				console.log("Is Yat: ", isYat);
+				self.isYatHandle = isYat;
 				if (isYat) {
 					let map = new Map();
 					
