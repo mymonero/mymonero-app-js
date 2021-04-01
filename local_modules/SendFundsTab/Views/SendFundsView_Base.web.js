@@ -1859,7 +1859,7 @@ class SendFundsView extends View
 				const lookup = yatMoneroLookup.lookupMoneroAddresses(enteredPossibleAddress).then((responseMap) => {
 					// If our library returns a map with zero keys, it typecasts it to a normal object with zero properties. 
 					// Since normal objects don't have a size property, responseMap.size returns as "undefined"
-					if (typeof(responseMap.size) == "undefined") {
+					if (responseMap.size == 0) {
 						// no monero address
 						let errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
 						self.validationMessageLayer.SetValidationError(errorString);
