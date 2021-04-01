@@ -1857,26 +1857,20 @@ class SendFundsView extends View
 			self.isYatHandle = isYat;
 			if (isYat) {
 				const lookup = yatMoneroLookup.lookupMoneroAddresses(enteredPossibleAddress).then((responseMap) => {
-					// If our library returns a map with zero keys, it typecasts it to a normal object with zero properties. 
-					// Since normal objects don't have a size property, responseMap.size returns as "undefined"
+					// Our library returns a map with between 0 and 2 keys
 					if (responseMap.size == 0) {
 						// no monero address
 						let errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
 						self.validationMessageLayer.SetValidationError(errorString);
-						console.log("No yat records");
 					} else if (responseMap.size == 1) {
 						// Either a Monero address or a Monero subaddress was found.
 						let iterator = responseMap.values();
 						let record = iterator.next();
-						console.log(record);
 						self._displayResolvedAddress(record.value);
 					} else if (responseMap.size == 2) {
-						// TODO: if a primary address is set, we use that, else we use the primary address
 						let moneroAddress = responseMap.get('0x1001');
-						console.log("Primary monero address:", moneroAddress);
 						self._displayResolvedAddress(moneroAddress);
 					}
-
 				}).catch((error) => {
 					// If the error status is defined, handle this error according to the HTTP error status code
 					if (typeof(error.response) !== "undefined" && typeof(error.response.status) !== "undefined") {
@@ -1902,7 +1896,7 @@ class SendFundsView extends View
 					}
 				});
 			} else {
-				// This conditional will run when a mixture of emoji and non-emoji characters is present in the address
+				// This conditional will run when a mixture of emoji and non-emoji characters are present in the address
 				let errorString = `"${enteredPossibleAddress}" is not a valid Yat handle. You may have input an emoji that is not part of the Yat emoji set, or a non-emoji character.`
 				self.validationMessageLayer.SetValidationError(errorString);
 				return;
