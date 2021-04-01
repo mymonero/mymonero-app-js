@@ -59,7 +59,7 @@ let rateServiceDomainText = "cryptocompare.com"
 // Yat import
 const YatMoneroLookup = require('yat-monero-lookup');
 
-let yatMoneroLookup = new YatMoneroLookup({ debugMode: true });
+let yatMoneroLookup = new YatMoneroLookup({});
 
 
 class SendFundsView extends View
@@ -1852,69 +1852,60 @@ class SendFundsView extends View
 		// if enteredPossibleAddress length less than 7, check if it's a Yat
 		let hasEmojiCharacters = /\p{Extended_Pictographic}/u.test(enteredPossibleAddress)
 		if (hasEmojiCharacters) {
-			console.log("Has emojis, probably a Yat handle attempt");
-			console.log("Possible address's length:", enteredPossibleAddress.length);
-			// An emoji is two-bytes, hence length < 14 
-			if (enteredPossibleAddress.length < 12) {
-				console.log("Less than 6 characters")
-				let isYat = yatMoneroLookup.isValidYatHandle(enteredPossibleAddress);
-				console.log("Is Yat: ", isYat);
-				self.isYatHandle = isYat;
-				if (isYat) {
-					let map = new Map();
-					
-					const lookup = yatMoneroLookup.lookupMoneroAddresses(enteredPossibleAddress).then((responseMap) => {
-						console.log("RESPONSE HERE");
-						console.log(responseMap);
-						console.log("MAP HERE", responseMap.size);
-						// If our library returns a map with zero keys, it typecasts it to a normal object with zero properties. 
-						// Since normal objects don't have a size property, responseMap.size returns as "undefined"
-						if (typeof(responseMap.size) == "undefined") {
-							// no monero address
-							let errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
+		
+			let isYat = yatMoneroLookup.isValidYatHandle(enteredPossibleAddress);
+			self.isYatHandle = isYat;
+			if (isYat) {
+				const lookup = yatMoneroLookup.lookupMoneroAddresses(enteredPossibleAddress).then((responseMap) => {
+					// If our library returns a map with zero keys, it typecasts it to a normal object with zero properties. 
+					// Since normal objects don't have a size property, responseMap.size returns as "undefined"
+					if (typeof(responseMap.size) == "undefined") {
+						// no monero address
+						let errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
+						self.validationMessageLayer.SetValidationError(errorString);
+						console.log("No yat records");
+					} else if (responseMap.size == 1) {
+						// Either a Monero address or a Monero subaddress was found.
+						let iterator = responseMap.values();
+						let record = iterator.next();
+						console.log(record);
+						self._displayResolvedAddress(record.value);
+					} else if (responseMap.size == 2) {
+						// TODO: if a primary address is set, we use that, else we use the primary address
+						let moneroAddress = responseMap.get('0x1001');
+						console.log("Primary monero address:", moneroAddress);
+						self._displayResolvedAddress(moneroAddress);
+					}
+
+				}).catch((error) => {
+					// If the error status is defined, handle this error according to the HTTP error status code
+					if (typeof(error.response) !== "undefined" && typeof(error.response.status) !== "undefined") {
+						if (error.response.status == 404) {
+							// Yat not found
+							let errorString = `The Yat "${enteredPossibleAddress}" does not exist`
 							self.validationMessageLayer.SetValidationError(errorString);
-							console.log("No yat records");
-						} else if (responseMap.size == 1) {
-							// Either a Monero address or a Monero subaddress was found.
-							let iterator = responseMap.values();
-							let record = iterator.next();
-							console.log(record);
-							self._displayResolvedAddress(record.value);
-						} else if (responseMap.size == 2) {
-							// TODO: if a primary address is set, we use that, else we use the primary address
-							let moneroAddress = responseMap.get('0x1001');
-							console.log("Primary monero address:", moneroAddress);
-							self._displayResolvedAddress(moneroAddress);
+							return;
+						} else if (error.response.status >= 500) {
+							// Yat server / remote network device error encountered
+							let errorString = `The Yat server is responding with an error. Please try again later. Error: ${error.message}`
+							self.validationMessageLayer.SetValidationError(errorString);
+						} else {
+							// Response code that isn't 404 or a server error (>= 500) on their side  
+							let errorString = `An unexpected error occurred when looking up the Yat Handle: ${error.message}`
+							self.validationMessageLayer.SetValidationError(errorString);
 						}
-	
-					}).catch((error) => {
-						console.log(error.response);
-						//console.log(error.response.status);
-						if (typeof(error.response) !== "undefined" && typeof(error.response.status) !== "undefined") {
-							// Due to the status being defined, handle this as an HTTP error response
-							if (error.response.status == 404) {
-								console.log("Yat not found");
-								// Show error 
-								let errorString = `The Yat "${enteredPossibleAddress}" does not exist`
-								self.validationMessageLayer.SetValidationError(errorString);
-								return;
-							}
-						}
-						console.log("Here's our error");
-						console.log(error);
-						console.log(error.message);
-					});
-					// lookup is a key->value Map with zero to two key-value pairs
-				} else {
-					// This conditional will run when a mixture of emoji and non-emoji characters is present in the address
-					let errorString = `"${enteredPossibleAddress}" is not a valid Yat handle. You may have input an emoji that is not part of the Yat emoji set, or a non-emoji character.`
-					self.validationMessageLayer.SetValidationError(errorString);
-					return;
-				}
+					} else {
+						// Network connectivity issues -- could be offline / Yat server not responding
+						let errorString = `Unable to communicate with the Yat server. It may be down, or you may be experiencing internet connectivity issues. Error: ${error.message}`
+						self.validationMessageLayer.SetValidationError(errorString);
+						// If we don't have an error.response, our request failed because of a network error
+					}
+				});
 			} else {
-				let errorString = `Yats have a maximum of five characters`
+				// This conditional will run when a mixture of emoji and non-emoji characters is present in the address
+				let errorString = `"${enteredPossibleAddress}" is not a valid Yat handle. You may have input an emoji that is not part of the Yat emoji set, or a non-emoji character.`
 				self.validationMessageLayer.SetValidationError(errorString);
-				console.log("Yats have a maximum of five characters");
+				return;
 			}
 		}
 			
