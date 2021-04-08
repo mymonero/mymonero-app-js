@@ -264,14 +264,6 @@ class ExchangeContentView extends ListView {
 
         self.emptyStateMessageContainerView = view
         self.addSubview(view)
-
-
-
-        // setInterval((context, options) => {
-        //     console.log(options);
-        //     console.log(self.context);
-        //     console.log(self.context.walletsListController);
-        // }, 5000);
     }
 
     Balance_JSBigInt(wallet)
@@ -374,14 +366,6 @@ class ExchangeContentView extends ListView {
 		return displayString
 	}
 
-/**
- *                 let exchangeRate = document.getElementById('exchangeRate');
-                
-                exchangeRate.addEventListener('click', function() {
-                    const rateObj = await ExchangeFunctions.getRatesAndLimits();
-                    console.log(rateObj);
-                })
-*/
     Navigation_Title() {
         return "Exchange"
     }
@@ -408,25 +392,7 @@ class ExchangeContentView extends ListView {
                 layer.style.fontWeight = "300"
                 }
             }
-
             
-            // view.layer.addEventListener(
-            //     "click",
-            //     function(e)
-            //     {
-            //         e.preventDefault()
-            //         //
-            //         let orderElement = document.getElementById("")    
-            //         //
-            //         // const view = new AddContactFromContactsTabView({}, self.context)
-            //         // self.currentlyPresented_AddContactView = view
-            //         // const navigationView = new StackAndModalNavigationView({}, self.context)
-            //         // navigationView.SetStackViews([ view ])
-            //         // self.navigationController.PresentView(navigationView, true)
-            //         //
-            //         return false
-            //     }
-            // )
             return view
         }
     }
