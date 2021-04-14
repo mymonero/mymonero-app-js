@@ -57,7 +57,7 @@ let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_uti
 let rateServiceDomainText = "cryptocompare.com" 
 //
 // Yat import
-const YatMoneroLookup = require('yat-monero-lookup');
+const YatMoneroLookup = require('@mymonero/mymonero-yat-lookup');
 
 let yatMoneroLookup = new YatMoneroLookup({});
 
