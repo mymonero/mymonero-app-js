@@ -121,6 +121,8 @@ class SendFundsView extends SendFundsView_Base {
 
     __didSendWithPickedContact(pickedContact_orNull, enteredAddressValue_orNull, resolvedAddress_orNull, mockedTransaction) {
         const self = this;
+        // TODO: When we have Contacts support for Yats, we'll remove this check
+        
         if (pickedContact_orNull === null) { // so they're going with a custom addr
             setTimeout(
                 function () {

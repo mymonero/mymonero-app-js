@@ -96,7 +96,6 @@ BTCCurrencyKeydownListener = function(event) {
 
 
 xmrBalanceChecks = function(exchangeFunctions) {
-    serverValidation.innerHTML = "";
     let BTCToReceive;
     let XMRbalance = parseFloat(XMRcurrencyInput.value);
     let in_amount = XMRbalance.toFixed(12);
@@ -134,6 +133,9 @@ xmrBalanceChecks = function(exchangeFunctions) {
     currencyInputTimer = setTimeout(() => {
         exchangeFunctions.getOfferWithInAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, in_amount)
             .then((response) => {
+                // We clear error messages again here to prevent duplicates, since it's possible that a user may change the input value while a request is still waiting for a server response. This prevents duplicate error messages
+                validationMessages.innerHTML = "";
+                serverValidation.innerHTML = "";
                 BTCToReceive = parseFloat(response.out_amount);
                 let selectedWallet = document.getElementById('selected-wallet');
                 let tx_feeElem = document.getElementById('tx-fee');
@@ -165,25 +167,31 @@ xmrBalanceChecks = function(exchangeFunctions) {
                 // }
                 BTCcurrencyInput.value = BTCToReceive.toFixed(8);
             }).catch((error) => {
+                // We clear error messages again here to prevent duplicates, since it's possible that a user may change the input value while a request is still waiting for a server response. This prevents duplicate error messages
+                validationMessages.innerHTML = "";
+                serverValidation.innerHTML = "";
                 let errorDiv = document.createElement('div');
                 let errorStringSplit = error.response.data.Error.split("must be");
                 errorDiv.classList.add('message-label');
-                errorDiv.id = 'server-invalid';
-                BTCcurrencyInput.value = "Error";
-                if (errorStringSplit.length > 1) {
-                    // currency out of bounds error
-                    let currencyType = errorStringSplit[0].includes("deposit_coint_amount") ? "XMR" : "BTC";
-                    errorDiv.innerHTML = `You must exchange ${errorStringSplit[1]} ${currencyType}`;
+                let errorMessage = "";
+                if (typeof(error.response.status) == "undefined") {
+                    errorMessage = error.message
                 } else {
-                    // undetermined error
-                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                    // We may have a value in error.response.data.Error
+                    if (typeof(error.response.data) !== "undefined" && typeof(error.response.data.Error !== "undefined")) {
+                        errorMessage = error.response.data.Error
+                    } else {
+                        errorMessage = error.message
+                    }
                 }
+                errorDiv.id = 'server-invalid';
+                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + errorMessage;
                 serverValidation.appendChild(errorDiv);
             });
     }, 1500);
 }
 
-btcBalanceChecks = function(exchangeFunctions) {
+btcBalanceChecks = function(exchangeFunctions) {    
     let BTCToReceive;
     let BTCbalance = parseFloat(BTCcurrencyInput.value);
     let out_amount = BTCbalance.toFixed(12);
@@ -221,6 +229,9 @@ btcBalanceChecks = function(exchangeFunctions) {
     currencyInputTimer = setTimeout(() => {
         exchangeFunctions.getOfferWithOutAmount(exchangeFunctions.in_currency, exchangeFunctions.out_currency, out_amount)
             .then((response) => {
+                // We clear error messages again here to prevent duplicates, since it's possible that a user may change the input value while a request is still waiting for a server response. This prevents duplicate error messages
+                validationMessages.innerHTML = "";
+                serverValidation.innerHTML = "";
                 let XMRtoReceive = parseFloat(response.in_amount);
                 let selectedWallet = document.getElementById('selected-wallet');
                 let tx_feeElem = document.getElementById('tx-fee');
@@ -257,19 +268,25 @@ btcBalanceChecks = function(exchangeFunctions) {
                 }
                 XMRcurrencyInput.value = XMRtoReceive.toFixed(12);
             }).catch((error) => {
+                // We clear error messages again here to prevent duplicates, since it's possible that a user may change the input value while a request is still waiting for a server response. This prevents duplicate error messages
+                validationMessages.innerHTML = "";
+                serverValidation.innerHTML = "";
                 let errorDiv = document.createElement('div');
                 let errorStringSplit = error.response.data.Error.split("must be");
                 errorDiv.classList.add('message-label');
-                errorDiv.id = 'server-invalid';
-                XMRcurrencyInput.value = "Error";
-                if (errorStringSplit.length > 1) {
-                    // currency out of bounds error
-                    let currencyType = errorStringSplit[0].includes("deposit_coint_amount") ? "XMR" : "BTC";
-                    errorDiv.innerHTML = `You must exchange ${errorStringSplit[1]} ${currencyType}`;
+                let errorMessage = "";
+                if (typeof(error.response.status) == "undefined") {
+                    errorMessage = error.message
                 } else {
-                    // undetermined error
-                    errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + error.message;
+                    // We may have a value in error.response.data.Error
+                    if (typeof(error.response.data) !== "undefined" && typeof(error.response.data.Error !== "undefined")) {
+                        errorMessage = error.response.data.Error
+                    } else {
+                        errorMessage = error.message
+                    }
                 }
+                errorDiv.id = 'server-invalid';
+                errorDiv.innerHTML = `There was a problem communicating with the server. <br>If this problem keeps occurring, please contact support with a screenshot of the following error: <br>` + errorMessage;
                 serverValidation.appendChild(errorDiv);
             });
     }, 1500);
