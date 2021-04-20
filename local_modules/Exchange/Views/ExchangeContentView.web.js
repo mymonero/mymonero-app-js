@@ -366,7 +366,6 @@ class ExchangeContentView extends ListView {
 		return displayString
 	}
 
-
     Navigation_Title() {
         return "Exchange"
     }
@@ -393,25 +392,7 @@ class ExchangeContentView extends ListView {
                 layer.style.fontWeight = "300"
                 }
             }
-
             
-            // view.layer.addEventListener(
-            //     "click",
-            //     function(e)
-            //     {
-            //         e.preventDefault()
-            //         //
-            //         let orderElement = document.getElementById("")    
-            //         //
-            //         // const view = new AddContactFromContactsTabView({}, self.context)
-            //         // self.currentlyPresented_AddContactView = view
-            //         // const navigationView = new StackAndModalNavigationView({}, self.context)
-            //         // navigationView.SetStackViews([ view ])
-            //         // self.navigationController.PresentView(navigationView, true)
-            //         //
-            //         return false
-            //     }
-            // )
             return view
         }
     }

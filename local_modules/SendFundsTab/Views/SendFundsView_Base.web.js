@@ -29,6 +29,7 @@
 "use strict"
 //
 const View = require('../../Views/View.web')
+
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.web')
@@ -55,6 +56,11 @@ let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_uti
 //
 let rateServiceDomainText = "cryptocompare.com" 
 //
+// Yat import
+const YatMoneroLookup = require('@mymonero/mymonero-yat-lookup');
+
+let yatMoneroLookup = new YatMoneroLookup({});
+
 
 class SendFundsView extends View
 {
@@ -72,6 +78,7 @@ class SendFundsView extends View
 	{
 		const self = this
 		self.isSubmitButtonDisabled = false
+		self.isYatHandle = false
 		self.setup_views()
 		self.startObserving()
 		//
@@ -893,6 +900,7 @@ class SendFundsView extends View
 				e.preventDefault()
 				{
 					if (self.isSubmitButtonDisabled !== true) { // button is enabled
+						console.log("We've tried to send.");
 						self._tryToGenerateSend()
 					}
 				}
@@ -1409,12 +1417,17 @@ class SendFundsView extends View
 		}
 		//
 		const hasPickedAContact = typeof self.pickedContact !== 'undefined' && self.pickedContact ? true : false
-		const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ""
+		let enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ""
 		const enteredAddressValue_exists = enteredAddressValue !== ""
 		//
 		const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ""
 		const resolvedAddress_exists = resolvedAddress !== "" // NOTE: it might be hidden, though!
 		const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === "block"
+		if (yatMoneroLookup.isValidYatHandle(self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value)) {
+			// The user entered a valid Yat. We need to override the value of enteredAddressValue to the resolved address
+			enteredAddressValue = self.resolvedAddress_valueLayer.innerHTML || "";
+		}
+
 		//
 		const manuallyEnteredPaymentID = self.manualPaymentIDInputLayer.value || ""
 		const manuallyEnteredPaymentID_exists = manuallyEnteredPaymentID !== ""
@@ -1475,6 +1488,7 @@ class SendFundsView extends View
 							}
 						)
 						// and of course proceed
+						
 						__proceedTo_generateSendTransaction()
 					}
 				)
@@ -1509,35 +1523,35 @@ class SendFundsView extends View
 			}
 		}
 		// fall through
-		__proceedTo_generateSendTransaction()
+		__proceedTo_generateSendTransaction(self)
 		//
-		function __proceedTo_generateSendTransaction()
+		function __proceedTo_generateSendTransaction(self)
 		{
-
-// Karl added this to try figure out what values are set
-			_reEnableFormElements();
-			console.log(wallet);
-			console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
-			console.log('resolvedAddress: ' + resolvedAddress);
-			console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
-			console.log('resolvedPaymentID: ' + resolvedPaymentID);
-			console.log('hasPickedAContact: ' + hasPickedAContact);
-			console.log('resolvedAddress_fieldIsVisible: ' + resolvedAddress_fieldIsVisible);
-			console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + manuallyEnteredPaymentID_fieldIsVisible);
-			console.log('resolvedPaymentID_fieldIsVisible: ' + resolvedPaymentID_fieldIsVisible);
-			console.log('contact_payment_id: ' + (hasPickedAContact ? self.pickedContact.payment_id : undefined));
-			console.log('cached_OAResolved_address: ' + (hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined));
-			console.log('contact_hasOpenAliasAddress: ' + (hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined));
-			console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
-			console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
-			console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
-// end of Karl's console logging
+			console.log(self);
+			// Karl added this to try figure out what values are set
+			// _reEnableFormElements();
+			// console.log(wallet);
+			// console.log('enteredAddressValue: ' + enteredAddressValue); // currency-ready wallet address
+			// console.log('resolvedAddress: ' + resolvedAddress);
+			// console.log('manuallyEnteredPaymentID: ' + manuallyEnteredPaymentID);
+			// console.log('resolvedPaymentID: ' + resolvedPaymentID);
+			// console.log('hasPickedAContact: ' + hasPickedAContact);
+			// console.log('resolvedAddress_fieldIsVisible: ' + resolvedAddress_fieldIsVisible);
+			// console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + manuallyEnteredPaymentID_fieldIsVisible);
+			// console.log('resolvedPaymentID_fieldIsVisible: ' + resolvedPaymentID_fieldIsVisible);
+			// console.log('contact_payment_id: ' + (hasPickedAContact ? self.pickedContact.payment_id : undefined));
+			// console.log('cached_OAResolved_address: ' + (hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined));
+			// console.log('contact_hasOpenAliasAddress: ' + (hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined));
+			// console.log('contact_address: ' + (hasPickedAContact ? self.pickedContact.address : undefined));			
+			// console.log('Final_XMR_amount_number): ' + final_XMR_amount_Number);			
+			// console.log('sweeping: ' + sweeping); // when trueself._selected_simplePriority());
+			// end of Karl's console logging
 		
 			let contact_payment_id = hasPickedAContact ? self.pickedContact.payment_id : undefined;
 			let cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined;
 			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
 			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
-
+			console.log(self.isYatHandle);
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
@@ -1576,7 +1590,7 @@ class SendFundsView extends View
 		// mocked transaction gets set in wallet.js
 		function handleResponse_fn(err, mockedTransaction) 
 		{
-			console.log("err", err)
+
 			if (err) {
 				_trampolineToReturnWithValidationErrorString(typeof err === 'string' ? err : err.message)
 				return
@@ -1585,15 +1599,18 @@ class SendFundsView extends View
 				const stateCachedTransaction = wallet.New_StateCachedTransaction(mockedTransaction); // for display
 				self.pushDetailsViewFor_transaction(wallet, stateCachedTransaction);
 			}
-			{
-				const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
-				self.__didSendWithPickedContact(
-					this_pickedContact, 
-					enteredAddressValue_exists ? enteredAddressValue : null, 
-					resolvedAddress_exists ? resolvedAddress : null,
-					mockedTransaction
-				);
-			}
+			// TODO: Once we have properly developed Yat support for Contacts, remove this isYatHandle check to allow a user to save the Yat contact
+			if (self.isYatHandle == false) {
+				{
+					const this_pickedContact = hasPickedAContact == true ? self.pickedContact : null
+					self.__didSendWithPickedContact(
+						this_pickedContact, 
+						enteredAddressValue_exists ? enteredAddressValue : null, 
+						resolvedAddress_exists ? resolvedAddress : null,
+						mockedTransaction
+					);
+				}
+			} 
 			{ // finally, clean up form
 				setTimeout(
 					function()
@@ -1799,6 +1816,9 @@ class SendFundsView extends View
 	}
 	_didFinishTypingInContactPickerInput(optl_event)
 	{
+		console.log("Invoked didFinishTypingInContactPickerInput");
+		//console.log("Checking if addy has  handle"); 
+		// Check for 
 		const self = this
 		//
 		const enteredPossibleAddress = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value
@@ -1828,6 +1848,61 @@ class SendFundsView extends View
 		//
 		self.isResolvingSendTarget = true
 		self.set_isSubmittable_needsUpdate()
+		
+		// if enteredPossibleAddress length less than 7, check if it's a Yat
+		let hasEmojiCharacters = /\p{Extended_Pictographic}/u.test(enteredPossibleAddress)
+		if (hasEmojiCharacters) {
+		
+			let isYat = yatMoneroLookup.isValidYatHandle(enteredPossibleAddress);
+			self.isYatHandle = isYat;
+			if (isYat) {
+				const lookup = yatMoneroLookup.lookupMoneroAddresses(enteredPossibleAddress).then((responseMap) => {
+					// Our library returns a map with between 0 and 2 keys
+					if (responseMap.size == 0) {
+						// no monero address
+						let errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
+						self.validationMessageLayer.SetValidationError(errorString);
+					} else if (responseMap.size == 1) {
+						// Either a Monero address or a Monero subaddress was found.
+						let iterator = responseMap.values();
+						let record = iterator.next();
+						self._displayResolvedAddress(record.value);
+					} else if (responseMap.size == 2) {
+						let moneroAddress = responseMap.get('0x1001');
+						self._displayResolvedAddress(moneroAddress);
+					}
+				}).catch((error) => {
+					// If the error status is defined, handle this error according to the HTTP error status code
+					if (typeof(error.response) !== "undefined" && typeof(error.response.status) !== "undefined") {
+						if (error.response.status == 404) {
+							// Yat not found
+							let errorString = `The Yat "${enteredPossibleAddress}" does not exist`
+							self.validationMessageLayer.SetValidationError(errorString);
+							return;
+						} else if (error.response.status >= 500) {
+							// Yat server / remote network device error encountered
+							let errorString = `The Yat server is responding with an error. Please try again later. Error: ${error.message}`
+							self.validationMessageLayer.SetValidationError(errorString);
+						} else {
+							// Response code that isn't 404 or a server error (>= 500) on their side  
+							let errorString = `An unexpected error occurred when looking up the Yat Handle: ${error.message}`
+							self.validationMessageLayer.SetValidationError(errorString);
+						}
+					} else {
+						// Network connectivity issues -- could be offline / Yat server not responding
+						let errorString = `Unable to communicate with the Yat server. It may be down, or you may be experiencing internet connectivity issues. Error: ${error.message}`
+						self.validationMessageLayer.SetValidationError(errorString);
+						// If we don't have an error.response, our request failed because of a network error
+					}
+				});
+			} else {
+				// This conditional will run when a mixture of emoji and non-emoji characters are present in the address
+				let errorString = `"${enteredPossibleAddress}" is not a valid Yat handle. You may have input an emoji that is not part of the Yat emoji set, or a non-emoji character.`
+				self.validationMessageLayer.SetValidationError(errorString);
+				return;
+			}
+		}
+			
 		//
 		const isOAAddress = monero_openalias_utils.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(enteredPossibleAddress)
 		if (isOAAddress !== true) {
