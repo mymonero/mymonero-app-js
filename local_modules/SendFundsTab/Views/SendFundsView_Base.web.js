@@ -1489,7 +1489,7 @@ class SendFundsView extends View
 						)
 						// and of course proceed
 						
-						__proceedTo_generateSendTransaction()
+						__proceedTo_generateSendTransaction(self)
 					}
 				)
 				//
@@ -1515,7 +1515,7 @@ class SendFundsView extends View
 							_reEnableFormElements()
 							return
 						}
-						__proceedTo_generateSendTransaction()
+						__proceedTo_generateSendTransaction(self)
 					}
 				)
 				//
@@ -1527,7 +1527,6 @@ class SendFundsView extends View
 		//
 		function __proceedTo_generateSendTransaction(self)
 		{
-			console.log(self);
 			// Karl added this to try figure out what values are set
 			// _reEnableFormElements();
 			// console.log(wallet);
