@@ -2,7 +2,7 @@
   "name": "MyMonero",
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "license": "BSD-3-Clause",
   "repository": "https://github.com/mymonero/mymonero-app-js",
   "main": "./local_modules/electron_main/electron_main.js",
@@ -11,6 +11,7 @@
     "dist": "electron-builder",
     "start": "electron ./local_modules/electron_main/electron_main.js",
     "dev": "cross-env NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
+    "simulate-prod": "cross-env NODE_ENV=production electron --no-sandbox ./local_modules/electron_main/electron_main.js",
     "postinstall": "electron-builder install-app-deps && npm run submodules",
     "submodules": "git submodule update --init --recursive && git submodule foreach --recursive git fetch && git submodule foreach --recursive git checkout master && git submodule foreach --recursive git pull --ff-only origin master"
   },
@@ -56,7 +57,7 @@
     ]
   },
   "engines": {
-    "node": "12.4.0"
+    "node": ">=12.4.0 <=15"
   },
   "dependencies": {
     "@mymonero/mymonero-yat-lookup": "^1.1.3",
@@ -67,6 +68,7 @@
     "electron-context-menu": "0.15.1",
     "electron-log": "3.0.9",
     "electron-updater": "4.2.0",
+    "electron-util": "^0.15.1",
     "fastclick": "1.0.6",
     "jsqr": "1.1.1",
     "mymonero-exchange": "^0.1.5",

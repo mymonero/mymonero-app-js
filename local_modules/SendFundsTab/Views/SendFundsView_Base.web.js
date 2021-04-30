@@ -1523,11 +1523,10 @@ class SendFundsView extends View
 			}
 		}
 		// fall through
-		__proceedTo_generateSendTransaction(self)
+		__proceedTo_generateSendTransaction()
 		//
-		function __proceedTo_generateSendTransaction(self)
+		function __proceedTo_generateSendTransaction()
 		{
-			console.log(self);
 			// Karl added this to try figure out what values are set
 			// _reEnableFormElements();
 			// console.log(wallet);
@@ -1551,7 +1550,7 @@ class SendFundsView extends View
 			let cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined;
 			let contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined;
 			let contact_address = hasPickedAContact ? self.pickedContact.address : undefined;
-			console.log(self.isYatHandle);
+			
 			wallet.SendFunds(
 				enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
 				resolvedAddress,
