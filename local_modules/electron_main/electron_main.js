@@ -61,10 +61,10 @@ const {/*crashReporter, */app} = require('electron')
 function isNonCriticalError(errorObject) {
 	return errorObject.message === "net::ERR_CONNECTION_CLOSE" ||
 		errorObject.message === "net::ERR_INTERNET_DISCONNECTED" ||
-        errorObject.message === "net::ERR_CONNECTION_RESET" ||
+		errorObject.message === "net::ERR_CONNECTION_RESET" ||
 		errorObject.message === "net::ERR_NETWORK_CHANGED" ||
 		errorObject.message === "net::ERR_NETWORK_IO_SUSPENDED" ||
-        errorObject.message === "net::ERR_CONNECTION_TIMED_OUT";
+		errorObject.message === "net::ERR_CONNECTION_TIMED_OUT";
 }
 
 { // `app` configuration
