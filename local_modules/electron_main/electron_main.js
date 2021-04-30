@@ -83,9 +83,22 @@ process.on(
 			return // Suppress dialog for this. We don't want people to think that MyMonero has bugs because of internet problems on their side
 		}
 
-		var errStr = "Please let us know of ";
+		var errStr = "";
+		const error_toString = error.toString()
+
+		if (error_toString.indexOf("IPC_CHANNEL_CLOSED") !== -1) {
+			errStr = ```Your operating system has deallocated RAM that was in use by MyMonero. This often happens when a device goes into sleep or hibernate mode.
+			This is not a bug in MyMonero. 
+			To ensure that MyMonero works properly, please restart MyMonero to ensure the wallet functions properly.
+			MyMonero will now exit.
+			```;
+			dialog.showErrorBox("Memory deallocated", errStr);
+			process.exit(1);
+		}
+
+		errStr = "Please let us know of ";
 		if (error) {
-			const error_toString = error.toString()
+			
 			errStr += "the following error message as it could be a bug:\n\n"+ error_toString
 			if (error.stack) {
 				errStr += "\n\n" + error.stack
