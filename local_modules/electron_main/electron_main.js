@@ -27,7 +27,6 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
-
 require('dotenv').config();
 require('events').EventEmitter.defaultMaxListeners = 25;
 
@@ -58,6 +57,16 @@ const {/*crashReporter, */app} = require('electron')
 // 		Raven.config(sentry_dsn, raven_params).install()
 // 	}
 // }
+
+function isNonCriticalError(errorObject) {
+	return errorObject.message === "net::ERR_CONNECTION_CLOSE" ||
+		errorObject.message === "net::ERR_INTERNET_DISCONNECTED" ||
+        errorObject.message === "net::ERR_CONNECTION_RESET" ||
+		errorObject.message === "net::ERR_NETWORK_CHANGED" ||
+		errorObject.message === "net::ERR_NETWORK_IO_SUSPENDED" ||
+        errorObject.message === "net::ERR_CONNECTION_TIMED_OUT";
+}
+
 { // `app` configuration
 	const appId = "com.mymonero.mymonero-desktop" // aka bundle id; NOTE: cannot currently access package.json in production pkging (cause of asar?… needs a little work)
 	app.setAppUserModelId(appId) // for Windows, primarily; before any windows set up
@@ -67,6 +76,13 @@ process.on(
 	'uncaughtException', 
 	function(error)
 	{
+		// NodeJS throws a number of painful errors that are typically network-specific 
+		// (these are not MyMonero bugs, but in hindsight, they should have been handled with proper try-catch logic in our codebase)
+		// We're going to evaluate the error and silently return if the error type is one of these
+		if (isNonCriticalError(error)) {
+			return // Suppress dialog for this. We don't want people to think that MyMonero has bugs because of internet problems on their side
+		}
+
 		var errStr = "Please let us know of ";
 		if (error) {
 			const error_toString = error.toString()
@@ -89,6 +105,7 @@ process.on(
 	module.exports = context
 	global.context = context
 }
+
 var gotLock = app.requestSingleInstanceLock() // ensure only one instance of the app can be run... not only for UX reasons but so we don't get any conditions which might mess with db consistency
 app.on('second-instance', function(argv, workingDirectory)
 { // Single instance context being passed control when user attempted to launch duplicate instance. Emit event so that main window may be focused
