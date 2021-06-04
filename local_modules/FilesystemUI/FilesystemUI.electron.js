@@ -50,7 +50,7 @@ class FilesytemUI {
 		//
 		var ext = imgData_base64String.split(';')[0].match(/jpeg|png|gif/)[0]
 		var data_base64String = imgData_base64String.replace(/^data:image\/\w+;base64,/, "") // strip off the data: url prefix to get just the base64-encoded bytes
-		var buffer = new Buffer(data_base64String, 'base64')
+		var buffer = new Buffer.from(data_base64String, 'base64')
 		//
 		const extensions = [ ext ]
 		if (ext === 'jpg') {
@@ -95,7 +95,7 @@ class FilesytemUI {
 		fn,
 		optl_uriContentPrefix // this can be undefined for electron since we're saving the file directly
 	) {
-		var buffer = new Buffer(contentString, 'utf8')
+		var buffer = new Buffer.from(contentString, 'utf8')
 		const extensions = [ ext ]
 		const remote = require('electron').remote
 		const dialog = remote.dialog

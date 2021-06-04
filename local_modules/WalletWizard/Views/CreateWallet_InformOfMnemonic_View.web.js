@@ -31,7 +31,7 @@
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_walletMnemonicBox = require('../../MMAppUICommonComponents/walletMnemonicBox.web')
-const mnemonic_languages = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/mnemonic_languages')
+const mnemonic_languages = require('@mymonero/mymonero-locales')
 const BaseView_AWalletWizardScreen = require('./BaseView_AWalletWizardScreen.web')
 //
 class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen

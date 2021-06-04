@@ -28,20 +28,17 @@
 //
 "use strict"
 //
-const async = require('async')
 const EventEmitter = require('events')
 const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
 const WalletInfo = require('./WalletInfo')
 //
-const monero_txParsing_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_txParsing_utils')
-const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
-const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
-const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
-const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
-const mnemonic_languages = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/mnemonic_languages')
+const monero_txParsing_utils = require('@mymonero/mymonero-tx-parsing-utils')
+const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger
+const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
+const monero_config = require('@mymonero/mymonero-monero-config')
+const mnemonic_languages = require('@mymonero/mymonero-locales')
 //
-const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
 const wallet_persistence_utils = require('./wallet_persistence_utils')
 const WalletHostPollingController = require('../Controllers/WalletHostPollingController')
 //

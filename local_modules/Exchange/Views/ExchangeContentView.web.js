@@ -29,23 +29,13 @@
 //"use strict"
 const View = require('../../Views/View.web')
 const ListView = require('../../Lists/Views/ListView.web')
-const emoji_web = require('../../Emoji/emoji_web')
-const ExchangeFunctions = require('../Javascript/ExchangeFunctions')
 const ExchangeUtils = require('../Javascript/ExchangeUtilityFunctions');
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
-const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
-const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
-const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
 const fs = require('fs');
 //const commonComponents_contactPicker = require('../../MMAppUICommonComponents/contactPicker.web')
-const jsQR = require('jsqr')
-const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
 
-let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
-const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
-const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
-const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
-const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
+let JSBigInt = require('@mymonero/mymonero-bigint').BigInteger // important: grab defined export
+const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
 const documents = require('../../DocumentPersister/DocumentPersister_Interface.js');
 
 class ExchangeContentView extends ListView {
