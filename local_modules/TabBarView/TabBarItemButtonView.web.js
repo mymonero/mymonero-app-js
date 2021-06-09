@@ -1,31 +1,3 @@
-// Copyright (c) 2014-2019, MyMonero.com
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without modification, are
-// permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this list of
-//	conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//	of conditions and the following disclaimer in the documentation and/or other
-//	materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its contributors may be
-//	used to endorse or promote products derived from this software without specific
-//	prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
 "use strict"
 //
 const View = require('../Views/View.web')
@@ -34,21 +6,20 @@ class TabBarItemButtonView extends View
 {
 	constructor(options, context)
 	{
+		console.log(options);
 		options.tag = "a"
 		//
 		super(options, context)
 		const self = this
-		{
-			self.isHorizontalBar = typeof options.isHorizontalBar !== 'undefined' ? options.isHorizontalBar : true
-			self.tabBarView_thickness = options.tabBarView_thickness
-			//
-			self.layer_baseStyleTemplate = options.layer_baseStyleTemplate || {}
-			self.icon_baseStyleTemplate = options.icon_baseStyleTemplate || {}
-			self.icon_selected_baseStyleTemplate = options.icon_selected_baseStyleTemplate || self.icon_baseStyleTemplate // fall back to non-selected
-			self.numberOf_tabs = options.numberOf_tabs
-			if (!self.numberOf_tabs) {
-				throw `${self.constructor.name} requires options.numberOf_tabs`
-			}
+		self.isHorizontalBar = typeof options.isHorizontalBar !== 'undefined' ? options.isHorizontalBar : true
+		self.tabBarView_thickness = options.tabBarView_thickness
+		//
+		self.layer_baseStyleTemplate = options.layer_baseStyleTemplate || {}
+		self.icon_baseStyleTemplate = options.icon_baseStyleTemplate || {}
+		self.icon_selected_baseStyleTemplate = options.icon_selected_baseStyleTemplate || self.icon_baseStyleTemplate // fall back to non-selected
+		self.numberOf_tabs = options.numberOf_tabs
+		if (!self.numberOf_tabs) {
+			throw `${self.constructor.name} requires options.numberOf_tabs`
 		}
 		self.setup()
 	}
@@ -65,6 +36,9 @@ class TabBarItemButtonView extends View
 	setup_views()
 	{
 		const self = this
+		console.log(self);
+		console.log(self.layer_baseStyleTemplate);
+		console.log(self.icon_baseStyleTemplate);
 		{
 			const layer = self.layer
 			layer.style.display = "inline-block"
@@ -82,14 +56,22 @@ class TabBarItemButtonView extends View
 			self.__applyStylesToLayer(self.layer_baseStyleTemplate, self.layer)
 		}
 		{ // icon
-			const layer = document.createElement("div")
-			layer.style.webkitAppRegion = "no-drag" // make clickable
-			layer.style.width = `100%`
-			layer.style.height = `100%`
-			layer.style.border = "none"
+			console.log(self.TabBarItem_icon_customStyle)
+			const layer = document.createElement('div')
+			layer.style.webkitAppRegion = 'no-drag' // make clickable
+			layer.style.width = '100%'
+			layer.style.height = '100%'
+			layer.style.border = 'none'
 			self.iconImageLayer = layer
 			self.layer.appendChild(self.iconImageLayer)
-			self.__applyStylesToLayer(self.icon_baseStyleTemplate, self.iconImageLayer)
+
+			//self.iconImageLayer.classList.add(self.icon_baseStyleTemplate)
+			self.iconImageLayer.id = self.icon_baseStyleTemplate;
+			if (self.icon_baseStyleTemplate.backgroundImage == "url(../../../assets/img/XMRtoBTCInactive.svg)") {
+				console.log("welp");
+				self.iconImageLayer.id = "tabButton-exchange"
+				self.iconImageLayer.classList.add("tabButton-exchange");
+			}
 		}
 		{ // observation
 			self.layer.addEventListener(

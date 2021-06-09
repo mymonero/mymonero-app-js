@@ -216,6 +216,7 @@ class TabBarAndContentView extends View
 							layer_baseStyleTemplate: layer_baseStyleTemplate,
 							icon_baseStyleTemplate: icon_baseStyleTemplate,
 							icon_selected_baseStyleTemplate: icon_selected_baseStyleTemplate,
+							icon_selected_baseStyleTemplate: to_tabBarContentView.TabBarItem_icon_selected_customStyle(),
 							numberOf_tabs: numberOf_tabs
 						}
 						const buttonView = new TabBarItemButtonView(options, context)

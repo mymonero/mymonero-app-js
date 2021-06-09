@@ -57,6 +57,12 @@ class ExchangeTabContentView extends StackAndModalNavigationView
 	{
 		return {}
 	}
+
+	TabBarItem_icon_customStyle () {
+		console.log("invoked?");
+		return 'tabButton-exchange'
+	}	
+
 	TabBarItem_icon_customStyle()
 	{
 		const self = this
