@@ -1,10 +1,8 @@
 // "use strict"
 
+const shell = require("electron").shell;
 const Utils = require('../Javascript/ExchangeUtilityFunctions')
-const ExchangeLibrary = require('mymonero-exchange')
-const ExchangeFunctions = new ExchangeLibrary()
 const ExchangeUtils = require('../Javascript/ExchangeUtilityFunctions')
-//const ValidationLibrary = require('wallet-address-validator')
 const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
@@ -12,8 +10,6 @@ const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger // important: g
 const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
 const ExchangeHelper = require("@mymonero/mymonero-exchange-helper")
 let exchangeHelper = new ExchangeHelper();
-
-//let handleOfferError = exchangeHelper.ErrorHelper.handleOfferError;
 
 let handleOfferError = exchangeHelper.errorHelper.handleOfferError;
 
@@ -207,8 +203,10 @@ class ExchangeContentView extends View {
     setTimeout(() => {
       let tabElement = document.getElementById('tabButton-exchange');
       tabElement.addEventListener('click', () => {
+        context.shell = shell;
         exchangeHelper.doInit(context);
       });
+      // after init, the localmonero link would exist, so we can bind to it
     }, 500)
     
   }
