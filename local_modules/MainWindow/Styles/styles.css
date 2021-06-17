@@ -1757,6 +1757,16 @@ div.exchange-button {
     word-break: break-all;
   }
   
+  /* Exchange styles */
+#minimum-fee {
+    float: right;
+  }
+  #minimum-fee-text, #tx-fee, #addressValidationLoaderText {
+    font-size: 10px;
+  }
+  #localmonero {
+    clear: left;
+  }
   #localmonero a,
   #indacoin a {
     margin: 8px 0px 0px 0px !important;
@@ -1930,6 +1940,8 @@ div.exchange-button {
   #clock {
     text-align: right;
   }
+  
+  
   .label-spacing {
     padding: 0px 0px 0px 0px !important;
   }
