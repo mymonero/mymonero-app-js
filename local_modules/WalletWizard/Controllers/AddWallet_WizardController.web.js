@@ -305,7 +305,7 @@ class AddWallet_WizardController
 		const self = this
 		function _with(raw__locale_code)
 		{
-			var compatibleLocaleCode = mnemonic_languages.compatible_code_from_locale(raw__locale_code)
+			var compatibleLocaleCode = mnemonic_languages.compatibleCodeFromLocale(raw__locale_code)
 			if (compatibleLocaleCode == null) {
 				compatibleLocaleCode = "en" // fall back to English
 			}

@@ -187,7 +187,7 @@ class Wallet extends EventEmitter
 		}
 		function _createWithLocale(currentLocale/*TODO rename*/)
 		{
-			var compatibleLocaleCode = mnemonic_languages.compatible_code_from_locale(currentLocale)
+			var compatibleLocaleCode = mnemonic_languages.compatibleCodeFromLocale(currentLocale)
 			if (compatibleLocaleCode == null) {
 				compatibleLocaleCode = "en" // fall back to English
 			}

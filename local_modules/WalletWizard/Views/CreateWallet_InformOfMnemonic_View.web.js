@@ -104,7 +104,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 			//
 			let selectLayer = document.createElement("select")
 			{
-				const currentValue = mnemonic_languages.compatible_code_from_locale(self.wizardController.currentWalletUsedLocaleCode)
+				const currentValue = mnemonic_languages.compatibleCodeFromLocale(self.wizardController.currentWalletUsedLocaleCode)
 				if (currentValue == null) {
 					throw "Expected to find compatible locale code"
 				}
@@ -290,7 +290,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 	_reconfigureLanguageSelect()
 	{
 		const self = this
-		const currentValue = mnemonic_languages.compatible_code_from_locale(self.wizardController.currentWalletUsedLocaleCode)
+		const currentValue = mnemonic_languages.compatibleCodeFromLocale(self.wizardController.currentWalletUsedLocaleCode)
 		if (currentValue == null) {
 			throw "Expected to find compatible locale code"
 		}
