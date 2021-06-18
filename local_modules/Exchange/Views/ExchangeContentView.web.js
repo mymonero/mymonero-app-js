@@ -102,7 +102,8 @@ class ExchangeContentView extends View {
     {
       const layer = view.layer
       layer.classList.add('emptyScreens')
-      layer.classList.add('empty-page-panel')
+      layer.classList.add('exchangeScreen')
+      layer.classList.add('exchange-page-panel')
     }
     let contentContainerLayer
     {
@@ -175,7 +176,32 @@ class ExchangeContentView extends View {
           } else {
             context.walletsListController.orderSent = false
           }
+          console.log(in_amount);
+          console.log(send_address);
+          console.log(sweep_wallet);
+          console.log(exchangeHelper.sendFundsValidationStatusCallback);
+          console.log(exchangeHelper.handleSendFundsResponseCallback);
+          console.log(context);
           // we need to choose the proper wallet to retrieve the data from
+
+          let selectedWallet = document.getElementById('selected-wallet');
+          console.log(selectedWallet);
+          let selectorOffset = selectedWallet.dataset.walletoffset;
+          console.log(selectorOffset);
+          let sweep_wallet = false; // TODO: Add sweeping functionality
+          try {
+              console.log(self);
+              console.log(self.context);
+              if (self.context.walletsListController.hasOwnProperty('orderSent')) {
+                  console.log('Order already sent previously');
+              } else {
+                  self.context.walletsListController.orderSent = false;
+              }
+              //sendFunds(self.context.walletsListController.records[selectorOffset], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn, self.context);
+          } catch (error) {
+              console.log(error);
+          }
+
           //sendFunds(context.walletsListController.records[0], in_amount, send_address, sweep_wallet, exchangeHelper.sendFundsValidationStatusCallback, exchangeHelper.handleSendFundsResponseCallback, context)
         } catch (error) {
           console.log(error)
