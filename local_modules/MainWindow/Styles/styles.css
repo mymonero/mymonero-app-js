@@ -1224,20 +1224,25 @@ div.exchange-button {
     max-width: 100px;
   }
   
-  .empty-page-panel {
+.exchange-page-panel {
     max-width: 100%;
     display: flex;
     align-self: center;
     align-content: center;
     justify-content: center;
-    height: 100%;
+    height: calc(100% -58px);
     width: calc(100% - 32px - 2px);
-    margin-top: 64px !important;
-  }
-  
-  .empty-page-panel .empty-page-content-container {
+    margin: 24px auto !important;
+}
+  .full-width td {
     display: block;
-    margin: auto;
+    width: 100%;
+    clear: both;
+  }
+  .exchange-page-panel .exchange-page-content-container {
+    display: block;
+    margin: 37px auto;
+    width: 100%;
   }
   
   .exchangeRate {
@@ -1626,7 +1631,7 @@ div.exchange-button {
   #exchange-xmr.active {
     display: block;
   }
-  .empty-page-panel .exchangeScreen .textInput {
+  .exchange-page-panel .exchangeScreen .textInput {
     padding: 0px 8px 0px 7px;
   }
   
