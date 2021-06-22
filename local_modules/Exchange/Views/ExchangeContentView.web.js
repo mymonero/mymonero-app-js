@@ -133,33 +133,11 @@ class ExchangeContentView extends View {
       layer.innerText = 'Exchange XMR'
       const orderSent = false
       layer.addEventListener('click', function (orderSent) {
-        const exchangePageDiv = document.getElementById('exchangePage')
-        //exchangePageDiv.classList.remove('active')
-
-        /* 
-                    * We define the status update and the response handling function here, since we need to update the DOM with status feedback from the monero-daemon.
-                    * We pass them as the final argument to ExchangeUtils.sendFunds
-                    * It performs the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
-                    */
-        //function validation_status_fn = exchangeHelper.validationStatusCallback
-        /*
-                    * We perform the necessary DOM-based status updates in this file so that we don't tightly couple DOM updates to a Utility module.
-                    */
-        // function handle_response_fn (err, mockedTransaction) {
-        //   let str
-        //   const monerodUpdates = document.getElementById('monerod-updates')
-        //   if (err) {
-        //     str = typeof err === 'string' ? err : err.message
-        //     monerodUpdates.innerText = str
-        //     return
-        //   }
-        //   str = 'Sent successfully.'
-        //   monerodUpdates.innerText = str
-        // }
-        // No cancel handler code since we don't provide a cancel method
         function cancelled_fn () { // canceled_fn
-          // No cancel handler code since we don't provide a cancel method
+        // No cancel handler code since we don't provide a cancel method
         }
+
+        const exchangePageDiv = document.getElementById('exchangePage')
         
         let sendFunds = ExchangeUtils.sendFunds;
 
@@ -173,36 +151,12 @@ class ExchangeContentView extends View {
         try {
           if (context.walletsListController.hasOwnProperty('orderSent')) {
             console.log('Order already sent previously')
+            return;
           } else {
             context.walletsListController.orderSent = false
           }
-          console.log(in_amount);
-          console.log(send_address);
-          console.log(sweep_wallet);
-          console.log(exchangeHelper.sendFundsValidationStatusCallback);
-          console.log(exchangeHelper.handleSendFundsResponseCallback);
-          console.log(context);
-          // we need to choose the proper wallet to retrieve the data from
 
-          let selectedWallet = document.getElementById('selected-wallet');
-          console.log(selectedWallet);
-          let selectorOffset = selectedWallet.dataset.walletoffset;
-          console.log(selectorOffset);
-          let sweep_wallet = false; // TODO: Add sweeping functionality
-          try {
-              console.log(self);
-              console.log(self.context);
-              if (self.context.walletsListController.hasOwnProperty('orderSent')) {
-                  console.log('Order already sent previously');
-              } else {
-                  self.context.walletsListController.orderSent = false;
-              }
-              //sendFunds(self.context.walletsListController.records[selectorOffset], xmr_amount_str, xmr_send_address, sweep_wallet, validation_status_fn, handle_response_fn, self.context);
-          } catch (error) {
-              console.log(error);
-          }
-
-          //sendFunds(context.walletsListController.records[0], in_amount, send_address, sweep_wallet, exchangeHelper.sendFundsValidationStatusCallback, exchangeHelper.handleSendFundsResponseCallback, context)
+          sendFunds(context.walletsListController.records[0], in_amount, send_address, sweep_wallet, exchangeHelper.sendFundsValidationStatusCallback, exchangeHelper.handleSendFundsResponseCallback, context)
         } catch (error) {
           console.log(error)
         }
