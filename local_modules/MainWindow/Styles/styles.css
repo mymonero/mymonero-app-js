@@ -1548,7 +1548,7 @@ div.exchange-button {
     padding: 9px 37px 0px 0px;
   }
   .hidden {
-    display: none;
+    display: none !important;
   }
   #wallet-selector {
     position: relative;
