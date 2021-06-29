@@ -35,8 +35,8 @@ const commonComponents_amounts = require('../../MMAppUICommonComponents/amounts.
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
 const WalletsSelectView = require('../../WalletsList/Views/WalletsSelectView.web')
-const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
-const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
+const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
+const monero_sendingFunds_utils = require('@mymonero/mymonero-sendfunds-utils')
 
 class ImportTransactionsModalView extends View {
     constructor(options, context) {

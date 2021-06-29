@@ -28,8 +28,8 @@
 //
 "use strict"
 //
-const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
-const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
+const monero_config = require('@mymonero/mymonero-monero-config')
+const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger
 const View = require('../../Views/View.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
@@ -42,7 +42,7 @@ const TransactionDetailsView = require("./TransactionDetailsView.web")
 const ImportTransactionsModalView = require('./ImportTransactionsModalView.web')
 const FundsRequestQRDisplayView = require('../../RequestFunds/Views/FundsRequestQRDisplayView.web')
 let Currencies = require('../../CcyConversionRates/Currencies')
-const monero_amount_format_utils = require("../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils");
+const monero_amount_format_utils = require("@mymonero/mymonero-money-format");
 
 class WalletDetailsView extends View {
     constructor(options, context) {

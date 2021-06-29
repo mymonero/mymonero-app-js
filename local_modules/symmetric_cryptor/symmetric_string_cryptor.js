@@ -66,15 +66,15 @@ function New_EncryptedBase64String__Async(
 	if (plaintext_msg == null) {
 		return null
 	}
-	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
-	Buffer.isBuffer(password) || (password = new Buffer(password, 'utf8')) // we're expecting a string, but might as well check anyway
+	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer.from(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
+	Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8')) // we're expecting a string, but might as well check anyway
 	//
 	const components = 
 	{
 		headers: 
 		{
-			version: new Buffer(String.fromCharCode(currentVersionCryptorFormatVersion)),
-			options: new Buffer(String.fromCharCode(cryptor_settings.options))
+			version: new Buffer.from(String.fromCharCode(currentVersionCryptorFormatVersion)),
+			options: new Buffer.from(String.fromCharCode(cryptor_settings.options))
 		}
 	}
 	components.headers.encryption_salt = _new_random_salt()
@@ -123,8 +123,8 @@ function New_EncryptedBase64String__Async(
 					var data = Buffer.concat([
 						components.headers.version,
 						components.headers.options,
-						components.headers.encryption_salt || new Buffer(''),
-						components.headers.hmac_salt || new Buffer(''),
+						components.headers.encryption_salt || new Buffer.from(''),
+						components.headers.hmac_salt || new Buffer.from(''),
 						components.headers.iv,
 						components.cipher_text
 					]);
@@ -145,7 +145,7 @@ function New_DecryptedString__Async(
 	password, 
 	fn
 ) {
-	Buffer.isBuffer(password) || (password = new Buffer(password, 'utf8'));
+	Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8'));
 
 	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
 		console.warn("New_DecryptedString__Async was passed nil encrypted_msg_base64_string")
@@ -202,7 +202,7 @@ function _new_encrypted_base64_unpacked_components_object(b64str)
 		throw "_new_encrypted_base64_unpacked_components_object was passed nil b64str"
 		// return undefined
 	}
-	var data = new Buffer(b64str, 'base64')
+	var data = new Buffer.from(b64str, 'base64')
 	var components = 
 	{
 		headers: _new_parsed_headers_object(data),
@@ -297,14 +297,14 @@ var _new_generated_hmac = function(
 	components, 
 	hmac_key
 ) {
-	var hmac_message = new Buffer('');
+	var hmac_message = new Buffer.from('');
 	if (cryptor_settings.hmac.includes_header) {
 		hmac_message = Buffer.concat([
 			hmac_message,
 			components.headers.version,
 			components.headers.options,
-			components.headers.encryption_salt || new Buffer(''),
-			components.headers.hmac_salt || new Buffer(''),
+			components.headers.encryption_salt || new Buffer.from(''),
+			components.headers.hmac_salt || new Buffer.from(''),
 			components.headers.iv
 		]);
 	}

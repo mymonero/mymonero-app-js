@@ -1,4 +1,4 @@
 module.exports = 
 {
-	API__authority: "api.mymonero.com:8443"
+	API__authority: "api.mymonero.com:443"
 }

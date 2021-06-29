@@ -31,8 +31,8 @@
 const View = require('../../Views/View.web')
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_navigationBarButtons = require('../../MMAppUICommonComponents/navigationBarButtons.web')
-const monero_amount_format_utils = require("../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils");
-const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
+const monero_amount_format_utils = require("@mymonero/mymonero-money-format");
+const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger
 
 //
 class TransactionDetailsView extends View {

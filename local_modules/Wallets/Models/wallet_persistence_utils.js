@@ -28,7 +28,7 @@
 //
 //
 const persistable_object_utils = require('../../DocumentPersister/persistable_object_utils')
-const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger
+const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger
 //
 const CollectionName = "Wallets"
 exports.CollectionName = CollectionName

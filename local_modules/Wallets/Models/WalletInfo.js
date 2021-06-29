@@ -1,6 +1,6 @@
 "use strict"
 
-const JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger;
+const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger;
 
 class WalletInfo
 {
