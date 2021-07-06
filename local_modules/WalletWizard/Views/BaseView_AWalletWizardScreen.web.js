@@ -69,6 +69,7 @@ class AddWallet_LandingScreenView extends View
 		layer.style.padding = "0" // actually going to change paddingTop in self.viewWillAppear() if navigation controller
 		layer.style.overflowY = "auto"
 		layer.classList.add("ClassNameForScrollingAncestorOfScrollToAbleElement")
+		layer.style.overflow = "hidden";
 		layer.style.backgroundColor = "#272527" // so we don't get a strange effect when pushing self on a stack nav view
 		layer.style.color = "#c0c0c0" // temporary
 		layer.style.wordBreak = "break-all" // to get the text to wrap

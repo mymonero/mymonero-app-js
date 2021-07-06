@@ -43,16 +43,16 @@ const commonComponents_actionButtons = require('../../MMAppUICommonComponents/ac
 //
 const JustSentTransactionDetailsView = require('./JustSentTransactionDetailsView.web')
 //
-const monero_sendingFunds_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_sendingFunds_utils')
+const monero_sendingFunds_utils = require('@mymonero/mymonero-sendfunds-utils')
 const monero_openalias_utils = require('../../OpenAlias/monero_openalias_utils')
-const monero_config = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_config')
-const monero_amount_format_utils = require('../../mymonero_libapp_js/mymonero-core-js/monero_utils/monero_amount_format_utils')
+const monero_config = require('@mymonero/mymonero-monero-config')
+const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
 //
 const jsQR = require('jsqr')
 const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
 //
 let Currencies = require('../../CcyConversionRates/Currencies')
-let JSBigInt = require('../../mymonero_libapp_js/mymonero-core-js/cryptonote_utils/biginteger').BigInteger // important: grab defined export
+let JSBigInt = require('@mymonero/mymonero-bigint').BigInteger // important: grab defined export
 //
 let rateServiceDomainText = "cryptocompare.com" 
 //

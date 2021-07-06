@@ -59,12 +59,14 @@ class BarButtonBaseView extends View
 		const self = this
 		self.isEnabled = isEnabled
 		const layer = self.layer
-		if (self.isEnabled) {
+		if (self.isEnabled) {			
 			layer.style.href = "#"
 			layer.classList.remove("disabled")
+			layer.classList.remove("navigation-blue-button-disabled");
 		} else {
 			layer.style.href = ""
 			layer.classList.add("disabled")
+			layer.classList.add("navigation-blue-button-disabled");
 		}
 		self.didConfigureInteractivity_fn(self)
 	}
