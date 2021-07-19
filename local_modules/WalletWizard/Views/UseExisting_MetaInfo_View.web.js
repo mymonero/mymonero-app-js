@@ -537,23 +537,26 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	//
 	// Runtime - Delegation - Interactions
 	//
+	// TODO: Paul handles both types of form submission here -- look to break them into separate form submission handlers to avoid issues
 	_userSelectedNextButton()
 	{
 		const self = this
 		{
 			self.isDisabledFromSubmission = true
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
-			//
-			try {
-				let ret = self.context.monero_utils.seed_and_keys_from_mnemonic(
-					self.lookup__mnemonicSeed(),
-					self.context.nettype
-				);
-			} catch (e) {
-				console.error("Invalid mnemonic!");
-				__trampolineFor_failedWithErrStr(e);
-				return
-			} 
+			// add check to ensure that we're using a mnemonic seed login pathbefore we test to see if the mnemonic seed is valid
+			if (self.mode_loginWith == "MnemonicSeed") {
+				try {
+					let ret = self.context.monero_utils.seed_and_keys_from_mnemonic(
+						self.lookup__mnemonicSeed(),
+						self.context.nettype
+					);
+				} catch (e) {
+					console.error("Invalid mnemonic!");
+					__trampolineFor_failedWithErrStr(e);
+					return
+				} 
+			}
 			self.validationMessageLayer.ClearAndHideMessage()
 			//
 			self.rightBarButtonView.layer.innerHTML = commonComponents_activityIndicators.New_Graphic_ActivityIndicatorLayer_htmlString({"margin-top": "3px"})
