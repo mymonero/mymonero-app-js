@@ -110,7 +110,8 @@ process.on(
 		} else {
 			errStr += "this issue as it could be a bug."
 		}
-		dialog.showErrorBox("Application Error", errStr);
+		// temporary for hotfix
+		// dialog.showErrorBox("Application Error", errStr);
 	}
 )
 { // Application
