@@ -106,7 +106,7 @@ class MenuControllerController
 		ipcRenderer.send(
 			self.menuController.IPCMethod__MenuController_SetItemNamedEnabled(),
 			{
-				itemName: self.menuController.MenuItemName_ChangePassword(),
+				itemName: "EventName_menuItemSelected_ChangePassword",
 				isEnabled: true
 			}
 		)
@@ -117,7 +117,7 @@ class MenuControllerController
 		ipcRenderer.send(
 			self.menuController.IPCMethod__MenuController_SetItemNamedEnabled(),
 			{
-				itemName: self.menuController.MenuItemName_ChangePassword(),
+				itemName: "EventName_menuItemSelected_ChangePassword",
 				isEnabled: false
 			}
 		)
