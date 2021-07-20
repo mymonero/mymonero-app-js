@@ -108,8 +108,8 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen
 				if (currentValue == null) {
 					throw "Expected to find compatible locale code"
 				}
-				let values = mnemonic_languages.supported_short_codes
-				let descriptions = mnemonic_languages.mnemonic_languages
+				let values = mnemonic_languages.supportedShortCodes
+				let descriptions = mnemonic_languages.mnemonicLanguages
 				let numberOf_values = values.length
 				for (var i = 0 ; i < numberOf_values ; i++) {
 					let value = values[i]
