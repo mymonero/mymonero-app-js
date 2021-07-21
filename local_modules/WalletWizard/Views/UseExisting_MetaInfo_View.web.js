@@ -537,24 +537,50 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 	//
 	// Runtime - Delegation - Interactions
 	//
+	// TODO: Paul handles both types of form submission here -- look to break them into separate form submission handlers to avoid issues
 	_userSelectedNextButton()
 	{
 		const self = this
 		{
 			self.isDisabledFromSubmission = true
 			self.context.userIdleInWindowController.TemporarilyDisable_userIdle()
-			//
-			try {
-				let ret = self.context.monero_utils.seed_and_keys_from_mnemonic(
-					self.lookup__mnemonicSeed(),
-					self.context.nettype
-				);
-			} catch (e) {
-				console.error("Invalid mnemonic!");
-				__trampolineFor_failedWithErrStr(e);
-				return
-			} 
 			self.validationMessageLayer.ClearAndHideMessage()
+			// add check to ensure that we're using a mnemonic seed login pathbefore we test to see if the mnemonic seed is valid
+			if (self.mode_loginWith == "MnemonicSeed") {
+				try {
+					let ret = self.context.monero_utils.seed_and_keys_from_mnemonic(
+						self.lookup__mnemonicSeed(),
+						self.context.nettype
+					);
+				} catch (error) {
+					self.layer.scrollTop = 0 // because we want to show the validation err msg
+					self.validationMessageLayer.SetValidationError("Invalid mnemonic!")
+					self.isDisabledFromSubmission = false
+					console.error("Invalid mnemonic!");
+					__trampolineFor_failedWithErrStr(error);
+					return
+				} 
+			} else {
+				try {
+					const addr = self.lookup__addr()
+					const viewKey = self.lookup__viewKey()
+					const spendKey = self.lookup__spendKey()
+					ret = self.context.monero_utils.validate_components_for_login(
+						addr,
+						viewKey,
+						spendKey, // expects string
+						"", // expects string
+						self.context.nettype
+					);
+				} catch (error) {
+					console.error("Invalid input. Please make sure your address and keys have been properly entered.");
+					self.layer.scrollTop = 0 // because we want to show the validation err msg
+					self.validationMessageLayer.SetValidationError("Invalid input. Please make sure your address and keys have been properly entered.")
+					self.isDisabledFromSubmission = false
+					__trampolineFor_failedWithErrStr(e);
+					return
+				}
+			}
 			//
 			self.rightBarButtonView.layer.innerHTML = commonComponents_activityIndicators.New_Graphic_ActivityIndicatorLayer_htmlString({"margin-top": "3px"})
 			self.disable_submitButton()
