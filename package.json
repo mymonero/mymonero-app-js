@@ -23,7 +23,6 @@
       "category": "public.app-category.finance",
       "target": [
         "dmg",
-        "mas",
         "zip"
       ]
     },
