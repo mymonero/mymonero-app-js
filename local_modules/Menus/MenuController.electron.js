@@ -339,7 +339,7 @@ class MenuController extends MenuController_Abstract
 					label: "Open User Data Folder…",
 					click: function(menuItem, browserWindow, event)
 					{
-						shell.openItem(self.context.app.getPath('userData'));
+						shell.openPath(self.context.app.getPath('userData'));
 					}
 				},
 				{
