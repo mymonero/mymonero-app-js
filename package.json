@@ -5,18 +5,17 @@
   "version": "1.1.24",
   "license": "BSD-3-Clause",
   "repository": "https://github.com/mymonero/mymonero-app-js",
-  "main": "./src/electron_main/electron_main.js",
+  "main": "./local_modules/electron_main/electron_main.js",
   "scripts": {
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "start": "electron ./local_modules/electron_main/electron_main.js",
-    "dev": "cross-env NODE_ENV=development electron --no-sandbox ./dist/electron_main/electron_main.js",
+    "start": "electron ./dist/electron_main/electron_main.js",
+    "dev": "cross-env NODE_ENV=development electron --no-sandbox ./local_modules/electron_main/electron_main.js",
     "simulate-prod": "cross-env NODE_ENV=production electron --no-sandbox ./local_modules/electron_main/electron_main.js",
     "postinstall": "electron-builder install-app-deps",
-    "transpile": "(webpack --mode=production); rollup dist/bundle.js -d bundle.js -f cjs; npm run dev",
-    "babel-watch": "(webpack --mode=development --watch); rollup dist/bundle.js -d dist/bundle.js -f cjs; npm run dev",
-    "transpile-lit": "rollup node_modules/lit/*.js -d node_modules/lit/ -f cjs; rollup node_modules/@lit/reactive-element/*.js -d node_modules/@lit/reactive-element/ -f cjs",
-    "build:cjs": "(webpack --mode=development); npm run dev"
+    "prepack": "npm run rollup-transpile",
+    "predist": "npm run rollup-transpile",
+    "rollup-transpile": "rollup node_modules/lit/*.js -d node_modules/lit/ -f cjs; rollup node_modules/@lit/reactive-element/*.js -d node_modules/@lit/reactive-element/ -f cjs;rollup node_modules/lit/node_modules/lit-html/*.js -d node_modules/lit/node_modules/lit-html/ -f cjs;rollup node_modules/lit-element/*.js -d node_modules/lit-element/ -f cjs;rollup node_modules/lit-element/node_modules/lit-html/*.js -d node_modules/lit-element/node_modules/lit-html/ -f cjs;"
   },
   "build": {
     "appId": "com.mymonero.mymonero-desktop",
@@ -70,7 +69,7 @@
     "@mymonero/mymonero-bigint": "^1.1.6",
     "@mymonero/mymonero-bridge-utils": "^1.1.6",
     "@mymonero/mymonero-exchange": "^1.1.13",
-    "@mymonero/mymonero-exchange-helper": "^1.1.14",
+    "@mymonero/mymonero-exchange-helper": "^1.1.17",
     "@mymonero/mymonero-keyimage-cache": "^1.1.6",
     "@mymonero/mymonero-locales": "^1.1.6",
     "@mymonero/mymonero-monero-config": "^1.1.6",
@@ -125,9 +124,6 @@
     "rollup-plugin-terser": "^7.0.2",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.3",
-    "webpack": "^5.40.0",
-    "webpack-cli": "4.8.0",
-    "webpack-merge": "4.2.2",
     "worker-loader": "3.0.8"
   }
 }
