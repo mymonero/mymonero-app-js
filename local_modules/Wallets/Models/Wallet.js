@@ -126,7 +126,6 @@ class Wallet extends EventEmitter
 		} else {
 			self.__setup_andAwaitBootAndLogInAndDocumentCreation(context)
 		}
-		console.log(self.context);
 		context.wallets = [];
 		context.wallets.forEach((element) => {
 			console.log('checking element');
@@ -294,7 +293,6 @@ class Wallet extends EventEmitter
 		return self.generatedOnInit_walletDescription.mnemonicString
 	}
 	// TODO: there may be room for a 'regenerate mnemonic' with new wordset imperative function
-
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Booting - Creating/adding wallets
@@ -479,8 +477,6 @@ class Wallet extends EventEmitter
 				self,
 				plaintextDocument
 			)
-			// Regenerate any runtime vals that depend on persisted vals..
-			self.regenerate_shouldDisplayImportAccountOption()
 			//
 			__proceedTo_validateEncryptedValuesHydration()
 		}
@@ -593,7 +589,6 @@ class Wallet extends EventEmitter
 				[], // newTransactions
 				old__transactions // oldTransactions
 			)
-			self.regenerate_shouldDisplayImportAccountOption()
 		}
 		self.saveToDisk(function(err)
 		{
@@ -827,7 +822,6 @@ class Wallet extends EventEmitter
 				self.login__generated_locally = received__generated_locally // now update this b/c the server may have pre-existing information
 				self.account_scan_start_height = start_height // is actually the same thing - we should save this here so we can use it when calculating whether to show the import btn
 				//
-				self.regenerate_shouldDisplayImportAccountOption() // now this can be called
 				//
 				const shouldExitOnLoginError = persistEvenIfLoginFailed_forServerChange == false
 				if (login__err) {
@@ -862,26 +856,6 @@ class Wallet extends EventEmitter
 			}
 		)
 	}
-	regenerate_shouldDisplayImportAccountOption()
-	{
-		const self = this
-		let isAPIBeforeGeneratedLocallyAPISupport = typeof self.login__generated_locally == "undefined" || typeof self.account_scan_start_height == 'undefined'
-		if (isAPIBeforeGeneratedLocallyAPISupport) {
-			if (typeof self.local_wasAGeneratedWallet == 'undefined') {
-				self.local_wasAGeneratedWallet = false // just going to set this to false - it means the user is on a wallet which was logged in via a previous version
-			}
-			if (typeof self.login__new_address == 'undefined') {
-				self.login__new_address = false // going to set this to false if it doesn't exist - it means the user is on a wallet which was logged in via a previous version
-			}
-			self.shouldDisplayImportAccountOption = !self.local_wasAGeneratedWallet && self.login__new_address 
-		} else {
-			if (typeof self.account_scan_start_height === 'undefined') {
-				throw "Logic error: expected latest_scan_start_height"
-			}
-			self.shouldDisplayImportAccountOption = self.login__generated_locally != true && self.account_scan_start_height !== 0
-		}
-	}
-
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Accessors - Public - Events - Booting
@@ -1241,23 +1215,6 @@ class Wallet extends EventEmitter
 		fn // (err?, mockedTransaction?) -> Void
 	) {
 		const self = this
-		console.log('enteredAddressValue: ' + (enteredAddressValue)); // currency-ready wallet address but not an OpenAlias address (resolve before calling;
-		console.log('resolvedAddress: ' + (resolvedAddress));
-		console.log('manuallyEnteredPaymentID: ' + (manuallyEnteredPaymentID));
-		console.log('resolvedPaymentID: ' + (resolvedPaymentID));
-		console.log('hasPickedAContact: ' + (hasPickedAContact));
-		console.log('resolvedAddress_fieldIsVisible: ' + (resolvedAddress_fieldIsVisible));
-		console.log('manuallyEnteredPaymentID_fieldIsVisible: ' + (manuallyEnteredPaymentID_fieldIsVisible));
-		console.log('resolvedPaymentID_fieldIsVisible: ' + (resolvedPaymentID_fieldIsVisible));
-		console.log('contact_payment_id: ' + (contact_payment_id));
-		console.log('cached_OAResolved_address: ' + (cached_OAResolved_address));
-		console.log('contact_hasOpenAliasAddress: ' + (contact_hasOpenAliasAddress));
-		console.log('contact_address: ' + (contact_address));
-		console.log('raw_amount_string: ' + (raw_amount_string));
-		console.log('isSweepTx: ' + (isSweepTx)); // when console.log('true: ' + (true)), amount will be ignore;
-		console.log('simple_priority: ' + (simple_priority));
-		console.log('preSuccess_nonTerminal_statusUpdate_fn: ' + (preSuccess_nonTerminal_statusUpdate_fn)), // (String) -> Voi;
-		console.log('canceled_fn: ' + (canceled_fn)); // () -> Voi;
 		// TODO: Remove this line once we can send
 		//self.isSendingFunds = false;
 		// state-lock the function
@@ -1348,7 +1305,7 @@ class Wallet extends EventEmitter
 		{
 			fromWallet_didFailToInitialize: self.didFailToInitialize_flag == true ? true : false,
 			fromWallet_didFailToBoot: self.didFailToBoot_flag == true ? true : false,
-			fromWallet_needsImport: self.shouldDisplayImportAccountOption == true ? true : false,
+			fromWallet_needsImport: false,
 			requireAuthentication: self.context.settingsController.authentication_requireWhenSending != false,
 			//
 			sending_amount_double_string: raw_amount_string,
@@ -1375,13 +1332,6 @@ class Wallet extends EventEmitter
 			contact_hasOpenAliasAddress: contact_hasOpenAliasAddress, // may be undefined
 			contact_address: contact_address // may be undefined
 		};
-
-		console.log(args);
-		for (let [property, key] in args) {
-			console.log(key);
-			console.log(property);
-			console.log(`key: ${key}` + `typeof: ${typeof(property)}`);
-		}
 
 		args.willBeginSending_fn = function()
 		{
@@ -1718,7 +1668,6 @@ class Wallet extends EventEmitter
 					}
 					if (heights_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
 						anyChanges = true
-						self.regenerate_shouldDisplayImportAccountOption() // scan start height may have changed
 						self.___didReceiveActualChangeTo_heights()
 					}
 					if (anyChanges == false) {
@@ -1876,7 +1825,6 @@ class Wallet extends EventEmitter
 						// console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
 					}
 					if (heights_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
-						self.regenerate_shouldDisplayImportAccountOption() // heights may have changed
 						self.___didReceiveActualChangeTo_heights()
 					}
 				} else {
