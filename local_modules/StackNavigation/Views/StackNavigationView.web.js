@@ -76,7 +76,15 @@ class StackNavigationView extends View
 			const view = new View({}, self.context)
 			{
 				const layer = view.layer
-				layer.classList.add('stacked-content-view')
+				layer.classList.add('stacked-content-view');
+				layer.id = "stack-view-stage-view"
+				layer.style.zIndex = '1'
+				layer.style.position = 'absolute'
+				layer.style.left = '0'
+				layer.style.top = '0'
+				layer.style.width = '100%'
+				layer.style.height = '100%'
+				layer.style.overflow = 'hidden' // we're going to say subviews are not allowed to hijack scroll - if they want to, they have to create their own wrapper - or else transitions cause scroll bar to appear
 			}
 			self.addSubview(view)
 			self.stackViewStageView = view

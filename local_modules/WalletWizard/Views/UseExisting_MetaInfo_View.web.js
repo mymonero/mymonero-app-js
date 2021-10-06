@@ -565,7 +565,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					const addr = self.lookup__addr()
 					const viewKey = self.lookup__viewKey()
 					const spendKey = self.lookup__spendKey()
-					ret = self.context.monero_utils.validate_components_for_login(
+					let ret = self.context.monero_utils.validate_components_for_login(
 						addr,
 						viewKey,
 						spendKey, // expects string
@@ -577,7 +577,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo
 					self.layer.scrollTop = 0 // because we want to show the validation err msg
 					self.validationMessageLayer.SetValidationError("Invalid input. Please make sure your address and keys have been properly entered.")
 					self.isDisabledFromSubmission = false
-					__trampolineFor_failedWithErrStr(e);
+					__trampolineFor_failedWithErrStr(error);
 					return
 				}
 			}

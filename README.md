@@ -1,6 +1,10 @@
-# MyMonero Desktop
+<p align="center">
+  <img alt="MyMonero" src="https://user-images.githubusercontent.com/1645428/120083066-8a394a00-c0c6-11eb-9bc5-1ce02784dab3.png">
+</p>
 
-![Logo](https://raw.githubusercontent.com/mymonero/mymonero-app-js/master/docs/assets/icon_100.png "Logo")
+<p align="center">
+  MyMonero Desktop
+</p>
 
 
 ### Info
@@ -24,31 +28,16 @@
 
 See `LICENSE.txt` for license.
 
-All app source code and assets copyright © 2014-2020 by MyMonero. All rights reserved.
+All app source code and assets copyright © 2014-2021 by MyMonero. All rights reserved.
 
 
 ## Downloads
 
-Download the latest version from our website at [mymonero.com](https://www.mymonero.com) or from the Releases tab.
+Download the latest version from our website at [mymonero.com](https://www.mymonero.com) or from the [Releases tab](https://github.com/mymonero/mymonero-app-js/releases/latest).
 
 Developers and pre-release testers who would like to use and work on the app can run it by obtaining the source and running one of the build commands below.
 
 To get set up with the source code, please see **Getting the Source Code** below.
-
-## What's new
-
-2020-10-16
-
-* The application has been updated for Monero's 0.17 hardfork
-* Electron has been upgraded to Electron version 8
-* The web wallet has been split off from the desktop wallet, to make ongoing development and support easier. The web wallet can now be found [here](https://github.com/mymonero/mymonero-app-js)
-* Users are now able to exchange their XMR into BTC
-* Code signing and notarization for MacOS & Windows
-* The build process has been enhanced and simplified
-
-## What to expect
-
-The next major release will allow for Monero be exchanged into many other cyptocurrencies.
 
 ## Requirements & Install Locations
 
@@ -61,7 +50,6 @@ The desktop app is built on [Electron](https://www.electronjs.org/) and can be p
 ### Where is user data saved?
 
 * Desktop: See Electron's [`app.getPath('userData')`](https://github.com/electron/electron/blob/master/docs/api/app.md#appgetpathname)
-
 
 
 ## Reporting Bugs & Making Feature Requests
