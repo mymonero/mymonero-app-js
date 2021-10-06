@@ -51,6 +51,7 @@ class NavigationBarView extends View {
         { // self.layer
             const layer = self.layer
             layer.classList.add("NavigationBarView")
+            layer.id = 'NavigationBarView'
             layer.classList.add('nav-bar-panel')
         }
         { // background decoration view
@@ -74,6 +75,7 @@ class NavigationBarView extends View {
             self.leftBarButtonHolderView = view
             const layer = view.layer
             layer.classList.add('nav-button-left-container')
+            layer.id = "leftBarButtonHolderView";
             self.addSubview(view)
         }
         { // rightBarButtonHolderView
@@ -81,6 +83,7 @@ class NavigationBarView extends View {
             self.rightBarButtonHolderView = view
             const layer = view.layer
             layer.classList.add('nav-button-right-container')
+            layer.id = "rightBarButtonHolderView";
             self.addSubview(view)
         }
     }
