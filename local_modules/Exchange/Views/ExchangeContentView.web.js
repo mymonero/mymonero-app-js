@@ -224,8 +224,8 @@ class ExchangeContentView extends View {
         layer.style.fontWeight = '300'
       }
     }
-    
-    return view
+    // Candidate for deletion -- we don't need a top right button on the landing page
+    // return view
   }
 }
 
