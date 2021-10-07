@@ -16,6 +16,17 @@
     "rollup-transpile": "rollup node_modules/lit/*.js -d node_modules/lit/ -f cjs; rollup node_modules/@lit/reactive-element/*.js -d node_modules/@lit/reactive-element/ -f cjs;rollup node_modules/lit/node_modules/lit-html/*.js -d node_modules/lit/node_modules/lit-html/ -f cjs;rollup node_modules/lit-element/*.js -d node_modules/lit-element/ -f cjs;rollup node_modules/lit-element/node_modules/lit-html/*.js -d node_modules/lit-element/node_modules/lit-html/ -f cjs;"
   },
   "build": {
+    "files": [
+      "!docs${/*}",
+      "!bin${/*}",
+      "!utils${/*}",
+      "!build-afterPack.js",
+      "!build-util.js",
+      "!certs.p12",
+      "!*.provisionprofile",
+      "!electron-builder.env",
+      "!electron-builder.env.example"
+    ],
     "appId": "com.mymonero.mymonero-desktop",
     "afterPack": "./build-afterPack.js",
     "afterSign": "./bin/notarize.js",
@@ -74,12 +85,12 @@
     "@mymonero/mymonero-money-format": "^1.1.6",
     "@mymonero/mymonero-net-service-utils": "^1.1.6",
     "@mymonero/mymonero-nettype": "^1.1.6",
-    "@mymonero/mymonero-page-templates": "^1.3.0-alpha.22",
+    "@mymonero/mymonero-page-templates": "^1.3.0-alpha.24",
     "@mymonero/mymonero-paymentid-utils": "^1.1.6",
     "@mymonero/mymonero-response-parser-utils": "^1.1.5",
     "@mymonero/mymonero-sendfunds-utils": "^1.1.6",
     "@mymonero/mymonero-tx-parsing-utils": "^1.1.6",
-    "@mymonero/mymonero-web-components": "*",
+    "@mymonero/mymonero-web-components": "^1.3.0-alpha.24",
     "@mymonero/mymonero-yat-lookup": "^1.1.3",
     "async": "3.1.0",
     "axios": "^0.21.1",
