@@ -2638,7 +2638,7 @@ div.exchange-button {
 
   @media screen and (max-height: 860px) {
     #stack-view-stage-view {
-      overflow-y: scroll !important;
+      overflow-y: auto !important;
     }
   }
   
