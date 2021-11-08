@@ -2635,3 +2635,13 @@ div.exchange-button {
   .selectIndicator {
     pointer-events: none; border: none; position: absolute; width: 8px; height: 13px;  z-index: 9; background-image: url(../../../assets/img/smallSelect_disclosureArrow@3x.png); background-repeat: no-repeat; background-position: center center; background-size: 8px 13px; 
   }
+
+  @media screen and (max-height: 860px) {
+    #stack-view-stage-view {
+      overflow-y: auto !important;
+    }
+  }
+  
+  #stack-view-stage-view {
+    background: rgb(39, 37, 39);
+  }
