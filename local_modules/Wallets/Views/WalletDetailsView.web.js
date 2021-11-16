@@ -768,9 +768,9 @@ class WalletDetailsView extends View {
         self.context.locale.Locale(function(err, locale)
         {
             if (err) {
-                // Fall back to en-US
+                // Fall back to locale provided by computer as default
                 console.error("Error obtaining the current locale.")
-                currentLocale = "en-US"
+                currentLocale = undefined
             } else {
                 currentLocale = locale
             }
