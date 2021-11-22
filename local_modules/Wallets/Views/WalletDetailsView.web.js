@@ -962,7 +962,7 @@ class WalletDetailsView extends View {
                         if (nBlocks > 0) {
                             return `${nBlocks} block${nBlocks != 1 ? "s" : ""} behind`
                         } else {
-                            return shouldShow_importTxsBtn = `Scanner up-to-date`;
+                            return `Scanner up-to-date`;
                         }
                     }
 
