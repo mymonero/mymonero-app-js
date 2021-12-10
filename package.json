@@ -104,6 +104,7 @@
     "jsqr": "1.1.1",
     "lit": "^2.0.0",
     "qrcode": "^1.4.4",
+    "sweetalert2": "^11.3.0",
     "uuid": "3.3.2",
     "velocity-animate": "1.5.2",
     "xhr": "2.5.0"
