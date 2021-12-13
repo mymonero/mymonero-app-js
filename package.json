@@ -28,7 +28,6 @@
       "!electron-builder.env.example"
     ],
     "appId": "com.mymonero.mymonero-desktop",
-    "afterPack": "./build-afterPack.js",
     "afterSign": "./bin/notarize.js",
     "publish": "github",
     "mac": {
@@ -41,8 +40,20 @@
     "win": {
       "certificateSubjectName": "MyMonero (PTY) LTD",
       "target": [
-        "nsis",
-        "zip"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
       ]
     },
     "nsis": {
