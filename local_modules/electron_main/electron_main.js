@@ -89,7 +89,7 @@ process.on(
 		if (error_toString.indexOf("IPC_CHANNEL_CLOSED") !== -1) {
 			errStr = ```Your operating system has deallocated RAM that was in use by MyMonero. This often happens when a device goes into sleep or hibernate mode.
 			This is not a bug in MyMonero. 
-			To ensure that MyMonero works properly, please restart MyMonero to ensure the wallet functions properly.
+			To ensure that MyMonero works properly, please restart MyMonero.
 			MyMonero will now exit.
 			```;
 			dialog.showErrorBox("Memory deallocated", errStr);
