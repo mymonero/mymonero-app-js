@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="MyMonero" src="https://user-images.githubusercontent.com/1645428/145999816-dddd7b9b-06c6-4791-8316-0e968e7666bf.png">
+  <img alt="MyMonero" src="https://user-images.githubusercontent.com/1645428/146000939-b06f8fd3-9ed2-4a5e-bdd6-3981281dde9c.png">
 </p>
 
 <p align="center">
