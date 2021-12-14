@@ -83,7 +83,7 @@ class AboutWindowController
 			const absPathTo_localModules = mutable_pathTo_localModules_components.join('/')
 			//
 			const pathTo_iconImage_png = absPathTo_localModules + "/electron_main/Resources/icons/icon.png"
-			options.icon = pathTo_iconImage_png
+			//options.icon = pathTo_iconImage_png
 		}
 		if (isWin || isLinux) { // for window decoration
 			options.height += 27
