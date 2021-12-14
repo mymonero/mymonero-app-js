@@ -2,7 +2,7 @@
   "name": "MyMonero",
   "author": "MyMonero",
   "description": "The simplest way to use Monero",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "license": "BSD-3-Clause",
   "repository": "https://github.com/mymonero/mymonero-app-js",
   "main": "./local_modules/electron_main/electron_main.js",
@@ -28,7 +28,6 @@
       "!electron-builder.env.example"
     ],
     "appId": "com.mymonero.mymonero-desktop",
-    "afterPack": "./build-afterPack.js",
     "afterSign": "./bin/notarize.js",
     "publish": "github",
     "mac": {
@@ -41,8 +40,20 @@
     "win": {
       "certificateSubjectName": "MyMonero (PTY) LTD",
       "target": [
-        "nsis",
-        "zip"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
       ]
     },
     "nsis": {
@@ -104,6 +115,7 @@
     "jsqr": "1.1.1",
     "lit": "^2.0.0",
     "qrcode": "^1.4.4",
+    "sweetalert2": "^11.3.0",
     "uuid": "3.3.2",
     "velocity-animate": "1.5.2",
     "xhr": "2.5.0"

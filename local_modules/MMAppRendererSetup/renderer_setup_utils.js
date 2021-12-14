@@ -26,7 +26,8 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-"use strict"
+const Swal = require('sweetalert2')
+"use strict"			
 //
 function StartExceptionReporting(
 	exceptionReporterOptions_requiredModule, 
@@ -54,17 +55,44 @@ function StartAlertingExceptions()
 	process.on(
 		'uncaughtException', 
 		function(error)
-		{
+		{			
 			var errStr = "An unexpected application error occurred.\n\nPlease let us know of ";
 			if (error) {
-				errStr += "the following error message as it could be a bug:\n\n"+ error.toString()
-				if (error.stack) {
-					errStr += "\n\n" + error.stack
-				}
+				errStr += `the following error message as it could be a bug:\n\n <p><span style='font-size: 11px;'>${error.toString()}`
 			} else {
 				errStr += "this issue as it could be a bug."
 			}
-			alert(errStr)
+			
+			errStr += "</span></p>";
+
+			let errorHtml = errStr;
+			// append stack trace to error we copy to clipboard
+			if (error && error.stack !== 'undefined') {
+				errStr += error.stack;
+			}
+
+			errStr += navigator.userAgent;
+
+			Swal.fire({
+				title: 'MyMonero has encountered an error',
+				html: errorHtml,
+				background: "#272527",
+				titleColor: "#FFFFFF",
+				color: "#FFFFFF",
+				text: 'Do you want to continue',
+				confirmButtonColor: "#11bbec",
+				confirmButtonText: 'Copy Error To Clipboard',
+				cancelButtonText: 'Close',
+				showCloseButton: true,
+				showCancelButton: true,
+				preConfirm: () => {	
+					navigator.clipboard.writeText(errStr)
+				},
+				customClass: {
+					confirmButton: 'base-button hoverable-cell navigation-blue-button-enabled action right-save-button',
+					cancelButton: 'base-button hoverable-cell navigation-blue-button-enabled action right-save-button disabled navigation-blue-button-disabled'
+				},
+			})
 		}
 	)
 }

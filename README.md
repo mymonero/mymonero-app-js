@@ -1,36 +1,26 @@
 <p align="center">
-  <img alt="MyMonero" src="https://user-images.githubusercontent.com/1645428/120083066-8a394a00-c0c6-11eb-9bc5-1ce02784dab3.png">
+  <img alt="MyMonero" src="https://user-images.githubusercontent.com/1645428/146000939-b06f8fd3-9ed2-4a5e-bdd6-3981281dde9c.png">
 </p>
 
 <p align="center">
   MyMonero Desktop
 </p>
 
+The simplest way to use the next-generation private digital currency Monero, at the sweet spot between security, convenience, and features
 
-### Info
+-----
+### Contents
 
+1. Downloads
+1. Requirements & Install Locations
+1. Reporting Bugs & Making Feature Requests
+1. Installation
+1. Building for Production
+1. Running in Development Mode
+1. Contributing
+1. Acknowledgements
 1. License and Copyrights
-2. Downloads
-3. Requirements & Install Locations
-4. Reporting Bugs & Making Feature Requests
-
-### Contributing and Testing
-
-1. Getting the Source Code
-2. Repo Contents Overview
-3. Building for Production
-4. Running in Development Mode
-5. Contributing
-6. Acknowledgements
-
-
-## License and Copyrights
-
-See `LICENSE.txt` for license.
-
-All app source code and assets copyright © 2014-2021 by MyMonero. All rights reserved.
-
-
+-----
 ## Downloads
 
 Download the latest version from our website at [mymonero.com](https://www.mymonero.com) or from the [Releases tab](https://github.com/mymonero/mymonero-app-js/releases/latest).
@@ -60,23 +50,23 @@ If you're reporting a bug, be sure to include all information which we would nee
 
  Please contact us via [contact us](https://mymonero.com/support) for general support and enquiries. Please only use the Issues tracker when you believe you've encountered a bug.
 
+## Installation
 
-# Contributing & Testing
+Before installing, [download and install Node.js](https://nodejs.org/en/download/).
 
+Clone the repo and install the dependencies.
+```bash
+git clone https://github.com/mymonero/mymonero-app-js.git
+cd mymonero-app-js
+```
+```bash
+npm install
+```
 
-## Getting the Source Code
-
-### Download & Install
-
-1. First, ensure that you have recent versions of `node` and `npm` installed.
-
-2. Clone or otherwise download this repository. Then, in your terminal, `cd` into the repo directory.
-
-3. (To get the bleeding edge, and/or if you are going to make changes) Switch to the `develop` branch by executing `git checkout develop`.
-
-4. Install all required `node_modules` by executing `npm install`.
-
-5. Run `npm start` to open the wallet without building.
+To start the desktop wallet, run the following
+```bash
+npm start
+```
 
 ## Building for Production
 
@@ -84,12 +74,11 @@ If you're testing a pre-release version of this app and need to verify its behav
 
 ## Running in Development Mode
 
-### Desktop
-
 *Does not require you to package, sign, and install the app, and will cause the Developer window to be shown. Certain features, such as URL opening under MacOS, require production build.*
 
-`npm run dev`
-
+```bash
+npm run dev
+```
 
 ## Contributing
 
@@ -148,3 +137,9 @@ Contributors to each release are credited in release notes.
 * 🔥 `mds` ([Matt Smith](http://mds.is)) MVP designer
 
 * 🌠 Your name here?
+
+## License and Copyrights
+
+See `LICENSE.txt` for license.
+
+All app source code and assets copyright © 2014-2021 by MyMonero. All rights reserved.
