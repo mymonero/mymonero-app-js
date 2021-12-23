@@ -89,7 +89,7 @@
     "@mymonero/mymonero-bigint": "^1.1.6",
     "@mymonero/mymonero-bridge-utils": "^1.1.6",
     "@mymonero/mymonero-exchange": "^1.1.13",
-    "@mymonero/mymonero-exchange-helper": "^1.3.0-alpha.18",
+    "@mymonero/mymonero-exchange-helper": "^1.3.1-alpha.4",
     "@mymonero/mymonero-keyimage-cache": "^1.1.6",
     "@mymonero/mymonero-locales": "^1.1.6",
     "@mymonero/mymonero-monero-config": "^1.1.6",
