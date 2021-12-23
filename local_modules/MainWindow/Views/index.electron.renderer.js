@@ -28,6 +28,7 @@
 //
 "use strict"
 
+const webComponents = require("@mymonero/mymonero-web-components")
 const setup_utils = require('../../MMAppRendererSetup/renderer_setup.electron')
 setup_utils({
     reporting_processName: "MainWindow"
