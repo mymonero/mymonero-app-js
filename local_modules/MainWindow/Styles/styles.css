@@ -34,13 +34,15 @@
     user-select: none;
     display: block;
     margin: 15px 0 8px 8px;
-    text-align: left;
-    color: #F8F7F8;
-    font-family: Native-Light, input, menlo, monospace;
     -webkit-font-smoothing: subpixel-antialiased;
-    font-size: 10px;
     letter-spacing: 0.5px;
-    font-weight: 300;
+    text-transform: uppercase;
+    user-select: none;
+    text-align: left;
+    color: rgb(248, 247, 248);
+    font-family: Native-Regular, input, menlo, monospace;
+    font-size: 11px;
+    font-weight: lighter;
 }
 
 .red-button {
@@ -2668,4 +2670,8 @@ div.exchange-button {
   }
   .swal2-confirm {
     background-color: #7066e0;
+  }
+  mym-yat-settings-view {
+    position: relative;
+    left: -8px;
   }
