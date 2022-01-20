@@ -428,34 +428,30 @@ class PasswordController extends EventEmitter
 								self.unguard_getNewOrExistingPassword()
 								return // just silently exit after unguarding
 							}
-							symmetric_string_cryptor.New_DecryptedString__Async(
-								self.encryptedMessageForUnlockChallenge,
-								existingPassword,
-								function(err, decryptedMessageForUnlockChallenge)
-								{
-									if (err) {
-										const errStr = self._new_incorrectPasswordValidationErrorMessageString()
-										const err_toReturn = new Error(errStr)
-										self.unguard_getNewOrExistingPassword()
-										self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err_toReturn)
-										return
-									}
-									if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
-										const errStr = self._new_incorrectPasswordValidationErrorMessageString()
-										const err = new Error(errStr)
-										self.unguard_getNewOrExistingPassword()
-										self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
-										return
-									}
-									//
-									// hang onto pw and set state
-									self._didObtainPassword(existingPassword)
-									//
-									// all done
+
+							symmetric_string_cryptor.DecryptedStringAsync(self.encryptedMessageForUnlockChallenge, existingPassword)
+							.then( (decryptedMessageForUnlockChallenge) => {
+								if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
+									const errStr = self._new_incorrectPasswordValidationErrorMessageString()
+									const err = new Error(errStr)
 									self.unguard_getNewOrExistingPassword()
-									self.emit(self.EventName_ObtainedCorrectExistingPassword())
+									self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err)
+									return
 								}
-							)
+								//
+								// hang onto pw and set state
+								self._didObtainPassword(existingPassword)
+								//
+								// all done
+								self.unguard_getNewOrExistingPassword()
+								self.emit(self.EventName_ObtainedCorrectExistingPassword())
+							})
+							.catch( (err) => {
+								const errStr = self._new_incorrectPasswordValidationErrorMessageString()
+								const err_toReturn = new Error(errStr)
+								self.unguard_getNewOrExistingPassword()
+								self.emit(self.EventName_ErroredWhileGettingExistingPassword(), err_toReturn)
+							})
 						}
 					)
 				}

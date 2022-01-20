@@ -27,11 +27,7 @@ var cryptor_settings =
 }
 //
 // Encryption
-function New_EncryptedBase64String__Async(
-	plaintext_msg, 
-	password,
-	fn
-) {
+function New_EncryptedBase64String__Async(plaintext_msg, password, fn) {
 	if (typeof plaintext_msg === 'undefined') {
 		return undefined
 	}
@@ -112,11 +108,7 @@ function New_EncryptedBase64String__Async(
 module.exports.New_EncryptedBase64String__Async = New_EncryptedBase64String__Async;
 //
 // Decryption
-function New_DecryptedString__Async(
-	encrypted_msg_base64_string, 
-	password, 
-	fn
-) {
+function New_DecryptedString__Async(encrypted_msg_base64_string, password, fn) {
 	Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8'));
 
 	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
@@ -124,49 +116,78 @@ function New_DecryptedString__Async(
 		return fn(null, encrypted_msg_base64_string)
 	}
 	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
-	_is_hmac_valid__async(
-		unpacked_base64_components, 
-		password,
-		function(err, isValid)
-		{
-			if (err) {
-				fn(err)
-				return
-			}
-			if (isValid === false) {
-				const err = new Error("HMAC is not valid.")
-				fn(err)
-				return				
-			}
-			_new_calculated_pbkdf2_key__async(
-				password, 
-				unpacked_base64_components.headers.encryption_salt,
-				function(err, cipherKey_binaryBuffer) 
-				{
-					if (err) {
-						fn(err)
-						return
-					}
-					const deCipher = crypto.createDecipheriv(
-						cryptor_settings.algorithm, 
-						cipherKey_binaryBuffer, 
-						unpacked_base64_components.headers.iv
-					);
-					// pkcs unpadding is done automatically; see cipher.setAutoPadding
-					const unpadded_decrypted_buffer = Buffer.concat([
-						deCipher.update(unpacked_base64_components.cipher_text), 
-						deCipher.final()
-					]);
-					const decrypted_string = unpadded_decrypted_buffer.toString('utf8')
-					//
-					fn(null, decrypted_string)
-				}
-			)
+	isHMACValidAsync(unpacked_base64_components, password).then( (isValid) => {
+		if (isValid === false) {
+			const err = new Error("HMAC is not valid.")
+			fn(err)
+			return				
 		}
-	)
+		pbkdf2Async(password, unpacked_base64_components.headers.encryption_salt)
+		.then((cipherKey_binaryBuffer) => {
+			const deCipher = crypto.createDecipheriv(
+				cryptor_settings.algorithm, 
+				cipherKey_binaryBuffer, 
+				unpacked_base64_components.headers.iv
+			);
+			// pkcs unpadding is done automatically; see cipher.setAutoPadding
+			const unpadded_decrypted_buffer = Buffer.concat([
+				deCipher.update(unpacked_base64_components.cipher_text), 
+				deCipher.final()
+			]);
+			const decrypted_string = unpadded_decrypted_buffer.toString('utf8')
+			//
+			fn(null, decrypted_string)
+		})
+		.catch((err) => {
+			fn(err)
+		})
+	}).catch( (err) => {
+		fn(err)
+	})
 }
 module.exports.New_DecryptedString__Async = New_DecryptedString__Async;
-//
+
+
+function DecryptedStringAsync(encrypted_msg_base64_string, password) {
+	return new Promise( (res, rej) => {
+	
+		Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8'));
+
+		if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
+			console.warn("New_DecryptedString__Async was passed nil encrypted_msg_base64_string")
+			res(encrypted_msg_base64_string)
+		}
+		var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
+		isHMACValidAsync(unpacked_base64_components, password).then( (isValid) => {
+			if (isValid === false) {
+				const err = new Error("HMAC is not valid.")
+				rej(err)
+			}
+			pbkdf2Async(password, unpacked_base64_components.headers.encryption_salt)
+			.then((cipherKey_binaryBuffer) => {
+				const deCipher = crypto.createDecipheriv(
+					cryptor_settings.algorithm, 
+					cipherKey_binaryBuffer, 
+					unpacked_base64_components.headers.iv
+				);
+				// pkcs unpadding is done automatically; see cipher.setAutoPadding
+				const unpadded_decrypted_buffer = Buffer.concat([
+					deCipher.update(unpacked_base64_components.cipher_text), 
+					deCipher.final()
+				]);
+				const decrypted_string = unpadded_decrypted_buffer.toString('utf8')
+				//
+				res(decrypted_string)
+			})
+			.catch((err) => {
+				rej(err)
+			})
+		}).catch( (err) => {
+			rej(err)
+		})
+	});
+}
+module.exports.DecryptedStringAsync = DecryptedStringAsync;
 // Shared
 function _new_encrypted_base64_unpacked_components_object(b64str) 
 {
@@ -248,11 +269,8 @@ function _is_hmac_valid__async(
 		}
 	)
 }
-function _new_calculated_pbkdf2_key__async(
-	password, 
-	salt, 
-	fn
-) { // Apply pseudo-random function HMAC-SHA1 by default
+
+function _new_calculated_pbkdf2_key__async(password, salt, fn) { // Apply pseudo-random function HMAC-SHA1 by default
 	crypto.pbkdf2(
 		password, 
 		salt, 
@@ -265,6 +283,31 @@ function _new_calculated_pbkdf2_key__async(
 		}
 	)
 }
+
+function pbkdf2Async(password, salt) { // Apply pseudo-random function HMAC-SHA1 by default
+	return new Promise( (res, rej) => {
+		crypto.pbkdf2(password, salt, cryptor_settings.pbkdf2.iterations, cryptor_settings.pbkdf2.key_length, 'sha1', (err, key) => {
+				err ? rej(err) : res(key)
+		})
+	});
+}
+
+function isHMACValidAsync(components, password) {
+	return new Promise( (res, rej) => {
+		pbkdf2Async(password, components.headers.hmac_salt)
+		.then( (hmac_key) => {
+			var generated_hmac_buffer = _new_generated_hmac(components, hmac_key);
+			// For 0.11+ we can use Buffer.compare
+			const isValid = components.hmac.toString('hex') == generated_hmac_buffer.toString('hex');
+			
+			res(isValid)
+		})
+		.catch( (err) => {
+			rej(err)
+		})
+	});
+}
+
 var _new_generated_hmac = function(
 	components, 
 	hmac_key

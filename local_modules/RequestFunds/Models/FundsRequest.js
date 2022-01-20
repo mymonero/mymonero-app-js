@@ -117,7 +117,6 @@ class FundsRequest extends EventEmitter
 	{
 		const self = this
 		persistable_object_utils.read(
-			self.context.string_cryptor__background,
 			self.context.persister,
 			fundsRequest_persistence_utils.CollectionName,
 			self, // because an _id was supposed to have been passed in

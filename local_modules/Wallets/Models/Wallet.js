@@ -13,7 +13,7 @@ const mnemonic_languages = require('@mymonero/mymonero-locales')
 //
 const wallet_persistence_utils = require('./wallet_persistence_utils')
 const WalletHostPollingController = require('../Controllers/WalletHostPollingController')
-//
+const string_cryptor = require('../../symmetric_cryptor/symmetric_string_cryptor')
 const wallet_currencies =
 {
 	xmr: 'xmr'
@@ -41,16 +41,9 @@ function areObjectsEqual(x, y)
 	}
 	return true;
 }
-//
-//
+
 class Wallet extends EventEmitter
 {
-
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// Lifecycle - Init -> setup
-	// Important: You must manually call one of the 'Boot_' methods after you initialize
-
 	constructor(options, context)
 	{
 		super() // must call super before we can access this
@@ -269,12 +262,7 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Booting - Creating/adding wallets
 
-	Boot_byLoggingIn_givenNewlyCreatedWallet(
-		persistencePassword,
-		walletLabel,
-		swatch,
-		fn
-	) {
+	Boot_byLoggingIn_givenNewlyCreatedWallet(persistencePassword, walletLabel, swatch, fn) {
 		const self = this
 		//		
 		self.persistencePassword = persistencePassword || null
@@ -295,16 +283,9 @@ class Wallet extends EventEmitter
 		const spend_key__private = keys.spend.sec
 		const wasAGeneratedWallet = true // true, in this case
 		//
-		self._boot_byLoggingIn(
-			address,
-			view_key__private,
-			spend_key__private,
-			seed,
-			wasAGeneratedWallet,
-			false, // persistEvenIfLoginFailed_forServerChange
-			fn
-		)
+		self._boot_byLoggingIn(address, view_key__private, spend_key__private, seed, wasAGeneratedWallet, false, fn)
 	}
+
 	Boot_byLoggingIn_existingWallet_withMnemonic(
 		persistencePassword,
 		walletLabel,
@@ -354,6 +335,7 @@ class Wallet extends EventEmitter
 			fn
 		);
 	}
+
 	Boot_byLoggingIn_existingWallet_withAddressAndKeys(
 		persistencePassword,
 		walletLabel,
@@ -394,10 +376,7 @@ class Wallet extends EventEmitter
 	////////////////////////////////////////////////////////////////////////////////
 	// Runtime - Imperatives - Public - Booting - Reading saved wallets
 
-	Boot_decryptingExistingInitDoc(
-		persistencePassword,
-		fn
-	) {
+	Boot_decryptingExistingInitDoc(persistencePassword, fn) {
 		const self = this
 		self.persistencePassword = persistencePassword || null
 		if (persistencePassword === null) {
@@ -420,7 +399,7 @@ class Wallet extends EventEmitter
 		//
 		function __proceedTo_decryptContentString(encryptedString)
 		{
-			self.context.string_cryptor__background.New_DecryptedString__Async(
+			string_cryptor.New_DecryptedString__Async(
 				encryptedString,
 				self.persistencePassword,
 				function(err, plaintextString)

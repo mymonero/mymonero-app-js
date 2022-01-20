@@ -2,7 +2,6 @@ const uuidV1 = require('uuid/v1')
 const string_cryptor = require('../symmetric_cryptor/symmetric_string_cryptor')
 
 function read(
-	string_cryptor__background,
 	persister,
 	CollectionName,
 	persistableObject, // you must set ._id on this before call
@@ -30,36 +29,31 @@ function read(
 			__proceedTo_decryptEncryptedDocument(encryptedDocument)
 		}
 	)
+
 	function __proceedTo_decryptEncryptedDocument(encryptedBase64String)
 	{
-		string_cryptor__background.New_DecryptedString__Async(
-			encryptedBase64String,
-			self.persistencePassword,
-			function(err, plaintextString)
-			{
-				if (err) {
-					console.error("❌  Decryption err: " + err.toString())
-					fn(err)
-					return
-				}
-				var plaintextDocument;
-				try {
-					plaintextDocument = JSON.parse(plaintextString)
-				} catch (e) {
-					let errStr = "Error while parsing JSON: " + e
-					console.error("❌  " + errStr)
-					fn(errStr)
-					return
-				}
-				fn(null, plaintextDocument)
+		string_cryptor.DecryptedStringAsync(encryptedBase64String, self.persistencePassword)
+		.then( (plaintextString) => {
+			var plaintextDocument;
+			try {
+				plaintextDocument = JSON.parse(plaintextString)
+			} catch (e) {
+				let errStr = "Error while parsing JSON: " + e
+				console.error("❌  " + errStr)
+				fn(errStr)
+				return
 			}
-		)
+			fn(null, plaintextDocument)
+		})
+		.catch( (err) => {
+			console.error("❌  Decryption err: " + err.toString())
+			fn(err)
+		})
 	}
 }
 exports.read = read
 //
 function write(
-	string_cryptor__background,
 	persister,
 	persistableObject, // for reading and writing the _id
 	CollectionName,
@@ -74,7 +68,7 @@ function write(
 		plaintextDocument._id = _id
 	}
 	const plaintextJSONString = JSON.stringify(plaintextDocument)
-	string_cryptor__background.New_EncryptedBase64String__Async(
+	string_cryptor.New_EncryptedBase64String__Async(
 		plaintextJSONString,
 		persistencePassword,
 		function(err, encryptedBase64String)

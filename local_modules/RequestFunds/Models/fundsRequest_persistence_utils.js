@@ -37,7 +37,6 @@ function SaveToDisk(
 	fn
 ) {
 	const self = instance
-	const string_cryptor__background = self.context.string_cryptor__background
 	console.log("📝  Saving fundsRequest to disk ", self.Description())
 	{
 		fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
@@ -69,7 +68,6 @@ function SaveToDisk(
 		is_displaying_local_wallet: self.is_displaying_local_wallet == true ? true : false
 	}
 	persistable_object_utils.write(
-		self.context.string_cryptor__background,
 		self.context.persister,
 		self, // for reading and writing the _id
 		CollectionName,

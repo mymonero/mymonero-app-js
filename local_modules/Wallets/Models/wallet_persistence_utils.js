@@ -202,7 +202,6 @@ function SaveToDisk(
 		plaintextDocument.local_wasAGeneratedWallet = self.local_wasAGeneratedWallet
 	}
 	persistable_object_utils.write(
-		self.context.string_cryptor__background,
 		self.context.persister,
 		self, // for reading and writing the _id
 		CollectionName,

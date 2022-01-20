@@ -25,7 +25,6 @@ function SaveToDisk(
 	fn
 ) {
 	const self = instance
-	const string_cryptor__background = self.context.string_cryptor__background
 	// console.log("📝  Saving contact to disk ", self.Description())
 	//
 	fn = fn || function(err) { console.error(err); console.trace("No fn provided to SaveToDisk") }
@@ -47,7 +46,7 @@ function SaveToDisk(
 		cached_OAResolved_XMR_address: self.cached_OAResolved_XMR_address
 	}
 	persistable_object_utils.write(
-		self.context.string_cryptor__background,
+		null,
 		self.context.persister,
 		self, // for reading and writing the _id
 		CollectionName,
