@@ -8,7 +8,7 @@ const WindowDialogs = require(__dirname + "/../../WindowDialogs/WindowDialogs.el
 const URLBrowser = require(__dirname + "/../../URLBrowser/URLBrowser.electron")
 const CcyConversionRates = require(__dirname + "/../../CcyConversionRates/Controller")
 const Locale = require(__dirname + "/../../Locale/Locale.electron")
-const BackgroundDocumentPersister = require(__dirname + "/../../DocumentPersister/BackgroundDocumentPersister.Files.electron")
+const DocumentPersister = require(__dirname + "/../../DocumentPersister/DocumentPersister.Files")
 const BackgroundResponseParser = require(__dirname + "/../../HostedMoneroAPIClient/BackgroundResponseParser.electron.renderer")
 const OpenAliasResolver = require(__dirname + "/../../OpenAlias/OpenAliasResolver")
 const ThemeController = require(__dirname + "/../../Theme/ThemeController")
@@ -51,7 +51,10 @@ function NewHydratedContext(app, menuController, urlOpeningController, appUpdate
 	context.urlBrowser = new URLBrowser({}, context)
 	context.CcyConversionRates_Controller_shared = new CcyConversionRates({}, context)
 	context.locale = new Locale({}, context)
-	context.persister = new BackgroundDocumentPersister({}, context)
+	context.persister = new DocumentPersister({
+		userDataAbsoluteFilepath: app.getPath('userData'),
+		fs: require('fs')
+	}, context)
 	context.backgroundAPIResponseParser = new BackgroundResponseParser({}, context)
 	context.openAliasResolver = new OpenAliasResolver({txtRecordResolver: new TXTRecordResolver({})}, context)
 	context.themeController = new ThemeController({}, context)

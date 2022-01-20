@@ -46,7 +46,6 @@ function SaveToDisk(
 		cached_OAResolved_XMR_address: self.cached_OAResolved_XMR_address
 	}
 	persistable_object_utils.write(
-		null,
 		self.context.persister,
 		self, // for reading and writing the _id
 		CollectionName,
