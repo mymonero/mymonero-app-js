@@ -20,8 +20,6 @@
       "!docs${/*}",
       "!bin${/*}",
       "!utils${/*}",
-      "!build-afterPack.js",
-      "!build-util.js",
       "!certs.p12",
       "!*.provisionprofile",
       "!electron-builder.env",
