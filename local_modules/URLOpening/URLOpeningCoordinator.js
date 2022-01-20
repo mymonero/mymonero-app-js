@@ -29,8 +29,11 @@
 "use strict"
 //
 const EventEmitter = require('events')
+const YatMoneroLookup = require('@mymonero/mymonero-yat-lookup');
+
+let yatMoneroLookup = new YatMoneroLookup({});
 //
-const PROTOCOL_PREFIX = "monero" // this is also specified for MacOS in packager.js under scheme
+const PROTOCOL_PREFIX = "mymoanero" // this is also specified for MacOS in packager.js under scheme
 // maybe support "mymonero" too
 //
 class URLOpeningCoordinator extends EventEmitter {
@@ -116,6 +119,33 @@ class URLOpeningCoordinator extends EventEmitter {
     _yieldThatTimeToHandleReceivedMoneroURL(url) {
         const self = this;
         self.requestURLToOpen_pendingFromDisallowedFromOpening = null // JIC it was set
+        console.log("Silly yield method:" + url);
+        if (url.indexOf("eid=" !== -1)) {
+            // this string has a Yat parameter in it
+            console.log("That's a yat")
+            // 1. Buy a Yat
+            // eid, refresh_token
+            let queryParameterOffset = url.indexOf("?");
+            queryParameterOffset++; // remove trailing ?
+
+            let queryParameterString = url.substring(queryParameterOffset);
+            let parameterArr = queryParameterString.split("&");
+            let parameterObj = {};
+            parameterArr.map((value) => {
+                let offset = value.indexOf("=");
+                let key = value.substring(0, offset);
+                offset++;
+                let newValue = value.substring(offset);
+                parameterObj[key] = newValue;
+            })
+            parameterObj['eid'] = decodeURIComponent(parameterObj['eid']);
+            console.log(parameterArr);
+            console.log(parameterObj);
+            // 2. Connect existing Yat(s)
+            // refresh_token, eid, addresses (in YAT_TAG_1=ADDRESS_1|YAT_TAG_2=ADDRESS_2|...|YAT_TAG_N=ADDRESS_N) -- 
+            // 0x1001 - std monero, 0x1002 subaddress monero
+            // we should receive a refresh_token and an eid 
+        }
         self.emit("EventName_TimeToHandleReceivedMoneroRequestURL", url)
     }
 }

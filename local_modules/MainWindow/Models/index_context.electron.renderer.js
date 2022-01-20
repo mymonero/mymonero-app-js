@@ -27,6 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 "use strict"
+console.log("Are we working?");
 //
 const instantiation_description__hostedMoneroAPIClient =
 { // this one is broken out so we can configure options with `app` object once we have it
@@ -140,7 +141,7 @@ var context_object_instantiation_descriptions =
 		options: {}
 	},
 	{
-		module_path: __dirname + "/../../URLOpening/URLOpeningCoordinator.web",
+		module_path: __dirname + "/../../URLOpening/URLOpeningCoordinator",
 		instance_key: "urlOpeningCoordinator",
 		options: {}
 	},
