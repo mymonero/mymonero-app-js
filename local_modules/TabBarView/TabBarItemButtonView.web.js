@@ -1,7 +1,7 @@
 "use strict"
-//
+
 const View = require('../Views/View.web')
-//
+
 class TabBarItemButtonView extends View
 {
 	constructor(options, context)
