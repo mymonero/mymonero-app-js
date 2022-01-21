@@ -789,9 +789,6 @@ class PasswordController extends EventEmitter {
     )
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Private - Deferring until booted
-
   _executeWhenBooted (fn) {
     const self = this
     if (self.hasBooted == true) {
@@ -801,9 +798,6 @@ class PasswordController extends EventEmitter {
     // console.log("Deferring execution of function until booted.")
     self._whenBooted_fns.push(fn)
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Private - Persistence
 
   saveToDisk (fn) {
     const self = this

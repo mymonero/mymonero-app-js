@@ -30,50 +30,44 @@ function HydrateInstance (
   self.is_displaying_local_wallet = plaintextDocument.is_displaying_local_wallet
 }
 exports.HydrateInstance = HydrateInstance
-//
-function SaveToDisk (
-  instance,
-  fn
-) {
-  const self = instance
-  console.log('📝  Saving fundsRequest to disk ', self.Description())
-  {
-    fn = fn || function (err) { console.error(err); console.trace('No fn provided to SaveToDisk') }
-  }
-  const persistencePassword = self.persistencePassword
-  if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
-    const errStr = '❌  Cannot save fundsRequest to disk as persistencePassword was missing.'
-    const err = new Error(errStr)
-    fn(err)
-    return
-  }
-  { // defaults/onces
+
+function SaveToDisk (instance) {
+  return new Promise((resolve, reject) => {
+    const self = instance
+    console.log('📝  Saving fundsRequest to disk ', self.Description())
+
+    const persistencePassword = self.persistencePassword
+    if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
+      const errStr = '❌  Cannot save fundsRequest to disk as persistencePassword was missing.'
+      const err = new Error(errStr)
+      reject(err)
+      return
+    }
     if (typeof self.dateCreated === 'undefined') {
       self.dateCreated = new Date()
     }
-  }
-  const plaintextDocument =
-  {
-    dateCreated: self.dateCreated.toString(), // must do toString else we will get exception on encrypting
-    //
-    from_fullname: self.from_fullname || '',
-    to_walletHexColorString: self.to_walletHexColorString || '',
-    to_address: self.to_address,
-    payment_id: self.payment_id,
-    amount: self.amount != null && self.amount != '' ? '' + self.amount : self.amount, // storing this as an optional String
-    amountCcySymbol: self.amountCcySymbol,
-    message: self.message || '',
-    description: self.description || '',
-    is_displaying_local_wallet: self.is_displaying_local_wallet == true
-  }
-  persistable_object_utils.write(
-    self.context.persister,
-    self, // for reading and writing the _id
-    CollectionName,
-    plaintextDocument, // _id will get generated for this if self does not have an _id
-    persistencePassword,
-    fn
-  )
+    const plaintextDocument =
+    {
+      dateCreated: self.dateCreated.toString(), // must do toString else we will get exception on encrypting
+      //
+      from_fullname: self.from_fullname || '',
+      to_walletHexColorString: self.to_walletHexColorString || '',
+      to_address: self.to_address,
+      payment_id: self.payment_id,
+      amount: self.amount != null && self.amount != '' ? '' + self.amount : self.amount, // storing this as an optional String
+      amountCcySymbol: self.amountCcySymbol,
+      message: self.message || '',
+      description: self.description || '',
+      is_displaying_local_wallet: self.is_displaying_local_wallet == true
+    }
+    persistable_object_utils.write(self.context.persister, self, CollectionName, plaintextDocument, persistencePassword)
+      .then(() => {
+        resolve()
+      })
+      .catch((err) => {
+        reject(err)
+      })
+  })
 }
 exports.SaveToDisk = SaveToDisk
 //

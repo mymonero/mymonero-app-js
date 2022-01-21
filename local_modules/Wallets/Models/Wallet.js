@@ -506,11 +506,10 @@ class Wallet extends EventEmitter {
         old__transactions // oldTransactions
       )
     }
-    self.saveToDisk(function (err) {
-      if (err) {
+    self.saveToDisk()
+      .catch((err) => {
         console.log('Error while saving during a deBoot(): ' + err)
-      }
-    })
+      })
   }
 
   logOutAndSaveThenLogBackIn (persistencePassword) {
@@ -651,7 +650,7 @@ class Wallet extends EventEmitter {
       }
     }
     if (didChangeAny) {
-      self.saveToDisk(function (err) {})
+      self.saveToDisk()
     }
   }
 
@@ -750,20 +749,18 @@ class Wallet extends EventEmitter {
           }
         }
         //
-        self.saveToDisk(
-          function (save__err) {
-            if (save__err) {
-              self.__trampolineFor_failedToBootWith_fnAndErr(fn, save__err)
-              return
-            }
-            if (shouldExitOnLoginError == false && login__err) {
+        self.saveToDisk()
+          .then(() => {
+            if (shouldExitOnLoginError == false) {
               // if we are attempting to re-boot the wallet, but login failed
               self.__trampolineFor_failedToBootWith_fnAndErr(fn, login__err) // i.e. leave the wallet in the 'errored'/'failed to boot' state even though we saved
             } else { // it's actually a success
               self._trampolineFor_successfullyBooted(fn)
             }
-          }
-        )
+          })
+          .catch((err) => {
+            self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
+          })
       }
     )
   }
@@ -1338,8 +1335,6 @@ class Wallet extends EventEmitter {
     self.context.monero_utils.async__send_funds(args)
   }
 
-  //
-  // Runtime - Imperatives - Manual refresh
   requestFromUI_manualRefresh () {
     const self = this
     if (typeof self.hostPollingController !== 'undefined' && self.hostPollingController !== null) {
@@ -1350,27 +1345,17 @@ class Wallet extends EventEmitter {
     }
   }
 
-  //
-  // Runtime - Imperatives - Private - Persistence
-  saveToDisk (fn) {
+  saveToDisk () {
     const self = this
     if (self.hasBeenTornDown) {
       console.warn('Wallet asked to saveToDisk after having been torn down.')
       console.warn((new Error()).stack)
       return
     }
-    wallet_persistence_utils.SaveToDisk(
-      self,
-      fn
-    )
+    return wallet_persistence_utils.SaveToDisk(self)
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Public - Deletion
-
-  Delete (
-    fn // (err?) -> Void
-  ) {
+  Delete (fn) {
     const self = this
     self.emit(self.EventName_willBeDeleted(), self._id)
     wallet_persistence_utils.DeleteFromDisk(
@@ -1386,28 +1371,20 @@ class Wallet extends EventEmitter {
     )
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Public - Changing password
-
-  ChangePasswordTo (
-    changeTo_persistencePassword,
-    fn
-  ) {
+  ChangePasswordTo (changeTo_persistencePassword, fn) {
     const self = this
     console.log('Wallet changing password.')
     const old_persistencePassword = self.persistencePassword
     self.persistencePassword = changeTo_persistencePassword
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to change password with error', err)
-          self.persistencePassword = old_persistencePassword // revert
-        } else {
-          console.log('Successfully changed password.')
-        }
+    self.saveToDisk()
+      .then(() => {
+        console.log('Successfully changed password.')
+      })
+      .catch((err) => {
+        console.error('Failed to change password with error', err)
+        self.persistencePassword = old_persistencePassword // revert
         fn(err)
-      }
-    )
+      })
   }
 
   /// /////////////////////////////////////////////////////////////////////////////
@@ -1440,22 +1417,20 @@ class Wallet extends EventEmitter {
         self[valueKey] = value
       }
     }
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to save new valuesByKey', err)
-        } else {
-          console.log('📝  Successfully saved ' + self.constructor.name + ' update ', JSON.stringify(valuesByKey))
-          if (didUpdate_walletLabel) {
-            self.emit(self.EventName_walletLabelChanged(), self.walletLabel)
-          }
-          if (didUpdate_swatch) {
-            self.emit(self.EventName_walletSwatchChanged(), self.swatch)
-          }
+    self.saveToDisk()
+      .then(() => {
+        console.log('📝  Successfully saved ' + self.constructor.name + ' update ', JSON.stringify(valuesByKey))
+        if (didUpdate_walletLabel) {
+          self.emit(self.EventName_walletLabelChanged(), self.walletLabel)
         }
+        if (didUpdate_swatch) {
+          self.emit(self.EventName_walletSwatchChanged(), self.swatch)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to save new valuesByKey', err)
         fn(err)
-      }
-    )
+      })
   }
 
   _manuallyInsertTransactionRecord (transaction) {
@@ -1469,23 +1444,18 @@ class Wallet extends EventEmitter {
     }
     self.transactions = newTransactions
     //
-    self.saveToDisk(
-      function (err) {
-        if (!err) {
-          // notify/yield
-          if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
-            self.options.didReceiveUpdateToAccountTransactions()
-          }
-          self.___didReceiveActualChangeTo_transactionsList(
-            1, // numberOfTransactionsAdded,
-            newTransactions,
-            oldTransactions
-          )
-        } else {
-          // try to save again?
+    self.saveToDisk()
+      .then(() => {
+        // notify/yield
+        if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
+          self.options.didReceiveUpdateToAccountTransactions()
         }
-      }
-    )
+        self.___didReceiveActualChangeTo_transactionsList(
+          1, // numberOfTransactionsAdded,
+          newTransactions,
+          oldTransactions
+        )
+      })
   }
 
   /// /////////////////////////////////////////////////////////////////////////////
@@ -1531,38 +1501,35 @@ class Wallet extends EventEmitter {
     self.blockchain_height = walletInfoObj.blockchainHeight
     self.dateThatLast_fetchedAccountInfo = walletInfoObj.dateLastFetched
     //
-    self.saveToDisk(
-      function (err) {
-        if (!err) {
-          // no matter what we'll notify that updates were received
-          if (typeof self.options.didReceiveUpdateToAccountInfo === 'function') {
-            self.options.didReceiveUpdateToAccountInfo()
-          }
-          //
-          // then we'll check if anything actually changed
-          let anyChanges = false
-          if (accountBalance_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
-            anyChanges = true
-            self.___didReceiveActualChangeTo_balance(
-              existing_total_received,
-              existing_total_sent,
-              existing_locked_balance
-            )
-          }
-          if (spentOutputs_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
-            anyChanges = true
-            self.___didReceiveActualChangeTo_spentOutputs(existing_spent_outputs)
-          }
-          if (heights_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
-            anyChanges = true
-            self.___didReceiveActualChangeTo_heights()
-          }
-          if (anyChanges == false) {
-            // console.log("💬  No actual changes to balance, heights, or spent outputs")
-          }
+    self.saveToDisk()
+      .then(() => {
+        // no matter what we'll notify that updates were received
+        if (typeof self.options.didReceiveUpdateToAccountInfo === 'function') {
+          self.options.didReceiveUpdateToAccountInfo()
         }
-      }
-    )
+        //
+        // then we'll check if anything actually changed
+        let anyChanges = false
+        if (accountBalance_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
+          anyChanges = true
+          self.___didReceiveActualChangeTo_balance(
+            existing_total_received,
+            existing_total_sent,
+            existing_locked_balance
+          )
+        }
+        if (spentOutputs_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
+          anyChanges = true
+          self.___didReceiveActualChangeTo_spentOutputs(existing_spent_outputs)
+        }
+        if (heights_didActuallyChange === true || wasFirstFetchOf_accountInfo === true) {
+          anyChanges = true
+          self.___didReceiveActualChangeTo_heights()
+        }
+        if (anyChanges == false) {
+          // console.log("💬  No actual changes to balance, heights, or spent outputs")
+        }
+      })
   }
 
   _WalletHostPollingController_didFetch_transactionHistory (account_scanned_height, account_scanned_block_height, account_scan_start_height, transaction_height, blockchain_height, transactions) {
@@ -1692,34 +1659,26 @@ class Wallet extends EventEmitter {
     }
     self.dateThatLast_fetchedAccountTransactions = new Date()
     //
-    self.saveToDisk(
-      function (err) {
-        if (!err) {
-          // notify/yield
-          //
-          // no matter what, we'll say we received update
-          if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
-            self.options.didReceiveUpdateToAccountTransactions()
-          }
-          //
-          // and here we'll check whether things actually changed
-          if (transactionsList_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
-            self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, existing_transactions)
-          } else {
-            // console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
-          }
-          if (heights_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
-            self.___didReceiveActualChangeTo_heights()
-          }
-        } else {
-          // try again?
+    self.saveToDisk()
+      .then(() => {
+        // notify/yield
+        //
+        // no matter what, we'll say we received update
+        if (typeof self.options.didReceiveUpdateToAccountTransactions === 'function') {
+          self.options.didReceiveUpdateToAccountTransactions()
         }
-      }
-    )
+        //
+        // and here we'll check whether things actually changed
+        if (transactionsList_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
+          self.___didReceiveActualChangeTo_transactionsList(numberOfTransactionsAdded, newTransactions, existing_transactions)
+        } else {
+          // console.log("💬  No info from txs fetch actually changed txs list so not emiting that txs changed")
+        }
+        if (heights_didActuallyChange === true || wasFirstFetchOf_transactions === true) {
+          self.___didReceiveActualChangeTo_heights()
+        }
+      })
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Delegation - Private - When actual data changes received from host
 
   ___didReceiveActualChangeTo_balance (
     old_total_received,

@@ -107,105 +107,103 @@ function HydrateInstance (walletInstance, plaintextDocument) {
 exports.HydrateInstance = HydrateInstance
 //
 //
-function SaveToDisk (
-  walletInstance,
-  fn
-) {
-  const self = walletInstance
-  // console.log("📝  Saving wallet to disk ", self.Description())
-  //
-  const persistencePassword = self.persistencePassword
-  if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
-    const errStr = '❌  Cannot save wallet to disk as persistencePassword was missing.'
-    const err = new Error(errStr)
-    fn(err)
-    return
-  }
-  //
-  const heights = {} // to construct:
-  if (self.account_scanned_tx_height !== null && typeof self.account_scanned_tx_height !== 'undefined') {
-    heights.account_scanned_tx_height = self.account_scanned_tx_height
-  }
-  if (self.account_scanned_height !== null && typeof self.account_scanned_height !== 'undefined') {
-    heights.account_scanned_height = self.account_scanned_height
-  }
-  if (self.account_scanned_block_height !== null && typeof self.account_scanned_block_height !== 'undefined') {
-    heights.account_scanned_block_height = self.account_scanned_block_height
-  }
-  if (self.account_scan_start_height !== null && typeof self.account_scan_start_height !== 'undefined') {
-    heights.account_scan_start_height = self.account_scan_start_height
-  }
-  if (self.transaction_height !== null && typeof self.transaction_height !== 'undefined') {
-    heights.transaction_height = self.transaction_height
-  }
-  if (self.blockchain_height !== null && typeof self.blockchain_height !== 'undefined') {
-    heights.blockchain_height = self.blockchain_height
-  }
-  //
-  const totals = {} // we store all of these as strings since the totals are JSBigInts
-  if (self.total_received !== null && typeof self.total_received !== 'undefined') {
-    totals.total_received = self.total_received.toString()
-  }
-  if (self.locked_balance !== null && typeof self.locked_balance !== 'undefined') {
-    totals.locked_balance = self.locked_balance.toString()
-  }
-  if (self.total_sent !== null && typeof self.total_sent !== 'undefined') {
-    totals.total_sent = self.total_sent.toString()
-  }
-  //
-  if (typeof self.dateWalletFirstSavedLocally === 'undefined') {
-    self.dateWalletFirstSavedLocally = new Date()
-  }
-  //
-  const transactions = self.transactions || []
-  transactions.forEach(
-    function (tx, i) {
-      tx.total_sent = tx.total_sent.toString()
-      tx.total_received = tx.total_received.toString()
+function SaveToDisk (walletInstance) {
+  return new Promise((resolve, reject) => {
+    const self = walletInstance
+    // console.log("📝  Saving wallet to disk ", self.Description())
+    //
+    const persistencePassword = self.persistencePassword
+    if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
+      const errStr = '❌  Cannot save wallet to disk as persistencePassword was missing.'
+      const err = new Error(errStr)
+      reject(err)
+      return
     }
-  )
-  //
-  const plaintextDocument =
-  {
-    walletLabel: self.walletLabel,
-    wallet_currency: self.wallet_currency,
-    swatch: self.swatch,
-    mnemonic_wordsetName: self.mnemonic_wordsetName,
     //
-    account_seed: self.account_seed,
-    private_keys: self.private_keys,
-    public_address: self.public_address,
-    public_keys: self.public_keys,
+    const heights = {} // to construct:
+    if (self.account_scanned_tx_height !== null && typeof self.account_scanned_tx_height !== 'undefined') {
+      heights.account_scanned_tx_height = self.account_scanned_tx_height
+    }
+    if (self.account_scanned_height !== null && typeof self.account_scanned_height !== 'undefined') {
+      heights.account_scanned_height = self.account_scanned_height
+    }
+    if (self.account_scanned_block_height !== null && typeof self.account_scanned_block_height !== 'undefined') {
+      heights.account_scanned_block_height = self.account_scanned_block_height
+    }
+    if (self.account_scan_start_height !== null && typeof self.account_scan_start_height !== 'undefined') {
+      heights.account_scan_start_height = self.account_scan_start_height
+    }
+    if (self.transaction_height !== null && typeof self.transaction_height !== 'undefined') {
+      heights.transaction_height = self.transaction_height
+    }
+    if (self.blockchain_height !== null && typeof self.blockchain_height !== 'undefined') {
+      heights.blockchain_height = self.blockchain_height
+    }
     //
-    isLoggedIn: self.isLoggedIn,
-    dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo ? self.dateThatLast_fetchedAccountInfo.toString() : undefined, // must convert to string else will get exception on encryption
-    dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions ? self.dateThatLast_fetchedAccountTransactions.toString() : undefined, // must convert to string else will get exception on encryption
-    dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally ? self.dateWalletFirstSavedLocally.toString() : undefined, // must convert to string else will get exception on encryption
+    const totals = {} // we store all of these as strings since the totals are JSBigInts
+    if (self.total_received !== null && typeof self.total_received !== 'undefined') {
+      totals.total_received = self.total_received.toString()
+    }
+    if (self.locked_balance !== null && typeof self.locked_balance !== 'undefined') {
+      totals.locked_balance = self.locked_balance.toString()
+    }
+    if (self.total_sent !== null && typeof self.total_sent !== 'undefined') {
+      totals.total_sent = self.total_sent.toString()
+    }
     //
-    isInViewOnlyMode: self.isInViewOnlyMode,
+    if (typeof self.dateWalletFirstSavedLocally === 'undefined') {
+      self.dateWalletFirstSavedLocally = new Date()
+    }
     //
-    transactions: transactions,
-    heights: heights,
-    totals: totals,
-    spent_outputs: self.spent_outputs || [] // maybe not fetched yet
-  }
-  if (typeof self.login__new_address !== 'undefined') {
-    plaintextDocument.login__new_address = self.login__new_address
-  }
-  if (typeof self.login__generated_locally !== 'undefined') {
-    plaintextDocument.login__generated_locally = self.login__generated_locally
-  }
-  if (typeof self.local_wasAGeneratedWallet !== 'undefined') { // saving this primarily so that we can keep calling the regen function with this value
-    plaintextDocument.local_wasAGeneratedWallet = self.local_wasAGeneratedWallet
-  }
-  persistable_object_utils.write(
-    self.context.persister,
-    self, // for reading and writing the _id
-    CollectionName,
-    plaintextDocument, // _id will get generated for this if self does not have an _id
-    persistencePassword,
-    fn
-  )
+    const transactions = self.transactions || []
+    transactions.forEach(
+      function (tx, i) {
+        tx.total_sent = tx.total_sent.toString()
+        tx.total_received = tx.total_received.toString()
+      }
+    )
+    //
+    const plaintextDocument =
+    {
+      walletLabel: self.walletLabel,
+      wallet_currency: self.wallet_currency,
+      swatch: self.swatch,
+      mnemonic_wordsetName: self.mnemonic_wordsetName,
+      //
+      account_seed: self.account_seed,
+      private_keys: self.private_keys,
+      public_address: self.public_address,
+      public_keys: self.public_keys,
+      //
+      isLoggedIn: self.isLoggedIn,
+      dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo ? self.dateThatLast_fetchedAccountInfo.toString() : undefined, // must convert to string else will get exception on encryption
+      dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions ? self.dateThatLast_fetchedAccountTransactions.toString() : undefined, // must convert to string else will get exception on encryption
+      dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally ? self.dateWalletFirstSavedLocally.toString() : undefined, // must convert to string else will get exception on encryption
+      //
+      isInViewOnlyMode: self.isInViewOnlyMode,
+      //
+      transactions: transactions,
+      heights: heights,
+      totals: totals,
+      spent_outputs: self.spent_outputs || [] // maybe not fetched yet
+    }
+    if (typeof self.login__new_address !== 'undefined') {
+      plaintextDocument.login__new_address = self.login__new_address
+    }
+    if (typeof self.login__generated_locally !== 'undefined') {
+      plaintextDocument.login__generated_locally = self.login__generated_locally
+    }
+    if (typeof self.local_wasAGeneratedWallet !== 'undefined') { // saving this primarily so that we can keep calling the regen function with this value
+      plaintextDocument.local_wasAGeneratedWallet = self.local_wasAGeneratedWallet
+    }
+    persistable_object_utils.write(self.context.persister, self, CollectionName, plaintextDocument, persistencePassword)
+      .then(() => {
+        resolve()
+      })
+      .catch((err) => {
+        reject(err)
+      })
+  })
 }
 exports.SaveToDisk = SaveToDisk
 

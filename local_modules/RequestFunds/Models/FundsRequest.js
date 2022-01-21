@@ -81,46 +81,38 @@ class FundsRequest extends EventEmitter {
 
   _setup_newDocument () {
     const self = this
-    {
-      self.from_fullname = self.options.from_fullname
-      self.to_walletHexColorString = self.options.to_walletHexColorString
-      self.to_address = self.options.to_address
-      self.amount = self.options.amount_StringOrNil
-      self.amountCcySymbol = self.options.amountCcySymbol
-      self.payment_id = self.options.payment_id
-      self.message = self.options.message
-      self.description = self.options.description
-      //
-      self.is_displaying_local_wallet = self.options.is_displaying_local_wallet // if it exists
-    }
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to save new fundsRequest', err)
-          self.__setup_didFailToBoot(err)
-          return
-        }
+    self.from_fullname = self.options.from_fullname
+    self.to_walletHexColorString = self.options.to_walletHexColorString
+    self.to_address = self.options.to_address
+    self.amount = self.options.amount_StringOrNil
+    self.amountCcySymbol = self.options.amountCcySymbol
+    self.payment_id = self.options.payment_id
+    self.message = self.options.message
+    self.description = self.options.description
+
+    self.is_displaying_local_wallet = self.options.is_displaying_local_wallet // if it exists
+    self.saveToDisk()
+      .then(() => {
         console.log('📝  Successfully saved new fundsRequest.')
         //
         self.__setup_didBoot()
-      }
-    )
+      })
+      .catch((err) => {
+        console.error('Failed to save new fundsRequest', err)
+        self.__setup_didFailToBoot(err)
+      })
   }
 
   _setup_fetchExistingDocumentWithId () {
     const self = this
-    persistable_object_utils.read(
-      self.context.persister,
-      fundsRequest_persistence_utils.CollectionName,
-      self, // because an _id was supposed to have been passed in
-      function (err, plaintextDocument) {
-        if (err) {
-          self.__setup_didFailToBoot(err)
-          return
-        }
+    persistable_object_utils.read(self.context.persister, fundsRequest_persistence_utils.CollectionName, self)
+      .then((plaintextDocument) => {
         __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
-      }
-    )
+      })
+      .catch((err) => {
+        self.__setup_didFailToBoot(err)
+      })
+
     function __proceedTo_hydrateByParsingPlaintextDocument (plaintextDocument) { // reconstituting state…
       fundsRequest_persistence_utils.HydrateInstance(
         self,
@@ -239,45 +231,30 @@ class FundsRequest extends EventEmitter {
     )
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Private - Persistence
-
-  saveToDisk (fn) {
+  saveToDisk () {
     const self = this
-    fundsRequest_persistence_utils.SaveToDisk(self, fn)
+    return fundsRequest_persistence_utils.SaveToDisk(self)
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Public - Deletion
-
-  Delete (
-    fn /* (err?) -> Void */
-  ) {
+  Delete (fn) {
     const self = this
     fundsRequest_persistence_utils.DeleteFromDisk(self, fn)
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Public - Changing password
-
-  ChangePasswordTo (
-    changeTo_persistencePassword,
-    fn
-  ) {
+  ChangePasswordTo (changeTo_persistencePassword, fn) {
     const self = this
     const old_persistencePassword = self.persistencePassword
     self.persistencePassword = changeTo_persistencePassword
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to change password with error', err)
-          self.persistencePassword = old_persistencePassword // revert
-        } else {
-          console.log('Successfully changed password.')
-        }
+    self.saveToDisk()
+      .then(() => {
+        console.log('Successfully changed password.')
+        fn()
+      })
+      .catch((err) => {
+        console.error('Failed to change password with error', err)
+        self.persistencePassword = old_persistencePassword // revert
         fn(err)
-      }
-    )
+      })
   }
 }
 module.exports = FundsRequest

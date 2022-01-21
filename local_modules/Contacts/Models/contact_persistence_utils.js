@@ -17,36 +17,35 @@ function HydrateInstance (instance, plaintextDocument) {
 }
 exports.HydrateInstance = HydrateInstance
 
-function SaveToDisk (instance, fn) {
-  const self = instance
-  // console.log("📝  Saving contact to disk ", self.Description())
-  //
-  fn = fn || function (err) { console.error(err); console.trace('No fn provided to SaveToDisk') }
-  //
-  const persistencePassword = self.persistencePassword
-  if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
-    const errStr = '❌  Cannot save contact to disk as persistencePassword was missing.'
-    const err = new Error(errStr)
-    fn(err)
-    return
-  }
-  //
-  const plaintextDocument =
-	{
-	  fullname: self.fullname,
-	  address: self.address,
-	  payment_id: self.payment_id,
-	  emoji: self.emoji,
-	  cached_OAResolved_XMR_address: self.cached_OAResolved_XMR_address
-	}
-  persistable_object_utils.write(
-    self.context.persister,
-    self, // for reading and writing the _id
-    CollectionName,
-    plaintextDocument, // _id will get generated for this if self does not have an _id
-    persistencePassword,
-    fn
-  )
+function SaveToDisk (instance) {
+  return new Promise((resolve, reject) => {
+    const self = instance
+    // console.log("📝  Saving contact to disk ", self.Description())
+
+    const persistencePassword = self.persistencePassword
+    if (persistencePassword === null || typeof persistencePassword === 'undefined' || persistencePassword === '') {
+      const errStr = '❌  Cannot save contact to disk as persistencePassword was missing.'
+      const err = new Error(errStr)
+      reject(err)
+      return
+    }
+
+    const plaintextDocument =
+    {
+      fullname: self.fullname,
+      address: self.address,
+      payment_id: self.payment_id,
+      emoji: self.emoji,
+      cached_OAResolved_XMR_address: self.cached_OAResolved_XMR_address
+    }
+    persistable_object_utils.write(self.context.persister, self, CollectionName, plaintextDocument, persistencePassword)
+      .then(() => {
+        resolve()
+      })
+      .catch((err) => {
+        reject(err)
+      })
+  })
 }
 exports.SaveToDisk = SaveToDisk
 

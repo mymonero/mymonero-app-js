@@ -82,41 +82,33 @@ class Contact extends EventEmitter {
 
   _setup_newDocument () {
     const self = this
-    {
-      self.fullname = self.options.fullname
-      self.address = self.options.address
-      self.payment_id = self.options.payment_id
-      self.emoji = self.options.emoji
-      self.cached_OAResolved_XMR_address = self.options.cached_OAResolved_XMR_address
-    }
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to save new contact', err)
-          self.__setup_didFailToBoot(err)
-          return
-        }
+    self.fullname = self.options.fullname
+    self.address = self.options.address
+    self.payment_id = self.options.payment_id
+    self.emoji = self.options.emoji
+    self.cached_OAResolved_XMR_address = self.options.cached_OAResolved_XMR_address
+
+    self.saveToDisk()
+      .then(() => {
         console.log('📝  Successfully saved new contact.')
-        //
         self.__setup_didBoot()
-      }
-    )
+      })
+      .catch((err) => {
+        console.error('Failed to save new contact', err)
+        self.__setup_didFailToBoot(err)
+      })
   }
 
   _setup_fetchExistingDocumentWithId () {
     const self = this
-    persistable_object_utils.read(
-      self.context.persister,
-      contact_persistence_utils.CollectionName,
-      self, // because an _id was supposed to have been passed in
-      function (err, plaintextDocument) {
-        if (err) {
-          self.__setup_didFailToBoot(err)
-          return
-        }
+    persistable_object_utils.read(self.context.persister, contact_persistence_utils.CollectionName, self)
+      .then((plaintextDocument) => {
         __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
-      }
-    )
+      })
+      .catch((err) => {
+        self.__setup_didFailToBoot(err)
+      })
+
     function __proceedTo_hydrateByParsingPlaintextDocument (plaintextDocument) { // reconstituting state…
       contact_persistence_utils.HydrateInstance(
         self,
@@ -331,17 +323,12 @@ class Contact extends EventEmitter {
     )
   }
 
-  saveToDisk (fn) {
+  saveToDisk () {
     const self = this
-    contact_persistence_utils.SaveToDisk(
-      self,
-      fn
-    )
+    return contact_persistence_utils.SaveToDisk(self)
   }
 
-  Delete (
-    fn // (err?) -> Void
-  ) {
+  Delete (fn) {
     const self = this
     self.emit(self.EventName_willBeDeleted(), self._id)
     contact_persistence_utils.DeleteFromDisk(
@@ -357,24 +344,19 @@ class Contact extends EventEmitter {
     )
   }
 
-  ChangePasswordTo (
-    changeTo_persistencePassword,
-    fn
-  ) {
+  ChangePasswordTo (changeTo_persistencePassword, fn) {
     const self = this
     const old_persistencePassword = self.persistencePassword
     self.persistencePassword = changeTo_persistencePassword
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to change password with error', err)
-          self.persistencePassword = old_persistencePassword // revert
-        } else {
-          console.log('Successfully changed password.')
-        }
+    self.saveToDisk()
+      .then(() => {
+        console.log('Successfully changed password.')
+      })
+      .catch((err) => {
+        console.error('Failed to change password with error', err)
+        self.persistencePassword = old_persistencePassword // revert
         fn(err)
-      }
-    )
+      })
   }
 
   Set_valuesByKey (
@@ -404,19 +386,18 @@ class Contact extends EventEmitter {
         self[valueKey] = value
       }
     }
-    self.saveToDisk(
-      function (err) {
-        if (err) {
-          console.error('Failed to save new valuesByKey', err)
-        } else {
-          // console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
-          self.regenerateQRCode(function () {
-            self._atRuntime_contactInfoUpdated()
-          })
-        }
+    self.saveToDisk()
+      .then(() => {
+        // console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
+        self.regenerateQRCode(function () {
+          self._atRuntime_contactInfoUpdated()
+        })
+        fn()
+      })
+      .catch((err) => {
+        console.error('Failed to save new valuesByKey', err)
         fn(err)
-      }
-    )
+      })
   }
 
   _atRuntime_contactInfoUpdated () {
