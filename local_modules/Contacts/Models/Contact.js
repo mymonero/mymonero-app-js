@@ -51,18 +51,14 @@ class Contact extends EventEmitter {
   __setup_didBoot () {
     const self = this
     self._startObserving_openAliasResolver()
-    self.regenerateQRCode(function () {
-      __proceedTo_didBoot()
-    })
-    function __proceedTo_didBoot () {
-      {
+    self.regenerateQRCode()
+      .then(() => {
         self.hasBooted = true
-      }
-      setTimeout(function () { // wait til next tick so that instantiator cannot have missed this
-        self.successfullyInitialized_cb(self)
-        self.emit(self.EventName_booted(), self)
+        setTimeout(function () { // wait til next tick so that instantiator cannot have missed this
+          self.successfullyInitialized_cb(self)
+          self.emit(self.EventName_booted(), self)
+        })
       })
-    }
   }
 
   __setup_didFailToBoot (err) {
@@ -293,34 +289,37 @@ class Contact extends EventEmitter {
     return self.uri_addressAsFirstPathComponent
   }
 
-  _new_qrCode_imgDataURIString (fn) {
-    const self = this
-    const uri = self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent() // NOTE: creating QR code with URI w/o "//" - wider scanning support in ecosystem
-    // ^- since we're not booted yet but we're only calling this when we know we have all the info
-    const options = { errorCorrectionLevel: 'Q' } // Q: quartile: 25%
-    QRCode.toDataURL(
-      uri,
-      options,
-      function (err, imgDataURIString) {
-        if (err) {
-          console.error('Error generating QR code:', err)
+  _new_qrCode_imgDataURIString () {
+    return new Promise((resolve, reject) => {
+      const self = this
+      const uri = self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent() // NOTE: creating QR code with URI w/o "//" - wider scanning support in ecosystem
+      // ^- since we're not booted yet but we're only calling this when we know we have all the info
+      const options = { errorCorrectionLevel: 'Q' } // Q: quartile: 25%
+      QRCode.toDataURL(
+        uri,
+        options,
+        function (err, imgDataURIString) {
+          if (err) {
+            console.error('Error generating QR code:', err)
+          }
+          err ? reject(err) : resolve(imgDataURIString)
         }
-        fn(err, imgDataURIString)
-      }
-    )
+      )
+    })
   }
 
-  regenerateQRCode (fn) {
-    const self = this
-    self._new_qrCode_imgDataURIString(
-      function (err, qrCode_imgDataURIString) {
-        if (err) {
-          throw err
-        }
-        self.qrCode_imgDataURIString = qrCode_imgDataURIString
-        fn()
-      }
-    )
+  regenerateQRCode () {
+    return new Promise((resolve, reject) => {
+      const self = this
+      self._new_qrCode_imgDataURIString()
+        .then((qrCode_imgDataURIString) => {
+          self.qrCode_imgDataURIString = qrCode_imgDataURIString
+          resolve()
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
   }
 
   saveToDisk () {
@@ -389,9 +388,10 @@ class Contact extends EventEmitter {
     self.saveToDisk()
       .then(() => {
         // console.log("📝  Successfully saved Contact update ", JSON.stringify(valuesByKey))
-        self.regenerateQRCode(function () {
-          self._atRuntime_contactInfoUpdated()
-        })
+        self.regenerateQRCode()
+          .then(() => {
+            self._atRuntime_contactInfoUpdated()
+          })
         fn()
       })
       .catch((err) => {
