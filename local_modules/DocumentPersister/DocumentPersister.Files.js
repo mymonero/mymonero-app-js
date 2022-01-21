@@ -42,46 +42,38 @@ class DocumentPersister {
 		})
 	}
 
-	IdsOfAllDocuments(collectionName, fn) {
-		const self = this
-		self.___read_collection_documentFileDescriptions(
-			collectionName,
-			function(err, documentFileDescriptions)
-			{
-				if (err) {
-					fn(err)
-					return
-				}
-				async.map(documentFileDescriptions, function(documentFileDescription, cb)
+	IdsOfAllDocuments(collectionName) {
+		return new Promise ( (res, rej) => {
+			const self = this
+		self.___read_collection_documentFileDescriptions(collectionName)
+		.then( (documentFileDescriptions) => {
+			async.map(documentFileDescriptions, function(documentFileDescription, cb)
 				{
 						cb(null, documentFileDescription._id)
 				})
 				.then ( (results) => {
-					fn(null, results)
+					res(results)
 				})
 				.catch( (err) => {
-					fn(err)
+					rej(err)
 				})
-			}
-		)
+		})
+		.catch ((err) => {
+			rej(err)
+		})
+		})
+		
 	}
 
 	AllDocuments(collectionName, fn) {
 		const self = this
-		self.___read_collection_documentFileDescriptions(
-			collectionName,
-			function(err, documentFileDescriptions)
-			{
-				if (err) {
-					fn(err)
-					return
-				}
-				self.___read_contentStringsWithDocumentFileDescriptions(
-					documentFileDescriptions,
-					fn
-				)
-			}
-		)
+		self.___read_collection_documentFileDescriptions(collectionName)
+		.then( (documentFileDescriptions) => {
+			self.___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions, fn)
+		})
+		.catch((err) => {
+			fn(err)
+		})
 	}
 
 	InsertDocument(collectionName, id, documentToInsert) {
@@ -97,43 +89,49 @@ class DocumentPersister {
 		return self.___write_fileDescriptionDocumentContentString(fileDescription, update)
 	}
 
-	RemoveDocumentsWithIds(collectionName, ids, fn) {
-		const self = this
-		var numRemoved = 0
-		async.each(
-			ids,
-			function(id, cb)
-			{
-				const fileDescription = self._new_fileDescriptionWithComponents(
-					collectionName,
-					id
-				)
-				const fileKey = self.____fileKeyFromFileDescription(fileDescription)
-				const filename = self.____filenameWithFileKey(fileKey)
-				const filepath = self.pathTo_dataSubdir+"/"+filename
-				self.fs.unlink(filepath, function(err)
+	RemoveDocumentsWithIds(collectionName, ids) {
+		return new Promise ((res, rej) => {
+			const self = this
+			var numRemoved = 0
+			async.each(
+				ids,
+				function(id, cb)
 				{
-					if (!err) {
-						numRemoved += 1
-					}
-					cb(err)
+					const fileDescription = self._new_fileDescriptionWithComponents(
+						collectionName,
+						id
+					)
+					const fileKey = self.____fileKeyFromFileDescription(fileDescription)
+					const filename = self.____filenameWithFileKey(fileKey)
+					const filepath = self.pathTo_dataSubdir+"/"+filename
+					self.fs.unlink(filepath, function(err)
+					{
+						if (!err) {
+							numRemoved += 1
+						}
+						cb(err)
+					})
 				})
-			},
-			function(err)
-			{
-				fn(err, numRemoved)
-			}
-		)
+				.then( () => {
+					res(numRemoved)
+				})
+				.catch( () => {
+					rej(err)
+				})
+			})
 	}
 
 	RemoveAllDocuments(collectionName, fn) {
 		const self = this
-		self.IdsOfAllDocuments(collectionName, function(err, ids) {
-			if (err) {
-				fn(err)
-				return
-			}
-			self.RemoveAllDocuments(collectionName, ids, fn)
+		self.IdsOfAllDocuments(collectionName)
+		.then( (ids) => {
+			self.RemoveDocumentsWithIds(collectionName, ids)
+			.then( (numRemoved) => {
+				fn
+			})
+		})
+		.catch ( (err) => {
+			fn(err)
 		})
 	}
 
@@ -242,9 +240,11 @@ class DocumentPersister {
 		})
 	}
 
-	___read_collection_documentFileDescriptions(collectionName, fn) {
-		const self = this
-		self.fs.readdir(self.pathTo_dataSubdir, function(err, files)
+	___read_collection_documentFileDescriptions(collectionName) {
+		
+		return new Promise( (res, rej) => {
+			const self = this
+			self.fs.readdir(self.pathTo_dataSubdir, function(err, files)
 		{ // filtering to what should be JSON doc files
 			const fileDescriptions = []
 			const extSuffix = self.____filenameExtension()
@@ -286,12 +286,14 @@ class DocumentPersister {
 			.then( (results) => {
 				// but we're actually going to disregard `results` here
 				// cause we filtered out directories above
-				fn(null, fileDescriptions)
+				res(fileDescriptions)
 			})
 			.catch( (err) => {
-				fn(err)
+				rej(err)
 			})
 		})
+		})
+		
 	}
 
 }

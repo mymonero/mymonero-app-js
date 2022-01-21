@@ -50,32 +50,21 @@ function SaveToDisk(instance, fn) {
 }
 exports.SaveToDisk = SaveToDisk
 
-function DeleteFromDisk(
-	instance,
-	fn
-)
-{
+function DeleteFromDisk(instance, fn) {
 	const self = instance
 	console.log("📝  Deleting contact ", self.Description())
-	self.context.persister.RemoveDocumentsWithIds(
-		CollectionName,
-		[ self._id ],
-		function(
-			err,
-			numRemoved
-		) {
-			if (err) {
-				console.error("Error while removing contact:", err)
-				fn(err)
-				return
-			}
-			if (numRemoved === 0) {
-				fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
-				return // bail
-			}
-			console.log("🗑  Deleted saved contact with _id " + self._id + ".")
-			fn()
+	self.context.persister.RemoveDocumentsWithIds(CollectionName, [ self._id ])
+	.then( (numRemoved) => {
+		if (numRemoved === 0) {
+			fn(new Error("❌  Number of documents removed by _id'd remove was 0"))
+			return // bail
 		}
-	)
+		console.log("🗑  Deleted saved contact with _id " + self._id + ".")
+		fn()
+	})
+	.catch((err) => {
+		console.error("Error while removing contact:", err)
+		fn(err)
+	})
 }
 exports.DeleteFromDisk = DeleteFromDisk

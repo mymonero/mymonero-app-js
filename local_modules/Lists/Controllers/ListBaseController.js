@@ -360,23 +360,18 @@ class ListBaseController extends EventEmitter
 	//
 	// Runtime - Accessors - Private - Lookups - Documents & instances
 	//
-	_new_idsOfPersistedRecords(
-		fn // (err?, ids?) -> Void
-	) {
+	_new_idsOfPersistedRecords(fn) {
 		const self = this
-		self.context.persister.IdsOfAllDocuments(
-			self.override_CollectionName(),
-			function(err, ids)
-			{
-				if (err) {
-					console.error(err)
+		self.context.persister.IdsOfAllDocuments(self.override_CollectionName())
+		.then((ids) => {
+			fn(null, ids)
+		})
+		.catch((err) => {
+			console.error(err)
 					fn(err)
-					return
-				}
-				fn(null, ids)
-			}
-		)
+		})
 	}
+
 	__recordInstanceAndIndexWithId(_id)
 	{
 		const self = this
