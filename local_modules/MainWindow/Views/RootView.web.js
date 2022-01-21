@@ -47,7 +47,7 @@ class RootView extends View {
     const self = this
     const platformSpecific_RootTabBarAndContentView = self.context.platformSpecific_RootTabBarAndContentView // slightly messy way of doing this, but it works
     if (!platformSpecific_RootTabBarAndContentView) {
-      throw `${self.constructor.name} requires a self.context.platformSpecific_RootTabBarAndContentView`
+      throw Error(`${self.constructor.name} requires a self.context.platformSpecific_RootTabBarAndContentView`)
     }
     const tabBarViewAndContentView = new platformSpecific_RootTabBarAndContentView({}, self.context)
     self.tabBarViewAndContentView = tabBarViewAndContentView

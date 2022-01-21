@@ -230,7 +230,7 @@ class Contact extends EventEmitter {
     const self = this
     const address = self.address
     if (!address || typeof address === 'undefined') {
-      throw 'HasIntegratedAddress() called but address nil.'
+      throw Error('HasIntegratedAddress() called but address nil.')
     }
     if (self.HasOpenAliasAddress() === true) {
       return false
@@ -279,7 +279,7 @@ class Contact extends EventEmitter {
   Lazy_URI__addressAsFirstPathComponent () {
     const self = this
     if (self.hasBooted !== true) {
-      throw 'Lazy_URI__addressAsFirstPathComponent() called while FundsRequest instance not booted'
+      throw Error('Lazy_URI__addressAsFirstPathComponent() called while FundsRequest instance not booted')
     }
     return self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
   }

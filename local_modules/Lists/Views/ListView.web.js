@@ -78,10 +78,6 @@ class ListView extends View {
     }
   }
 
-  //
-  //
-  // Lifecycle - Teardown
-  //
   TearDown () {
     const self = this
     super.TearDown()
@@ -111,19 +107,11 @@ class ListView extends View {
     }
   }
 
-  //
-  //
-  // Runtime - Accessors - Navigation
-  //
   Navigation_Title () {
     const self = this
     throw Error('Override Navigation_Title in ' + self.constructor.name)
   }
 
-  //
-  //
-  // Runtime - Imperatives - View Configuration
-  //
   reloadData (params) {
     params = params || {}
     const isFrom_EventName_listUpdated = params.isFrom_EventName_listUpdated === true
@@ -209,10 +197,6 @@ class ListView extends View {
     }
   }
 
-  //
-  //
-  // Runtime - Internal - Imperatives - Navigation/presentation
-  //
   overridable_pushesDetailsViewOnCellTap () {
     return false // default behavior no, but you can override and return true to get this
   }

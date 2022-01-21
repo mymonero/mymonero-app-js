@@ -3,10 +3,6 @@
 const View = require('../../Views/View.web')
 
 class ListCellView extends View {
-  //
-  //
-  // Init
-  //
   constructor (options, context) {
     super(options, context)
     //
@@ -39,10 +35,6 @@ class ListCellView extends View {
     return self.layer
   }
 
-  //
-  //
-  // Teardown/Recycling
-  //
   TearDown () {
     super.TearDown()
     //
@@ -63,10 +55,6 @@ class ListCellView extends View {
     self.record = null
   }
 
-  //
-  //
-  // Interface - Runtime - Imperatives - State/UI Configuration
-  //
   ConfigureWithRecord (record, isAtEnd) {
     const self = this
     if (typeof self.record !== 'undefined') {
@@ -78,10 +66,6 @@ class ListCellView extends View {
     self.overridable_startObserving_record()
   }
 
-  //
-  //
-  // Internal - Runtime - Imperatives - State/UI Configuration
-  //
   configureUI () {
     const self = this
     self.overridable_configureUIWithRecord()
@@ -91,10 +75,6 @@ class ListCellView extends View {
     const self = this
   }
 
-  //
-  //
-  // Overridable - Runtime - Imperatives - Observation
-  //
   overridable_startObserving_record () { // If you do override these, please make sure to call them on super in case of future modification
     const self = this
     if (typeof self.record === 'undefined' || self.record === null) {
@@ -109,10 +89,6 @@ class ListCellView extends View {
     }
   }
 
-  //
-  //
-  // Internal - Runtime - Delegation - Interactions
-  //
   __cellTapped () {
     const self = this
     self.overridable_cellTapped(

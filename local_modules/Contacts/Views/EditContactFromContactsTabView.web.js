@@ -95,18 +95,10 @@ class EditContactFromContactsTabView extends ContactFormView {
     self.form_containerLayer.appendChild(layer)
   }
 
-  //
-  //
-  // Runtime - Accessors - Navigation
-  //
   Navigation_Title () {
     return 'Edit Contact'
   }
 
-  //
-  //
-  // Runtime - Imperatives - UI
-  //
   dismissView () {
     const self = this
     const modalParentView = self.navigationController.modalParentView
@@ -115,10 +107,6 @@ class EditContactFromContactsTabView extends ContactFormView {
     })
   }
 
-  //
-  //
-  // Runtime - Imperatives - Contact operation
-  //
   _tryToCreateOrSaveContact () {
     const self = this
     //
@@ -267,10 +255,6 @@ class EditContactFromContactsTabView extends ContactFormView {
     }
   }
 
-  //
-  //
-  // Runtime - Delegation - Nav bar btn events
-  //
   _saveButtonView_pressed () {
     super._saveButtonView_pressed()
     //
@@ -278,19 +262,11 @@ class EditContactFromContactsTabView extends ContactFormView {
     self._tryToCreateOrSaveContact()
   }
 
-  //
-  //
-  // Runtime - Delegation - Deletion -> navigation handling
-  //
   _thisRecordWasDeleted () {
     const self = this
     self.dismissView()
   }
 
-  //
-  //
-  // Runtime - Delegation - Yield
-  //
   _didSaveContact () {
     const self = this
     self.dismissView()

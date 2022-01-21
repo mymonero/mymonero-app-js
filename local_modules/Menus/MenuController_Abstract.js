@@ -17,9 +17,6 @@ class MenuController extends EventEmitter {
     const self = this
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Accessors - Event Names
-
   EventName_menuItemSelected_ChangePassword () {
     return 'EventName_menuItemSelected_ChangePassword'
   }
@@ -27,9 +24,6 @@ class MenuController extends EventEmitter {
   EventName_menuItemSelected_Preferences () {
     return 'EventName_menuItemSelected_Preferences'
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives
 
   SetItemNamedEnabled (itemName, isEnabled) {
     isEnabled = typeof isEnabled === 'string' ? isEnabled == 'true' : isEnabled // to support IPC on windows… apparently cannot pass booleans
@@ -39,10 +33,7 @@ class MenuController extends EventEmitter {
 
   override_setItemNamedEnabled (itemName, isEnabled) {
     const self = this
-    throw `You must implement setItemNamedEnabled in ${self.constructor.name}`
+    throw Error(`You must implement setItemNamedEnabled in ${self.constructor.name}`)
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Delegation
 }
 module.exports = MenuController

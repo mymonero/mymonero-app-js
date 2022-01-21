@@ -69,7 +69,7 @@ function New_MnemonicConfirmation_SelectedWordsView (mnemonicString, context, di
         this_wordView_layer.href = '' // no longer clickable
         const wordUUID = this_wordView_layer.__component_mnemonicWordUUID
         if (!wordUUID || typeof wordUUID === 'undefined') {
-          throw 'No word id associated with clicked layer'
+          throw Error('No word id associated with clicked layer')
         }
         view.Component_DeselectWordWithUUID(wordUUID)
         return false
@@ -84,8 +84,8 @@ function New_MnemonicConfirmation_SelectedWordsView (mnemonicString, context, di
     {
       const indexOf_wordUUID = ordered_selectedWordUUIDs.indexOf(wordUUID)
       if (indexOf_wordUUID === -1) {
-        throw 'WordUUID not found in list of selected words.'
-      }
+        throw Error('WordUUID not found in list of selected words.'
+              )      }
       ordered_selectedWordUUIDs.splice(indexOf_wordUUID, 1) // remove
     }
     {
@@ -201,11 +201,11 @@ function New_MnemonicConfirmation_SelectableWordsView (
           this_wordView_layer.href = '' // no longer clickable
           const word = this_wordView_layer.__component_mnemonicWord
           if (!word || typeof word === 'undefined') {
-            throw 'No word associated with clicked layer'
+            throw Error('No word associated with clicked layer')
           }
           const wordUUID = this_wordView_layer.__component_mnemonicWordUUID
           if (!wordUUID || typeof wordUUID === 'undefined') {
-            throw 'No word ID associated with clicked layer'
+            throw Error('No word ID associated with clicked layer')
           }
           mnemonicConfirmation_selectedWordsView.Component_SelectWordWithUUID(word, wordUUID)
           //
@@ -224,7 +224,7 @@ function New_MnemonicConfirmation_SelectableWordsView (
       function (wordUUID, i) {
         const word = wordsByWordUUID[wordUUID]
         if (typeof word === 'undefined' || !word) {
-          throw 'Word not found for UUID'
+          throw Error('Word not found for UUID')
           // return
         }
         words.push(word)

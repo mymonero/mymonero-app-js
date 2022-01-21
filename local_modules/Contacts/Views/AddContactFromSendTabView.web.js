@@ -10,7 +10,7 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView {
     {
       self.mockedTransaction = self.options.mockedTransaction
       if (!self.mockedTransaction || typeof self.mockedTransaction === 'undefined') {
-        throw self.constructor.name + ' requires a self.mockedTransaction'
+        throw Error(self.constructor.name + ' requires a self.mockedTransaction')
       }
     }
     {
@@ -127,24 +127,16 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView {
     super.setup_validationMessageLayer()
     const layer = self.validationMessageLayer
     if (!layer) {
-      throw '!layer'
+      throw Error('!layer')
     }
     layer.style.width = 'calc(100% - 12px)'
     layer.style.marginLeft = '6px'
   }
 
-  //
-  //
-  // Runtime - Accessors - Navigation
-  //
   Navigation_Title () {
     return 'Save Contact' // user knows it as Save, here
   }
 
-  //
-  //
-  // Runtime - Accessors - Overrides
-  //
   _overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues () {
     return true // very special case - cause we just / already resolved this info
   }
@@ -161,16 +153,12 @@ class AddContactFromSendTabView extends AddContactFromOtherTabView {
     return view
   }
 
-  //
-  //
-  // Runtime - Delegation - Overrides
-  //
   _willSaveContactWithDescription (contactDescription) {
     const self = this
     if (self.is_enteredAddressValue_OAAddress) {
       const resolvedAddress = self.options.resolvedAddress_orNull
       if (!resolvedAddress) {
-        throw 'resolvedAddress was nil despite is_enteredAddressValue_OAAddress'
+        throw Error('resolvedAddress was nil despite is_enteredAddressValue_OAAddress')
       }
       contactDescription.cached_OAResolved_XMR_address = resolvedAddress
       // no need to make a payment ID because paymentID_valueToUse comes from the tx pid which comes from the OA record value, if any

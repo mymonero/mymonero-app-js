@@ -15,7 +15,7 @@ class HostedMoneroAPIClient {
     //
     self.request = options.request_conformant_module
     if (!self.request) {
-      throw `${self.constructor.name} requires an options.request_conformant_module such as require('request' / 'xhr')`
+      throw Error(`${self.constructor.name} requires an options.request_conformant_module such as require('request' / 'xhr')`)
     }
     //
     self.setup()
@@ -26,11 +26,11 @@ class HostedMoneroAPIClient {
     { // options
       self.appUserAgent_product = self.options.appUserAgent_product
       if (!self.appUserAgent_product) {
-        throw `${self.constructor.name} requires options.appUserAgent_product`
+        throw Error(`${self.constructor.name} requires options.appUserAgent_product`)
       }
       self.appUserAgent_version = self.options.appUserAgent_version
       if (!self.appUserAgent_version) {
-        throw `${self.constructor.name} requires options.appUserAgent_version`
+        throw Error(`${self.constructor.name} requires options.appUserAgent_version`)
       }
     }
   }
@@ -41,7 +41,7 @@ class HostedMoneroAPIClient {
     const self = this
     const settingsController = self.context.settingsController
     if (settingsController.hasBooted != true) {
-      throw 'Expected SettingsController to have been booted'
+      throw Error('Expected SettingsController to have been booted')
     }
     const specificAPIAddressURLAuthority = self.context.settingsController.specificAPIAddressURLAuthority || ''
     if (specificAPIAddressURLAuthority != '') {
@@ -318,7 +318,7 @@ class HostedMoneroAPIClient {
         fn(null, {})
         return
       } else {
-        throw `[${self.constructor.name}/SubmitSerializedSignedTransaction]: context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess was true despite isDebug not being true. Set back to false for production build.`
+        throw Error(`[${self.constructor.name}/SubmitSerializedSignedTransaction]: context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess was true despite isDebug not being true. Set back to false for production build.`)
       }
     }
     net_service_utils.AddUserAgentParamters(

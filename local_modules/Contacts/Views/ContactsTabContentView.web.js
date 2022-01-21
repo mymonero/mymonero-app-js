@@ -3,10 +3,6 @@
 const StackAndModalNavigationView = require('../../StackNavigation/Views/StackAndModalNavigationView.web')
 
 class ContactsTabContentView extends StackAndModalNavigationView {
-  constructor (options, context) {
-    super(options, context)
-  }
-
   setup () {
     super.setup() // we must call on super
     const self = this
@@ -23,10 +19,6 @@ class ContactsTabContentView extends StackAndModalNavigationView {
     )
   }
 
-  //
-  //
-  // Runtime - Accessors - Implementation of TabBarItem protocol - custom tab bar item styling
-  //
   TabBarItem_layer_customStyle () {
     return {}
   }

@@ -5,7 +5,7 @@ const emoji_web = require('../Emoji/emoji_web')
 
 function New_contactPickerLayer (context, placeholderText, contactsListController, didPickContact_fn, didClearPickedContact_fn, didFinishTypingInInput_fn) { // NOTE: You must call Component_TearDown when you're done with this component
   if (!contactsListController) {
-    throw 'New_contactPickerLayer requires a contactsListController'
+    throw Error('New_contactPickerLayer requires a contactsListController')
   }
   //
   const containerLayer = document.createElement('div')

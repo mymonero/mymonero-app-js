@@ -7,20 +7,18 @@ class InfoDisclosingView extends View {
   constructor (options, context) {
     super(options, context)
     const self = this
-    {
-      self.padding_left = typeof options.padding_left === 'undefined' ? 18 : options.padding_left
-      self.padding_right = typeof options.padding_right === 'undefined' ? 42 : options.padding_right
-      self.padding_v = typeof options.padding_v === 'undefined' ? 16 : options.padding_v
-      self.shouldToggle_fn = options.shouldToggle_fn || function (to_isDisclosed, async_reply_fn) { async_reply_fn(true) }
-      //
-      self.previewView = options.previewView
-      if (!self.previewView) {
-        throw `${self.constructor.name} requires a self.previewView`
-      }
-      self.disclosedView = options.disclosedView
-      if (!self.disclosedView) {
-        throw `${self.constructor.name} requires a self.disclosedView`
-      }
+    self.padding_left = typeof options.padding_left === 'undefined' ? 18 : options.padding_left
+    self.padding_right = typeof options.padding_right === 'undefined' ? 42 : options.padding_right
+    self.padding_v = typeof options.padding_v === 'undefined' ? 16 : options.padding_v
+    self.shouldToggle_fn = options.shouldToggle_fn || function (to_isDisclosed, async_reply_fn) { async_reply_fn(true) }
+    //
+    self.previewView = options.previewView
+    if (!self.previewView) {
+      throw Error(`${self.constructor.name} requires a self.previewView`)
+    }
+    self.disclosedView = options.disclosedView
+    if (!self.disclosedView) {
+      throw Error(`${self.constructor.name} requires a self.disclosedView`)
     }
     self.setup()
   }

@@ -87,10 +87,6 @@ class ContactsListView extends ListView {
     }
   }
 
-  //
-  //
-  // Runtime - Accessors - Navigation
-  //
   Navigation_Title () {
     return 'Contacts'
   }
@@ -121,10 +117,6 @@ class ContactsListView extends ListView {
     return view
   }
 
-  //
-  //
-  // Runtime - Delegation - UI building
-  //
   overridable_willBuildUIWithRecords (records) {
     super.overridable_willBuildUIWithRecords(records)
     //

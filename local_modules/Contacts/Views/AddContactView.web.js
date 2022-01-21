@@ -9,10 +9,6 @@ const jsQR = require('jsqr')
 const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
 
 class AddContactView extends ContactFormView {
-  constructor (options, context) {
-    super(options, context) // call super before `this`
-  }
-
   setup () {
     const self = this
     super.setup()
@@ -71,18 +67,10 @@ class AddContactView extends ContactFormView {
     self.actionButtonsContainerView.addSubview(buttonView)
   }
 
-  //
-  //
-  // Runtime - Accessors - Navigation
-  //
   Navigation_Title () {
     return 'New Contact'
   }
 
-  //
-  //
-  // Runtime - Accessors - Overridable
-  //
   _overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues () {
     return false
   }
@@ -91,10 +79,6 @@ class AddContactView extends ContactFormView {
     return true
   }
 
-  //
-  //
-  // Runtime - Imperatives - Contact operation
-  //
   _tryToCreateOrSaveContact () {
     const self = this
     //

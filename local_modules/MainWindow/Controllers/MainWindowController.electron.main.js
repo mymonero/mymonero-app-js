@@ -93,9 +93,6 @@ class MainWindowController {
     return window
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Window
-
   create_window_whenAppReady () {
     const self = this
     const app = self.context.app

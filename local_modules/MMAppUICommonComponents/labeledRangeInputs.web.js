@@ -121,10 +121,10 @@ function New_fieldValue_labeledRangeInputView (params, context) {
     const float_max = parseFloat(max)
     // ^- going to assuming float is a good medium for numerical comparison - supposing JS doesn't screw it up
     if (isNaN(float_inputValue)) {
-      throw 'Range input value cannot be parsed as float for comparison'
+      throw Error('Range input value cannot be parsed as float for comparison')
     }
     if (isNaN(float_max)) {
-      throw 'Range input max cannot be parsed as float for comparison'
+      throw Error('Range input max cannot be parsed as float for comparison')
     }
     if (float_inputValue === float_max) {
       if (isMaxInfinity) {

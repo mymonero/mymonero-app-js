@@ -47,15 +47,9 @@ class MenuController extends MenuController_Abstract {
     )
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Accessors - IPC Method names
-
   IPCMethod__MenuController_SetItemNamedEnabled () {
     return 'IPCMethod__MenuController_SetItemNamedEnabled'
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Accessors - Menu item names
 
   MenuItemName_ChangePassword () {
     return 'Change Password'
@@ -64,9 +58,6 @@ class MenuController extends MenuController_Abstract {
   MenuItemName_Preferences () {
     return 'Preferences'
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Accessors - Factories
 
   _new_menuSpecs () {
     const self = this
@@ -319,9 +310,6 @@ class MenuController extends MenuController_Abstract {
     return menuSpecs
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Accessors - Searches
-
   _firstMenuItemNamed (itemName) {
     const self = this
     const menuItems = self.menu.items
@@ -345,19 +333,14 @@ class MenuController extends MenuController_Abstract {
     return null
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Override/implementations
-
   override_setItemNamedEnabled (itemName, isEnabled) {
     const self = this
     const menuItem = self._firstMenuItemNamed(itemName)
     if (menuItem === null) {
-      throw 'Menu item not found'
+      throw Error('Menu item not found')
     }
     menuItem.enabled = isEnabled
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Delegation
 }
 module.exports = MenuController

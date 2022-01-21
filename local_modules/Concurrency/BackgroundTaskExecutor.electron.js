@@ -5,10 +5,6 @@ const child_process = require('child_process')
 const fork = child_process.fork
 
 class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface {
-  constructor (options, context) {
-    super(options, context)
-  }
-
   setup () {
     const self = this
     { // before calling on super - which will call setup_worker

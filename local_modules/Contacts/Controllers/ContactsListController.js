@@ -5,10 +5,6 @@ const Contact = require('../Models/Contact')
 const contact_persistence_utils = require('../Models/contact_persistence_utils')
 
 class ContactsListController extends ListBaseController {
-  constructor (options, context) {
-    super(options, context)
-  }
-
   //
   //
   // Overrides

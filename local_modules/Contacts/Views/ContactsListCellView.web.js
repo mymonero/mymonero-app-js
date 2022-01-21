@@ -6,10 +6,6 @@ const commonComponents_tables = require('../../MMAppUICommonComponents/tables.we
 const emoji_web = require('../../Emoji/emoji_web')
 
 class ContactsListCellView extends ListCellView {
-  constructor (options, context) {
-    super(options, context)
-  }
-
   setup_views () {
     const self = this
     super.setup_views()

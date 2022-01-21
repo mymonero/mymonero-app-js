@@ -7,18 +7,10 @@ class AddContactFromContactsTabView extends AddContactView {
     super.setup()
   }
 
-  //
-  //
-  // Runtime - Accessors - Navigation
-  //
   Navigation_Title () {
     return 'New Contact'
   }
 
-  //
-  //
-  // Runtime - Delegation - Overrides
-  //
   _didSaveNewContact (contact) {
     const self = this
     {

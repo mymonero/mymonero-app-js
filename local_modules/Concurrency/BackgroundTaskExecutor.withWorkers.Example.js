@@ -3,10 +3,6 @@
 const BackgroundTaskExecutor_Interface = require('./BackgroundTaskExecutor_Interface')
 
 class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface {
-  constructor (options, context) {
-    super(options, context)
-  }
-
   setup_worker () {
     const self = this
     throw Error(`You must override and implement ${self.constructor.name}/setup_worker and set self.worker`)

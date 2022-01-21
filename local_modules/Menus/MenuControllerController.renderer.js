@@ -3,9 +3,6 @@
 const { ipcRenderer } = require('electron')
 
 class MenuControllerController {	// Silly as it sounds, this class exists to integrate the main process menuController with event emissions from the renderer side so that integratees can remain able to operate independently
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Lifecycle - Initialization
-
   constructor (options, context) {
     const self = this
     self.options = options
@@ -61,10 +58,6 @@ class MenuControllerController {	// Silly as it sounds, this class exists to int
     )
   }
 
-  //
-  //
-  // Runtime - Imperatives
-  //
   enableMenuItem_ChangePassword () {
     const self = this
     ipcRenderer.send(

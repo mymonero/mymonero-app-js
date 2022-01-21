@@ -9,10 +9,6 @@ const ExchangeTabContentView = require('../../Exchange/Views/ExchangeTabContentV
 const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
 
 class RootTabBarAndContentView extends TabBarAndContentView {
-  constructor (options, context) {
-    super(options, context)
-  }
-
   setup () { // ^ called automatically by super, so
     const self = this
     super.setup() // must call this
