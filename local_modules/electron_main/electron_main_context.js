@@ -10,9 +10,9 @@ const TXTResolvingController = require(__dirname + '/../OpenAlias/TXTResolvingCo
 
 function NewHydratedContext (app) {
   const initialContext =
-	{
-	  app: app
-	}
+  {
+    app: app
+  }
 
   const context = initialContext != null ? initialContext : {}
 

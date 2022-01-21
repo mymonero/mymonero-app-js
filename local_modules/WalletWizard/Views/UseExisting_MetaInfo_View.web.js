@@ -274,7 +274,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo {
         } else if (self.mode_loginWith == Modes_LoginWith.AddrAndPrivKeys) {
           return 'Secret Mnemonic'
         } else {
-          throw 'unrecognized self.mode_loginWith'
+          throw Error('unrecognized self.mode_loginWith')
           // return undefined
         }
       }
@@ -392,7 +392,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo {
         return false
       }
     } else {
-      throw 'unrecognized self.mode_loginWith'
+      throw Error('unrecognized self.mode_loginWith')
       // return false
     }
 
@@ -447,7 +447,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo {
     } else if (self.mode_loginWith == Modes_LoginWith.AddrAndPrivKeys) {
       otherMode = Modes_LoginWith.MnemonicSeed
     } else {
-      throw 'unrecognized self.mode_loginWith'
+      throw Error('unrecognized self.mode_loginWith')
     }
     self.mode_loginWith = otherMode
     //
@@ -634,7 +634,7 @@ class UseExisting_MetaInfo_View extends BaseView_Wallet_MetaInfo {
         }
       )
     } else {
-      throw 'unrecognized self.mode_loginWith'
+      throw Error('unrecognized self.mode_loginWith')
     }
   }
 }

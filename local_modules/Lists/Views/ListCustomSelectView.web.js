@@ -8,13 +8,13 @@ class ListCustomSelectView extends CustomSelectView {
     options = options || {}
     { // validating options
       if (!options.listController || typeof options.listController === 'undefined') {
-        throw `${self.constructor.name} requires options.listController`
+        throw Error(`${self.constructor.name} requires options.listController`)
       }
       if (!options.cellContentsViewClass || typeof options.cellContentsViewClass === 'undefined') {
-        throw `${self.constructor.name} requires options.cellContentsViewClass`
+        throw Error(`${self.constructor.name} requires options.cellContentsViewClass`)
       }
       if (!options.cellView_height_fn || typeof options.cellView_height_fn === 'undefined') {
-        throw `${self.constructor.name} requires options.cellView_height_fn`
+        throw Error(`${self.constructor.name} requires options.cellView_height_fn`)
       }
     }
     const cellContentsViewClass = options.cellContentsViewClass

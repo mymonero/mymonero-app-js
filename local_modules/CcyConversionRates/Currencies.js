@@ -67,7 +67,7 @@ const nonAtomicCurrency_formattedString = exports.nonAtomicCurrency_formattedStr
 ) { // -> String
   // is nonAtomic-unit'd currency a good enough way to categorize these?
   if (ccySymbol == ccySymbolsByCcy.XMR) {
-    throw 'nonAtomicCurrency_formattedString not to be called with ccySymbol=.XMR'
+    throw Error('nonAtomicCurrency_formattedString not to be called with ccySymbol=.XMR')
   }
   if (final_amountDouble == 0) {
     return '0' // not 0.0
@@ -76,23 +76,23 @@ const nonAtomicCurrency_formattedString = exports.nonAtomicCurrency_formattedStr
   const components = naiveString.split('.')
   const components_length = components.length
   if (components_length <= 0) {
-    throw 'Unexpected 0 components while formatting nonatomic currency'
+    throw Error('Unexpected 0 components while formatting nonatomic currency')
   }
   if (components_length == 1) { // meaning there's no '.'
     if (naiveString.indexOf('.') != -1) {
-      throw "one component but no '.' character"
+      throw Error("one component but no '.' character")
     }
     return naiveString + '.00'
   }
   if (components_length != 2) {
-    throw 'expected components_length=' + components_length
+    throw Error('expected components_length=' + components_length)
   }
   const component_1 = components[0]
   const component_2 = components[1]
   const component_2_str_length = component_2.length
   const currency_unitsForDisplay = unitsForDisplay(ccySymbol)
   if (component_2_str_length > currency_unitsForDisplay) {
-    throw 'expected component_2_characters_count<=currency_unitsForDisplay'
+    throw Error('expected component_2_characters_count<=currency_unitsForDisplay')
   }
   const requiredNumberOfZeroes = currency_unitsForDisplay - component_2_str_length
   let rightSidePaddingZeroes = ''
@@ -127,37 +127,37 @@ exports.submittableMoneroAmountDouble_orNull = function (
   return xmrAmountDouble
 }
 const rounded_ccyConversionRateCalculated_moneroAmountNumber =
-	exports.rounded_ccyConversionRateCalculated_moneroAmountNumber =
-	function (
-	    CcyConversionRates_Controller_shared,
-	    userInputAmountJSNumber,
-	    selectedCurrencySymbol
-	  ) { // -> Double? // may return nil if ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
-	    const xmrToCurrencyRate = CcyConversionRates_Controller_shared.rateFromXMR_orNullIfNotReady(
-	      selectedCurrencySymbol
-	    )
-	    if (xmrToCurrencyRate == null) {
-	      return null // ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
-	    }
-	    // conversion:
-	    // currencyAmt = xmrAmt * xmrToCurrencyRate;
-	    // xmrAmt = currencyAmt / xmrToCurrencyRate.
-	    // I figure it's better to apply the rounding here rather than only at the display level so that what is actually sent corresponds to what the user saw, even if greater ccyConversion precision /could/ be accomplished..
-	    const raw_ccyConversionRateApplied_amount = userInputAmountJSNumber * (1 / xmrToCurrencyRate)
-	    const truncated_amount = roundTo(raw_ccyConversionRateApplied_amount, 4) // must be truncated for display purposes
-	    if (isNaN(truncated_amount)) {
-	      throw 'truncated_amount in rounded_ccyConversionRateCalculated_moneroAmountNumber is NaN'
-	    }
-	    //
-	    return truncated_amount
-	  }
+exports.rounded_ccyConversionRateCalculated_moneroAmountNumber =
+function (
+  CcyConversionRates_Controller_shared,
+  userInputAmountJSNumber,
+  selectedCurrencySymbol
+) { // -> Double? // may return nil if ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
+  const xmrToCurrencyRate = CcyConversionRates_Controller_shared.rateFromXMR_orNullIfNotReady(
+    selectedCurrencySymbol
+  )
+  if (xmrToCurrencyRate == null) {
+    return null // ccyConversion rate unavailable - consumers will try again on 'didUpdateAvailabilityOfRates'
+  }
+  // conversion:
+  // currencyAmt = xmrAmt * xmrToCurrencyRate;
+  // xmrAmt = currencyAmt / xmrToCurrencyRate.
+  // I figure it's better to apply the rounding here rather than only at the display level so that what is actually sent corresponds to what the user saw, even if greater ccyConversion precision /could/ be accomplished..
+  const raw_ccyConversionRateApplied_amount = userInputAmountJSNumber * (1 / xmrToCurrencyRate)
+  const truncated_amount = roundTo(raw_ccyConversionRateApplied_amount, 4) // must be truncated for display purposes
+  if (isNaN(truncated_amount)) {
+    throw Error('truncated_amount in rounded_ccyConversionRateCalculated_moneroAmountNumber is NaN')
+  }
+  //
+  return truncated_amount
+  }
 const displayUnitsRounded_amountInCurrency = exports.displayUnitsRounded_amountInCurrency = function ( // Note: __DISPLAY__ units
   CcyConversionRates_Controller_shared,
   ccySymbol,
   moneroAmountNumber // NOTE: 'Double' JS Number, not JS BigInt
 ) { // -> Double?
   if (typeof moneroAmountNumber !== 'number') {
-    throw 'unexpected typeof moneroAmountNumber=' + (typeof moneroAmountNumber)
+    throw Error('unexpected typeof moneroAmountNumber=' + (typeof moneroAmountNumber))
   }
   if (ccySymbol == ccySymbolsByCcy.XMR) {
     return moneroAmountNumber // no conversion necessary

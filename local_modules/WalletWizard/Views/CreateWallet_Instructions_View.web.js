@@ -205,8 +205,7 @@ class CreateWallet_Instructions_View extends BaseView_AWalletWizardScreen {
     self.rightBarButtonView = view
     const layer = view.layer
     layer.innerHTML = 'Next'
-    layer.addEventListener(
-      'click',
+    layer.addEventListener('click',
       function (e) {
         e.preventDefault()
         {

@@ -157,21 +157,21 @@ class Wallet extends EventEmitter {
           throw 'self.mnemonic_wordsetName not found'
         }
         self.generatedOnInit_walletDescription =
-				{ // this structure here is an artifact of a previous organization of the mymonero-core-js code. it should/can be phased out
-				  seed: ret.sec_seed_string,
-				  mnemonicString: ret.mnemonic_string,
-				  keys: {
-				    public_addr: ret.address_string,
-				    view: {
-				      sec: ret.sec_viewKey_string,
-				      pub: ret.pub_viewKey_string
-				    },
-				    spend: {
-				      sec: ret.sec_spendKey_string,
-				      pub: ret.pub_spendKey_string
-				    }
-				  }
-				}
+        { // this structure here is an artifact of a previous organization of the mymonero-core-js code. it should/can be phased out
+          seed: ret.sec_seed_string,
+          mnemonicString: ret.mnemonic_string,
+          keys: {
+            public_addr: ret.address_string,
+            view: {
+              sec: ret.sec_viewKey_string,
+              pub: ret.pub_viewKey_string
+            },
+            spend: {
+              sec: ret.sec_spendKey_string,
+              pub: ret.pub_spendKey_string
+            }
+          }
+        }
       } catch (e) {
         self.failedToInitialize_cb(e)
         return
@@ -249,7 +249,7 @@ class Wallet extends EventEmitter {
     //
     self.persistencePassword = persistencePassword || null
     if (self.persistencePassword === null) {
-      throw 'You must supply a persistencePassword when you are calling a Boot_* method of Wallet'
+      throw Error('You must supply a persistencePassword when you are calling a Boot_* method of Wallet')
     }
     self.walletLabel = walletLabel || ''
     self.swatch = swatch || ''
@@ -280,7 +280,7 @@ class Wallet extends EventEmitter {
     //
     self.persistencePassword = persistencePassword || null
     if (persistencePassword === null) {
-      throw 'You must supply a persistencePassword when you are calling a Boot_* method of Wallet'
+      throw Error('You must supply a persistencePassword when you are calling a Boot_* method of Wallet')
     }
     //
     self.walletLabel = walletLabel || ''
@@ -329,16 +329,12 @@ class Wallet extends EventEmitter {
     fn // (err?) -> Void
   ) {
     const self = this
-    {
-      self.persistencePassword = persistencePassword || null
-      if (persistencePassword === null) {
-        throw 'You must supply a persistencePassword when you are calling a Boot_* method of Wallet'
-      }
+    self.persistencePassword = persistencePassword || null
+    if (persistencePassword === null) {
+      throw Error('You must supply a persistencePassword when you are calling a Boot_* method of Wallet')
     }
-    {
-      self.walletLabel = walletLabel || ''
-      self.swatch = swatch || ''
-    }
+    self.walletLabel = walletLabel || ''
+    self.swatch = swatch || ''
     {
       const seed = undefined
       const wasAGeneratedWallet = false
@@ -353,9 +349,6 @@ class Wallet extends EventEmitter {
       )
     }
   }
-
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Runtime - Imperatives - Public - Booting - Reading saved wallets
 
   Boot_decryptingExistingInitDoc (persistencePassword, fn) {
     const self = this
@@ -543,7 +536,7 @@ class Wallet extends EventEmitter {
       )
     } else {
       if (self.account_seed != null && typeof self.account_seed !== 'undefined') {
-        throw 'expected nil self.account_seed'
+        throw Error('expected nil self.account_seed')
       }
       self.Boot_byLoggingIn_existingWallet_withAddressAndKeys(
         persistencePassword,
@@ -577,7 +570,7 @@ class Wallet extends EventEmitter {
             derived_mnemonicString
           )
           if (areMnemonicsEqual == false) { // would be rather odd
-            throw 'Different mnemonicString derived from accountSeed than was entered for login'
+            throw Error('Different mnemonicString derived from accountSeed than was entered for login')
           }
           console.log("Not setting mnemonicSeed because the instance was initialized with one and it's the same as the one derived from the account_seed.")
         }
@@ -709,7 +702,7 @@ class Wallet extends EventEmitter {
     // record these properties regardless of whether we are about to error on login
     self.public_address = address
     if (seed_orUndefined === '') {
-      throw '_boot_byLoggingIn passed an empty string for a seed; pass undefined or seed.'
+      throw Error('_boot_byLoggingIn passed an empty string for a seed; pass undefined or seed.')
     }
     self.account_seed = seed_orUndefined
     self.public_keys =
@@ -904,10 +897,10 @@ class Wallet extends EventEmitter {
   {
     const self = this
     if (self.account_scanned_height == 0 || typeof self.account_scanned_height === 'undefined' || self.account_scanned_height === null) {
-      throw 'CatchingUpPercentageFloat() requested but self.account_scanned_height still 0' // maybe replace with warn log
+      throw Error('CatchingUpPercentageFloat() requested but self.account_scanned_height still 0') // maybe replace with warn log
       // return 0
     } else if (self.transaction_height == 0 || typeof self.transaction_height === 'undefined' || self.transaction_height === null) {
-      throw 'CatchingUpPercentageFloat() requested but self.transaction_height still 0' // maybe replace with warn log
+      throw Error('CatchingUpPercentageFloat() requested but self.transaction_height still 0') // maybe replace with warn log
       // return 0
     }
     const pctFloat = self.account_scanned_height / self.transaction_height

@@ -43,7 +43,7 @@ class Controller extends EventEmitter {
     const self = this
     //
     if (ccySymbol == Currencies.ccySymbolsByCcy.XMR) {
-      throw "Invalid 'currency' argument value"
+      throw Error("Invalid 'currency' argument value")
     }
     const rateValue_orNil = self.xmrToCcyRateJSNumbersByCcySymbols[ccySymbol]
     return (rateValue_orNil != null && typeof rateValue_orNil !== 'undefined')
@@ -77,7 +77,7 @@ class Controller extends EventEmitter {
     const self = this
     //
     if (rateAsNumber == null || typeof rateAsNumber === 'undefined') {
-      throw 'unexpected nil rateAsNumber passed to CcyConversionRates.Controller.set()'
+      throw Error('unexpected nil rateAsNumber passed to CcyConversionRates.Controller.set()')
     }
     const doNotNotify = isPartOfBatch
     const raw_previouslyExisting_rateValue = self.xmrToCcyRateJSNumbersByCcySymbols[ccySymbol]

@@ -5,10 +5,7 @@ const CollectionName = 'Wallets'
 exports.CollectionName = CollectionName
 //
 // Utility functions
-function HydrateInstance (
-  walletInstance,
-  plaintextDocument
-) {
+function HydrateInstance (walletInstance, plaintextDocument) {
   const self = walletInstance
   //
   // console.log("plaintextDocument", plaintextDocument)
@@ -58,12 +55,12 @@ function HydrateInstance (
             tx.total_sent = new JSBigInt(val)
           } else if (typeof val === 'object') {
             if (typeof val._d === 'undefined' || val._d == null ||
-							typeof val._s === 'undefined' || val._s == null) {
-              throw "Couldn't parse saved tx.total_sent: " + val
+              typeof val._s === 'undefined' || val._s == null) {
+              throw Error("Couldn't parse saved tx.total_sent: " + val)
             }
             tx.total_sent = new JSBigInt(val._d, val._s, JSBigInt.CONSTRUCT)
           } else {
-            throw "Couldn't parse saved tx.total_sent: " + tx.total_sent
+            throw Error("Couldn't parse saved tx.total_sent: " + tx.total_sent)
           }
         } else {
           tx.total_sent = new JSBigInt(0)
@@ -76,12 +73,12 @@ function HydrateInstance (
             tx.total_received = new JSBigInt(val)
           } else if (typeof val === 'object') {
             if (typeof val._d === 'undefined' || val._d == null ||
-							typeof val._s === 'undefined' || val._s == null) {
-              throw "Couldn't parse saved tx.total_sent: " + val
+              typeof val._s === 'undefined' || val._s == null) {
+              throw Error("Couldn't parse saved tx.total_sent: " + val)
             }
             tx.total_received = new JSBigInt(val._d, val._s, JSBigInt.CONSTRUCT)
           } else {
-            throw "Couldn't parse saved tx.total_sent: " + tx.total_sent
+            throw Error("Couldn't parse saved tx.total_sent: " + tx.total_sent)
           }
         } else {
           tx.total_received = new JSBigInt(0)
@@ -169,29 +166,29 @@ function SaveToDisk (
   )
   //
   const plaintextDocument =
-	{
-	  walletLabel: self.walletLabel,
-	  wallet_currency: self.wallet_currency,
-	  swatch: self.swatch,
-	  mnemonic_wordsetName: self.mnemonic_wordsetName,
-	  //
-	  account_seed: self.account_seed,
-	  private_keys: self.private_keys,
-	  public_address: self.public_address,
-	  public_keys: self.public_keys,
-	  //
-	  isLoggedIn: self.isLoggedIn,
-	  dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo ? self.dateThatLast_fetchedAccountInfo.toString() : undefined, // must convert to string else will get exception on encryption
-	  dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions ? self.dateThatLast_fetchedAccountTransactions.toString() : undefined, // must convert to string else will get exception on encryption
-	  dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally ? self.dateWalletFirstSavedLocally.toString() : undefined, // must convert to string else will get exception on encryption
-	  //
-	  isInViewOnlyMode: self.isInViewOnlyMode,
-	  //
-	  transactions: transactions,
-	  heights: heights,
-	  totals: totals,
-	  spent_outputs: self.spent_outputs || [] // maybe not fetched yet
-	}
+  {
+    walletLabel: self.walletLabel,
+    wallet_currency: self.wallet_currency,
+    swatch: self.swatch,
+    mnemonic_wordsetName: self.mnemonic_wordsetName,
+    //
+    account_seed: self.account_seed,
+    private_keys: self.private_keys,
+    public_address: self.public_address,
+    public_keys: self.public_keys,
+    //
+    isLoggedIn: self.isLoggedIn,
+    dateThatLast_fetchedAccountInfo: self.dateThatLast_fetchedAccountInfo ? self.dateThatLast_fetchedAccountInfo.toString() : undefined, // must convert to string else will get exception on encryption
+    dateThatLast_fetchedAccountTransactions: self.dateThatLast_fetchedAccountTransactions ? self.dateThatLast_fetchedAccountTransactions.toString() : undefined, // must convert to string else will get exception on encryption
+    dateWalletFirstSavedLocally: self.dateWalletFirstSavedLocally ? self.dateWalletFirstSavedLocally.toString() : undefined, // must convert to string else will get exception on encryption
+    //
+    isInViewOnlyMode: self.isInViewOnlyMode,
+    //
+    transactions: transactions,
+    heights: heights,
+    totals: totals,
+    spent_outputs: self.spent_outputs || [] // maybe not fetched yet
+  }
   if (typeof self.login__new_address !== 'undefined') {
     plaintextDocument.login__new_address = self.login__new_address
   }

@@ -299,7 +299,7 @@ class CreateWallet_ConfirmMnemonic_View extends BaseView_AWalletWizardScreen {
     }
     const walletInstance = self.wizardController.walletInstance
     if (!walletInstance) {
-      throw 'Missing expected walletInstance'
+      throw Error('Missing expected walletInstance')
     }
     function ____reEnable_userIdleAndScreenSleepFromSubmissionDisable () { // factored because we would like to call this on successful submission too!
       self.context.userIdleInWindowController.ReEnable_userIdle()

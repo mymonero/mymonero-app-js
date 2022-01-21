@@ -25,18 +25,18 @@ const AppUpdatesBridgeToMain = require(__dirname + '/../../AppUpdates/AppUpdates
 
 function NewHydratedContext (app, menuController, urlOpeningController, appUpdatesController, monero_utils) {
   const initialContext =
-	{
-	  nettype: require('@mymonero/mymonero-nettype').network_type.MAINNET, // critical setting
-	  app: app,
-	  menuController: menuController,
-	  appUpdatesController: appUpdatesController,
-	  urlOpeningController: urlOpeningController,
-	  userDataAbsoluteFilepath: app.getPath('userData'),
-	  isDebug: process.env.NODE_ENV === 'development',
-	  platformSpecific_RootTabBarAndContentView: require('../Views/RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
-	  HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
-	  monero_utils: monero_utils
-	}
+  {
+    nettype: require('@mymonero/mymonero-nettype').network_type.MAINNET, // critical setting
+    app: app,
+    menuController: menuController,
+    appUpdatesController: appUpdatesController,
+    urlOpeningController: urlOpeningController,
+    userDataAbsoluteFilepath: app.getPath('userData'),
+    isDebug: process.env.NODE_ENV === 'development',
+    platformSpecific_RootTabBarAndContentView: require('../Views/RootTabBarAndContentView.electron.web'), // slightly messy place to put this (thanks to Cordova port) but it works
+    HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess: false && process.env.NODE_ENV === 'development',
+    monero_utils: monero_utils
+  }
 
   const context = initialContext != null ? initialContext : {}
 

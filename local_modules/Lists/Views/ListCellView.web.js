@@ -98,14 +98,14 @@ class ListCellView extends View {
   overridable_startObserving_record () { // If you do override these, please make sure to call them on super in case of future modification
     const self = this
     if (typeof self.record === 'undefined' || self.record === null) {
-      throw 'nil record in start observing'
+      throw Error('nil record in start observing')
     }
   }
 
   overridable_stopObserving_record () { // If you do override these, please make sure to call them on super in case of future modification
     const self = this
     if (typeof self.record === 'undefined' || self.record === null) {
-      throw 'nil record in stop observing'
+      throw Error('nil record in stop observing')
     }
   }
 

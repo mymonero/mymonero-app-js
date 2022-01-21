@@ -14,12 +14,12 @@ class TransactionDetailsView extends View {
     {
       self.transaction = options.transaction
       if (self.transaction === null || typeof self.transaction === 'undefined') {
-        throw 'options.transaction nil but required for ' + self.constructor.name
+        throw Error('options.transaction nil but required for ' + self.constructor.name)
       }
       //
       self.wallet = options.wallet
       if (self.wallet === null || typeof self.wallet === 'undefined') {
-        throw 'options.wallet nil but required for ' + self.constructor.name
+        throw Error('options.wallet nil but required for ' + self.constructor.name)
       }
     }
     self.setup()
@@ -275,7 +275,7 @@ class TransactionDetailsView extends View {
   _setup_startObserving_wallet () {
     const self = this
     if (typeof self.wallet === 'undefined' || self.wallet === null) {
-      throw 'nil self.wallet undefined in ' + self.constructor.name + '/' + '_setup_startObserving_wallet`'
+      throw Error('nil self.wallet undefined in ' + self.constructor.name + '/' + '_setup_startObserving_wallet`')
     }
     // here, we're going to store the listener functions as instance properties
     // because when we need to stopObserving we need to have access to the listener fns
@@ -390,7 +390,7 @@ class TransactionDetailsView extends View {
     })
     const wallet = self.wallet
     if (wallet.didFailToInitialize_flag === true || wallet.didFailToBoot_flag === true) {
-      throw self.constructor.name + ' opened while wallet failed to init or boot.'
+      throw Error(self.constructor.name + ' opened while wallet failed to init or boot.')
     }
     const transaction = self.transaction
     if (transaction.isUnlocked !== true) {
@@ -497,7 +497,7 @@ class TransactionDetailsView extends View {
       }
       self._configureUIWithTransaction() // updated - it might not be this one which updated but (a) it's quite possible and (b) configuring the UI isn't too expensive
     } else {
-      throw "Didn't find same transaction in already open details view. Probably a server bug."
+      throw Error("Didn't find same transaction in already open details view. Probably a server bug.")
     }
   }
 

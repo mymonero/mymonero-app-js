@@ -75,7 +75,7 @@ class ListBaseController extends EventEmitter {
   _setBooted () {
     const self = this
     if (self.hasBooted == true) {
-      throw 'code fault: _setBooted called while self.hasBooted=true'
+      throw Error('code fault: _setBooted called while self.hasBooted=true')
     }
     self.hasBooted = true
     const fns_length = self._whenBooted_fns.length
@@ -191,12 +191,12 @@ class ListBaseController extends EventEmitter {
 
   override_CollectionName () { // Return a string such as "Wallets", i.e. as declared at {recordName}_persistence_utils.CollectionName
     const self = this
-    throw `[${self.constructor.name}/overridable_CollectionName]: You must implement this method.`
+    throw Error(`[${self.constructor.name}/overridable_CollectionName]: You must implement this method.`)
   }
 
   override_lookup_RecordClass () { // Return a `class`, i.e. as declared in a module
     const self = this
-    throw `[${self.constructor.name}/override_lookup_RecordClass]: You must implement this method.`
+    throw Error(`[${self.constructor.name}/override_lookup_RecordClass]: You must implement this method.`)
   }
 
   override_booting_reconstituteRecordInstanceOptionsWithBase (
@@ -206,7 +206,7 @@ class ListBaseController extends EventEmitter {
     forOverrider_instance_didFailBoot_fn
   ) {
     const self = this
-    throw `[${self.constructor.name}/override_booting_reconstituteRecordInstanceOptionsWithBase]: You must implement this method and call at least one of the appropriate callbacks.`
+    throw Error(`[${self.constructor.name}/override_booting_reconstituteRecordInstanceOptionsWithBase]: You must implement this method and call at least one of the appropriate callbacks.`)
   }
 
   overridable_finalizeAndSortRecords (fn) // () -> Void

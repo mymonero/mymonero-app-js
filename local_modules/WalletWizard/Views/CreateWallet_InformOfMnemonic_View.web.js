@@ -76,7 +76,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen {
       {
         const currentValue = mnemonic_languages.compatibleCodeFromLocale(self.wizardController.currentWalletUsedLocaleCode)
         if (currentValue == null) {
-          throw 'Expected to find compatible locale code'
+          throw Error('Expected to find compatible locale code')
         }
         const values = mnemonic_languages.supportedShortCodes
         const descriptions = mnemonic_languages.mnemonicLanguages
@@ -259,7 +259,7 @@ class CreateWallet_InformOfMnemonic_View extends BaseView_AWalletWizardScreen {
     const self = this
     const currentValue = mnemonic_languages.compatibleCodeFromLocale(self.wizardController.currentWalletUsedLocaleCode)
     if (currentValue == null) {
-      throw 'Expected to find compatible locale code'
+      throw Error('Expected to find compatible locale code')
     }
     self.languageSelectLayer.value = currentValue
   }

@@ -14,7 +14,7 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface {
     { // before calling on super - which will call setup_worker
       self.absolutePathToChildProcessSourceFile = self.options.absolutePathToChildProcessSourceFile
       if (typeof self.absolutePathToChildProcessSourceFile === 'undefined' || !self.absolutePathToChildProcessSourceFile) {
-        throw `absolutePathToChildProcessSourceFile required in ${self.constructor.name}`
+        throw Error(`absolutePathToChildProcessSourceFile required in ${self.constructor.name}`)
       }
       //
       self.argsForChild = self.options.argsForChild || []
@@ -57,7 +57,7 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface {
       } else if (typeof message === 'object') {
         payload = message
       } else {
-        throw 'unrecognized typeof message received from child'
+        throw Error('unrecognized typeof message received from child')
       }
       self._receivedPayloadFromWorker(payload)
     })

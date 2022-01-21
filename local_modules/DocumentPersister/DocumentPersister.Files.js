@@ -1,7 +1,6 @@
 'use strict'
 
 const async = require('async')
-const { readFile } = require('fs').promises
 
 class DocumentPersister {
   constructor (options) {
@@ -12,14 +11,14 @@ class DocumentPersister {
       options = self.options
       const options_userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
       if (!options_userDataAbsoluteFilepath || typeof options_userDataAbsoluteFilepath === 'undefined') {
-        throw 'options.userDataAbsoluteFilepath required'
+        throw Error('options.userDataAbsoluteFilepath required')
       }
       //
       self.userDataAbsoluteFilepath = options_userDataAbsoluteFilepath
       //
       self.fs = options.fs
       if (!self.fs || typeof self.fs === 'undefined') {
-        throw 'options.fs required'
+        throw Error('options.fs required')
       }
     }
     // strip trailing slashes so we can just append path components with string ops internally (join is hairy on android due to it being a url instead of a path)
@@ -32,7 +31,7 @@ class DocumentPersister {
   }
 
   DocumentsWithIds (collectionName, ids) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       async.map(ids, function (_id, cb) {
         const fileDescription = self._new_fileDescriptionWithComponents(collectionName, ids)
@@ -41,17 +40,17 @@ class DocumentPersister {
         .then((fileDescriptions) => {
           self.___read_contentStringsWithDocumentFileDescriptions(fileDescriptions)
             .then((results) => {
-              res(results)
+              resolve(results)
             })
             .catch((err) => {
-              rej(err)
+              reject(err)
             })
         })
     })
   }
 
   IdsOfAllDocuments (collectionName) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       self.___read_collection_documentFileDescriptions(collectionName)
         .then((documentFileDescriptions) => {
@@ -59,33 +58,33 @@ class DocumentPersister {
             cb(null, documentFileDescription._id)
           })
             .then((results) => {
-              res(results)
+              resolve(results)
             })
             .catch((err) => {
-              rej(err)
+              reject(err)
             })
         })
         .catch((err) => {
-          rej(err)
+          reject(err)
         })
     })
   }
 
   AllDocuments (collectionName) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       self.___read_collection_documentFileDescriptions(collectionName)
         .then((documentFileDescriptions) => {
           self.___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions)
             .then((results) => {
-              res(results)
+              resolve(results)
             })
             .catch((err) => {
-              rej(err)
+              reject(err)
             })
         })
         .catch((err) => {
-          rej(err)
+          reject(err)
         })
     })
   }
@@ -104,7 +103,7 @@ class DocumentPersister {
   }
 
   RemoveDocumentsWithIds (collectionName, ids) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       let numRemoved = 0
       async.each(
@@ -125,32 +124,32 @@ class DocumentPersister {
           })
         })
         .then(() => {
-          res(numRemoved)
+          resolve(numRemoved)
         })
-        .catch(() => {
-          rej(err)
+        .catch((err) => {
+          reject(err)
         })
     })
   }
 
   RemoveAllDocuments (collectionName) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       self.IdsOfAllDocuments(collectionName)
         .then((ids) => {
           self.RemoveDocumentsWithIds(collectionName, ids)
             .then((numRemoved) => {
-              res()
+              resolve()
             })
         })
         .catch((err) => {
-          rej(err)
+          reject(err)
         })
     })
   }
 
   ___write_fileDescriptionDocumentContentString (fileDescription, documentToWrite) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       let stringContents = null
       if (typeof documentToWrite === 'string') {
@@ -159,18 +158,17 @@ class DocumentPersister {
         try {
           stringContents = JSON.stringify(documentToWrite)
         } catch (e) {
-          rej(e)
+          reject(e)
         }
         if (!stringContents || typeof stringContents === 'undefined') { // just to be careful
-          rej(new Error('Unable to stringify document for write.'))
+          reject(new Error('Unable to stringify document for write.'))
         }
       }
       const fileKey = self.____fileKeyFromFileDescription(fileDescription)
       const filename = self.____filenameWithFileKey(fileKey)
       const filepath = self.pathTo_dataSubdir + '/' + filename
       self.fs.writeFile(filepath, stringContents, function (err) {
-        err ? rej(err) : res(documentToWrite)
-        // fn(err, documentToWrite) // and send back saved document (with id)
+        err ? reject(err) : resolve(documentToWrite)
       })
     })
   }
@@ -183,10 +181,10 @@ class DocumentPersister {
   }
 
   ___read_contentStringsWithDocumentFileDescriptions (documentFileDescriptions) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       if (!documentFileDescriptions || documentFileDescriptions.length == 0) {
-        res([])
+        resolve([])
       }
       async.map(documentFileDescriptions, function (documentFileDescription, cb) {
         self.___read_contentStringWithDocumentFileDescription(documentFileDescription)
@@ -198,10 +196,10 @@ class DocumentPersister {
           })
       })
         .then((results) => {
-          res(results)
+          resolve(results)
         })
         .catch((err) => {
-          rej(err)
+          reject(err)
         })
     })
   }
@@ -227,31 +225,34 @@ class DocumentPersister {
   }
 
   ___read_contentStringWithDocumentFileDescription (documentFileDescription) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       const expected_fileKey = self.____fileKeyFromFileDescription(documentFileDescription)
       const expected_filename = self.____filenameWithFileKey(expected_fileKey)
       const filepath = self.pathTo_dataSubdir + '/' + expected_filename
       self.fs.exists(filepath, function (exists) { // ^-- this is implemented with .exists instead of .open, even though .exists is deprecated, in order to remain compatible with html5-fs for Cordova
         if (!exists) {
-          rej(new Error('Document for file description does not exist.'))
+          reject(new Error('Document for file description does not exist.'))
           return
         }
-        readFile(
+        self.fs.readFile(
           filepath,
-          { encoding: 'utf8' }
-
-        ).then((documentContentString) => {
-          res(documentContentString)
-        })
+          { encoding: 'utf8' },
+          function (err, documentToWrite) {
+            err ? reject(err) : resolve(documentToWrite)
+          }
+        )
       })
     })
   }
 
   ___read_collection_documentFileDescriptions (collectionName) {
-    return new Promise((res, rej) => {
+    return new Promise((resolve, reject) => {
       const self = this
       self.fs.readdir(self.pathTo_dataSubdir, function (err, files) { // filtering to what should be JSON doc files
+        if (err) {
+          reject(err)
+        }
         const fileDescriptions = []
         const extSuffix = self.____filenameExtension()
         const extSuffix_length = extSuffix.length
@@ -290,10 +291,10 @@ class DocumentPersister {
           .then((results) => {
             // but we're actually going to disregard `results` here
             // cause we filtered out directories above
-            res(fileDescriptions)
+            resolve(fileDescriptions)
           })
           .catch((err) => {
-            rej(err)
+            reject(err)
           })
       })
     })

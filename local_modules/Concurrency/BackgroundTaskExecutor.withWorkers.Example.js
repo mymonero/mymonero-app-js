@@ -9,7 +9,7 @@ class BackgroundTaskExecutor extends BackgroundTaskExecutor_Interface {
 
   setup_worker () {
     const self = this
-    throw `You must override and implement ${self.constructor.name}/setup_worker and set self.worker`
+    throw Error(`You must override and implement ${self.constructor.name}/setup_worker and set self.worker`)
     // This was left to the subclasser because webpack does not play well with dynamic requires
   }
 

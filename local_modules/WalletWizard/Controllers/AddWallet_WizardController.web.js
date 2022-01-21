@@ -118,7 +118,7 @@ class AddWallet_WizardController {
   _current_wizardTaskMode_stepNamesByIdxStr () {
     const self = this
     if (self.current_wizardTaskModeName == null || typeof self.current_wizardTaskModeName === 'undefined') {
-      throw 'asked for _current_wizardTaskMode_stepNamesByIdxStr while self.current_wizardTaskModeName nil'
+      throw Error('asked for _current_wizardTaskMode_stepNamesByIdxStr while self.current_wizardTaskModeName nil')
     }
     const steps = self.WizardTask_ModeStepNamesByIdxStr_ByTaskModeName[self.current_wizardTaskModeName]
     //
@@ -128,10 +128,10 @@ class AddWallet_WizardController {
   _current_wizardTaskMode_stepName_orNilForEnd () {
     const self = this
     if (self.current_wizardTaskMode_stepNamesByIdxStr == null || typeof self.current_wizardTaskMode_stepNamesByIdxStr === 'undefined') {
-      throw 'asked for _current_wizardTaskMode_stepName while self.current_wizardTaskMode_stepNamesByIdxStr nil'
+      throw Error('asked for _current_wizardTaskMode_stepName while self.current_wizardTaskMode_stepNamesByIdxStr nil')
     }
     if (self.current_wizardTaskMode_stepIdx == null || typeof self.current_wizardTaskMode_stepIdx === 'undefined') {
-      throw 'asked for _current_wizardTaskMode_stepName while self.current_wizardTaskMode_stepIdx nil'
+      throw Error('asked for _current_wizardTaskMode_stepName while self.current_wizardTaskMode_stepIdx nil')
     }
     const stepName = self.current_wizardTaskMode_stepNamesByIdxStr['' + self.current_wizardTaskMode_stepIdx]
     if (typeof stepName === 'undefined' || stepName == null || stepName == '') {
@@ -150,7 +150,7 @@ class AddWallet_WizardController {
     // now we access the module not by dynamic inclusion but statically (see webpack)
     const viewConstructor = StaticCacheForBundling_WizardTaskStepScreenViewModules_byViewFilename[viewModuleFilename]
     if (!viewConstructor || typeof viewConstructor === 'undefined') {
-      throw 'Unable to find the file at ' + viewModuleFilename
+      throw Error('Unable to find the file at ' + viewModuleFilename)
     }
     const options =
 		{
@@ -205,7 +205,7 @@ class AddWallet_WizardController {
   PatchToDifferentWizardTaskMode_byPushingScreen (patchTo_wizardTaskMode, atIndex) {
     const self = this
     if (self.initial_wizardTaskModeName === null) {
-      throw 'Asked to PatchToDifferentWizardTaskMode_byPushingScreen but wizard not yet in a task mode.'
+      throw Error('Asked to PatchToDifferentWizardTaskMode_byPushingScreen but wizard not yet in a task mode.')
       // return
     }
     self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
@@ -223,7 +223,7 @@ class AddWallet_WizardController {
   PatchToDifferentWizardTaskMode_withoutPushingScreen (patchTo_wizardTaskMode, atIndex) {
     const self = this
     if (self.initial_wizardTaskModeName === null) {
-      throw 'Asked to PatchToDifferentWizardTaskMode_withoutPushingScreen but wizard not yet in a task mode.'
+      throw Error('Asked to PatchToDifferentWizardTaskMode_withoutPushingScreen but wizard not yet in a task mode.')
       // return
     }
     self._configureRuntimeStateForTaskModeName(patchTo_wizardTaskMode, atIndex)
@@ -260,7 +260,7 @@ class AddWallet_WizardController {
         } else if (opts.taskFinished === true) {
 
         } else {
-          throw '[' + self.constructor.name + '/DismissWizardModal]: unrecognized opts flag configuration: ' + JSON.stringify(opts)
+          throw Error('[' + self.constructor.name + '/DismissWizardModal]: unrecognized opts flag configuration: ' + JSON.stringify(opts))
         }
       }
     )

@@ -44,7 +44,7 @@ class Controller {
     let isEnabled = self.context.settingsController.autoDownloadUpdatesEnabled
     if (typeof isEnabled === 'undefined' || isEnabled === null) {
       isEnabled = false
-      throw 'Expected isEnabled != nil'
+      throw Error('Expected isEnabled != nil')
     }
     ipcRenderer.send(
       self.appUpdatesController.IPCMethod__ViewOfSettingsUpdated(),

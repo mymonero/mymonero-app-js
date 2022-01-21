@@ -55,7 +55,7 @@ class Controller extends EventEmitter {
 
     if (autoUpdater == null) {
       if (isAutoUpdaterSupported) {
-        throw 'Illegal autoUpdater=null && isAutoUpdaterSupported'
+        throw Error('Illegal autoUpdater=null && isAutoUpdaterSupported')
       }
       return // nothing to do
     }
@@ -139,7 +139,7 @@ class Controller extends EventEmitter {
           console.warn('Unexpected autoUpdater.autoDownload && !autoUpdater.autoInstallOnAppQuit')
         }
         if (self.lastCheckWasManuallyInitiated == true) {
-          throw 'This should be a dialog'
+          throw Error('This should be a dialog')
         }
         const note = new Notification({
           title: 'A new update is ready to install',
@@ -246,7 +246,7 @@ class Controller extends EventEmitter {
   set_autoUpdateInstallEnabled (to_isEnabled) {
     const self = this
     if (autoUpdater == null) {
-      throw 'The app should disallow calling set_autoUpdateInstallEnabled(…) while autoUpdater is legally null.'
+      throw Error('The app should disallow calling set_autoUpdateInstallEnabled(…) while autoUpdater is legally null.')
     }
     autoUpdater.autoDownload = to_isEnabled
     autoUpdater.autoInstallOnAppQuit = to_isEnabled
@@ -261,7 +261,7 @@ class Controller extends EventEmitter {
   checkForUpdates (isManuallyInitiated) {
     const self = this
     if (autoUpdater == null) {
-      throw 'The app should disallow calling checkForUpdates(…) while autoUpdater is legally null.'
+      throw Error('The app should disallow calling checkForUpdates(…) while autoUpdater is legally null.')
     }
     {
       isManuallyInitiated = isManuallyInitiated == true

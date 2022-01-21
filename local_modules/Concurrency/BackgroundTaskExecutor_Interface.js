@@ -23,13 +23,13 @@ class BackgroundTaskExecutor {
 
   setup_worker () {
     const self = this
-    throw `You must override and implement ${self.constructor.name}/setup_worker and set self.worker`
+    throw Error(`You must override and implement ${self.constructor.name}/setup_worker and set self.worker`)
   }
 
   startObserving_worker () { // Implementors: override but call on super
     const self = this
     if (!self.worker || typeof self.worker === 'undefined') {
-      throw 'self.worker undefined in startObserving_worker'
+      throw Error('self.worker undefined in startObserving_worker')
     }
     const worker = self.worker
     self.timeout_waitingForBoot = setTimeout(
@@ -37,9 +37,9 @@ class BackgroundTaskExecutor {
         self.timeout_waitingForBoot = null
         //
         if (self.hasBooted !== true) {
-          throw "Couldn't bring worker up."
+          throw Error("Couldn't bring worker up.")
         } else if (self.hasBooted === true) {
-          throw 'Code fault: timeout_waitingForBoot fired after successful boot.'
+          throw Error('Code fault: timeout_waitingForBoot fired after successful boot.')
         }
       },
       5000
@@ -68,7 +68,7 @@ class BackgroundTaskExecutor {
     const taskUUID = uuidV1()
     { // we need to generate taskUUID now to construct arguments so we might as well also hang onto it here instead of putting that within the call to ExecuteWhenBooted
       if (!fn || typeof fn !== 'function') {
-        throw `executeBackgroundTaskNamed for ${taskName} given non fn as arg 2`
+        throw Error(`executeBackgroundTaskNamed for ${taskName} given non fn as arg 2`)
       }
       self.callbacksByUUID[taskUUID] = fn
     }
@@ -86,7 +86,7 @@ class BackgroundTaskExecutor {
 
   _concrete_sendPayloadToWorker (payload) {
     const self = this
-    throw `You must override and implement ${self.constructor.name}/_concrete_sendPayloadToWorker`
+    throw Error(`You must override and implement ${self.constructor.name}/_concrete_sendPayloadToWorker`)
   }
 
   //
@@ -95,7 +95,7 @@ class BackgroundTaskExecutor {
     const self = this
     {
       if (self.timeout_waitingForBoot === null) {
-        throw 'Got message back from worker after timeout'
+        throw Error('Got message back from worker after timeout')
       }
       clearTimeout(self.timeout_waitingForBoot)
       self.timeout_waitingForBoot = null
@@ -109,7 +109,7 @@ class BackgroundTaskExecutor {
   _setBooted () {
     const self = this
     if (self.hasBooted == true) {
-      throw 'code fault: _setBooted called while self.hasBooted=true'
+      throw Error('code fault: _setBooted called while self.hasBooted=true')
     }
     self.hasBooted = true
     const fns_length = self._whenBooted_fns.length
@@ -127,7 +127,7 @@ class BackgroundTaskExecutor {
     // console.log("_receivedPayloadFromChild", payload)
     const eventName = payload.eventName
     if (eventName !== 'FinishedTask') {
-      throw "child sent eventName !== 'FinishedTask'"
+      throw Error("child sent eventName !== 'FinishedTask'")
     }
     const taskUUID = payload.taskUUID
     const err_str = payload.err_str && typeof payload.err_str !== 'undefined'

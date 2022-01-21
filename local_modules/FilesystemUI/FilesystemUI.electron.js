@@ -126,7 +126,7 @@ class FilesytemUI {
       if (Array.isArray(path)) {
         path = path[0] // select first
       } else {
-        throw 'Unknown `path` return type ' + typeof path + ' from showOpenDialog'
+        throw Error('Unknown `path` return type ' + typeof path + ' from showOpenDialog')
       }
     }
     console.log('Open file at path', path)

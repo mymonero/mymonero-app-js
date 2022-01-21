@@ -61,7 +61,7 @@ class WalletCellContentsView extends View {
       case commonComponents_walletIcons.SizeClasses.Medium32:
         return 16
     }
-    throw 'Unhandled sef.icon_sizeClass in _lookup_walletIconLayer_left'
+    throw Error('Unhandled sef.icon_sizeClass in _lookup_walletIconLayer_left')
     // return 15
   }
 
@@ -75,7 +75,7 @@ class WalletCellContentsView extends View {
       case commonComponents_walletIcons.SizeClasses.Medium32:
         return 66
     }
-    throw 'Unhandled sef.icon_sizeClass in _lookup_labelsPaddingLeft'
+    throw Error('Unhandled sef.icon_sizeClass in _lookup_labelsPaddingLeft')
     // return 80
   }
 
@@ -89,7 +89,7 @@ class WalletCellContentsView extends View {
       case commonComponents_walletIcons.SizeClasses.Medium32:
         return 15
     }
-    throw 'Unhandled sef.icon_sizeClass in _lookup_titlelabelPaddingTop'
+    throw Error('Unhandled sef.icon_sizeClass in _lookup_titlelabelPaddingTop')
     // return 20
   }
 
@@ -139,10 +139,6 @@ class WalletCellContentsView extends View {
     self.layer.appendChild(layer)
   }
 
-  //
-  //
-  // Lifecycle - Teardown
-  //
   TearDown () {
     super.TearDown()
     //
@@ -151,10 +147,6 @@ class WalletCellContentsView extends View {
     self.wallet = null
   }
 
-  //
-  //
-  // Internal - Teardown/Recycling
-  //
   PrepareForReuse () {
     const self = this
     //
@@ -347,7 +339,7 @@ class WalletCellContentsView extends View {
       return
     }
     if (typeof self.wallet === 'undefined' || self.wallet === null) {
-      throw 'wallet undefined in start observing'
+      throw Error('wallet undefined in start observing')
     }
     // here, we're going to store a bunch of functions as instance properties
     // because if we need to stopObserving we need to have access to the listener fns

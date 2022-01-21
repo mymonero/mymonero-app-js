@@ -160,7 +160,7 @@ class WalletDetailsView extends View {
             finalized_secondarySection_string = Array(coinUnitPlaces - decimalComponent_length + 2).join('0')
           }
         } else {
-          throw "Couldn't parse formatted balance string."
+          throw Error("Couldn't parse formatted balance string.")
         }
       } else {
         finalized_main_string = amt_str
@@ -316,7 +316,7 @@ class WalletDetailsView extends View {
           return r.is_displaying_local_wallet == true && r.to_address === self.wallet.public_address
         })
         if (typeof requestForWallet === 'undefined') {
-          throw 'Expected requestForWallet to be non nil'
+          throw Error('Expected requestForWallet to be non nil')
         }
         //
         // hook into existing push functionality to get stuff like reference tracking
@@ -377,7 +377,7 @@ class WalletDetailsView extends View {
   _setup_startObserving_wallet () {
     const self = this
     if (typeof self.wallet === 'undefined' || self.wallet === null) {
-      throw 'wallet undefined in start observing'
+      throw Error('wallet undefined in start observing')
     }
     //
     // login events
@@ -457,7 +457,7 @@ class WalletDetailsView extends View {
           self.navigationController.PopView(true) // animated
         }, 500) // because we want to wait until whatever UI deleted it settles down or we will get a refusal to pop while dismissing a modal
       } else { // or, we're not on top, so let's just remove self from the list of views
-        throw 'A Wallet details view expected to be on top of navigation stack when its wallet was deleted.'
+        throw Error('A Wallet details view expected to be on top of navigation stack when its wallet was deleted.')
         // which means the following line should be uncommented and the method ImmediatelyExtractStackView needs to be implemented (which will w/o animation snatch self out of the stack)
         // self.navigationController.ImmediatelyExtractStackView(self)
       }
@@ -723,7 +723,7 @@ class WalletDetailsView extends View {
         secondaryBalancesLabelText += amount_displayStringComponents.amt_str + '&nbsp;' + 'locked'
       }
       if (secondaryBalancesLabelText === '') {
-        throw 'Expected non zero secondaryBalancesLabelText by this point'
+        throw Error('Expected non zero secondaryBalancesLabelText by this point')
       }
       self.secondaryBalancesLabelLayer.innerHTML = secondaryBalancesLabelText
       self.secondaryBalancesLabelLayer.style.display = 'block'
@@ -949,7 +949,7 @@ class WalletDetailsView extends View {
               ? 'SCANNING…'
               : 'SCANNING BLOCKCHAIN…'
           } else {
-            throw 'Illegal: !wallet.IsFetchingAnyUpdates() && !wallet.IsScannerCatchingUp()'
+            throw Error('Illegal: !wallet.IsFetchingAnyUpdates() && !wallet.IsScannerCatchingUp()')
           }
           progressLabelLayer_innerHTMLStr = __blocksBehindMsg(nBlocks)
           self.catchingUp_activityIndicatorLayer.Component_setMessageText(messageText)
@@ -1068,15 +1068,15 @@ class WalletDetailsView extends View {
     }
     { // validate wallet and tx
       if (typeof self.wallet === 'undefined' || self.wallet === null) {
-        throw self.constructor.name + ' requires self.wallet to ' + _cmd
+        throw Error(self.constructor.name + ' requires self.wallet to ' + _cmd)
       }
       if (typeof transaction === 'undefined' || transaction === null) {
-        throw self.constructor.name + ' requires transaction to ' + _cmd
+        throw Error(self.constructor.name + ' requires transaction to ' + _cmd)
       }
     }
     const navigationController = self.navigationController
     if (typeof navigationController === 'undefined' || navigationController === null) {
-      throw self.constructor.name + ' requires navigationController to ' + _cmd
+      throw Error(self.constructor.name + ' requires navigationController to ' + _cmd)
     }
     {
       const options =
@@ -1102,14 +1102,14 @@ class WalletDetailsView extends View {
     const self = this
     const wallet_bootFailed = self._wallet_bootFailed()
     if (wallet_bootFailed) {
-      throw 'Expected !wallet_bootFailed'
+      throw Error('Expected !wallet_bootFailed')
     }
     if (self.wallet.HasEverFetched_transactions() !== true) {
-      throw 'Expected true HasEverFetched_transactions'
+      throw Error('Expected true HasEverFetched_transactions')
     }
     const stateCachedTransactions = self.wallet.New_StateCachedTransactions()
     if (stateCachedTransactions.length == 0) {
-      throw 'Expected non-zero num transactions'
+      throw Error('Expected non-zero num transactions')
     }
     const headers = ['date', 'amount', 'status', 'tx id', 'payment_id']
     let csvContent = ''
@@ -1167,7 +1167,7 @@ class WalletDetailsView extends View {
     super.viewDidAppear()
     //
     if (typeof self.wallet === 'undefined' || self.wallet === null) {
-      throw 'WalletDetailsView/viewDidAppear: self.wallet=nil'
+      throw Error('WalletDetailsView/viewDidAppear: self.wallet=nil')
     }
     self.wallet.requestFromUI_manualRefresh()
     //

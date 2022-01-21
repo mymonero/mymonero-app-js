@@ -14,7 +14,7 @@ class EditWalletView extends View {
     { // options
       self.wallet = self.options.wallet
       if (!self.wallet) {
-        throw self.constructor.name + ' requires an options.wallet'
+        throw Error(self.constructor.name + ' requires an options.wallet')
       }
     }
     self.setup()
@@ -176,9 +176,7 @@ class EditWalletView extends View {
     const view = commonComponents_navigationBarButtons.New_LeftSide_CancelButtonView(self.context)
     const layer = view.layer
     { // observe
-      layer.addEventListener(
-        'click',
-        function (e) {
+      layer.addEventListener('click', function (e) {
           e.preventDefault()
           { // v--- self.navigationController because self is presented packaged in a StackNavigationView
             self.navigationController.modalParentView.DismissTopModalView(true)
@@ -196,9 +194,7 @@ class EditWalletView extends View {
     self.rightBarButtonView = view
     const layer = view.layer
     { // observe
-      layer.addEventListener(
-        'click',
-        function (e) {
+      layer.addEventListener('click', function (e) {
           e.preventDefault()
           {
             self._saveButtonView_pressed()
