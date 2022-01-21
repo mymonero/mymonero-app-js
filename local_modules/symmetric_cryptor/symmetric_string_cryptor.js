@@ -50,19 +50,13 @@ function New_EncryptedBase64String__Async(plaintext_msg, password, fn) {
 	components.headers.iv = _new_random_iv_of_length(cryptor_settings.iv_length)
 	//
 	// TODO: maybe do the key gen here in parallel
-	_new_calculated_pbkdf2_key__async(
-		password, 
-		components.headers.encryption_salt,
-		function(err, encryption_key)
+	_new_calculated_pbkdf2_key__async(password, components.headers.encryption_salt, function(err, encryption_key)
 		{
 			if (err) {
 				fn(err)
 				return
 			}
-			_new_calculated_pbkdf2_key__async(
-				password, 
-				components.headers.hmac_salt,
-				function(err, hmac_key)
+			_new_calculated_pbkdf2_key__async(password, components.headers.hmac_salt, function(err, hmac_key)
 				{
 					if (err) {
 						fn(err)
@@ -78,11 +72,7 @@ function New_EncryptedBase64String__Async(plaintext_msg, password, fn) {
 					if (cryptor_settings.iv_length !== components.headers.iv.length) {
 						throw "Expected cryptor_settings.iv_length == components.headers.iv.length";
 					}
-					const cipher = crypto.createCipheriv(
-						cryptor_settings.algorithm, 
-						encryption_key, 
-						iv
-					);
+					const cipher = crypto.createCipheriv(cryptor_settings.algorithm, encryption_key, iv);
 					// pkcs padding is done automatically; see cipher.setAutoPadding
 					components.cipher_text = Buffer.concat([
 						cipher.update(plaintext_msg), 

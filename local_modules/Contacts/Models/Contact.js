@@ -27,6 +27,7 @@ class Contact extends EventEmitter
 		//
 		self.setup()
 	}
+	
 	setup()
 	{
 		var self = this
@@ -187,16 +188,14 @@ class Contact extends EventEmitter
 			self._EventName_resolvedOpenAliasAddress_fn
 		)
 	}
-	//
-	//
-	// Lifecycle - Teardown
-	//
+
 	TearDown()
 	{
 		const self = this
 		//
 		self._stopObserving_openAliasResolver()
 	}
+
 	_stopObserving_openAliasResolver()
 	{
 		const self = this
@@ -210,17 +209,13 @@ class Contact extends EventEmitter
 		}
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors - Public
-
 	Description()
 	{
 		const self = this
 		//
 		return `${self.constructor.name}<${self._id}> "${self.emoji}  ${self.fullname}, XMR addr: ${self.address}, payment id: ${self.payment_id}".`
 	}
-	//
+	
 	EventName_booted()
 	{
 		return "EventName_booted"
@@ -241,7 +236,7 @@ class Contact extends EventEmitter
 	{
 		return "EventName_deleted"
 	}
-	//
+	
 	HasOpenAliasAddress()
 	{ // throws
 		const self = this
@@ -249,6 +244,7 @@ class Contact extends EventEmitter
 		//
 		return self.context.openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address)
 	}
+
 	HasIntegratedAddress()
 	{ // throws
 		const self = this
@@ -266,7 +262,7 @@ class Contact extends EventEmitter
 		//
 		return isIntegratedAddress
 	}
-	//
+	
 	new_integratedXMRAddress_orNilIfNotApplicable()
 	{
 		let self = this
@@ -300,11 +296,7 @@ class Contact extends EventEmitter
 		);
 		return int_addr;
 	}
-	
 
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Accessors
-	
 	Lazy_URI__addressAsFirstPathComponent()
 	{
 		const self = this
@@ -313,6 +305,7 @@ class Contact extends EventEmitter
 		}
 		return self._assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
 	}
+
 	_assumingBootedOrEquivalent__Lazy_URI__addressAsFirstPathComponent()
 	{
 		const self = this
@@ -330,7 +323,7 @@ class Contact extends EventEmitter
 		}
 		return self.uri_addressAsFirstPathComponent
 	}
-	//
+	
 	_new_qrCode_imgDataURIString(fn)
 	{
 		const self = this
@@ -350,10 +343,6 @@ class Contact extends EventEmitter
 		)
 	}
 
-
-	//
-	// Runtime - Imperatives 
-
 	regenerateQRCode(fn)
 	{
 		const self = this
@@ -369,10 +358,6 @@ class Contact extends EventEmitter
 		)
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Private - Persistence
-
 	saveToDisk(fn)
 	{
 		const self = this
@@ -381,10 +366,6 @@ class Contact extends EventEmitter
 			fn
 		)
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Deletion
 
 	Delete(
 		fn // (err?) -> Void
@@ -404,10 +385,6 @@ class Contact extends EventEmitter
 		)
 	}
 	
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Changing password
-
 	ChangePasswordTo(
 		changeTo_persistencePassword,
 		fn
@@ -428,10 +405,6 @@ class Contact extends EventEmitter
 			}
 		)
 	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Imperatives - Public - Changing meta data
 
 	Set_valuesByKey(
 		valuesByKey, // keys like "emoji", "fullname", "address", "cached_OAResolved_XMR_address"
@@ -475,10 +448,6 @@ class Contact extends EventEmitter
 			}
 		)
 	}
-	
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Runtime - Delegation - Private
 
 	_atRuntime_contactInfoUpdated()
 	{

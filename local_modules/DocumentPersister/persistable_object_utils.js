@@ -1,37 +1,26 @@
 const uuidV1 = require('uuid/v1')
 const string_cryptor = require('../symmetric_cryptor/symmetric_string_cryptor')
 
-function read(
-	persister,
-	CollectionName,
-	persistableObject, // you must set ._id on this before call
-	fn // (err?, plaintextDocument?)
-) {
+function read(persister, CollectionName, persistableObject,	fn) {
 	const self = persistableObject
-	persister.DocumentsWithIds(
-		CollectionName,
-		[ self._id ],
-		function(err, docs)
-		{
-			if (err) {
-				console.error(err.toString())
-				fn(err)
-				return
-			}
-			if (docs.length === 0) {
-				const errStr = "❌  Record with that _id not found."
-				const err = new Error(errStr)
-				console.error(errStr)
-				fn(err)
-				return
-			}
-			const encryptedDocument = docs[0]
-			__proceedTo_decryptEncryptedDocument(encryptedDocument)
+	persister.DocumentsWithIds(CollectionName, [ self._id ], function(err, docs) {
+		if (err) {
+			console.error(err.toString())
+			fn(err)
+			return
 		}
-	)
+		if (docs.length === 0) {
+			const errStr = "❌  Record with that _id not found."
+			const err = new Error(errStr)
+			console.error(errStr)
+			fn(err)
+			return
+		}
+		const encryptedDocument = docs[0]
+		__proceedTo_decryptEncryptedDocument(encryptedDocument)
+	})
 
-	function __proceedTo_decryptEncryptedDocument(encryptedBase64String)
-	{
+	function __proceedTo_decryptEncryptedDocument(encryptedBase64String) {
 		string_cryptor.DecryptedStringAsync(encryptedBase64String, self.persistencePassword)
 		.then( (plaintextString) => {
 			var plaintextDocument;
@@ -52,15 +41,8 @@ function read(
 	}
 }
 exports.read = read
-//
-function write(
-	persister,
-	persistableObject, // for reading and writing the _id
-	CollectionName,
-	plaintextDocument,
-	persistencePassword,
-	fn
-) {
+
+function write(persister, persistableObject, CollectionName, plaintextDocument, persistencePassword, fn) {
 	const self = persistableObject
 	var _id = plaintextDocument._id
 	if (typeof _id === 'undefined' || _id == null || _id == "") {
@@ -85,41 +67,30 @@ function write(
 			}
 		}
 	)
-	function _proceedTo_insertNewDocument(encryptedBase64String)
-	{
-		persister.InsertDocument(
-			CollectionName,
-			plaintextDocument._id,
-			encryptedBase64String,
-			function(err) {
-				if (err) {
-					console.error("Error while saving object:", err)
-					fn(err)
-					return
-				}
-				self._id = plaintextDocument._id // so we have it in runtime memory now…
-				console.log("✅  Saved newly inserted object with _id " + self._id + ".")
-				fn()
-			}
-		)
+
+	function _proceedTo_insertNewDocument(encryptedBase64String) {
+		persister.InsertDocument(CollectionName, plaintextDocument._id, encryptedBase64String)
+		.then( (documentToWrite) => {
+			self._id = plaintextDocument._id // so we have it in runtime memory now…
+			console.log("✅  Saved newly inserted object with _id " + self._id + ".")
+			fn()
+		})
+		.catch( (err) => {
+			console.error("Error while saving object:", err)
+			fn(err)
+		})
 	}
-	function _proceedTo_updateExistingDocument(encryptedBase64String)
-	{
-		persister.UpdateDocumentWithId(
-			CollectionName,
-			self._id,
-			encryptedBase64String,
-			function(err)
-			{
-				if (err) {
-					console.error("Error while saving record:", err)
-					fn(err)
-					return
-				}
-				console.log("✅  Saved update to object with _id " + self._id + ".")
-				fn()
-			}
-		)
+
+	function _proceedTo_updateExistingDocument(encryptedBase64String) {
+		persister.UpdateDocumentWithId(CollectionName, self._id, encryptedBase64String)
+		.then( (documentToWrite) => {
+			console.log("✅  Saved update to object with _id " + self._id + ".")
+			fn()
+		})
+		.catch( (err) => {
+			console.error("Error while saving record:", err)
+			fn(err)
+		})
 	}
 }
 exports.write = write

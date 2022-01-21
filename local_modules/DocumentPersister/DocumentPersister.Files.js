@@ -1,15 +1,12 @@
 "use strict"
 
 const async = require('async')
-const DocumentPersister_Interface = require('./DocumentPersister_Interface')
 
-class DocumentPersister extends DocumentPersister_Interface
-{
-	constructor(options)
-	{
-		super(options) // must call on super before accessing options
-		//
+class DocumentPersister {
+	constructor(options) {
 		const self = this
+
+		self.options = options
 		{
 			options = self.options
 			const options_userDataAbsoluteFilepath = options.userDataAbsoluteFilepath
@@ -32,30 +29,19 @@ class DocumentPersister extends DocumentPersister_Interface
 		self.pathTo_dataSubdir = pathTo_dataSubdir
 		// console.log("self.pathTo_dataSubdir" , self.pathTo_dataSubdir)
 	}
-	//
-	//
-	// Runtime - Accessors - Private - Overrides
-	//
-	__documentContentStringsWithIds(collectionName, _ids, fn)
-	{
+
+	DocumentsWithIds(collectionName, ids, fn) {
 		const self = this
-		async.map(_ids, function(_id, cb)
+		async.map(ids, function(_id, cb)
 		{
-			const fileDescription = self._new_fileDescriptionWithComponents(
-				collectionName,
-				_ids
-			)
+			const fileDescription = self._new_fileDescriptionWithComponents(collectionName, ids)
 			cb(null, fileDescription)
-		}, function(err, fileDescriptions)
-		{
-			self.___read_contentStringsWithDocumentFileDescriptions(
-				fileDescriptions,
-				fn
-			)
+		}, function(err, fileDescriptions) {
+			self.___read_contentStringsWithDocumentFileDescriptions(fileDescriptions, fn)
 		})
 	}
-	__idsOfAllDocuments(collectionName, fn)
-	{
+
+	IdsOfAllDocuments(collectionName, fn) {
 		const self = this
 		self.___read_collection_documentFileDescriptions(
 			collectionName,
@@ -79,8 +65,8 @@ class DocumentPersister extends DocumentPersister_Interface
 			}
 		)
 	}
-	__allDocuments(collectionName, fn)
-	{
+
+	AllDocuments(collectionName, fn) {
 		const self = this
 		self.___read_collection_documentFileDescriptions(
 			collectionName,
@@ -97,31 +83,21 @@ class DocumentPersister extends DocumentPersister_Interface
 			}
 		)
 	}
-	//
-	//
-	// Runtime - Imperatives - Private - Overrides
-	//
-	__insertDocument(collectionName, id, documentToInsert, fn)
-	{
+
+	InsertDocument(collectionName, id, documentToInsert) {
 		const self = this
 		// you may like to be sure to specify the _id manually within your "documentToInsert"
-		const fileDescription = self._new_fileDescriptionWithComponents(
-			collectionName,
-			id
-		)
-		self.___write_fileDescriptionDocumentContentString(fileDescription, documentToInsert, fn)
+		const fileDescription = self._new_fileDescriptionWithComponents(collectionName, id)
+		return self.___write_fileDescriptionDocumentContentString(fileDescription, documentToInsert)
 	}
-	__updateDocumentWithId(collectionName, id, update, fn)
-	{
+
+	UpdateDocumentWithId(collectionName, id, update) {
 		const self = this
-		const fileDescription = self._new_fileDescriptionWithComponents(
-			collectionName,
-			id
-		)
-		self.___write_fileDescriptionDocumentContentString(fileDescription, update, fn)
+		const fileDescription = self._new_fileDescriptionWithComponents(collectionName, id)
+		return self.___write_fileDescriptionDocumentContentString(fileDescription, update)
 	}
-	__removeDocumentsWithIds(collectionName, ids, fn)
-	{ 
+
+	RemoveDocumentsWithIds(collectionName, ids, fn) {
 		const self = this
 		var numRemoved = 0
 		async.each(
@@ -149,66 +125,52 @@ class DocumentPersister extends DocumentPersister_Interface
 			}
 		)
 	}
-	__removeAllDocuments(collectionName, fn)
-	{
+
+	RemoveAllDocuments(collectionName, fn) {
 		const self = this
-		self.__idsOfAllDocuments(
-			collectionName,
-			function(err, ids)
-			{
-				if (err) {
-					fn(err)
-					return
-				}
-				self.__removeDocumentsWithIds(
-					collectionName,
-					ids,
-					fn
-				)
-			}
-		)
-	}
-	//
-	//
-	// Internal - Imperatives - File writing
-	//
-	___write_fileDescriptionDocumentContentString(fileDescription, documentToWrite, fn)
-	{
-		const self = this
-		var stringContents = null
-		if (typeof documentToWrite === 'string') {
-			stringContents = documentToWrite
-		} else {
-			try {
-				stringContents = JSON.stringify(documentToWrite)
-			} catch (e) {
-				fn(e)
+		self.IdsOfAllDocuments(collectionName, function(err, ids) {
+			if (err) {
+				fn(err)
 				return
 			}
-			if (!stringContents || typeof stringContents === 'undefined') { // just to be careful
-				fn(new Error("Unable to stringify document for write."))
-				return
-			}
-		}
-		const fileKey = self.____fileKeyFromFileDescription(fileDescription)
-		const filename = self.____filenameWithFileKey(fileKey)
-		const filepath = self.pathTo_dataSubdir+"/"+filename
-		self.fs.writeFile(filepath, stringContents, function(err)
-		{
-			fn(err, documentToWrite) // and send back saved document (with id)
+			self.RemoveAllDocuments(collectionName, ids, fn)
 		})
 	}
-	//
-	//
-	// Internal - Accessors - Shared file descriptions & document data
-	//
-	_new_fileDescriptionWithComponents(collectionName, _id)
-	{
+
+	___write_fileDescriptionDocumentContentString(fileDescription, documentToWrite) {
+		return new Promise( (res, rej) => {
+			const self = this
+			var stringContents = null
+			if (typeof documentToWrite === 'string') {
+				stringContents = documentToWrite
+			} else {
+				try {
+					stringContents = JSON.stringify(documentToWrite)
+				} catch (e) {
+					rej(e)
+				}
+				if (!stringContents || typeof stringContents === 'undefined') { // just to be careful
+					rej(new Error("Unable to stringify document for write."))
+				}
+			}
+			const fileKey = self.____fileKeyFromFileDescription(fileDescription)
+			const filename = self.____filenameWithFileKey(fileKey)
+			const filepath = self.pathTo_dataSubdir+"/"+filename
+			self.fs.writeFile(filepath, stringContents, function(err)
+			{
+				err ? rej(err) : res(documentToWrite);
+				// fn(err, documentToWrite) // and send back saved document (with id)
+			})
+		});
+	}
+
+	_new_fileDescriptionWithComponents(collectionName, _id) {
 		return {
 			_id: _id,
 			collectionName: collectionName
 		}
 	}
+
 	___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions, fn)
 	{
 		const self = this
@@ -216,10 +178,7 @@ class DocumentPersister extends DocumentPersister_Interface
 			fn(null, [])
 			return
 		}
-		async.map(
-			documentFileDescriptions,
-			function(documentFileDescription, cb)
-			{
+		async.map(documentFileDescriptions, function(documentFileDescription, cb) {
 				self.___read_contentStringWithDocumentFileDescription(
 					documentFileDescription,
 					function(err, documentContentString)
@@ -231,9 +190,7 @@ class DocumentPersister extends DocumentPersister_Interface
 						cb(null, documentContentString)
 					}
 				)
-			},
-			function(err, results)
-			{
+		}, function(err, results) {
 				if (err) {
 					fn(err)
 					return
@@ -241,7 +198,8 @@ class DocumentPersister extends DocumentPersister_Interface
 				fn(null, results)
 			}
 		)
-	}	
+	}
+
 	____fileKeyFromFileDescription(fileDescription)
 	{
 		const self = this
@@ -249,23 +207,24 @@ class DocumentPersister extends DocumentPersister_Interface
 		//
 		return `${fileDescription.collectionName}${fileKeyComponentDelimiterString}${fileDescription._id}`
 	}
+
 	____fileKeyComponentDelimiterString()
 	{
 		return "__" // not -, because those exist in uuids 
 	}
+
 	____filenameExtension()
 	{
 		return ".mmdbdoc_v1" // just trying to pick something fairly unique, and short
 	}
+
 	____filenameWithFileKey(fileKey)
 	{
 		const self = this
 		return `${fileKey}${self.____filenameExtension()}`
 	}
-	___read_contentStringWithDocumentFileDescription(
-		documentFileDescription,
-		fn
-	) {
+
+	___read_contentStringWithDocumentFileDescription(documentFileDescription, fn) {
 		const self = this
 		const expected_fileKey = self.____fileKeyFromFileDescription(documentFileDescription)
 		const expected_filename = self.____filenameWithFileKey(expected_fileKey)
@@ -283,10 +242,8 @@ class DocumentPersister extends DocumentPersister_Interface
 			)
 		})
 	}
-	___read_collection_documentFileDescriptions(
-		collectionName,
-		fn
-	) {
+
+	___read_collection_documentFileDescriptions(collectionName, fn) {
 		const self = this
 		self.fs.readdir(
 			self.pathTo_dataSubdir, 

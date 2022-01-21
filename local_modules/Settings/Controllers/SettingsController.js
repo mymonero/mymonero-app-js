@@ -289,40 +289,28 @@ class SettingsController extends EventEmitter
 					persistableDocument._id = _id
 					//
 					const jsonString = JSON.stringify(persistableDocument)
-					self.context.persister.InsertDocument(
-						CollectionName,
-						_id,
-						jsonString,
-						function(err) 
-						{
-							if (err) {
-								console.error("Error while saving " + CollectionName + ":", err)
-								fn(err)
-								return
-							}
-							self._id = _id // must save it back
-							console.log("✅  Saved newly inserted " + CollectionName + " record with _id " + self._id + ".")
-							fn()
-						}
-					)
+					self.context.persister.InsertDocument(CollectionName, _id, jsonString)
+					.then( (documentToWrite) => {
+						self._id = _id // must save it back
+						console.log("✅  Saved newly inserted " + CollectionName + " record with _id " + self._id + ".")
+						fn()
+					})
+					.catch( (err) => {
+						console.error("Error while saving " + CollectionName + ":", err)
+						fn(err)
+					})
 				}
 				function _proceedTo_updateExistingDocument(persistableDocument)
 				{
-					self.context.persister.UpdateDocumentWithId(
-						CollectionName,
-						self._id,
-						persistableDocument,
-						function(err)
-						{
-							if (err) {
-								console.error("Error while saving update to Settings record:", err)
-								fn(err)
-								return
-							}
-							// console.log("✅  Saved update to Settings record with _id " + self._id + ".")
-							fn()
-						}
-					)
+					self.context.persister.UpdateDocumentWithId(CollectionName, self._id, persistableDocument)
+					.then( (documentToWrite) => {
+						// console.log("✅  Saved update to Settings record with _id " + self._id + ".")
+						fn()
+					})
+					.catch( (err) => {
+						console.error("Error while saving update to Settings record:", err)
+						fn(err)
+					})
 				}
 			}
 		)

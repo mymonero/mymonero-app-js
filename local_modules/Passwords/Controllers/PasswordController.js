@@ -901,40 +901,29 @@ class PasswordController extends EventEmitter
 			persistableDocument._id = _id
 			//
 			const jsonString = JSON.stringify(persistableDocument)
-			self.context.persister.InsertDocument(
-				CollectionName,
-				_id,
-				persistableDocument,
-				function(err)
-				{
-					if (err) {
-						console.error("Error while saving password record:", err)
-						fn(err)
-						return
-					}
-					self._id = _id // must save it back
+			self.context.persister.InsertDocument(CollectionName, _id, persistableDocument)
+			.then( (documentToWrite) => {
+				self._id = _id // must save it back
 					console.log("✅  Saved newly inserted password record with _id " + self._id + ".")
-					fn()
-				}
-			)
+				fn()
+			})
+			.catch( (err) => {
+				console.error("Error while saving password record:", err)
+				fn(err)
+			})
 		}
+		
 		function _proceedTo_updateExistingDocument(persistableDocument)
 		{
-			self.context.persister.UpdateDocumentWithId(
-				CollectionName,
-				self._id,
-				persistableDocument,
-				function(err)
-				{
-					if (err) {
-						console.error("Error while saving update to password record:", err)
-						fn(err)
-						return
-					}
-					// console.log("✅  Saved update to password record with _id " + self._id + ".")
-					fn()
-				}
-			)
+			self.context.persister.UpdateDocumentWithId(CollectionName, self._id, persistableDocument)
+			.then( (documentToWrite) => {
+				// console.log("✅  Saved update to password record with _id " + self._id + ".")
+				fn()
+			})
+			.catch( (err) => {
+				console.error("Error while saving update to password record:", err)
+				fn(err)
+			})
 		}
 	}
 	//

@@ -5,10 +5,7 @@ const CollectionName = "Contacts"
 exports.CollectionName = CollectionName
 //
 // Utility functions
-function HydrateInstance(
-	instance,
-	plaintextDocument
-) {
+function HydrateInstance(instance, plaintextDocument) {
 	const self = instance
 	//
 	// console.log("plaintextDocument", plaintextDocument)
@@ -19,11 +16,8 @@ function HydrateInstance(
 	self.cached_OAResolved_XMR_address = plaintextDocument.cached_OAResolved_XMR_address
 }
 exports.HydrateInstance = HydrateInstance
-//
-function SaveToDisk(
-	instance,
-	fn
-) {
+
+function SaveToDisk(instance, fn) {
 	const self = instance
 	// console.log("📝  Saving contact to disk ", self.Description())
 	//
@@ -55,7 +49,7 @@ function SaveToDisk(
 	)
 }
 exports.SaveToDisk = SaveToDisk
-//
+
 function DeleteFromDisk(
 	instance,
 	fn
