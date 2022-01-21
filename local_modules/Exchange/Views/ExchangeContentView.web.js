@@ -1,7 +1,6 @@
 // "use strict"
 
-
-const shell = require("electron").shell;
+const shell = require('electron').shell
 const Utils = require('../Javascript/ExchangeUtilityFunctions')
 const ExchangeUtils = require('../Javascript/ExchangeUtilityFunctions')
 const View = require('../../Views/View.web')
@@ -9,24 +8,24 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger // important: grab defined export
 const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
-const ExchangeHelper = require("@mymonero/mymonero-exchange-helper")
-const webComponents = require("@mymonero/mymonero-web-components");
-const pageTemplates = require("@mymonero/mymonero-page-templates");
-const ExchangeLandingPage = pageTemplates.ExchangeLandingPage;
-let exchangeHelper = new ExchangeHelper();
+const ExchangeHelper = require('@mymonero/mymonero-exchange-helper')
+const webComponents = require('@mymonero/mymonero-web-components')
+const pageTemplates = require('@mymonero/mymonero-page-templates')
+const ExchangeLandingPage = pageTemplates.ExchangeLandingPage
+const exchangeHelper = new ExchangeHelper()
 
-let handleOfferError = exchangeHelper.errorHelper.handleOfferError;
+const handleOfferError = exchangeHelper.errorHelper.handleOfferError
 
-function newEstimatedNetworkFeeString(fee_JSBigInt) {
+function newEstimatedNetworkFeeString (fee_JSBigInt) {
   const self = this
-  const estimatedTotalFee_JSBigInt = fee_JSBigInt;
+  const estimatedTotalFee_JSBigInt = fee_JSBigInt
   const estimatedTotalFee_str = monero_amount_format_utils.formatMoney(estimatedTotalFee_JSBigInt)
   const estimatedTotalFee_moneroAmountDouble = parseFloat(estimatedTotalFee_str)
 
   // const estimatedTotalFee_moneroAmountDouble = 0.028
   // Just hard-coding this to a reasonable estimate for now as the fee estimator algo uses the median blocksize which results in an estimate about twice what it should be
-  //const displayCcySymbol = self.context.settingsController.displayCcySymbol
-  //const finalizable_ccySymbol = displayCcySymbol
+  // const displayCcySymbol = self.context.settingsController.displayCcySymbol
+  // const finalizable_ccySymbol = displayCcySymbol
   const finalizable_formattedAmountString = estimatedTotalFee_str// `${estimatedTotalFee_moneroAmountDouble}`
   const final_formattedAmountString = finalizable_formattedAmountString
   const final_ccySymbol = 'XMR'
@@ -37,7 +36,7 @@ function newEstimatedNetworkFeeString(fee_JSBigInt) {
 class ExchangeContentView extends View {
   constructor (options, context) {
     // Can we deterministically add an event listener to clicks on the Exchange tab?
-    
+
     super(options, context)
     const ecvSelf = this
     const self = context
@@ -58,45 +57,45 @@ class ExchangeContentView extends View {
 
   _setup_views () {
     const self = this
-    //self._refresh_sending_fee();
-    console.log("Setup view stuff");
+    // self._refresh_sending_fee();
+    console.log('Setup view stuff')
   }
 
   // New refactored
-  _setup_tabButtonClickListener(context) {
-    const self = this;
-    console.log("Setting up tab button click listener");
-    let tabElement = document.getElementById('tabButton-exchange');
-    //tabElement.addEventListener('click', self.renderExchangeForm.bind(context))
+  _setup_tabButtonClickListener (context) {
+    const self = this
+    console.log('Setting up tab button click listener')
+    const tabElement = document.getElementById('tabButton-exchange')
+    // tabElement.addEventListener('click', self.renderExchangeForm.bind(context))
   }
 
   // New refactored
-  renderExchangeForm(context) {
+  renderExchangeForm (context) {
     // Let's check whether we're unlocked, and if yes, refresh the wallet selector
-    const self = this 
-    console.log(self.exchangeFormTemplate);
+    const self = this
+    console.log(self.exchangeFormTemplate)
     if (self.walletsListController.records.length > 0) {
-      let walletHtml = exchangeHelper.walletSelectorTemplate(self)
-      console.log(walletHtml);
-      let walletSelector = document.getElementById('wallet-selector');
-      walletSelector.innerHTML = walletHtml;
-    }   
+      const walletHtml = exchangeHelper.walletSelectorTemplate(self)
+      console.log(walletHtml)
+      const walletSelector = document.getElementById('wallet-selector')
+      walletSelector.innerHTML = walletHtml
+    }
   }
 
   _setup_emptyStateContainerView (context) {
     // TODO: wrap this in a promise so that we can execute logic after this
     const self = this
-    self.exchangeFormTemplate = exchangeHelper.htmlFormTemplate();
-    let parentElementToAttachListenerTo = document.getElementById('tabButton-exchange');
+    self.exchangeFormTemplate = exchangeHelper.htmlFormTemplate()
+    const parentElementToAttachListenerTo = document.getElementById('tabButton-exchange')
     // We need to refactor this to update a template
     const initialExchangeInit = setInterval(() => {
       // We can't guarantee the existence of the tabButton-exchange div because of how the page loads, so we wrap it in an interval that fires as soon as the render is done
-      let parentElementToAttachListenerTo = document.getElementById('tabButton-exchange');
+      const parentElementToAttachListenerTo = document.getElementById('tabButton-exchange')
       if (parentElementToAttachListenerTo !== null) {
-        self._setup_tabButtonClickListener(self.context);
+        self._setup_tabButtonClickListener(self.context)
         clearInterval(self.initialExchangeInit)
         // TODO: We need to move the walletExchangeOptions init somewhere else
-        //self._setup_walletExchangeOptions(self.context)
+        // self._setup_walletExchangeOptions(self.context)
       }
     }, 200)
 
@@ -114,7 +113,7 @@ class ExchangeContentView extends View {
       const layer = document.createElement('div')
       layer.classList.add('content-container')
       layer.classList.add('exchange-content-container')
-      layer.id = 'exchange-content-container';
+      layer.id = 'exchange-content-container'
       view.layer.appendChild(layer)
       contentContainerLayer = layer
     }
@@ -124,9 +123,9 @@ class ExchangeContentView extends View {
       layer.classList.add('message-label')
       layer.classList.add('exchangeRate')
       layer.id = 'explanatory-message'
-      let subLayer = document.createElement("exchange-landing-page");
-      subLayer.context = self.context;
-      layer.appendChild(subLayer);
+      const subLayer = document.createElement('exchange-landing-page')
+      subLayer.context = self.context
+      layer.appendChild(subLayer)
 
       contentContainerLayer.appendChild(layer)
     }
@@ -146,7 +145,7 @@ class ExchangeContentView extends View {
     //     }
 
     //     const exchangePageDiv = document.getElementById('exchangePage')
-        
+
     //     let sendFunds = ExchangeUtils.sendFunds;
 
     //     const in_amount = document.getElementById('in_amount_remaining').innerHTML
@@ -183,20 +182,19 @@ class ExchangeContentView extends View {
     //   contentContainerLayer.appendChild(layer)
     // }
 
-    let e = document.getElementById("exchangePage");
+    const e = document.getElementById('exchangePage')
     self.emptyStateMessageContainerView = view
     self.addSubview(view)
 
-    //const a = document.getElementById('server-invalid')
+    // const a = document.getElementById('server-invalid')
     setTimeout(() => {
-      let tabElement = document.getElementById('tabButton-exchange');
+      const tabElement = document.getElementById('tabButton-exchange')
       tabElement.addEventListener('click', () => {
-        context.shell = shell;
-        exchangeHelper.doInit(context);
-      });
+        context.shell = shell
+        exchangeHelper.doInit(context)
+      })
       // after init, the localmonero link would exist, so we can bind to it
     }, 500)
-    
   }
 
   Navigation_Title () {
