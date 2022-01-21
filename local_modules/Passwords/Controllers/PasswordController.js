@@ -982,20 +982,16 @@ class PasswordController extends EventEmitter
 						}
 						//
 						// then delete pw record - after registrants in case any of them fail and user still needs to be able to delete some of them on next boot
-						self.context.persister.RemoveAllDocuments(
-							CollectionName, 
-							function(err)
-							{ 
-								if (err) {
-									cb(err)
-									return
-								}
-								console.log("🗑  Deleted password record.")
+						self.context.persister.RemoveAllDocuments(CollectionName)
+						.then ( () => {
+							console.log("🗑  Deleted password record.")
 								self.setupAndBoot() // now trigger a boot before we call cb (tho we could do it after - consumers will wait for boot)
 								//
 								cb(err)
-							}
-						)
+						})
+						.catch( (err) => {
+							cb(err)
+						})
 					}
 				)
 			},

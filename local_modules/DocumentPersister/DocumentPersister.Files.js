@@ -1,6 +1,7 @@
 "use strict"
 
 const async = require('async')
+const { readFile } = require('fs').promises
 
 class DocumentPersister {
 	constructor(options) {
@@ -121,17 +122,19 @@ class DocumentPersister {
 			})
 	}
 
-	RemoveAllDocuments(collectionName, fn) {
-		const self = this
-		self.IdsOfAllDocuments(collectionName)
-		.then( (ids) => {
-			self.RemoveDocumentsWithIds(collectionName, ids)
-			.then( (numRemoved) => {
-				fn
+	RemoveAllDocuments(collectionName) {
+		return new Promise ((res, rej) => {
+			const self = this
+			self.IdsOfAllDocuments(collectionName)
+			.then( (ids) => {
+				self.RemoveDocumentsWithIds(collectionName, ids)
+				.then( (numRemoved) => {
+					res()
+				})
 			})
-		})
-		.catch ( (err) => {
-			fn(err)
+			.catch ( (err) => {
+				rej(err)
+			})
 		})
 	}
 
@@ -177,17 +180,13 @@ class DocumentPersister {
 			return
 		}
 		async.map(documentFileDescriptions, function(documentFileDescription, cb) {
-				self.___read_contentStringWithDocumentFileDescription(
-					documentFileDescription,
-					function(err, documentContentString)
-					{
-						if (err) {
-							cb(err)
-							return
-						}
-						cb(null, documentContentString)
-					}
-				)
+				self.___read_contentStringWithDocumentFileDescription(documentFileDescription)
+				.then( (documentContentString) => {
+					cb(null, documentContentString)
+				})
+				.catch( (err) => {
+					cb(err)
+				})
 		})
 		.then( (results) => {
 			fn(null, results)
@@ -221,23 +220,28 @@ class DocumentPersister {
 		return `${fileKey}${self.____filenameExtension()}`
 	}
 
-	___read_contentStringWithDocumentFileDescription(documentFileDescription, fn) {
-		const self = this
-		const expected_fileKey = self.____fileKeyFromFileDescription(documentFileDescription)
-		const expected_filename = self.____filenameWithFileKey(expected_fileKey)
-		const filepath = self.pathTo_dataSubdir+"/"+expected_filename
-		self.fs.exists(filepath, function(exists)
-		{ // ^-- this is implemented with .exists instead of .open, even though .exists is deprecated, in order to remain compatible with html5-fs for Cordova
-			if (!exists) {
-				fn(new Error("Document for file description does not exist."))
-				return
-			}
-			self.fs.readFile(
-				filepath, 
-				{ encoding: 'utf8' }, 
-				fn
-			)
+	___read_contentStringWithDocumentFileDescription(documentFileDescription) {
+		return new Promise ( (res, rej) => {
+			const self = this
+			const expected_fileKey = self.____fileKeyFromFileDescription(documentFileDescription)
+			const expected_filename = self.____filenameWithFileKey(expected_fileKey)
+			const filepath = self.pathTo_dataSubdir+"/"+expected_filename
+			self.fs.exists(filepath, function(exists)
+			{ // ^-- this is implemented with .exists instead of .open, even though .exists is deprecated, in order to remain compatible with html5-fs for Cordova
+				if (!exists) {
+					rej(new Error("Document for file description does not exist."))
+					return
+				}
+				readFile(
+					filepath, 
+					{ encoding: 'utf8' }, 
+					
+				).then( (documentContentString) => {
+					res(documentContentString)
+				})
+			})
 		})
+		
 	}
 
 	___read_collection_documentFileDescriptions(collectionName) {

@@ -590,23 +590,21 @@ class ListBaseController extends EventEmitter
 		self.hasBooted = false
 		// now we'll wait for the "did" event ---v before emiting anything like list updated, etc
 	}
+
 	passwordController_DeleteEverything(fn)
 	{
 		const self = this
 		const collectionName = self.override_CollectionName()
-		self.context.persister.RemoveAllDocuments(
-			collectionName, 
-			function(err)
-			{
-				if (err) {
-					fn(err) // must call back!
-					return
-				}
-				console.log(`🗑  Deleted all ${collectionName}.`)
-				fn() // must call back!
-			}
-		)
+		self.context.persister.RemoveAllDocuments(collectionName)
+		.then( () => {
+			console.log(`🗑  Deleted all ${collectionName}.`)
+			fn() // must call back!
+		})
+		.catch( (err) => {
+			fn(err) // must call back!
+		})
 	}
+	
 	_passwordController_EventName_didDeconstructBootedStateAndClearPassword()
 	{
 		const self = this
