@@ -429,7 +429,7 @@ class PasswordController extends EventEmitter
 								return // just silently exit after unguarding
 							}
 
-							symmetric_string_cryptor.DecryptedStringAsync(self.encryptedMessageForUnlockChallenge, existingPassword)
+							symmetric_string_cryptor.New_DecryptedString__Async(self.encryptedMessageForUnlockChallenge, existingPassword)
 							.then( (decryptedMessageForUnlockChallenge) => {
 								if (decryptedMessageForUnlockChallenge !== plaintextMessageToSaveForUnlockChallenges) {
 									const errStr = self._new_incorrectPasswordValidationErrorMessageString()
@@ -869,17 +869,9 @@ class PasswordController extends EventEmitter
 			fn(new Error(errStr))
 			throw errStr
 		}
-		const encryptedMessageForUnlockChallenge = symmetric_string_cryptor.New_EncryptedBase64String__Async(
-			plaintextMessageToSaveForUnlockChallenges,
-			self.password,
-			function(err, encryptedMessageForUnlockChallenge)
-			{
-				if (err) {
-					console.error("Error while encrypting message for unlock challenge:", err)
-					fn(err)
-					throw err
-				}
-				self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
+		symmetric_string_cryptor.New_EncryptedBase64String__Async(plaintextMessageToSaveForUnlockChallenges, self.password)
+		.then( (encryptedBase64String) => {
+			self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
 				const persistableDocument =
 				{
 					_id: self.id, // critical for update
@@ -893,8 +885,12 @@ class PasswordController extends EventEmitter
 				} else {
 					_proceedTo_updateExistingDocument(persistableDocument)
 				}
-			}
-		)
+		})
+		.catch( (err) => {
+			console.error("Error while encrypting message for unlock challenge:", err)
+			fn(err)
+		})
+			
 		function _proceedTo_insertNewDocument(persistableDocument)
 		{
 			const _id = uuidV1() // generate new

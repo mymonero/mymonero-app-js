@@ -27,120 +27,79 @@ var cryptor_settings =
 }
 //
 // Encryption
-function New_EncryptedBase64String__Async(plaintext_msg, password, fn) {
-	if (typeof plaintext_msg === 'undefined') {
-		return undefined
-	}
-	if (plaintext_msg == null) {
-		return null
-	}
-	Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer.from(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
-	Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8')) // we're expecting a string, but might as well check anyway
-	//
-	const components = 
-	{
-		headers: 
-		{
-			version: new Buffer.from(String.fromCharCode(currentVersionCryptorFormatVersion)),
-			options: new Buffer.from(String.fromCharCode(cryptor_settings.options))
+function New_EncryptedBase64String__Async(plaintext_msg, password) {
+	return new Promise( (res, rej) => {
+		if (typeof plaintext_msg === 'undefined') {
+			rej(undefined)
 		}
-	}
-	components.headers.encryption_salt = _new_random_salt()
-	components.headers.hmac_salt = _new_random_salt()
-	components.headers.iv = _new_random_iv_of_length(cryptor_settings.iv_length)
-	//
-	// TODO: maybe do the key gen here in parallel
-	_new_calculated_pbkdf2_key__async(password, components.headers.encryption_salt, function(err, encryption_key)
+		if (plaintext_msg == null) {
+			rej(null)
+		}
+		Buffer.isBuffer(plaintext_msg) || (plaintext_msg = new Buffer.from(plaintext_msg, 'utf8')) // we're expecting a string, but might as well check anyway
+		Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8')) // we're expecting a string, but might as well check anyway
+		//
+		const components = 
 		{
-			if (err) {
-				fn(err)
-				return
+			headers: 
+			{
+				version: new Buffer.from(String.fromCharCode(currentVersionCryptorFormatVersion)),
+				options: new Buffer.from(String.fromCharCode(cryptor_settings.options))
 			}
-			_new_calculated_pbkdf2_key__async(password, components.headers.hmac_salt, function(err, hmac_key)
-				{
-					if (err) {
-						fn(err)
-						return
-					}
-					var iv = components.headers.iv
-					if (Buffer.isBuffer(iv) == false) {
-						throw "Expected Buffer.isBuffer(iv)";
-					}
-					if (Buffer.isBuffer(encryption_key) == false) {
-						throw "Expected Buffer.isBuffer(encryption_key)";
-					}
-					if (cryptor_settings.iv_length !== components.headers.iv.length) {
-						throw "Expected cryptor_settings.iv_length == components.headers.iv.length";
-					}
-					const cipher = crypto.createCipheriv(cryptor_settings.algorithm, encryption_key, iv);
-					// pkcs padding is done automatically; see cipher.setAutoPadding
-					components.cipher_text = Buffer.concat([
-						cipher.update(plaintext_msg), 
-						cipher.final()
-					]);
-					var data = Buffer.concat([
-						components.headers.version,
-						components.headers.options,
-						components.headers.encryption_salt || new Buffer.from(''),
-						components.headers.hmac_salt || new Buffer.from(''),
-						components.headers.iv,
-						components.cipher_text
-					]);
-					const hmac = _new_generated_hmac(components, hmac_key);
-					const encryptedMessage_base64String = Buffer.concat([data, hmac]).toString('base64');
-					//
-					fn(null, encryptedMessage_base64String)
-				}
-			)
 		}
-	)
+		components.headers.encryption_salt = _new_random_salt()
+		components.headers.hmac_salt = _new_random_salt()
+		components.headers.iv = _new_random_iv_of_length(cryptor_settings.iv_length)
+		//
+		// TODO: maybe do the key gen here in parallel
+		_new_calculated_pbkdf2_key__async(password, components.headers.encryption_salt, function(err, encryption_key)
+			{
+				if (err) {
+					rej(err)
+				}
+				_new_calculated_pbkdf2_key__async(password, components.headers.hmac_salt, function(err, hmac_key)
+					{
+						if (err) {
+							rej(err)
+						}
+						var iv = components.headers.iv
+						if (Buffer.isBuffer(iv) == false) {
+							throw "Expected Buffer.isBuffer(iv)";
+						}
+						if (Buffer.isBuffer(encryption_key) == false) {
+							throw "Expected Buffer.isBuffer(encryption_key)";
+						}
+						if (cryptor_settings.iv_length !== components.headers.iv.length) {
+							throw "Expected cryptor_settings.iv_length == components.headers.iv.length";
+						}
+						const cipher = crypto.createCipheriv(cryptor_settings.algorithm, encryption_key, iv);
+						// pkcs padding is done automatically; see cipher.setAutoPadding
+						components.cipher_text = Buffer.concat([
+							cipher.update(plaintext_msg), 
+							cipher.final()
+						]);
+						var data = Buffer.concat([
+							components.headers.version,
+							components.headers.options,
+							components.headers.encryption_salt || new Buffer.from(''),
+							components.headers.hmac_salt || new Buffer.from(''),
+							components.headers.iv,
+							components.cipher_text
+						]);
+						const hmac = _new_generated_hmac(components, hmac_key);
+						const encryptedMessage_base64String = Buffer.concat([data, hmac]).toString('base64');
+						//
+						res(encryptedMessage_base64String)
+					}
+				)
+			}
+		)
+	});
 }
 module.exports.New_EncryptedBase64String__Async = New_EncryptedBase64String__Async;
 //
 // Decryption
-function New_DecryptedString__Async(encrypted_msg_base64_string, password, fn) {
-	Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8'));
-
-	if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
-		console.warn("New_DecryptedString__Async was passed nil encrypted_msg_base64_string")
-		return fn(null, encrypted_msg_base64_string)
-	}
-	var unpacked_base64_components = _new_encrypted_base64_unpacked_components_object(encrypted_msg_base64_string)
-	isHMACValidAsync(unpacked_base64_components, password).then( (isValid) => {
-		if (isValid === false) {
-			const err = new Error("HMAC is not valid.")
-			fn(err)
-			return				
-		}
-		pbkdf2Async(password, unpacked_base64_components.headers.encryption_salt)
-		.then((cipherKey_binaryBuffer) => {
-			const deCipher = crypto.createDecipheriv(
-				cryptor_settings.algorithm, 
-				cipherKey_binaryBuffer, 
-				unpacked_base64_components.headers.iv
-			);
-			// pkcs unpadding is done automatically; see cipher.setAutoPadding
-			const unpadded_decrypted_buffer = Buffer.concat([
-				deCipher.update(unpacked_base64_components.cipher_text), 
-				deCipher.final()
-			]);
-			const decrypted_string = unpadded_decrypted_buffer.toString('utf8')
-			//
-			fn(null, decrypted_string)
-		})
-		.catch((err) => {
-			fn(err)
-		})
-	}).catch( (err) => {
-		fn(err)
-	})
-}
-module.exports.New_DecryptedString__Async = New_DecryptedString__Async;
-
-
-function DecryptedStringAsync(encrypted_msg_base64_string, password) {
+function New_DecryptedString__Async(encrypted_msg_base64_string, password) {
 	return new Promise( (res, rej) => {
-	
 		Buffer.isBuffer(password) || (password = new Buffer.from(password, 'utf8'));
 
 		if (!encrypted_msg_base64_string || typeof encrypted_msg_base64_string === 'undefined') {
@@ -151,7 +110,7 @@ function DecryptedStringAsync(encrypted_msg_base64_string, password) {
 		isHMACValidAsync(unpacked_base64_components, password).then( (isValid) => {
 			if (isValid === false) {
 				const err = new Error("HMAC is not valid.")
-				rej(err)
+				rej(err)		
 			}
 			pbkdf2Async(password, unpacked_base64_components.headers.encryption_salt)
 			.then((cipherKey_binaryBuffer) => {
@@ -177,7 +136,8 @@ function DecryptedStringAsync(encrypted_msg_base64_string, password) {
 		})
 	});
 }
-module.exports.DecryptedStringAsync = DecryptedStringAsync;
+module.exports.New_DecryptedString__Async = New_DecryptedString__Async;
+
 // Shared
 function _new_encrypted_base64_unpacked_components_object(b64str) 
 {

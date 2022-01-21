@@ -21,7 +21,7 @@ function read(persister, CollectionName, persistableObject,	fn) {
 	})
 
 	function __proceedTo_decryptEncryptedDocument(encryptedBase64String) {
-		string_cryptor.DecryptedStringAsync(encryptedBase64String, self.persistencePassword)
+		string_cryptor.New_DecryptedString__Async(encryptedBase64String, self.persistencePassword)
 		.then( (plaintextString) => {
 			var plaintextDocument;
 			try {
@@ -50,23 +50,18 @@ function write(persister, persistableObject, CollectionName, plaintextDocument, 
 		plaintextDocument._id = _id
 	}
 	const plaintextJSONString = JSON.stringify(plaintextDocument)
-	string_cryptor.New_EncryptedBase64String__Async(
-		plaintextJSONString,
-		persistencePassword,
-		function(err, encryptedBase64String)
-		{
-			if (err) {
-				console.error("Error while saving :", err)
-				fn(err)
-				return
-			}
-			if (self._id === null) {
-				_proceedTo_insertNewDocument(encryptedBase64String)
-			} else {
-				_proceedTo_updateExistingDocument(encryptedBase64String)
-			}
+	string_cryptor.New_EncryptedBase64String__Async(plaintextJSONString, persistencePassword)
+	.then( (encryptedBase64String) => {
+		if (self._id === null) {
+			_proceedTo_insertNewDocument(encryptedBase64String)
+		} else {
+			_proceedTo_updateExistingDocument(encryptedBase64String)
 		}
-	)
+	})
+	.catch( (err) => {
+		console.error("Error while saving :", err)
+			fn(err)
+	})
 
 	function _proceedTo_insertNewDocument(encryptedBase64String) {
 		persister.InsertDocument(CollectionName, plaintextDocument._id, encryptedBase64String)

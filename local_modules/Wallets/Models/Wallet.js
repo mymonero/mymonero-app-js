@@ -399,17 +399,9 @@ class Wallet extends EventEmitter
 		//
 		function __proceedTo_decryptContentString(encryptedString)
 		{
-			string_cryptor.New_DecryptedString__Async(
-				encryptedString,
-				self.persistencePassword,
-				function(err, plaintextString)
-				{
-					if (err) {
-						console.error("❌  Decryption err: " + err.toString())
-						self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
-						return
-					}
-					self.initialization_encryptedString = null // now we can free this
+			string_cryptor.New_DecryptedString__Async(encryptedString, self.persistencePassword)
+			.then( (plaintextString) => {
+				self.initialization_encryptedString = null // now we can free this
 					//
 					var plaintextDocument = null;
 					try {
@@ -419,8 +411,11 @@ class Wallet extends EventEmitter
 						return
 					}
 					__proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
-				}
-			)
+			})
+			.catch( (err) => {
+				console.error("❌  Decryption err: " + err.toString())
+				self.__trampolineFor_failedToBootWith_fnAndErr(fn, err)
+			})
 		}
 		function __proceedTo_hydrateByParsingPlaintextDocument(plaintextDocument)
 		{ // reconstituting state…

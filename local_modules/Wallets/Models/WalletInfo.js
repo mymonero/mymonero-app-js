@@ -39,7 +39,7 @@ class WalletInfo
         this.dateLastFetched = dateLastFetched;
 
         console.log("💬  WalletInfo values set");
-        console.log(this);
+        // console.log(this);
     }
 
     update(totalReceived, totalSent, lockedBalance, spentOutputs, scannedTxHeight, scannedBlockHeight, scanStartHeight, transactionHeight, blockchainHeight) {
