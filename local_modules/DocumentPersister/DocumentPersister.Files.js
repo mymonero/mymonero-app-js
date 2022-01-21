@@ -36,7 +36,8 @@ class DocumentPersister {
 		{
 			const fileDescription = self._new_fileDescriptionWithComponents(collectionName, ids)
 			cb(null, fileDescription)
-		}, function(err, fileDescriptions) {
+		})
+		.then( (fileDescriptions) => {
 			self.___read_contentStringsWithDocumentFileDescriptions(fileDescriptions, fn)
 		})
 	}
@@ -51,17 +52,16 @@ class DocumentPersister {
 					fn(err)
 					return
 				}
-				async.map(
-					documentFileDescriptions,
-					function(documentFileDescription, cb)
-					{
+				async.map(documentFileDescriptions, function(documentFileDescription, cb)
+				{
 						cb(null, documentFileDescription._id)
-					},
-					function(err, results)
-					{
-						fn(err, results)
-					}
-				)
+				})
+				.then ( (results) => {
+					fn(null, results)
+				})
+				.catch( (err) => {
+					fn(err)
+				})
 			}
 		)
 	}
@@ -190,14 +190,13 @@ class DocumentPersister {
 						cb(null, documentContentString)
 					}
 				)
-		}, function(err, results) {
-				if (err) {
-					fn(err)
-					return
-				}
-				fn(null, results)
-			}
-		)
+		})
+		.then( (results) => {
+			fn(null, results)
+		})
+		.catch( (err) => {
+			fn(err)
+		})
 	}
 
 	____fileKeyFromFileDescription(fileDescription)
@@ -245,57 +244,54 @@ class DocumentPersister {
 
 	___read_collection_documentFileDescriptions(collectionName, fn) {
 		const self = this
-		self.fs.readdir(
-			self.pathTo_dataSubdir, 
-			function(err, files)
-			{ // filtering to what should be JSON doc files
-				const fileDescriptions = []
-				const extSuffix = self.____filenameExtension()
-				const extSuffix_length = extSuffix.length
-				async.map(
-					files,
-					function(file, cb)
-					{
-						if (file.endsWith(extSuffix) !== true) {
-							// we're not going to consider this an error because it could be the .DS_Store file
-							cb(null, file)
-							return
-						}
-						const filepath = self.pathTo_dataSubdir+"/"+file
-						self.fs.exists(filepath, function(exists)
-						{ // going to assume it's not a directory, but only to simplify things under Cordova, and because we are checking the file extension just above
-							const filename_sansExt = file.substring(0, file.length - extSuffix_length) // since we already validated that this string ends with extSuffix
-							const fileKey = filename_sansExt // assumption/hope
-							const fileKeyComponentDelimiterString = self.____fileKeyComponentDelimiterString()
-							const fileKey_components = fileKey.split(fileKeyComponentDelimiterString)
-							if (fileKey_components.length != 2) {
-								cb(new Error("Unrecognized filename format in db data directory."))
-								return
-							}
-							const fileKey_collectionName = fileKey_components[0]
-							if (fileKey_collectionName !== collectionName) {
-								// console.log("Skipping file named", fileKey, "as it's not in", collectionName)
-								cb(null, file) // skip
-								return
-							}
-							const fileKey_id  = fileKey_components[1]
-							const fileDescription = self._new_fileDescriptionWithComponents(
-								fileKey_collectionName, 
-								fileKey_id
-							)
-							fileDescriptions.push(fileDescription) // ought to be a JSON doc file
-							//
-							cb(null, file) // returning file but we are not using it
-						})
-					},
-					function(err, results)
-					{	// but we're actually going to disregard `results` here
-						// cause we filtered out directories above
-						fn(err, fileDescriptions)
+		self.fs.readdir(self.pathTo_dataSubdir, function(err, files)
+		{ // filtering to what should be JSON doc files
+			const fileDescriptions = []
+			const extSuffix = self.____filenameExtension()
+			const extSuffix_length = extSuffix.length
+			async.map(files, function(file, cb)
+			{
+				if (file.endsWith(extSuffix) !== true) {
+					// we're not going to consider this an error because it could be the .DS_Store file
+					cb(null, file)
+					return
+				}
+				const filepath = self.pathTo_dataSubdir+"/"+file
+				self.fs.exists(filepath, function(exists)
+				{ // going to assume it's not a directory, but only to simplify things under Cordova, and because we are checking the file extension just above
+					const filename_sansExt = file.substring(0, file.length - extSuffix_length) // since we already validated that this string ends with extSuffix
+					const fileKey = filename_sansExt // assumption/hope
+					const fileKeyComponentDelimiterString = self.____fileKeyComponentDelimiterString()
+					const fileKey_components = fileKey.split(fileKeyComponentDelimiterString)
+					if (fileKey_components.length != 2) {
+						cb(new Error("Unrecognized filename format in db data directory."))
+						return
 					}
-				)
-			}
-		)
+					const fileKey_collectionName = fileKey_components[0]
+					if (fileKey_collectionName !== collectionName) {
+						// console.log("Skipping file named", fileKey, "as it's not in", collectionName)
+						cb(null, file) // skip
+						return
+					}
+					const fileKey_id  = fileKey_components[1]
+					const fileDescription = self._new_fileDescriptionWithComponents(
+						fileKey_collectionName, 
+						fileKey_id
+					)
+					fileDescriptions.push(fileDescription) // ought to be a JSON doc file
+					//
+					cb(null, file) // returning file but we are not using it
+				})
+			})
+			.then( (results) => {
+				// but we're actually going to disregard `results` here
+				// cause we filtered out directories above
+				fn(null, fileDescriptions)
+			})
+			.catch( (err) => {
+				fn(err)
+			})
+		})
 	}
 
 }
