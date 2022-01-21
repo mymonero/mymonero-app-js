@@ -48,40 +48,32 @@ class PasswordController extends EventEmitter
 		const self = this
 		//
 		// first, check if any password model has been stored
-		self.context.persister.AllDocuments(
-			CollectionName,
-			function(err, contentStrings)
-			{
-				if (err) {
-					console.error("Error while fetching existing", CollectionName, err)
-					throw err
+		self.context.persister.AllDocuments(CollectionName)
+		.then((contentStrings) => {
+			const contentStrings_length = contentStrings.length
+			if (contentStrings_length === 0) { //
+				const mocked_doc =
+				{
+					userSelectedTypeOfPassword: self.AvailableUserSelectableTypesOfPassword().FreeformStringPW // default…… for desktop anyway. this might change based on UX direction
 				}
-				const contentStrings_length = contentStrings.length
-				if (contentStrings_length === 0) { //
-					const mocked_doc =
-					{
-						userSelectedTypeOfPassword: self.AvailableUserSelectableTypesOfPassword().FreeformStringPW // default…… for desktop anyway. this might change based on UX direction
-					}
-					_proceedTo_loadStateFromModel(
-						false, // never entered pw before
-						mocked_doc
-					)
-					return
-				}
-				if (contentStrings_length > 1) {
-					const errStr = "Error while fetching existing " + CollectionName + "... more than one PasswordModel found. Selecting first."
-					console.error(errStr)
-					// this is indicative of a code fault
-				}
-				const contentString = contentStrings[0]
-				const plaintextDoc = JSON.parse(contentString) // whole doc is not encrypted - only challenge
-				// console.log("💬  Found existing saved password model with _id", doc._id)
-				_proceedTo_loadStateFromModel(
-					true,
-					plaintextDoc
-				)
+				_proceedTo_loadStateFromModel(false, mocked_doc)
+				return
 			}
-		)
+			if (contentStrings_length > 1) {
+				const errStr = "Error while fetching existing " + CollectionName + "... more than one PasswordModel found. Selecting first."
+				console.error(errStr)
+				// this is indicative of a code fault
+			}
+			const contentString = contentStrings[0]
+			const plaintextDoc = JSON.parse(contentString) // whole doc is not encrypted - only challenge
+			// console.log("💬  Found existing saved password model with _id", doc._id)
+			_proceedTo_loadStateFromModel(true, plaintextDoc)
+		})
+		.catch((err) => {
+			console.error("Error while fetching existing", CollectionName, err)
+			throw err
+		})
+		
 		function _proceedTo_loadStateFromModel(
 			hasUserSavedAPassword,
 			passwordModel_doc

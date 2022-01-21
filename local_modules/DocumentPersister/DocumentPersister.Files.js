@@ -31,16 +31,25 @@ class DocumentPersister {
 		// console.log("self.pathTo_dataSubdir" , self.pathTo_dataSubdir)
 	}
 
-	DocumentsWithIds(collectionName, ids, fn) {
-		const self = this
-		async.map(ids, function(_id, cb)
-		{
-			const fileDescription = self._new_fileDescriptionWithComponents(collectionName, ids)
-			cb(null, fileDescription)
+	DocumentsWithIds(collectionName, ids) {
+		return new Promise ( (res, rej) => {
+			const self = this
+			async.map(ids, function(_id, cb)
+			{
+				const fileDescription = self._new_fileDescriptionWithComponents(collectionName, ids)
+				cb(null, fileDescription)
+			})
+			.then( (fileDescriptions) => {
+				self.___read_contentStringsWithDocumentFileDescriptions(fileDescriptions)
+				.then( (results) => {
+					res(results)
+				})
+				.catch( (err) => {
+					rej(err)
+				})
+			})
 		})
-		.then( (fileDescriptions) => {
-			self.___read_contentStringsWithDocumentFileDescriptions(fileDescriptions, fn)
-		})
+		
 	}
 
 	IdsOfAllDocuments(collectionName) {
@@ -66,15 +75,24 @@ class DocumentPersister {
 		
 	}
 
-	AllDocuments(collectionName, fn) {
-		const self = this
-		self.___read_collection_documentFileDescriptions(collectionName)
-		.then( (documentFileDescriptions) => {
-			self.___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions, fn)
+	AllDocuments(collectionName) {
+		return new Promise ((res, rej) => {
+			const self = this
+			self.___read_collection_documentFileDescriptions(collectionName)
+			.then( (documentFileDescriptions) => {
+				self.___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions)
+				.then((results) => {
+					res(results)
+				})
+				.catch((err) => {
+					rej(err)
+				})
+			})
+			.catch((err) => {
+				rej(err)
+			})
 		})
-		.catch((err) => {
-			fn(err)
-		})
+		
 	}
 
 	InsertDocument(collectionName, id, documentToInsert) {
@@ -172,27 +190,27 @@ class DocumentPersister {
 		}
 	}
 
-	___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions, fn)
-	{
-		const self = this
-		if (!documentFileDescriptions || documentFileDescriptions.length == 0) {
-			fn(null, [])
-			return
-		}
-		async.map(documentFileDescriptions, function(documentFileDescription, cb) {
-				self.___read_contentStringWithDocumentFileDescription(documentFileDescription)
-				.then( (documentContentString) => {
-					cb(null, documentContentString)
-				})
-				.catch( (err) => {
-					cb(err)
-				})
-		})
-		.then( (results) => {
-			fn(null, results)
-		})
-		.catch( (err) => {
-			fn(err)
+	___read_contentStringsWithDocumentFileDescriptions(documentFileDescriptions) {
+		return new Promise ( (res, rej) => {
+			const self = this
+			if (!documentFileDescriptions || documentFileDescriptions.length == 0) {
+				res([])
+			}
+			async.map(documentFileDescriptions, function(documentFileDescription, cb) {
+					self.___read_contentStringWithDocumentFileDescription(documentFileDescription)
+					.then( (documentContentString) => {
+						cb(null, documentContentString)
+					})
+					.catch( (err) => {
+						cb(err)
+					})
+			})
+			.then( (results) => {
+				res(results)
+			})
+			.catch( (err) => {
+				rej(err)
+			})
 		})
 	}
 

@@ -3,12 +3,8 @@ const string_cryptor = require('../symmetric_cryptor/symmetric_string_cryptor')
 
 function read(persister, CollectionName, persistableObject,	fn) {
 	const self = persistableObject
-	persister.DocumentsWithIds(CollectionName, [ self._id ], function(err, docs) {
-		if (err) {
-			console.error(err.toString())
-			fn(err)
-			return
-		}
+	persister.DocumentsWithIds(CollectionName, [ self._id ])
+	.then( (docs) => {
 		if (docs.length === 0) {
 			const errStr = "❌  Record with that _id not found."
 			const err = new Error(errStr)
@@ -18,6 +14,10 @@ function read(persister, CollectionName, persistableObject,	fn) {
 		}
 		const encryptedDocument = docs[0]
 		__proceedTo_decryptEncryptedDocument(encryptedDocument)
+	})
+	.catch((err) => {
+		console.error(err.toString())
+			fn(err)
 	})
 
 	function __proceedTo_decryptEncryptedDocument(encryptedBase64String) {

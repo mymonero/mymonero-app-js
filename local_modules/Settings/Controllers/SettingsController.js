@@ -47,32 +47,30 @@ class SettingsController extends EventEmitter
 		const self = this
 		//
 		// first, check if any password model has been stored
-		self.context.persister.AllDocuments(
-			CollectionName,
-			function(err, contentStrings)
-			{
-				if (err) {
-					console.error("Error while fetching existing", CollectionName, err)
-					throw err
-				}
-				const contentStrings_length = contentStrings.length
-				if (contentStrings_length === 0) { //
-					const mocked_doc = JSON.parse(JSON.stringify(k_defaults_record)) // hamfisted copy
-					_proceedTo_loadStateFromRecord(mocked_doc)
-					return
-				}
-				if (contentStrings_length > 1) {
-					const errStr = "Error while fetching existing " + CollectionName + "... more than one record found. Selecting first."
-					console.error(errStr)
-					// this is indicative of a code fault
-					throw errStr // might as well throw then
-				}
-				const plaintextString = contentStrings[0] // NOTE: Settings is not presently encrypted
-				const doc = JSON.parse(plaintextString);
-				// console.log("💬  Found existing saved " + CollectionName + " with _id", doc._id)
-				_proceedTo_loadStateFromRecord(doc)
+		self.context.persister.AllDocuments(CollectionName)
+		.then((contentStrings) => {
+			const contentStrings_length = contentStrings.length
+			if (contentStrings_length === 0) { //
+				const mocked_doc = JSON.parse(JSON.stringify(k_defaults_record)) // hamfisted copy
+				_proceedTo_loadStateFromRecord(mocked_doc)
+				return
 			}
-		)
+			if (contentStrings_length > 1) {
+				const errStr = "Error while fetching existing " + CollectionName + "... more than one record found. Selecting first."
+				console.error(errStr)
+				// this is indicative of a code fault
+				throw errStr // might as well throw then
+			}
+			const plaintextString = contentStrings[0] // NOTE: Settings is not presently encrypted
+			const doc = JSON.parse(plaintextString);
+			// console.log("💬  Found existing saved " + CollectionName + " with _id", doc._id)
+			_proceedTo_loadStateFromRecord(doc)
+		})
+		.catch((err) => {
+			console.error("Error while fetching existing", CollectionName, err)
+			throw err
+		})
+		
 		function _proceedTo_loadStateFromRecord(record_doc)
 		{
 			self._id = record_doc._id || undefined

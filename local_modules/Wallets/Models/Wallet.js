@@ -101,40 +101,35 @@ class Wallet extends EventEmitter
 	__setup_fetchExistingDoc_andAwaitBoot(context)
 	{
 		const self = this
-		self.context.persister.DocumentsWithIds(
-			wallet_persistence_utils.CollectionName,
-			[ self._id ], // cause we're saying we have an _id passed in…
-			function(err, contentStrings)
-			{
-				if (err) {
-					console.error("err.message:", err.message)
-					self.failedToInitialize_cb(err)
-					return
-				}
-				if (contentStrings.length === 0) {
-					const errStr = "❌  Wallet with that _id not found."
-					const err = new Error(errStr)
-					console.error(errStr)
-					self.failedToInitialize_cb(err)
-					return
-				}
-				const encryptedString = contentStrings[0]
-				// and we hang onto this for when the instantiator opts to boot the instance
-				self.initialization_encryptedString = encryptedString
-				self.successfullyInitialized_cb()
-				let checkWalletExists = false;
-				context.wallets.forEach((element) => {
-					console.log('checking element2');
-					if (element._id === self._id) {
-						console.log('success');
-						checkWalletExists = true;
-					}
-				});
-				if (!checkWalletExists) {
-					context.wallets.push(self);
-				}
+		self.context.persister.DocumentsWithIds(wallet_persistence_utils.CollectionName, [ self._id ])
+		.then((contentStrings) => {
+			if (contentStrings.length === 0) {
+				const errStr = "❌  Wallet with that _id not found."
+				const err = new Error(errStr)
+				console.error(errStr)
+				self.failedToInitialize_cb(err)
+				return
 			}
-		)
+			const encryptedString = contentStrings[0]
+			// and we hang onto this for when the instantiator opts to boot the instance
+			self.initialization_encryptedString = encryptedString
+			self.successfullyInitialized_cb()
+			let checkWalletExists = false;
+			context.wallets.forEach((element) => {
+				console.log('checking element2');
+				if (element._id === self._id) {
+					console.log('success');
+					checkWalletExists = true;
+				}
+			});
+			if (!checkWalletExists) {
+				context.wallets.push(self);
+			}
+		})
+		.catch((err) => {
+			console.error("err.message:", err.message)
+			self.failedToInitialize_cb(err)
+		})
 	}
 	__setup_andAwaitBootAndLogInAndDocumentCreation(context)
 	{
