@@ -63,13 +63,11 @@ class Contact extends EventEmitter {
 
   __setup_didFailToBoot (err) {
     const self = this
-    {
-      self.didFailToInitialize_flag = true
-      self.didFailToInitialize_errOrNil = err
-      //
-      self.didFailToBoot_flag = true
-      self.didFailToBoot_errOrNil = err
-    }
+    self.didFailToInitialize_flag = true
+    self.didFailToInitialize_errOrNil = err
+
+    self.didFailToBoot_flag = true
+    self.didFailToBoot_errOrNil = err
     setTimeout(function () { // wait til next tick so that instantiator cannot have missed this
       self.failedToInitialize_cb(err, self)
       self.emit(self.EventName_errorWhileBooting(), err)
@@ -106,12 +104,10 @@ class Contact extends EventEmitter {
       })
 
     function __proceedTo_hydrateByParsingPlaintextDocument (plaintextDocument) { // reconstituting state…
-      contact_persistence_utils.HydrateInstance(
-        self,
-        plaintextDocument
-      )
+      contact_persistence_utils.HydrateInstance(self, plaintextDocument)
       __proceedTo_validateHydration()
     }
+
     function __proceedTo_validateHydration () {
       function _failWithValidationErr (errStr) {
         const err = new Error(errStr)
@@ -126,7 +122,6 @@ class Contact extends EventEmitter {
     }
   }
 
-  //
   _startObserving_openAliasResolver () {
     const self = this
     const emitter = self.context.openAliasResolver
@@ -165,7 +160,7 @@ class Contact extends EventEmitter {
 
   TearDown () {
     const self = this
-    //
+
     self._stopObserving_openAliasResolver()
   }
 
@@ -256,11 +251,7 @@ class Contact extends EventEmitter {
       return null // integrated addr must not be generated for subaddrs
     }
     // now we know we have a std xmr addr and a short pid
-    const int_addr = self.context.monero_utils.new__int_addr_from_addr_and_short_pid(
-      address,
-      payment_id,
-      self.context.nettype
-    )
+    const int_addr = self.context.monero_utils.new__int_addr_from_addr_and_short_pid(address, payment_id, self.context.nettype)
     return int_addr
   }
 
@@ -358,32 +349,27 @@ class Contact extends EventEmitter {
       })
   }
 
-  Set_valuesByKey (
-    valuesByKey, // keys like "emoji", "fullname", "address", "cached_OAResolved_XMR_address"
-    fn // (err?) -> Void
-  ) {
+  Set_valuesByKey (valuesByKey, fn) {
     const self = this
     const valueKeys = Object.keys(valuesByKey)
     for (const valueKey of valueKeys) {
       const value = valuesByKey[valueKey]
-      { // validate
-        if (valueKey === 'emoji') {
-          const supposedEmoji = value
-          if (Emojis.indexOf(supposedEmoji) === -1) {
-            const errStr = 'Input to set emoji was not a known emoji.'
-            fn(new Error(errStr))
-            return
-          }
-        } else if (valueKey === 'address') {
-          const address = value
-          if (self.context.openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) { // if new one is not OA addr, clear cached OA-resolved info
-            self.cached_OAResolved_XMR_address = null
-          }
+      // validate
+      if (valueKey === 'emoji') {
+        const supposedEmoji = value
+        if (Emojis.indexOf(supposedEmoji) === -1) {
+          const errStr = 'Input to set emoji was not a known emoji.'
+          fn(new Error(errStr))
+          return
+        }
+      } else if (valueKey === 'address') {
+        const address = value
+        if (self.context.openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) { // if new one is not OA addr, clear cached OA-resolved info
+          self.cached_OAResolved_XMR_address = null
         }
       }
-      { // set
-        self[valueKey] = value
-      }
+      // set
+      self[valueKey] = value
     }
     self.saveToDisk()
       .then(() => {

@@ -4,10 +4,6 @@ const EventEmitter = require('events')
 const async = require('async')
 
 class ListBaseController extends EventEmitter {
-  //
-  //
-  // Lifecycle - Initialization
-  //
   constructor (options, context) {
     super() // must call super before we can access `this`
     //
@@ -258,9 +254,6 @@ class ListBaseController extends EventEmitter {
     }
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////
-  // Lifecycle/Runtime - Teardown
-
   TearDown () {
     const self = this
     self._tearDown_records()
@@ -319,10 +312,6 @@ class ListBaseController extends EventEmitter {
     }
   }
 
-  //
-  //
-  // Booting/Booted - Accessors - Public - Events emitted
-  //
   EventName_booted () {
     return 'EventName_booted'
   }
@@ -340,10 +329,6 @@ class ListBaseController extends EventEmitter {
     return 'EventName_deletedRecordWithId'
   }
 
-  //
-  //
-  // Runtime - Accessors - Private - Lookups - Documents & instances
-  //
   _new_idsOfPersistedRecords (fn) {
     const self = this
     self.context.persister.IdsOfAllDocuments(self.override_CollectionName())
@@ -368,13 +353,9 @@ class ListBaseController extends EventEmitter {
         }
       }
     }
-    throw 'Record unexpectedly not found'
+    throw Error('Record unexpectedly not found')
   }
 
-  //
-  //
-  // Booted - Accessors - Public
-  //
   WhenBooted_Records (fn) {
     const self = this
     self.ExecuteWhenBooted(
@@ -384,10 +365,6 @@ class ListBaseController extends EventEmitter {
     )
   }
 
-  //
-  //
-  // Runtime - Imperatives - Public - Deferring control til boot
-  //
   ExecuteWhenBooted (fn) {
     const self = this
     if (self.hasBooted == true) {
@@ -397,14 +374,7 @@ class ListBaseController extends EventEmitter {
     self._whenBooted_fns.push(fn)
   }
 
-  //
-  //
-  // Runtime - Imperatives - CRUD - (D)eletion
-  //
-  WhenBooted_DeleteRecordWithId (
-    _id,
-    fn
-  ) {
+  WhenBooted_DeleteRecordWithId (_id, fn) {
     const self = this
     //
     self.ExecuteWhenBooted(
@@ -425,10 +395,7 @@ class ListBaseController extends EventEmitter {
     )
   }
 
-  givenBooted_DeleteRecord (
-    recordInstance,
-    fn
-  ) {
+  givenBooted_DeleteRecord (recordInstance, fn) {
     const self = this
     const indexOfRecord = self.__recordInstanceAndIndexWithId(recordInstance._id)
     self.givenBooted_DeleteRecordAtIndex(
@@ -438,11 +405,7 @@ class ListBaseController extends EventEmitter {
     )
   }
 
-  givenBooted_DeleteRecordAtIndex (
-    recordInstance,
-    indexOfRecord,
-    fn
-  ) {
+  givenBooted_DeleteRecordAtIndex (recordInstance, indexOfRecord, fn) {
     const self = this
     self.givenBooted_deleteRecord_noListUpdatedEmit(
       recordInstance,
@@ -479,16 +442,8 @@ class ListBaseController extends EventEmitter {
     )
   }
 
-  //
-  //
-  // Runtime - Delegation - Post-instantiation hook
-  //
   RuntimeContext_postWholeContextInit_setup () {}
-  //
-  //
-  //
-  // Runtime - Imperatives - Private - Event observation - Records
-  //
+
   overridable_startObserving_record (record) {
     const self = this
   }
@@ -497,10 +452,6 @@ class ListBaseController extends EventEmitter {
     const self = this
   }
 
-  //
-  //
-  // Runtime/Boot - Delegation - Private - List updating/instance management
-  //
   _atRuntime__record_wasSuccessfullySetUpAfterBeingAdded (recordInstance) {
     const self = this
     self._atRuntime__record_wasSuccessfullySetUpAfterBeingAdded_noSortNoListUpdated(recordInstance)
@@ -529,8 +480,6 @@ class ListBaseController extends EventEmitter {
     self.emit(self.EventName_listUpdated())
   }
 
-  //
-  // Runtime/Boot - Delegation - Private
   passwordController_ChangePassword (
     toPassword,
     fn // this MUST get called

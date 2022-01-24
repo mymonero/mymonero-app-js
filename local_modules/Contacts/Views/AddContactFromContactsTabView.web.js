@@ -16,9 +16,9 @@ class AddContactFromContactsTabView extends AddContactView {
     {
       const ContactDetailsView = require('./ContactDetailsView.web')
       const options =
-			{
-			  record: contact // note: options takes `record`, not `contact`
-			}
+      {
+        record: contact // note: options takes `record`, not `contact`
+      }
       const view = new ContactDetailsView(options, self.context)
       const modalParentView = self.navigationController.modalParentView
       const underlying_navigationController = modalParentView

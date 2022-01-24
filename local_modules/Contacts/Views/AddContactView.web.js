@@ -42,9 +42,7 @@ class AddContactView extends ContactFormView {
     layer.style.marginTop = '15px'
     layer.style.height = 32 + 8 + 'px'
     self.actionButtonsContainerView = view
-    {
-      self._setup_actionButton_chooseFile()
-    }
+    self._setup_actionButton_chooseFile()
     self.form_containerLayer.appendChild(view.layer)
   }
 
