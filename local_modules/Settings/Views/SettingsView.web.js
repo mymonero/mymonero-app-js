@@ -9,7 +9,7 @@ const commonComponents_switchToggles = require('../../MMAppUICommonComponents/sw
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_ccySelect = require('../../MMAppUICommonComponents/ccySelect.web')
 const commonComponents_tooltips = require('../../MMAppUICommonComponents/tooltips.web')
-const config__MyMonero = require('../../HostedMoneroAPIClient/config__MyMonero')
+const sanitizeUrl = require('@braintree/sanitize-url').sanitizeUrl
 
 class SettingsView extends View {
   constructor (options, context) {
@@ -259,8 +259,28 @@ class SettingsView extends View {
     const div = commonComponents_forms.New_fieldContainerLayer(self.context)
     {
       const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer('SERVER ADDRESS', self.context)
+      labelLayer.style.width = 'auto'
+      labelLayer.style.display = 'inline-block'
+      labelLayer.style.float = 'left'
+      labelLayer.style.marginTop = '0'
       div.appendChild(labelLayer)
-      //
+
+      const view = commonComponents_tables.New_clickableLinkButtonView(
+        'Save',
+        self.context,
+        function () {
+           self._serverURLInputLayer_did_save()
+        }
+      )
+      self.forgotPassword_buttonView = view
+      const layer = view.layer
+      layer.style.margin = '0 9px 0 0'
+
+      layer.style.display = 'inline-block'
+      layer.style.float = 'right'
+      layer.style.clear = 'none'
+      div.appendChild(layer)
+
       const valueLayer = commonComponents_forms.New_fieldValue_textInputLayer(self.context, {
         placeholderText: 'Leave blank to use mymonero.com'
       })
@@ -524,28 +544,16 @@ class SettingsView extends View {
     }
     //
     const fn = fn_orNil || function (didError, savableValue) {}
-    let mutable_value = (self.serverURLInputLayer.value || '').replace(/^\s+|\s+$/g, '') // whitespace-stripped
-    //
+    let mutable_value = sanitizeUrl(self.serverURLInputLayer.value) // whitespace-stripped
+
     let preSubmission_validationError = null
     {
       if (mutable_value != '') {
         if (mutable_value.indexOf('.') == -1 && mutable_value.indexOf(':') == -1 && mutable_value.indexOf('localhost') == -1) {
-          preSubmission_validationError = `Please enter a valid URL authority, e.g. ${config__MyMonero.API__authority}.`
+          preSubmission_validationError = `Please enter a valid URL authority, e.g. https://api.mymonero.com.`
         } else { // important else in the absence of reorganizing this code
           // strip http:// and https:// prefix here.. there's got to be a better way to do this..
           // ... probably not a good idea to naively strip "*://" prefix ... or is it?
-          const strippablePrefixes =
-					[
-					  'https://',
-					  'http://',
-					  '//' // we can strip it for https anyway
-					]
-          for (let i = 0; i < strippablePrefixes.length; i++) {
-            const prefix = strippablePrefixes[i]
-            if (mutable_value.indexOf(prefix) === 0) {
-              mutable_value = mutable_value.slice(prefix.length, mutable_value.length)
-            }
-          }
         }
       }
     }
@@ -571,6 +579,19 @@ class SettingsView extends View {
     }
     self.serverURLInputLayer.style.border = '1px solid #f97777'
     self.serverURL_validationMessageLayer.style.display = 'block'
+    self.serverURL_validationMessageLayer.style.color = '#f97777'
+    self.serverURL_validationMessageLayer.innerHTML = validationMessageString
+  }
+
+  serverURL_setSuccessMessage (validationMessageString) {
+    const self = this
+    if (validationMessageString === '' || !validationMessageString) {
+      self.ClearValidationMessage()
+      return
+    }
+    self.serverURLInputLayer.style.border = '1px solid #dfdedf'
+    self.serverURL_validationMessageLayer.style.display = 'block'
+    self.serverURL_validationMessageLayer.style.color = '#dfdedf'
     self.serverURL_validationMessageLayer.innerHTML = validationMessageString
   }
 
@@ -666,6 +687,11 @@ class SettingsView extends View {
     {
       if (self.serverURLInputLayer) {
         self.serverURLInputLayer.value = self.context.settingsController.specificAPIAddressURLAuthority || ''
+        if (self.context.settingsController.specificAPIAddressURLAuthority === 'https://api.mymonero.com') {
+          self.serverURL_setSuccessMessage('Set to mymonero.com')
+        } else {
+          self.serverURL_setSuccessMessage('Custom server url set. Set to https://api.mymonero.com to use mymonero.com')
+        }
       }
       // and now that the value is set…
       self._updateValidationErrorForAddressInputView() // so we get validation error from persisted but incorrect value, if necessary for user feedback
@@ -754,6 +780,62 @@ class SettingsView extends View {
             const currentValue = self.context.settingsController.specificAPIAddressURLAuthority || ''
             if (savableValue == currentValue) {
               // do not clear/re-log-in on wallets if we're, e.g., resetting the password programmatically after the user has canceled deleting all wallets
+              // self.serverURL_connecting_activityIndicatorLayer.style.display = 'none' // hide
+              self.serverURL_setSuccessMessage('Current server url')
+              self.serverURL_connecting_activityIndicatorLayer.style.display = 'none'
+              return
+            }
+            console.log('checking: ', savableValue)
+            self.context.hostedMoneroAPIClient.check(savableValue,
+              function (login__err) {
+                if (login__err) {
+                  self.serverURL_clearValidationMessage()
+                  if (login__err.message === 'invalid address and/or view key' || login__err.message === 'account does not exist') {
+                    self.serverURL_setSuccessMessage('Server is a LWS Server')
+                  } else {
+                    self.serverURL_setValidationMessage(login__err.message)
+                  }
+                }
+                self.serverURL_connecting_activityIndicatorLayer.style.display = 'none'
+              })
+          }
+        )
+      },
+      600
+    )
+  }
+
+  _serverURLInputLayer_did_save () {
+    const self = this
+    function __teardown_timeout_toSave_serverURL () {
+      if (self.timeout_toSave_serverURL != null && typeof self.timeout_toSave_serverURL !== 'undefined') {
+        clearTimeout(self.timeout_toSave_serverURL)
+        self.timeout_toSave_serverURL = null
+      }
+    }
+    __teardown_timeout_toSave_serverURL()
+    self.serverURL_clearValidationMessage()
+    {
+      const entered_serverURL_value = self.serverURLInputLayer.value || ''
+      if (entered_serverURL_value == '') {
+        self.serverURL_connecting_activityIndicatorLayer.style.display = 'none' // no need to show 'connecting…'
+      } else {
+        self.serverURL_connecting_activityIndicatorLayer.style.display = 'block' // show
+      }
+    }
+    // now wait until user is really done typing…
+    self.timeout_toSave_serverURL = setTimeout(
+      function () {
+        __teardown_timeout_toSave_serverURL() // zero timer pointer
+        //
+        self._updateValidationErrorForAddressInputView( // also called on init so we get validation error on load
+          function (didError, savableValue) {
+            if (didError) {
+              return // not proceeding to save
+            }
+            const currentValue = self.context.settingsController.specificAPIAddressURLAuthority || ''
+            if (savableValue == currentValue) {
+              // do not clear/re-log-in on wallets if we're, e.g., resetting the password programmatically after the user has canceled deleting all wallets
               self.serverURL_connecting_activityIndicatorLayer.style.display = 'none' // hide
               return
             }
@@ -769,6 +851,11 @@ class SettingsView extends View {
                   // but don't exit before hiding the 'connecting…' indicator
                 }
                 self.serverURL_connecting_activityIndicatorLayer.style.display = 'none' // hide
+                if (self.context.settingsController.specificAPIAddressURLAuthority === 'https://api.mymonero.com') {
+                  self.serverURL_setSuccessMessage('Set to mymonero.com')
+                } else {
+                  self.serverURL_setSuccessMessage('Custom server url set. Set to https://api.mymonero.com to use mymonero.com')
+                }
               }
             )
           }
