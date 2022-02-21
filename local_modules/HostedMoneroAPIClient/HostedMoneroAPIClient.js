@@ -29,11 +29,21 @@ class HostedMoneroAPIClient {
     }
   }
 
+  _new_apiAddress_authority () { // overridable
+    const self = this
+    return self.context.settingsController.specificAPIAddressURLAuthority
+  }
+
   check (url, fn) {
     const self = this
-    const parameters = net_service_utils.New_ParametersForWalletRequest('', '')
-    parameters.create_account = false
-    parameters.generated_locally = ''
+
+    const parameters = {
+      address: '',
+      view_key: '',
+      create_account: false,
+      generated_locally: ''
+    }
+
     const requestHandle = net_service_utils.HTTPRequest(
       self.request,
       url,
@@ -49,14 +59,18 @@ class HostedMoneroAPIClient {
     return requestHandle
   }
 
-  LogIn (address, view_key__private, generated_locally, fn) { // fn: (err?, new_address?) -> RequestHandle
+  LogIn (address, privateViewKey, generatedLocally, fn) {
     const self = this
-    const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
-    parameters.create_account = true
-    parameters.generated_locally = generated_locally
+
+    const parameters = {
+      address: address,
+      view_key: privateViewKey,
+      create_account: true,
+      generated_locally: generatedLocally
+    }
+
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/login',
       parameters,
       function (err, data) {
@@ -71,20 +85,19 @@ class HostedMoneroAPIClient {
       const new_address = data.new_address
       const received__generated_locally = data.generated_locally
       const start_height = data.start_height
-      // console.log("data from login: ", data)
-      // TODO? parse anything else?
-      //
       fn(null, new_address, received__generated_locally, start_height)
     }
     return requestHandle
   }
 
-  AddressInfo_returningRequestHandle (address, view_key__private, spend_key__public, spend_key__private, fn) { // -> RequestHandle
+  AddressInfo_returningRequestHandle (address, privateViewKey, publicSpendKey, privateSpendKey, fn) {
     const self = this
-    const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+    const parameters = {
+      address: address,
+      view_key: privateViewKey
+    }
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/get_address_info',
       parameters,
       function (err, data) {
@@ -97,12 +110,11 @@ class HostedMoneroAPIClient {
     )
     function __proceedTo_parseAndCallBack (data) {
       self.context.backgroundAPIResponseParser.Parsed_AddressInfo(
-
         data,
         address,
-        view_key__private,
-        spend_key__public,
-        spend_key__private,
+        privateViewKey,
+        publicSpendKey,
+        privateSpendKey,
         function (err, returnValuesByKey) {
           if (err) {
             fn(err)
@@ -153,12 +165,14 @@ class HostedMoneroAPIClient {
     return requestHandle
   }
 
-  AddressTransactions_returningRequestHandle (address, view_key__private, spend_key__public, spend_key__private, fn) {
+  AddressTransactions_returningRequestHandle (address, privateViewKey, publicSpendKey, privateSpendKey, fn) {
     const self = this
-    const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
+    const parameters = {
+      address: address,
+      view_key: privateViewKey
+    }
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/get_address_txs',
       parameters,
       function (err, data) {
@@ -173,9 +187,9 @@ class HostedMoneroAPIClient {
       self.context.backgroundAPIResponseParser.Parsed_AddressTransactions(
         data,
         address,
-        view_key__private,
-        spend_key__public,
-        spend_key__private,
+        privateViewKey,
+        publicSpendKey,
+        privateSpendKey,
         function (err, returnValuesByKey) {
           if (err) {
             fn(err)
@@ -208,18 +222,16 @@ class HostedMoneroAPIClient {
     return requestHandle
   }
 
-  // Getting wallet txs import info
-  ImportRequestInfoAndStatus (address, view_key__private, fn) {
+  ImportRequestInfoAndStatus (address, privateViewKey, fn) {
     const self = this
-    const parameters = net_service_utils.New_ParametersForWalletRequest(address, view_key__private)
-    net_service_utils.AddUserAgentParamters(
-      parameters,
-      self.appUserAgent_product,
-      self.appUserAgent_version
-    )
+    const parameters = {
+      address: address,
+      view_key: privateViewKey,
+      app_name: self.appUserAgent_product,
+      app_version: self.appUserAgent_version
+    }
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/import_wallet_request',
       parameters,
       function (err, data) {
@@ -246,19 +258,14 @@ class HostedMoneroAPIClient {
     return requestHandle
   }
 
-  // Getting outputs for sending funds
-  UnspentOuts (req_params, fn) { // -> RequestHandle
+  UnspentOuts (reqParams, fn) {
     const self = this
-    net_service_utils.AddUserAgentParamters(
-      req_params,
-      self.appUserAgent_product,
-      self.appUserAgent_version
-    )
+    reqParams.app_name = self.appUserAgent_product
+    reqParams.app_version = self.appUserAgent_version
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/get_unspent_outs',
-      req_params,
+      reqParams,
       function (err, data) {
         fn(err ? err.toString() : null, data)
       }
@@ -266,18 +273,14 @@ class HostedMoneroAPIClient {
     return requestHandle
   }
 
-  RandomOuts (req_params, fn) { // -> RequestHandle
+  RandomOuts (reqParams, fn) {
     const self = this
-    net_service_utils.AddUserAgentParamters(
-      req_params,
-      self.appUserAgent_product,
-      self.appUserAgent_version
-    )
+    reqParams.app_name = self.appUserAgent_product
+    reqParams.app_version = self.appUserAgent_version
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/get_random_outs',
-      req_params,
+      reqParams,
       function (err, data) {
         fn(err ? err.toString() : null, data)
       }
@@ -285,28 +288,15 @@ class HostedMoneroAPIClient {
     return requestHandle
   }
 
-  SubmitRawTx (req_params, fn) {
+  SubmitRawTx (reqParams, fn) {
     const self = this
-    // just a debug feature:
-    if (self.context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess === true) {
-      if (self.context.isDebug === true) {
-        console.warn('⚠️  WARNING: Mocking that SubmitSerializedSignedTransaction returned a success response w/o having hit the server.')
-        fn(null, {})
-        return
-      } else {
-        throw Error(`[${self.constructor.name}/SubmitSerializedSignedTransaction]: context.HostedMoneroAPIClient_DEBUGONLY_mockSendTransactionSuccess was true despite isDebug not being true. Set back to false for production build.`)
-      }
-    }
-    net_service_utils.AddUserAgentParamters(
-      req_params,
-      self.appUserAgent_product,
-      self.appUserAgent_version
-    )
+    reqParams.app_name = self.appUserAgent_product
+    reqParams.app_version = self.appUserAgent_version
+
     const requestHandle = net_service_utils.HTTPRequest(
-      self.request,
-      self.context.settingsController.specificAPIAddressURLAuthority,
+      self._new_apiAddress_authority(),
       '/submit_raw_tx',
-      req_params,
+      reqParams,
       function (err, data) {
         fn(err ? err.toString() : null, data)
       }
