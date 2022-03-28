@@ -195,15 +195,44 @@ class RootTabBarAndContentView extends TabBarAndContentView {
             self.sendTabContentView._proxied_ondragleave(e)
           }
         }
-        return false
-      }
-      self.layer.ondrop = function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        numberOfDragsActive = 0 // reset just in case ondragleave wasn't properly fired due to some DOM manipulation or on drop. can happen.
-        const indexOf_sendTabContentView = self.IndexOfTabBarContentView(self.sendTabContentView)
-        if (indexOf_sendTabContentView === self._currentlySelectedTabBarItemIndex) {
-          self.sendTabContentView._proxied_ondrop(e)
+        { // urlOpeningController
+            const controller = self.context.urlOpeningCoordinator
+            console.log(controller);
+            controller.on("EventName_TimeToHandleReceivedMoneroRequestURL", function (url) {
+                console.log("URL:" + url);
+                // KB: This is where we're going to hook into Yat deep links
+                if (url.indexOf("eid=") !== -1) {
+                    // this string has a Yat parameter in it
+
+                    console.log("That's a yat")
+                    // 1. Buy a Yat
+                    // eid, refresh_token
+                    let queryParameterOffset = url.indexOf("?");
+                    queryParameterOffset++; // remove trailing ?
+        
+                    let queryParameterString = url.substring(queryParameterOffset);
+                    let parameterArr = queryParameterString.split("&");
+                    let parameterObj = {};
+                    parameterArr.map((value) => {
+                        let offset = value.indexOf("=");
+                        let key = value.substring(0, offset);
+                        offset++;
+                        let newValue = value.substring(offset);
+                        parameterObj[key] = newValue;
+                    })
+                    parameterObj['eid'] = decodeURIComponent(parameterObj['eid']);
+                    console.log(parameterArr);
+                    console.log(parameterObj);
+                    // 2. Connect existing Yat(s)
+                    // refresh_token, eid, addresses (in YAT_TAG_1=ADDRESS_1|YAT_TAG_2=ADDRESS_2|...|YAT_TAG_N=ADDRESS_N) -- 
+                    // 0x1001 - std monero, 0x1002 subaddress monero
+                    // we should receive a refresh_token and an eid 
+                    // self._selectTab_withContentView(self.settingsTabContentView);
+                    // Maybe we just toast "Hi, linked Yat xxx to wallet.name"
+                } else { // fallback to handling request as a send funds request
+                    self._selectTab_withContentView(self.sendTabContentView);
+                }
+            })
         }
         return false
       }
