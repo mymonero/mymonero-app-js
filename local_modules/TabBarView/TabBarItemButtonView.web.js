@@ -4,7 +4,6 @@ const View = require('../Views/View.web')
 
 class TabBarItemButtonView extends View {
   constructor (options, context) {
-    console.log(options)
     options.tag = 'a'
     //
     super(options, context)
@@ -34,9 +33,6 @@ class TabBarItemButtonView extends View {
 
   setup_views () {
     const self = this
-    console.log(self)
-    console.log(self.layer_baseStyleTemplate)
-    console.log(self.icon_baseStyleTemplate)
     {
       const layer = self.layer
       layer.style.display = 'inline-block'
@@ -54,7 +50,6 @@ class TabBarItemButtonView extends View {
       self.__applyStylesToLayer(self.layer_baseStyleTemplate, self.layer)
     }
     { // icon
-      console.log(self.TabBarItem_icon_customStyle)
       const layer = document.createElement('div')
       layer.style.webkitAppRegion = 'no-drag' // make clickable
       layer.style.width = '100%'
@@ -66,7 +61,6 @@ class TabBarItemButtonView extends View {
       // self.iconImageLayer.classList.add(self.icon_baseStyleTemplate)
       self.iconImageLayer.id = self.icon_baseStyleTemplate
       if (self.icon_baseStyleTemplate.backgroundImage == 'url(../../../assets/img/XMRtoBTCInactive.svg)') {
-        console.log('welp')
         self.iconImageLayer.id = 'tabButton-exchange'
         self.iconImageLayer.classList.add('tabButton-exchange')
       }
