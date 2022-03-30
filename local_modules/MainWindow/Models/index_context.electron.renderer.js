@@ -22,6 +22,7 @@ const WalletAppCoordinator = require(__dirname + '/../../WalletAppCoordinator/Wa
 const URLOpeningCoordinator = require(__dirname + '/../../URLOpening/URLOpeningCoordinator.web')
 const MenuControllerController = require(__dirname + '/../../Menus/MenuControllerController.renderer')
 const AppUpdatesBridgeToMain = require(__dirname + '/../../AppUpdates/AppUpdatesBridgeToMain.electron.renderer')
+const Electron = require("electron")
 
 function NewHydratedContext (app, menuController, urlOpeningController, appUpdatesController, monero_utils) {
   const initialContext =
@@ -80,6 +81,7 @@ function NewHydratedContext (app, menuController, urlOpeningController, appUpdat
     }
   }
 
+  context.shell = Electron.shell
   return context
 }
 module.exports.NewHydratedContext = NewHydratedContext
