@@ -31,7 +31,7 @@
 //
 const EventEmitter = require('events')
 //
-const PROTOCOL_PREFIX = "mymoanero" // this is also specified for MacOS in packager.js under scheme
+const PROTOCOL_PREFIX = "mymonero" // this is also specified for MacOS in packager.js under scheme
 // maybe support "mymonero" too
 
 class URLOpeningController_Abstract extends EventEmitter {
