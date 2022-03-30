@@ -6,9 +6,9 @@ exports.CollectionName = CollectionName
 //
 // Utility functions
 function HydrateInstance (walletInstance, plaintextDocument) {
+  
   const self = walletInstance
-  //
-  // console.log("plaintextDocument", plaintextDocument)
+
   self.isLoggedIn = plaintextDocument.isLoggedIn
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 
@@ -42,6 +42,11 @@ function HydrateInstance (walletInstance, plaintextDocument) {
   self.public_address = plaintextDocument.public_address
   self.public_keys = plaintextDocument.public_keys
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+  if (plaintextDocument.eid !== 'undefined') {
+    self.eid = plaintextDocument.eid
+  }
+  
+
   //
   self.transactions = plaintextDocument.transactions
   self.transactions.forEach(
@@ -185,7 +190,9 @@ function SaveToDisk (walletInstance) {
       transactions: transactions,
       heights: heights,
       totals: totals,
-      spent_outputs: self.spent_outputs || [] // maybe not fetched yet
+      spent_outputs: self.spent_outputs || [], // maybe not fetched yet
+      // Optional Yat info
+      eid: self.eid
     }
     if (typeof self.login__new_address !== 'undefined') {
       plaintextDocument.login__new_address = self.login__new_address
