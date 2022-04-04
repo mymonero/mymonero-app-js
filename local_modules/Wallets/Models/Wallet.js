@@ -109,9 +109,7 @@ class Wallet extends EventEmitter {
         self.successfullyInitialized_cb()
         let checkWalletExists = false
         context.wallets.forEach((element) => {
-          console.log('checking element2')
           if (element._id === self._id) {
-            console.log('success')
             checkWalletExists = true
           }
         })
@@ -530,7 +528,7 @@ class Wallet extends EventEmitter {
         self.walletLabel,
         self.swatch,
         self.mnemonicString,
-        true, // persistEvenIfLoginFailed_forServerChange,
+        false, // persistEvenIfLoginFailed_forServerChange,
         fn
       )
     } else {
@@ -544,7 +542,7 @@ class Wallet extends EventEmitter {
         self.public_address,
         self.private_keys.view,
         self.private_keys.spend,
-        true, // persistEvenIfLoginFailed_forServerChange,
+        false, // persistEvenIfLoginFailed_forServerChange,
         fn
       )
     }
