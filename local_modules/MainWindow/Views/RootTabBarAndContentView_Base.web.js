@@ -207,7 +207,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
       controller.on("EventName_TimeToHandleYatDeepLink", function (url) {
           console.log("URL:" + url);
           // for speedy debug purposes - This variable gets set when the user specifies a wallet to connect a Yat (in settings)
-          this.context.walletsListController.addressToLink = "47joJKcNWs66f6ein9qTTVFyzeGnmBEGWKomSuMmqwaBYGj7gv2RvFRRUy1xtzpn6qE8BBpDnuFbp44qe9X1XmK78vqXaij"
+          //this.context.walletsListController.addressToLink = "47joJKcNWs66f6ein9qTTVFyzeGnmBEGWKomSuMmqwaBYGj7gv2RvFRRUy1xtzpn6qE8BBpDnuFbp44qe9X1XmK78vqXaij"
           // KB: This is where we're going to hook into Yat deep links
           if (url.indexOf("eid=") !== -1) {
               // this string has a Yat parameter in it
@@ -226,8 +226,6 @@ class RootTabBarAndContentView extends TabBarAndContentView {
                   parameterObj[key] = newValue;
               })
               parameterObj['eid'] = decodeURIComponent(parameterObj['eid']);
-              console.log(parameterArr);
-              console.log(parameterObj);
               if (typeof(this.context.walletsListController.addressToLink) === undefined) {
                 // throw an error -- a wallet address wasn't specified
               } else {
@@ -259,8 +257,6 @@ class RootTabBarAndContentView extends TabBarAndContentView {
                     showConfirmButton: false,
                     timer: 2500
                   })
-
-                  console.log(this.context);
                 }
 
                 
