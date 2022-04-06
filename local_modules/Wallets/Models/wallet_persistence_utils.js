@@ -43,15 +43,6 @@ function HydrateInstance (walletInstance, plaintextDocument) {
   self.public_address = plaintextDocument.public_address
   self.public_keys = plaintextDocument.public_keys
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
-<<<<<<< HEAD
-  if (plaintextDocument.eid !== 'undefined') {
-    self.eid = plaintextDocument.eid
-  }
-  
-
-  //
-=======
->>>>>>> develop
   self.transactions = plaintextDocument.transactions
   self.transactions.forEach(
     function (tx, i) { // we must fix up what JSON stringifying did to the data
