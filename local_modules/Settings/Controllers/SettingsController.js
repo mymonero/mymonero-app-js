@@ -9,7 +9,7 @@ const Currencies = require('../../CcyConversionRates/Currencies')
 
 const k_defaults_record =
 {
-  specificAPIAddressURLAuthority: '',
+  specificAPIAddressURLAuthority: 'https://api.mymonero.com',
   appTimeoutAfterS: 3 * 60, // 3 mins
   invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount: false,
   displayCcySymbol: Currencies.ccySymbolsByCcy.XMR, // default
@@ -72,7 +72,7 @@ class SettingsController extends EventEmitter {
     function _proceedTo_loadStateFromRecord (record_doc) {
       self._id = record_doc._id || undefined
       //
-      self.specificAPIAddressURLAuthority = record_doc.specificAPIAddressURLAuthority
+      self.specificAPIAddressURLAuthority = (record_doc.specificAPIAddressURLAuthority === '') ? 'https://api.mymonero.com' : record_doc.specificAPIAddressURLAuthority
       self.appTimeoutAfterS = record_doc.appTimeoutAfterS
       self.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount = record_doc.invisible_hasAgreedToTermsOfCalculatedEffectiveMoneroAmount
       self.displayCcySymbol = record_doc.displayCcySymbol
@@ -91,7 +91,7 @@ class SettingsController extends EventEmitter {
       } else {
         self.autoDownloadUpdatesEnabled = record_doc.autoDownloadUpdatesEnabled
       }
-      //
+
       self._setBooted() // all done!
     }
   }
@@ -112,10 +112,6 @@ class SettingsController extends EventEmitter {
     self._whenBooted_fns = [] // flash for next time
   }
 
-  //
-  //
-  // Runtime - Accessors
-  //
   EventName_settingsChanged_specificAPIAddressURLAuthority () {
     return 'EventName_settingsChanged_specificAPIAddressURLAuthority'
   }
@@ -149,10 +145,6 @@ class SettingsController extends EventEmitter {
     return k_defaults_record.autoDownloadUpdatesEnabled
   }
 
-  //
-  //
-  // Runtime - Imperatives - Settings Values
-  //
   Set_settings_valuesByKey (
     valuesByKey,
     fn // (err?) -> Void
@@ -196,6 +188,7 @@ class SettingsController extends EventEmitter {
             } else {
               console.log('📝  Successfully saved ' + self.constructor.name + ' update ', JSON.stringify(valuesByKey))
               if (didUpdate_specificAPIAddressURLAuthority) {
+                console.log('emitted api url change')
                 self.emit(
                   self.EventName_settingsChanged_specificAPIAddressURLAuthority(),
                   self.specificAPIAddressURLAuthority
@@ -250,10 +243,6 @@ class SettingsController extends EventEmitter {
     self._whenBooted_fns.push(fn)
   }
 
-  //
-  //
-  // Runtime - Imperatives - Private - Persistence
-  //
   saveToDisk (fn) {
     const self = this
     self.executeWhenBooted(

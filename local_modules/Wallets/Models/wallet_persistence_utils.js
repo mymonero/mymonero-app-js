@@ -8,8 +8,10 @@ exports.CollectionName = CollectionName
 function HydrateInstance (walletInstance, plaintextDocument) {
   
   const self = walletInstance
-
-  self.isLoggedIn = plaintextDocument.isLoggedIn
+  //
+  // console.log("plaintextDocument", plaintextDocument)
+  // Set to true to resolve issues with wallets locking up when altering server url
+  self.isLoggedIn = true //plaintextDocument.isLoggedIn
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 
   self.login__new_address = plaintextDocument.login__new_address // may be undefined
@@ -35,19 +37,21 @@ function HydrateInstance (walletInstance, plaintextDocument) {
   self.wallet_currency = plaintextDocument.wallet_currency
   self.swatch = plaintextDocument.swatch
   //
-  // console.log("plaintextDocument", plaintextDocument)
   self.mnemonic_wordsetName = plaintextDocument.mnemonic_wordsetName
   self.account_seed = plaintextDocument.account_seed !== '' ? plaintextDocument.account_seed : null // do not ever want to have empty string
   self.private_keys = plaintextDocument.private_keys
   self.public_address = plaintextDocument.public_address
   self.public_keys = plaintextDocument.public_keys
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
+<<<<<<< HEAD
   if (plaintextDocument.eid !== 'undefined') {
     self.eid = plaintextDocument.eid
   }
   
 
   //
+=======
+>>>>>>> develop
   self.transactions = plaintextDocument.transactions
   self.transactions.forEach(
     function (tx, i) { // we must fix up what JSON stringifying did to the data
