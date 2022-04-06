@@ -4,16 +4,8 @@ const JSBigInt = require('@mymonero/mymonero-bigint').BigInteger
 const monero_amount_format_utils = require('@mymonero/mymonero-money-format')
 const monero_keyImage_cache_utils = require('@mymonero/mymonero-keyimage-cache')
 
-function Parsed_AddressInfo__sync (
-  keyImage_cache,
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance
-) {
-  // -> returnValuesByKey
+function Parsed_AddressInfo__keyImageManaged (data, address, view_key__private, spend_key__public, spend_key__private, coreBridge_instance, fn) {
+  const keyImageCache = monero_keyImage_cache_utils.Lazy_KeyImageCacheForWalletWith(address)
   const total_received = new JSBigInt(data.total_received || 0)
   const locked_balance = new JSBigInt(data.locked_funds || 0)
   let total_sent = new JSBigInt(data.total_sent || 0) // will be modified in place
@@ -27,7 +19,7 @@ function Parsed_AddressInfo__sync (
   //
   for (const spent_output of spent_outputs) {
     const key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
-      keyImage_cache,
+      keyImageCache,
       spent_output.tx_pub_key,
       spent_output.out_index,
       address,
@@ -45,12 +37,8 @@ function Parsed_AddressInfo__sync (
   const ratesBySymbol = data.rates || {} // jic it's not there
   //
   const returnValuesByKey = {
-    total_received_String: total_received
-      ? total_received.toString()
-      : null,
-    locked_balance_String: locked_balance
-      ? locked_balance.toString()
-      : null,
+    total_received_String: total_received ? total_received.toString() : null,
+    locked_balance_String: locked_balance ? locked_balance.toString() : null,
     total_sent_String: total_sent ? total_sent.toString() : null,
     // ^serialized JSBigInt
     spent_outputs: spent_outputs,
@@ -62,107 +50,14 @@ function Parsed_AddressInfo__sync (
     //
     ratesBySymbol: ratesBySymbol
   }
-  return returnValuesByKey
-}
-function Parsed_AddressInfo__sync__keyImageManaged (
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance
-) {
-  // -> returnValuesByKey
-  const keyImageCache = monero_keyImage_cache_utils.Lazy_KeyImageCacheForWalletWith(
-    address
-  )
-  return Parsed_AddressInfo__sync(
-    keyImageCache,
-    data,
-    address,
-    view_key__private,
-    spend_key__public,
-    spend_key__private,
-    coreBridge_instance
-  )
-}
-function Parsed_AddressInfo (
-  keyImage_cache,
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance,
-  fn // (err?, returnValuesByKey) -> Void
-) {
-  const returnValuesByKey = Parsed_AddressInfo__sync(
-    keyImage_cache,
-    data,
-    address,
-    view_key__private,
-    spend_key__public,
-    spend_key__private,
-    coreBridge_instance
-  )
   fn(null, returnValuesByKey)
 }
-function Parsed_AddressInfo__keyImageManaged (
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance,
-  fn
-) {
-  // -> returnValuesByKey
-  Parsed_AddressInfo(
-    monero_keyImage_cache_utils.Lazy_KeyImageCacheForWalletWith(address),
-    data,
-    address,
-    view_key__private,
-    spend_key__public,
-    spend_key__private,
-    coreBridge_instance,
-    fn
-  )
-}
-exports.Parsed_AddressInfo = Parsed_AddressInfo
+
 exports.Parsed_AddressInfo__keyImageManaged = Parsed_AddressInfo__keyImageManaged // in case you can't send a mutable key image cache dictionary
-exports.Parsed_AddressInfo__sync__keyImageManaged = Parsed_AddressInfo__sync__keyImageManaged // in case you can't send a mutable key image cache dictionary
-exports.Parsed_AddressInfo__sync = Parsed_AddressInfo__sync
-//
-function Parsed_AddressTransactions (
-  keyImage_cache,
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance,
-  fn // (err?, returnValuesByKey) -> Void
-) {
-  const returnValuesByKey = Parsed_AddressTransactions__sync(
-    keyImage_cache,
-    data,
-    address,
-    view_key__private,
-    spend_key__public,
-    spend_key__private,
-    coreBridge_instance
-  )
-  fn(null, returnValuesByKey)
-}
-function Parsed_AddressTransactions__sync (
-  keyImage_cache,
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance
-) {
+
+function Parsed_AddressTransactions__keyImageManaged (data, address, view_key__private, spend_key__public, spend_key__private, coreBridge_instance, fn) {
+  const keyImageCache = monero_keyImage_cache_utils.Lazy_KeyImageCacheForWalletWith(address)
+
   const account_scanned_height = data.scanned_height || 0
   const account_scanned_block_height = data.scanned_block_height || 0
   const account_scan_start_height = data.start_height || 0
@@ -176,7 +71,7 @@ function Parsed_AddressTransactions__sync (
     if ((transactions[i].spent_outputs || []).length > 0) {
       for (let j = 0; j < transactions[i].spent_outputs.length; ++j) {
         const key_image = monero_keyImage_cache_utils.Lazy_KeyImage(
-          keyImage_cache,
+          keyImageCache,
           transactions[i].spent_outputs[j].tx_pub_key,
           transactions[i].spent_outputs[j].out_index,
           address,
@@ -256,50 +151,7 @@ function Parsed_AddressTransactions__sync (
     blockchain_height: blockchain_height,
     serialized_transactions: transactions
   }
-  return returnValuesByKey
+  fn(null, returnValuesByKey)
 }
-function Parsed_AddressTransactions__sync__keyImageManaged (
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance
-) {
-  const keyImageCache = monero_keyImage_cache_utils.Lazy_KeyImageCacheForWalletWith(
-    address
-  )
-  return Parsed_AddressTransactions__sync(
-    keyImageCache,
-    data,
-    address,
-    view_key__private,
-    spend_key__public,
-    spend_key__private,
-    coreBridge_instance
-  )
-}
-function Parsed_AddressTransactions__keyImageManaged (
-  data,
-  address,
-  view_key__private,
-  spend_key__public,
-  spend_key__private,
-  coreBridge_instance,
-  fn
-) {
-  Parsed_AddressTransactions(
-    monero_keyImage_cache_utils.Lazy_KeyImageCacheForWalletWith(address),
-    data,
-    address,
-    view_key__private,
-    spend_key__public,
-    spend_key__private,
-    coreBridge_instance,
-    fn
-  )
-}
-exports.Parsed_AddressTransactions = Parsed_AddressTransactions
+
 exports.Parsed_AddressTransactions__keyImageManaged = Parsed_AddressTransactions__keyImageManaged
-exports.Parsed_AddressTransactions__sync = Parsed_AddressTransactions__sync
-exports.Parsed_AddressTransactions__sync__keyImageManaged = Parsed_AddressTransactions__sync__keyImageManaged

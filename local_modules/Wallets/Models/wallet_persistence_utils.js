@@ -14,6 +14,11 @@ function HydrateInstance (walletInstance, plaintextDocument) {
   self.isLoggedIn = true //plaintextDocument.isLoggedIn
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 
+  // for yat persistence
+  if (plaintextDocument.eid !== 'undefined') {
+    self.eid = plaintextDocument.eid
+  }
+
   self.login__new_address = plaintextDocument.login__new_address // may be undefined
   self.login__generated_locally = plaintextDocument.login__generated_locally // may be undefined
   if (typeof plaintextDocument.local_wasAGeneratedWallet !== 'undefined') {
@@ -44,6 +49,7 @@ function HydrateInstance (walletInstance, plaintextDocument) {
   self.public_keys = plaintextDocument.public_keys
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
   self.transactions = plaintextDocument.transactions
+  
   self.transactions.forEach(
     function (tx, i) { // we must fix up what JSON stringifying did to the data
       tx.timestamp = new Date(tx.timestamp)

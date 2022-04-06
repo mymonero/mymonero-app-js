@@ -1,13 +1,28 @@
 'use strict'
 
-const fn_names = require('./__bridged_fns_spec.electron').bridgedFn_names
+const fn_names = [
+  'is_subaddress',
+  'is_integrated_address',
+  'new_payment_id',
+  'new__int_addr_from_addr_and_short_pid',
+  'decode_address',
+  'newly_created_wallet',
+  'are_equal_mnemonics',
+  'mnemonic_from_seed',
+  'seed_and_keys_from_mnemonic',
+  'validate_components_for_login',
+  'address_and_keys_from_seed',
+  'generate_key_image',
+  'estimated_tx_network_fee'
+  // "async__send_funds", // this is not to be bridged via synch IPC since it requires async bridging
+]
 const moneroUtils_promise_fn = function (options) {
   options = options || {}
   //
   return new Promise(function (resolve, reject) {
     function _didLoad (coreBridge_instance) {
       if (coreBridge_instance == null) {
-        throw 'Unable to make coreBridge_instance'
+        throw Error('Unable to make coreBridge_instance')
       }
       const local_fns = {}
       for (const i in fn_names) {
@@ -28,7 +43,6 @@ const moneroUtils_promise_fn = function (options) {
       const { ipcRenderer } = require('electron')
       self._bridge_call_cbs_by_call_id = {}
       local_fns.async__send_funds = function (args) {
-        const this_bridge_call_id = __new_bridge_call_id()
         const real__authenticate_fn = args.authenticate_fn
         const real__get_unspent_outs_fn = args.get_unspent_outs_fn
         const real__get_random_outs_fn = args.get_random_outs_fn
@@ -49,22 +63,14 @@ const moneroUtils_promise_fn = function (options) {
         delete args.error_fn
         delete args.success_fn
         //
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__authenticate(this_bridge_call_id)] = function () {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-authenticate'] = function () {
           real__authenticate_fn(function (did_pass) {
-            const ret_args =
-						{
-						  IPCBridge_call_id: this_bridge_call_id,
-						  did_pass: did_pass
-						}
-            ipcRenderer.send('async__send_funds--authenticate--res_cb', ret_args)
+            ipcRenderer.send('async__send_funds--authenticate--res_cb', { did_pass: did_pass })
           })
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__get_unspent_outs(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-get_unspent_outs'] = function (cb_arg) {
           real__get_unspent_outs_fn(cb_arg, function (err_msg, res) {
-            const ret_args =
-						{
-						  IPCBridge_call_id: this_bridge_call_id
-						}
+            const ret_args = {}
             if (err_msg) {
               ret_args.err_msg = err_msg
             } else {
@@ -73,12 +79,9 @@ const moneroUtils_promise_fn = function (options) {
             ipcRenderer.send('async__send_funds--get_unspent_outs--res_cb', ret_args)
           })
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__get_random_outs(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-get_random_outs'] = function (cb_arg) {
           real__get_random_outs_fn(cb_arg, function (err_msg, res) {
-            const ret_args =
-						{
-						  IPCBridge_call_id: this_bridge_call_id
-						}
+            const ret_args = {}
             if (err_msg) {
               ret_args.err_msg = err_msg
             } else {
@@ -87,12 +90,9 @@ const moneroUtils_promise_fn = function (options) {
             ipcRenderer.send('async__send_funds--get_random_outs--res_cb', ret_args)
           })
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__submit_raw_tx(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-submit_raw_tx'] = function (cb_arg) {
           real__submit_raw_tx_fn(cb_arg, function (err_msg, res) {
-            const ret_args =
-						{
-						  IPCBridge_call_id: this_bridge_call_id
-						}
+            const ret_args = {}
             if (err_msg) {
               ret_args.err_msg = err_msg
             } else {
@@ -101,67 +101,56 @@ const moneroUtils_promise_fn = function (options) {
             ipcRenderer.send('async__send_funds--submit_raw_tx--res_cb', ret_args)
           })
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__status_update(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-status_update'] = function (cb_arg) {
           real__status_update_fn(cb_arg)
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__canceled(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-canceled'] = function (cb_arg) {
           real__canceled_fn(cb_arg)
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__willBeginSending(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-willBeginSending'] = function (cb_arg) {
           real__willBeginSending_fn(cb_arg)
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__error(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-error'] = function (cb_arg) {
           real__error_fn(cb_arg) // contains .err_msg
         }
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__success(this_bridge_call_id)] = function (cb_arg) {
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-success'] = function (cb_arg) {
           real__success_fn(cb_arg) // contains stuff like tx_hash, mixin, tx_key, final_payment_id, serialized_signed_tx, ....
         }
         //
 
         console.log('calling ipcRenderer to send funds')
-        console.log(this_bridge_call_id)
         console.log(args)
 
         ipcRenderer.send('async__send_funds', {
-          IPCBridge_call_id: this_bridge_call_id,
           args: args
         })
       }
       ipcRenderer.on('async__send_funds--authenticate_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__authenticate(call_id)]()
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-authenticate']()
       })
       ipcRenderer.on('async__send_funds--get_unspent_outs_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__get_unspent_outs(call_id)](IPC_on_arg.req_params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-get_unspent_outs'](IPC_on_arg.req_params)
       })
       ipcRenderer.on('async__send_funds--get_random_outs_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__get_random_outs(call_id)](IPC_on_arg.req_params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-get_random_outs'](IPC_on_arg.req_params)
       })
       ipcRenderer.on('async__send_funds--submit_raw_tx_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__submit_raw_tx(call_id)](IPC_on_arg.req_params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-submit_raw_tx'](IPC_on_arg.req_params)
       })
       ipcRenderer.on('async__send_funds--status_update_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__status_update(call_id)](IPC_on_arg.params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-status_update'](IPC_on_arg.params)
       })
       ipcRenderer.on('async__send_funds--canceled_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__canceled(call_id)](IPC_on_arg.params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-canceled'](IPC_on_arg.params)
       })
       ipcRenderer.on('async__send_funds--willBeginSending_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__willBeginSending(call_id)](IPC_on_arg.params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-willBeginSending'](IPC_on_arg.params)
       })
       ipcRenderer.on('async__send_funds--error_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__error(call_id)](IPC_on_arg.params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-error'](IPC_on_arg.params)
       })
       ipcRenderer.on('async__send_funds--success_fn', function (event, IPC_on_arg) {
-        const call_id = IPC_on_arg.call_id
-        self._bridge_call_cbs_by_call_id[__IPCbridge_call_cb_key__success(call_id)](IPC_on_arg.params)
+        self._bridge_call_cbs_by_call_id['IPCbridge_call_cb-success'](IPC_on_arg.params)
       })
       resolve(local_fns)
     }
@@ -194,36 +183,6 @@ const moneroUtils_promise_fn = function (options) {
     }
     _try(0)
   })
-}
-function __new_bridge_call_id () {
-  return Math.random().toString(36).substr(2, 9) // doesn't have to be super random
-}
-function __IPCbridge_call_cb_key__authenticate (call_id) {
-  return `IPCbridge_call_cb-authenticate-${call_id}`
-}
-function __IPCbridge_call_cb_key__get_unspent_outs (call_id) {
-  return `IPCbridge_call_cb-get_unspent_outs-${call_id}`
-}
-function __IPCbridge_call_cb_key__get_random_outs (call_id) {
-  return `IPCbridge_call_cb-get_random_outs-${call_id}`
-}
-function __IPCbridge_call_cb_key__submit_raw_tx (call_id) {
-  return `IPCbridge_call_cb-submit_raw_tx-${call_id}`
-}
-function __IPCbridge_call_cb_key__canceled (call_id) {
-  return `IPCbridge_call_cb-canceled-${call_id}`
-}
-function __IPCbridge_call_cb_key__willBeginSending (call_id) {
-  return `IPCbridge_call_cb-willBeginSending-${call_id}`
-}
-function __IPCbridge_call_cb_key__status_update (call_id) {
-  return `IPCbridge_call_cb-status_update-${call_id}`
-}
-function __IPCbridge_call_cb_key__error (call_id) {
-  return `IPCbridge_call_cb-error-${call_id}`
-}
-function __IPCbridge_call_cb_key__success (call_id) {
-  return `IPCbridge_call_cb-success-${call_id}`
 }
 //
 //

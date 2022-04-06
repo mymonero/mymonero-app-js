@@ -70,6 +70,7 @@ class HostedMoneroAPIClient {
     }
 
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/login',
       parameters,
@@ -97,6 +98,7 @@ class HostedMoneroAPIClient {
       view_key: privateViewKey
     }
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/get_address_info',
       parameters,
@@ -172,6 +174,7 @@ class HostedMoneroAPIClient {
       view_key: privateViewKey
     }
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/get_address_txs',
       parameters,
@@ -231,6 +234,7 @@ class HostedMoneroAPIClient {
       app_version: self.appUserAgent_version
     }
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/import_wallet_request',
       parameters,
@@ -263,6 +267,7 @@ class HostedMoneroAPIClient {
     reqParams.app_name = self.appUserAgent_product
     reqParams.app_version = self.appUserAgent_version
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/get_unspent_outs',
       reqParams,
@@ -278,6 +283,7 @@ class HostedMoneroAPIClient {
     reqParams.app_name = self.appUserAgent_product
     reqParams.app_version = self.appUserAgent_version
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/get_random_outs',
       reqParams,
@@ -294,6 +300,7 @@ class HostedMoneroAPIClient {
     reqParams.app_version = self.appUserAgent_version
 
     const requestHandle = net_service_utils.HTTPRequest(
+      self.request,
       self._new_apiAddress_authority(),
       '/submit_raw_tx',
       reqParams,

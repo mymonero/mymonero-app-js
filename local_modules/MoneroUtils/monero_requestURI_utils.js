@@ -13,7 +13,7 @@ function New_RequestFunds_URI (args) {
   // -> String?
   const address = args.address
   if (!address) {
-    throw 'missing address'
+    throw Error('missing address')
     // return null
   }
   let mutable_uri = ''
@@ -25,7 +25,7 @@ function New_RequestFunds_URI (args) {
     } else if (uriType === URITypes.addressAsFirstPathComponent) {
       // nothing to do
     } else {
-      throw 'Illegal args.uriType'
+      throw Error('Illegal args.uriType')
     }
   }
   mutable_uri += address
@@ -74,7 +74,7 @@ function New_ParsedPayload_FromPossibleRequestURIString (string, nettype, monero
     const stringHasQMark = string.indexOf('?') !== -1
     if (stringHasQMark) {
       // fairly sure this is correct.. (just an extra failsafe/filter)
-      throw 'Unrecognized URI format'
+      throw Error('Unrecognized URI format')
     }
     const couldBeOAAddress = string.indexOf('.') != -1 // contains period - would be nice to get this from DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress so maybe mymonero_core_js should gain local_modules/OpenAlias
     if (couldBeOAAddress) {
@@ -89,7 +89,7 @@ function New_ParsedPayload_FromPossibleRequestURIString (string, nettype, monero
         nettype
       )
     } catch (e) {
-      throw 'No Monero request info'
+      throw Error('No Monero request info')
     }
     // then it looks like a monero address
     return {
@@ -100,7 +100,7 @@ function New_ParsedPayload_FromPossibleRequestURIString (string, nettype, monero
   const url = new URL(uriString)
   const protocol = url.protocol
   if (protocol !== coinUriPrefix) {
-    throw 'Request URI has non-Monero protocol'
+    throw Error('Request URI has non-Monero protocol')
   }
   let target_address = url.pathname // var instead of const as have to finalize it
   // it seems that if the URL has // in it, pathname will be empty, but host will contain the address instead
