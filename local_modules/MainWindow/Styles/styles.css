@@ -2690,3 +2690,12 @@ div.exchange-button {
     background: rgb(39, 37, 39) !important;
     color: white !important;
   }
+
+  .yatField span {
+    overflow: visible !important;
+  }
+
+  div.yatField > div > span.field_value {
+    margin-top: -6px !important;
+    font-size: 18px !important;
+  }
