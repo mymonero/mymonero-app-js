@@ -677,9 +677,7 @@ class WalletDetailsView extends View {
     const viewKey = wallet.private_keys.view
     const spendKey = wallet.private_keys.spend
     if (wallet.didFailToInitialize_flag) { // failed to initialize
-      if (self.wallet.eid !== undefined) {
-        self.preview__address_YatView.SetValue(null)
-      }
+      self.preview__address_YatView.SetValue(null)
       self.preview__address_fieldView.SetValue(null)
       self.disclosed__address_fieldView.SetValue(null)
       self.viewKey_fieldView.SetValue(null)
@@ -690,12 +688,12 @@ class WalletDetailsView extends View {
     if (wallet.didFailToBoot_flag == true) {
       // in this state, we should still have enough info to display
     }
-    self.preview__address_fieldView.SetValue(addr)
     if (self.wallet.eid !== undefined) {
       self.preview__address_YatView.SetValue(wallet.eid)
+      self.disclosed__address_YatView.SetValue(wallet.eid)
     }
+    self.preview__address_fieldView.SetValue(addr)
     self.disclosed__address_fieldView.SetValue(addr)
-    self.disclosed__address_YatView.SetValue(wallet.eid)
     self.viewKey_fieldView.SetValue(viewKey)
     self.spendKey_fieldView.SetValue(spendKey)
     self.mnemonicSeed_fieldView.SetValue(mnemonic)
