@@ -274,7 +274,11 @@ class WalletCellContentsView extends View {
       self.descriptionLayer.innerHTML = ''
       return
     }
-    self.titleLayer.innerHTML = wallet.walletLabel
+    if (wallet.eid !== undefined) {
+      self.titleLayer.innerHTML = wallet.walletLabel + " - " + wallet.eid
+    } else {
+      self.titleLayer.innerHTML = wallet.walletLabel
+    }
     let descriptionLayer_innerHTML
     {
       if (wallet.isLoggingIn == true) {

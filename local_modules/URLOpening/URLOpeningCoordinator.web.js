@@ -88,7 +88,11 @@ class URLOpeningCoordinator extends EventEmitter {
   _yieldThatTimeToHandleReceivedMoneroURL (url) {
     const self = this
     self.requestURLToOpen_pendingFromDisallowedFromOpening = null // JIC it was set
-    self.emit('EventName_TimeToHandleReceivedMoneroRequestURL', url)
+    if (url.indexOf("eid=") !== -1) {
+      self.emit("EventName_TimeToHandleYatDeepLink", url)
+    } else {
+      self.emit('EventName_TimeToHandleReceivedMoneroRequestURL', url)
+    }
   }
 }
 

@@ -6,9 +6,11 @@ exports.CollectionName = CollectionName
 //
 // Utility functions
 function HydrateInstance (walletInstance, plaintextDocument) {
+  
   const self = walletInstance
   //
   // console.log("plaintextDocument", plaintextDocument)
+  // Set to true to resolve issues with wallets locking up when altering server url
   self.isLoggedIn = true //plaintextDocument.isLoggedIn
   self.isInViewOnlyMode = plaintextDocument.isInViewOnlyMode
 
@@ -183,7 +185,9 @@ function SaveToDisk (walletInstance) {
       transactions: transactions,
       heights: heights,
       totals: totals,
-      spent_outputs: self.spent_outputs || [] // maybe not fetched yet
+      spent_outputs: self.spent_outputs || [], // maybe not fetched yet
+      // Optional Yat info
+      eid: self.eid
     }
     if (typeof self.login__new_address !== 'undefined') {
       plaintextDocument.login__new_address = self.login__new_address

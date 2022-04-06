@@ -7,6 +7,7 @@ const RequestTabContentView = require('../../RequestFunds/Views/RequestTabConten
 const ContactsTabContentView = require('../../Contacts/Views/ContactsTabContentView.web')
 const ExchangeTabContentView = require('../../Exchange/Views/ExchangeTabContentView.web')
 const SettingsTabContentView = require('../../Settings/Views/SettingsTabContentView.web')
+const Swal = require('sweetalert2')
 
 class RootTabBarAndContentView extends TabBarAndContentView {
   setup () { // ^ called automatically by super, so
@@ -197,17 +198,82 @@ class RootTabBarAndContentView extends TabBarAndContentView {
         }
         return false
       }
-      self.layer.ondrop = function (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        numberOfDragsActive = 0 // reset just in case ondragleave wasn't properly fired due to some DOM manipulation or on drop. can happen.
-        const indexOf_sendTabContentView = self.IndexOfTabBarContentView(self.sendTabContentView)
-        if (indexOf_sendTabContentView === self._currentlySelectedTabBarItemIndex) {
-          self.sendTabContentView._proxied_ondrop(e)
-        }
-        return false
-      }
     }
+
+    { // urlOpeningController
+      // Paul originally routed URL handling through here to be able to change the active tab. This should be refactored
+      const controller = self.context.urlOpeningCoordinator
+      console.log(controller);
+      controller.on("EventName_TimeToHandleYatDeepLink", function (url) {
+          console.log("URL:" + url);
+          // for speedy debug purposes - This variable gets set when the user specifies a wallet to connect a Yat (in settings)
+          //this.context.walletsListController.addressToLink = "47joJKcNWs66f6ein9qTTVFyzeGnmBEGWKomSuMmqwaBYGj7gv2RvFRRUy1xtzpn6qE8BBpDnuFbp44qe9X1XmK78vqXaij"
+          // KB: This is where we're going to hook into Yat deep links
+          if (url.indexOf("eid=") !== -1) {
+              // this string has a Yat parameter in it
+              // eid, refresh_token
+              let queryParameterOffset = url.indexOf("?");
+              queryParameterOffset++; // remove trailing ?
+  
+              let queryParameterString = url.substring(queryParameterOffset);
+              let parameterArr = queryParameterString.split("&");
+              let parameterObj = {};
+              parameterArr.map((value) => {
+                  let offset = value.indexOf("=");
+                  let key = value.substring(0, offset);
+                  offset++;
+                  let newValue = value.substring(offset);
+                  parameterObj[key] = newValue;
+              })
+              parameterObj['eid'] = decodeURIComponent(parameterObj['eid']);
+              if (typeof(this.context.walletsListController.addressToLink) === undefined) {
+                // throw an error -- a wallet address wasn't specified
+              } else {
+                let walletIndex;
+                let matchedWalletReturnArray = this.context.wallets.filter((value, index) => {
+                  if (value.public_address === this.context.walletsListController.addressToLink) {
+                    walletIndex = index;
+                    return true
+                  }
+                })
+
+                if (typeof(walletIndex) == "number") {
+                  //const matchedWallet = matchedWalletReturnArray[0];
+                  //console.log(matchedWallet);
+                  
+                  this.context.wallets[walletIndex].eid = parameterObj.eid;
+                  this.context.passwordController.yatRefreshToken = parameterObj.refresh_token;
+
+                  // This input is received via URL, for safety we don't use a template literal for it
+                  let messageText = 'You have successfully linked `' + parameterObj.eid + '` to wallet ' + this.context.wallets[walletIndex].walletLabel;
+                  Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: 'Yat successfully linked',
+                    text: messageText,
+                    background: '#272527',
+                    titleColor: '#FFFFFF',
+                    color: '#FFFFFF',
+                    showConfirmButton: false,
+                    timer: 2500
+                  })
+                }
+
+                
+                // 2. Connect existing Yat(s)
+                // refresh_token, eid, addresses (in YAT_TAG_1=ADDRESS_1|YAT_TAG_2=ADDRESS_2|...|YAT_TAG_N=ADDRESS_N) -- 
+                // 0x1001 - std monero, 0x1002 subaddress monero
+                // we should receive a refresh_token and an eid 
+                // self._selectTab_withContentView(self.settingsTabContentView);
+                // Maybe we just toast "Hi, linked Yat xxx to wallet.name"
+                //self._selectTab_withContentView(self.sendTabContentView);
+              }
+          }
+      })
+      controller.on("EventName_TimeToHandleReceivedMoneroRequestURL", function (url) {
+        self._selectTab_withContentView(self.sendTabContentView);
+      })
+  }
 
     { // menuController
       const emitter = self.context.menuController
