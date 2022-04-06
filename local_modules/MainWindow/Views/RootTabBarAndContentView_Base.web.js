@@ -231,6 +231,9 @@ class RootTabBarAndContentView extends TabBarAndContentView {
               } else {
                 let walletIndex;
                 let matchedWalletReturnArray = this.context.wallets.filter((value, index) => {
+                  if (value.eid === parameterObj.eid) {
+                    value.eid = undefined;
+                  }
                   if (value.public_address === this.context.walletsListController.addressToLink) {
                     walletIndex = index;
                     return true
