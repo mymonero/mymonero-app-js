@@ -93,7 +93,7 @@
     "@mymonero/mymonero-locales": "^2.0.2",
     "@mymonero/mymonero-monero-config": "^1.1.6",
     "@mymonero/mymonero-money-format": "^1.1.6",
-    "@mymonero/mymonero-net-service-utils": "^1.1.6",
+    "@mymonero/mymonero-net-service-utils": "^2.1.1",
     "@mymonero/mymonero-nettype": "^1.1.6",
     "@mymonero/mymonero-page-templates": "^2.1.2",
     "@mymonero/mymonero-paymentid-utils": "^1.1.6",
