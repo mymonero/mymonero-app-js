@@ -811,7 +811,7 @@ class PasswordController extends EventEmitter {
     }
     symmetric_string_cryptor.New_EncryptedBase64String__Async(plaintextMessageToSaveForUnlockChallenges, self.password)
       .then((encryptedBase64String) => {
-        self.encryptedMessageForUnlockChallenge = encryptedMessageForUnlockChallenge // it's important that we hang onto this in memory so we can access it if we need to change the password later
+        self.encryptedMessageForUnlockChallenge = encryptedBase64String // it's important that we hang onto this in memory so we can access it if we need to change the password later
         const persistableDocument =
 				{
 				  _id: self.id, // critical for update
