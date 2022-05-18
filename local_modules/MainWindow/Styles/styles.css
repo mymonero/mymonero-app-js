@@ -638,11 +638,27 @@
     text-overflow: ellipsis;
 
     top: 0px;
-    left: 48px;
+    left: 6px;
     width: calc(100% - 48px - 12px)
 }
 
-.contactPicker .autocomplete-results .row .title.withNonNativeEmoji {
+.contactPicker .autocomplete-results .row {
+    position: relative;
+    left: 0px;
+    box-sizing: border-box;
+    padding: 0px 15px;
+    width: 100%;
+    height: 31px;
+    color: rgb(29, 27, 29);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    line-height: 31px;
+    user-select: none;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .contactPicker .picked-contact .emojione {
@@ -658,6 +674,10 @@
 
 .contactPicker .picked-contact .title.withNonNativeEmoji {
     margin-left: 21px;
+}
+
+.picked-contact div {
+  height: 38px;
 }
 
 /** END FROM contactPicker.web.js */
@@ -2252,18 +2272,7 @@ div.exchange-button {
     top: -1px;
     transform: scale(.5);
   }
-  .contactPicker .autocomplete-results .row .title {
-    position: absolute;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  
-    top: 0px;
-    left: 48px;
-    width: calc(100% - 48px - 12px)
-  }
-  .contactPicker .autocomplete-results .row .title.withNonNativeEmoji	 {
-  }
+
   .contactPicker .picked-contact .emojione {
     position: absolute;
     left: 1px;

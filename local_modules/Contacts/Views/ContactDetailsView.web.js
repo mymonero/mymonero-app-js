@@ -79,7 +79,7 @@ class ContactDetailsView extends View {
 
   _setup_field_address () {
     const self = this
-    const fieldLabelTitle = 'Address'
+    const fieldLabelTitle = (self.contact.yat !== undefined && self.contact.yat !== null) ? 'Yat Handle' : 'Address'
     const value = self.contact.address
     const valueToDisplayIfValueNil = 'N/A'
     const div = commonComponents_tables.New_copyable_longStringValueField_component_fieldContainerLayer(
@@ -166,6 +166,9 @@ class ContactDetailsView extends View {
 
   _setup_URIContainerLayer () {
     const self = this
+    if (self.yat !== undefined) { 
+      return // We don't want people importing the current Yat address from QR codes
+    }
     const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
     containerLayer.style.padding = '0 0 0 15px' // to get separator inset
     {
