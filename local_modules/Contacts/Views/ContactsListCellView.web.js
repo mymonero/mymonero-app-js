@@ -11,7 +11,7 @@ class ContactsListCellView extends ListCellView {
     super.setup_views()
     self.layer.classList.add('ContactsListCellView')
     self.layer.style.position = 'relative'
-    self.layer.style.padding = '19px 0 7px 0'
+    self.layer.style.padding = '19px 0 15px 0'
     { // hover effects/classes
       self.layer.classList.add('hoverable-cell')
       self.layer.classList.add('utility')
@@ -28,7 +28,7 @@ class ContactsListCellView extends ListCellView {
     const self = this
     const layer = document.createElement('div')
     layer.style.position = 'relative'
-    layer.style.margin = '0 66px 4px 50px'
+    layer.style.margin = '0 66px 4px 8px'
     layer.style.height = 'auto'
     layer.style.fontSize = '13px'
     layer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
@@ -47,7 +47,7 @@ class ContactsListCellView extends ListCellView {
     const self = this
     const layer = document.createElement('div')
     layer.style.position = 'relative'
-    layer.style.margin = '0 66px 4px 50px'
+    layer.style.margin = '0 66px 4px 8px'
     layer.style.fontSize = '13px'
     layer.style.fontFamily = 'Native-Light, input, menlo, monospace'
     layer.style.fontWeight = '100'

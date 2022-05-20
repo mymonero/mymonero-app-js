@@ -500,6 +500,10 @@
     margin-top: -6px;
 }
 
+.ContactsListCellView > div {
+  margin-left: 0px; padding-left: 10px;
+}
+
 /** END FROM ContactsListCellView.web.js */
 
 /** FROM walleticons.web.js */

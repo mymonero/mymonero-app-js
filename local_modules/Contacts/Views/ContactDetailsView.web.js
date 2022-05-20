@@ -166,7 +166,7 @@ class ContactDetailsView extends View {
 
   _setup_URIContainerLayer () {
     const self = this
-    if (self.yat !== undefined) { 
+    if (self.contact.isYat) { 
       return // We don't want people importing the current Yat address from QR codes
     }
     const containerLayer = self.__new_flatTable_sectionContainerLayer(false)
