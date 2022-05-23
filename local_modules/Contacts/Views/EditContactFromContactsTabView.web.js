@@ -145,26 +145,20 @@ class EditContactFromContactsTabView extends ContactFormView {
     __disableForm()
     //
 
-// Yat
+    // Yat
     // checking for emojis for Yat addresses
     const hasEmojiCharacters = /\p{Extended_Pictographic}/u.test(address)
-    console.log("Check Yat");
     if (hasEmojiCharacters) {
-      console.log("Has emojis");
       // const isYat = yatMoneroLookup.isValidYatHandle(address)
       const isYat = true
       self.isYat = isYat
-      console.log(isYat);
       if (isYat) {
         self.yat = address;
-        console.log("Definitely Yat");
         const lookup = yatMoneroLookup.lookupMoneroAddresses(address).then((responseMap) => {
-          console.log(responseMap);
-          // Our library returns a map with between 0 and 2 keys
+          // Our library returns a ResponseMap with between 0 and 2 keys
           if (responseMap.size == 0) {
             // no monero address
             // When zero keys, we're not going to let a user save a contact. There's the off chance they try to add an incorrect Yat
-            console.log("?");
             const errorString = `There is no Monero address associated with "${address}"`
             self.validationMessageLayer.SetValidationError(errorString)
             return
@@ -172,12 +166,8 @@ class EditContactFromContactsTabView extends ContactFormView {
             // Either a Monero address or a Monero subaddress was found.
             const iterator = responseMap.values()
             const record = iterator.next()
-            //self._displayResolvedAddress(record.value)
-            console.log("2");
           } else if (responseMap.size == 2) {
             const moneroAddress = responseMap.get('0x1001')
-            //self._displayResolvedAddress(moneroAddress)
-            console.log("4");
           }
           // So, success
           // const contactDescription = {

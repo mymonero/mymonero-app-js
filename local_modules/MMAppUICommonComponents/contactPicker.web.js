@@ -342,7 +342,7 @@ function _new_pickedContactLayer (context, contact, didClickCloseBtn_fn) {
     contentLayer.style.position = 'relative'
     contentLayer.style.maxWidth = '274px'
 
-      contentLayer.style.padding = `3px ${8 + 30}px 5px 5px`
+    contentLayer.style.padding = `3px ${8 + 30}px 5px 5px`
 
     contentLayer.style.whiteSpace = 'nowrap'
     contentLayer.style.overflow = 'hidden'
