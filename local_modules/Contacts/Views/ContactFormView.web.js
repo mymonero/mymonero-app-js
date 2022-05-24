@@ -67,20 +67,40 @@ class ContactFormView extends View {
     self.form_containerLayer = containerLayer
     {
       self._setup_field_fullname()
-      self._setup_field_emoji()
+      // Emojis are being deprecated in favour of Yats, to avoid confusion
+      // self._setup_field_emoji()
       self.form_containerLayer.appendChild(commonComponents_tables.New_clearingBreakLayer())
       self._setup_field_address()
+      self._setup_form_ResolvedAddressLayer()
       self._did_setup_field_address() // for subclasses - overridable
       self._setup_field_paymentID()
     }
     self.layer.appendChild(containerLayer)
   }
 
+  _setup_form_ResolvedAddressLayer() { 
+    // resolved monero address field
+    const self = this
+    const fieldContainerLayer = document.createElement('div')
+    self.resolvedAddress_containerLayer = fieldContainerLayer
+    self.form_containerLayer.appendChild(fieldContainerLayer)
+    fieldContainerLayer.style.display = 'none' // initial state
+
+    const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer('MONERO ADDRESS', self.context)
+    labelLayer.style.marginTop = '12px' // instead of 15
+    fieldContainerLayer.appendChild(labelLayer)
+    //
+    const valueLayer = commonComponents_forms.New_NonEditable_ValueDisplayLayer_BreakChar('', self.context) // zero val for now
+    self.resolvedAddress_valueLayer = valueLayer
+    fieldContainerLayer.appendChild(valueLayer)
+    
+  }
+
   _overridable_new_fieldInputLayer__address () {
     const self = this
     const view = commonComponents_forms.New_fieldValue_textAreaView(
       {
-        placeholderText: 'Enter address, email, or domain'
+        placeholderText: 'Enter Monero address, Yat address, email or domain'
       },
       self.context
     )
@@ -163,30 +183,6 @@ class ContactFormView extends View {
     const inUseEmojis = self.context.contactsListController.GivenBooted_CurrentlyInUseEmojis()
     const value = emoji_selection.EmojiWhichIsNotAlreadyInUse(inUseEmojis)
     return value
-  }
-
-  _setup_field_emoji () {
-    const self = this
-    const value = self._overridable_initial_emoji_value()
-    //
-    const paddingLeft = 24
-    const div = commonComponents_forms.New_fieldContainerLayer(self.context)
-    div.style.padding = '0 24px 0 24px'
-    div.style.width = '58px'
-    div.style.display = 'inline-block'
-    //
-    const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer('EMOJI', self.context)
-    div.appendChild(labelLayer)
-    //
-    const view = new EmojiPickerControlView({
-      value: value,
-      didPickEmoji_fn: function (emoji) {} // nothing to do as we simply read at submit
-    }, self.context)
-    const valueLayer = view.layer
-    self.emojiInputView = view
-    div.appendChild(valueLayer)
-    //
-    self.form_containerLayer.appendChild(div)
   }
 
   _setup_field_address () {
