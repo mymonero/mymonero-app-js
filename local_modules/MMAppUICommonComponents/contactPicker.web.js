@@ -278,8 +278,14 @@ function _new_autocompleteResultRowLayer (context, contact, isAtEnd, clicked_fn)
   const padding_h = 15
   const layer = document.createElement('div')
   layer.classList.add('row')
+  let labelText
+  if (contact.isYat === true) {
+    labelText = contact.fullname + " <span class='emojiLetterSpacing'>(" + contact.address + "&nbsp;)</span>"
+  } else {
+    labelText = contact.fullname + " (" + contact.address.substring(0, 10) + "...)"
+  }
   layer.innerHTML = `<span class="title">
-                      ${contact.isYat === true ? contact.address + " - " : ''}${contact.fullname}
+                      ${labelText}
                     </span>`
   {
     layer.addEventListener('mouseover', function () { this.highlight() })
@@ -325,14 +331,10 @@ function _new_pickedContactLayer (context, contact, didClickCloseBtn_fn) {
   layer.appendChild(contentLayer)
   { // ^-- using a content layer here so we can get width-of-content behavior with inline-block
     // while getting parent to give us display:block behavior
-    let titleClasses = 'title'
-    if (context.Emoji_renderWithNativeEmoji !== true) {
-      titleClasses += ' withNonNativeEmoji'
-    }
     if (typeof(contact.isYat) !== 'undefined' && contact.isYat === true) {
-      contentLayer.innerHTML = `<span class="${titleClasses}">${contact.fullname} (${contact.address})</span>`  
+      contentLayer.innerHTML = `<span class="title withNativeEmoji">${contact.fullname} (${contact.address})</span>`  
     } else {
-      contentLayer.innerHTML = `<span class="${titleClasses}">${contact.fullname} ()</span>`
+      contentLayer.innerHTML = `<span class="title">${contact.fullname}</span>`
     }
     // contentLayer.innerHTML = `${contact.yat}&nbsp;<span class="${titleClasses}">${contact.fullname}</span>`
     // layer.innerHTML = `<span class="title">
@@ -342,7 +344,7 @@ function _new_pickedContactLayer (context, contact, didClickCloseBtn_fn) {
     contentLayer.style.position = 'relative'
     contentLayer.style.maxWidth = '274px'
 
-    contentLayer.style.padding = `3px ${8 + 30}px 5px 5px`
+    contentLayer.style.padding = `8px 43px 5px 10px`
 
     contentLayer.style.whiteSpace = 'nowrap'
     contentLayer.style.overflow = 'hidden'

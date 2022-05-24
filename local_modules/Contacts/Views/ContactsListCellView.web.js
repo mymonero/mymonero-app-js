@@ -46,6 +46,7 @@ class ContactsListCellView extends ListCellView {
   __setup_addressLayer () {
     const self = this
     const layer = document.createElement('div')
+    layer.classList.add('withNativeEmoji')
     layer.style.position = 'relative'
     layer.style.margin = '0 66px 4px 8px'
     layer.style.fontSize = '13px'

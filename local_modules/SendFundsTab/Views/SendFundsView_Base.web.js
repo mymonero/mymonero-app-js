@@ -186,7 +186,9 @@ class SendFundsView extends View {
     div.style.paddingTop = '2px'
     const labelLayer = pkg.labelLayer
     labelLayer.style.marginTop = '0'
+    labelLayer.classList.add('isNumericInputElement')
     self.amountInputLayer = pkg.valueLayer
+    //self.amountInputlayer.classList.add('isNumericInputElement')
     self.amountInputLayer.addEventListener(
       'input', // to cover copy/paste ops, etc
       function (event) {
@@ -234,6 +236,7 @@ class SendFundsView extends View {
       layer.style.marginTop = '8px'
       layer.style.color = '#9E9C9E'
       layer.style.display = 'inline-block'
+      layer.classList.add('isNumericInputElement')
       self.networkFeeEstimateLayer = layer
       breakingDiv.appendChild(layer)
     }
