@@ -97,7 +97,7 @@
     "@mymonero/mymonero-money-format": "^1.1.6",
     "@mymonero/mymonero-net-service-utils": "^2.1.1",
     "@mymonero/mymonero-nettype": "^1.1.6",
-    "@mymonero/mymonero-page-templates": "^2.1.2",
+    "@mymonero/mymonero-page-templates": "^2.1.8",
     "@mymonero/mymonero-paymentid-utils": "^1.1.6",
     "@mymonero/mymonero-response-parser-utils": "^1.1.5",
     "@mymonero/mymonero-sendfunds-utils": "^1.1.6",
