@@ -29,6 +29,7 @@ function New_AmountInputFieldPKG (
   div.style.padding = `7px ${container_padding_h}px 0 ${container_padding_h}px`
   //
   const labelLayer = commonComponents_forms.New_fieldTitle_labelLayer('AMOUNT', context)
+  labelLayer.classList.add('isNumericInputElement')
   div.appendChild(labelLayer)
   // ^ block
   if (isOptional == true) {

@@ -5,8 +5,12 @@ const ContactFormView = require('./ContactFormView.web')
 const monero_paymentID_utils = require('@mymonero/mymonero-paymentid-utils')
 const commonComponents_activityIndicators = require('../../MMAppUICommonComponents/activityIndicators.web')
 const commonComponents_actionButtons = require('../../MMAppUICommonComponents/actionButtons.web')
+const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const jsQR = require('jsqr')
 const monero_requestURI_utils = require('../../MoneroUtils/monero_requestURI_utils')
+// Yat import
+const YatMoneroLookup = require('@mymonero/mymonero-yat-lookup')
+const yatMoneroLookup = new YatMoneroLookup({})
 
 class AddContactView extends ContactFormView {
   setup () {
@@ -77,20 +81,28 @@ class AddContactView extends ContactFormView {
     return true
   }
 
+  _displayResolvedAddress (address) {
+    const self = this
+    if (!address) {
+      throw 'nil address passed to _displayResolvedAddress'
+    }
+    if (typeof self.resolvedAddress_containerLayer === 'undefined' || !self.resolvedAddress_containerLayer) {
+      throw '_displayResolvedAddress expects a non-nil self.resolvedAddress_containerLayer'
+    }
+    self.resolvedAddress_valueLayer.innerHTML = address
+    self.resolvedAddress_containerLayer.style.display = 'block'
+  }
+
   _tryToCreateOrSaveContact () {
     const self = this
     //
     const fullname = self.fullnameInputLayer.value
-    const emoji = self.emojiInputView.Value()
+    //const emoji = self.emojiInputView.Value()
     const address = self.addressInputLayer.value
     let paymentID = self.paymentIDInputLayer.value
     //
     if (typeof fullname === 'undefined' || !fullname) {
       self.validationMessageLayer.SetValidationError('Please enter a name for this contact.')
-      return
-    }
-    if (typeof emoji === 'undefined' || !emoji) {
-      self.validationMessageLayer.SetValidationError('Please select an emoji for this contact.')
       return
     }
     if (typeof address === 'undefined' || !address) {
@@ -106,7 +118,7 @@ class AddContactView extends ContactFormView {
     //
     const canSkipEntireOAResolveAndDirectlyUseInputValues = self._overridable_defaultFalse_canSkipEntireOAResolveAndDirectlyUseInputValues()
     if (canSkipEntireOAResolveAndDirectlyUseInputValues === true) { // not the typical case
-      console.log('💬  Skipping OA resolve on AddContact.')
+      // console.log('💬  Skipping OA resolve on AddContact.')
       _proceedTo_addContact_paymentID(
         paymentID, // can apparently use the exact field value
         undefined // NOTE: This, cached_OAResolved_XMR_address, can be supplied by subclass._willSaveContactWithDescription
@@ -124,6 +136,94 @@ class AddContactView extends ContactFormView {
     self.validationMessageLayer.ClearAndHideMessage()
     __disableForm()
     //
+
+    // Yat
+    // checking for emojis for Yat addresses
+    const hasEmojiCharacters = /\p{Extended_Pictographic}/u.test(address)
+    if (hasEmojiCharacters) {
+      // const isYat = yatMoneroLookup.isValidYatHandle(address)
+      const isYat = true
+      if (isYat) {
+        self.yat = address;
+        const lookup = yatMoneroLookup.lookupMoneroAddresses(address).then((responseMap) => {
+          self.isYat = true
+          // Our library returns a map with between 0 and 2 keys
+          if (responseMap.size == 0) {
+            // no monero address
+            // When zero keys, we're not going to let a user save a contact. There's the off chance they try to add an incorrect Yat
+            const errorString = `There is no Monero address associated with "${address}"`
+            self.validationMessageLayer.SetValidationError(errorString)
+            return
+          } else if (responseMap.size == 1) {
+            // Either a Monero address or a Monero subaddress was found.
+            const iterator = responseMap.values()
+            const record = iterator.next()
+            self._displayResolvedAddress(record.value)
+          } else if (responseMap.size == 2) {
+            const moneroAddress = responseMap.get('0x1001')
+            self._displayResolvedAddress(moneroAddress)
+          }
+          const contactDescription = {
+            fullname: fullname,           
+            isYat: true, 
+            address: address,
+            payment_id: null,
+            cached_OAResolved_XMR_address: null
+          }
+          self._willSaveContactWithDescription(contactDescription)
+          self.context.contactsListController.WhenBooted_AddContact(
+            contactDescription,
+            function (err, contact) {
+              if (err) {
+                __reEnableForm()
+                console.error('Error while creating contact', err)
+                self.validationMessageLayer.SetValidationError(err)
+                return
+              }
+              // there's no need to re-enable the form because we're about to dismiss
+              self._didSaveNewContact(contact)
+            }
+          )
+
+        }).catch((error) => {
+          __reEnableForm()
+          // If the error status is defined, handle this error according to the HTTP error status code
+          if (typeof (error.response) !== 'undefined' && typeof (error.response.status) !== 'undefined') {
+            if (error.response.status == 404) {
+              // Yat not found
+              const errorString = `The Yat "${address}" does not exist`
+              self.validationMessageLayer.SetValidationError(errorString)
+            } else if (error.response.status >= 500) {
+              // Yat server / remote network device error encountered
+              const errorString = `The Yat server is responding with an error. Please try again later. Error: ${error.message}`
+              self.validationMessageLayer.SetValidationError(errorString)
+            } else {
+              // Response code that isn't 404 or a server error (>= 500) on their side
+              const errorString = `An unexpected error occurred when looking up the Yat Handle: ${error.message}`
+              self.validationMessageLayer.SetValidationError(errorString)
+            }
+          } else {
+            // Network connectivity issues -- could be offline / Yat server not responding
+            const errorString = `Unable to communicate with the Yat server. It may be down, or you may be experiencing internet connectivity issues. Error: ${error.message}`
+            self.validationMessageLayer.SetValidationError(errorString)
+            // If we don't have an error.response, our request failed because of a network error
+          }
+        })
+      } else {
+        // This conditional will run when a mixture of emoji and non-emoji characters are present in the address
+        const errorString = `"${address}" is not a valid Yat handle. You may have input an emoji that is not part of the Yat emoji set, or a non-emoji character.`
+        self.validationMessageLayer.SetValidationError(errorString)
+        const hasEmojiCharacters = true;
+        return
+      }
+    }
+
+    if (hasEmojiCharacters == true) {
+      return
+    }
+
+    // If we don't have emojis in the address string, continue to evaluate normally
+
     self.cancelAny_requestHandle_for_oaResolution() // jic
     const openAliasResolver = self.context.openAliasResolver
     if (openAliasResolver.DoesStringContainPeriodChar_excludingAsXMRAddress_qualifyingAsPossibleOAAddress(address) === false) {
@@ -201,7 +301,7 @@ class AddContactView extends ContactFormView {
         }
       )
     }
-    //
+    
     function _proceedTo_addContact_paymentID (paymentID__toSave, cached_OAResolved_XMR_address__orUndefined) {
       const paymentID_exists = paymentID__toSave && typeof paymentID__toSave !== 'undefined'
       const paymentID_existsAndIsNotValid = paymentID_exists && monero_paymentID_utils.IsValidPaymentIDOrNoPaymentID(paymentID__toSave) === false
@@ -213,12 +313,14 @@ class AddContactView extends ContactFormView {
       const contactDescription =
 			{
 			  fullname: fullname,
-			  emoji: emoji,
+        // emoji: emoji,
+        isYat: self.isYat, 
 			  address: address,
 			  payment_id: paymentID__toSave,
 			  cached_OAResolved_XMR_address: cached_OAResolved_XMR_address__orUndefined
 			}
       self._willSaveContactWithDescription(contactDescription)
+      console.log(contactDescription);
       self.context.contactsListController.WhenBooted_AddContact(
         contactDescription,
         function (err, contact) {
