@@ -86,7 +86,7 @@
     "@babel/register": "^7.15.3",
     "@braintree/sanitize-url": "^6.0.0",
     "@mymonero/changenow-exchange-integration": "*",
-    "@mymonero/mymonero-app-bridge": "^2.1.17",
+    "@mymonero/mymonero-app-bridge": "^2.1.18",
     "@mymonero/mymonero-bigint": "^1.1.6",
     "@mymonero/mymonero-bridge-utils": "^1.1.6",
     "@mymonero/mymonero-exchange": "^1.1.13",
