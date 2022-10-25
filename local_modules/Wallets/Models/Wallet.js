@@ -1102,7 +1102,6 @@ class Wallet extends EventEmitter {
     contact_hasOpenAliasAddress,
     contact_address,
     //
-    raw_amount_string,
     isSweepTx, // when true, amount will be ignored
     simple_priority,
     //
@@ -1134,7 +1133,7 @@ class Wallet extends EventEmitter {
       // critical to do on every exit from this method
       self.context.userIdleInWindowController.ReEnable_userIdle()
     }
-    //const raw_amount_string = destinations[0].send_amount
+    const raw_amount_string = destinations[0].send_amount
     const statusUpdate_messageBase = isSweepTx ? 'Sending wallet balance…' : `Sending ${raw_amount_string} XMR…`
     const processStepMessageSuffix_byEnumVal =
 		{
