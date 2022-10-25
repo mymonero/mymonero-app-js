@@ -1359,7 +1359,6 @@ class SendFundsView extends View {
     const hasPickedAContact = !!(typeof self.pickedContact !== 'undefined' && self.pickedContact)
     let enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ''
     const enteredAddressValue_exists = enteredAddressValue !== ''
-    //
     const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ''
     const resolvedAddress_exists = resolvedAddress !== '' // NOTE: it might be hidden, though!
     const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === 'block'
