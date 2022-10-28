@@ -1,5 +1,4 @@
-'use strict'
-
+const async = require('async')
 const EventEmitter = require('events')
 const extend = require('util')._extend
 const uuidV1 = require('uuid/v1')
@@ -14,6 +13,7 @@ const mnemonic_languages = require('@mymonero/mymonero-locales')
 const wallet_persistence_utils = require('./wallet_persistence_utils')
 const WalletHostPollingController = require('../Controllers/WalletHostPollingController')
 const string_cryptor = require('../../symmetric_cryptor/symmetric_string_cryptor')
+const monero_app_bridge = require("@mymonero/mymonero-app-bridge")
 const wallet_currencies =
 {
   xmr: 'xmr'
@@ -1088,7 +1088,7 @@ class Wallet extends EventEmitter {
   // Runtime - Imperatives - Public - Sending funds
 
   SendFunds (
-    enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
+    destinations, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
     resolvedAddress,
     manuallyEnteredPaymentID,
     resolvedPaymentID,
@@ -1102,7 +1102,6 @@ class Wallet extends EventEmitter {
     contact_hasOpenAliasAddress,
     contact_address,
     //
-    raw_amount_string,
     isSweepTx, // when true, amount will be ignored
     simple_priority,
     //
@@ -1134,6 +1133,7 @@ class Wallet extends EventEmitter {
       // critical to do on every exit from this method
       self.context.userIdleInWindowController.ReEnable_userIdle()
     }
+    const raw_amount_string = destinations[0].send_amount
     const statusUpdate_messageBase = isSweepTx ? 'Sending wallet balance…' : `Sending ${raw_amount_string} XMR…`
     const processStepMessageSuffix_byEnumVal =
 		{
@@ -1203,7 +1203,7 @@ class Wallet extends EventEmitter {
 		  fromWallet_needsImport: false,
 		  requireAuthentication: self.context.settingsController.authentication_requireWhenSending != false,
 		  //
-		  sending_amount_double_string: raw_amount_string,
+      destinations: destinations, 
 		  hasPickedAContact: hasPickedAContact,
 		  resolvedAddress_fieldIsVisible: resolvedAddress_fieldIsVisible,
 		  manuallyEnteredPaymentID_fieldIsVisible: manuallyEnteredPaymentID_fieldIsVisible,
@@ -1217,7 +1217,6 @@ class Wallet extends EventEmitter {
 		  priority: simple_priority,
 		  nettype: self.context.nettype,
 		  //
-		  enteredAddressValue: enteredAddressValue, // may be ""
 		  resolvedAddress: resolvedAddress, // may be ""
 		  manuallyEnteredPaymentID: manuallyEnteredPaymentID, // may be ""
 		  resolvedPaymentID: resolvedPaymentID, // may be ""
@@ -1706,4 +1705,5 @@ class Wallet extends EventEmitter {
     }
   }
 }
+
 module.exports = Wallet

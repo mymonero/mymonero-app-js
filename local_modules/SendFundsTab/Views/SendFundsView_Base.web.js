@@ -1357,45 +1357,14 @@ class SendFundsView extends View {
     }
     //
     const hasPickedAContact = !!(typeof self.pickedContact !== 'undefined' && self.pickedContact)
-    var enteredAddressValue, enteredAddressValue_exists, resolvedAddress, resolvedAddress_exists, resolvedAddress_fieldIsVisible;
-    if (hasPickedAContact && self.pickedContact.isYat === true) {
-
-      enteredAddressValue = self.pickedContact.address
-      enteredAddressValue_exists = enteredAddressValue !== ''
-      //
-      resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ''
-      resolvedAddress_exists = resolvedAddress !== '' // NOTE: it might be hidden, though!
-      resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === 'block'
-      // console.log("Test for yat");
-      if (yatMoneroLookup.isValidYatHandle(enteredAddressValue)) {
-        // The user entered a valid Yat. We need to override the value of enteredAddressValue to the resolved address
-        let lookupResponse = await yatMoneroLookup.lookupMoneroAddresses(self.pickedContact.address)
-        // we get back a responsemap
-        if (lookupResponse.size == 0) {
-          // no monero address
-          const errorString = `There is no Monero address associated with "${enteredPossibleAddress}"`
-          self.validationMessageLayer.SetValidationError(errorString)
-        } else if (lookupResponse.size == 1) {
-          // Either a Monero address or a Monero subaddress was found.
-          const iterator = lookupResponse.values()
-          const record = iterator.next()
-          self._displayResolvedAddress(record.value)
-          self.pickedContact.resolvedAddress = record.value
-        } else if (lookupResponse.size == 2) {
-          const moneroAddress = lookupResponse.get('0x1001')
-          self._displayResolvedAddress(moneroAddress)
-          self.pickedContact.resolvedAddress = moneroAddress
-        } else {
-          throw new Error("An error occurred while trying to resolve your contact's Yat address")
-        }
-      }
-    } else {
-      let enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ''
-      const enteredAddressValue_exists = enteredAddressValue !== ''
-      //
-      const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ''
-      const resolvedAddress_exists = resolvedAddress !== '' // NOTE: it might be hidden, though!
-      const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === 'block'  
+    let enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ''
+    const enteredAddressValue_exists = enteredAddressValue !== ''
+    const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ''
+    const resolvedAddress_exists = resolvedAddress !== '' // NOTE: it might be hidden, though!
+    const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === 'block'
+    // Check if Yat
+    if (self.isYat) {
+        enteredAddressValue = resolvedAddress;
     }
 
     const manuallyEnteredPaymentID = self.manualPaymentIDInputLayer.value || ''
@@ -1416,7 +1385,21 @@ class SendFundsView extends View {
       // "detected" payment id. So the `hasPickedAContact` usage above yields slightly
       // ambiguity in code and could be improved to encompass request uri pid "forcing"
     }
+    
+    // OA address
+    // we need to handle oa adresses, we can't purely rely on enteredAddressValue being correct
+    if (enteredAddressValue.includes('.')) {
+      enteredAddressValue = resolvedAddress
+    }
 
+    const destinations = [
+        {
+        to_address: typeof(enteredAddressValue) !== 'undefined' ? enteredAddressValue : resolvedAddress,
+              send_amount: '' + final_XMR_amount_Number
+      }
+    ];
+    console.log(destinations);
+    
     //
     // now if using alternate display currency, be sure to ask for terms agreement before doing send
     if (!sweeping && selected_ccySymbol != Currencies.ccySymbolsByCcy.XMR) {
@@ -1492,31 +1475,8 @@ class SendFundsView extends View {
     __proceedTo_generateSendTransaction()
     //
     function __proceedTo_generateSendTransaction () {
-
-      const hasPickedAContact = !!(typeof self.pickedContact !== 'undefined' && self.pickedContact)
-      const enteredAddressValue = self.contactOrAddressPickerLayer.ContactPicker_inputLayer.value || ''
-      const enteredAddressValue_exists = enteredAddressValue !== ''
-      //
-      const resolvedAddress = self.resolvedAddress_valueLayer.innerHTML || ''
-      const resolvedAddress_exists = resolvedAddress !== '' // NOTE: it might be hidden, though!
-      const resolvedAddress_fieldIsVisible = self.resolvedAddress_containerLayer.style.display === 'block'
-
-      const contact_payment_id = hasPickedAContact ? self.pickedContact.payment_id : undefined
-      const cached_OAResolved_address = hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined
-
-      const contact_hasOpenAliasAddress = hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined
-      const contact_address = hasPickedAContact ? self.pickedContact.address : undefined
-
-      // Check if Yat, if yes, use resolved address	
-      if (typeof(hasPickedAContact) !== "undefined" && hasPickedAContact != false) {	
-        if (self.pickedContact.isYat) {	
-          enteredAddressValue = self.pickedContact.resolvedAddress	
-          contact_address = self.pickedContact.resolvedAddress	
-        }	
-      }
-
       wallet.SendFunds(
-        enteredAddressValue, // currency-ready wallet address, but not an OpenAlias address (resolve before calling)
+        destinations,
         resolvedAddress,
         manuallyEnteredPaymentID,
         resolvedPaymentID,
@@ -1524,11 +1484,12 @@ class SendFundsView extends View {
         resolvedAddress_fieldIsVisible,
         manuallyEnteredPaymentID_fieldIsVisible,
         resolvedPaymentID_fieldIsVisible,
-        contact_payment_id,
-        cached_OAResolved_address,
-        contact_hasOpenAliasAddress,
-        contact_address,
-        '' + final_XMR_amount_Number,
+        //
+        hasPickedAContact ? self.pickedContact.payment_id : undefined,
+        hasPickedAContact ? self.pickedContact.cached_OAResolved_XMR_address : undefined,
+        hasPickedAContact ? self.pickedContact.HasOpenAliasAddress() : undefined,
+        hasPickedAContact ? self.pickedContact.address : undefined,
+        //
         sweeping, // when true, amount will be ignored
         self._selected_simplePriority(),
         preSuccess_nonTerminal_statusUpdate_fn,

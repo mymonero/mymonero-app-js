@@ -57,10 +57,17 @@ for (const i in fn_names) {
     IPCBridge_cb_jump_map['async__send_funds--submit_raw_tx--res_cb_jump_cb--'](IPC_arg.err_msg, IPC_arg.res)
   })
   ipcMain.on('async__send_funds', function (event, IPC_arg) {
+    console.log("ipcMain.on 'async__send_funds'")
     if (coreBridge_instance === null) {
+      console.log("coreBridge_instance == null")
       throw Error('Expected coreBridge_instance to have been loaded by the time async__send_funds was called')
     }
-    const call_args = IPC_arg.args
+    console.log("IPC_arg.args");
+    console.log(IPC_arg.args);
+    const call_args = JSON.parse(IPC_arg.args);
+    console.log("call_args");
+    console.log(call_args);
+
     call_args.authenticate_fn = function (cb) {
       IPCBridge_cb_jump_map['async__send_funds--authenticate--res_cb_jump_cb--'] = function (did_pass) {
         cb(did_pass)
