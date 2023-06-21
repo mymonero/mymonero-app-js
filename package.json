@@ -111,7 +111,7 @@
     "dotenv": "^8.2.0",
     "electron-context-menu": "0.15.1",
     "electron-log": "3.0.9",
-    "electron-updater": "4.2.0",
+    "electron-updater": "4.2.1",
     "electron-util": "^0.15.1",
     "fastclick": "1.0.6",
     "jsqr": "1.1.1",
