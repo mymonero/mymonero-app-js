@@ -65,6 +65,7 @@ class MainWindowController {
 		    // can actually occur when app is in the background or is minimized
 
 		    nodeIntegration: true,
+		    enableRemoteModule: true,
 
 		    // the following are currently the default values but stating them here to be explicit…
 		    webSecurity: true,

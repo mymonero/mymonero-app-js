@@ -43,6 +43,7 @@ const moneroUtils_promise_fn = function (options) {
       const { ipcRenderer } = require('electron')
       self._bridge_call_cbs_by_call_id = {}
       local_fns.async__send_funds = function (args) {
+        console.log("in local_fns.async__send_funds")
         const real__authenticate_fn = args.authenticate_fn
         const real__get_unspent_outs_fn = args.get_unspent_outs_fn
         const real__get_random_outs_fn = args.get_random_outs_fn
@@ -120,9 +121,10 @@ const moneroUtils_promise_fn = function (options) {
 
         console.log('calling ipcRenderer to send funds')
         console.log(args)
+        console.log(JSON.stringify(args))
 
         ipcRenderer.send('async__send_funds', {
-          args: args
+          args: JSON.stringify(args)
         })
       }
       ipcRenderer.on('async__send_funds--authenticate_fn', function (event, IPC_on_arg) {
