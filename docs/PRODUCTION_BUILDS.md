@@ -39,11 +39,17 @@ MyMonero releases are done as follows:
 
 MacOS and linux builds can be done at the same time. the binaries are published to GitHub under a draft release.
 
-`electron-builder -ml -p always`
+`electron-builder -ml`
 
 Windows builds for both 32bit and 64 bit can be done at the same time. They are required to be seperate from the Linux releases as adding the --ia32 flag will try build a 32 bit linux version which does not work.
 
-`electron-builder -w --ia32 --x64 -p always`
+`electron-builder -w --ia32 --x64`
+
+Rename the windows files to match the latest.yml file names.
+The spaces should be swapped with dashes "-" or else the auto update scripts will fail on the client side.
+
+All files are then uploaded in to the release manually. Currently the automatic publishing no longer seems to work for us. 
+Check previous releases for the files that should be excluded,
 
 SHA256 values are generated for the local build files.
 
@@ -56,3 +62,5 @@ This is done via downloading the zipped archive. cant be downloaded with Safari 
 `gpg --armor --detach-sign mymonero-app-js-1.x.xx.tar.gz`
 
 This produces the .asc file which is then uploaded and added to the release
+
+*** Currently we do not support snaps since the snap store build change. ***
