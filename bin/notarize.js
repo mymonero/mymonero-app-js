@@ -10,6 +10,8 @@ exports.default = async function notarizing (context) {
   const appName = context.packager.appInfo.productFilename
 
   return await notarize({
+    tool: 'notarytool',
+    teamId: 'NLN5D623Y3',
     appBundleId: 'com.mymonero.mymonero-desktop',
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLE_ID,
