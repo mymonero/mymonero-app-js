@@ -5,6 +5,7 @@ const commonComponents_navigationBarButtons = require('../../MMAppUICommonCompon
 const commonComponents_tables = require('../../MMAppUICommonComponents/tables.web')
 const commonComponents_forms = require('../../MMAppUICommonComponents/forms.web')
 const ForgotPasswordView = require('./ForgotPasswordView.web')
+const Swal = require('sweetalert2')
 
 class EnterExistingPasswordView extends View {
   constructor (options, context) {
@@ -50,6 +51,85 @@ class EnterExistingPasswordView extends View {
         return false
       }
     )
+    Swal.fire({
+      // title: "MyMonero will be sunsetting its services in January 2026",
+      //icon: "info",
+      icon: undefined,
+      inputAutoFocus: false,
+      html: `
+        <style>
+        .swal2-html-container {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+          letter-spacing: 0;
+          font-size: 13px;
+          font-weight: 300;
+          -webkit-font-smoothing: subpixel-antialiased;
+        }
+        </style>
+        <img src="../Resources/MM-to-Cake.jpg" style="width: auto; max-width: 100%;">
+        <div style="font-weight:bold; margin-bottom: 1.25em; font-size: 1.25em; margin-top: 0.5em;">MyMonero will be sunsetting its services in January 2026</div>
+        <div style="text-align:left; margin-bottom: 1em;">
+        Dear Monero Community,
+        </div>
+        <div style="text-align: justify; margin-bottom: 1em;">After over a decade of serving the Monero ecosystem, MyMonero has decided to sunset its wallet service on Tuesday, January 06, 2026. We've worked closely with the Cake Wallet team to help provide continuity for our users, given their strong track record in the Monero community. We understand the trust you've placed in us since 2014, and we're committed to ensuring a smooth, secure, and privacy-preserving transition for all users.</div>
+        
+        <div style="text-align:left; margin-bottom: 1em;">Please migrate your Monero to <a href="https://docs.cakewallet.com/tutorials/mymonero/" target="_blank" class="no-decoration">Cake Wallet</a> prior to January, 2026 to ensure uninterrupted access to your funds.</div>
+
+        <div style="text-align:left; margin-bottom: 1em;"><a href="https://mymonero.com/?announcement=1" class="no-decoration">Read more about this change here.</a></div>
+        <div style="text-align:left; margin-bottom: 1em;">Thank you for being part of this journey with us.</div>
+        <style>
+        --swal2-action-button-focus-box-shadow, --swal2-action-button-focus-box-shadow {
+          background: none !important;
+        }
+        .swal2-confirm, .swal2-confirm:hover {
+          background-color: rgb(17, 187, 236) !important;
+          padding: 8px 16px !important;
+          min-width: 140px !important;
+          height: auto !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          border: none !important;
+          border-radius: 6px !important;
+        }
+
+        .swal2-deny, .swal2-deny:hover {
+          background-color: rgb(17, 187, 236) !important;
+          padding: 8px 16px !important;
+          min-width: 140px !important;
+          height: auto !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          border: none !important;
+          border-radius: 6px !important;
+        }
+
+        .no-decoration {
+          text-decoration: none !important;
+          color: rgb(17, 187, 236) !important;
+        }
+        </style>
+      `,
+      showCloseButton: true,
+      focusConfirm: false,  
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonColor: "rgb(17, 187, 236)",
+      denyButtonColor: "rgb(17, 187, 236)",
+      cancelButtonColor: "rgb(17, 187, 236)",
+      confirmButtonText: `Download Cake Wallet`,
+      denyButtonText: `Migration Guide`,
+      didOpen: function () {
+        Swal.getConfirmButton().blur()
+      }
+    }).then(async (result) => {  
+      console.log(result);
+      if (result.isConfirmed) {
+        window.open("https://cakewallet.com", "_blank");
+      } else if (result.isDenied) {
+        window.open("https://docs.cakewallet.com/tutorials/mymonero/", "_blank");
+      }
+    })
+
   }
 
   _setup_inputFieldGroup () {

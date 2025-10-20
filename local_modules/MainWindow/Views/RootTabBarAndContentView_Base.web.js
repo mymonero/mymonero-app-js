@@ -203,7 +203,7 @@ class RootTabBarAndContentView extends TabBarAndContentView {
     { // urlOpeningController
       // Paul originally routed URL handling through here to be able to change the active tab. This should be refactored
       const controller = self.context.urlOpeningCoordinator
-      console.log(controller);
+
       controller.on("EventName_TimeToHandleYatDeepLink", function (url) {
           console.log("URL:" + url);
           // for speedy debug purposes - This variable gets set when the user specifies a wallet to connect a Yat (in settings)
