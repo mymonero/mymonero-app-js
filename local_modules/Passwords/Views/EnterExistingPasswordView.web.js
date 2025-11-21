@@ -66,7 +66,7 @@ class EnterExistingPasswordView extends View {
           -webkit-font-smoothing: subpixel-antialiased;
         }
         </style>
-        <img src="../Resources/MM-to-Cake.jpg" style="width: auto; max-width: 100%;">
+        <img src="../../MainWindow/Resources/MM-to-Cake.jpg" style="width: auto; max-width: 100%;">
         <div style="font-weight:bold; margin-bottom: 1.25em; font-size: 1.25em; margin-top: 0.5em;">MyMonero will be sunsetting its services in January 2026</div>
         <div style="text-align:left; margin-bottom: 1em;">
         Dear Monero Community,
